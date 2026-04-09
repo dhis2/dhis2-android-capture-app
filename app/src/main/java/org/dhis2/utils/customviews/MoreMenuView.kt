@@ -9,11 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
+import org.dhis2.utils.getOnToolbarColor
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.menu.DropDownMenu
 import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemData
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
-import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 @Composable
 fun <T> MoreOptionsWithDropDownMenuButton(
@@ -22,12 +22,13 @@ fun <T> MoreOptionsWithDropDownMenuButton(
     onMenuToggle: (Boolean) -> Unit,
     onItemClick: (T) -> Unit,
 ) {
+    val onToolbarColor = getOnToolbarColor()
     IconButton(
         modifier = Modifier,
         icon = {
             Icon(
                 imageVector = Icons.Outlined.MoreVert,
-                tint = SurfaceColor.SurfaceBright,
+                tint = onToolbarColor,
                 contentDescription = null,
             )
         },

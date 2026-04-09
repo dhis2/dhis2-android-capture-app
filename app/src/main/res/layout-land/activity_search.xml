@@ -62,6 +62,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
+                app:tint="?onToolbarColor"
                 tools:ignore="ContentDescription" />
 
             <TextView
@@ -72,7 +73,7 @@
                 android:layout_toEndOf="@id/back_button"
                 android:gravity="center_vertical"
                 android:text="@string/search"
-                android:textColor="@color/white_faf"
+                android:textColor="?onToolbarColor"
                 android:textSize="20sp"
                 android:visibility="gone"
                 app:layout_constraintStart_toEndOf="@id/back_button"
@@ -94,6 +95,7 @@
                     android:id="@+id/totalFilterCount"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:backgroundTint="?onToolbarColor"
                     android:background="@drawable/ic_oval_shape_white"
                     android:gravity="center"
                     android:includeFontPadding="false"
@@ -110,6 +112,7 @@
                 style="@style/ActionIcon"
                 android:onClick="@{()->presenter.showFilterGeneral()}"
                 android:visibility="gone"
+                app:tint="?onToolbarColor"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -124,7 +127,7 @@
                 app:layout_constraintEnd_toStartOf="@id/filter"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_sync"
-                app:tint="?colorOnPrimary"
+                app:tint="?onToolbarColor"
                 tools:ignore="ContentDescription" />
 
             <Spinner
