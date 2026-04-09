@@ -165,6 +165,19 @@ android {
             buildConfigField("int", "MATOMO_ID", "2")
             buildConfigField("String", "BUILD_DATE", "\"" + getBuildDate() + "\"")
             buildConfigField("String", "GIT_SHA", "\"" + getCommitHash() + "\"")
+
+            val openIdAuthScheme = System.getenv("OPEN_ID_AUTH_SCHEME") ?: "open.id.app.fallback"
+            manifestPlaceholders["openIdAuthScheme"] = openIdAuthScheme
+
+            val openIdClient = System.getenv("OPEN_ID_CLIENT") ?: ""
+            buildConfigField("String", "OPEN_ID_CLIENT", "\"$openIdClient\"")
+
+            val openIdRedirectUri = System.getenv("OPEN_ID_REDIRECT_URI") ?: ""
+            buildConfigField("String", "OPEN_ID_REDIRECT_URI", "\"$openIdRedirectUri\"")
+
+            val openIdDiscoveryUri = System.getenv("OPEN_ID_DISCOVERY_URI") ?: ""
+            buildConfigField("String", "OPEN_ID_DISCOVERY_URI", "\"$openIdDiscoveryUri\"")
+
         }
         getByName("release") {
             isShrinkResources = true

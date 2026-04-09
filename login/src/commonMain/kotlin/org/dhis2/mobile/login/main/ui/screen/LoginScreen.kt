@@ -56,6 +56,7 @@ import androidx.navigation.toRoute
 import coil3.compose.LocalPlatformContext
 import org.dhis2.mobile.commons.extensions.ObserveAsEvents
 import org.dhis2.mobile.login.accounts.ui.screen.AccountsScreen
+import org.dhis2.mobile.login.main.di.OpenIdConfig
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.ui.contracts.filePicker
 import org.dhis2.mobile.login.main.ui.navigation.NavigationAction
@@ -77,6 +78,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.dropShadow
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -93,6 +95,7 @@ fun LoginScreen(
 ) {
     val context = LocalPlatformContext.current
     val viewModel = koinViewModel<LoginViewModel> { parametersOf(context) }
+    val openIdConfig: OpenIdConfig = koinInject()
     var displayMoreActions by remember { mutableStateOf(false) }
     var displayBackArrow by remember { mutableStateOf(false) }
     val snackBarHostState = remember { SnackbarHostState() }
@@ -212,7 +215,7 @@ fun LoginScreen(
                         selectedServerFlag = arg.selectedServerFlag,
                         allowRecovery = arg.allowRecovery,
                         oidcInfo =
-                            fixedOpenIdProvider()?.takeIf { info ->
+                            fixedOpenIdProvider(openIdConfig)?.takeIf { info ->
                                 info.serverUrl == arg.selectedServer
                             },
                         fromHome = fromHome,
@@ -253,9 +256,15 @@ fun LoginScreen(
  * Don't forget to add the RedirectUriReceiverActivity in the android manifest. Check the
  * documentation for more info.
  * */
-private fun fixedOpenIdProvider(): OidcInfo? {
-    // Change to the correct provider
-    return null
+private fun fixedOpenIdProvider(config: OpenIdConfig): OidcInfo? {
+    if (config.clientId.isEmpty()) return null
+    return OidcInfo.Discovery(
+        server = config.server,
+        loginButtonText = config.buttonText,
+        clientId = config.clientId,
+        redirectUri = config.redirectUri,
+        discoveryUri = config.discoveryUri,
+    )
 }
 
 @Composable

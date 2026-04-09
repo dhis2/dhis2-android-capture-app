@@ -28,6 +28,14 @@ internal actual val accountModule =
 
         single<OpenIdController> { OpenIdControllerImpl() }
 
+        single {
+            OpenIdConfig(
+                clientId = getProperty("openIdClient", ""),
+                redirectUri = getProperty("openIdRedirectUri", ""),
+                discoveryUri = getProperty("openIdDiscoveryUri", ""),
+            )
+        }
+
         factory<LoginRepository> { _ ->
             LoginRepositoryImpl(
                 d2 = get(),

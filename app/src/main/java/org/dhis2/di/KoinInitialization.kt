@@ -33,6 +33,9 @@ object KoinInitialization {
                 mapOf(
                     "sentryDsn" to BuildConfig.SENTRY_DSN,
                     "isTrainingFlavor" to (BuildConfig.FLAVOR == "dhis2Training"),
+                    "openIdClient" to BuildConfig.OPEN_ID_CLIENT,
+                    "openIdRedirectUri" to BuildConfig.OPEN_ID_REDIRECT_URI,
+                    "openIdDiscoveryUri" to BuildConfig.OPEN_ID_DISCOVERY_URI,
                 ),
             )
             workManagerFactory()
