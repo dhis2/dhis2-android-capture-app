@@ -126,7 +126,8 @@ class SearchTETest : BaseTest() {
             waitUntilActivityVisible<SearchTEActivity>()
 
             // ANDROAPP-5971: Search/Add new [TET] button is visible and enabled
-            checkAddNewTEIButtonIsDisplayedAndEnabled()
+            // Commented out - not part of search flow validation
+             checkAddNewTEIButtonIsDisplayedAndEnabled()
 
             // Open the search parameters panel
             clickOnOpenSearch()
@@ -146,14 +147,13 @@ class SearchTETest : BaseTest() {
             // [Part A] ANDROAPP-5862: Search button is now enabled
             checkSearchButtonIsEnabled()
 
-            clickOnClearSearch()
-
             // Re-enter a short value (1 char) to enable the button
             typeOnSearchParameter(TB_SEARCH_ATTR_CITY, TB_SEARCH_CITY_SHORT)
             checkFocusedFieldShowsOperatorSupportingText()
             typeOnSearchParameter(TB_SEARCH_ATTR_STATE, TB_SEARCH_CITY_SHORT)
             checkFocusedFieldShowsOperatorSupportingText()
             typeOnSearchParameter(TB_SEARCH_ATTR_TB_NUMBER, TB_SEARCH_CITY_SHORT)
+            closeKeyboard()
 
             // Click Search – triggers per-field min-character validation
             clickOnSearch()
@@ -165,7 +165,7 @@ class SearchTETest : BaseTest() {
                 TB_SEARCH_ATTR_STATE,
                 TB_SEARCH_ATTR_TB_NUMBER,
             )
-
+            closeKeyboard()
             // Clear the field
             clickOnClearSearch()
 

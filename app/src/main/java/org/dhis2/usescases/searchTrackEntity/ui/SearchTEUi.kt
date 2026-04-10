@@ -663,7 +663,7 @@ fun CreateNewButton(
     ) {
         if (it) {
             ExtendedFAB(
-                modifier = modifier,
+                modifier = modifier.testTag("ADD_NEW_BUTTON"),
                 onClick = onClick,
                 text = stringResource(R.string.search_new_te_type, teTypeName.lowercase()),
                 icon = icon,
@@ -671,7 +671,7 @@ fun CreateNewButton(
             )
         } else {
             FAB(
-                modifier = modifier,
+                modifier = modifier.testTag("ADD_NEW_BUTTON"),
                 onClick = onClick,
                 icon = icon,
                 style = FABStyle.SECONDARY,
