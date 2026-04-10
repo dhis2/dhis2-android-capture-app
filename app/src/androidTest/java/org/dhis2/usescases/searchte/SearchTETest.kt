@@ -126,8 +126,8 @@ class SearchTETest : BaseTest() {
             waitUntilActivityVisible<SearchTEActivity>()
 
             // ANDROAPP-5971: Search/Add new [TET] button is visible and enabled
-            // Commented out - not part of search flow validation
-             checkAddNewTEIButtonIsDisplayedAndEnabled()
+            // Verify the button is displayed and enabled before opening search
+            checkAddNewTEIButtonIsDisplayedAndEnabled()
 
             // Open the search parameters panel
             clickOnOpenSearch()
