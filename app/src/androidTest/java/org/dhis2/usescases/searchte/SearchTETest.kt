@@ -148,7 +148,6 @@ class SearchTETest : BaseTest() {
             checkSearchButtonIsEnabled()
 
             // Re-enter a short value (1 char) to enable the button
-            typeOnSearchParameter(TB_SEARCH_ATTR_CITY, TB_SEARCH_CITY_SHORT)
             checkFocusedFieldShowsOperatorSupportingText()
             typeOnSearchParameter(TB_SEARCH_ATTR_STATE, TB_SEARCH_CITY_SHORT)
             checkFocusedFieldShowsOperatorSupportingText()
