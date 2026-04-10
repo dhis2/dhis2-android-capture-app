@@ -48,8 +48,8 @@ class SyncMetadata(
         }
 
     private suspend fun handleMetadataPeriodChange(
-        initialMetadataSyncPeriod: SyncPeriod,
-        finalMetadataSyncPeriod: SyncPeriod,
+        initialMetadataSyncPeriod: SyncPeriod?,
+        finalMetadataSyncPeriod: SyncPeriod?,
     ) {
         val metadataSyncPeriodChanged =
             initialMetadataSyncPeriod != finalMetadataSyncPeriod
@@ -63,7 +63,7 @@ class SyncMetadata(
             }
 
             metadataSyncPeriodChanged -> {
-                syncBackgroundJobAction.launchMetadataSync(finalMetadataSyncPeriod.toSeconds())
+                syncBackgroundJobAction.launchMetadataSync(finalMetadataSyncPeriod?.toSeconds() ?: 0L)
             }
         }
     }

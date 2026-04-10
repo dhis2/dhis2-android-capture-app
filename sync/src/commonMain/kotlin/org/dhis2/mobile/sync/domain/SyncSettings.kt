@@ -18,11 +18,11 @@ class SyncSettings(
                 val currentMetadataSyncPeriod = repository.currentMetadataSyncPeriod()
 
                 val metadataPeriodChangedFromManual =
-                    previousMetadataSyncPeriod is SyncPeriod.Manual &&
+                    (previousMetadataSyncPeriod is SyncPeriod.Manual || previousMetadataSyncPeriod == null) &&
                         currentMetadataSyncPeriod !is SyncPeriod.Manual
 
                 if (metadataPeriodChangedFromManual) {
-                    syncBackgroundJobAction.launchMetadataSync(currentMetadataSyncPeriod.toSeconds())
+                    syncBackgroundJobAction.launchMetadataSync(currentMetadataSyncPeriod?.toSeconds() ?: 0L)
                     syncBackgroundJobAction.cancelSyncSettings()
                 }
             }

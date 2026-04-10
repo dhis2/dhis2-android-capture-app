@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.map
 import org.dhis2.mobile.sync.model.SyncJobStatus
 import org.dhis2.mobile.sync.model.SyncStatus
 import java.util.concurrent.TimeUnit
-import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 
 const val METADATA_SYNC = "METADATA_SYNC"
 const val METADATA_SYNC_NOW = "METADATA_SYNC_NOW"
@@ -100,7 +100,7 @@ class AndroidSyncBackgroundJobAction(
             PeriodicWorkRequest
                 .Builder(
                     workerClass = SyncSettingsWorker::class.java,
-                    repeatInterval = 1.days.inWholeSeconds,
+                    repeatInterval = 1.hours.inWholeSeconds,
                     repeatIntervalTimeUnit = TimeUnit.SECONDS,
                 ).setInitialDelay(1, TimeUnit.MINUTES)
                 .addTag(

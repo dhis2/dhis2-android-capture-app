@@ -6,7 +6,7 @@ import org.dhis2.mobile.sync.model.SyncPeriod
 interface SyncRepository {
     suspend fun refreshSyncSettings(): Result<Unit>
 
-    suspend fun currentMetadataSyncPeriod(): SyncPeriod
+    suspend fun currentMetadataSyncPeriod(): SyncPeriod?
 
     suspend fun currentDataSyncPeriod(): SyncPeriod
 
