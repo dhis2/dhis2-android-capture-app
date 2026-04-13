@@ -2,6 +2,14 @@ import com.android.build.api.variant.impl.VariantOutputImpl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Properties
+
+val localProps =
+    Properties().also { props ->
+        rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use(props::load)
+    }
+
+fun envOrLocal(key: String, default: String = "") = System.getenv(key) ?: localProps.getProperty(key) ?: default
 
 plugins {
     id("com.android.application")
@@ -125,6 +133,34 @@ android {
         buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
         buildConfigField("String", "VERSION_NAME", "\"${defaultConfig.versionName}\"")
         buildConfigField("String", "SENTRY_DSN", "\"${bitriseSentryDSN}\"")
+
+        // Open id configuration
+        val openIdAuthScheme = envOrLocal("OPEN_ID_AUTH_SCHEME", "open.id.app.fallback")
+        manifestPlaceholders["openIdAuthScheme"] = openIdAuthScheme
+
+        val openIdType = envOrLocal("OPEN_ID_TYPE")
+        buildConfigField("String", "OPEN_ID_TYPE", "\"$openIdType\"")
+
+        val openIdServer = envOrLocal("OPEN_ID_SERVER")
+        buildConfigField("String", "OPEN_ID_SERVER", "\"$openIdServer\"")
+
+        val openIdClient = envOrLocal("OPEN_ID_CLIENT")
+        buildConfigField("String", "OPEN_ID_CLIENT", "\"$openIdClient\"")
+
+        val openIdRedirectUri = envOrLocal("OPEN_ID_REDIRECT_URI")
+        buildConfigField("String", "OPEN_ID_REDIRECT_URI", "\"$openIdRedirectUri\"")
+
+        val openIdDiscoveryUri = envOrLocal("OPEN_ID_DISCOVERY_URI")
+        buildConfigField("String", "OPEN_ID_DISCOVERY_URI", "\"$openIdDiscoveryUri\"")
+
+        val openIdAuthorizationUrl = envOrLocal("OPEN_ID_AUTHORIZATION_URL")
+        buildConfigField("String", "OPEN_ID_AUTHORIZATION_URL", "\"$openIdAuthorizationUrl\"")
+
+        val openIdTokenUrl = envOrLocal("OPEN_ID_TOKEN_URL")
+        buildConfigField("String", "OPEN_ID_TOKEN_URL", "\"$openIdTokenUrl\"")
+
+        val openIdButtonText = envOrLocal("OPEN_ID_BUTTON_TEXT")
+        buildConfigField("String", "OPEN_ID_BUTTON_TEXT", "\"$openIdButtonText\"")
     }
     packaging {
         jniLibs {
@@ -165,19 +201,6 @@ android {
             buildConfigField("int", "MATOMO_ID", "2")
             buildConfigField("String", "BUILD_DATE", "\"" + getBuildDate() + "\"")
             buildConfigField("String", "GIT_SHA", "\"" + getCommitHash() + "\"")
-
-            val openIdAuthScheme = System.getenv("OPEN_ID_AUTH_SCHEME") ?: "open.id.app.fallback"
-            manifestPlaceholders["openIdAuthScheme"] = openIdAuthScheme
-
-            val openIdClient = System.getenv("OPEN_ID_CLIENT") ?: ""
-            buildConfigField("String", "OPEN_ID_CLIENT", "\"$openIdClient\"")
-
-            val openIdRedirectUri = System.getenv("OPEN_ID_REDIRECT_URI") ?: ""
-            buildConfigField("String", "OPEN_ID_REDIRECT_URI", "\"$openIdRedirectUri\"")
-
-            val openIdDiscoveryUri = System.getenv("OPEN_ID_DISCOVERY_URI") ?: ""
-            buildConfigField("String", "OPEN_ID_DISCOVERY_URI", "\"$openIdDiscoveryUri\"")
-
         }
         getByName("release") {
             isShrinkResources = true

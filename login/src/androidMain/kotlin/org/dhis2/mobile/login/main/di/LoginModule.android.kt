@@ -9,6 +9,7 @@ import org.dhis2.mobile.login.authentication.OpenIdController
 import org.dhis2.mobile.login.authentication.OpenIdControllerImpl
 import org.dhis2.mobile.login.main.data.LoginRepository
 import org.dhis2.mobile.login.main.data.LoginRepositoryImpl
+import org.dhis2.mobile.login.main.ui.state.OidcInfo
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
@@ -29,11 +30,26 @@ internal actual val accountModule =
         single<OpenIdController> { OpenIdControllerImpl() }
 
         single {
-            OpenIdConfig(
-                clientId = getProperty("openIdClient", ""),
-                redirectUri = getProperty("openIdRedirectUri", ""),
-                discoveryUri = getProperty("openIdDiscoveryUri", ""),
-            )
+            when (getProperty("openIdType", "")) {
+                "token" ->
+                    OidcInfo.Token(
+                        server = getProperty("openIdServer", ""),
+                        loginLabel = getProperty("openIdButtonText", ""),
+                        clientId = getProperty("openIdClient", ""),
+                        redirectUri = getProperty("openIdRedirectUri", ""),
+                        authorizationUrl = getProperty("openIdAuthorizationUrl", ""),
+                        tokenUrl = getProperty("openIdTokenUrl", ""),
+                    )
+
+                else ->
+                    OidcInfo.Discovery(
+                        server = getProperty("openIdServer", ""),
+                        loginButtonText = getProperty("openIdButtonText", ""),
+                        clientId = getProperty("openIdClient", ""),
+                        redirectUri = getProperty("openIdRedirectUri", ""),
+                        discoveryUri = getProperty("openIdDiscoveryUri", ""),
+                    )
+            }
         }
 
         factory<LoginRepository> { _ ->

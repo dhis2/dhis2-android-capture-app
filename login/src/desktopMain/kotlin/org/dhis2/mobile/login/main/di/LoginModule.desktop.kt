@@ -6,5 +6,4 @@ import org.koin.dsl.module
 internal actual val accountModule: Module
     get() =
         module {
-            single { OpenIdConfig() }
         }

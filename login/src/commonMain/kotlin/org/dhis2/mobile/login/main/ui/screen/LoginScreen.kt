@@ -56,7 +56,6 @@ import androidx.navigation.toRoute
 import coil3.compose.LocalPlatformContext
 import org.dhis2.mobile.commons.extensions.ObserveAsEvents
 import org.dhis2.mobile.login.accounts.ui.screen.AccountsScreen
-import org.dhis2.mobile.login.main.di.OpenIdConfig
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.ui.contracts.filePicker
 import org.dhis2.mobile.login.main.ui.navigation.NavigationAction
@@ -95,7 +94,7 @@ fun LoginScreen(
 ) {
     val context = LocalPlatformContext.current
     val viewModel = koinViewModel<LoginViewModel> { parametersOf(context) }
-    val openIdConfig: OpenIdConfig = koinInject()
+    val fixedOidcInfo = koinInject<OidcInfo>()
     var displayMoreActions by remember { mutableStateOf(false) }
     var displayBackArrow by remember { mutableStateOf(false) }
     val snackBarHostState = remember { SnackbarHostState() }
@@ -215,7 +214,7 @@ fun LoginScreen(
                         selectedServerFlag = arg.selectedServerFlag,
                         allowRecovery = arg.allowRecovery,
                         oidcInfo =
-                            fixedOpenIdProvider(openIdConfig)?.takeIf { info ->
+                            fixedOpenIdProvider(fixedOidcInfo).takeIf { info ->
                                 info.serverUrl == arg.selectedServer
                             },
                         fromHome = fromHome,
@@ -252,20 +251,12 @@ fun LoginScreen(
 
 /**
  * OpenId Configuration
- * Return either OidcInfo.Token or OidcInfo.Discovery classes to configure the login screen.
- * Don't forget to add the RedirectUriReceiverActivity in the android manifest. Check the
- * documentation for more info.
+ * Returns oidcInfo setup by environment variables, if you want to configure manually,
+ * replace it by either OidcInfo.Token or OidcInfo.Discovery classes.
+ * Don't forget to add the auth scheme in RedirectUriReceiverActivity in the android manifest.
+ * Check the documentation for more info.
  * */
-private fun fixedOpenIdProvider(config: OpenIdConfig): OidcInfo? {
-    if (config.clientId.isEmpty()) return null
-    return OidcInfo.Discovery(
-        server = config.server,
-        loginButtonText = config.buttonText,
-        clientId = config.clientId,
-        redirectUri = config.redirectUri,
-        discoveryUri = config.discoveryUri,
-    )
-}
+private fun fixedOpenIdProvider(oidcInfo: OidcInfo): OidcInfo = oidcInfo
 
 @Composable
 fun LoginTopBar(
