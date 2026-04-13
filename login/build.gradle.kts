@@ -41,20 +41,20 @@ kotlin {
             resources.srcDirs("src/commonMain/composeResources")
 
             dependencies {
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.ui)
-                implementation(compose.material3)
-                api(compose.materialIconsExtended)
+                implementation(libs.compose.runtime)
+                implementation(libs.compose.foundation)
+                implementation(libs.compose.ui)
+                implementation(libs.compose.material3)
+                api(libs.compose.material3.iconsExtendend)
                 val designSystem = libs.dhis2.mobile.designsystem
                 implementation("${designSystem.get().group}:${designSystem.get().name}:${designSystem.get().version}") {
                     isChanging = true
                 }
                 implementation(libs.compose.material3.window)
-                implementation(compose.components.resources)
+                implementation(libs.compose.components.resources)
                 implementation(project(":commonskmm"))
                 implementation(libs.navigation.compose)
-                implementation(compose.components.uiToolingPreview)
+                implementation(libs.compose.ui.uiToolingPreview)
 
                 // Koin
                 api(libs.koin.core)
@@ -69,7 +69,7 @@ kotlin {
                 implementation(libs.test.turbine)
                 implementation(libs.test.kotlinCoroutines)
                 implementation(libs.test.mockitoKotlin)
-                implementation(compose.components.resources)
+                implementation(libs.compose.components.resources)
             }
         }
 
@@ -101,7 +101,7 @@ kotlin {
 
         val desktopMain by getting {
             dependencies {
-                implementation(compose.desktop.common)
+                implementation(libs.compose.desktop.common)
             }
         }
     }
