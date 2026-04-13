@@ -92,7 +92,6 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun clickOnSearch() {
         closeKeyboard()
         composeTestRule.onNodeWithTag("SEARCH_BUTTON").performClick()
-        composeTestRule.waitForIdle()
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -227,19 +226,6 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     @OptIn(ExperimentalTestApi::class)
-    fun checkFirstSearchParamIsBarcodeOrQR() {
-        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SEARCH_PARAM_ITEM"), TIMEOUT)
-        composeTestRule
-            .onAllNodesWithTag("SEARCH_PARAM_ITEM")[0]
-            .assert(
-                hasAnyDescendant(
-                    hasContentDescription("QR Code Icon") or
-                        hasContentDescription("Barcode Icon"),
-                ),
-            )
-    }
-
-    @OptIn(ExperimentalTestApi::class)
     fun checkFirstSearchParamIsBarcodeOrQROrUnique(expectedLabel: String) {
         composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SEARCH_PARAM_ITEM"), TIMEOUT)
         composeTestRule
@@ -286,8 +272,7 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun clickOnClearSearch() {
         // Ensure keyboard is fully closed and UI has settled
         closeKeyboard()
-        composeTestRule.waitForIdle()
-        
+
         // Additional wait to ensure UI is fully settled on slower devices
         Thread.sleep(500)
         
@@ -303,8 +288,7 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             
             // Close keyboard and wait before looking for buttons
             closeKeyboard()
-            composeTestRule.waitForIdle()
-            
+
             try {
                 // Find all Icon Buttons with content description "Icon Button"
                 // These are the X/Cancel buttons in the input fields
@@ -324,18 +308,15 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
                 // Click the first visible clear button
                 try {
                     iconButtons[0].performScrollTo()
-                    composeTestRule.waitForIdle()
                 } catch (e: Exception) {
                     println("DEBUG: performScrollTo failed: ${e.message}")
                 }
                 
                 iconButtons[0].performClick()
-                composeTestRule.waitForIdle()
-                
+
                 // After clicking, keyboard may reappear, close it again
                 closeKeyboard()
-                composeTestRule.waitForIdle()
-                
+
             } catch (e: Exception) {
                 // No more buttons to click
                 println("DEBUG: Exception in clickOnClearSearch loop: ${e.message}")
@@ -346,7 +327,6 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         // After clearing all fields, ensure keyboard is closed
         // This is critical because clicking X buttons might have opened the keyboard
         closeKeyboard()
-        composeTestRule.waitForIdle()
     }
 
     @OptIn(ExperimentalTestApi::class)
