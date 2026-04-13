@@ -21,6 +21,12 @@ import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.sms.SmsSendingService
+import org.dhis2.utils.granularsync.data.GranularSyncRepository
+import org.dhis2.utils.granularsync.domain.MissingSyncTargetException
+import org.dhis2.utils.granularsync.domain.SyncStatus
+import org.dhis2.utils.granularsync.domain.SyncStatusData
+import org.dhis2.utils.granularsync.ui.SyncUiState
+import org.dhis2.utils.granularsync.ui.SyncUiStateMapper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.State
@@ -65,6 +71,7 @@ class GranularSyncPresenterTest {
         }
     private val workManager = Mockito.mock(WorkManagerController::class.java)
     private val smsSyncProvider: SMSSyncProvider = mock()
+    private val mapper: SyncUiStateMapper = mock()
     private val context: Context = mock()
     private val syncContext: SyncContext = SyncContext.Global()
     private val syncBackgroundJobAction: SyncBackgroundJobAction = mock()
@@ -80,17 +87,24 @@ class GranularSyncPresenterTest {
         }
         Dispatchers.setMain(testingDispatcher)
         runBlocking {
-            whenever(repository.getUiState(anyOrNull())) doReturn
-                SyncUiState(
-                    syncState = State.SYNCED,
-                    title = "Title",
+            whenever(repository.getSyncStatus(anyOrNull())) doReturn
+                SyncStatusData(
+                    syncState = SyncStatus.SYNCED,
                     lastSyncDate = null,
-                    message = null,
-                    mainActionLabel = null,
-                    secondaryActionLabel = null,
                     content = emptyList(),
+                    targetName = "",
                 )
         }
+        whenever(mapper.toUiState(any(), any())) doReturn
+            SyncUiState(
+                syncState = SyncStatus.SYNCED,
+                title = "Title",
+                lastSyncDate = null,
+                message = null,
+                mainActionLabel = null,
+                secondaryActionLabel = null,
+                content = emptyList(),
+            )
     }
 
     @After
@@ -111,11 +125,19 @@ class GranularSyncPresenterTest {
                 SyncContext.TrackerProgram("test_uid"),
                 workManager,
                 smsSyncProvider,
+                mapper,
             )
 
+        val mockedStatusData =
+            SyncStatusData(
+                syncState = SyncStatus.ERROR,
+                lastSyncDate = Date(),
+                content = emptyList(),
+                targetName = "test",
+            )
         val mockedState =
             SyncUiState(
-                syncState = State.ERROR,
+                syncState = SyncStatus.ERROR,
                 title = "Title",
                 lastSyncDate = SyncDate(Date()),
                 message = "message",
@@ -124,8 +146,9 @@ class GranularSyncPresenterTest {
                 content = emptyList(),
             )
         runBlocking {
-            whenever(repository.getUiState(anyOrNull())) doReturn mockedState
+            whenever(repository.getSyncStatus(anyOrNull())) doReturn mockedStatusData
         }
+        whenever(mapper.toUiState(any(), any())) doReturn mockedState
 
         presenter.refreshContent()
         val result = presenter.currentState.value
@@ -144,11 +167,12 @@ class GranularSyncPresenterTest {
                 SyncContext.TrackerProgram("missing_uid"),
                 workManager,
                 smsSyncProvider,
+                mapper,
             )
 
         val missingTargetUiState =
             SyncUiState(
-                syncState = State.ERROR,
+                syncState = SyncStatus.ERROR,
                 title = "Sync error",
                 lastSyncDate = null,
                 message = "missing_uid not found",
@@ -158,9 +182,10 @@ class GranularSyncPresenterTest {
             )
 
         runBlocking {
-            whenever(repository.getUiState(anyOrNull())) doThrow
-                MissingSyncTargetException(missingTargetUiState)
+            whenever(repository.getSyncStatus(anyOrNull())) doThrow
+                MissingSyncTargetException("missing_uid")
         }
+        whenever(mapper.missingTargetUiState("missing_uid")) doReturn missingTargetUiState
 
         presenter.refreshContent()
 
@@ -201,6 +226,7 @@ class GranularSyncPresenterTest {
                         it,
                         workManager,
                         smsSyncProvider,
+                        mapper,
                     ).canSendSMS()
                 it to enable
             }.forEach { (syncContext, canSendSMS) ->
@@ -229,6 +255,7 @@ class GranularSyncPresenterTest {
                 syncContext,
                 workManager,
                 smsSyncProvider,
+                mapper,
             )
 
         val testingMsg = "testingMsg"
@@ -257,6 +284,7 @@ class GranularSyncPresenterTest {
                 syncContext,
                 workManager,
                 smsSyncProvider,
+                mapper,
             )
 
         presenter.onSmsNotManuallySent(context)
@@ -275,6 +303,7 @@ class GranularSyncPresenterTest {
                 syncContext,
                 workManager,
                 smsSyncProvider,
+                mapper,
             )
 
         whenever(smsSyncProvider.isPlayServicesEnabled()) doReturn false
@@ -309,6 +338,7 @@ class GranularSyncPresenterTest {
                 syncContext,
                 workManager,
                 smsSyncProvider,
+                mapper,
             )
 
         whenever(smsSyncProvider.expectsResponseSMS()) doReturn false
@@ -318,7 +348,7 @@ class GranularSyncPresenterTest {
         }
 
         runBlocking {
-            verify(repository).getUiState(anyOrNull())
+            verify(repository).getSyncStatus(anyOrNull())
         }
     }
 
@@ -334,6 +364,7 @@ class GranularSyncPresenterTest {
                 syncContext,
                 workManager,
                 smsSyncProvider,
+                mapper,
             )
 
         whenever(smsSyncProvider.expectsResponseSMS()) doReturn true
@@ -341,7 +372,7 @@ class GranularSyncPresenterTest {
         }
 
         runBlocking {
-            verify(repository, times(0)).getUiState(anyOrNull())
+            verify(repository, times(0)).getSyncStatus(anyOrNull())
         }
     }
 
@@ -357,6 +388,7 @@ class GranularSyncPresenterTest {
                 syncContext,
                 workManager,
                 smsSyncProvider,
+                mapper,
             )
 
         whenever(smsSyncProvider.smsSender) doReturn mock()
@@ -365,7 +397,7 @@ class GranularSyncPresenterTest {
         presenter.onConfirmationMessageStateChanged(true)
 
         runBlocking {
-            verify(repository).getUiState(anyOrNull())
+            verify(repository).getSyncStatus(anyOrNull())
         }
     }
 
@@ -381,6 +413,7 @@ class GranularSyncPresenterTest {
                 syncContext,
                 workManager,
                 smsSyncProvider,
+                mapper,
             )
 
         whenever(smsSyncProvider.smsSender) doReturn mock()
@@ -389,7 +422,7 @@ class GranularSyncPresenterTest {
         presenter.onConfirmationMessageStateChanged(false)
 
         runBlocking {
-            verify(repository).getUiState(anyOrNull())
+            verify(repository).getSyncStatus(anyOrNull())
         }
     }
 
@@ -405,6 +438,7 @@ class GranularSyncPresenterTest {
                 SyncContext.TrackerProgram("programUid"),
                 workManager,
                 smsSyncProvider,
+                mapper,
             )
 
         val workInfoList = MutableLiveData<List<WorkInfo>>(emptyList())
@@ -430,6 +464,7 @@ class GranularSyncPresenterTest {
                 SyncContext.TrackerProgramTei("enrollmentUid"),
                 workManager,
                 smsSyncProvider,
+                mapper,
             )
 
         val workInfoList = MutableLiveData<List<WorkInfo>>(emptyList())
@@ -455,6 +490,7 @@ class GranularSyncPresenterTest {
                 SyncContext.Event("eventUid"),
                 workManager,
                 smsSyncProvider,
+                mapper,
             )
 
         val workInfoList = MutableLiveData<List<WorkInfo>>(emptyList())
@@ -480,6 +516,7 @@ class GranularSyncPresenterTest {
                 SyncContext.DataSet("dataSetUid"),
                 workManager,
                 smsSyncProvider,
+                mapper,
             )
 
         val workInfoList = MutableLiveData<List<WorkInfo>>(emptyList())
@@ -510,6 +547,7 @@ class GranularSyncPresenterTest {
                 ),
                 workManager,
                 smsSyncProvider,
+                mapper,
             )
 
         val mockedDataSet: DataSet =
@@ -573,6 +611,7 @@ class GranularSyncPresenterTest {
                 SyncContext.Global(),
                 workManager,
                 smsSyncProvider,
+                mapper,
             )
 
         val workInfoList = MutableLiveData<List<WorkInfo>>(emptyList())
@@ -600,6 +639,7 @@ class GranularSyncPresenterTest {
                     SyncContext.Global(),
                     workManager,
                     smsSyncProvider,
+                    mapper,
                 )
 
             presenter.checkServerAvailability()
@@ -622,6 +662,7 @@ class GranularSyncPresenterTest {
                     SyncContext.Global(),
                     workManager,
                     smsSyncProvider,
+                    mapper,
                 )
 
             presenter.checkServerAvailability()

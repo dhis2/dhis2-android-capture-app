@@ -1,4 +1,4 @@
-package org.dhis2.utils.granularsync
+package org.dhis2.utils.granularsync.data
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -43,6 +43,10 @@ import org.dhis2.commons.sync.SyncStatusItem
 import org.dhis2.commons.sync.SyncStatusType
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
+import org.dhis2.utils.granularsync.domain.MissingSyncTargetException
+import org.dhis2.utils.granularsync.SyncDate
+import org.dhis2.utils.granularsync.domain.SyncStatus
+import org.dhis2.utils.granularsync.domain.SyncStatusData
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSetInstance
@@ -60,12 +64,15 @@ class GranularSyncRepository(
     private val resourceManager: ResourceManager,
     private val dispatcher: DispatcherProvider,
 ) {
-    suspend fun getUiState(forcedState: State? = null): SyncUiState =
+    suspend fun getSyncStatus(forcedState: State? = null): SyncStatusData =
         coroutineScope {
             val lastSync = async { getLastSynced() }
-            buildUiState(
-                state = forcedState ?: getState(),
-                lastSync = lastSync.await(),
+            val state = forcedState ?: getState()
+            SyncStatusData(
+                syncState = state.toSyncStatus(),
+                lastSyncDate = lastSync.await().takeIf { state != State.UPLOADING }?.date,
+                content = getContent(state),
+                targetName = getTitle(),
             )
         }
 
@@ -174,143 +181,6 @@ class GranularSyncRepository(
                 ConflictType.ALL ->
                     SyncDate(preferenceProvider.lastSync())
             }
-        }
-
-    private fun buildUiState(
-        state: State,
-        lastSync: SyncDate,
-    ): SyncUiState =
-        SyncUiState(
-            syncState = state,
-            title = getTitleForState(state),
-            lastSyncDate = lastSync.takeIf { state != State.UPLOADING },
-            message = getMessageForState(state),
-            mainActionLabel = getMainActionLabel(state),
-            secondaryActionLabel = getSecondaryActionLabel(state),
-            content = getContent(state),
-        )
-
-    private fun getTitleForState(state: State): String =
-        when (state) {
-            State.TO_POST,
-            State.TO_UPDATE,
-            -> resourceManager.getString(R.string.sync_dialog_title_not_synced)
-
-            State.ERROR -> resourceManager.getString(R.string.sync_dialog_title_error)
-            State.RELATIONSHIP,
-            State.SYNCED,
-            -> resourceManager.getString(R.string.sync_dialog_title_synced)
-
-            State.WARNING -> resourceManager.getString(R.string.sync_dialog_title_warning)
-            State.UPLOADING -> resourceManager.getString(R.string.sync_dialog_title_syncing)
-            State.SENT_VIA_SMS,
-            State.SYNCED_VIA_SMS,
-            -> resourceManager.getString(R.string.sync_dialog_title_sms_syced)
-        }
-
-    private fun getMessageForState(state: State): String? =
-        when (state) {
-            State.TO_POST,
-            State.TO_UPDATE,
-            -> getNotSyncedMessage()
-
-            State.SYNCED -> getSyncedMessage()
-            State.SENT_VIA_SMS,
-            State.SYNCED_VIA_SMS,
-            -> getSmsSyncedMessage()
-
-            State.ERROR,
-            State.WARNING,
-            State.RELATIONSHIP,
-            State.UPLOADING,
-            -> null
-        }
-
-    private fun getNotSyncedMessage(): String =
-        when (syncContext.conflictType()) {
-            ConflictType.ALL ->
-                resourceManager.getString(R.string.sync_dialog_message_not_synced_all)
-
-            ConflictType.DATA_SET,
-            ConflictType.DATA_VALUES,
-            ConflictType.PROGRAM,
-            ->
-                resourceManager.getString(
-                    R.string.sync_dialog_message_not_synced_program,
-                    getMessageArgument(),
-                )
-
-            ConflictType.TEI, ConflictType.EVENT ->
-                resourceManager.getString(
-                    R.string.sync_dialog_message_not_synced_tei,
-                    getMessageArgument(),
-                )
-        }
-
-    private fun getSyncedMessage(): String =
-        when (syncContext.conflictType()) {
-            ConflictType.ALL -> resourceManager.getString(R.string.sync_dialog_message_synced_all)
-            ConflictType.DATA_SET,
-            ConflictType.DATA_VALUES,
-            ConflictType.PROGRAM,
-            ->
-                resourceManager.getString(
-                    R.string.sync_dialog_message_synced_program,
-                    getMessageArgument(),
-                )
-
-            ConflictType.TEI, ConflictType.EVENT ->
-                resourceManager.getString(
-                    R.string.sync_dialog_message_synced_tei,
-                    getMessageArgument(),
-                )
-        }
-
-    private fun getSmsSyncedMessage(): String? =
-        when (syncContext.conflictType()) {
-            ConflictType.ALL,
-            ConflictType.DATA_SET,
-            ConflictType.PROGRAM,
-            -> null
-
-            ConflictType.DATA_VALUES,
-            ConflictType.TEI,
-            ConflictType.EVENT,
-            -> resourceManager.getString(R.string.sync_dialog_message_sms_synced)
-        }
-
-    private fun getMainActionLabel(state: State): String? =
-        when (state) {
-            State.TO_POST,
-            State.SENT_VIA_SMS,
-            State.SYNCED_VIA_SMS,
-            State.TO_UPDATE,
-            -> resourceManager.getString(R.string.sync_dialog_action_send)
-
-            State.ERROR,
-            State.SYNCED,
-            State.WARNING,
-            -> resourceManager.getString(R.string.sync_dialog_action_refresh)
-
-            State.UPLOADING,
-            State.RELATIONSHIP,
-            -> null
-        }
-
-    private fun getSecondaryActionLabel(state: State): String? =
-        when (state) {
-            State.UPLOADING,
-            State.RELATIONSHIP,
-            -> null
-
-            State.TO_POST,
-            State.TO_UPDATE,
-            State.ERROR,
-            State.SYNCED,
-            State.SENT_VIA_SMS,
-            State.SYNCED_VIA_SMS,
-            State.WARNING,
-            -> resourceManager.getString(R.string.sync_dialog_action_not_now)
         }
 
     private fun getContent(state: State): List<SyncStatusItem> =
@@ -1032,20 +902,23 @@ class GranularSyncRepository(
         }
     }
 
-    private fun getMessageArgument(): String = getTitle()
+    private fun State.toSyncStatus(): SyncStatus =
+        when (this) {
+            State.TO_POST,
+            State.TO_UPDATE,
+            -> SyncStatus.NOT_SYNCED
+
+            State.ERROR -> SyncStatus.ERROR
+            State.WARNING -> SyncStatus.WARNING
+            State.SYNCED -> SyncStatus.SYNCED
+            State.RELATIONSHIP -> SyncStatus.RELATIONSHIP
+            State.UPLOADING -> SyncStatus.UPLOADING
+            State.SENT_VIA_SMS -> SyncStatus.SENT_VIA_SMS
+            State.SYNCED_VIA_SMS -> SyncStatus.SYNCED_VIA_SMS
+        }
 
     private fun missingSyncTargetException(): MissingSyncTargetException =
-        MissingSyncTargetException(
-            SyncUiState(
-                syncState = State.ERROR,
-                title = getTitleForState(State.ERROR),
-                lastSyncDate = null,
-                message = resourceManager.getString(R.string.resource_not_found, syncContext.recordUid()),
-                mainActionLabel = getMainActionLabel(State.ERROR),
-                secondaryActionLabel = getSecondaryActionLabel(State.ERROR),
-                content = emptyList(),
-            ),
-        )
+        MissingSyncTargetException(syncContext.recordUid())
 
     private fun getTitle(): String =
         when (syncContext.conflictType()) {

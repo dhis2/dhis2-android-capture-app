@@ -60,6 +60,11 @@ import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.sms.SmsSendingService
+import org.dhis2.utils.granularsync.data.GranularSyncRepository
+import org.dhis2.utils.granularsync.domain.MissingSyncTargetException
+import org.dhis2.utils.granularsync.domain.SyncStatus
+import org.dhis2.utils.granularsync.ui.SyncUiState
+import org.dhis2.utils.granularsync.ui.SyncUiStateMapper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
 import org.koin.core.component.KoinComponent
@@ -75,6 +80,7 @@ class GranularSyncPresenter(
     private val syncContext: SyncContext,
     private val workManagerController: WorkManagerController,
     private val smsSyncProvider: SMSSyncProvider,
+    private val mapper: SyncUiStateMapper,
 ) : ViewModel(),
     KoinComponent {
     private val workerName: String
@@ -97,16 +103,16 @@ class GranularSyncPresenter(
     private fun loadSyncInfo(forcedState: State? = null) {
         viewModelScope.launch(dispatcher.io()) {
             try {
-                val syncState = repository.getUiState(forcedState)
-                val dismissOnUpdate = refreshing && syncState.syncState == State.SYNCED
+                val syncStatusData = repository.getSyncStatus(forcedState)
+                val dismissOnUpdate = refreshing && syncStatusData.syncState == SyncStatus.SYNCED
                 refreshing = false
                 _currentState.update {
-                    syncState.copy(shouldDismissOnUpdate = dismissOnUpdate)
+                    mapper.toUiState(syncStatusData, dismissOnUpdate)
                 }
-            } catch (missingSyncTargetException: MissingSyncTargetException) {
+            } catch (e: MissingSyncTargetException) {
                 refreshing = false
                 _currentState.update {
-                    missingSyncTargetException.uiState
+                    mapper.missingTargetUiState(e.recordUid)
                 }
             }
         }

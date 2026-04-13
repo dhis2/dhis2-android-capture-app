@@ -6,15 +6,15 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.dhis2.R
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
+import org.dhis2.utils.granularsync.data.GranularSyncRepository
+import org.dhis2.utils.granularsync.domain.MissingSyncTargetException
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.common.State
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
@@ -41,38 +41,6 @@ class GranularSyncRepositoryTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(testingDispatcher)
-        whenever(resourceManager.getString(R.string.sync_dialog_title_synced)) doReturn "Synced"
-        whenever(resourceManager.getString(R.string.sync_dialog_title_error)) doReturn "Sync error"
-        whenever(resourceManager.getString(R.string.sync_dialog_action_refresh)) doReturn "Refresh"
-        whenever(resourceManager.getString(R.string.sync_dialog_action_not_now)) doReturn "Not now"
-        whenever(resourceManager.getString(R.string.resource_not_found, "programUid")) doReturn "programUid not found"
-        whenever(resourceManager.getString(R.string.resource_not_found, "enrollmentUid")) doReturn "enrollmentUid not found"
-        whenever(resourceManager.getString(R.string.resource_not_found, "eventUid")) doReturn "eventUid not found"
-        whenever(resourceManager.getString(R.string.resource_not_found, "dataSetUid")) doReturn "dataSetUid not found"
-        whenever(
-            resourceManager.getString(
-                R.string.sync_dialog_message_synced_program,
-                "programUid",
-            ),
-        ) doReturn "Program synced"
-        whenever(
-            resourceManager.getString(
-                R.string.sync_dialog_message_synced_program,
-                "dataSetUid",
-            ),
-        ) doReturn "Dataset synced"
-        whenever(
-            resourceManager.getString(
-                R.string.sync_dialog_message_synced_tei,
-                "enrollmentUid",
-            ),
-        ) doReturn "Tei synced"
-        whenever(
-            resourceManager.getString(
-                R.string.sync_dialog_message_synced_tei,
-                "eventUid",
-            ),
-        ) doReturn "Event synced"
     }
 
     @After
@@ -87,7 +55,7 @@ class GranularSyncRepositoryTest {
 
             assertMissingSyncTarget(
                 syncContext = SyncContext.TrackerProgram("programUid"),
-                expectedMessage = "programUid not found",
+                expectedRecordUid = "programUid",
             )
         }
     }
@@ -100,7 +68,7 @@ class GranularSyncRepositoryTest {
 
             assertMissingSyncTarget(
                 syncContext = SyncContext.TrackerProgramTei("enrollmentUid"),
-                expectedMessage = "enrollmentUid not found",
+                expectedRecordUid = "enrollmentUid",
             )
         }
     }
@@ -112,7 +80,7 @@ class GranularSyncRepositoryTest {
 
             assertMissingSyncTarget(
                 syncContext = SyncContext.Event("eventUid"),
-                expectedMessage = "eventUid not found",
+                expectedRecordUid = "eventUid",
             )
         }
     }
@@ -124,27 +92,22 @@ class GranularSyncRepositoryTest {
 
             assertMissingSyncTarget(
                 syncContext = SyncContext.DataSet("dataSetUid"),
-                expectedMessage = "dataSetUid not found",
+                expectedRecordUid = "dataSetUid",
             )
         }
     }
 
     private suspend fun assertMissingSyncTarget(
         syncContext: SyncContext,
-        expectedMessage: String,
+        expectedRecordUid: String,
     ) {
         val repository = repositoryFor(syncContext)
 
         try {
-            repository.getUiState()
+            repository.getSyncStatus()
             fail("Expected MissingSyncTargetException")
         } catch (exception: MissingSyncTargetException) {
-            assertEquals(State.ERROR, exception.uiState.syncState)
-            assertEquals("Sync error", exception.uiState.title)
-            assertEquals(expectedMessage, exception.uiState.message)
-            assertEquals("Refresh", exception.uiState.mainActionLabel)
-            assertEquals("Not now", exception.uiState.secondaryActionLabel)
-            assertEquals(emptyList<Any>(), exception.uiState.content)
+            assertEquals(expectedRecordUid, exception.recordUid)
         }
     }
 
