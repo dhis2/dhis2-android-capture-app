@@ -44,6 +44,12 @@ jobs:
       with:
         python-version: 3.12.1
 
+      # Create RELEASE_BRANCH and push it to repository
+    - name: Create and push release branch
+      run: |
+        git checkout -b ${{ env.RELEASE_BRANCH }}
+        git push origin ${{ env.RELEASE_BRANCH }}
+
       # Creates an auxiliary branch. This branch will be used to create the signed commit using the GH API.
       # It is required to use an auxiliary branch because the RELEASE_BRANCH is protected and the GH API
       # rejects the commit even though the user identified by the token is included in the bypass list.
