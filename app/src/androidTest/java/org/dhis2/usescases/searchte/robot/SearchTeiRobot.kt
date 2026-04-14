@@ -265,7 +265,6 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onAllNodesWithTag("INPUT_TEXT_FIELD").onLast().performTextInput(value)
         // Close keyboard after typing to reveal fields that might be hidden behind it
         closeKeyboard()
-        composeTestRule.waitForIdle()
     }
 
     @OptIn(ExperimentalTestApi::class)
