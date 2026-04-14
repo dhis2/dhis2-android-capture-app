@@ -92,7 +92,8 @@ class NoteRobot : BaseRobot() {
                 withId(R.id.storeBy),
                 withEffectiveVisibility(Visibility.VISIBLE),
                 withText(user)
-            )
+            ),
+            waitMillis = NOTES_WAIT_TIMEOUT_MS,
         )
             .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
         waitForView(
@@ -100,7 +101,8 @@ class NoteRobot : BaseRobot() {
                 withId(R.id.note_text),
                 withEffectiveVisibility(Visibility.VISIBLE),
                 withText(noteText)
-            )
+            ),
+            waitMillis = NOTES_WAIT_TIMEOUT_MS,
         )
             .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
     }
