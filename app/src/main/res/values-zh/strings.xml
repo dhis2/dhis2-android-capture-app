@@ -606,7 +606,6 @@
     <string name="complete_enrollment_label">完整%s</string>
     <string name="deactivate_enrollment_label">停用%s</string>
     <string name="reopen_enrollment_label">重新打开%s</string>
-
     <plurals name="error_count_label">
         <item quantity="other">%s 错误</item>
     </plurals>
