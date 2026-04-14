@@ -164,13 +164,15 @@ class SearchTETest : BaseTest() {
                 TB_SEARCH_ATTR_TB_NUMBER,
             )
             clickOnClearSearch()
+            closeKeyboard()
 
             // Update to valid search values and search again
             openNextSearchParameter(TB_SEARCH_ATTR_CITY)
             typeOnSearchParameter(TB_SEARCH_ATTR_CITY, TB_SEARCH_CITY)
+            closeKeyboard()
             openNextSearchParameter(TB_SEARCH_ATTR_STATE)
             typeOnSearchParameter(TB_SEARCH_ATTR_STATE, TB_SEARCH_STATE)
-            openNextSearchParameter(TB_SEARCH_ATTR_TB_NUMBER)
+            closeKeyboard()
             typeOnSearchParameter(TB_SEARCH_ATTR_TB_NUMBER, TB_SEARCH_TB_NUMBER)
 
             // Click Search with valid values
