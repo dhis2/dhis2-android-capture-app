@@ -58,7 +58,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
                 R.string.navigation_notes
             )
         ).performClick()
-        waitToDebounce(500)
+        waitForView(withId(R.id.addNoteButton))
     }
 
     fun goToRelationships() {
