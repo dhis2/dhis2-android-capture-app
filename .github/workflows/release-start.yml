@@ -63,15 +63,12 @@ jobs:
         ref: ${{ env.TEMP_RELEASE_BRANCH }}
         token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
 
-      # Fetch the remote commit (signed commit) and create a new branch with the RELEASE_BRANCH name.
+      # Create pull request of the new branch with th RELEASE_BRANCH name
       # This is required because the RELEASE_BRANCH is protected.
-    - name: Create and push release branch
-      run: |
-        git reset --hard
-        git pull origin ${{ env.TEMP_RELEASE_BRANCH }}
-        git checkout -b ${{ env.RELEASE_BRANCH }}
-        git push origin ${{ env.RELEASE_BRANCH }}
-        git push origin --delete ${{ env.TEMP_RELEASE_BRANCH }}
+    - name: Create pull request
+      run: gh pr create -B ${{ env.RELEASE_BRANCH }} -H ${{ env.TEMP_RELEASE_BRANCH }} --title 'Updates ${{ env.RELEASE_BRANCH }} version name to ${{ env.RELEASE_VERSION }}' --body 'Created by Github action'
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   update_version:
     runs-on: ubuntu-latest
@@ -79,7 +76,7 @@ jobs:
       DEVELOPMENT_VERSION: ${{ inputs.development_version_name }}
       DEVELOPMENT_SDK_VERSION: ${{ inputs.dev_sdk_version_name }}
       DEVELOPMENT_DESIGN_VERSION: ${{ inputs.dev_design_system_version_name }}
-      DEVELOPMENT_BRANCH: 'update_version_to${{ inputs.development_version_name }}'
+      DEVELOPMENT_BRANCH: 'update_version_to_${{ inputs.development_version_name }}'
 
     steps:
       - name: Check out code
@@ -111,6 +108,6 @@ jobs:
           token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
 
       - name: Create pull request
-        run: gh pr create -B develop -H update_version_to${{ env.DEVELOPMENT_VERSION }} --title 'Merge ${{ env.DEVELOPMENT_BRANCH }} into develop' --body 'Created by Github action'
+        run: gh pr create -B develop -H update_version_to_${{ env.DEVELOPMENT_VERSION }} --title 'Merge ${{ env.DEVELOPMENT_BRANCH }} into develop' --body 'Created by Github action'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
