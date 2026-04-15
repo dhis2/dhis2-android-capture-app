@@ -19,8 +19,8 @@ import org.dhis2.android.rtsm.services.scheduler.SchedulerProviderImpl
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.android.rtsm.ui.managestock.TableModelMapper
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepositoryImpl
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepositoryImpl
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider

@@ -9,7 +9,7 @@ import io.reactivex.Observable
 import org.dhis2.R
 import org.dhis2.android.rtsm.utils.NetworkUtils
 import org.dhis2.commons.data.ProgramConfigurationRepository
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider

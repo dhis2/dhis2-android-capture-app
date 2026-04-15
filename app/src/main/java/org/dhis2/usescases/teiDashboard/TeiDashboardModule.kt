@@ -5,7 +5,7 @@ import dagger.Provides
 import dhis2.org.analytics.charts.Charts
 import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.dhis2.commons.di.dagger.PerActivity
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.EventResourcesProvider

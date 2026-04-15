@@ -11,7 +11,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.viewmodel.DispatcherProvider
