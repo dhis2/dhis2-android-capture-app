@@ -57,6 +57,11 @@ class FetchSearchParametersTest {
                     createSearchParameter("param1", TrackerInputType.TEXT, isUnique = false),
                     createSearchParameter("param2", TrackerInputType.QR_CODE, isUnique = true),
                     createSearchParameter("param3", TrackerInputType.BAR_CODE, isUnique = false),
+                    createSearchParameter(
+                        "param4",
+                        TrackerInputType.NOT_SUPPORTED_HIDE_ON_LIST,
+                        isUnique = false,
+                    ),
                 )
 
             whenever(repository.getSearchParametersByProgram(programUid)) doReturn parameters

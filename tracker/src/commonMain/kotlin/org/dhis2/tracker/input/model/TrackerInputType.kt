@@ -33,5 +33,6 @@ enum class TrackerInputType {
     SEQUENTIAL,
     DROPDOWN,
     NOT_SUPPORTED,
+    NOT_SUPPORTED_HIDE_ON_LIST,
     CUSTOM_INTENT,
 }

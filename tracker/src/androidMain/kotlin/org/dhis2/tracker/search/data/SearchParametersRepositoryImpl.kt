@@ -207,13 +207,15 @@ class SearchParametersRepositoryImpl(
             ValueType.UNIT_INTERVAL,
             ValueType.TRACKER_ASSOCIATE,
             ValueType.REFERENCE,
-            ValueType.COORDINATE,
-            ValueType.IMAGE,
             ValueType.FILE_RESOURCE,
             ValueType.GEOJSON,
             ValueType.URL,
             null,
             -> TrackerInputType.NOT_SUPPORTED
+
+            ValueType.COORDINATE,
+            ValueType.IMAGE,
+            -> TrackerInputType.NOT_SUPPORTED_HIDE_ON_LIST
         }
 
     private fun getInputTypeForOptionSetByRenderingType(valueTypeRenderingType: ValueTypeRenderingType?): TrackerInputType =
