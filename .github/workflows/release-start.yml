@@ -44,11 +44,16 @@ jobs:
       with:
         python-version: 3.12.1
 
-      # Create RELEASE_BRANCH and push it to repository
+      # Create RELEASE_BRANCH via the GitHub API to bypass push protection
     - name: Create and push release branch
       run: |
-        git checkout -b ${{ env.RELEASE_BRANCH }}
-        git push origin ${{ env.RELEASE_BRANCH }}
+        SHA=$(git rev-parse HEAD)
+        gh api repos/${{ github.repository }}/git/refs \
+          --method POST \
+          -f ref="refs/heads/${{ env.RELEASE_BRANCH }}" \
+          -f sha="$SHA"
+      env:
+        GH_TOKEN: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
 
       # Creates an auxiliary branch. This branch will be used to create the signed commit using the GH API.
       # It is required to use an auxiliary branch because the RELEASE_BRANCH is protected and the GH API
