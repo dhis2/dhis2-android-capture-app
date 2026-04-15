@@ -22,16 +22,25 @@ description: >
 ## Run Commands
 
 ```bash
-# All unit tests
+# Shortcut: lint + all unit tests (mirrors CI)
+./run_tests.sh
+
+# All unit tests (legacy + KMP host + KMP debug)
 ./gradlew testDebugUnitTest testDhis2DebugUnitTest testAndroidHostTest
 
-# Single KMP module test class (commonTest source set)
+# Desktop targets in KMP modules
+./gradlew desktopTest
+
+# Single KMP module test class (commonTest + androidUnitTest source sets)
 ./gradlew :login:testAndroidHostTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest"
+
+# Single KMP module test class (androidUnitTest source set only)
+./gradlew :login:testAndroidDebugUnitTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest"
 
 # Single legacy Android module test class
 ./gradlew :form:testDebugUnitTest --tests "org.dhis2.form.ui.FormViewModelTest"
 
-# Single test method (commonTest source set)
+# Single test method (commonTest + androidUnitTest source sets)
 ./gradlew :login:testAndroidHostTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest.initial screen is set correctly when starting"
 ```
 
@@ -145,7 +154,10 @@ class ExampleRepositoryTest {
 
 ## UI Tests: Robot Pattern
 
-All UI tests go in `androidInstrumentedTest/`. Always use the Robot pattern.
+All UI tests go in `androidInstrumentedTest/`. Always use the Robot pattern. Tests extend
+`BaseTest`, which provides `mockWebServerRobot` — a helper that stubs HTTP responses from the
+DHIS2 server so tests run fully offline against a local `MockWebServer`. Register stubs
+**before** launching the robot body.
 
 ```kotlin
 fun exampleRobot(rule: ComposeTestRule, body: ExampleRobot.() -> Unit) =
@@ -169,12 +181,15 @@ class ExampleTest : BaseTest() {
 
     @Test
     fun shouldPerformSuccessfulAction() {
+        // Stub the network response before any UI interaction
         mockWebServerRobot.addResponse(GET, "/api/endpoint", MOCK_RESPONSE, 200)
         exampleRobot(rule) {
             typeUsername("user")
             clickSubmitButton()
             verifySuccessMessageDisplayed()
         }
+        // Call cleanDatabase() after any test that writes to the local DB —
+        // it clears all DHIS2 SDK tables so state doesn't leak into the next test.
         cleanDatabase()
     }
 }
