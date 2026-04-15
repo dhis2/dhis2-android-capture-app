@@ -4,5 +4,6 @@
     <string name="app_name">DHIS2</string>
     <string name="syncing_settings">检查网络设置</string>
     <string name="syncing_configuration">同步配置</string>
+    <string name="syncing_data">同步您的数据</string>
 </resources>
 
