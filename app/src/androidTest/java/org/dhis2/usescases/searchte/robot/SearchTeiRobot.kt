@@ -89,8 +89,11 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         }
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun clickOnSearch() {
         closeKeyboard()
+        composeTestRule.waitForIdle()
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SEARCH_BUTTON"), TIMEOUT)
         composeTestRule.onNodeWithTag("SEARCH_BUTTON").performClick()
     }
 
@@ -269,62 +272,35 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     @OptIn(ExperimentalTestApi::class)
     fun clickOnClearSearch() {
-        // Ensure keyboard is fully closed and UI has settled
         closeKeyboard()
+        composeTestRule.waitForIdle()
 
-        // Additional wait to ensure UI is fully settled on slower devices
-        Thread.sleep(500)
-        
-        // Clear all input fields by clicking the X (reset/cancel) icons
-        // The X icons are IconButtons with Cancel icon that appear when fields have text
-        // After clicking each button, the keyboard may reappear, hiding other buttons
-        
         var attempts = 0
-        val maxAttempts = 10  // Should be enough for 3 fields
-        
+        val maxAttempts = 10
+
         while (attempts < maxAttempts) {
             attempts++
-            
-            // Close keyboard and wait before looking for buttons
             closeKeyboard()
+            composeTestRule.waitForIdle()
+
+            val iconButtons = composeTestRule.onAllNodes(
+                hasContentDescription("Icon Button"),
+                useUnmergedTree = true,
+            )
+
+            if (iconButtons.fetchSemanticsNodes().isEmpty()) break
 
             try {
-                // Find all Icon Buttons with content description "Icon Button"
-                // These are the X/Cancel buttons in the input fields
-                val iconButtons = composeTestRule.onAllNodes(
-                    hasContentDescription("Icon Button"),
-                    useUnmergedTree = true
-                )
-                
-                val buttonCount = iconButtons.fetchSemanticsNodes().size
-                println("DEBUG: clickOnClearSearch - buttonCount = $buttonCount, attempt = $attempts")
-                
-                if (buttonCount == 0) {
-                    // No more reset buttons, all fields cleared
-                    break
-                }
-                
-                // Click the first visible clear button
-                try {
-                    iconButtons[0].performScrollTo()
-                } catch (e: Exception) {
-                    println("DEBUG: performScrollTo failed: ${e.message}")
-                }
-                
-                iconButtons[0].performClick()
-
-                // After clicking, keyboard may reappear, close it again
-                closeKeyboard()
-
-            } catch (e: Exception) {
-                // No more buttons to click
-                println("DEBUG: Exception in clickOnClearSearch loop: ${e.message}")
-                break
+                iconButtons[0].performScrollTo()
+            } catch (_: Exception) {
+                // Scroll not needed or not applicable
             }
+
+            iconButtons[0].performClick()
+            closeKeyboard()
+            composeTestRule.waitForIdle()
         }
-        
-        // After clearing all fields, ensure keyboard is closed
-        // This is critical because clicking X buttons might have opened the keyboard
+
         closeKeyboard()
     }
 
