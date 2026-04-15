@@ -763,6 +763,10 @@ fun TrackerInputProvider(
                 inputStyle = inputStyle,
             )
         }
+
+        TrackerInputType.NOT_SUPPORTED_HIDE_ON_LIST -> {
+            // no-op
+        }
     }
 }
 

@@ -21,7 +21,13 @@ class FetchSearchParameters(
                         repository.getSearchParametersByProgram(it)
                     } ?: repository.getSearchParametersByTrackedEntityType(input.teiTypeUid)
 
-                Result.success(sortSearchParameters(searchParameters))
+                val filteredSearchParameters =
+                    searchParameters
+                        .filter {
+                            it.inputType != TrackerInputType.NOT_SUPPORTED_HIDE_ON_LIST
+                        }
+
+                Result.success(sortSearchParameters(filteredSearchParameters))
             } catch (e: DomainError) {
                 Result.failure(e)
             }
