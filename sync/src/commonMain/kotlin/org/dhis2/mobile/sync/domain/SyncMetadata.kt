@@ -69,8 +69,8 @@ class SyncMetadata(
     }
 
     private suspend fun handleDataPeriodChange(
-        initialDataSyncPeriod: SyncPeriod,
-        finalDataSyncPeriod: SyncPeriod,
+        initialDataSyncPeriod: SyncPeriod?,
+        finalDataSyncPeriod: SyncPeriod?,
     ) {
         val dataSyncPeriodChanged = initialDataSyncPeriod != finalDataSyncPeriod
         val dataSyncPeriodChangedToManual =
@@ -82,7 +82,7 @@ class SyncMetadata(
             }
 
             dataSyncPeriodChanged -> {
-                syncBackgroundJobAction.launchDataSync(finalDataSyncPeriod.toSeconds())
+                syncBackgroundJobAction.launchDataSync(finalDataSyncPeriod?.toSeconds() ?: 0)
             }
         }
     }

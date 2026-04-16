@@ -13,9 +13,12 @@ class SyncSettings(
     override suspend fun invoke(input: Unit): Result<Unit> =
         try {
             val previousMetadataSyncPeriod = repository.currentMetadataSyncPeriod()
+            val previousDataSyncPeriod = repository.currentDataSyncPeriod()
+
             val result = repository.refreshSyncSettings()
             if (result.isSuccess) {
                 val currentMetadataSyncPeriod = repository.currentMetadataSyncPeriod()
+                val currentDataSyncPeriod = repository.currentDataSyncPeriod()
 
                 val metadataPeriodChangedFromManual =
                     (previousMetadataSyncPeriod is SyncPeriod.Manual || previousMetadataSyncPeriod == null) &&
@@ -23,6 +26,15 @@ class SyncSettings(
 
                 if (metadataPeriodChangedFromManual) {
                     syncBackgroundJobAction.launchMetadataSync(currentMetadataSyncPeriod?.toSeconds() ?: 0L)
+                    syncBackgroundJobAction.cancelSyncSettings()
+                }
+
+                val dataPeriodChangedFromManual =
+                    (previousDataSyncPeriod is SyncPeriod.Manual || previousDataSyncPeriod == null) &&
+                        currentDataSyncPeriod !is SyncPeriod.Manual
+
+                if (dataPeriodChangedFromManual) {
+                    syncBackgroundJobAction.launchDataSync(currentDataSyncPeriod?.toSeconds() ?: 0L)
                     syncBackgroundJobAction.cancelSyncSettings()
                 }
             }

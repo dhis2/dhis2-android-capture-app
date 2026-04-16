@@ -53,7 +53,7 @@ class AndroidSyncBackgroundJobAction(
 
             workManager.enqueueUniquePeriodicWork(
                 uniqueWorkName = METADATA_SYNC,
-                existingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+                existingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.UPDATE,
                 request = request,
             )
         }
@@ -89,7 +89,7 @@ class AndroidSyncBackgroundJobAction(
 
             workManager.enqueueUniquePeriodicWork(
                 uniqueWorkName = DATA_SYNC,
-                existingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+                existingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.UPDATE,
                 request = request,
             )
         }
@@ -102,14 +102,16 @@ class AndroidSyncBackgroundJobAction(
                     workerClass = SyncSettingsWorker::class.java,
                     repeatInterval = 1.hours.inWholeSeconds,
                     repeatIntervalTimeUnit = TimeUnit.SECONDS,
-                ).setInitialDelay(1, TimeUnit.MINUTES)
-                .addTag(
+                ).setInitialDelay(
+                    1,
+                    TimeUnit.HOURS,
+                ).addTag(
                     SYNC_SETTINGS,
                 ).build()
 
         workManager.enqueueUniquePeriodicWork(
             SYNC_SETTINGS,
-            ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+            ExistingPeriodicWorkPolicy.UPDATE,
             request,
         )
     }
@@ -138,6 +140,27 @@ class AndroidSyncBackgroundJobAction(
                     )
                 }
             }
+
+    override fun getNextMetadataSync() =
+        workManager
+            .getWorkInfosForUniqueWork(METADATA_SYNC)
+            .get()
+            .firstOrNull()
+            ?.nextScheduleTimeMillis
+
+    override fun getNextDataSync() =
+        workManager
+            .getWorkInfosForUniqueWork(DATA_SYNC)
+            .get()
+            .firstOrNull()
+            ?.nextScheduleTimeMillis
+
+    override fun getNextSettingsSync(): Long? =
+        workManager
+            .getWorkInfosForUniqueWork(DATA_SYNC)
+            .get()
+            .firstOrNull()
+            ?.nextScheduleTimeMillis
 
     override fun observeDataJob() =
         workManager

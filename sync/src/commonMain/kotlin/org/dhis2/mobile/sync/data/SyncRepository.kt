@@ -8,7 +8,7 @@ interface SyncRepository {
 
     suspend fun currentMetadataSyncPeriod(): SyncPeriod?
 
-    suspend fun currentDataSyncPeriod(): SyncPeriod
+    suspend fun currentDataSyncPeriod(): SyncPeriod?
 
     suspend fun syncMetadata(onProgressUpdate: (Int) -> Unit): Result<Unit>
 

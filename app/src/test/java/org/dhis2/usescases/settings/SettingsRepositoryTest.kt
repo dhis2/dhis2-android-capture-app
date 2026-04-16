@@ -63,6 +63,7 @@ class SettingsRepositoryTest {
                 d2,
                 preferencesProvider,
                 featureConfigRepository,
+                syncBackgroundJobAction,
             )
         configurePreferences()
         configureDataCount()
