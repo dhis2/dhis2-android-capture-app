@@ -35,7 +35,6 @@ class SyncSettings(
 
                 if (dataPeriodChangedFromManual) {
                     syncBackgroundJobAction.launchDataSync(currentDataSyncPeriod?.toSeconds() ?: 0L)
-                    syncBackgroundJobAction.cancelSyncSettings()
                 }
             }
 
