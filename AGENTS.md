@@ -174,59 +174,12 @@ val featureModule = module {
 
 ## Testing
 
-### Mocking library
-- **KMP modules** (`commonTest`): `mockito-kotlin` (`org.mockito.kotlin.mock`, `whenever`, `verify`)
-- **Legacy Android modules**: `mockito-kotlin` or `mockito-core`
-- Turbine (`app.cash.turbine`) for Flow assertions; `kotlinx-coroutines-test` for coroutine testing
+- **Unit tests**: `mockito-kotlin` + `kotlin.test` in `commonTest`; `mockito-kotlin` + JUnit in `androidUnitTest` and legacy modules
+- **Flow assertions**: Turbine (`app.cash.turbine`) + `kotlinx-coroutines-test`
+- **UI tests**: Compose Testing + Espresso, Robot pattern, located in `androidInstrumentedTest/`
+- **ViewModel coroutines**: always use `launchUseCase { }` — it wraps `CoroutineTracker` which integrates with Espresso's `IdlingResource`; never use `Thread.sleep()`
 
-### Running a single test
-```bash
-# KMP module (commonTest source set)
-./gradlew :login:testAndroidHostTest --tests "fully.qualified.ClassName.method name"
-
-# KMP module (androidUnitTest source set)
-./gradlew :login:testAndroidDebugUnitTest --tests "fully.qualified.ClassName.method name"
-
-# Legacy Android module
-./gradlew :form:testDebugUnitTest --tests "org.dhis2.form.ui.FormViewModelTest"
-```
-
-### Unit test structure (KMP commonTest)
-```kotlin
-class MyUseCaseTest {
-    private val repository: MyRepository = mock()
-    private val useCase = MyUseCase(repository)
-
-    @Test
-    fun `should return success when data is valid`() = runTest {
-        whenever(repository.getData()).thenReturn(listOf(item))
-        val result = useCase()
-        assertTrue(result.isSuccess)
-    }
-}
-```
-
-### UI / instrumented tests (Robot pattern)
-- Location: `androidInstrumentedTest/` or `androidTest/`
-- Extend `BaseTest`; use `MockWebServerRobot` for API mocking
-- **Never use `Thread.sleep()` or hard-coded delays** — `launchUseCase` + `CoroutineTracker`
-  integrates with Espresso `IdlingResource` automatically
-- Tag UI components with `Modifier.testTag(CONSTANT)` using format `{SCREEN}_{COMPONENT}_TAG`
-- For DHIS2 composite inputs: click wrapper tag first, then find inner `"INPUT_TEXT_FIELD"` node,
-  use `performTextInput()` (not `performTextReplacement()`)
-
-```kotlin
-fun loginRobot(rule: ComposeTestRule, body: LoginRobot.() -> Unit) =
-    LoginRobot(rule).apply { body() }
-
-class LoginRobot(val rule: ComposeTestRule) : BaseRobot() {
-    fun typeServer(url: String) {
-        rule.waitUntilExactlyOneExists(hasTestTag(SERVER_INPUT_TAG), TIMEOUT)
-        rule.onNodeWithTag(SERVER_INPUT_TAG).performClick()
-        rule.onAllNodesWithTag("INPUT_TEXT_FIELD")[0].performTextInput(url)
-    }
-}
-```
+For patterns, examples, and common mistakes load the **android-testing** skill.
 
 ---
 
