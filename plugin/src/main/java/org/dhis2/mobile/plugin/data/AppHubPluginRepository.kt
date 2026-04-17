@@ -10,6 +10,24 @@ import timber.log.Timber
 private const val PLUGIN_NAMESPACE = "dhis2AndroidPlugins"
 private const val PLUGIN_CONFIG_KEY = "config"
 
+// TODO: remove — hardcoded config for local testing while the dataStore entry is not yet set up.
+private const val FALLBACK_CONFIG_JSON = """
+{
+    "plugins": [
+        {
+            "id": "org.dhis2.myplugin",
+            "version": "1.0.2",
+            "checksum": "sha256:981f895f254d304979910673132d5eb6ecefc04ff961766379e6911dd29e111f",
+            "entryPoint": "org.dhis2.pluginimplementationtest.MyPlugin",
+            "downloadUrl": "http://10.0.2.2:8080/org.dhis2.myplugin-1.0.0.dex",
+            "injectionPoints": ["HOME_ABOVE_PROGRAM_LIST"],
+            "allowedDataSetUids": [],
+            "allowedProgramUids": []
+        }
+    ]
+}
+"""
+
 /**
  * Fetches the list of plugins configured for this DHIS2 server instance.
  *
@@ -53,12 +71,10 @@ class AppHubPluginRepository(private val d2: D2) {
                     .blockingGet()
                     .firstOrNull()
 
-                if (entry == null) {
-                    Timber.d("No plugin configuration found in server dataStore")
-                    return@runCatching emptyList()
+                val configJson = entry?.value() ?: run {
+                    Timber.w("No plugin configuration in server dataStore — using hardcoded fallback")
+                    FALLBACK_CONFIG_JSON
                 }
-
-                val configJson = entry.value() ?: return@runCatching emptyList()
                 val config = json.decodeFromString<PluginConfig>(configJson)
                 Timber.d("Found ${config.plugins.size} plugin(s) in server configuration")
                 config.plugins
