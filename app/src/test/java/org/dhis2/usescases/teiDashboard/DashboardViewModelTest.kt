@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -16,6 +17,7 @@ import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -35,6 +37,11 @@ class DashboardViewModelTest {
     private val testingDispatcher = StandardTestDispatcher()
     private val pageConfigurator: NavigationPageConfigurator = mock()
     private val resoourcesManager: ResourceManager = mock()
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before

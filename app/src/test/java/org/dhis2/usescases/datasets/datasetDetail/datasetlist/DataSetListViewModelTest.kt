@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.Actions
@@ -19,6 +20,7 @@ import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailRepository
 import org.dhis2.usescases.datasets.datasetDetail.datasetList.DataSetListViewModel
 import org.hisp.dhis.android.core.common.State
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -42,6 +44,11 @@ class DataSetListViewModelTest {
 
     private val filterProcessor: FlowableProcessor<FilterManager> = PublishProcessor.create()
     private val filterManagerFlowable = Flowable.just(filterManager).startWith(filterProcessor)
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before

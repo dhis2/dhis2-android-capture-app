@@ -47,12 +47,17 @@ class GranularSyncModule(
     private val syncContext: SyncContext,
 ) {
     @Provides
+    fun provideSyncUiStateMapper(resourceManager: ResourceManager): SyncUiStateMapper =
+        SyncUiStateMapper(syncContext, resourceManager)
+
+    @Provides
     fun providesViewModelFactory(
         d2: D2,
         schedulerProvider: SchedulerProvider,
         workManagerController: WorkManagerController,
         smsSyncProvider: SMSSyncProvider,
         repository: GranularSyncRepository,
+        mapper: SyncUiStateMapper,
     ): GranularSyncViewModelFactory =
         GranularSyncViewModelFactory(
             d2,
@@ -69,6 +74,7 @@ class GranularSyncModule(
             syncContext,
             workManagerController,
             smsSyncProvider,
+            mapper,
         )
 
     @Provides

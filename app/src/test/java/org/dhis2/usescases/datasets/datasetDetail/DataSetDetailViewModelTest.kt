@@ -5,8 +5,10 @@ import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -27,6 +29,11 @@ class DataSetDetailViewModelTest {
     private val initializedConfigurator: DataSetPageConfigurator = mock()
 
     private lateinit var viewModel: DataSetDetailViewModel
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
     @Before
     fun setUp() {
