@@ -274,35 +274,20 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun clickOnClearSearch() {
         closeKeyboard()
         composeTestRule.waitForIdle()
-
-        var attempts = 0
-        val maxAttempts = 10
-
-        while (attempts < maxAttempts) {
-            attempts++
+        val count = composeTestRule
+            .onAllNodesWithTag("INPUT_TEXT_RESET_BUTTON", useUnmergedTree = true)
+            .fetchSemanticsNodes().size
+        repeat(count) {
             closeKeyboard()
             composeTestRule.waitForIdle()
-
-            val iconButtons = composeTestRule.onAllNodes(
-                hasContentDescription("Icon Button"),
-                useUnmergedTree = true,
-            )
-
-            if (iconButtons.fetchSemanticsNodes().isEmpty()) break
-
-            try {
-                iconButtons[0].performScrollTo()
-            } catch (_: Exception) {
-                // Scroll not needed or not applicable
-            }
-
-            iconButtons[0].performClick()
-            closeKeyboard()
-            composeTestRule.waitForIdle()
+            composeTestRule
+                .onAllNodesWithTag("INPUT_TEXT_RESET_BUTTON", useUnmergedTree = true)[0]
+                .performClick()
         }
-
         closeKeyboard()
+        composeTestRule.waitForIdle()
     }
+
 
     @OptIn(ExperimentalTestApi::class)
     fun checkFocusedFieldShowsOperatorSupportingText() {
