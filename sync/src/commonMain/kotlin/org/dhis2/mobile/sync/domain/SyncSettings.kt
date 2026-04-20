@@ -20,6 +20,14 @@ class SyncSettings(
                 val currentMetadataSyncPeriod = repository.currentMetadataSyncPeriod()
                 val currentDataSyncPeriod = repository.currentDataSyncPeriod()
 
+                val dataPeriodChangedFromManual =
+                    (previousDataSyncPeriod is SyncPeriod.Manual || previousDataSyncPeriod == null) &&
+                        currentDataSyncPeriod !is SyncPeriod.Manual
+
+                if (dataPeriodChangedFromManual) {
+                    syncBackgroundJobAction.launchDataSync(currentDataSyncPeriod?.toSeconds() ?: 0L)
+                }
+
                 val metadataPeriodChangedFromManual =
                     (previousMetadataSyncPeriod is SyncPeriod.Manual || previousMetadataSyncPeriod == null) &&
                         currentMetadataSyncPeriod !is SyncPeriod.Manual
@@ -27,14 +35,6 @@ class SyncSettings(
                 if (metadataPeriodChangedFromManual) {
                     syncBackgroundJobAction.launchMetadataSync(currentMetadataSyncPeriod?.toSeconds() ?: 0L)
                     syncBackgroundJobAction.cancelSyncSettings()
-                }
-
-                val dataPeriodChangedFromManual =
-                    (previousDataSyncPeriod is SyncPeriod.Manual || previousDataSyncPeriod == null) &&
-                        currentDataSyncPeriod !is SyncPeriod.Manual
-
-                if (dataPeriodChangedFromManual) {
-                    syncBackgroundJobAction.launchDataSync(currentDataSyncPeriod?.toSeconds() ?: 0L)
                 }
             }
 

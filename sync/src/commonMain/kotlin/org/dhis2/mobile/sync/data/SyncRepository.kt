@@ -47,4 +47,6 @@ interface SyncRepository {
     suspend fun getAllTrackerPrograms(): Result<List<String>>
 
     suspend fun getAllDataSets(): Result<List<String>>
+
+    suspend fun saveDataSyncError(stackTrace: String)
 }

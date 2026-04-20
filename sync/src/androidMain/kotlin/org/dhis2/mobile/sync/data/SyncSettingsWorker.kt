@@ -21,7 +21,7 @@ class SyncSettingsWorker(
     private val notificationManager: NotificationManager,
 ) : CoroutineWorker(context, workerParams) {
     override suspend fun doWork(): Result {
-        setForegroundAsync(getForegroundInfo())
+        setForeground(getForegroundInfo())
         notificationManager.displaySyncSettingsNotification(
             smallIcon = R.drawable.ic_sync,
             contentTitle = getString(Res.string.app_name),

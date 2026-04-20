@@ -8,12 +8,14 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import androidx.work.await
+import androidx.work.workDataOf
 import kotlinx.coroutines.flow.map
 import org.dhis2.mobile.sync.model.SyncJobStatus
 import org.dhis2.mobile.sync.model.SyncStatus
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.hours
 
+const val IS_PERIODIC = "IS_PERIODIC"
 const val METADATA_SYNC = "METADATA_SYNC"
 const val METADATA_SYNC_NOW = "METADATA_SYNC_NOW"
 const val DATA_SYNC = "DATA_SYNC"
@@ -49,7 +51,8 @@ class AndroidSyncBackgroundJobAction(
                     ).setInitialDelay(
                         syncingPeriod,
                         TimeUnit.SECONDS,
-                    ).build()
+                    ).setInputData(workDataOf(IS_PERIODIC to true))
+                    .build()
 
             workManager.enqueueUniquePeriodicWork(
                 uniqueWorkName = METADATA_SYNC,
@@ -85,7 +88,8 @@ class AndroidSyncBackgroundJobAction(
                     ).setInitialDelay(
                         syncingPeriod,
                         TimeUnit.SECONDS,
-                    ).build()
+                    ).setInputData(workDataOf(IS_PERIODIC to true))
+                    .build()
 
             workManager.enqueueUniquePeriodicWork(
                 uniqueWorkName = DATA_SYNC,
@@ -146,6 +150,7 @@ class AndroidSyncBackgroundJobAction(
             .getWorkInfosForUniqueWork(METADATA_SYNC)
             .get()
             .firstOrNull()
+            ?.takeIf { it.state == WorkInfo.State.ENQUEUED }
             ?.nextScheduleTimeMillis
 
     override fun getNextDataSync() =
@@ -153,13 +158,15 @@ class AndroidSyncBackgroundJobAction(
             .getWorkInfosForUniqueWork(DATA_SYNC)
             .get()
             .firstOrNull()
+            ?.takeIf { it.state == WorkInfo.State.ENQUEUED }
             ?.nextScheduleTimeMillis
 
     override fun getNextSettingsSync(): Long? =
         workManager
-            .getWorkInfosForUniqueWork(DATA_SYNC)
+            .getWorkInfosForUniqueWork(SYNC_SETTINGS)
             .get()
             .firstOrNull()
+            ?.takeIf { it.state == WorkInfo.State.ENQUEUED }
             ?.nextScheduleTimeMillis
 
     override fun observeDataJob() =

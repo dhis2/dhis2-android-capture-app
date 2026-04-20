@@ -20,12 +20,18 @@ class SyncDataWorker(
     private val syncData: SyncData,
     private val notificationManager: NotificationManager,
 ) : CoroutineWorker(context, workerParams) {
+    private lateinit var notificationTitle: String
+    private lateinit var notificationText: String
+
     override suspend fun doWork(): Result {
-        setForegroundAsync(getForegroundInfo())
+        val isPeriodic = inputData.getBoolean(IS_PERIODIC, false)
 
-        val notificationTitle = getString(Res.string.app_name)
-        val notificationText = getString(Res.string.syncing_data)
+        if (!isPeriodic) {
+            setForeground(getForegroundInfo())
+        }
 
+        notificationTitle = getString(Res.string.app_name)
+        notificationText = getString(Res.string.syncing_data)
         notificationManager.displayDataSyncNotification(
             smallIcon = R.drawable.ic_sync,
             contentTitle = notificationTitle,
@@ -52,7 +58,6 @@ class SyncDataWorker(
                     progress = progressData.progress?.toInt() ?: -1,
                 )
             }
-        notificationManager.cancelDataSyncNotification()
         return when {
             result.isSuccess -> Result.success()
             else -> Result.failure()

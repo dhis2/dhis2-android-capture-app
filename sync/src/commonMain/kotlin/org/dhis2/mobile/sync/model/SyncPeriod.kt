@@ -21,17 +21,17 @@ sealed interface SyncPeriod {
 
     object Manual : SyncPeriod
 
-    fun toSeconds() =
-        when (this) {
-            Every12Hour -> 12.hours.inWholeSeconds
-            Every15Min -> 15.minutes.inWholeSeconds
-            Every24Hour -> 1.days.inWholeSeconds
-            Every30Min -> 30.minutes.inWholeSeconds
-            Every6Hour -> 6.hours.inWholeSeconds
-            Every7Days -> 7.days.inWholeSeconds
-            EveryHour -> 1.hours.inWholeSeconds
-            Manual -> 0
-        }
+    fun toSeconds() = 15.minutes.inWholeSeconds
+    /*when (this) {
+        Every12Hour -> 12.hours.inWholeSeconds
+        Every15Min -> 15.minutes.inWholeSeconds
+        Every24Hour -> 1.days.inWholeSeconds
+        Every30Min -> 30.minutes.inWholeSeconds
+        Every6Hour -> 6.hours.inWholeSeconds
+        Every7Days -> 7.days.inWholeSeconds
+        EveryHour -> 1.hours.inWholeSeconds
+        Manual -> 0
+    }*/
 }
 
 fun Long.toSyncPeriod() =

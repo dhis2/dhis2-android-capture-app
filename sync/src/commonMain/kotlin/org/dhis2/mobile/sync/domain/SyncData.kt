@@ -75,12 +75,16 @@ class SyncData(
 
             repository.saveDataSyncState(isSuccess)
 
-            syncStatusController.finishSync()
             Result.success(Unit)
         } catch (domainError: DomainError) {
             if (domainError is DomainError.NetworkError) {
                 syncStatusController.onNetworkUnavailable()
             }
             Result.failure(domainError)
+        } catch (e: Exception) {
+            repository.saveDataSyncError(e.stackTraceToString())
+            Result.failure(e)
+        } finally {
+            syncStatusController.finishSync()
         }
 }
