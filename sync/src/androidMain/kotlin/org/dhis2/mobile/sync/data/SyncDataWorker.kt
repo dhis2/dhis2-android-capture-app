@@ -58,6 +58,11 @@ class SyncDataWorker(
                     progress = progressData.progress?.toInt() ?: -1,
                 )
             }
+
+        if (!isPeriodic) {
+            notificationManager.cancelDataSyncNotification()
+        }
+
         return when {
             result.isSuccess -> Result.success()
             else -> Result.failure()

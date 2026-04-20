@@ -25,8 +25,10 @@ class SyncMetadataWorker(
     private lateinit var notificationTitle: String
     private lateinit var notificationText: String
 
+    private val isPeriodic by lazy { inputData.getBoolean(IS_PERIODIC, false) }
+
     override suspend fun doWork(): Result {
-        if (!inputData.getBoolean(IS_PERIODIC, false)) {
+        if (!isPeriodic) {
             setForeground(getForegroundInfo())
         }
 
@@ -49,6 +51,10 @@ class SyncMetadataWorker(
                     progress = progress,
                 )
             }
+
+        if (!isPeriodic) {
+            notificationManager.cancelMetadataSyncNotification()
+        }
 
         return when {
             result.isSuccess -> Result.success()
