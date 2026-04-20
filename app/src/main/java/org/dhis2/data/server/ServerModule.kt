@@ -7,6 +7,7 @@ import dagger.Provides
 import dhis2.org.analytics.charts.Charts
 import dhis2.org.analytics.charts.DhisAnalyticCharts
 import okhttp3.Interceptor
+import okhttp3.logging.HttpLoggingInterceptor
 import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.bindings.app
@@ -181,6 +182,7 @@ class ServerModule {
                     AnalyticsHelper(context.app().appComponent().matomoController()),
                 ),
             )
+            interceptors.add(redactingLoggingInterceptor())
             return D2Configuration
                 .builder()
                 .appName(BuildConfig.APPLICATION_ID)
@@ -192,6 +194,19 @@ class ServerModule {
                 .context(context)
                 .build()
         }
+
+        private fun redactingLoggingInterceptor(): HttpLoggingInterceptor =
+            HttpLoggingInterceptor().apply {
+                level = if (BuildConfig.DEBUG) {
+                    HttpLoggingInterceptor.Level.BASIC
+                } else {
+                    HttpLoggingInterceptor.Level.NONE
+                }
+                redactHeader("Authorization")
+                redactHeader("Cookie")
+                redactHeader("Set-Cookie")
+                redactHeader("Proxy-Authorization")
+            }
     }
 
     @Provides

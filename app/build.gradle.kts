@@ -276,6 +276,7 @@ dependencies {
     implementation(libs.github.fancyshowcase)
     implementation(libs.lottie)
     implementation(libs.network.okhttp)
+    implementation(libs.network.okhttp.logging)
     implementation(libs.analytics.matomo)
     implementation(libs.analytics.rxlint)
     implementation(libs.analytics.customactivityoncrash)

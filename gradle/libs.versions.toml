@@ -150,6 +150,7 @@ google-material3-themeadapter = { group = "com.google.accompanist", name = "acco
 google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 network-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+network-okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 dates-jodatime = { group = "joda-time", name = "joda-time", version.ref = "jodatime" }
 dagger = { group = "com.google.dagger", name = "dagger", version.ref = "dagger" }
 dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "dagger" }
