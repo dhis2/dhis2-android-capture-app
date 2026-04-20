@@ -77,6 +77,7 @@ dependencies {
     api(libs.dhis2.expressionparser)
     api(libs.androidx.coreKtx)
     api(libs.androidx.appcompat)
+    implementation(libs.androidx.security.crypto)
     api(libs.androidx.fragmentKtx)
     api(libs.androidx.viewModelKtx)
     api(libs.androidx.recyclerView)
