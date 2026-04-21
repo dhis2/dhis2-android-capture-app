@@ -16,7 +16,7 @@ import org.koin.dsl.module
 val pluginModule = module {
     // Infrastructure
     single { PluginRegistry() }
-    singleOf(::PluginLoader)
+    single { PluginLoader(androidContext()) }
     singleOf(::PluginVerifier)
     single { PluginDownloader(androidContext()) }
 
