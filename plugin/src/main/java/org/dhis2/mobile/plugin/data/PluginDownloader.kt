@@ -10,9 +10,9 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 /**
- * Downloads plugin DEX files from the App Hub and caches them in internal storage.
+ * Downloads signed plugin bundles (zip) from the App Hub and caches them on disk.
  *
- * Cached files are stored at `{filesDir}/plugins/{pluginId}-{version}.dex` and reused
+ * Cached files are stored at `{filesDir}/plugins/{pluginId}-{version}.zip` and reused
  * across app restarts to avoid redundant downloads. A new version always overwrites the cache.
  *
  * Note: The download is performed by the host app (not the plugin) so it is not subject to the
@@ -24,18 +24,18 @@ class PluginDownloader(private val context: Context) {
         get() = File(context.filesDir, "plugins").also { it.mkdirs() }
 
     /**
-     * Returns the cached DEX bytes for [metadata] if already downloaded, otherwise downloads,
-     * caches, and returns them.
+     * Returns a [File] pointing at the on-disk cached zip for [metadata]. If the bundle has not
+     * been downloaded yet it is fetched from [PluginMetadata.downloadUrl] first.
      *
-     * @return [Result.success] with the DEX bytes, or [Result.failure] on any I/O error.
+     * @return [Result.success] with the cached file, or [Result.failure] on any I/O error.
      */
-    suspend fun getOrDownload(metadata: PluginMetadata): Result<ByteArray> =
+    suspend fun getOrDownload(metadata: PluginMetadata): Result<File> =
         withContext(Dispatchers.IO) {
             runCatching {
                 val cachedFile = cacheFile(metadata)
                 if (cachedFile.exists()) {
                     Timber.d("Plugin '${metadata.id}' v${metadata.version} loaded from cache")
-                    return@runCatching cachedFile.readBytes()
+                    return@runCatching cachedFile
                 }
 
                 Timber.d("Downloading plugin '${metadata.id}' v${metadata.version} from ${metadata.downloadUrl}")
@@ -43,17 +43,11 @@ class PluginDownloader(private val context: Context) {
 
                 cachedFile.writeBytes(bytes)
                 Timber.d("Plugin cached to ${cachedFile.absolutePath}")
-                bytes
+                cachedFile
             }
         }
 
-    /** Returns the cached DEX bytes if present, or `null` if not yet downloaded. */
-    fun getCached(metadata: PluginMetadata): ByteArray? {
-        val file = cacheFile(metadata)
-        return if (file.exists()) file.readBytes() else null
-    }
-
-    /** Removes the cached DEX file for [metadata], forcing a re-download on next call. */
+    /** Removes the cached zip file for [metadata], forcing a re-download on next call. */
     fun evict(metadata: PluginMetadata) {
         cacheFile(metadata).delete()
     }
@@ -75,7 +69,7 @@ class PluginDownloader(private val context: Context) {
     }
 
     private fun cacheFile(metadata: PluginMetadata) =
-        File(pluginDir, "${metadata.id}-${metadata.version}.dex")
+        File(pluginDir, "${metadata.id}-${metadata.version}.zip")
 
     private companion object {
         const val CONNECT_TIMEOUT_MS = 10_000
