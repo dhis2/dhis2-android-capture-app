@@ -31,6 +31,8 @@ import org.hisp.dhis.android.core.settings.SynchronizationSettings
 import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase
 import timber.log.Timber
 
+private const val dateTimeFormat = "dd/MM/yyyy HH:mm"
+
 class SettingsRepository(
     val d2: D2,
     val prefs: PreferenceProvider,
@@ -67,7 +69,7 @@ class SettingsRepository(
                 dataSyncPeriod = dataPeriod(),
                 lastDataSync = prefs.getString(Constants.LAST_DATA_SYNC, "-")!!,
                 nextDataSync = syncBackgroundJobAction.getNextDataSync()?.let {
-                    DateFormat.format("dd/MM/yyyy HH:mm", it).toString()
+                    DateFormat.format(dateTimeFormat, it).toString()
                 },
                 syncHasErrors = !prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true),
                 dataHasErrors = dataHasErrors(),
@@ -87,10 +89,10 @@ class SettingsRepository(
                 metadataSyncPeriod = metadataPeriod(),
                 lastMetadataSync = prefs.getString(Constants.LAST_META_SYNC, "-")!!,
                 nextMetadataSync = syncBackgroundJobAction.getNextMetadataSync()?.let {
-                    DateFormat.format("dd/MM/yyyy HH:mm", it).toString()
+                    DateFormat.format(dateTimeFormat, it).toString()
                 },
                 nextSettingsSync = syncBackgroundJobAction.getNextSettingsSync()?.let {
-                    DateFormat.format("dd/MM/yyyy HH:mm", it).toString()
+                    DateFormat.format(dateTimeFormat, it).toString()
                 },
                 hasErrors = !prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true),
                 canEdit = syncSettings?.metadataSync() == null,
