@@ -6,29 +6,36 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import org.dhis2.mobile.plugin.sdk.Dhis2Plugin
 import org.dhis2.mobile.plugin.sdk.InjectionPoint
+import java.io.File
+
+/** A loaded plugin paired with the filesystem root of its extracted resources. */
+data class RegisteredPlugin(
+    val plugin: Dhis2Plugin,
+    val resourceRoot: File,
+)
 
 /**
- * In-memory registry of successfully loaded [Dhis2Plugin] instances.
+ * In-memory registry of successfully loaded plugin instances.
  *
- * Plugins are registered after their DEX has been downloaded, verified, and instantiated.
- * The registry exposes a [StateFlow] so that injection-point Composables can observe
- * the plugin list reactively (e.g., when a plugin is loaded after the screen is already showing).
+ * Plugins are registered after their bundle has been downloaded, verified, extracted, and
+ * instantiated. The registry exposes a [StateFlow] so that injection-point Composables can
+ * observe the plugin list reactively.
  */
 class PluginRegistry {
 
-    private val _plugins = MutableStateFlow<List<Dhis2Plugin>>(emptyList())
+    private val _plugins = MutableStateFlow<List<RegisteredPlugin>>(emptyList())
 
-    /** All currently loaded plugins. */
-    val plugins: StateFlow<List<Dhis2Plugin>> = _plugins.asStateFlow()
+    /** All currently registered plugins. */
+    val plugins: StateFlow<List<RegisteredPlugin>> = _plugins.asStateFlow()
 
-    /** Adds [plugin] to the registry. */
-    fun register(plugin: Dhis2Plugin) {
-        _plugins.update { current -> current + plugin }
+    /** Adds [plugin] with its associated [resourceRoot] to the registry. */
+    fun register(plugin: Dhis2Plugin, resourceRoot: File) {
+        _plugins.update { current -> current + RegisteredPlugin(plugin, resourceRoot) }
     }
 
-    /** Returns all plugins that target [injectionPoint]. */
-    fun getPluginsForSlot(injectionPoint: InjectionPoint): List<Dhis2Plugin> =
-        _plugins.value.filter { injectionPoint in it.metadata.injectionPoints }
+    /** Returns all plugins targeting [injectionPoint]. */
+    fun getPluginsForSlot(injectionPoint: InjectionPoint): List<RegisteredPlugin> =
+        _plugins.value.filter { injectionPoint in it.plugin.metadata.injectionPoints }
 
     /** Removes all registered plugins (e.g. on user logout). */
     fun clear() {

@@ -11,18 +11,19 @@ private const val PLUGIN_NAMESPACE = "dhis2AndroidPlugins"
 private const val PLUGIN_CONFIG_KEY = "config"
 
 // TODO: remove — hardcoded config for local testing while the dataStore entry is not yet set up.
+//TODO: we need to download the dataStore to use it. Ideally the Android SDK is providing this info.
 private const val FALLBACK_CONFIG_JSON = """
 {
     "plugins": [
         {
             "id": "org.dhis2.myplugin",
-            "version": "1.0.2",
-            "checksum": "sha256:981f895f254d304979910673132d5eb6ecefc04ff961766379e6911dd29e111f",
+            "version": "1.3.0",
+            "checksum": "sha256:bd03a2cbac9373ee68d84d7dce1877fee86702b6bd2a5240930a7cc20cf5c732",
             "entryPoint": "org.dhis2.pluginimplementationtest.MyPlugin",
-            "downloadUrl": "http://10.0.2.2:8080/org.dhis2.myplugin-1.0.0.dex",
+            "downloadUrl": "http://10.0.2.2:8080/org.dhis2.myplugin-1.3.0.zip",
             "injectionPoints": ["HOME_ABOVE_PROGRAM_LIST"],
             "allowedDataSetUids": [],
-            "allowedProgramUids": []
+            "allowedProgramUids": ["IpHINAT79UW"]
         }
     ]
 }

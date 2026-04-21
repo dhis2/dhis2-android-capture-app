@@ -1,187 +1,98 @@
-# DHIS2 Android Capture App — Plugin System
+# DHIS2 Android Plugin System
 
-> **Status:** preview / `0.1.0-SNAPSHOT`. The public API, distribution format, and
+> Status: preview (`plugin-sdk 0.1.0-SNAPSHOT`). API, bundle format, and
 > injection points may still change.
 
-## 1. Overview
+## 1. What it is
 
-The plugin system lets third-party developers extend the DHIS2 Android Capture
-App **without forking** it. A plugin is a small Android library that implements
-a single interface (`Dhis2Plugin`), is packaged as a DEX file, and is picked up
-by the app at login time via a server-side configuration.
+Third-party developers can extend the DHIS2 Android Capture App without
+forking it. A plugin is a small Android library that implements `Dhis2Plugin`,
+is packaged as a **signed zip bundle** (DEX + resources), and is picked up at
+login time via a server-side configuration.
 
-It is designed for two audiences:
+Two audiences:
 
 - **DHIS2 server administrators** — decide which plugins an instance uses, by
   writing a small JSON config into the server dataStore.
 - **Third-party Android developers** — build Composable UI and domain logic
-  that runs inside the Capture App under a tightly scoped security contract.
+  that runs inside the Capture App under a scope-enforced SDK.
 
-The host app does the download, integrity check, sandboxing, DI wiring, and
-rendering; the plugin only provides metadata and a Composable.
+The host app does download, integrity + signature verification, sandboxing, DI
+wiring, resource injection, and rendering. The plugin only provides metadata
+and a Composable.
 
-## 2. Architecture at a glance
-
-```
-┌────────────────────────┐   1. build DEX        ┌──────────────────────┐
-│ Third-party dev        │──────────────────────▶│ Hosting (App Hub,    │
-│ (Android Studio)       │                       │ CDN, local HTTP, …)  │
-└────────────────────────┘                       └──────────┬───────────┘
-                                                            │ 2. downloadUrl
-                                                            ▼
-┌────────────────────────┐   3. register JSON   ┌──────────────────────┐
-│ DHIS2 server admin     │─────────────────────▶│ DHIS2 server         │
-│ (Data Store Manager)   │                       │ dataStore            │
-└────────────────────────┘                       │ namespace:           │
-                                                 │  dhis2AndroidPlugins │
-                                                 │ key: config          │
-                                                 └──────────┬───────────┘
-                                                            │ 4. fetched at login
-                                                            ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│                       Capture App (host)                              │
-│   LoadPluginsUseCase                                                  │
-│     → AppHubPluginRepository  (read config)                          │
-│     → PluginDownloader        (HTTP GET → filesDir/plugins/*.dex)    │
-│     → PluginVerifier          (SHA-256)                              │
-│     → PluginLoader            (InMemoryDexClassLoader, API 26+)      │
-│     → PluginRegistry          (StateFlow<List<Dhis2Plugin>>)         │
-│                                                                      │
-│   UI: PluginSlot(InjectionPoint.HOME_ABOVE_PROGRAM_LIST)              │
-│     → ScopedDhis2PluginContext (enforces UID allow-lists)            │
-│     → plugin.content(context)                                         │
-└──────────────────────────────────────────────────────────────────────┘
-```
-
-End-to-end flow:
-
-1. The developer implements `Dhis2Plugin`, builds a DEX, hosts it on a URL the
-   device can reach.
-2. The admin writes a small JSON blob into the DHIS2 dataStore describing the
-   plugin (id, version, `downloadUrl`, `checksum`, `allowedProgramUids`,
-   `allowedDataSetUids`, `injectionPoints`).
-3. On the next successful login (`MainActivity.onCreate`), the app fetches the
-   config, downloads each DEX (caching it under
-   `filesDir/plugins/{id}-{version}.dex`), verifies its SHA-256, loads it with
-   `InMemoryDexClassLoader`, and registers the resulting instance.
-4. Any `PluginSlot(injectionPoint = …)` placed in the host UI renders every
-   plugin registered for that slot, wrapped in a per-plugin scoped
-   `Dhis2PluginContext`.
-
-## 3. The plugin SDK (`:plugin-sdk`)
-
-Maven coordinates (currently published to Maven Local only):
+## 2. How it works
 
 ```
-org.dhis2.mobile:plugin-sdk:0.1.0-SNAPSHOT
+Developer      :plugin:buildPluginBundle  →  signed zip {id}-{version}.zip
+Developer      uploads zip to a URL reachable by the device
+DHIS2 admin    writes JSON to dataStore dhis2AndroidPlugins/config
+Capture App    at login:  download → SHA-256 → JAR signature
+                        → extract zip → load DEX via InMemoryDexClassLoader
+                        → register instance
+Capture App    at render: PluginSlot(slot) per plugin
+                        → FileSystemResourceReader via LocalResourceReader
+                        → ScopedDhis2PluginContext (allow-list enforcement)
+                        → plugin.content(ctx)
 ```
 
-The SDK is a Kotlin Multiplatform module (Android + Desktop JVM). External
-developers target Android and consume a single artifact.
+## 3. The SDK (`:plugin-sdk`)
 
-### 3.1 `Dhis2Plugin`
+Maven coordinates: `org.dhis2.mobile:plugin-sdk:0.1.0-SNAPSHOT` (Maven Local
+only for now). Kotlin Multiplatform — Android + Desktop JVM targets. Only the
+Android host exists today; Desktop is a future host, no SDK changes needed.
+
+### Public API
 
 ```kotlin
 interface Dhis2Plugin {
     val metadata: PluginMetadata
     fun provideKoinModule(): Module? = null
-
-    @Composable
-    fun content(context: Dhis2PluginContext)
+    @Composable fun content(context: Dhis2PluginContext)
 }
-```
 
-- The implementing class must have a **public no-argument constructor** — the
-  host instantiates it via reflection.
-- `provideKoinModule()` is optional; if non-null, the module is loaded into the
-  host's Koin container at plugin load time.
-- `content(context)` is the plugin's UI. It runs **inside the host
-  composition** — keep it contained, don't navigate outside the slot.
-
-### 3.2 `PluginMetadata`
-
-```kotlin
 @Serializable
 data class PluginMetadata(
-    val id: String,                               // "org.myorg.my-plugin"
-    val version: String,                          // "1.0.0"
-    val entryPoint: String,                       // "org.myorg.plugin.MyPlugin"
+    val id: String,                                 // "org.myorg.my-plugin"
+    val version: String,                            // "1.0.0"
+    val entryPoint: String,                         // "org.myorg.plugin.MyPlugin"
     val allowedProgramUids: List<String> = emptyList(),
     val allowedDataSetUids: List<String> = emptyList(),
     val injectionPoints: List<InjectionPoint> = emptyList(),
-    val downloadUrl: String = "",                 // used only server-side
-    val checksum: String = "",                    // "sha256:<hex>"
+    val downloadUrl: String = "",
+    val checksum: String = "",                      // "sha256:<hex>"
 )
-```
 
-The **same data class** is serialized into the server dataStore JSON *and*
-returned from the plugin instance at runtime — allow-lists declared in the JSON
-are the ones enforced in `Dhis2PluginContext`.
-
-### 3.3 `Dhis2PluginContext`
-
-The **only** gateway through which a plugin may access DHIS2 data. Every
-operation is automatically scoped to `allowedProgramUids` /
-`allowedDataSetUids` from the plugin's metadata.
-
-```kotlin
 interface Dhis2PluginContext {
     val pluginMetadata: PluginMetadata
-
-    // Read
     suspend fun getTrackedEntityInstances(programUid: String):
         Result<List<TrackedEntityInstanceDto>>
     suspend fun getDataValues(orgUnitUid: String, dataSetUid: String, period: String):
         Result<List<DataValueDto>>
-
-    // Write
     suspend fun saveDataValue(dataSetUid: String, dataValue: DataValueDto):
         Result<Unit>
 }
+
+enum class InjectionPoint { HOME_ABOVE_PROGRAM_LIST }
 ```
 
-- Out-of-scope access returns `Result.failure(SecurityException(…))`; it never
-  silently returns empty data, and it never throws.
-- Returns **DTOs only** (`TrackedEntityInstanceDto`, `DataValueDto`) — raw
-  DHIS2 Android SDK (`D2`) types are never exposed to plugin code, so SDK
-  evolution does not break existing plugins.
-- All blocking `D2` calls are wrapped on `Dispatchers.IO` by the host.
+Contract:
 
-### 3.4 `InjectionPoint`
+- The entry-point class must be **public** with a **no-arg constructor** — the
+  host instantiates it via reflection.
+- `content()` runs inside the host composition; don't navigate outside the slot.
+- Every `Dhis2PluginContext` operation is scope-checked against the plugin's
+  allow-lists. Out-of-scope access returns `Result.failure(SecurityException)`
+  — never silently empty, never thrown.
+- Plugins only see DTOs (`TrackedEntityInstanceDto`, `DataValueDto`), never
+  raw SDK (`D2`) types.
 
-```kotlin
-enum class InjectionPoint {
-    HOME_ABOVE_PROGRAM_LIST,
-}
-```
-
-Today there is only one slot. It is rendered above the program list on the
-home screen (see `ProgramUi.kt`).
-
-## 4. The host module (`:plugin`)
-
-Internal module. Developers don't consume it, but the admin-facing behaviour
-is worth knowing:
-
-| Component | Responsibility |
-|---|---|
-| `LoadPluginsUseCase` | Kicked off from `MainActivity.onCreate` on a `lifecycleScope` coroutine. Per-plugin failure-isolated. Skips the whole system on API < 26. |
-| `AppHubPluginRepository` | Reads the config JSON from the DHIS2 dataStore (namespace `dhis2AndroidPlugins`, key `config`). Returns an **empty list, not a failure**, if no config is set. |
-| `PluginDownloader` | HTTP GET of `downloadUrl` with 10 s connect / 30 s read timeouts. Caches at `filesDir/plugins/{id}-{version}.dex`. Bump `version` to force a re-download. |
-| `PluginVerifier` | SHA-256 compare. Format is `sha256:<hex>`. **Blank checksum is accepted with a warning** — handy during local testing, dangerous in production. |
-| `PluginLoader` | `InMemoryDexClassLoader` with the host's class loader as parent — so the plugin resolves `:plugin-sdk` types from the host at runtime instead of bundling its own copy. Requires API 26+. |
-| `PluginRegistry` | `MutableStateFlow<List<Dhis2Plugin>>`. Queried reactively by `PluginSlot`. |
-| `ScopedDhis2PluginContext` | Enforces UID allow-lists; wraps `D2` calls on `Dispatchers.IO`; maps to DTOs. |
-| `PluginSlot(injectionPoint)` | Composable. Drop it anywhere in the host UI; it renders every plugin declaring that `InjectionPoint`, each inside a `key(plugin.metadata.id) { … }` block. |
-
-## 5. Server-side configuration
+## 4. Server-side configuration
 
 The admin writes a JSON object into the DHIS2 server dataStore at:
 
 - **namespace:** `dhis2AndroidPlugins`
 - **key:** `config`
-
-Schema:
 
 ```json
 {
@@ -190,8 +101,8 @@ Schema:
       "id": "org.myorg.my-plugin",
       "version": "1.0.0",
       "entryPoint": "org.myorg.plugin.MyPlugin",
-      "downloadUrl": "https://apps.dhis2.org/api/apps/my-plugin/1.0.0/plugin.dex",
-      "checksum": "sha256:abc123…",
+      "downloadUrl": "https://example.com/my-plugin-1.0.0.zip",
+      "checksum": "sha256:abc…",
       "allowedProgramUids": ["UID1"],
       "allowedDataSetUids": [],
       "injectionPoints": ["HOME_ABOVE_PROGRAM_LIST"]
@@ -200,11 +111,7 @@ Schema:
 }
 ```
 
-Any number of plugins can be declared. Plugins the app cannot download or
-verify are skipped silently (see logcat) — the rest still load.
-
-Easiest way to edit this from the server side is the **Data Store Manager**
-app on the DHIS2 web. It can also be done via the REST API:
+Edit via DHIS2 web's **Data Store Manager** app, or via the REST API:
 
 ```bash
 curl -u <user:pass> -X POST \
@@ -213,397 +120,241 @@ curl -u <user:pass> -X POST \
   --data @config.json
 ```
 
-(Use `PUT` on subsequent updates.)
+(POST first time, PUT to update.) Plugins the app can't download or verify
+are skipped silently; the rest still load.
 
-## 6. Writing a plugin — step by step
+## 5. Writing a plugin
 
-The walkthrough below mirrors the sample project at
-`AndroidStudioProjects/Pluginimplementationtest`. That project has a two-module
-layout:
+The sample project at `AndroidStudioProjects/Pluginimplementationtest` shows
+the reference setup with two modules:
 
-```
-Pluginimplementationtest/
-├── app/      # com.android.application — runnable harness with MainActivity +
-│             #   StubDhis2PluginContext. Used to preview the plugin without
-│             #   having to install the Capture App.
-└── plugin/   # com.android.library  — the actual plugin code. Produces the
-              #   standalone DEX consumed by the Capture App via the
-              #   `:plugin:buildPluginDex` Gradle task.
-```
+- **`:plugin`** — KMP + CMP library. Contains the plugin code and resources.
+  Produces the shippable signed zip.
+- **`:app`** — plain Android application harness for previewing without
+  installing the Capture App.
 
-The plugin code lives in `:plugin`. The `:app` module is a dev-only harness and
-is **not** shipped to end users.
-
-### 6.1 Gradle setup
-
-**`settings.gradle.kts`** — include `mavenLocal()` while the SDK is a SNAPSHOT,
-and declare both modules:
-
-```kotlin
-pluginManagement {
-    repositories {
-        google { /* … */ }
-        mavenLocal()
-        mavenCentral()
-        gradlePluginPortal()
-    }
-}
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        google()
-        mavenLocal()
-        mavenCentral()
-    }
-}
-include(":app")
-include(":plugin")
-```
-
-**`plugin/build.gradle.kts`** — the library module. Note every runtime-provided
-dep is `compileOnly`:
+### 5.1 `:plugin/build.gradle.kts` essentials
 
 ```kotlin
 plugins {
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.kotlin.multiplatform.library)   // NOT com.android.library
+    alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.kotlin.compose)
 }
 
-android {
-    namespace = "org.myorg.myplugin"
-    compileSdk { version = release(36) }
-    defaultConfig { minSdk = 26 }            // required: InMemoryDexClassLoader
-    buildFeatures { compose = true }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+kotlin {
+    androidLibrary {
+        namespace = "org.myorg.myplugin.plugin"
+        compileSdk = 36
+        minSdk = 26                                // InMemoryDexClassLoader floor
+    }
+    sourceSets.commonMain.dependencies {
+        compileOnly(libs.plugin.sdk)               // host provides at runtime
+        compileOnly(compose.runtime)
+        compileOnly(compose.ui)
+        compileOnly(compose.material3)
+        // MUST be `implementation` — this is CMP's opt-in signal to generate
+        // the Res accessor. With compileOnly, Res.* imports don't resolve.
+        implementation(compose.components.resources)
     }
 }
 
-dependencies {
-    // compileOnly is LOAD-BEARING: these are provided by the Capture App at
-    // runtime via InMemoryDexClassLoader's parent delegation. Bundling them
-    // causes DEX bloat and ClassCastException from duplicated classes.
-    compileOnly("org.dhis2.mobile:plugin-sdk:0.1.0-SNAPSHOT")
-    compileOnly(platform(libs.androidx.compose.bom))
-    compileOnly(libs.androidx.compose.ui)
-    compileOnly(libs.androidx.compose.material3)
+compose.resources {
+    // Set explicitly or CMP derives it from the root project name.
+    packageOfResClass = "org.myorg.myplugin.plugin.generated.resources"
 }
 
-// See §6.3 — the buildPluginDex task goes here.
+// buildPluginBundle task — ~130 lines, copy from the sample.
 ```
 
-**`app/build.gradle.kts`** — the harness. Depends on `:plugin` so `MainActivity`
-can preview `MyPlugin` without the Capture App:
-
-```kotlin
-dependencies {
-    implementation(project(":plugin"))
-    implementation("org.dhis2.mobile:plugin-sdk:0.1.0-SNAPSHOT") // StubDhis2PluginContext
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.material3)
-}
-```
-
-### 6.2 Implement `Dhis2Plugin`
+### 5.2 Implement `Dhis2Plugin`
 
 ```kotlin
 package org.myorg.myplugin
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.plugin.sdk.*
+import org.myorg.myplugin.plugin.generated.resources.Res
+import org.myorg.myplugin.plugin.generated.resources.plugin_title
+import org.jetbrains.compose.resources.stringResource
 
 class MyPlugin : Dhis2Plugin {
     override val metadata = PluginMetadata(
         id = "org.myorg.myplugin",
         version = "1.0.0",
         entryPoint = "org.myorg.myplugin.MyPlugin",
+        allowedProgramUids = listOf("IpHINAT79UW"),
         injectionPoints = listOf(InjectionPoint.HOME_ABOVE_PROGRAM_LIST),
     )
 
-    override fun provideKoinModule() = null
-
     @Composable
     override fun content(context: Dhis2PluginContext) {
-        Card(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-            Text(
-                text = "Hello from ${context.pluginMetadata.id}!",
-                modifier = Modifier.padding(16.dp),
-            )
-        }
+        Text(stringResource(Res.string.plugin_title))
     }
 }
 ```
 
-Key rules:
+### 5.3 Resources
 
-- The class must be **public** and have a **no-arg constructor**.
-- `entryPoint` must be the exact fully-qualified class name — this is what
-  `classLoader.loadClass(...)` resolves.
-- `id` and `version` in the code should match the dataStore JSON; the
-  `version` is part of the DEX cache key, so bumping it forces a re-download.
+```
+plugin/src/commonMain/composeResources/
+├── values/strings.xml           # default (English)
+├── values-es/strings.xml        # Spanish
+└── drawable/plugin_icon.xml
+```
 
-### 6.3 Build the DEX
+Access from code: `stringResource(Res.string.foo)`, `painterResource(Res.drawable.foo)`.
 
-The sample's `plugin/build.gradle.kts` defines a `buildPluginDex` task that
-produces a single standalone DEX. It (1) builds the release AAR, (2) extracts
-`classes.jar`, (3) runs `d8` on it, (4) names the output
-`{pluginId}-{pluginVersion}.dex`, (5) prints size + SHA-256.
+### 5.4 Build the bundle
 
 ```bash
-./gradlew :plugin:buildPluginDex
+./gradlew :plugin:buildPluginBundle
 ```
 
-Output:
+Output: `plugin/build/outputs/plugin-bundle/{id}-{version}.zip`. The task prints
+size + SHA-256. Signing uses the Android debug keystore (`~/.android/debug.keystore`,
+password `android`). Production publishers swap to their own keystore.
+
+Bundle layout:
 
 ```
-Built plugin DEX
-  path:     plugin/build/outputs/plugin-dex/org.myorg.myplugin-1.0.0.dex
-  size:     ~16 KB
-  checksum: sha256:…
+{id}-{version}.zip
+├── META-INF/…              (jarsigner)
+├── plugin.json             (id, version, entryPoint, targets)
+└── android/
+    ├── classes.dex         (plugin classes only — host provides the rest)
+    └── composeResources/{packageOfResClass}/…
 ```
 
-The DEX contains **only** the plugin's own compiled classes. All Compose,
-Material3, AndroidX, and `plugin-sdk` references are unresolved in the DEX —
-they'll be resolved from the host's class loader at runtime.
+The `android/` prefix is deliberate — adding a future Desktop target means
+adding `desktop/plugin.jar` alongside, not a new distribution format.
 
-The task body is short (~60 lines) and lives with the plugin rather than
-shipped as a reusable Gradle plugin yet. Copy it into your own project's
-`plugin/build.gradle.kts`. It uses the `d8` binary from
-`{sdk}/build-tools/<ver>/d8`, resolving the SDK from `ANDROID_HOME`,
-`ANDROID_SDK_ROOT`, or `local.properties`.
+### 5.5 Ship it
 
-### 6.4 Host the DEX and register it
+Upload the zip to a URL the device can reach, and add an entry to the
+dataStore JSON (§4). Done.
 
-Upload `plugin/build/outputs/plugin-dex/{id}-{version}.dex` to a URL the
-device can reach, take the SHA-256 printed by the task, and add an entry to
-the dataStore JSON (section 5). That's it.
+## 6. Security model
 
-### 6.5 Preview the plugin locally (optional)
+- **Scope enforcement.** `Dhis2PluginContext` rejects programs/datasets not in
+  the plugin's allow-list (`Result.failure(SecurityException)`).
+- **DTO boundary.** Plugins never see `D2`. Insulates plugins from SDK
+  evolution and prevents escape via the SDK's fluent API.
+- **Integrity.** SHA-256 verified before load. Mismatch evicts the cache.
+- **Authorship.** JAR signature verified via standard `jarsigner` scheme. Any
+  valid signature passes today — per-publisher cert allow-listing is future work.
+- **API guard.** `InMemoryDexClassLoader` requires API 26+; older devices skip
+  the whole plugin system (log + empty registry).
+- **Process.** Plugins run **in-process** with the host. A crash propagates to
+  the enclosing composition — pick trusted authors.
 
-The `:app` harness lets you see the plugin render without installing the
-Capture App:
+## 7. Current limitations
 
-```bash
-./gradlew :app:installDebug
-```
+- One injection point: `HOME_ABOVE_PROGRAM_LIST`.
+- `buildPluginBundle` is copy-pasted per plugin project — no published Gradle
+  plugin yet.
+- No plugin uninstall flow — delete the dataStore entry and the device cache
+  (`/data/data/com.dhis2.debug/files/plugins/{id}-{version}.zip`).
+- No per-publisher cert allow-list.
+- Plugins share the host's `D2` session and Koin graph — a misbehaving Koin
+  binding in a plugin can affect the host.
+- `Dhis2PluginContext` exposes only TEIs and data values; events, enrollments,
+  and org-units are future work.
+- No `plugin-sdk-test` artefact — plugin authors copy-paste their own
+  `StubDhis2PluginContext` for previews.
 
-`MainActivity` instantiates `MyPlugin`, wires it to `StubDhis2PluginContext`
-(returns empty data, success on writes), and renders
-`MyPlugin.content(...)` inside a mock "program list" scaffold.
+## 8. Testing a plugin locally
 
-## 7. Security model
+Android emulator + local Python HTTP server + the sample project.
 
-- **Scope enforcement.** Every read/write from `Dhis2PluginContext` is checked
-  against `allowedProgramUids` / `allowedDataSetUids`. Violations surface as
-  `Result.failure(SecurityException)` to the plugin and an `e`-level log on
-  the host.
-- **DTO-only boundary.** Plugins never see `D2` or its entity types. This
-  insulates plugins from SDK evolution and prevents them from escaping the
-  sandbox via the SDK's fluent API.
-- **Integrity.** SHA-256 is verified before the DEX is loaded. A mismatch
-  evicts the cache and skips the plugin.
-- **API guard.** `InMemoryDexClassLoader` requires API 26+; on older devices
-  the whole system is skipped.
-- **Process.** Plugins run **in-process** with the host. A crash inside a
-  plugin propagates to the enclosing composition — pick trusted authors.
+1. **Publish the SDK to Maven Local** (host repo):
 
-## 8. Current limitations
+   ```bash
+   cd ~/StudioProjects/ai-dhis2-android-capture-app
+   ./gradlew :plugin-sdk:publishToMavenLocal
+   ```
 
-- One injection point only: `HOME_ABOVE_PROGRAM_LIST`.
-- No published Gradle plugin yet — each plugin project copies the
-  `buildPluginDex` task (~60 lines) into its own `plugin/build.gradle.kts`.
-- No plugin uninstall flow (clear `filesDir/plugins/` manually or remove the
-  dataStore entry; the next login will stop loading it).
-- No code-signing / author signature verification — only a hash.
-- Plugins share the host's `D2` session and Koin graph; misbehaving Koin
-  bindings in a plugin module can affect the host.
-- `Dhis2PluginContext` currently exposes only TEIs and data values. Events,
-  enrollments, and org-unit resolution are not yet on the API surface.
-- No `plugin-sdk-test` artefact yet — plugin authors copy-paste their own
-  `StubDhis2PluginContext` for previews. A future release could ship a
-  fluent `FakeDhis2PluginContext` with configurable fixtures.
+2. **Build the bundle** (sample repo):
 
-## 9. Testing a plugin locally
+   ```bash
+   cd ~/AndroidStudioProjects/Pluginimplementationtest
+   ./gradlew :plugin:buildPluginBundle
+   ```
 
-This walkthrough targets the **Android emulator** + a **local Python HTTP
-server** + the sample project at
-`/Users/andresmr/AndroidStudioProjects/Pluginimplementationtest`.
+   Printed output gives the zip path and SHA-256.
 
-### Step 1 — Publish the SDK to Maven Local
+3. **Serve it to the emulator**:
 
-From the Capture App repo:
+   ```bash
+   cd plugin/build/outputs/plugin-bundle
+   python3 -m http.server 8080
+   ```
 
-```bash
-cd ~/StudioProjects/ai-dhis2-android-capture-app
-./gradlew :plugin-sdk:publishToMavenLocal
-```
+   From the emulator: `http://10.0.2.2:8080/{id}-{version}.zip`. For a physical
+   device on the same LAN, use the host's LAN IP instead of `10.0.2.2`.
 
-Verify:
+4. **Point the Capture App at the bundle**, two options:
 
-```bash
-ls ~/.m2/repository/org/dhis2/mobile/plugin-sdk/0.1.0-SNAPSHOT/
-```
+   - **Real path**: write the JSON (§4) to the DHIS2 server dataStore. Paste
+     the SHA-256 as `checksum`. For a first smoke test `"checksum": ""` works
+     (SHA-256 is skipped with a warning; signature verification still runs).
+   - **Fast local iteration**: edit `FALLBACK_CONFIG_JSON` in
+     `plugin/src/main/java/org/dhis2/mobile/plugin/data/AppHubPluginRepository.kt`.
+     It's used when the dataStore has no config. Marked `TODO: remove` —
+     revert before merging.
 
-You should see an `.aar` and a `.module` file.
+5. **Run the Capture App** (`dhis2Debug` variant) and log in. Watch the logs:
 
-### Step 2 — Build the plugin DEX
+   ```bash
+   adb logcat | grep -E "Plugin|Dhis2Plugin"
+   ```
 
-```bash
-cd ~/AndroidStudioProjects/Pluginimplementationtest
-./gradlew :plugin:buildPluginDex
-```
+   Expected sequence:
 
-The task prints the output path, size, and SHA-256. The produced file lives at:
+   ```
+   Downloading plugin 'org.dhis2.myplugin' v1.2.0 from http://…
+   Loading plugin 'org.dhis2.myplugin' v1.2.0 from DEX (N bytes) with resource root …
+   Plugin 'org.dhis2.myplugin' v1.2.0 loaded successfully
+   ```
 
-```
-plugin/build/outputs/plugin-dex/org.dhis2.myplugin-1.0.0.dex
-```
+   The plugin renders above the program list.
 
-Record the SHA-256 — you'll paste it into the dataStore entry in step 4 (or
-leave `checksum` empty and let `PluginVerifier` skip it with a warning).
-
-> **Why `buildPluginDex` and not `assembleDebug`?** An app build produces
-> multi-dex APKs (`classes.dex`, `classes2.dex`, …) whose `classes.dex` is
-> not the plugin — it's Compose/Material bloat. `buildPluginDex` runs `d8`
-> on just the `:plugin` library's own `classes.jar`, yielding a ~16 KB DEX
-> that contains the plugin's own classes only. The rest (Compose, Material3,
-> `plugin-sdk`) is provided by the host's class loader at runtime.
-
-### Step 3 — Serve the DEX to the emulator
-
-```bash
-cd ~/AndroidStudioProjects/Pluginimplementationtest/plugin/build/outputs/plugin-dex
-python3 -m http.server 8080
-```
-
-From inside the emulator, `10.0.2.2` points back at your host machine. So
-the URL the app will use is:
-
-```
-http://10.0.2.2:8080/org.dhis2.myplugin-1.0.0.dex
-```
-
-(The filename is `{pluginId}-{pluginVersion}.dex` — `org.dhis2.myplugin` is the
-sample plugin's id, not a path prefix.)
-
-(For a physical device on the same LAN, use the host's LAN IP instead of
-`10.0.2.2`. Cleartext HTTP to a LAN IP works on debug builds because
-`usesCleartextTraffic` is typically enabled there; if it isn't, add the IP to
-`network_security_config.xml`.)
-
-### Step 4 — Register the plugin in the server dataStore
-
-Pick a DHIS2 dev server you can log into from the app and whose dataStore you
-can write to (e.g. `https://play.dhis2.org/…` with admin, or your local
-docker instance). From the DHIS2 web, open **Data Store Manager** → add key
-**`config`** under namespace **`dhis2AndroidPlugins`** with:
-
-```json
-{
-  "plugins": [
-    {
-      "id": "org.dhis2.myplugin",
-      "version": "1.0.0",
-      "entryPoint": "org.dhis2.pluginimplementationtest.MyPlugin",
-      "downloadUrl": "http://10.0.2.2:8080/org.dhis2.myplugin-1.0.0.dex",
-      "checksum": "sha256:<paste hash from step 2>",
-      "allowedProgramUids": [],
-      "allowedDataSetUids": [],
-      "injectionPoints": ["HOME_ABOVE_PROGRAM_LIST"]
-    }
-  ]
-}
-```
-
-Or via curl:
-
-```bash
-curl -u admin:district -X POST \
-  -H "Content-Type: application/json" \
-  "https://<server>/api/dataStore/dhis2AndroidPlugins/config" \
-  -d '{"plugins":[{ … as above … }]}'
-```
-
-For a first smoke test you can set `"checksum": ""` — `PluginVerifier` logs a
-warning and skips verification.
-
-### Step 5 — Run the Capture App and verify
-
-1. Run the `dhis2Debug` variant on the emulator and log into the server you
-   just configured.
-2. On the home screen, above the program list, the sample plugin's green
-   card ("Hello from MyPlugin! 👋") should appear.
-
-Watch the logs while this happens:
-
-```bash
-adb logcat | grep -E "Plugin|Dhis2Plugin"
-```
-
-You should see, in order:
-
-```
-Found 1 plugin(s) in server configuration
-Downloading plugin 'org.dhis2.myplugin' v1.0.0 from http://10.0.2.2:8080/…
-Plugin cached to /data/data/com.dhis2.debug/files/plugins/org.dhis2.myplugin-1.0.0.dex
-Loading plugin 'org.dhis2.myplugin' v1.0.0 from DEX (16404 bytes)
-Plugin 'org.dhis2.myplugin' v1.0.0 loaded successfully
-```
-
-The tell-tale sign the right file is being served: size ~16 KB, not ~17 MB.
-
-### Step 6 — Iterate
-
-Each time you change the plugin:
-
-1. Rebuild the DEX: `./gradlew :plugin:buildPluginDex`.
-2. Either **bump `pluginVersion`** in `plugin/build.gradle.kts` (and also in
-   the dataStore JSON or hardcoded fallback), **or** clear the on-device
-   cache manually:
+6. **Iterate.** After code changes: bump `pluginVersion` in
+   `plugin/build.gradle.kts` and in the JSON/fallback, rebuild, restart the
+   app. Or wipe the device cache:
 
    ```bash
    adb shell run-as com.dhis2.debug rm -rf files/plugins
    ```
 
-   (Replace `com.dhis2.debug` with the applicationId of whichever variant you
-   are running — `com.dhis2` for release, `com.dhis2.debug` for `dhis2Debug`,
-   etc.)
+7. **Locale test.** Switch the emulator language (Settings → Languages) and
+   reopen the screen. The plugin's strings should change accordingly.
 
-3. Restart the app and log in again.
+### Previewing with the harness (optional)
 
-> **Note.** While iterating locally you can short-circuit the server-side
-> dataStore step entirely: `plugin/src/main/java/org/dhis2/mobile/plugin/data/AppHubPluginRepository.kt`
-> contains a `FALLBACK_CONFIG_JSON` constant that the host falls back to when
-> no dataStore entry exists. Update its `checksum` / `version` / `downloadUrl`
-> and you can iterate without a server round-trip. Revert this before
-> merging — it's marked with a `TODO: remove` comment.
+`./gradlew :app:installDebug` builds a standalone preview app that
+instantiates `MyPlugin` with a `StubDhis2PluginContext` (fake TEIs). Use it
+for quick UI tweaks without a Capture App rebuild.
 
-### Troubleshooting
+## 9. Troubleshooting
 
-| Symptom | Likely cause / fix |
+| Symptom | Cause / fix |
 |---|---|
-| No log line at all, no plugin rendered | dataStore entry under wrong namespace/key, or user can't read it. Check sharing. |
-| `HTTP 404/Connection refused` | URL unreachable from device. Verify `10.0.2.2` (emulator) vs LAN IP (device), and that `python3 -m http.server` is still running. |
-| `Plugin checksum mismatch!` | Re-run `shasum -a 256`, paste with the `sha256:` prefix. The file you SHA'd must be the exact bytes the server serves. |
-| `ClassCastException: … not assignable to Dhis2Plugin` | Plugin DEX bundles its own copy of the SDK. Every `plugin-sdk`/Compose/Material3 dep in `plugin/build.gradle.kts` must be `compileOnly`. |
-| `ClassNotFoundException` on the plugin's entry point, downloaded bytes are huge (~17 MB) | You built the whole harness APK (`:app:assembleDebug`) instead of running `:plugin:buildPluginDex`, so the "DEX" is a multi-dex APK and the entry-point class isn't in `classes.dex`. Always use `:plugin:buildPluginDex`. |
-| Plugin code change isn't visible | The cached DEX is still the old one. Bump `pluginVersion` in `plugin/build.gradle.kts` (and the dataStore JSON / hardcoded fallback) or `adb shell run-as … rm -rf files/plugins`. |
-| `Plugin system requires API 26+` | The emulator/device is on API < 26. Use API 26+ image. |
+| `No plugin configuration found in server dataStore` | Config isn't at `dhis2AndroidPlugins/config` or the user can't read the namespace. Use the `FALLBACK_CONFIG_JSON` hack during iteration. |
+| `Plugin checksum mismatch!` | The served zip doesn't match `checksum` in the config. Re-run `shasum -a 256` and update the JSON (with `sha256:` prefix). |
+| `Plugin bundle signature verification failed` / `Unsigned entry in plugin bundle` | The zip was edited after signing. Re-run `:plugin:buildPluginBundle`; never hand-edit the zip. |
+| `ClassCastException: … not assignable to Dhis2Plugin` | Plugin DEX bundles its own SDK copy. Keep `plugin-sdk` + all `compose.*` deps (except `compose.components.resources`) as `compileOnly`. |
+| `NoSuchMethodError` for mangled `Text`/`Card` signatures | Compose ABI mismatch. Plugin is compiled against CMP 1.10.3; consumer is on a different version. Harness `:app` and the Capture App must both use CMP (`compose.runtime` etc.), not `androidx.compose.bom`. |
+| `MissingResourceException` for `composeResources/…` | Capture App: `PluginSlot` should provide `LocalResourceReader` per-plugin. Harness: the `stagePluginAssets` task must run and stage resources into `:app`'s assets. |
+| Plugin code changes aren't visible | Cached bundle. Bump `pluginVersion` or `adb shell run-as com.dhis2.debug rm -rf files/plugins`. |
+| `Plugin system requires API 26+` | Device/emulator is API < 26. Use an API 26+ image. |
 
 ---
 
 *Source files for reference:*
-`plugin-sdk/src/commonMain/kotlin/org/dhis2/mobile/plugin/sdk/` —
-`Dhis2Plugin.kt`, `Dhis2PluginContext.kt`, `PluginMetadata.kt`,
-`InjectionPoint.kt`; `plugin/src/main/java/org/dhis2/mobile/plugin/` —
-`data/AppHubPluginRepository.kt`, `data/PluginDownloader.kt`,
-`data/PluginVerifier.kt`, `data/PluginLoader.kt`,
-`domain/LoadPluginsUseCase.kt`,
-`security/ScopedDhis2PluginContext.kt`, `ui/PluginSlot.kt`.
+
+- `plugin-sdk/src/commonMain/kotlin/org/dhis2/mobile/plugin/sdk/` — `Dhis2Plugin.kt`, `Dhis2PluginContext.kt`, `PluginMetadata.kt`, `InjectionPoint.kt`, `dto/*`
+- `plugin/src/main/java/org/dhis2/mobile/plugin/` — `data/AppHubPluginRepository.kt`, `data/PluginDownloader.kt`, `data/PluginVerifier.kt`, `data/PluginLoader.kt`, `domain/LoadPluginsUseCase.kt`, `registry/PluginRegistry.kt`, `security/ScopedDhis2PluginContext.kt`, `ui/PluginSlot.kt`, `ui/FileSystemResourceReader.kt`
+- Sample project: `~/AndroidStudioProjects/Pluginimplementationtest/`

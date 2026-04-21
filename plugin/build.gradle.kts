@@ -42,6 +42,10 @@ dependencies {
     implementation(libs.dhis2.android.sdk)
     implementation(libs.analytics.timber)
     implementation(libs.kotlin.serialization.json)
+    // LocalResourceReader (@ExperimentalResourceApi) — PluginSlot injects a
+    // filesystem-backed ResourceReader so the plugin's CMP Resources resolve
+    // from the extracted bundle without touching AssetManager.
+    implementation(libs.compose.components.resources)
 
     coreLibraryDesugaring(libs.desugar)
 }
