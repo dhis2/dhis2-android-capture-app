@@ -48,6 +48,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputText
 import org.hisp.dhis.mobile.ui.designsystem.component.InputUnitInterval
 import org.hisp.dhis.mobile.ui.designsystem.component.InputYesOnlyCheckBox
 import org.hisp.dhis.mobile.ui.designsystem.component.InputYesOnlySwitch
+import org.hisp.dhis.mobile.ui.designsystem.component.model.RegExValidations
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -277,6 +278,7 @@ fun TrackerInputProvider(
                         onUiEvent = onUiEvent,
                     )
                 },
+                notation = RegExValidations.BRITISH_DECIMAL_NOTATION,
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
                 onFocusChanged = { isFocused ->
