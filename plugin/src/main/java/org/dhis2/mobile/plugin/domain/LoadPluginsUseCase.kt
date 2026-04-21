@@ -13,12 +13,16 @@ import timber.log.Timber
 /**
  * Downloads, verifies, loads, and registers all plugins configured on the DHIS2 server.
  *
- * This use case is intended to be called once at login time (after the server connection
- * is established). Each step is failure-isolated per plugin: a single plugin failing to
- * download, verify, or load does not block other plugins.
+ * Intended to be called once at login time (after the server connection is established).
+ * Each step is failure-isolated per plugin: a single plugin failing to download, verify,
+ * or load does not block other plugins.
  *
- * Requires API 26+ for [android.system.Os.InMemoryDexClassLoader]. On older devices,
- * the use case completes successfully but loads zero plugins.
+ * Pipeline per plugin:
+ *   download zip → SHA-256 check → JAR signature check → unzip + load DEX →
+ *   optionally load Koin module → register in PluginRegistry.
+ *
+ * Requires API 26+ for `InMemoryDexClassLoader`. On older devices the use case completes
+ * successfully with zero plugins loaded.
  */
 class LoadPluginsUseCase(
     private val appHubPluginRepository: AppHubPluginRepository,
@@ -49,22 +53,28 @@ class LoadPluginsUseCase(
 
         for (metadata in metadataList) {
             runCatching {
-                val bytes = pluginDownloader.getOrDownload(metadata).getOrThrow()
+                val bundle = pluginDownloader.getOrDownload(metadata).getOrThrow()
 
-                if (!pluginVerifier.verify(bytes, metadata.checksum)) {
+                if (!pluginVerifier.verify(bundle.readBytes(), metadata.checksum)) {
                     Timber.e("Plugin '${metadata.id}' failed checksum verification — skipping")
                     pluginDownloader.evict(metadata)
                     return@runCatching
                 }
 
-                @Suppress("DEPRECATION")
-                val plugin = pluginLoader.load(bytes, metadata)
+                pluginVerifier.verifySignature(bundle).getOrElse { err ->
+                    Timber.e(err, "Plugin '${metadata.id}' signature verification failed — skipping")
+                    pluginDownloader.evict(metadata)
+                    return@runCatching
+                }
 
-                plugin.provideKoinModule()?.let { module ->
+                @Suppress("DEPRECATION")
+                val loaded = pluginLoader.load(bundle, metadata)
+
+                loaded.plugin.provideKoinModule()?.let { module ->
                     koin.loadModules(listOf(module))
                 }
 
-                pluginRegistry.register(plugin)
+                pluginRegistry.register(loaded.plugin, loaded.resourceRoot)
                 Timber.d("Plugin '${metadata.id}' v${metadata.version} loaded successfully")
             }.onFailure { err ->
                 Timber.e(err, "Failed to load plugin '${metadata.id}' — skipping")
