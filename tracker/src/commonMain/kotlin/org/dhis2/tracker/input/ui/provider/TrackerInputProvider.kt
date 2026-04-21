@@ -764,7 +764,9 @@ fun TrackerInputProvider(
             )
         }
 
-        TrackerInputType.NOT_SUPPORTED_HIDE_ON_LIST -> {
+        TrackerInputType.COORDINATES,
+        TrackerInputType.IMAGE,
+        -> {
             // no-op
         }
     }
