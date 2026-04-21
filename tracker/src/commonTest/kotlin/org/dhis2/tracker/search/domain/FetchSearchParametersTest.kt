@@ -59,7 +59,7 @@ class FetchSearchParametersTest {
                     createSearchParameter("param3", TrackerInputType.BAR_CODE, isUnique = false),
                     createSearchParameter(
                         "param4",
-                        TrackerInputType.NOT_SUPPORTED_HIDE_ON_LIST,
+                        TrackerInputType.IMAGE,
                         isUnique = false,
                     ),
                 )

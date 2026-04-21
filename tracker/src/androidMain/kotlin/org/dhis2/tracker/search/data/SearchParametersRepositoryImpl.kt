@@ -213,9 +213,8 @@ class SearchParametersRepositoryImpl(
             null,
             -> TrackerInputType.NOT_SUPPORTED
 
-            ValueType.COORDINATE,
-            ValueType.IMAGE,
-            -> TrackerInputType.NOT_SUPPORTED_HIDE_ON_LIST
+            ValueType.COORDINATE -> TrackerInputType.COORDINATES
+            ValueType.IMAGE -> TrackerInputType.IMAGE
         }
 
     private fun getInputTypeForOptionSetByRenderingType(valueTypeRenderingType: ValueTypeRenderingType?): TrackerInputType =

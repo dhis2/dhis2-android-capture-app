@@ -13,6 +13,12 @@ class FetchSearchParameters(
     val dispatcher: Dispatcher,
     val repository: SearchParametersRepository,
 ) : UseCase<FetchSearchParametersData, List<SearchParameterModel>> {
+    val hiddenInputTypes =
+        listOf(
+            TrackerInputType.IMAGE,
+            TrackerInputType.COORDINATES,
+        )
+
     override suspend fun invoke(input: FetchSearchParametersData): Result<List<SearchParameterModel>> =
         withContext(dispatcher.io) {
             try {
@@ -24,7 +30,7 @@ class FetchSearchParameters(
                 val filteredSearchParameters =
                     searchParameters
                         .filter {
-                            it.inputType != TrackerInputType.NOT_SUPPORTED_HIDE_ON_LIST
+                            it.inputType !in hiddenInputTypes
                         }
 
                 Result.success(sortSearchParameters(filteredSearchParameters))
