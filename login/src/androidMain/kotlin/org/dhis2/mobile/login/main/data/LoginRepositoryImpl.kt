@@ -4,7 +4,6 @@ import androidx.core.net.toUri
 import coil3.PlatformContext
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import org.dhis2.mobile.commons.auth.OpenIdController
 import org.dhis2.mobile.commons.biometrics.BiometricActions
 import org.dhis2.mobile.commons.biometrics.CryptographicActions
 import org.dhis2.mobile.commons.coroutine.Dispatcher
@@ -17,6 +16,7 @@ import org.dhis2.mobile.commons.providers.SECURE_SERVER_URL
 import org.dhis2.mobile.commons.reporting.AnalyticActions
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider
+import org.dhis2.mobile.login.authentication.OpenIdController
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.error_device_not_registered

@@ -58,6 +58,15 @@ jobs:
           DEBUG_KEY_PASS: ${{ secrets.DEBUG_KEY_PASS }}
           DEBUG_KEYSTORE_PASSWORD: ${{ secrets.DEBUG_KEYSTORE_PASSWORD }}
           DEBUG_KEYSTORE_PATH: ${{ steps.decode_keystore.outputs.filePath }}
+          OPEN_ID_AUTH_SCHEME: ${{ secrets.OPEN_ID_AUTH_SCHEME }}
+          OPEN_ID_TYPE: ${{ secrets.OPEN_ID_TYPE }}
+          OPEN_ID_SERVER: ${{ secrets.OPEN_ID_SERVER }}
+          OPEN_ID_CLIENT: ${{ secrets.OPEN_ID_CLIENT }}
+          OPEN_ID_REDIRECT_URI: ${{ secrets.OPEN_ID_REDIRECT_URI }}
+          OPEN_ID_DISCOVERY_URI: ${{ secrets.OPEN_ID_DISCOVERY_URI }}
+          OPEN_ID_AUTHORIZATION_URL: ${{ secrets.OPEN_ID_AUTHORIZATION_URL }}
+          OPEN_ID_TOKEN_URL: ${{ secrets.OPEN_ID_TOKEN_URL }}
+          OPEN_ID_BUTTON_TEXT: ${{ secrets.OPEN_ID_BUTTON_TEXT }}
       
       - name: Locate built APK
         id: apk-path
