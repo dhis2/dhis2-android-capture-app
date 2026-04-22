@@ -3,7 +3,7 @@ package org.dhis2.usescases.settings
 import io.reactivex.Single
 import org.dhis2.bindings.toSeconds
 import org.dhis2.commons.Constants
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_NUMBER_RV
 import org.dhis2.commons.prefs.Preference.Companion.EVENT_MAX
 import org.dhis2.commons.prefs.Preference.Companion.EVENT_MAX_DEFAULT

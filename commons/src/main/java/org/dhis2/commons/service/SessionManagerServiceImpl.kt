@@ -3,13 +3,13 @@ package org.dhis2.commons.service
 import androidx.lifecycle.LifecycleCoroutineScope
 import io.reactivex.Completable
 import kotlinx.coroutines.launch
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.commons.featureconfig.model.Feature
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.mobile.commons.featureconfig.model.Feature
 import org.hisp.dhis.android.core.D2
 import timber.log.Timber
 

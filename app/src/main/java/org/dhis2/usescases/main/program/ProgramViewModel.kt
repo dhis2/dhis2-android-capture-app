@@ -8,9 +8,9 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.commons.featureconfig.model.Feature
-import org.dhis2.commons.featureconfig.model.FeatureOptions
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.mobile.commons.featureconfig.model.Feature
+import org.dhis2.mobile.commons.featureconfig.model.FeatureOptions
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.Actions.Companion.SYNC_BTN
 import org.dhis2.commons.matomo.Categories.Companion.HOME
