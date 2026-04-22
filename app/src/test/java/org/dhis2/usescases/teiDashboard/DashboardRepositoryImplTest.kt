@@ -3,7 +3,7 @@ package org.dhis2.usescases.teiDashboard
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Single
 import org.dhis2.commons.data.ProgramConfigurationRepository
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager

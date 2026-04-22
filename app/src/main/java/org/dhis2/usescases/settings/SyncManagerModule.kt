@@ -4,7 +4,7 @@ import dagger.Module
 import dagger.Provides
 import org.dhis2.R
 import org.dhis2.commons.di.dagger.PerFragment
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager

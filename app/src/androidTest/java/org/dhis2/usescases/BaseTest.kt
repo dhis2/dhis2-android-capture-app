@@ -20,7 +20,7 @@ import org.dhis2.common.keystore.KeyStoreRobot.Companion.USERNAME
 import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferencesRobot
 import org.dhis2.common.rules.DisableAnimations
-import org.dhis2.commons.featureconfig.model.Feature
+import org.dhis2.mobile.commons.featureconfig.model.Feature
 import org.dhis2.commons.orgunitselector.OrgUnitIdlingResource
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.form.ui.idling.FormCountingIdlingResource

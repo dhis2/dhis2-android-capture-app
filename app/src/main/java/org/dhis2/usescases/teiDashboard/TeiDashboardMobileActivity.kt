@@ -33,7 +33,7 @@ import org.dhis2.R
 import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.TEI_UID
 import org.dhis2.commons.dialogs.bottomsheet.DeleteBottomSheetDialog
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.network.NetworkUtils

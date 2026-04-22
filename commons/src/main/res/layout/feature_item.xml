@@ -11,7 +11,7 @@
 
         <variable
             name="featureState"
-            type="org.dhis2.commons.featureconfig.model.FeatureState" />
+            type="org.dhis2.mobile.commons.featureconfig.model.FeatureState" />
     </data>
 
     <LinearLayout

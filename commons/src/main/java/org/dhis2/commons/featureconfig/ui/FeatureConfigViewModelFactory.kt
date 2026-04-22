@@ -2,7 +2,7 @@ package org.dhis2.commons.featureconfig.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 
 class FeatureConfigViewModelFactory(
     val repository: FeatureConfigRepository,

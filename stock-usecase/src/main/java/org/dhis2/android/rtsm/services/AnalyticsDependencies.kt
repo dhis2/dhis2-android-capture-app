@@ -2,7 +2,7 @@ package org.dhis2.android.rtsm.services
 
 import android.content.Context
 import dhis2.org.analytics.charts.Charts
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.D2
