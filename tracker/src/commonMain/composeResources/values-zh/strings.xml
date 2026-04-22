@@ -24,4 +24,5 @@
     <string name="end_with_search_operator">必须与数值的末尾一致</string>
     <string name="yes">是</string>
     <string name="no">否</string>
-    </resources>
+    <string name="min_characters_warning">请输入至少%1$d 个字符</string>
+</resources>
