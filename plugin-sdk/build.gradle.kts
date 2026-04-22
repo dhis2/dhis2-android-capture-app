@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "org.dhis2.mobile"
-version = "0.1.0-SNAPSHOT"
+version = "0.1.1-SNAPSHOT"
 
 kotlin {
     androidLibrary {
