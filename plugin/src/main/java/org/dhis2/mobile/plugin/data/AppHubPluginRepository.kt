@@ -17,10 +17,10 @@ private const val FALLBACK_CONFIG_JSON = """
     "plugins": [
         {
             "id": "org.dhis2.myplugin",
-            "version": "1.3.0",
-            "checksum": "sha256:bd03a2cbac9373ee68d84d7dce1877fee86702b6bd2a5240930a7cc20cf5c732",
+            "version": "1.4.0",
+            "checksum": "sha256:bace3ff14439372a8bbfa076fde4974158168c84d5913df9cf530a27e448587c",
             "entryPoint": "org.dhis2.pluginimplementationtest.MyPlugin",
-            "downloadUrl": "http://10.0.2.2:8080/org.dhis2.myplugin-1.3.0.zip",
+            "downloadUrl": "http://10.0.2.2:8080/org.dhis2.myplugin-1.4.0.zip",
             "injectionPoints": ["HOME_ABOVE_PROGRAM_LIST"],
             "allowedDataSetUids": [],
             "allowedProgramUids": ["IpHINAT79UW"]
