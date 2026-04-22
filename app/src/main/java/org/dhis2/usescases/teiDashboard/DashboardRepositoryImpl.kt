@@ -873,16 +873,20 @@ class DashboardRepositoryImpl(
     }
 
     override fun getTETypeName(): String? =
-        getTrackedEntityInstance(teiUid)
-            .flatMap { tei: TrackedEntityInstance ->
-                d2
-                    .trackedEntityModule()
-                    .trackedEntityTypes()
-                    .uid(tei.trackedEntityType())
-                    .get()
-                    .toObservable()
-            }.blockingFirst()
-            ?.displayName()
+        try {
+            getTrackedEntityInstance(teiUid)
+                .flatMap { tei: TrackedEntityInstance ->
+                    d2
+                        .trackedEntityModule()
+                        .trackedEntityTypes()
+                        .uid(tei.trackedEntityType())
+                        .get()
+                        .toObservable()
+                }.blockingFirst()
+                ?.displayName()
+        } catch (e: Exception) {
+            null
+        }
 
     override fun getAttributesMap(
         programUid: String,

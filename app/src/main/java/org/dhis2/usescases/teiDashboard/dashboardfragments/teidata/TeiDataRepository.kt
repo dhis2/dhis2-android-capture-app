@@ -14,11 +14,11 @@ interface TeiDataRepository {
         groupedByStage: Boolean,
     ): Single<List<EventModel>>
 
-    fun getEnrollment(): Single<Enrollment?>
+    fun getEnrollment(): Single<Enrollment>
 
-    fun getEnrollmentProgram(): Single<Program?>
+    fun getEnrollmentProgram(): Single<Program>
 
-    fun getTrackedEntityInstance(): Single<TrackedEntityInstance?>
+    fun getTrackedEntityInstance(): Single<TrackedEntityInstance>
 
     fun eventsWithoutCatCombo(): Single<List<EventModel>>
 
