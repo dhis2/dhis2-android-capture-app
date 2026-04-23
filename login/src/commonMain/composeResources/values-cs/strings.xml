@@ -22,7 +22,7 @@
     <string name="back_to_settings">Zpět na nastavení</string>
     <string name="action_next">Další</string>
     <string name="server_verification_running">Navázání spojení...</string>
-    <string name="server_verification_title">Ke kterému serveru se chcete připojit?</string>
+    <string name="server_verification_title">Ke kterému serveru se chcete připojit\?</string>
     <string name="server_url_title">URL serveru</string>
     <string name="two_fa_is_on">Je zapnuté dvoufaktorové ověřování.</string>
     <string name="two_fa_disable_title">Vypnutí dvoufaktorového ověřování</string>
@@ -33,7 +33,7 @@
     <string name="two_fa_disable_error">Nepodařilo se vypnout dvoufaktorové ověřování.</string>
     <string name="server_url_error">Není platná URL serveru</string>
     <string name="biometrics_login_title">Rychlé přihlášení</string>
-    <string name="biometrics_login_text">Chcete se přihlásit pomocí otisku prstu nebo jiné biometrické metody?</string>
+    <string name="biometrics_login_text">Chcete se přihlásit pomocí otisku prstu nebo jiné biometrické metody\?</string>
     <string name="biometrics_permission_already_saved">Pověření již byla uložena</string>
     <string name="biometrics_permission_cancelled">Pověření nebyla uložena</string>
     <string name="username_hint">Uživatelské jméno</string>
@@ -44,7 +44,7 @@
     <string name="openid_or">Nebo</string>
     <string name="action_openid_log_in">Přihlášení pomocí openID</string>
     <string name="action_manage_account">Správa účtů</string>
-    <string name="tracking_title">Chcete nám pomoci vylepšit tuto aplikaci?</string>
+    <string name="tracking_title">Chcete nám pomoci vylepšit tuto aplikaci\?</string>
     <string name="tracking_description">Pokud řeknete ano, aplikace bude odesílat anonymní statistiky a protokoly o chybách, které nám pomáhají zlepšovat uživatelský komfort a výkon.</string>
     <string name="tracking_description_link">Další podrobnosti naleznete v našem </string>
     <string name="privacy_policy">Zásady ochrany osobních údajů</string>
@@ -56,7 +56,7 @@
     <string name="enter_pin">Zadejte svůj kód PIN</string>
     <string name="enter_pin_description">Pro přístup k účtu zadejte čtyřmístný kód PIN.</string>
     <string name="enter_pin_button">Odemknout</string>
-    <string name="forgot_pin_button">Zapomněli jste kód PIN?</string>
+    <string name="forgot_pin_button">Zapomněli jste kód PIN\?</string>
     <string name="pin_error_incorrect">Nesprávný kód PIN</string>
     <string name="pin_error_no_pin">Není nakonfigurován žádný kód PIN</string>
     <string name="pin_error_save_failed">Nepodařilo se uložit kód PIN</string>
@@ -66,4 +66,5 @@
     <string name="importing_successful">Import byl úspěšný</string>
     <string name="openid_process_cancelled">Přihlášení bylo zrušeno</string>
     <string name="openid_invalid_auth_result">Neplatný výsledek autorizace</string>
+    <string name="openid_login_cancelled">Ověřování zrušeno</string>
     </resources>
