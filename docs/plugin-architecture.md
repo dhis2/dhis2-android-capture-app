@@ -145,7 +145,8 @@ and `path/Dhis2SdkApiPathHandler.kt`. Phase B scope:
 
 Server-side `/api/dataStore/{ns}/{key}` routing is deferred until real plugins
 start hitting it — the SDK's dataStoreDownload API needs verification and is
-best designed once we know which namespaces matter.
+best designed once we know which namespaces matter. Phase D lands with the
+download pipeline.
 
 **API version prefix.** `@dhis2/app-runtime` reads the server version from
 `/api/system/info` and then prefixes subsequent calls with it — e.g.
@@ -260,8 +261,8 @@ No NanoHTTPD. No custom HTTP server dependency.
 | --- | --- | --- |
 | A | ✅ **Done, verified** | Transport swap: `WebViewAssetLoader`, generic post-robot bridge, plugin bundle as APK-asset black box. Bundled `simple-form-field-plugin` renders end-to-end; `getPropsFromParent` + `setFieldValue` round-trip through post-robot → `PluginBridge`. |
 | B | ✅ **Done, verified** | `/api/*` → SDK proxy (`Dhis2SdkApiDispatcher`) covers `systemInfo` / `me` / `userSettings` with version-prefix stripping. `@dhis2/app-runtime`'s `DataProvider` boots cleanly against the offline SDK. |
-| C | Deferred | Runtime download + dataStore-driven discovery + SHA-256 verification. Server-side config becomes the only install surface; APK stops bundling plugin assets. |
-| D | Deferred | Per-field dispatch: `Form.kt` resolves plugin-enabled fields via dataStore mapping and renders `PluginWebViewHost` in place of `FieldProvider`. `setFieldValue` → `FormIntent.OnSave`. |
+| C | 🚧 **In progress** | Real-field dispatch + write-back. `Form.kt` derives `PluginProps` from its `sections` parameter (real DHIS2 UIDs) and wires `setFieldValue` → `FormIntent.OnSave(uid, value, valueType)`. Also: dynamic height via post-robot `resize` so the WebView container grows/shrinks to match the plugin's natural content size. |
+| D | Deferred | Runtime download + dataStore-driven discovery + SHA-256 verification. Server-side config becomes the only install surface; APK stops bundling plugin assets. Deprioritised on 2026-04-23 — tackle only after C lands and the team decides the HTML-views track is worth productising. |
 
 ## Lessons learned (from Phase A + B verification)
 
