@@ -92,6 +92,7 @@ ktlint = "13.1.0"
 sonarqube = "7.2.3.7755"
 browser = "1.9.0"
 biometric = "1.1.0"
+androidxWebkit = "1.12.1"
 coil = "3.3.0"
 cyclonedx = "2.1.0"
 jetbrains-material3="1.9.0"
@@ -125,6 +126,7 @@ navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-co
 test-androidx-paging = { group = "androidx.paging", name = "paging-testing", version.ref = "pagingTesting" }
 androidx-coreKtx = { group = "androidx.core", name = "core-ktx", version.ref = "corektx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-webkit = { group = "androidx.webkit", name = "webkit", version.ref = "androidxWebkit" }
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
 androidx-cardview = { group = "androidx.cardview", name = "cardview", version.ref = "cardview" }
 androidx-legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacysupport" }

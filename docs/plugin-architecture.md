@@ -1,527 +1,334 @@
-# DHIS2 Android Plugin Architecture
+# DHIS2 Android Plugin Architecture — Web Plugins (HTML Views)
+
+> **Scope:** this document covers the *web plugin* track (HTML Views PoC).
+> Phases A + B are implemented on this branch; Phases C + D are documented at
+> the end for context but live on a follow-up branch.
 
 ## Overview
 
-This document describes the recommended architecture for running DHIS2 web plugins inside the Android app using a local HTTP server approach. This solution enables **any DHIS2 plugin** to work without modification.
+This document describes how the Android Capture App runs **unmodified** DHIS2
+web plugins — the same React + `@dhis2/app-runtime` bundles the web Capture
+app loads through the Tracker Plugin Configurator. The goal is that installing
+or swapping a plugin is a server-side configuration act only: no Android code
+change, no new APK.
 
-## Problem Statement
+## Problem statement
 
-DHIS2 plugins are designed for web-to-web iframe communication using the `post-robot` library. They expect:
+DHIS2 web plugins are designed for web-to-web iframe communication using
+[`post-robot`](https://github.com/krakenjs/post-robot). They expect:
 
-1. To run inside an iframe
-2. A parent window that responds to post-robot messages
-3. HTTP/HTTPS origin (not `file://`)
-4. Access to DHIS2 API endpoints
+1. To run inside an iframe whose parent is a real web origin.
+2. A parent window that speaks post-robot (the protocol `@dhis2/app-runtime`'s
+   Plugin hook drives).
+3. HTTP/HTTPS origin — not `file://`.
+4. Access to the DHIS2 API at `${baseUrl}/api/*`.
 
-When loading plugins directly in an Android WebView with `file://` URLs:
-- `window.parent === window` (no iframe hierarchy)
-- Cross-origin restrictions prevent iframe communication
-- `fetch()` calls to `/api/*` fail
-- Post-robot communication breaks
+Loading the plugin directly in a WebView via `file://` fails all four:
+`window.parent === window`, cross-origin checks block postMessage, `fetch`
+resolves against `file:///`, service workers don't register.
 
-## Solution: Local HTTP Server
+## Solution: `WebViewAssetLoader` + generic bridge + SDK-backed `/api/*` proxy
 
-Run an embedded HTTP server inside the Android app that:
-- Serves plugin files via `http://localhost:PORT/`
-- Acts as a proxy for `/api/*` calls → routes to DHIS2 SDK
-- Hosts a bridge page that handles post-robot communication
-- Provides proper HTTP origin for iframe communication
+We give the WebView a synthetic HTTPS origin (`https://appassets.androidplatform.net`)
+using AndroidX [`WebViewAssetLoader`](https://developer.android.com/reference/androidx/webkit/WebViewAssetLoader).
+No real server, no port, no socket — the loader intercepts `shouldInterceptRequest`
+and maps URL paths to local content or Kotlin-backed responses.
+
+Three `PathHandler`s are registered:
+
+- `/host/` → ships the generic `bridge.html` + vendored `post-robot.min.js`
+  from `form/src/main/assets/dhis2-plugin-host/`.
+- `/plugins/` → ships the plugin bundle(s). In Phase A + B this reads from
+  APK assets (`form/src/main/assets/plugins/`). Phase C swaps this for
+  `{filesDir}/plugins/` so bundles are downloaded at runtime.
+- `/api/` → routed to `Dhis2SdkApiDispatcher`, which translates into D2 SDK
+  calls and returns JSON. Offline-first for free: the SDK already owns the
+  local DB.
+
+### Why `WebViewAssetLoader` rather than a local HTTP server
+
+We briefly explored embedding NanoHTTPD on `127.0.0.1:PORT`. Both give the
+plugin a real origin, but `WebViewAssetLoader` is strictly simpler:
+
+- No TCP socket, no port management, no lifecycle to supervise.
+- No Play-Store policy friction (apps running local servers get flagged).
+- Service workers work without secure-context workarounds.
+- Synchronous `PathHandler.handle()` fits the D2 SDK's `blockingGet()` API
+  and the WebView network thread.
+
+The only NanoHTTPD advantage — asynchronous request handling inside the
+server — is not needed here: the handler runs off the UI thread and the SDK
+already exposes blocking getters used widely in the Capture App.
+
+## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  Android App                                                │
-│                                                             │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │  PluginServer (NanoHTTPD)                             │  │
-│  │  http://localhost:8080                                │  │
-│  │                                                       │  │
-│  │  Routes:                                              │  │
-│  │  ├── /                    → bridge.html (parent)      │  │
-│  │  ├── /plugin/*            → plugin assets             │  │
-│  │  ├── /api/system/info     → SDK: d2.systemInfoModule()│  │
-│  │  ├── /api/me              → SDK: d2.userModule()      │  │
-│  │  ├── /api/dataElements/*  → SDK: d2.dataElementModule │  │
-│  │  └── /api/*               → SDK (generic routing)     │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                         ↑                                   │
-│                         │ HTTP                              │
-│                         ↓                                   │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │  WebView                                              │  │
-│  │  loads http://localhost:8080/                         │  │
-│  │                                                       │  │
-│  │  ┌─────────────────────────────────────────────────┐  │  │
-│  │  │ bridge.html (parent window)                     │  │  │
-│  │  │                                                 │  │  │
-│  │  │  - Listens for post-robot messages              │  │  │
-│  │  │  - Provides props to plugin via post-robot      │  │  │
-│  │  │  - Forwards setFieldValue to Android            │  │  │
-│  │  │                                                 │  │  │
-│  │  │  ┌───────────────────────────────────────────┐  │  │  │
-│  │  │  │ <iframe src="/plugin/plugin.html">       │  │  │  │
-│  │  │  │                                          │  │  │  │
-│  │  │  │  DHIS2 Plugin (unmodified)               │  │  │  │
-│  │  │  │  - post-robot works ✓                    │  │  │  │
-│  │  │  │  - fetch("/api/*") works ✓               │  │  │  │
-│  │  │  │  - Same origin ✓                         │  │  │  │
-│  │  │  │                                          │  │  │  │
-│  │  │  └───────────────────────────────────────────┘  │  │  │
-│  │  └─────────────────────────────────────────────────┘  │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                         ↑                                   │
-│                         │ JavascriptInterface               │
-│                         ↓                                   │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │  PluginBridge (Kotlin)                                │  │
-│  │                                                       │  │
-│  │  - Receives setFieldValue callbacks from JS           │  │
-│  │  - Sends updated props to WebView                     │  │
-│  │  - Coordinates with Form/ViewModel                    │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                         ↑                                   │
-│                         │                                   │
-│                         ↓                                   │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │  DHIS2 Android SDK                                    │  │
-│  │                                                       │  │
-│  │  d2.trackedEntityModule()                             │  │
-│  │  d2.eventModule()                                     │  │
-│  │  d2.dataElementModule()                               │  │
-│  │  etc.                                                 │  │
-│  └───────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────── Android WebView (Capture App) ──────────────────────────┐
+│  Loads https://appassets.androidplatform.net/host/bridge.html                       │
+│                                                                                     │
+│  ┌──────────────────────────────── bridge.html ──────────────────────────────────┐  │
+│  │  • post-robot parent:                                                         │  │
+│  │      postRobot.on("getPropsFromParent", …) → replies with props + callbacks   │  │
+│  │      postRobot.send(plugin, "updated", props) on host state change            │  │
+│  │  • Exposed Kotlin bridge (via @JavascriptInterface Android):                  │  │
+│  │      setFieldValue        → window.Android.onSetFieldValue(JSON.stringify(p)) │  │
+│  │      setContextFieldValue → window.Android.onSetContextFieldValue(…)          │  │
+│  │                                                                               │  │
+│  │  <iframe src="https://appassets.androidplatform.net/plugins/{id}-{ver}/…">    │  │
+│  │     Unmodified DHIS2 plugin (same origin → post-robot works)                  │  │
+│  │  </iframe>                                                                    │  │
+│  └───────────────────────────────────────────────────────────────────────────────┘  │
+│                                                                                     │
+│  WebViewAssetLoader                                                                 │
+│   ├─ /host/    → AssetsPathHandler("dhis2-plugin-host")                             │
+│   │              bridge.html, post-robot.min.js (shipped with app)                  │
+│   ├─ /plugins/ → AssetsPathHandler("plugins")                                       │
+│   │              {id}-{version}/plugin.html + assets (APK today, filesDir in C)     │
+│   └─ /api/     → Dhis2SdkApiPathHandler                                             │
+│                  /api/system/info, /api/me, /api/userSettings, /api/dataStore/…     │
+│                  → D2 SDK (blockingGet), JSON response                              │
+└─────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-## Implementation Components
+## Implementation components
 
-### 1. PluginServer.kt
+### `bridge.html` (`form/src/main/assets/dhis2-plugin-host/bridge.html`)
 
-Embedded HTTP server using NanoHTTPD that serves plugin assets and proxies API calls.
+Generic, plugin-agnostic parent page. Loads post-robot, implements the parent
+half of the plugin protocol, and exposes two entry points called from Kotlin
+via `evaluateJavascript`:
+
+- `window.configurePlugin({ pluginUrl, props })` — boots the plugin iframe.
+- `window.updateProps(jsonString)` — pushes a fresh prop set to the plugin
+  over post-robot's `updated` event.
+
+### Vendored post-robot (`form/src/main/assets/dhis2-plugin-host/post-robot.min.js`)
+
+Version **10.0.46**, matching the copy bundled by `@dhis2/app-runtime@3.x`
+inside every built DHIS2 plugin. See
+`form/src/main/assets/dhis2-plugin-host/README.md` for install instructions
+and bump policy.
+
+### `PluginWebViewHost` (Composable)
+
+`form/src/main/java/org/dhis2/form/ui/plugin/PluginWebViewHost.kt`.
+Owns the WebView, builds the `WebViewAssetLoader`, wires
+`shouldInterceptRequest` + `onPageFinished`, and exposes a simple Compose API:
 
 ```kotlin
-// Location: form/src/main/java/org/dhis2/form/ui/plugin/server/PluginServer.kt
-
-class PluginServer(
-    private val context: Context,
-    private val d2: D2,
-    private val port: Int = 8080
-) : NanoHTTPD(port) {
-
-    override fun serve(session: IHTTPSession): Response {
-        val uri = session.uri
-        
-        return when {
-            // Serve bridge.html for root
-            uri == "/" || uri == "/index.html" -> serveBridgeHtml()
-            
-            // Serve plugin assets
-            uri.startsWith("/plugin/") -> servePluginAsset(uri)
-            
-            // Proxy API calls to SDK
-            uri.startsWith("/api/") -> handleApiCall(session)
-            
-            else -> newFixedLengthResponse(Status.NOT_FOUND, "text/plain", "Not found")
-        }
-    }
-    
-    private fun handleApiCall(session: IHTTPSession): Response {
-        val uri = session.uri
-        
-        return when {
-            uri.contains("/api/system/info") -> {
-                val info = d2.systemInfoModule().systemInfo().blockingGet()
-                jsonResponse(info)
-            }
-            uri.contains("/api/me") -> {
-                val user = d2.userModule().user().blockingGet()
-                jsonResponse(user)
-            }
-            // Add more API mappings as needed
-            else -> jsonResponse(mapOf<String, Any>())
-        }
-    }
-}
-```
-
-### 2. bridge.html
-
-Parent page that hosts the plugin iframe and handles post-robot communication.
-
-```html
-<!-- Location: form/src/main/assets/plugin-bridge/bridge.html -->
-
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Plugin Bridge</title>
-    <style>
-        html, body { margin: 0; padding: 0; width: 100%; height: 100%; }
-        iframe { width: 100%; height: 100%; border: none; }
-    </style>
-</head>
-<body>
-    <iframe id="plugin-frame"></iframe>
-    
-    <script>
-        // Plugin configuration passed from Android
-        let pluginConfig = {
-            pluginPath: '/plugin/plugin.html',
-            props: {}
-        };
-        
-        // Receive configuration from Android
-        window.setPluginConfig = function(config) {
-            pluginConfig = config;
-            loadPlugin();
-        };
-        
-        // Load plugin iframe
-        function loadPlugin() {
-            document.getElementById('plugin-frame').src = pluginConfig.pluginPath;
-        }
-        
-        // Handle post-robot messages from plugin
-        window.addEventListener('message', function(event) {
-            const data = event.data;
-            if (!data || data.type !== 'postrobot_message_request') return;
-            
-            if (data.name === 'postrobot_hello') {
-                sendPostRobotResponse(event.source, data, {
-                    instanceID: 'android-bridge-' + Date.now()
-                });
-            }
-            else if (data.name === 'getPropsFromParent') {
-                sendPostRobotResponse(event.source, data, {
-                    data: buildPropsWithCallbacks()
-                });
-            }
-        });
-        
-        function buildPropsWithCallbacks() {
-            return {
-                ...pluginConfig.props,
-                setFieldValue: function(params) {
-                    // Forward to Android
-                    if (window.Android) {
-                        window.Android.onSetFieldValue(JSON.stringify(params));
-                    }
-                },
-                setContextFieldValue: function(params) {
-                    if (window.Android) {
-                        window.Android.onSetContextFieldValue(JSON.stringify(params));
-                    }
-                }
-            };
-        }
-        
-        function sendPostRobotResponse(target, request, responseData) {
-            // Send ACK
-            target.postMessage({
-                type: 'postrobot_message_ack',
-                hash: request.hash,
-                name: request.name
-            }, '*');
-            
-            // Send response
-            target.postMessage({
-                type: 'postrobot_message_response',
-                hash: request.hash,
-                name: request.name,
-                data: responseData
-            }, '*');
-        }
-        
-        // Receive prop updates from Android
-        window.updateProps = function(props) {
-            pluginConfig.props = props;
-            // Send updated props to plugin via post-robot 'updated' event
-            const iframe = document.getElementById('plugin-frame');
-            if (iframe.contentWindow) {
-                iframe.contentWindow.postMessage({
-                    type: 'postrobot_message_request',
-                    name: 'updated',
-                    hash: 'update-' + Date.now(),
-                    data: { data: buildPropsWithCallbacks() },
-                    fireAndForget: true
-                }, '*');
-            }
-        };
-    </script>
-</body>
-</html>
-```
-
-### 3. PluginBridge.kt
-
-Kotlin interface between WebView and the rest of the Android app.
-
-```kotlin
-// Location: form/src/main/java/org/dhis2/form/ui/plugin/PluginBridge.kt
-
-class PluginBridge(
-    private val onSetFieldValue: (SetFieldValueParams) -> Unit,
-    private val onSetContextFieldValue: (SetContextFieldValueParams) -> Unit
-) {
-    
-    @JavascriptInterface
-    fun onSetFieldValue(paramsJson: String) {
-        val params = Gson().fromJson(paramsJson, SetFieldValueParams::class.java)
-        onSetFieldValue(params)
-    }
-    
-    @JavascriptInterface
-    fun onSetContextFieldValue(paramsJson: String) {
-        val params = Gson().fromJson(paramsJson, SetContextFieldValueParams::class.java)
-        onSetContextFieldValue(params)
-    }
-}
-
-data class SetFieldValueParams(
-    val fieldId: String,
-    val value: Any?,
-    val options: FieldValueOptions? = null
-)
-
-data class SetContextFieldValueParams(
-    val fieldId: String, // "geometry" | "occurredAt" | "enrolledAt"
-    val value: Any?,
-    val options: FieldValueOptions? = null
-)
-
-data class FieldValueOptions(
-    val valid: Boolean? = null,
-    val touched: Boolean? = null,
-    val error: String? = null
+PluginWebViewHost(
+    pluginId = "simple-capture-plugin",
+    pluginVersion = "1.0.0",
+    props = pluginProps,
+    onSetFieldValue = { params -> /* → FormIntent.OnSave in Phase D */ },
+    onSetContextFieldValue = { params -> /* → dedicated intents in Phase D */ },
 )
 ```
 
-### 4. PluginWebView Composable
+### `PluginBridge` (`@JavascriptInterface`)
 
-Compose component that manages the WebView and server lifecycle.
+`form/src/main/java/org/dhis2/form/ui/plugin/PluginBridge.kt`. Two entry
+points: `onSetFieldValue(String)` and `onSetContextFieldValue(String)`,
+each deserialising a `SetFieldValueParams` / `SetContextFieldValueParams`
+DTO via Gson.
 
-```kotlin
-// Location: form/src/main/java/org/dhis2/form/ui/plugin/PluginWebView.kt
+### `Dhis2SdkApiDispatcher` + `Dhis2SdkApiPathHandler`
 
-@Composable
-fun PluginWebView(
-    pluginId: String,
-    props: PluginProps,
-    onSetFieldValue: (SetFieldValueParams) -> Unit,
-    onSetContextFieldValue: (SetContextFieldValueParams) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val context = LocalContext.current
-    val d2 = // inject D2 instance
-    
-    // Remember server instance
-    val server = remember {
-        PluginServer(context, d2).also { it.start() }
-    }
-    
-    // Cleanup server on dispose
-    DisposableEffect(Unit) {
-        onDispose { server.stop() }
-    }
-    
-    // WebView
-    AndroidView(
-        modifier = modifier,
-        factory = { ctx ->
-            WebView(ctx).apply {
-                settings.javaScriptEnabled = true
-                settings.domStorageEnabled = true
-                
-                addJavascriptInterface(
-                    PluginBridge(onSetFieldValue, onSetContextFieldValue),
-                    "Android"
-                )
-                
-                webViewClient = object : WebViewClient() {
-                    override fun onPageFinished(view: WebView?, url: String?) {
-                        // Send initial configuration
-                        val config = mapOf(
-                            "pluginPath" to "/plugin/$pluginId/plugin.html",
-                            "props" to props
-                        )
-                        val configJson = Gson().toJson(config)
-                        view?.evaluateJavascript(
-                            "window.setPluginConfig($configJson)",
-                            null
-                        )
-                    }
-                }
-                
-                loadUrl("http://localhost:${server.listeningPort}/")
-            }
-        },
-        update = { webView ->
-            // Update props when they change
-            val propsJson = Gson().toJson(props)
-            webView.evaluateJavascript("window.updateProps($propsJson)", null)
-        }
-    )
-}
-```
+`form/src/main/java/org/dhis2/form/ui/plugin/api/Dhis2SdkApiDispatcher.kt`
+and `path/Dhis2SdkApiPathHandler.kt`. Phase B scope:
 
-### 5. Plugin Registration
+| Path | SDK call |
+| --- | --- |
+| `/api/system/info` | `d2.systemInfoModule().systemInfo().blockingGet()` |
+| `/api/me` | `d2.userModule().user().blockingGet()` |
+| `/api/userSettings` | `{}` (passthrough) |
 
-System for registering and managing available plugins.
+Server-side `/api/dataStore/{ns}/{key}` routing is deferred until real plugins
+start hitting it — the SDK's dataStoreDownload API needs verification and is
+best designed once we know which namespaces matter.
 
-```kotlin
-// Location: form/src/main/java/org/dhis2/form/ui/plugin/PluginRegistry.kt
+**API version prefix.** `@dhis2/app-runtime` reads the server version from
+`/api/system/info` and then prefixes subsequent calls with it — e.g.
+`/api/43/me`, `/api/43/userSettings`. `Dhis2SdkApiDispatcher` strips a
+leading numeric segment before matching, so a single handler covers both
+versioned and unversioned paths.
 
-object PluginRegistry {
-    
-    private val plugins = mutableMapOf<String, PluginDefinition>()
-    
-    fun register(plugin: PluginDefinition) {
-        plugins[plugin.id] = plugin
-    }
-    
-    fun getPlugin(id: String): PluginDefinition? = plugins[id]
-    
-    fun getPluginsForDataElement(dataElementId: String): List<PluginDefinition> {
-        // Logic to determine which plugins apply to a data element
-        return plugins.values.filter { it.appliesTo(dataElementId) }
-    }
-}
+**`/api/me` shape.** `@dhis2/app-runtime`'s `DataProvider` blocks its children
+until `/api/me` resolves to a valid user. An empty `{}` is not enough — the
+dispatcher returns at minimum `{ id, username, authorities[], userCredentials }`.
+`authorities` comes from `d2.userModule().authorities().blockingGet()`.
 
-data class PluginDefinition(
-    val id: String,
-    val name: String,
-    val version: String,
-    val assetPath: String, // Path in assets folder
-    val supportedValueTypes: List<ValueType> = emptyList(),
-    val appliesTo: (dataElementId: String) -> Boolean = { false }
-)
-```
+Unknown GETs log a WARN and return `200 {}` so plugins degrade gracefully
+instead of erroring. Writes (POST/PUT/DELETE) return `405` — plugins that
+need writebacks should use the `setFieldValue` callback, not `/api/*`.
 
-## Data Flow
+## Data flow
 
-### 1. Plugin Initialization
+### Initialisation
 
 ```
-┌──────────┐    ┌─────────────┐    ┌───────────┐    ┌────────┐
-│  Form    │───>│ PluginServer│───>│  WebView  │───>│ Plugin │
-│ViewModel │    │   start()   │    │  loadUrl  │    │  loads │
-└──────────┘    └─────────────┘    └───────────┘    └────────┘
-     │                                                   │
-     │           setPluginConfig(props)                  │
-     └──────────────────────────────────────────────────>│
-                                                         │
-                       getPropsFromParent                │
-     <───────────────────────────────────────────────────┤
-     │                                                   │
-     │           props with callbacks                    │
-     └──────────────────────────────────────────────────>│
-                                                         │
-                      Plugin renders ✓                   │
+Kotlin → WebView: loadUrl("https://.../host/bridge.html")
+bridge.html → post-robot listener armed
+Kotlin → WebView: evaluateJavascript("window.configurePlugin({pluginUrl, props})")
+bridge.html → iframe.src = pluginUrl
+Plugin → postRobot.send(parent, "getPropsFromParent") → parent returns props
+Plugin renders ✓
 ```
 
-### 2. User Interaction (setFieldValue)
+### `setFieldValue`
 
 ```
-┌────────┐    ┌────────────┐    ┌──────────────┐    ┌──────────┐
-│ Plugin │───>│ bridge.html│───>│PluginBridge │───>│ViewModel │
-│ button │    │ postMessage│    │ @JSInterface│    │ saveValue│
-└────────┘    └────────────┘    └──────────────┘    └──────────┘
-     │                                                    │
-     │  setFieldValue({fieldId, value})                   │
-     └───────────────────────────────────────────────────>│
-                                                          │
-                                                   SDK save
-                                                          │
-     <────────────────────────────────────────────────────┤
-     │              props updated                         │
-     │<───────────────────────────────────────────────────┘
+Plugin → props.setFieldValue({fieldId, value})
+bridge.html → post-robot proxy round-trip
+bridge.html → window.Android.onSetFieldValue(JSON)
+PluginBridge.kt → onSetFieldValue callback → (Phase D) FormIntent.OnSave
 ```
 
-### 3. API Call (fetch)
+### `/api/*` call
 
 ```
-┌────────┐    ┌─────────────┐    ┌─────────┐
-│ Plugin │───>│PluginServer │───>│  SDK    │
-│ fetch  │    │ /api/*      │    │ module  │
-└────────┘    └─────────────┘    └─────────┘
-     │                                │
-     │  fetch("/api/dataElements")    │
-     └───────────────────────────────>│
-                                      │
-              d2.dataElementModule()  │
-                    .get()            │
-                                      │
-     <────────────────────────────────┤
-     │         JSON response          │
+Plugin → fetch("/api/system/info")
+WebView → shouldInterceptRequest → WebViewAssetLoader → Dhis2SdkApiPathHandler
+Dhis2SdkApiDispatcher → d2.systemInfoModule().systemInfo().blockingGet()
+Dhis2SdkApiPathHandler → WebResourceResponse(application/json, 200, body)
+Plugin receives real data (offline-first via SDK's local DB)
 ```
 
-## File Structure
+## File structure
 
 ```
 form/
 ├── src/main/
 │   ├── assets/
-│   │   ├── plugin-bridge/
-│   │   │   └── bridge.html           # Parent bridge page
-│   │   └── plugins/
-│   │       └── simple-form-field/    # Example plugin
-│   │           ├── plugin.html
-│   │           └── assets/
-│   │               ├── plugin.js
-│   │               └── plugin.css
+│   │   ├── dhis2-plugin-host/               # ships with app, one generic bridge
+│   │   │   ├── bridge.html
+│   │   │   ├── post-robot.min.js            # vendored 10.0.46 (see README)
+│   │   │   └── README.md
+│   │   └── plugins/                         # Phase A+B: plugins in APK (black box)
+│   │       └── simple-capture-plugin-1.0.0/ # Phase C: move to {filesDir}/plugins/
 │   │
 │   └── java/org/dhis2/form/ui/plugin/
-│       ├── server/
-│       │   ├── PluginServer.kt       # NanoHTTPD server
-│       │   └── ApiHandler.kt         # SDK API routing
-│       ├── PluginBridge.kt           # JS interface
-│       ├── PluginWebView.kt          # Compose component
-│       ├── PluginProps.kt            # Data classes
-│       ├── PluginRegistry.kt         # Plugin management
-│       └── PluginInterface.kt        # Existing interface
+│       ├── PluginBridge.kt                  # @JavascriptInterface Android
+│       ├── PluginWebViewHost.kt             # Composable entry point
+│       ├── PluginProps.kt                   # props/metadata data classes
+│       ├── PluginDemo.kt                    # dev switch + mock props (delete in Phase D)
+│       ├── SetFieldValueParams.kt           # DTOs for callbacks
+│       ├── api/
+│       │   └── Dhis2SdkApiDispatcher.kt     # path → SDK routing
+│       └── path/
+│           └── Dhis2SdkApiPathHandler.kt    # WebViewAssetLoader.PathHandler
 ```
 
 ## Dependencies
 
-Add to `form/build.gradle.kts`:
+In `gradle/libs.versions.toml`:
 
-```kotlin
-dependencies {
-    // NanoHTTPD for embedded HTTP server
-    implementation("org.nanohttpd:nanohttpd:2.3.1")
-}
+```toml
+[versions]
+androidxWebkit = "1.12.1"
+
+[libraries]
+androidx-webkit = { group = "androidx.webkit", name = "webkit", version.ref = "androidxWebkit" }
 ```
 
-## Security Considerations
+In `form/build.gradle.kts`:
 
-1. **Server binding**: Bind only to `localhost` (127.0.0.1), not all interfaces
-2. **Port selection**: Use dynamic port allocation to avoid conflicts
-3. **Request validation**: Validate all incoming requests
-4. **SDK access**: Only expose necessary SDK methods via API proxy
+```kotlin
+implementation(libs.androidx.webkit)
+```
 
-## Benefits of This Approach
+No NanoHTTPD. No custom HTTP server dependency.
 
-| Aspect | Benefit |
-|--------|---------|
-| **Compatibility** | Works with ANY unmodified DHIS2 plugin |
-| **Same-origin** | HTTP origin enables proper iframe communication |
-| **API Interception** | Server-side routing to SDK for offline support |
-| **Generic** | One implementation supports all plugins |
-| **Testable** | Server can be tested independently |
-| **Scalable** | Easy to add more plugins and API endpoints |
+## Security considerations
 
-## Future Enhancements
+- **Origin isolation.** The WebView runs on a synthetic HTTPS origin dedicated
+  to this loader. Plugins cannot reach the surrounding Android UI except
+  through the narrow `@JavascriptInterface` surface defined in `PluginBridge`.
+- **Asset integrity.** Phase C adds SHA-256 verification of downloaded plugin
+  bundles (config-pinned). Phase A+B run vendored bundles that ship inside
+  the APK and are treated as black boxes.
+- **SDK scope.** The API dispatcher exposes read-only DHIS2 data. No raw `D2`
+  is handed to the plugin. Writes flow through `setFieldValue`, which the
+  host validates and applies to its own form model.
+- **Signing.** Unlike native plugin bundles (signed jarsigner APKs), DHIS2
+  web apps aren't signed by App Hub — we rely on content hashing at
+  download time plus per-instance admin curation via dataStore.
 
-1. **Plugin marketplace**: Download plugins from DHIS2 app hub
-2. **Hot reload**: Update plugins without app restart
-3. **Plugin sandboxing**: Isolate plugin permissions
-4. **Caching**: Cache plugin assets and API responses
-5. **Offline queue**: Queue API writes when offline
+## Phase status
+
+| Phase | State | What it adds |
+| --- | --- | --- |
+| A | ✅ **Done, verified** | Transport swap: `WebViewAssetLoader`, generic post-robot bridge, plugin bundle as APK-asset black box. Bundled `simple-form-field-plugin` renders end-to-end; `getPropsFromParent` + `setFieldValue` round-trip through post-robot → `PluginBridge`. |
+| B | ✅ **Done, verified** | `/api/*` → SDK proxy (`Dhis2SdkApiDispatcher`) covers `systemInfo` / `me` / `userSettings` with version-prefix stripping. `@dhis2/app-runtime`'s `DataProvider` boots cleanly against the offline SDK. |
+| C | Deferred | Runtime download + dataStore-driven discovery + SHA-256 verification. Server-side config becomes the only install surface; APK stops bundling plugin assets. |
+| D | Deferred | Per-field dispatch: `Form.kt` resolves plugin-enabled fields via dataStore mapping and renders `PluginWebViewHost` in place of `FieldProvider`. `setFieldValue` → `FormIntent.OnSave`. |
+
+## Lessons learned (from Phase A + B verification)
+
+Four non-obvious gotchas we hit wiring up the unmodified `simple-form-field-plugin`.
+Worth flagging so anyone reviewing or extending this knows to expect them.
+
+1. **WebView inside AndroidView needs explicit `LayoutParams`.** Compose's
+   `modifier.height(200.dp)` sizes the AndroidView container, but the WebView
+   child doesn't automatically inherit `MATCH_PARENT` — its internal viewport
+   (`window.innerHeight`) stays at `0`. That makes the plugin's
+   `height:100vh` shell collapse to `0` even though the WebView visually
+   occupies the full height. Fix:
+   ```kotlin
+   WebView(ctx).apply {
+       layoutParams = ViewGroup.LayoutParams(
+           ViewGroup.LayoutParams.MATCH_PARENT,
+           ViewGroup.LayoutParams.MATCH_PARENT,
+       )
+       settings.useWideViewPort = true
+       settings.loadWithOverviewMode = true
+       // …
+   }
+   ```
+
+2. **DHIS2 plugins assume the Capture web shell provides `html/body` height.**
+   The bundle only sets `#dhis2-app-root { isolation:isolate }` and the
+   component uses `height:100vh` at the `.app-shell-adapter` level. Standalone
+   in an iframe, `html/body` default to `auto` height and the shell collapses.
+   Because bridge.html and the plugin iframe are same-origin
+   (`https://appassets.androidplatform.net`), the bridge can inject a
+   fix-up stylesheet into the iframe's `<head>` on load:
+   ```css
+   html, body { height: 100% !important; margin: 0 !important; padding: 0 !important; }
+   #dhis2-app-root { display: block; height: 100vh !important; width: 100% !important; }
+   ```
+   This doesn't touch the plugin bundle — the plugin is still a black box.
+
+3. **`@dhis2/app-runtime`'s `<DataProvider>` blocks on `/api/me`.**
+   Returning `{}` isn't enough — it expects a real user object with
+   `authorities` and `userCredentials`. Without those, the DataProvider shows
+   no UI at all (no error, no spinner, just an empty root). The dispatcher
+   returns a populated map sourced from `d2.userModule().user()` +
+   `d2.userModule().authorities()`.
+
+4. **post-robot envelope-format drift is real.** The `plugin-architecture.md`
+   draft originally hand-rolled `postrobot_message_request` / `_response`
+   envelopes. That works for a specific version but is brittle across
+   post-robot majors (notably proxy-function serialisation for
+   `setFieldValue`-style callbacks). The shipped bridge vendors
+   **post-robot 10.0.46** — matching the copy `@dhis2/app-runtime@3.x`
+   bundles inside the plugin itself, confirmed by the
+   `post_robot_10_0_46__` namespace string inside the built bundle — and
+   uses `postRobot.on(...)` / `postRobot.send(...)` instead of mirroring the
+   wire format.
+
+## Open questions
+
+- Do we want to share the plugin download/cache/verify layer with the native
+  plugin PoC (`feature/plugin-system`)? Decide when planning Phase C.
+- Which additional `/api/*` endpoints do real partner plugins need? Driven
+  by the WARN log from `Dhis2SdkApiDispatcher.get(path)`.
+- Service-worker lifecycle: DHIS2 plugins ship a service worker; need to
+  clean up caches when a plugin version is swapped (Phase C).
 
 ## References
 
-- [NanoHTTPD GitHub](https://github.com/NanoHttpd/nanohttpd)
-- [DHIS2 Plugin Documentation](https://developers.dhis2.org/docs/app-platform/plugins)
-- [Post-Robot Library](https://github.com/krakenjs/post-robot)
-- [WebView Best Practices](https://developer.android.com/develop/ui/views/layout/webapps/webview)
+- [AndroidX `WebViewAssetLoader`](https://developer.android.com/reference/androidx/webkit/WebViewAssetLoader)
+- [post-robot](https://github.com/krakenjs/post-robot)
+- [DHIS2 app-platform plugins](https://developers.dhis2.org/docs/app-platform/plugins)
+- [DHIS2 Android SDK](https://github.com/dhis2/dhis2-android-sdk)

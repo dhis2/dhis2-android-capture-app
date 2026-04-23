@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+    <title>DHIS2 Plugin Host</title>
+    <style>
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
+        iframe { width: 100%; height: 100%; border: none; display: block; background: transparent; }
+    </style>
+    <script src="./post-robot.min.js"></script>
+</head>
+<body>
+    <iframe id="plugin-frame" title="DHIS2 Plugin"
+            onload="window.__pluginFrameLoaded && window.__pluginFrameLoaded(this)"></iframe>
+    <script>
+    (function () {
+        'use strict';
+
+        if (typeof postRobot === 'undefined') {
+            console.error('[PluginHost] post-robot not loaded — drop post-robot.min.js into assets/dhis2-plugin-host/');
+            return;
+        }
+
+        window.addEventListener('error', function (e) {
+            console.error('[PluginHost] error:', e.message, 'at', e.filename + ':' + e.lineno);
+        });
+        window.addEventListener('unhandledrejection', function (e) {
+            console.error('[PluginHost] rejection:', e.reason && (e.reason.stack || e.reason.message || e.reason));
+        });
+
+        // Same-origin fix-up: DHIS2 plugins assume the Capture web shell provides html/body
+        // sizing through its own cascade. Standalone in an iframe their root collapses to 0.
+        // Inject a stylesheet into the iframe's <head> on load — no edit to the plugin bundle.
+        window.__pluginFrameLoaded = function (frame) {
+            var doc, win;
+            try {
+                doc = frame.contentDocument;
+                win = frame.contentWindow;
+            } catch (e) {
+                console.error('[PluginHost] cannot access iframe:', e);
+                return;
+            }
+
+            win.addEventListener('error', function (e) {
+                console.error('[PluginHost iframe] error:', e.message, 'at', e.filename + ':' + e.lineno);
+            });
+            win.addEventListener('unhandledrejection', function (e) {
+                console.error('[PluginHost iframe] rejection:', e.reason && (e.reason.stack || e.reason.message || e.reason));
+            });
+
+            try {
+                var fix = doc.createElement('style');
+                fix.textContent =
+                    'html,body{height:100%!important;margin:0!important;padding:0!important;}' +
+                    '#dhis2-app-root{display:block;height:100vh!important;width:100%!important;}' +
+                    '#dhis2-portal-root{position:fixed;top:0;left:0;z-index:9999;}';
+                doc.head.appendChild(fix);
+            } catch (e) {
+                console.error('[PluginHost] stylesheet injection failed:', e);
+            }
+        };
+
+        var pluginUrl = null;
+        var currentProps = {};
+
+        // Callbacks the plugin invokes. post-robot serialises function props as proxy handles,
+        // so when the plugin calls setFieldValue() it round-trips back here and we forward
+        // into the Kotlin @JavascriptInterface.
+        function buildPropsWithCallbacks() {
+            var props = Object.assign({}, currentProps);
+            props.setFieldValue = function (params) {
+                if (window.Android && window.Android.onSetFieldValue) {
+                    window.Android.onSetFieldValue(JSON.stringify(params));
+                }
+            };
+            props.setContextFieldValue = function (params) {
+                if (window.Android && window.Android.onSetContextFieldValue) {
+                    window.Android.onSetContextFieldValue(JSON.stringify(params));
+                }
+            };
+            return props;
+        }
+
+        postRobot.on('getPropsFromParent', function () {
+            return buildPropsWithCallbacks();
+        });
+
+        // Kotlin calls these via WebView.evaluateJavascript after the bridge loads.
+        window.configurePlugin = function (config) {
+            pluginUrl = config.pluginUrl;
+            currentProps = (config && config.props) || {};
+            document.getElementById('plugin-frame').src = pluginUrl;
+        };
+
+        window.updateProps = function (propsJson) {
+            try {
+                currentProps = JSON.parse(propsJson);
+            } catch (e) {
+                console.error('[PluginHost] updateProps: invalid JSON', e);
+                return;
+            }
+            var frame = document.getElementById('plugin-frame');
+            if (frame && frame.contentWindow) {
+                postRobot.send(frame.contentWindow, 'updated', buildPropsWithCallbacks())
+                    .catch(function (err) {
+                        console.warn('[PluginHost] "updated" send failed:', err);
+                    });
+            }
+        };
+    })();
+    </script>
+</body>
+</html>
