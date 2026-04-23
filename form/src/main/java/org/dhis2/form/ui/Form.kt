@@ -36,7 +36,9 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FormSection
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.plugin.FieldMetadata
 import org.dhis2.form.ui.plugin.PluginDemo
+import org.dhis2.form.ui.plugin.PluginProps
 import org.dhis2.form.ui.plugin.PluginWebViewHost
 import org.dhis2.form.ui.provider.inputfield.FieldProvider
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
@@ -102,13 +104,23 @@ fun Form(
                 PluginWebViewHost(
                     pluginId = PluginDemo.PLUGIN_ID,
                     pluginVersion = PluginDemo.PLUGIN_VERSION,
-                    props = PluginDemo.mockProps(),
-                    onSetFieldValue = { /* Phase D: intentHandler(FormIntent.OnSave(...)) */ },
+                    props = realPluginProps(sections),
+                    onSetFieldValue = { params ->
+                        val field = sections.flatMap { it.fields }
+                            .firstOrNull { it.uid == params.fieldId }
+                        intentHandler(
+                            FormIntent.OnSave(
+                                uid = params.fieldId,
+                                value = params.value?.toString(),
+                                valueType = field?.valueType,
+                            ),
+                        )
+                    },
                     onSetContextFieldValue = { /* Phase D */ },
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .height(Spacing.Spacing200),
+                            .height(Spacing.Spacing104),
                 )
             }
         }
@@ -185,6 +197,37 @@ fun Form(
     if (shouldDisplayNoFieldsWarning(sections)) {
         NoFieldsWarning()
     }
+}
+
+fun realPluginProps(sections: List<FormSection>): PluginProps {
+    val allFields = sections.flatMap { it.fields }
+    return PluginProps(
+        values = allFields.associate { it.uid to it.value },
+        errors = allFields.filter { it.error != null }
+            .associate { it.uid to listOf(it.error!!) },
+        warnings = allFields.filter { it.warning != null }
+            .associate { it.uid to listOf(it.warning!!) },
+        formSubmitted = false,
+        fieldsMetadata = allFields.associate { f ->
+            f.uid to FieldMetadata(
+                id = f.uid,
+                name = f.label,
+                formName = f.label,
+                type = f.valueType?.name ?: "TEXT",
+                compulsory = f.mandatory,
+                disabled = !f.editable,
+                shortName = f.label,
+                description = f.description,
+                optionSet = f.optionSet,
+                displayInForms = true,
+                displayInReports = true,
+                icon = null,
+                unique = null,
+                searchable = true,
+                url = null,
+            )
+        },
+    )
 }
 
 private fun manageOnNextEvent(
