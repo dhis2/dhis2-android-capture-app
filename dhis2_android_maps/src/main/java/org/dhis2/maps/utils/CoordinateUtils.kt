@@ -42,9 +42,13 @@ object CoordinateUtils {
             is Polygon -> {
                 val value =
                     geometry.coordinates().map { polygon ->
-                        polygon.map { point ->
+                        val polygonCoordinates = polygon.map { point ->
                             point.coordinates().map { coordinate -> coordinate.truncate() }
+                        }.toMutableList()
+                        if (polygonCoordinates.first() != polygonCoordinates.last()) {
+                            polygonCoordinates.add(polygonCoordinates.first())
                         }
+                        polygonCoordinates
                     }
                 Gson().toJson(value)
             }
