@@ -35,7 +35,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputLink
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLongText
 import org.hisp.dhis.mobile.ui.designsystem.component.InputMultiSelection
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNegativeInteger
-import org.hisp.dhis.mobile.ui.designsystem.component.InputNotSupported
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputOrgUnit
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPercentage
@@ -756,14 +755,6 @@ fun TrackerInputProvider(
         TrackerInputType.MATRIX,
         TrackerInputType.SEQUENTIAL,
         TrackerInputType.NOT_SUPPORTED,
-        -> {
-            InputNotSupported(
-                modifier = modifierWithFocus.fillMaxWidth(),
-                title = inputModel.label,
-                inputStyle = inputStyle,
-            )
-        }
-
         TrackerInputType.COORDINATES,
         TrackerInputType.IMAGE,
         -> {
