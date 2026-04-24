@@ -40,6 +40,8 @@ import org.dhis2.usescases.main.ui.model.HomeAction
 import org.dhis2.usescases.main.ui.model.HomeEffect
 import org.dhis2.usescases.main.ui.model.HomeScreenState
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
+import org.dhis2.utils.getOnToolbarColor
+import org.dhis2.utils.getThemePrimaryColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Badge
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.TopBar
@@ -127,11 +129,13 @@ fun HomeTopBar(
     onSyncClicked: () -> Unit,
     onFilterClicked: () -> Unit,
 ) {
+    val primaryColor = getThemePrimaryColor()
+    val onToolbarColor = getOnToolbarColor()
     TopBar(
         navigationIcon = {
             TopBarActionIcon(
                 icon = Icons.Filled.Menu,
-                tint = MaterialTheme.colorScheme.onPrimary,
+                tint = onToolbarColor,
                 contentDescription = "menu",
                 onClick = onMenuClicked,
             )
@@ -144,7 +148,7 @@ fun HomeTopBar(
                         Icon(
                             imageVector = Icons.Filled.Sync,
                             contentDescription = "Sync",
-                            tint = MaterialTheme.colorScheme.onPrimary,
+                            tint = onToolbarColor,
                         )
                     },
                 )
@@ -160,8 +164,8 @@ fun HomeTopBar(
                                 if (screenState.activeFilters > 0) {
                                     Badge(
                                         text = "${screenState.activeFilters}",
-                                        color = MaterialTheme.colorScheme.onPrimary,
-                                        textColor = MaterialTheme.colorScheme.primary,
+                                        color = onToolbarColor,
+                                        textColor = primaryColor,
                                     )
                                 }
                             },
@@ -169,7 +173,7 @@ fun HomeTopBar(
                             Icon(
                                 painter = painterResource(R.drawable.ic_filter),
                                 contentDescription = "Filters",
-                                tint = MaterialTheme.colorScheme.onPrimary,
+                                tint = onToolbarColor,
                             )
                         }
                     },
@@ -187,7 +191,7 @@ fun HomeTopBar(
             }?.let { titleId ->
                 Text(
                     text = stringResource(titleId),
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = onToolbarColor,
                     style = MaterialTheme.typography.titleLarge,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -195,8 +199,8 @@ fun HomeTopBar(
             }
         },
         colors = TopAppBarDefaults.topAppBarColors().copy(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary,
+            containerColor = primaryColor,
+            titleContentColor = onToolbarColor,
         ),
     )
 }
