@@ -77,6 +77,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.dropShadow
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -93,6 +94,7 @@ fun LoginScreen(
 ) {
     val context = LocalPlatformContext.current
     val viewModel = koinViewModel<LoginViewModel> { parametersOf(context) }
+    val fixedOidcInfo = koinInject<OidcInfo>()
     var displayMoreActions by remember { mutableStateOf(false) }
     var displayBackArrow by remember { mutableStateOf(false) }
     val snackBarHostState = remember { SnackbarHostState() }
@@ -212,7 +214,7 @@ fun LoginScreen(
                         selectedServerFlag = arg.selectedServerFlag,
                         allowRecovery = arg.allowRecovery,
                         oidcInfo =
-                            fixedOpenIdProvider()?.takeIf { info ->
+                            fixedOpenIdProvider(fixedOidcInfo).takeIf { info ->
                                 info.serverUrl == arg.selectedServer
                             },
                         fromHome = fromHome,
@@ -249,14 +251,12 @@ fun LoginScreen(
 
 /**
  * OpenId Configuration
- * Return either OidcInfo.Token or OidcInfo.Discovery classes to configure the login screen.
- * Don't forget to add the RedirectUriReceiverActivity in the android manifest. Check the
- * documentation for more info.
+ * Returns oidcInfo setup by environment variables, if you want to configure manually,
+ * replace it by either OidcInfo.Token or OidcInfo.Discovery classes.
+ * Don't forget to add the auth scheme in RedirectUriReceiverActivity in the android manifest.
+ * Check the documentation for more info.
  * */
-private fun fixedOpenIdProvider(): OidcInfo? {
-    // Change to the correct provider
-    return null
-}
+private fun fixedOpenIdProvider(oidcInfo: OidcInfo): OidcInfo = oidcInfo
 
 @Composable
 fun LoginTopBar(
