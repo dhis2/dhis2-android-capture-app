@@ -10,7 +10,7 @@ class NoteDetailRepositoryImpl(
     private val d2: D2,
     private val programUid: String,
 ) : NoteDetailRepository {
-    override fun getNote(noteId: String): Single<Note?> =
+    override fun getNote(noteId: String): Single<Note> =
         d2
             .noteModule()
             .notes()
