@@ -12,6 +12,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.BehaviorProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.Constants
 import org.dhis2.commons.bindings.canCreateEventInEnrollment
 import org.dhis2.commons.bindings.enrollment
@@ -484,7 +485,9 @@ class TEIDataPresenter(
             if (orgUnits.count() == 1) {
                 onNewEventSelected(orgUnits.first().uid(), programStageUid)
             } else {
-                view.displayOrgUnitSelectorForNewEvent(programUid, programStageUid)
+                withContext(dispatcher.ui()) {
+                    view.displayOrgUnitSelectorForNewEvent(programUid, programStageUid)
+                }
             }
         }
     }
@@ -502,14 +505,18 @@ class TEIDataPresenter(
                     enrollmentUid = enrollmentUid,
                 ).fold(
                     onSuccess = { eventUid ->
-                        view.goToEventDetails(
-                            eventUid = eventUid,
-                            eventMode = EventMode.NEW,
-                            programUid = it,
-                        )
+                        withContext(dispatcher.ui()) {
+                            view.goToEventDetails(
+                                eventUid = eventUid,
+                                eventMode = EventMode.NEW,
+                                programUid = it,
+                            )
+                        }
                     },
                     onFailure = { d2Error ->
-                        view.displayMessage(d2ErrorUtils.getErrorMessage(d2Error))
+                        withContext(dispatcher.ui()) {
+                            view.displayMessage(d2ErrorUtils.getErrorMessage(d2Error))
+                        }
                     },
                 )
             }
