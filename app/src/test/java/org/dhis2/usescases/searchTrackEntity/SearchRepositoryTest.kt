@@ -290,7 +290,7 @@ class SearchRepositoryTest {
         ) doReturn enrollmentsForInfoToReturn
 
         val programUid =
-            if (enrollmentsForInfoToReturn.isNotEmpty()) enrollmentsForInfoToReturn[0].program() else "programUid"
+            if (enrollmentsForInfoToReturn.isNotEmpty()) enrollmentsForInfoToReturn[0].program()!! else "programUid"
         whenever(d2.programModule().programs()) doReturn programCollectionRepository
         whenever(
             programCollectionRepository.uid(any()),
