@@ -669,6 +669,8 @@ class ChartsRepositoryTest {
                     ProgramIndicator
                         .builder()
                         .uid("indicator_1")
+                        .attributeCombo(ObjectWithUid.create("defaultCC"))
+                        .categoryCombo(ObjectWithUid.create("defaultCC"))
                         .build(),
                 )
         }

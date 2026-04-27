@@ -8,6 +8,10 @@ import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.repositories.filters.internal.BooleanFilterConnector
+import org.hisp.dhis.android.core.category.CategoryCombo
+import org.hisp.dhis.android.core.category.CategoryComboCollectionRepository
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.period.PeriodType
@@ -34,6 +38,7 @@ class TrackerAnalyticsRepositoryTest {
 
     @Before
     fun setUp() {
+        stubDefaultCategoryComboChain()
         whenever(
             d2
                 .enrollmentModule()
@@ -520,11 +525,15 @@ class TrackerAnalyticsRepositoryTest {
                 .builder()
                 .uid("programIndicatorUid_1")
                 .displayInForm(true)
+                .attributeCombo(ObjectWithUid.create("defaultCC"))
+                .categoryCombo(ObjectWithUid.create("defaultCC"))
                 .build(),
             ProgramIndicator
                 .builder()
                 .uid("programIndicatorUid_2")
                 .displayInForm(false)
+                .attributeCombo(ObjectWithUid.create("defaultCC"))
+                .categoryCombo(ObjectWithUid.create("defaultCC"))
                 .build(),
         )
 
@@ -573,4 +582,14 @@ class TrackerAnalyticsRepositoryTest {
                 10,
             ),
         )
+
+    private fun stubDefaultCategoryComboChain() {
+        val booleanFilter: BooleanFilterConnector<CategoryComboCollectionRepository> = mock()
+        val categoryCombosRepo: CategoryComboCollectionRepository = mock {
+            on { byIsDefault() } doReturn booleanFilter
+            on { blockingGet() } doReturn listOf(CategoryCombo.builder().uid("defaultCC").build())
+        }
+        doReturn(categoryCombosRepo).whenever(booleanFilter).eq(true)
+        whenever(d2.categoryModule().categoryCombos()) doReturn categoryCombosRepo
+    }
 }
