@@ -48,6 +48,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputText
 import org.hisp.dhis.mobile.ui.designsystem.component.InputUnitInterval
 import org.hisp.dhis.mobile.ui.designsystem.component.InputYesOnlyCheckBox
 import org.hisp.dhis.mobile.ui.designsystem.component.InputYesOnlySwitch
+import org.hisp.dhis.mobile.ui.designsystem.component.model.RegExValidations
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -58,11 +59,15 @@ fun TrackerInputProvider(
     onNextClicked: () -> Unit,
     onUiEvent: (TrackerInputUiEvent) -> Unit,
 ) {
+    var savedTextSelection by remember(inputModel.uid) {
+        mutableStateOf(TextRange(inputModel.value?.length ?: 0))
+    }
+
     var textValue by remember(inputModel.uid, inputModel.value) {
         mutableStateOf(
             TextFieldValue(
                 text = inputModel.value ?: "",
-                selection = TextRange(inputModel.value?.length ?: 0),
+                selection = savedTextSelection,
             ),
         )
     }
@@ -74,6 +79,16 @@ fun TrackerInputProvider(
         if (inputModel.focused) {
             focusRequester.requestFocus()
         }
+    }
+
+    val onTextValueChanged: (TextFieldValue?) -> Unit = { newValue ->
+        textValue = newValue ?: TextFieldValue()
+        savedTextSelection = newValue?.selection ?: TextRange.Zero
+        manageOnValueChange(
+            newValue = newValue?.text,
+            inputModel = inputModel,
+            onUiEvent = onUiEvent,
+        )
     }
 
     val onImeActionClick: (ImeAction) -> Unit = { imeAction ->
@@ -93,13 +108,7 @@ fun TrackerInputProvider(
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
-                onValueChanged = { newValue ->
-                    manageOnValueChange(
-                        newValue = newValue?.text,
-                        inputModel = inputModel,
-                        onUiEvent = onUiEvent,
-                    )
-                },
+                onValueChanged = onTextValueChanged,
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
                 onFocusChanged = { isFocused ->
@@ -122,13 +131,7 @@ fun TrackerInputProvider(
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
-                onValueChanged = { newValue ->
-                    manageOnValueChange(
-                        newValue = newValue?.text,
-                        inputModel = inputModel,
-                        onUiEvent = onUiEvent,
-                    )
-                },
+                onValueChanged = onTextValueChanged,
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
                 onFocusChanged = { isFocused ->
@@ -151,13 +154,7 @@ fun TrackerInputProvider(
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
-                onValueChanged = { newValue ->
-                    manageOnValueChange(
-                        newValue = newValue?.text,
-                        inputModel = inputModel,
-                        onUiEvent = onUiEvent,
-                    )
-                },
+                onValueChanged = onTextValueChanged,
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
                 onFocusChanged = { isFocused ->
@@ -181,13 +178,7 @@ fun TrackerInputProvider(
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onEmailActionCLicked = {},
-                onValueChanged = { newValue ->
-                    manageOnValueChange(
-                        newValue = newValue?.text,
-                        inputModel = inputModel,
-                        onUiEvent = onUiEvent,
-                    )
-                },
+                onValueChanged = onTextValueChanged,
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
                 onFocusChanged = { isFocused ->
@@ -211,13 +202,7 @@ fun TrackerInputProvider(
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onCallActionClicked = {},
-                onValueChanged = { newValue ->
-                    manageOnValueChange(
-                        newValue = newValue?.text,
-                        inputModel = inputModel,
-                        onUiEvent = onUiEvent,
-                    )
-                },
+                onValueChanged = onTextValueChanged,
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
                 onFocusChanged = { isFocused ->
@@ -241,13 +226,7 @@ fun TrackerInputProvider(
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onLinkActionCLicked = {},
-                onValueChanged = { newValue ->
-                    manageOnValueChange(
-                        newValue = newValue?.text,
-                        inputModel = inputModel,
-                        onUiEvent = onUiEvent,
-                    )
-                },
+                onValueChanged = onTextValueChanged,
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
                 onFocusChanged = { isFocused ->
@@ -270,13 +249,8 @@ fun TrackerInputProvider(
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
-                onValueChanged = { newValue ->
-                    manageOnValueChange(
-                        newValue = newValue?.text,
-                        inputModel = inputModel,
-                        onUiEvent = onUiEvent,
-                    )
-                },
+                onValueChanged = onTextValueChanged,
+                notation = RegExValidations.BRITISH_DECIMAL_NOTATION,
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
                 onFocusChanged = { isFocused ->
@@ -299,13 +273,7 @@ fun TrackerInputProvider(
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
-                onValueChanged = { newValue ->
-                    manageOnValueChange(
-                        newValue = newValue?.text,
-                        inputModel = inputModel,
-                        onUiEvent = onUiEvent,
-                    )
-                },
+                onValueChanged = onTextValueChanged,
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
                 onFocusChanged = { isFocused ->
@@ -328,13 +296,7 @@ fun TrackerInputProvider(
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
-                onValueChanged = { newValue ->
-                    manageOnValueChange(
-                        newValue = newValue?.text,
-                        inputModel = inputModel,
-                        onUiEvent = onUiEvent,
-                    )
-                },
+                onValueChanged = onTextValueChanged,
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
                 onFocusChanged = { isFocused ->
@@ -357,13 +319,7 @@ fun TrackerInputProvider(
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
-                onValueChanged = { newValue ->
-                    manageOnValueChange(
-                        newValue = newValue?.text,
-                        inputModel = inputModel,
-                        onUiEvent = onUiEvent,
-                    )
-                },
+                onValueChanged = onTextValueChanged,
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
                 onFocusChanged = { isFocused ->
@@ -386,13 +342,7 @@ fun TrackerInputProvider(
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
-                onValueChanged = { newValue ->
-                    manageOnValueChange(
-                        newValue = newValue?.text,
-                        inputModel = inputModel,
-                        onUiEvent = onUiEvent,
-                    )
-                },
+                onValueChanged = onTextValueChanged,
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
                 onFocusChanged = { isFocused ->
@@ -415,13 +365,7 @@ fun TrackerInputProvider(
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
-                onValueChanged = { newValue ->
-                    manageOnValueChange(
-                        newValue = newValue?.text,
-                        inputModel = inputModel,
-                        onUiEvent = onUiEvent,
-                    )
-                },
+                onValueChanged = onTextValueChanged,
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
                 onFocusChanged = { isFocused ->
@@ -444,13 +388,7 @@ fun TrackerInputProvider(
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
-                onValueChanged = { newValue ->
-                    manageOnValueChange(
-                        newValue = newValue?.text,
-                        inputModel = inputModel,
-                        onUiEvent = onUiEvent,
-                    )
-                },
+                onValueChanged = onTextValueChanged,
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
             )
@@ -591,13 +529,7 @@ fun TrackerInputProvider(
                         ),
                     )
                 },
-                onValueChanged = { newValue ->
-                    manageOnValueChange(
-                        newValue = newValue?.text,
-                        inputModel = inputModel,
-                        onUiEvent = onUiEvent,
-                    )
-                },
+                onValueChanged = onTextValueChanged,
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
             )
@@ -622,13 +554,7 @@ fun TrackerInputProvider(
                         ),
                     )
                 },
-                onValueChanged = { newValue ->
-                    manageOnValueChange(
-                        newValue = newValue?.text,
-                        inputModel = inputModel,
-                        onUiEvent = onUiEvent,
-                    )
-                },
+                onValueChanged = onTextValueChanged,
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
             )

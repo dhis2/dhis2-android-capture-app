@@ -14,9 +14,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
@@ -58,12 +60,10 @@ class ProgramEventDetailViewModel(
     private val _backdropActive = MutableLiveData<Boolean>()
     val backdropActive: LiveData<Boolean> get() = _backdropActive
 
-    private val _shouldNavigateToEventDetails: MutableSharedFlow<String> =
-        MutableSharedFlow(
-            replay = Int.MAX_VALUE,
-        )
-    val shouldNavigateToEventDetails: SharedFlow<String>
-        get() = _shouldNavigateToEventDetails
+    private val _shouldNavigateToEventDetails = Channel<String>()
+
+    val shouldNavigateToEventDetails: Flow<String>
+        get() = _shouldNavigateToEventDetails.receiveAsFlow()
 
     private val _navigationBarUIState = mutableStateOf(NavigationBarUIState<NavigationPage>())
     val navigationBarUIState: State<NavigationBarUIState<NavigationPage>> = _navigationBarUIState
@@ -172,7 +172,7 @@ class ProgramEventDetailViewModel(
                 programStageUid = programStageUid,
                 enrollmentUid = null,
             ).getOrNull()?.let { eventUid ->
-                _shouldNavigateToEventDetails.emit(eventUid)
+                _shouldNavigateToEventDetails.send(eventUid)
             }
         }
     }

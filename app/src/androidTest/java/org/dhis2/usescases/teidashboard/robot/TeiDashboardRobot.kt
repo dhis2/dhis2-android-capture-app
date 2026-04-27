@@ -59,6 +59,9 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             )
         ).performClick()
         waitForView(withId(R.id.addNoteButton))
+        // Wait for notes RecyclerView to be ready after navigation
+        waitForView(withId(R.id.notes_recycler), waitMillis = 10000)
+        composeTestRule.waitForIdle()
     }
 
     fun goToRelationships() {
