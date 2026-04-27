@@ -113,7 +113,6 @@ class SearchTETest : BaseTest() {
 
     @Test
     fun shouldFollowTBProgramSearchFlow() {
-        // Mock the online search to return empty results (only local DB results shown)
         mockWebServerRobot.addResponse(
             ResponseController.GET,
             API_TRACKED_ENTITY_PATH,
@@ -125,8 +124,7 @@ class SearchTETest : BaseTest() {
         searchTeiRobot(composeTestRule) {
             waitUntilActivityVisible<SearchTEActivity>()
 
-            // ANDROAPP-5971: Search/Add new [TET] button is visible and enabled
-            // Verify the button is displayed and enabled before opening search
+            // ANDROAPP-5971: Verify the button is displayed and enabled before opening search
             checkAddNewTEIButtonIsDisplayedAndEnabled()
 
             // Open the search parameters panel
@@ -144,7 +142,7 @@ class SearchTETest : BaseTest() {
             // Enter a value to enable the search button (Part A entry)
             typeOnSearchParameter(TB_SEARCH_ATTR_CITY, TB_SEARCH_CITY_SHORT)
 
-            // [Part A] ANDROAPP-5862: Search button is now enabled
+            // ANDROAPP-5862: Search button is now enabled
             checkSearchButtonIsEnabled()
 
             // Re-enter a short value (1 char) to enable the button
@@ -157,7 +155,6 @@ class SearchTETest : BaseTest() {
             clickOnSearch()
 
             // ANDROAPP-7489/7490 & ANDROAPP-1056/7491:
-            // Error is displayed because value is below the minimum character requirement
             checkMinCharactersErrorIsDisplayed(
                 TB_SEARCH_ATTR_CITY,
                 TB_SEARCH_ATTR_STATE,

@@ -260,14 +260,18 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     @OptIn(ExperimentalTestApi::class)
     fun typeOnSearchParameter(label: String, value: String) {
+        // Dismiss the keyboard first so the LazyColumn recomposes and exposes all field labels.
+        // Without this, items scrolled behind an open keyboard are dropped from composition and
+        // waitUntilAtLeastOneExists(hasText(label)) times out on the next field.
+        // We do NOT close the keyboard at the end: keeping focus on the typed field lets
+        // checkFocusedFieldShowsOperatorSupportingText() read its supporting text.
+        // Any focus jump caused by the IMM dismiss is immediately overridden by clicking the label.
+        closeKeyboard()
         composeTestRule.waitForIdle()
-
         composeTestRule.waitUntilAtLeastOneExists(hasText(label), TIMEOUT)
         composeTestRule.onNodeWithText(label).performClick()
         composeTestRule.waitUntilAtLeastOneExists(hasTestTag("INPUT_TEXT_FIELD"), TIMEOUT)
         composeTestRule.onAllNodesWithTag("INPUT_TEXT_FIELD").onLast().performTextInput(value)
-        // Close keyboard after typing to reveal fields that might be hidden behind it
-        closeKeyboard()
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -278,14 +282,18 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             .onAllNodesWithTag("INPUT_TEXT_RESET_BUTTON", useUnmergedTree = true)
             .fetchSemanticsNodes().size
         repeat(count) {
-            closeKeyboard()
             composeTestRule.waitForIdle()
             composeTestRule
                 .onAllNodesWithTag("INPUT_TEXT_RESET_BUTTON", useUnmergedTree = true)[0]
+                .performScrollTo()
                 .performClick()
+            // Use hardware back press to dismiss the keyboard that appears after clicking X.
+            // Unlike closeKeyboard() (IMM-based), the back key is consumed by the keyboard
+            // itself before reaching Compose, so focus does not jump to the first focusable
+            // item (Unique ID) in the LazyColumn.
+            pressBack()
+            composeTestRule.waitForIdle()
         }
-        closeKeyboard()
-        composeTestRule.waitForIdle()
     }
 
 
