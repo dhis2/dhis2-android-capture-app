@@ -34,20 +34,22 @@ internal actual val accountModule =
                 "token" ->
                     OidcInfo.Token(
                         server = getProperty("openIdServer", ""),
-                        loginLabel = getProperty("openIdButtonText", ""),
+                        loginLabel = getPropertyOrNull("openIdButtonText"),
                         clientId = getProperty("openIdClient", ""),
                         redirectUri = getProperty("openIdRedirectUri", ""),
                         authorizationUrl = getProperty("openIdAuthorizationUrl", ""),
                         tokenUrl = getProperty("openIdTokenUrl", ""),
+                        prompt = getPropertyOrNull<String>("openIdPrompt")?.takeIf { it.isNotEmpty() },
                     )
 
                 else ->
                     OidcInfo.Discovery(
                         server = getProperty("openIdServer", ""),
-                        loginButtonText = getProperty("openIdButtonText", ""),
+                        loginButtonText = getPropertyOrNull("openIdButtonText"),
                         clientId = getProperty("openIdClient", ""),
                         redirectUri = getProperty("openIdRedirectUri", ""),
                         discoveryUri = getProperty("openIdDiscoveryUri", ""),
+                        prompt = getPropertyOrNull<String>("openIdPrompt")?.takeIf { it.isNotEmpty() },
                     )
             }
         }
