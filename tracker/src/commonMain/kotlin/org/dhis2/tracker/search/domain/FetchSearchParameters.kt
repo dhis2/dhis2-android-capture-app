@@ -17,6 +17,11 @@ class FetchSearchParameters(
         listOf(
             TrackerInputType.IMAGE,
             TrackerInputType.COORDINATES,
+            TrackerInputType.LETTER,
+            TrackerInputType.UNIT_INTERVAL,
+            TrackerInputType.COORDINATES,
+            TrackerInputType.URL,
+            TrackerInputType.NOT_SUPPORTED,
         )
 
     override suspend fun invoke(input: FetchSearchParametersData): Result<List<SearchParameterModel>> =
