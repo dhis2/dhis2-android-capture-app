@@ -27,9 +27,6 @@ abstract class BaseIndicatorRepository(
     open val programUid: String,
     open val resourceManager: ResourceManager,
 ) : IndicatorRepository {
-    private val defaultCategoryCombo =
-        d2.categoryModule().categoryCombos().byIsDefault().eq(true).blockingGet().first()
-
     fun getIndicators(
         filter: Boolean = true,
         indicatorValueCalculator: (String) -> String,
@@ -106,6 +103,8 @@ abstract class BaseIndicatorRepository(
 
     private fun applyRuleEffectForIndicators(calcResult: Result<List<RuleEffect>>): List<IndicatorModel> {
         val indicators = arrayListOf<IndicatorModel>()
+        val defaultCategoryCombo =
+            d2.categoryModule().categoryCombos().byIsDefault().eq(true).blockingGet().first()
 
         if (calcResult.isFailure) {
             Timber.e(calcResult.exceptionOrNull())
