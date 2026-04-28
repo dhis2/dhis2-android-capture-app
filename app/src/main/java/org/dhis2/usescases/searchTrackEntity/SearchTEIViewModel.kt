@@ -18,6 +18,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
@@ -77,6 +78,7 @@ import timber.log.Timber
 
 const val TEI_TYPE_SEARCH_MAX_RESULTS = 5
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SearchTEIViewModel(
     val initialProgramUid: String?,
     initialQuery: MutableMap<String, List<String>?>?,
@@ -677,6 +679,7 @@ class SearchTEIViewModel(
 
     private fun performSearch() {
         viewModelScope.launch(dispatchers.io()) {
+            CoroutineTracker.increment()
             try {
                 if (canPerformSearch()) {
                     searching = queryDataList.isNotEmpty()
@@ -720,6 +723,8 @@ class SearchTEIViewModel(
                 }
             } catch (e: Exception) {
                 Timber.d(e)
+            } finally {
+                CoroutineTracker.decrement()
             }
         }
     }
