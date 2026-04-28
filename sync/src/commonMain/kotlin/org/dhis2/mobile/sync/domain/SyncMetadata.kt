@@ -63,7 +63,9 @@ class SyncMetadata(
             }
 
             metadataSyncPeriodChanged -> {
-                syncBackgroundJobAction.launchMetadataSync(finalMetadataSyncPeriod?.toSeconds() ?: 0L)
+                syncBackgroundJobAction.launchMetadataSync(
+                    finalMetadataSyncPeriod?.toSeconds() ?: SyncPeriod.Every7Days.toSeconds(),
+                )
             }
         }
     }
@@ -82,7 +84,9 @@ class SyncMetadata(
             }
 
             dataSyncPeriodChanged -> {
-                syncBackgroundJobAction.launchDataSync(finalDataSyncPeriod?.toSeconds() ?: 0)
+                syncBackgroundJobAction.launchDataSync(
+                    finalDataSyncPeriod?.toSeconds() ?: SyncPeriod.Every24Hour.toSeconds(),
+                )
             }
         }
     }
