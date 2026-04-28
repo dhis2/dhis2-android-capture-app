@@ -12,7 +12,7 @@ class LoginUser(
         password: String,
         isNetworkAvailable: Boolean,
     ): LoginResult {
-        val result = repository.loginUser(serverUrl, username, password, isNetworkAvailable)
+        val result = repository.loginUser(serverUrl, username.trim(), password, isNetworkAvailable)
         return handleResult(result, serverUrl, username)
     }
 }
