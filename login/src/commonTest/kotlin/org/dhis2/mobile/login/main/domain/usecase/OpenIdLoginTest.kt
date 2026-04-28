@@ -3,6 +3,7 @@ package org.dhis2.mobile.login.main.domain.usecase
 import kotlinx.coroutines.test.runTest
 import org.dhis2.mobile.login.main.data.LoginRepository
 import org.dhis2.mobile.login.main.domain.model.LoginResult
+import org.dhis2.mobile.login.main.domain.model.OpenIdLoginConfiguration
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -26,6 +27,20 @@ class OpenIdLoginTest {
     private val authorizationUri = "https://test.server.org/oauth/authorize"
     private val tokenUrl = "https://test.server.org/oauth/token"
     private val username = "openIdUser"
+    private val prompt = "select_account"
+
+    private val defaultConfig
+        get() =
+            OpenIdLoginConfiguration(
+                serverUrl = serverUrl,
+                isNetworkAvailable = isNetworkAvailable,
+                clientId = clientId,
+                redirectUri = redirectUri,
+                discoveryUri = discoveryUri,
+                authorizationUri = authorizationUri,
+                tokenUrl = tokenUrl,
+                prompt = prompt,
+            )
 
     @Before
     fun setUp() {
@@ -36,33 +51,14 @@ class OpenIdLoginTest {
     fun `GIVEN successful OpenID login with no existing accounts WHEN user logs in THEN biometric credentials are NOT deleted`() =
         runTest {
             // GIVEN - User has no other accounts (numberOfAccounts = 0)
-            whenever(
-                repository.loginWithOpenId(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                ),
-            ) doReturn Result.success(Unit)
+            whenever(repository.loginWithOpenId(defaultConfig)) doReturn Result.success(Unit)
             whenever(repository.getUsername()) doReturn username
             whenever(repository.numberOfAccounts()) doReturn 0
             whenever(repository.displayTrackingMessage()) doReturn false
             whenever(repository.initialSyncDone(serverUrl, username)) doReturn true
 
             // WHEN - User logs in successfully with OpenID
-            val result =
-                openIdLogin(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                )
+            val result = openIdLogin(defaultConfig)
 
             // THEN - Login is successful
             assertIs<LoginResult.Success>(result)
@@ -78,33 +74,14 @@ class OpenIdLoginTest {
     fun `GIVEN successful OpenID login with multiple existing accounts WHEN user logs in THEN biometric credentials are deleted`() =
         runTest {
             // GIVEN - User has multiple existing accounts (numberOfAccounts = 3)
-            whenever(
-                repository.loginWithOpenId(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                ),
-            ) doReturn Result.success(Unit)
+            whenever(repository.loginWithOpenId(defaultConfig)) doReturn Result.success(Unit)
             whenever(repository.getUsername()) doReturn username
             whenever(repository.numberOfAccounts()) doReturn 3
             whenever(repository.displayTrackingMessage()) doReturn false
             whenever(repository.initialSyncDone(serverUrl, username)) doReturn true
 
             // WHEN - User logs in successfully with OpenID
-            val result =
-                openIdLogin(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                )
+            val result = openIdLogin(defaultConfig)
 
             // THEN - Login is successful and biometric credentials are deleted
             assertIs<LoginResult.Success>(result)
@@ -120,29 +97,10 @@ class OpenIdLoginTest {
         runTest {
             // GIVEN - OpenID login will fail
             val errorMessage = "OpenID authentication failed"
-            whenever(
-                repository.loginWithOpenId(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                ),
-            ) doReturn Result.failure(Exception(errorMessage))
+            whenever(repository.loginWithOpenId(defaultConfig)) doReturn Result.failure(Exception(errorMessage))
 
             // WHEN - User attempts to log in with OpenID
-            val result =
-                openIdLogin(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                )
+            val result = openIdLogin(defaultConfig)
 
             // THEN - Login fails and biometric credentials are NOT deleted
             assertIs<LoginResult.Error>(result)
@@ -159,44 +117,18 @@ class OpenIdLoginTest {
     fun `GIVEN successful OpenID login WHEN repository operations are executed THEN they are called in correct order`() =
         runTest {
             // GIVEN
-            whenever(
-                repository.loginWithOpenId(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                ),
-            ) doReturn Result.success(Unit)
+            whenever(repository.loginWithOpenId(defaultConfig)) doReturn Result.success(Unit)
             whenever(repository.getUsername()) doReturn username
             whenever(repository.numberOfAccounts()) doReturn 2
             whenever(repository.displayTrackingMessage()) doReturn false
             whenever(repository.initialSyncDone(serverUrl, username)) doReturn true
 
             // WHEN
-            openIdLogin(
-                serverUrl = serverUrl,
-                isNetworkAvailable = isNetworkAvailable,
-                clientId = clientId,
-                redirectUri = redirectUri,
-                discoveryUri = discoveryUri,
-                authorizationUri = authorizationUri,
-                tokenUrl = tokenUrl,
-            )
+            openIdLogin(defaultConfig)
 
             // THEN - Verify the order of operations
             val inOrder = org.mockito.kotlin.inOrder(repository)
-            inOrder.verify(repository).loginWithOpenId(
-                serverUrl = serverUrl,
-                isNetworkAvailable = isNetworkAvailable,
-                clientId = clientId,
-                redirectUri = redirectUri,
-                discoveryUri = discoveryUri,
-                authorizationUri = authorizationUri,
-                tokenUrl = tokenUrl,
-            )
+            inOrder.verify(repository).loginWithOpenId(defaultConfig)
             inOrder.verify(repository).getUsername()
             inOrder.verify(repository).unlockSession()
             inOrder.verify(repository).updateAvailableUsers(username)
@@ -212,78 +144,33 @@ class OpenIdLoginTest {
         runTest {
             // GIVEN - Network is unavailable
             val isOffline = false
-            whenever(
-                repository.loginWithOpenId(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isOffline,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                ),
-            ) doReturn Result.success(Unit)
+            val offlineConfig = defaultConfig.copy(isNetworkAvailable = isOffline)
+            whenever(repository.loginWithOpenId(offlineConfig)) doReturn Result.success(Unit)
             whenever(repository.getUsername()) doReturn username
             whenever(repository.numberOfAccounts()) doReturn 0
             whenever(repository.displayTrackingMessage()) doReturn false
             whenever(repository.initialSyncDone(serverUrl, username)) doReturn true
 
             // WHEN - User attempts to log in offline
-            val result =
-                openIdLogin(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isOffline,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                )
+            val result = openIdLogin(offlineConfig)
 
             // THEN - Login is successful with offline flag
             assertIs<LoginResult.Success>(result)
-            verify(repository).loginWithOpenId(
-                serverUrl = serverUrl,
-                isNetworkAvailable = isOffline,
-                clientId = clientId,
-                redirectUri = redirectUri,
-                discoveryUri = discoveryUri,
-                authorizationUri = authorizationUri,
-                tokenUrl = tokenUrl,
-            )
+            verify(repository).loginWithOpenId(offlineConfig)
         }
 
     @Test
     fun `GIVEN all success flags are true WHEN OpenID login succeeds THEN all flags are reflected in result`() =
         runTest {
             // GIVEN - Both tracking message and initial sync are required
-            whenever(
-                repository.loginWithOpenId(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                ),
-            ) doReturn Result.success(Unit)
+            whenever(repository.loginWithOpenId(defaultConfig)) doReturn Result.success(Unit)
             whenever(repository.getUsername()) doReturn username
             whenever(repository.numberOfAccounts()) doReturn 0
             whenever(repository.displayTrackingMessage()) doReturn true
             whenever(repository.initialSyncDone(serverUrl, username)) doReturn true
 
             // WHEN - User logs in successfully
-            val result =
-                openIdLogin(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                )
+            val result = openIdLogin(defaultConfig)
 
             // THEN - Both flags are true
             assertIs<LoginResult.Success>(result)
@@ -295,33 +182,14 @@ class OpenIdLoginTest {
     fun `GIVEN all success flags are false WHEN OpenID login succeeds THEN all flags are false in result`() =
         runTest {
             // GIVEN - Neither tracking message nor initial sync are required
-            whenever(
-                repository.loginWithOpenId(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                ),
-            ) doReturn Result.success(Unit)
+            whenever(repository.loginWithOpenId(defaultConfig)) doReturn Result.success(Unit)
             whenever(repository.getUsername()) doReturn username
             whenever(repository.numberOfAccounts()) doReturn 0
             whenever(repository.displayTrackingMessage()) doReturn false
             whenever(repository.initialSyncDone(serverUrl, username)) doReturn false
 
             // WHEN - User logs in successfully
-            val result =
-                openIdLogin(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                )
+            val result = openIdLogin(defaultConfig)
 
             // THEN - Both flags are false
             assertIs<LoginResult.Success>(result)
@@ -334,45 +202,19 @@ class OpenIdLoginTest {
         runTest {
             // GIVEN - Custom app redirect URI
             val customRedirectUri = "myapp://oauth/callback"
-            whenever(
-                repository.loginWithOpenId(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = customRedirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                ),
-            ) doReturn Result.success(Unit)
+            val customConfig = defaultConfig.copy(redirectUri = customRedirectUri)
+            whenever(repository.loginWithOpenId(customConfig)) doReturn Result.success(Unit)
             whenever(repository.getUsername()) doReturn username
             whenever(repository.numberOfAccounts()) doReturn 0
             whenever(repository.displayTrackingMessage()) doReturn false
             whenever(repository.initialSyncDone(serverUrl, username)) doReturn true
 
             // WHEN - User logs in with custom redirect URI
-            val result =
-                openIdLogin(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = customRedirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                )
+            val result = openIdLogin(customConfig)
 
             // THEN - Login succeeds with custom redirect URI
             assertIs<LoginResult.Success>(result)
-            verify(repository).loginWithOpenId(
-                serverUrl = serverUrl,
-                isNetworkAvailable = isNetworkAvailable,
-                clientId = clientId,
-                redirectUri = customRedirectUri,
-                discoveryUri = discoveryUri,
-                authorizationUri = authorizationUri,
-                tokenUrl = tokenUrl,
-            )
+            verify(repository).loginWithOpenId(customConfig)
         }
 
     @Test
@@ -380,33 +222,15 @@ class OpenIdLoginTest {
         runTest {
             // GIVEN - Server URL with path
             val serverWithPath = "https://test.server.org/dhis"
-            whenever(
-                repository.loginWithOpenId(
-                    serverUrl = serverWithPath,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                ),
-            ) doReturn Result.success(Unit)
+            val configWithPath = defaultConfig.copy(serverUrl = serverWithPath)
+            whenever(repository.loginWithOpenId(configWithPath)) doReturn Result.success(Unit)
             whenever(repository.getUsername()) doReturn username
             whenever(repository.numberOfAccounts()) doReturn 0
             whenever(repository.displayTrackingMessage()) doReturn false
             whenever(repository.initialSyncDone(serverWithPath, username)) doReturn true
 
             // WHEN - User logs in with server URL containing path
-            val result =
-                openIdLogin(
-                    serverUrl = serverWithPath,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                )
+            val result = openIdLogin(configWithPath)
 
             // THEN - Server URL is passed correctly
             assertIs<LoginResult.Success>(result)
@@ -419,29 +243,10 @@ class OpenIdLoginTest {
         runTest {
             // GIVEN - Repository throws RuntimeException
             val runtimeError = "OpenID provider unavailable"
-            whenever(
-                repository.loginWithOpenId(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                ),
-            ) doReturn Result.failure(RuntimeException(runtimeError))
+            whenever(repository.loginWithOpenId(defaultConfig)) doReturn Result.failure(RuntimeException(runtimeError))
 
             // WHEN - User attempts to log in
-            val result =
-                openIdLogin(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                )
+            val result = openIdLogin(defaultConfig)
 
             // THEN - Error message is propagated
             assertIs<LoginResult.Error>(result)
@@ -452,32 +257,14 @@ class OpenIdLoginTest {
     fun `GIVEN successful OpenID login WHEN unlockSession is called THEN it is always executed`() =
         runTest {
             // GIVEN - Successful OpenID login
-            whenever(
-                repository.loginWithOpenId(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                ),
-            ) doReturn Result.success(Unit)
+            whenever(repository.loginWithOpenId(defaultConfig)) doReturn Result.success(Unit)
             whenever(repository.getUsername()) doReturn username
             whenever(repository.numberOfAccounts()) doReturn 0
             whenever(repository.displayTrackingMessage()) doReturn false
             whenever(repository.initialSyncDone(serverUrl, username)) doReturn true
 
             // WHEN - User logs in
-            openIdLogin(
-                serverUrl = serverUrl,
-                isNetworkAvailable = isNetworkAvailable,
-                clientId = clientId,
-                redirectUri = redirectUri,
-                discoveryUri = discoveryUri,
-                authorizationUri = authorizationUri,
-                tokenUrl = tokenUrl,
-            )
+            openIdLogin(defaultConfig)
 
             // THEN - Session is always unlocked on success
             verify(repository).unlockSession()
@@ -487,28 +274,10 @@ class OpenIdLoginTest {
     fun `GIVEN failed OpenID login WHEN unlockSession would be called THEN it is never executed`() =
         runTest {
             // GIVEN - Failed OpenID login
-            whenever(
-                repository.loginWithOpenId(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                ),
-            ) doReturn Result.failure(Exception("OpenID failed"))
+            whenever(repository.loginWithOpenId(defaultConfig)) doReturn Result.failure(Exception("OpenID failed"))
 
             // WHEN - User attempts to log in
-            openIdLogin(
-                serverUrl = serverUrl,
-                isNetworkAvailable = isNetworkAvailable,
-                clientId = clientId,
-                redirectUri = redirectUri,
-                discoveryUri = discoveryUri,
-                authorizationUri = authorizationUri,
-                tokenUrl = tokenUrl,
-            )
+            openIdLogin(defaultConfig)
 
             // THEN - Session is never unlocked on failure
             verify(repository, never()).unlockSession()
@@ -519,33 +288,14 @@ class OpenIdLoginTest {
         runTest {
             // GIVEN - Username contains special characters
             val specialUsername = "user@example.com"
-            whenever(
-                repository.loginWithOpenId(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                ),
-            ) doReturn Result.success(Unit)
+            whenever(repository.loginWithOpenId(defaultConfig)) doReturn Result.success(Unit)
             whenever(repository.getUsername()) doReturn specialUsername
             whenever(repository.numberOfAccounts()) doReturn 0
             whenever(repository.displayTrackingMessage()) doReturn false
             whenever(repository.initialSyncDone(serverUrl, specialUsername)) doReturn true
 
             // WHEN - User logs in successfully
-            val result =
-                openIdLogin(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                )
+            val result = openIdLogin(defaultConfig)
 
             // THEN - Special username is used correctly
             assertIs<LoginResult.Success>(result)
