@@ -56,14 +56,19 @@ class SyncMetadata(
         val metadataSyncPeriodChangedToManual =
             initialMetadataSyncPeriod !is SyncPeriod.Manual && finalMetadataSyncPeriod is SyncPeriod.Manual
 
+        val notScheduled =
+            syncBackgroundJobAction.getNextMetadataSync() == null && finalMetadataSyncPeriod !is SyncPeriod.Manual
+
         when {
             metadataSyncPeriodChangedToManual -> {
                 syncBackgroundJobAction.cancelMetadataSync()
                 syncBackgroundJobAction.launchSyncSettings()
             }
 
-            metadataSyncPeriodChanged -> {
-                syncBackgroundJobAction.launchMetadataSync(finalMetadataSyncPeriod?.toSeconds() ?: 0L)
+            metadataSyncPeriodChanged || notScheduled -> {
+                syncBackgroundJobAction.launchMetadataSync(
+                    finalMetadataSyncPeriod?.toSeconds() ?: SyncPeriod.Every7Days.toSeconds(),
+                )
             }
         }
     }
@@ -76,13 +81,18 @@ class SyncMetadata(
         val dataSyncPeriodChangedToManual =
             initialDataSyncPeriod !is SyncPeriod.Manual && finalDataSyncPeriod is SyncPeriod.Manual
 
+        val notScheduled =
+            syncBackgroundJobAction.getNextDataSync() == null && finalDataSyncPeriod !is SyncPeriod.Manual
+
         when {
             dataSyncPeriodChangedToManual -> {
                 syncBackgroundJobAction.cancelDataSync()
             }
 
-            dataSyncPeriodChanged -> {
-                syncBackgroundJobAction.launchDataSync(finalDataSyncPeriod?.toSeconds() ?: 0)
+            dataSyncPeriodChanged || notScheduled -> {
+                syncBackgroundJobAction.launchDataSync(
+                    finalDataSyncPeriod?.toSeconds() ?: SyncPeriod.Every24Hour.toSeconds(),
+                )
             }
         }
     }
