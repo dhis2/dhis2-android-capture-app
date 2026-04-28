@@ -25,7 +25,10 @@ interface SyncRepository {
 
     fun uploadEvent(eventUid: String): Observable<D2Progress>
 
-    fun downLoadEvent(eventUid: String): Observable<out D2Progress>
+    fun downLoadEvent(
+        eventUid: String,
+        programUid: String,
+    ): Observable<TrackerD2Progress>
 
     fun downloadEventFiles(eventUid: String): Observable<D2Progress>
 
