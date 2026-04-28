@@ -23,6 +23,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
+import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.bindings.EVERY_12_HOUR
 import org.dhis2.bindings.EVERY_24_HOUR
@@ -76,7 +77,12 @@ internal fun SyncDataSettingItem(
             }
 
             else -> {
-                provideDefaultInfoItems(dataSettings.dataSyncPeriod, dataSettings.lastDataSync, context)
+                provideDefaultInfoItems(
+                    dataSettings.dataSyncPeriod,
+                    dataSettings.lastDataSync,
+                    dataSettings.nextDataSync,
+                    context
+                )
             }
         }
 
@@ -95,13 +101,13 @@ internal fun SyncDataSettingItem(
             ) {
                 if (dataSettings.canEdit) {
                     var selectedItem by
-                        remember {
-                            mutableStateOf(
-                                DropdownItem(
-                                    label = syncPeriodLabel(dataSettings.dataSyncPeriod, context),
-                                ),
-                            )
-                        }
+                    remember {
+                        mutableStateOf(
+                            DropdownItem(
+                                label = syncPeriodLabel(dataSettings.dataSyncPeriod, context),
+                            ),
+                        )
+                    }
                     val dataSyncPeriods =
                         listOf(
                             stringResource(R.string.thirty_minutes),
@@ -173,19 +179,33 @@ internal fun SyncDataSettingItem(
 private fun provideDefaultInfoItems(
     dataSyncPeriod: Int,
     lastDataSync: String,
+    nextDataSync: String?,
     context: Context,
 ): List<AdditionalInfoItem> =
-    listOf(
-        AdditionalInfoItem(
-            key = stringResource(R.string.settings_sync_period_v2),
-            value = syncPeriodLabel(dataSyncPeriod, context),
-        ),
-        AdditionalInfoItem(
-            key = stringResource(R.string.last_data_sync),
-            value = lastDataSync,
-            color = TextColor.OnSurface,
-        ),
-    )
+    buildList {
+        add(
+            AdditionalInfoItem(
+                key = stringResource(R.string.settings_sync_period_v2),
+                value = syncPeriodLabel(dataSyncPeriod, context),
+            )
+        )
+        add(
+            AdditionalInfoItem(
+                key = stringResource(R.string.last_data_sync),
+                value = lastDataSync,
+                color = TextColor.OnSurface,
+            )
+        )
+        nextDataSync?.takeIf { BuildConfig.DEBUG }?.let {
+            add(
+                AdditionalInfoItem(
+                    key = "Next Sync On",
+                    value = nextDataSync,
+                    color = TextColor.OnSurface,
+                )
+            )
+        }
+    }
 
 @Composable
 private fun provideSyncErrorInfo(

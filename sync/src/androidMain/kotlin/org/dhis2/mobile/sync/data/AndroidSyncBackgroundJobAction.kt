@@ -8,12 +8,14 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import androidx.work.await
+import androidx.work.workDataOf
 import kotlinx.coroutines.flow.map
 import org.dhis2.mobile.sync.model.SyncJobStatus
 import org.dhis2.mobile.sync.model.SyncStatus
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.hours
 
+const val IS_PERIODIC = "IS_PERIODIC"
 const val METADATA_SYNC = "METADATA_SYNC"
 const val METADATA_SYNC_NOW = "METADATA_SYNC_NOW"
 const val DATA_SYNC = "DATA_SYNC"
@@ -49,11 +51,12 @@ class AndroidSyncBackgroundJobAction(
                     ).setInitialDelay(
                         syncingPeriod,
                         TimeUnit.SECONDS,
-                    ).build()
+                    ).setInputData(workDataOf(IS_PERIODIC to true))
+                    .build()
 
             workManager.enqueueUniquePeriodicWork(
                 uniqueWorkName = METADATA_SYNC,
-                existingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+                existingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.UPDATE,
                 request = request,
             )
         }
@@ -85,11 +88,12 @@ class AndroidSyncBackgroundJobAction(
                     ).setInitialDelay(
                         syncingPeriod,
                         TimeUnit.SECONDS,
-                    ).build()
+                    ).setInputData(workDataOf(IS_PERIODIC to true))
+                    .build()
 
             workManager.enqueueUniquePeriodicWork(
                 uniqueWorkName = DATA_SYNC,
-                existingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+                existingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.UPDATE,
                 request = request,
             )
         }
@@ -102,14 +106,16 @@ class AndroidSyncBackgroundJobAction(
                     workerClass = SyncSettingsWorker::class.java,
                     repeatInterval = 1.hours.inWholeSeconds,
                     repeatIntervalTimeUnit = TimeUnit.SECONDS,
-                ).setInitialDelay(1, TimeUnit.MINUTES)
-                .addTag(
+                ).setInitialDelay(
+                    1,
+                    TimeUnit.HOURS,
+                ).addTag(
                     SYNC_SETTINGS,
                 ).build()
 
         workManager.enqueueUniquePeriodicWork(
             SYNC_SETTINGS,
-            ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+            ExistingPeriodicWorkPolicy.UPDATE,
             request,
         )
     }
@@ -138,6 +144,30 @@ class AndroidSyncBackgroundJobAction(
                     )
                 }
             }
+
+    override fun getNextMetadataSync() =
+        workManager
+            .getWorkInfosForUniqueWork(METADATA_SYNC)
+            .get()
+            .firstOrNull()
+            ?.takeIf { it.state == WorkInfo.State.ENQUEUED }
+            ?.nextScheduleTimeMillis
+
+    override fun getNextDataSync() =
+        workManager
+            .getWorkInfosForUniqueWork(DATA_SYNC)
+            .get()
+            .firstOrNull()
+            ?.takeIf { it.state == WorkInfo.State.ENQUEUED }
+            ?.nextScheduleTimeMillis
+
+    override fun getNextSettingsSync(): Long? =
+        workManager
+            .getWorkInfosForUniqueWork(SYNC_SETTINGS)
+            .get()
+            .firstOrNull()
+            ?.takeIf { it.state == WorkInfo.State.ENQUEUED }
+            ?.nextScheduleTimeMillis
 
     override fun observeDataJob() =
         workManager

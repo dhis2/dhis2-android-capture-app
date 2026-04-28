@@ -171,6 +171,7 @@ class SyncManagerModule(
             d2,
             preferenceProvider,
             featureConfigRepository,
+            syncBackgroundJobAction,
         )
 
     @Provides

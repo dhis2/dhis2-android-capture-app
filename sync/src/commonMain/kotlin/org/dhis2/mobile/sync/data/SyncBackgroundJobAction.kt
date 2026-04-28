@@ -21,4 +21,10 @@ interface SyncBackgroundJobAction {
     suspend fun cancelDataSync()
 
     suspend fun cancelAll()
+
+    fun getNextMetadataSync(): Long?
+
+    fun getNextDataSync(): Long?
+
+    fun getNextSettingsSync(): Long?
 }
