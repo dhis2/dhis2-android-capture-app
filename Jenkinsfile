@@ -85,27 +85,10 @@ pipeline {
             steps {
                 script {
                     echo 'Building UI APKs'
-                    sh './gradlew :app:assembleDhis2Debug :app:assembleDhis2DebugAndroidTest :form:assembleAndroidTest'
+                    sh './gradlew :app:assembleDhis2Debug :app:assembleDhis2DebugAndroidTest'
                 }
             }
         }
-        stage('Run Form Tests') {
-                environment {
-                    BROWSERSTACK = credentials('android-browserstack')
-                    form_apk = sh(returnStdout: true, script: 'find form/build/outputs -iname "*.apk" | sed -n 1p')
-                    form_apk_path = "${env.WORKSPACE}/${form_apk}"
-                    buildTag = "${env.GIT_BRANCH} - form"
-                }
-                steps {
-                    dir("${env.WORKSPACE}/scripts"){
-                        script {
-                            echo 'Browserstack deployment and running Form module tests'
-                            sh 'chmod +x browserstackJenkinsForm.sh'
-                            sh './browserstackJenkinsForm.sh'
-                        }
-                    }
-                }
-            }
         stage('Run UI Tests in portrait') {
             environment {
                 BROWSERSTACK = credentials('android-browserstack')

@@ -19,7 +19,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 
 @Composable
-internal fun ProvideCategorySelectorInput(
+fun ProvideCategorySelectorInput(
     modifier: Modifier = Modifier,
     fieldUiModel: FieldUiModel,
     inputStyle: InputStyle,
