@@ -209,6 +209,8 @@ class SearchRepositoryImplKt(
             TrackerInputType.NOT_SUPPORTED,
             TrackerInputType.CUSTOM_INTENT,
                 -> ValueType.TEXT
+            TrackerInputType.COORDINATES -> ValueType.COORDINATE
+            TrackerInputType.IMAGE -> ValueType.IMAGE
         }
 
     override fun mapTrackedEntitySearchItemResultToSearchTeiModel(
