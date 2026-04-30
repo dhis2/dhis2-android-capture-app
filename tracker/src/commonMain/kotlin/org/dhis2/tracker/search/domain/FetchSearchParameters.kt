@@ -13,6 +13,17 @@ class FetchSearchParameters(
     val dispatcher: Dispatcher,
     val repository: SearchParametersRepository,
 ) : UseCase<FetchSearchParametersData, List<SearchParameterModel>> {
+    val hiddenInputTypes =
+        listOf(
+            TrackerInputType.IMAGE,
+            TrackerInputType.COORDINATES,
+            TrackerInputType.LETTER,
+            TrackerInputType.UNIT_INTERVAL,
+            TrackerInputType.COORDINATES,
+            TrackerInputType.URL,
+            TrackerInputType.NOT_SUPPORTED,
+        )
+
     override suspend fun invoke(input: FetchSearchParametersData): Result<List<SearchParameterModel>> =
         withContext(dispatcher.io) {
             try {
@@ -21,7 +32,13 @@ class FetchSearchParameters(
                         repository.getSearchParametersByProgram(it)
                     } ?: repository.getSearchParametersByTrackedEntityType(input.teiTypeUid)
 
-                Result.success(sortSearchParameters(searchParameters))
+                val filteredSearchParameters =
+                    searchParameters
+                        .filter {
+                            it.inputType !in hiddenInputTypes
+                        }
+
+                Result.success(sortSearchParameters(filteredSearchParameters))
             } catch (e: DomainError) {
                 Result.failure(e)
             }

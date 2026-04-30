@@ -683,7 +683,7 @@ public class FilterManager implements Serializable {
     }
 
     public void setWorkingListScope(WorkingListScope scope) {
-        if (!currentWorkingListScope.get().equals(scope)) {
+        if (!Objects.equals(currentWorkingListScope.get().workingListUid(), scope.workingListUid())) {
             currentWorkingListScope.set(scope);
             setFilterCountersForWorkingList(scope);
         }
