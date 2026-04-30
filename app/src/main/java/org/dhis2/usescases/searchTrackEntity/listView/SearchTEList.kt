@@ -370,14 +370,15 @@ class SearchTEList : FragmentGlobalAbstract() {
     private fun initData() {
         displayLoadingData()
 
+        liveAdapter.addOnPagesUpdatedListener {
+            onInitDataLoaded()
+            CoroutineTracker.decrement()
+        }
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.searchPagingData.collect { data ->
-                    liveAdapter.addOnPagesUpdatedListener {
-                        onInitDataLoaded()
-                        CoroutineTracker.decrement()
-                    }
-                    liveAdapter.submitData(lifecycle, data)
+                viewModel.searchPagingData.collectLatest { data ->
+                    liveAdapter.submitData(data)
                 }
             }
         }

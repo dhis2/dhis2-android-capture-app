@@ -40,6 +40,7 @@ class EventProgramFilterSearchHelper
                         filterManager.setWorkingListScope(
                             it.scope.mapToEventWorkingListScope(
                                 filterRepository.resources,
+                                filterManager.currentWorkingList()?.uid,
                             ),
                         )
                     }

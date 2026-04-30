@@ -164,6 +164,7 @@ class FilterManagerTest {
     fun `Should count filters in total for event working list`() {
         val workingListScope =
             EventWorkingListScope(
+                workingListUid = "uid",
                 stageUid = "uid",
                 eventDate = "23/11/2023",
                 eventStatusList = listOf("status"),
@@ -179,6 +180,7 @@ class FilterManagerTest {
     fun `Should count filters in total for tei working list`() {
         val workingListScope =
             TeiWorkingListScope(
+                workingListUid = "uid",
                 enrollmentStatusList = listOf("status", "status"),
                 enrollmentDate = null,
                 eventStatusList = listOf(),
