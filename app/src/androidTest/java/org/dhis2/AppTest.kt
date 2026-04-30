@@ -17,7 +17,7 @@ import org.hisp.dhis.android.core.D2Manager.setTestingSecureStore
 class AppTest : App() {
 
     fun restoreDB() {
-
+        setUpServerComponent()
     }
 
     @Override
