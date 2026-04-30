@@ -1,18 +1,22 @@
 package org.dhis2.usescases.searchte.robot
 
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasAnyAncestor
-import androidx.compose.ui.test.hasParent
+import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onLast
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -20,19 +24,14 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
-import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.dhis2.common.matchers.RecyclerviewMatchers
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
-import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasNoMoreResultsInProgram
-import org.dhis2.common.viewactions.openSpinnerPopup
-import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
-import org.dhis2.usescases.searchte.entity.DisplayListFieldsUIModel
+import org.dhis2.tracker.search.ui.screen.SEARCH_PARAMETERS_LIST_TAG
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
-import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
-
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 
 fun searchTeiRobot(
     composeTestRule: ComposeTestRule,
@@ -66,7 +65,14 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             )
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun openNextSearchParameter(parameterValue: String) {
+        closeKeyboard()
+        composeTestRule.waitForIdle()
+        composeTestRule
+            .onNodeWithTag(SEARCH_PARAMETERS_LIST_TAG)
+            .performScrollToNode(hasText(parameterValue))
+        composeTestRule.waitUntilAtLeastOneExists(hasText(parameterValue), TIMEOUT)
         composeTestRule.onNodeWithText(parameterValue).performClick()
     }
 
@@ -82,80 +88,17 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         }
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun clickOnSearch() {
         closeKeyboard()
+        composeTestRule.waitForIdle()
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SEARCH_BUTTON"), TIMEOUT)
         composeTestRule.onNodeWithTag("SEARCH_BUTTON").performClick()
-        composeTestRule.waitForIdle()
-    }
-
-    @OptIn(ExperimentalTestApi::class)
-    fun checkListOfSearchTEI(title: String, attributes: Map<String?, String>) {
-        //Checks title and all attributes are displayed
-        composeTestRule.waitUntilAtLeastOneExists(hasText(title))
-        composeTestRule.onNodeWithText(title).assertIsDisplayed()
-        attributes.forEach { item ->
-            item.key?.let { composeTestRule.onNodeWithText("$it:", true).assertIsDisplayed() }
-            composeTestRule.onNode(
-                hasParent(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
-                        and hasText(item.value, true), useUnmergedTree = true
-            ).assertIsDisplayed()
-        }
-    }
-
-    fun checkNoSearchResult() {
-        onView(withId(R.id.scrollView))
-            .check(
-                matches(
-                    RecyclerviewMatchers.allElementsWithHolderTypeHave(
-                        SearchResult::class.java,
-                        allOf(
-                            hasNoMoreResultsInProgram()
-                        )
-                    )
-                )
-            )
-    }
-
-    fun clickOnProgramSpinner() {
-        onView(withId(R.id.program_spinner)).perform(openSpinnerPopup())
-    }
-
-    fun selectAProgram(program: String) {
-        onView(allOf(withId(R.id.spinner_text), withText(program)))
-            .perform(click())
-    }
-
-    fun checkProgramHasChanged(program: String) {
-        onView(withId(R.id.spinner_text)).check(matches(withText(program)))
-    }
-
-    @OptIn(ExperimentalTestApi::class)
-    fun checkFieldsFromDisplayList(
-        displayListFieldsUIModel: DisplayListFieldsUIModel
-    ) {
-        //Given the title is the first attribute
-        val title = "First name: ${displayListFieldsUIModel.name}"
-        val displayedAttributes = createAttributesList(displayListFieldsUIModel)
-        val showMoreText = InstrumentationRegistry.getInstrumentation()
-            .targetContext.getString(R.string.show_more)
-        composeTestRule.waitForIdle()
-        composeTestRule.waitUntilAtLeastOneExists(hasText(showMoreText))
-        //When we expand all attribute list
-        composeTestRule.onNodeWithText(showMoreText, true, useUnmergedTree = true).performClick()
-        //Then The title and all attributes are displayed
-        composeTestRule.onNodeWithText(title).assertIsDisplayed()
-        displayedAttributes.forEach { item ->
-            item.key?.let { composeTestRule.onNodeWithText("$it:", true).assertIsDisplayed() }
-            composeTestRule.onNode(
-                hasParent(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
-                        and hasText(item.value, true), useUnmergedTree = true
-            ).assertIsDisplayed()
-        }
     }
 
     @OptIn(ExperimentalTestApi::class)
     fun clickOnShowMap() {
-        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("NAVIGATION_BAR_ITEM_Map"),TIMEOUT)
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("NAVIGATION_BAR_ITEM_Map"), TIMEOUT)
         composeTestRule.onNodeWithTag("NAVIGATION_BAR_ITEM_Map").performClick()
     }
 
@@ -172,7 +115,7 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         // Finally assert that the text is displayed
         composeTestRule.onNode(
             hasAnyAncestor(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
-                    and hasText(firstName, ignoreCase = true, substring = true), 
+                    and hasText(firstName, ignoreCase = true, substring = true),
             useUnmergedTree = true
         ).assertIsDisplayed()
     }
@@ -185,27 +128,136 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         onView(withId(R.id.createButton)).perform(click())
     }
 
-    fun checkListOfSearchTEIWithAdditionalInfo(title: String, additionalText: String) {
-        composeTestRule.onNodeWithText(title).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(additionalText).assertIsDisplayed()
+    // --- Methods for the TB Program search flow test ---
+
+    @OptIn(ExperimentalTestApi::class)
+    fun checkAddNewTEIButtonIsDisplayedAndEnabled() {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("ADD_NEW_BUTTON"), TIMEOUT)
+        composeTestRule.onNodeWithTag("ADD_NEW_BUTTON")
+            .assertIsDisplayed()
+            .assertIsEnabled()
     }
 
-    private fun createAttributesList(displayListFieldsUIModel: DisplayListFieldsUIModel) = listOf(
-        AdditionalInfoItem(
-            key = "Last name",
-            value = displayListFieldsUIModel.lastName,
-        ),
-        AdditionalInfoItem(
-            key = "Email",
-            value = displayListFieldsUIModel.email,
-        ),
-        AdditionalInfoItem(
-            key = "Date of birth",
-            value = displayListFieldsUIModel.birthday,
-        ),
-        AdditionalInfoItem(
-            key = "Address",
-            value = displayListFieldsUIModel.address,
-        ),
-    )
+    @OptIn(ExperimentalTestApi::class)
+    fun checkFirstSearchParamIsBarcodeOrQROrUnique(expectedLabel: String) {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SEARCH_PARAM_ITEM"), TIMEOUT)
+        composeTestRule
+            .onAllNodesWithTag("SEARCH_PARAM_ITEM")[0]
+            .assert(hasText(expectedLabel))
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun checkSearchParamCount(expectedCount: Int) {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SEARCH_PARAM_ITEM"), TIMEOUT)
+        val count = composeTestRule
+            .onAllNodesWithTag("SEARCH_PARAM_ITEM")
+            .fetchSemanticsNodes()
+            .size
+        assertEquals(
+            "Expected $expectedCount search parameters, but found $count",
+            expectedCount,
+            count
+        )
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun checkSearchButtonIsDisabled() {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SEARCH_BUTTON"), TIMEOUT)
+        composeTestRule.onNodeWithTag("SEARCH_BUTTON").assertIsNotEnabled()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun checkSearchButtonIsEnabled() {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SEARCH_BUTTON"), TIMEOUT)
+        composeTestRule.onNodeWithTag("SEARCH_BUTTON").assertIsEnabled()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun typeOnSearchParameter(label: String, value: String) {
+        // Dismiss the keyboard first so the LazyColumn recomposes and exposes all field labels.
+        // Without this, items scrolled behind an open keyboard are dropped from composition and
+        // waitUntilAtLeastOneExists(hasText(label)) times out on the next field.
+        // We do NOT close the keyboard at the end: keeping focus on the typed field lets
+        // checkFocusedFieldShowsOperatorSupportingText() read its supporting text.
+        // Any focus jump caused by the IMM dismiss is immediately overridden by clicking the label.
+        closeKeyboard()
+        composeTestRule.waitForIdle()
+        // Scroll the LazyColumn to ensure the target field is in composition before clicking.
+        composeTestRule
+            .onNodeWithTag(SEARCH_PARAMETERS_LIST_TAG)
+            .performScrollToNode(hasText(label))
+        composeTestRule.waitUntilAtLeastOneExists(hasText(label), TIMEOUT)
+        composeTestRule.onNodeWithText(label).performClick()
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("INPUT_TEXT_FIELD"), TIMEOUT)
+        composeTestRule.onAllNodesWithTag("INPUT_TEXT_FIELD").onLast().performTextInput(value)
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun clickOnClearSearch() {
+        closeKeyboard()
+        composeTestRule.waitForIdle()
+        val count = composeTestRule
+            .onAllNodesWithTag("INPUT_TEXT_RESET_BUTTON", useUnmergedTree = true)
+            .fetchSemanticsNodes().size
+        repeat(count) {
+            composeTestRule.waitForIdle()
+            composeTestRule
+                .onAllNodesWithTag("INPUT_TEXT_RESET_BUTTON", useUnmergedTree = true)[0]
+                .performScrollTo()
+                .performClick()
+            // Use hardware back press to dismiss the keyboard that appears after clicking X.
+            // Unlike closeKeyboard() (IMM-based), the back key is consumed by the keyboard
+            // itself before reaching Compose, so focus does not jump to the first focusable
+            // item (Unique ID) in the LazyColumn.
+            pressBack()
+            composeTestRule.waitForIdle()
+        }
+    }
+
+
+    @OptIn(ExperimentalTestApi::class)
+    fun checkFocusedFieldShowsOperatorSupportingText() {
+        composeTestRule.waitUntilAtLeastOneExists(
+            hasText("Exact matches only") or
+                    hasText("Must match the start of the value") or
+                    hasText("Must match the end of the value"),
+            TIMEOUT,
+        )
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun checkMinCharactersErrorIsDisplayed(vararg fieldLabels: String) {
+        composeTestRule.waitForIdle()
+
+        fieldLabels.forEach { label ->
+            // Scroll the LazyColumn to compose the target field before asserting.
+            // Off-screen items are dropped from composition on slow CI devices, causing
+            // waitUntilAtLeastOneExists to time out even though the error is present.
+            composeTestRule
+                .onNodeWithTag(SEARCH_PARAMETERS_LIST_TAG)
+                .performScrollToNode(hasText(label))
+            composeTestRule.waitForIdle()
+
+            val containerMatcher =
+                hasAnyDescendant(hasText(label)) and
+                        hasAnyDescendant(hasText("Enter at least", substring = true))
+
+            composeTestRule.waitUntilAtLeastOneExists(containerMatcher, TIMEOUT)
+
+            val matchingNodes = composeTestRule
+                .onAllNodes(containerMatcher)
+                .fetchSemanticsNodes()
+
+            assertTrue(
+                "Expected a min-characters error associated with field label \"$label\", but none was found.",
+                matchingNodes.isNotEmpty(),
+            )
+        }
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun checkSearchResultDisplayed(teiName: String) {
+        composeTestRule.waitUntilAtLeastOneExists(hasText(teiName, substring = true), TIMEOUT)
+        composeTestRule.onNodeWithText(teiName, substring = true).assertIsDisplayed()
+    }
 }
