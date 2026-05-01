@@ -94,6 +94,7 @@ ktlint = "13.1.0"
 sonarqube = "7.2.3.7755"
 browser = "1.9.0"
 biometric = "1.1.0"
+securityCrypto = "1.0.0"
 coil = "3.3.0"
 cyclonedx = "2.1.0"
 workRuntimeKtx = "2.11.1"
@@ -140,6 +141,7 @@ androidx-material3-window = { group = "androidx.compose.material3", name = "mate
 compose-material3-window = { group = "org.jetbrains.compose.material3", name = "material3-window-size-class", version.ref = "material3WindowSizeCompose" }
 androidx-material3-adaptative-android = { group = "androidx.compose.material3.adaptive", name = "adaptive-android", version.ref = "material3AdaptiveAndroid" }
 androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
+androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
 kotlin-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxserialization" }
 google-guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
