@@ -19,6 +19,7 @@ import org.dhis2.commons.prefs.Preference.Companion.TIME_META
 import org.dhis2.commons.prefs.Preference.Companion.TIME_WEEKLY
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.server.UserManager
+import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.settings.DataSyncPeriod
@@ -27,6 +28,7 @@ import org.hisp.dhis.android.core.settings.LimitScope
 import org.hisp.dhis.android.core.settings.MetadataSyncPeriod
 import org.hisp.dhis.android.core.settings.ProgramSetting
 import org.hisp.dhis.android.core.settings.ProgramSettings
+import org.hisp.dhis.android.core.settings.SynchronizationSettings
 import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase
 import org.junit.Before
 import org.junit.Test
@@ -42,6 +44,11 @@ class SettingsRepositoryTest {
         Mockito.mock(UserManager::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val preferencesProvider: PreferenceProvider = mock()
     private val featureConfigRepository: FeatureConfigRepository = mock()
+    private val syncBackgroundJobAction: SyncBackgroundJobAction = mock {
+        on { getNextSettingsSync() } doReturn null
+        on { getNextMetadataSync() } doReturn null
+        on { getNextDataSync() } doReturn null
+    }
     private val smsConfig: ConfigCase.SmsConfig =
         mock {
             on { isModuleEnabled } doReturn true
@@ -62,6 +69,7 @@ class SettingsRepositoryTest {
                 d2,
                 preferencesProvider,
                 featureConfigRepository,
+                syncBackgroundJobAction,
             )
         configurePreferences()
         configureDataCount()
@@ -70,6 +78,7 @@ class SettingsRepositoryTest {
 
     @Test
     fun `Should return metadata period from general settings if exist`() {
+        configureSyncSettings(true)
         configureGeneralSettings(true)
         val testObserver = settingsRepository.metaSync().test()
         testObserver
@@ -92,6 +101,7 @@ class SettingsRepositoryTest {
 
     @Test
     fun `Should return data period from general settings if exist`() {
+        configureSyncSettings(true)
         configureGeneralSettings(true)
         configureDataErrors()
         val testObserver = settingsRepository.dataSync().test()
@@ -116,8 +126,9 @@ class SettingsRepositoryTest {
 
     @Test
     fun `Should return parameters from general settings if exist`() {
+        configureSyncSettings(true)
         configureGeneralSettings(true)
-        configureProgramSettings(true)
+
         val testObserver = settingsRepository.syncParameters().test()
         testObserver
             .assertNoErrors()
@@ -130,8 +141,9 @@ class SettingsRepositoryTest {
 
     @Test
     fun `Should return parameters from preferences if general settings does not exist`() {
+        configureSyncSettings(false)
         configureGeneralSettings(false)
-        configureProgramSettings(false)
+
         val testObserver = settingsRepository.syncParameters().test()
         testObserver
             .assertNoErrors()
@@ -146,6 +158,7 @@ class SettingsRepositoryTest {
     fun `Should return reserved values from settings if exist`() {
         configureGeneralSettings(true)
         val testObserver = settingsRepository.reservedValues().test()
+
         testObserver
             .assertNoErrors()
             .assertValue {
@@ -157,6 +170,7 @@ class SettingsRepositoryTest {
     fun `Should return reserved values from preferences if settings does not exist`() {
         configureGeneralSettings(false)
         val testObserver = settingsRepository.reservedValues().test()
+
         testObserver
             .assertNoErrors()
             .assertValue {
@@ -168,11 +182,23 @@ class SettingsRepositoryTest {
     fun `Should return editable sms configuration if settings does not exist`() {
         configureGeneralSettings(false)
         val testObserver = settingsRepository.sms().test()
+
         testObserver
             .assertNoErrors()
             .assertValue {
                 it.isGatewayNumberEditable && it.isResponseNumberEditable
             }
+    }
+
+    private fun configureSyncSettings(hasSyncSettings: Boolean) {
+        whenever(
+            d2.settingModule().synchronizationSettings().blockingExists(),
+        ) doReturn hasSyncSettings
+        if (hasSyncSettings) {
+            whenever(
+                d2.settingModule().synchronizationSettings().blockingGet(),
+            ) doReturn mockedSyncSettings()
+        }
     }
 
     private fun configureGeneralSettings(hasGeneralSettings: Boolean) {
@@ -182,15 +208,6 @@ class SettingsRepositoryTest {
         if (hasGeneralSettings) {
             whenever(d2.settingModule().generalSetting().blockingGet()) doReturn
                 mockedGeneralSettings()
-        }
-    }
-
-    private fun configureProgramSettings(hasProgramSettings: Boolean) {
-        whenever(d2.settingModule().programSetting().blockingExists()) doReturn
-            hasProgramSettings
-        if (hasProgramSettings) {
-            whenever(d2.settingModule().programSetting().blockingGet()) doReturn
-                mockedProgramSettings()
         }
     }
 
@@ -469,11 +486,17 @@ class SettingsRepositoryTest {
         whenever(d2.smsModule().configCase()) doReturn configCase
     }
 
-    private fun mockedGeneralSettings(): GeneralSettings =
-        GeneralSettings
+    private fun mockedSyncSettings() =
+        SynchronizationSettings
             .builder()
             .dataSync(SETTINGS_DATA_PERIOD)
             .metadataSync(SETTINGS_METADATA_PERIOD)
+            .programSettings(mockedProgramSettings())
+            .build()
+
+    private fun mockedGeneralSettings(): GeneralSettings =
+        GeneralSettings
+            .builder()
             .encryptDB(SETTINGS_ENCRYPT)
             .reservedValues(SETTINGS_RV)
             .build()

@@ -11,6 +11,7 @@ class PeriodTypeLabelProvider {
             FilterPeriodType.WEEKLY -> R.string.weekly
             FilterPeriodType.WEEKLY_WEDNESDAY -> R.string.weekly_start_wednesday
             FilterPeriodType.WEEKLY_THURSDAY -> R.string.weekly_start_thursday
+            FilterPeriodType.WEEKLY_FRIDAY -> R.string.weekly_start_friday
             FilterPeriodType.WEEKLY_SATURDAY -> R.string.weekly_start_saturday
             FilterPeriodType.WEEKLY_SUNDAY -> R.string.weekly_start_sunday
             FilterPeriodType.BI_WEEKLY -> R.string.bi_weekly
@@ -22,8 +23,11 @@ class PeriodTypeLabelProvider {
             FilterPeriodType.SIX_MONTHLY_APRIL -> R.string.six_monthly_april
             FilterPeriodType.SIX_MONTHLY_NOV -> R.string.six_monthly_nov
             FilterPeriodType.YEARLY -> R.string.YEARLY
+            FilterPeriodType.FINANCIAL_FEB -> R.string.financial_year_february
             FilterPeriodType.FINANCIAL_APRIL -> R.string.financial_year_april
             FilterPeriodType.FINANCIAL_JULY -> R.string.financial_year_july
+            FilterPeriodType.FINANCIAL_AUG -> R.string.financial_year_august
+            FilterPeriodType.FINANCIAL_SEP -> R.string.financial_year_september
             FilterPeriodType.FINANCIAL_OCT -> R.string.financial_year_october
             FilterPeriodType.FINANCIAL_NOV -> R.string.financial_year_november
         }

@@ -14,17 +14,6 @@ actual fun WebAuthenticator(
     url: String,
     onDismiss: () -> Unit,
 ) {
-    // TODO Use the url parameter when the backend supports dynamic redirect URIs
-    val redirectUri = "https://vgarciabnz.github.io"
-    val oauthAuthUrl =
-        "https://dev.im.dhis2.org/oauth2-android-test/oauth2/authorize?" +
-            "response_type=code" +
-            "&client_id=dhis2-client" +
-            "&redirect_uri=$redirectUri" +
-            "&scope=openid%20email" +
-            "&state=abc123"
-
-    // Custom Tab launcher will handle the result of the Custom Tab to detect if the user closed it
     val customTabLauncher =
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult(),
@@ -41,11 +30,13 @@ actual fun WebAuthenticator(
                 .setShowTitle(false)
                 .setUrlBarHidingEnabled(true)
                 .build()
+        // Custom Tab is not kept in the activity history stack and it's removed from memory.
+        // It won't appear in the "Recent Apps" list
         customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
 
         val intent =
             customTabsIntent.intent.apply {
-                data = oauthAuthUrl.toUri()
+                data = url.toUri()
             }
 
         customTabLauncher.launch(intent)

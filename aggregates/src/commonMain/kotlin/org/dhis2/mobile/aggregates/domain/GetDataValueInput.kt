@@ -45,6 +45,7 @@ internal class GetDataValueInput(
                     attrOptionComboUid = attrOptionComboUid,
                     dataElementUid = dataElementUid,
                     categoryOptionComboUid = categoryOptionComboUid,
+                    sourceDataSetUid = dataSetUid,
                 )
             val conflicts =
                 repository.conflicts(
@@ -63,6 +64,7 @@ internal class GetDataValueInput(
                     orgUnitUid = orgUnitUid,
                     categoryOptionComboUid = categoryOptionComboUid,
                     attrOptionComboUid = attrOptionComboUid,
+                    sourceDataSetUid = dataSetUid,
                 )
 
             CellInfo(

@@ -26,8 +26,8 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.launch
-import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FormSection
@@ -46,7 +46,6 @@ fun Form(
     sections: List<FormSection> = emptyList(),
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
-    resources: ResourceManager,
 ) {
     val scrollState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
@@ -77,7 +76,8 @@ fun Form(
                             bottomStart = Spacing.Spacing0,
                             bottomEnd = Spacing.Spacing0,
                         ),
-                ).clickable(
+                )
+                .clickable(
                     interactionSource =
                         remember {
                             MutableInteractionSource()
@@ -118,7 +118,7 @@ fun Form(
                     state = section.state,
                     errorCount = section.errors,
                     warningCount = section.warnings,
-                    warningMessage = section.warningMessage?.let { resources.getString(it) },
+                    warningMessage = section.warningMessage?.let { stringResource(it) },
                     onNextSection = onNextSection,
                     onSectionClick = {
                         intentHandler.invoke(FormIntent.OnSection(section.uid))
@@ -132,7 +132,6 @@ fun Form(
                                     fieldUiModel = fieldUiModel,
                                     uiEventHandler = uiEventHandler,
                                     intentHandler = intentHandler,
-                                    resources = resources,
                                     focusManager = focusManager,
                                     onNextClicked = {
                                         manageOnNextEvent(
@@ -164,7 +163,7 @@ fun Form(
         }
     }
     if (shouldDisplayNoFieldsWarning(sections)) {
-        NoFieldsWarning(resources)
+        NoFieldsWarning()
     }
 }
 
@@ -190,7 +189,7 @@ fun shouldDisplayNoFieldsWarning(sections: List<FormSection>): Boolean =
     }
 
 @Composable
-fun NoFieldsWarning(resources: ResourceManager) {
+fun NoFieldsWarning() {
     Column(
         modifier =
             Modifier
@@ -201,7 +200,7 @@ fun NoFieldsWarning(resources: ResourceManager) {
                 Modifier
                     .clip(shape = RoundedCornerShape(Radius.Full))
                     .background(SurfaceColor.WarningContainer),
-            text = resources.getString(R.string.form_without_fields),
+            text = stringResource(R.string.form_without_fields),
             icon = {
                 Icon(
                     imageVector = Icons.Outlined.ErrorOutline,

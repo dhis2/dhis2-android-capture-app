@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.dhis2.commons.Constants
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.usescases.settings.domain.CheckVersionUpdate
@@ -28,6 +27,7 @@ import org.dhis2.usescases.settings.domain.UpdateSyncSettings
 import org.dhis2.usescases.settings.models.DeleteDataState
 import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.settings.models.SettingsState
+import org.dhis2.usescases.settings.models.SyncStateInput
 import org.hisp.dhis.android.core.settings.LimitScope
 import java.io.File
 
@@ -114,14 +114,21 @@ class SyncManagerPresenter(
     }
 
     private suspend fun loadData() {
-        val settingsState =
-            getSettingsState(
+        getSettingsState(
+            SyncStateInput(
                 openedItem = _settingsState.value?.openedItem,
                 hasConnection = _settingsState.value?.hasConnection == true,
                 metadataSyncInProgress = syncWorkInfo.value.metadataSyncProgress == LaunchSync.SyncStatus.InProgress,
                 dataSyncInProgress = syncWorkInfo.value.dataSyncProgress == LaunchSync.SyncStatus.InProgress,
-            )
-        _settingsState.update { settingsState }
+            ),
+        ).fold(
+            onSuccess = { settingsState ->
+                _settingsState.update { settingsState }
+            },
+            onFailure = {
+                // do nothing
+            },
+        )
     }
 
     fun onItemClick(settingsItem: SettingItem) {
@@ -361,18 +368,14 @@ class SyncManagerPresenter(
     fun onSyncDataPeriodChanged(period: Int) {
         viewModelScope.launch(dispatcherProvider.io()) {
             launchSync(LaunchSync.SyncAction.UpdateSyncDataPeriod(period))
-            if (period == Constants.TIME_MANUAL) {
-                loadData()
-            }
+            loadData()
         }
     }
 
     fun onSyncMetaPeriodChanged(period: Int) {
         viewModelScope.launch(dispatcherProvider.io()) {
             launchSync(LaunchSync.SyncAction.UpdateSyncMetadataPeriod(period))
-            if (period == Constants.TIME_MANUAL) {
-                loadData()
-            }
+            loadData()
         }
     }
 

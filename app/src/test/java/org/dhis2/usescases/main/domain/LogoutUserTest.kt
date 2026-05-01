@@ -2,9 +2,10 @@ package org.dhis2.usescases.main.domain
 
 import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.filters.FilterManager
-import org.dhis2.data.service.SyncStatusController
-import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.error.DomainError
+import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
+import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.dhis2.usescases.main.HomeRepository
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
@@ -18,8 +19,8 @@ import org.mockito.kotlin.whenever
 
 class LogoutUserTest {
     private val repository: HomeRepository = mock()
-    private val workManagerController: WorkManagerController = mock()
     private val syncStatusController: SyncStatusController = mock()
+    private val syncBackgroundJobAction: SyncBackgroundJobAction = mock()
     private val filterManager: FilterManager = mock()
 
     private lateinit var logoutUser: LogoutUser
@@ -29,7 +30,7 @@ class LogoutUserTest {
         logoutUser =
             LogoutUser(
                 repository,
-                workManagerController,
+                syncBackgroundJobAction,
                 syncStatusController,
                 filterManager,
             )
@@ -41,7 +42,7 @@ class LogoutUserTest {
             whenever(repository.logOut()) doReturn Result.success(Unit)
             whenever(repository.accountsCount()) doReturn 1
             val result = logoutUser()
-            verify(workManagerController).cancelAllWorkAndWait()
+            verify(syncBackgroundJobAction).cancelAll()
             verify(syncStatusController).restore()
             verify(filterManager).clearAllFilters()
             verify(repository).clearSessionLock()
@@ -57,7 +58,7 @@ class LogoutUserTest {
             val testException = DomainError.UnexpectedError("test")
             whenever(repository.clearSessionLock()) doReturn Result.failure(testException)
             val result = logoutUser()
-            verify(workManagerController).cancelAllWorkAndWait()
+            verify(syncBackgroundJobAction).cancelAll()
             verify(syncStatusController).restore()
             verify(filterManager).clearAllFilters()
             verify(repository).clearSessionLock()
@@ -80,7 +81,7 @@ class LogoutUserTest {
                 assertTrue(e == testException)
             }
 
-            verify(workManagerController).cancelAllWorkAndWait()
+            verify(syncBackgroundJobAction).cancelAll()
             verify(syncStatusController).restore()
             verify(filterManager).clearAllFilters()
             verify(repository).clearSessionLock()

@@ -72,8 +72,8 @@ class EventCaptureFormPresenter(
                         1,
                     ) to false
 
-                EventNonEditableReason.ORGUNIT_IS_NOT_IN_CAPTURE_SCOPE ->
-                    resourceManager.getString(R.string.edition_orgunit_capture_scope) to
+                EventNonEditableReason.ORGUNIT_IS_NOT_IN_USER_SCOPE ->
+                    resourceManager.getString(R.string.edition_orgunit_user_scope) to
                         false
             }
         view.showNonEditableMessage(reason, canBeReOpened)

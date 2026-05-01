@@ -128,7 +128,7 @@
     <string name="search_to_find_more">Искать, чтобы найти больше</string>
     <string name="action_done">Готово</string>
     <string name="input_not_supported">Не поддерживается</string>
-    <!--*******************->
+    <!--*******************
         D2 Error Messages
     **********************-->
     <string name="login_error_null_pass">Пароль отсутствует. Пожалуйста, введите пароль.</string>
@@ -152,7 +152,6 @@
     <string name="error_access_keystore">Невозможно получить доступ к хранилищу ключей устройства.</string>
     <string name="error_create_existing_error">Создание прервано. Объект уже существует.</string>
     <string name="error_delete_non_existing_object">Удаление прервано. Объект не существует.</string>
-    <string name="error_reserve_value_on_server">Мы не смогли зарезервировать значения для этих записей. Пожалуйста, свяжитесь с вашим администратором.</string>
     <string name="error_export_login">Пожалуйста, войдите в систему, чтобы экспортировать базу данных.</string>
     <string name="error_export_encrypted">Экспорт зашифрованной базы данных не поддерживается.</string>
     <string name="error_import_exist">Вы импортируете уже существующую базу данных.</string>
@@ -171,7 +170,6 @@
     <string name="error_socket_timeout">Серверу потребовалось слишком много времени для ответа. Мы отменили запрос. </string>
     <string name="error_relationship_updated">Связь не может быть обновлена.</string>
     <string name="error_too_many_periods">Слишком много периодов.</string>
-    <string name="error_url_not_found">Мы не смогли найти URL-адрес. Пожалуйста, проверьте его.</string>
     <string name="error_account_disabled">Ваша учетная запись пользователя была отключена. Если это ошибка, обратитесь к своему администратору.</string>
     <string name="error_account_locked">Ваша учетная запись заблокирована. Если это ошибка, обратитесь к своему администратору.</string>
     <string name="error_set_value">Значение не удалось установить.</string>
@@ -180,8 +178,13 @@
     <string name="error_org_unit_scope">Онлайн-поиск доступен только для подразделений вашей организации по поиску пользователей.</string>
     <string name="error_server_unavailable">Сервер в настоящее время недоступен. Повторите попытку позже.</string>
     <string name="error_no_internet_connection">Вы находитесь оффлайн. Подключитесь к Интернету и повторите попытку.</string>
-    <!--*******************->
+    <!--*******************
        END OF D2 Error Messages
     **********************-->
+    <string name="age_or">ИЛИ</string>
+    <string name="age">ВОЗРАСТ</string>
+    <string name="date_of_birth">ДАТА РОЖДЕНИЯ</string>
+    <string name="cancel">Отменить</string>
+    <string name="ok">ОК</string>
 
 </resources>

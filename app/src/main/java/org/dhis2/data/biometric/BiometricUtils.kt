@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import androidx.annotation.RequiresApi
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
@@ -93,27 +92,19 @@ class CryptographyManager : CryptographicActions {
             load(null)
         }
 
-    override fun getInitializedCipherForEncryption(): Cipher? =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val cipher = getCipher()
-            val secretKey =
-                getOrCreateSecretKey()
+    override fun getInitializedCipherForEncryption(): Cipher {
+        val cipher = getCipher()
+        val secretKey = getOrCreateSecretKey()
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey)
+        return cipher
+    }
 
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-            cipher
-        } else {
-            null
-        }
-
-    override fun getInitializedCipherForDecryption(initializationVector: ByteArray): Cipher? =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val cipher = getCipher()
-            val secretKey = getOrCreateSecretKey()
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, GCMParameterSpec(128, initializationVector))
-            cipher
-        } else {
-            null
-        }
+    override fun getInitializedCipherForDecryption(initializationVector: ByteArray): Cipher {
+        val cipher = getCipher()
+        val secretKey = getOrCreateSecretKey()
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, GCMParameterSpec(128, initializationVector))
+        return cipher
+    }
 
     override fun encryptData(
         plaintext: String,
@@ -136,7 +127,6 @@ class CryptographyManager : CryptographicActions {
         return Cipher.getInstance(transformation)
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun getOrCreateSecretKey(): SecretKey {
         // If Secretkey was previously created for that keyName, then grab and return it.
         keyStore.getKey(KEY_NAME, null)?.let { return it as SecretKey }

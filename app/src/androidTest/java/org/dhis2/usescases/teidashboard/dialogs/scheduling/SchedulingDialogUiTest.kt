@@ -1,10 +1,13 @@
 package org.dhis2.usescases.teidashboard.dialogs.scheduling
 
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.isSelectable
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -34,7 +37,11 @@ class SchedulingDialogUiTest : BaseTest() {
     val composeTestRule = createAndroidComposeRule<TestActivity>()
 
     private val viewModel: SchedulingViewModel = mock()
-    private val enrollment = Enrollment.builder().uid("enrollmentUid").build()
+    private val enrollment = Enrollment
+        .builder()
+        .uid("enrollmentUid")
+        .attributeOptionCombo("attributeOptionComboUid")
+        .build()
     private val overdueSubtitle = "Overdue subtitle"
 
 
@@ -145,7 +152,14 @@ class SchedulingDialogUiTest : BaseTest() {
             ) {
             }
         }
-        composeTestRule.onNodeWithText("No").performClick()
+        composeTestRule.waitForIdle()
+        composeTestRule
+            .onAllNodes(
+                matcher = hasAnyAncestor(hasTestTag("YES_NO_OPTIONS")) and isSelectable(),
+                useUnmergedTree = true,
+            )
+            .onLast()
+            .performClick()
         composeTestRule.onNodeWithText("Program stage").assertDoesNotExist()
         composeTestRule.onNodeWithText("Date").assertDoesNotExist()
         composeTestRule.onNodeWithText("CatCombo *").assertDoesNotExist()

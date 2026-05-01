@@ -49,7 +49,7 @@ jobs:
         encodedString: ${{ secrets.KEYSTORE }}
 
     - name: Build Release APKs
-      run: ./gradlew app:assembleDhis2Release app:assembleDhis2PlayServicesRelease
+      run: ./gradlew --dependency-verification lenient app:assembleDhis2Release app:assembleDhis2PlayServicesRelease
       env:
         SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -73,7 +73,7 @@ jobs:
         TRAINING_KEY_PASSWORD: ${{ secrets.TRAINING_KEY_PASSWORD }}
         TRAINING_STORE_PASSWORD: ${{ secrets.TRAINING_STORE_PASSWORD }}
         TRAINING_STORE_FILE: ${{ steps.decode_training_keystore.outputs.filePath }}
-      run: ./gradlew app:assembleDhis2TrainingRelease
+      run: ./gradlew --dependency-verification lenient app:assembleDhis2TrainingRelease
 
     - name: Read version name from file
       working-directory: ./gradle

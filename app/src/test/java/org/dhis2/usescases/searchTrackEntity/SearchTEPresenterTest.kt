@@ -10,9 +10,10 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.schedulers.TestSchedulerProvider
-import org.dhis2.data.service.SyncStatusController
+import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.junit.After
@@ -58,6 +59,8 @@ class SearchTEPresenterTest {
                 .uid(initialProgram)
                 .displayFrontPageList(true)
                 .minAttributesRequiredToSearch(0)
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
 
         whenever(
@@ -98,6 +101,8 @@ class SearchTEPresenterTest {
                 .uid("uid")
                 .displayFrontPageList(true)
                 .minAttributesRequiredToSearch(1)
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
 
         presenter.setProgramForTesting(program)
@@ -115,6 +120,8 @@ class SearchTEPresenterTest {
                 .uid("uid")
                 .displayFrontPageList(true)
                 .minAttributesRequiredToSearch(1)
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
 
         val newSelectedProgram =
@@ -123,6 +130,8 @@ class SearchTEPresenterTest {
                 .uid("uid2")
                 .displayFrontPageList(true)
                 .minAttributesRequiredToSearch(1)
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
 
         whenever(

@@ -37,7 +37,6 @@
     <string name="sync_error_title">خطأ في المزامنة</string>
     <string name="sync_error_text">حدث خطأ أثناء المزامنة. يرجى اعادة المحاولة.</string>
     <string name="sync_incomplete_error_text">انتهت المزامنة ولكن لم نتلق تأكيدًا من الخادم لجميع السجلات. هذه السجلات لا تزال تحمل علامة \"غير مزامن\" في التطبيق. نوصي بإعادة محاولة المزامنة.</string>
-    <string name="data_sync_warning_program">تحذير: تم مزامنة معظم البيانات الخاصة بك ولكن يوجد تعارضات في بعض الحقول. قم بعمل مزامنة للتكوين الخاص بك وحاول مرة أخرى. إذا استمر التحذير ، فتحقق من حالة المزامنة: يتم وضع علامة @ على البرامج و TEI والأحداث المتعارضة.</string>
     <string name="server_sync_error">حدث خطأ ولم يستجب الخادم. تواصل مع مديرك.</string>
 
     <string name="search_result_text">تم العثور على %s نتيجة</string>
@@ -488,6 +487,7 @@
     <string name="action_agree">قبول</string>
     <string name="action_continue">متابعة</string>
     <string name="login_server_info_title">رابط الخادم</string>
+    <string name="login_server_info_message">أدخل عنوان URL لخادم DHIS 2 لمؤسستك على النحو الذي حصلت عليه من مسؤول النظام.\n\n أو بدلاً من ذلك ، يمكنك مسح رمز الـ QR الذي يحتوي على عنوان URL لخادمك</string>
     <string name="forgot_your_code">نسيت الرمز الخاص بك؟</string>
     <string name="event_form_end_options_title">ما الذي تريد فعله لهذا الحدث؟</string>
     <string name="sectionSelectorEnd">إنهاء</string>
@@ -789,7 +789,7 @@
     <string name="edition_no_write_access">ليس لديك إذن لتحرير هذه البيانات</string>
     <string name="event_date_not_in_orgunit_range">هذه البيانات غير قابلة للتعديل لأنه تم اغلاق الوحدة التنظيمية</string>
     <string name="edition_no_catcombo_access">ليس لديك إذن لتحرير هذه البيانات</string>
-    <string name="edition_orgunit_capture_scope">لا يمكنك تحرير البيانات من هذه الوحدة التنظيمية</string>
+    <string name="edition_orgunit_user_scope">لا يمكنك تحرير البيانات من هذه الوحدة التنظيمية</string>
     <string name="reload_list">إعادة البحث</string>
     <string name="error_tei_online_search_title">البحث عبر الإتصال بالسيرفر عن طريق الإنترنت ارجع الرسالة التالية:</string>
     <string name="program_rules_loop_warning_title">تحذير قواعد البرنامج</string>

@@ -12,12 +12,13 @@ import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.data.service.SyncStatusData
 import org.dhis2.mobile.commons.model.MetadataIconData
+import org.dhis2.mobile.sync.model.SyncStatusData
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.DataSetInstanceSummary
@@ -88,6 +89,7 @@ class ProgramRepositoryImplTest {
                 .builder()
                 .uid("dataSetUid")
                 .description("description")
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .style(
                     ObjectStyle
                         .builder()
@@ -242,7 +244,7 @@ class ProgramRepositoryImplTest {
             filterPresenter.filteredTrackerProgram(any()).offlineFirst(),
         ) doReturn mock()
         whenever(
-            filterPresenter.filteredTrackerProgram(any<Program>()).offlineFirst().blockingGetUids(),
+            filterPresenter.filteredTrackerProgram(any()).offlineFirst().blockingGetUids(),
         ) doReturn listOf("0", "1")
     }
 
@@ -274,6 +276,8 @@ class ProgramRepositoryImplTest {
                 .displayName("program1")
                 .programType(ProgramType.WITHOUT_REGISTRATION)
                 .style(ObjectStyle.builder().build())
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build(),
             Program
                 .builder()
@@ -281,6 +285,8 @@ class ProgramRepositoryImplTest {
                 .displayName("program2")
                 .programType(ProgramType.WITH_REGISTRATION)
                 .style(ObjectStyle.builder().build())
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .trackedEntityType(
                     TrackedEntityType
                         .builder()

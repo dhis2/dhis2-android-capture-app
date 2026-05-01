@@ -34,7 +34,6 @@
     <string name="sync_error_title">Problème de synchronisation</string>
     <string name="sync_error_text">Une erreur s´est produite pendant sync. Essayez à nouveau.</string>
     <string name="sync_incomplete_error_text">La synchronisation est terminée, mais nous n\'avons pas reçu de confirmation du serveur pour tous les enregistrements. Ces enregistrements sont toujours marqués comme \"hors ligne\" dans l\'application. Nous vous recommandons de réessayer la synchronisation.</string>
-    <string name="data_sync_warning_program">AVERTISSEMENT: La plupart de vos données ont été syncrhonisées mais certains champs ont eu des conflits. Synchronisez votre configuration et ressayez, Si l\'erreur persiste, vérifiez le statut de synchronisation: les programmes, TEIs et évènements avec conflits sont marqués avec @. </string>
     <string name="server_sync_error">Une erreur s\'est produite et le serveur n\'a pas répondu. Contactez votre administrateur.</string>
 
     <string name="search_result_text">%s résultats trouvé</string>
@@ -112,7 +111,7 @@
     <string name="update">Mettre à jour</string>
     <string name="date">Date</string>
     <string name="org_unit">Unités d´Organisation</string>
-    <string name="no_org_units">Il n\'y a pas d\'Unité d\'organisation Ouvert pour la date sélectionnée. Merci de sélectionner une autre date ou une autre Unité d\'Organisation.</string>
+    <string name="no_org_units">Il n\'y a pas d\'unité d\'organisation ouverte pour la date sélectionnée. Merci de sélectionner une autre date ou une autre unité d\'organisation.</string>
     <string name="category_option">Options de catégorie</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
@@ -299,7 +298,7 @@
     <string name="qr_no_data">Aucune donnée</string>
     <string name="qr_error_id">Code QR invalide</string>
     <string name="qr_error_attr">Cet attribut ne peut pas être ajouté</string>
-    <string name="qr_error_enrollment">Cette inscription ne peu pas être ajoutée</string>
+    <string name="qr_error_enrollment">Cette entité ne peut pas être enrôlée</string>
 
     <string name="about">À propos</string>
     <string name="programs_to_enroll">Programmes disponibles pour l´admission</string>
@@ -469,6 +468,7 @@
     <string name="action_agree">Accord</string>
     <string name="action_continue">Continuer</string>
     <string name="login_server_info_title">URL du serveur</string>
+    <string name="login_server_info_message">Saisissez l\'URL du serveur DHIS 2 de votre organisation tel que fourni par votre administrateur système.\n\nVous pouvez également scanner le code QR avec le lien URL du serveur</string>
     <string name="forgot_your_code">Oublié le code?</string>
     <string name="event_form_end_options_title">Que souhaitez-vous faire pour cet évènement?</string>
     <string name="sectionSelectorEnd">FIN</string>
@@ -486,7 +486,7 @@
     <string name="tuto_main_11">Maintenant vous pouvez vérifier l\'information de synchronisation en cliquant ici</string>
     <string name="no_conflicts_update_message">Cette donnée est enregistrée seulement sur votre appareil et n\'a pas été synchronisée avec le serveur. </string>
     <string name="no_conflicts_synced_message">Vous êtes à jour! Toutes vos données ont été envoyées au serveur. </string>
-    <string name="relationship_error_recursive">Vous ne pouvez pas établir de relation une donnée avec elle-même</string>
+    <string name="relationship_error_recursive">Vous ne pouvez pas établir de relation entre une donnée et elle-même</string>
     <string name="unblock_session">Dévérouiller la session</string>
     <string name="data_set_complete">Terminer</string>
     <string name="data_set_open">Ouvrir</string>
@@ -498,7 +498,7 @@
     <string name="data_every_week">Hebdomadaire</string>
     <string name="period_week">Semaine</string>
     <string name="sync_setting">Paramètre de synchronisation: %s</string>
-    <string name="relationship_without_enrollment">La donnée à laquelle vous essayer d\'acceéer n\'a pas d\'enrôlement. Vous ne pouvez pas accéder au tableau de bord.</string>
+    <string name="relationship_without_enrollment">La donnée à laquelle vous essayer d\'accéder n\'a pas d\'enrôlement. Vous ne pouvez pas accéder au tableau de bord.</string>
     <string name="formatting_error">Erreur de formattage</string>
     <string name="dashboard_menu_delete_tei_v2">Supprimer 1%s</string>
     <string name="delete_authority_error">Vous n\'avez pas l\'autorité pour supprimer cette donnée</string>
@@ -651,9 +651,9 @@
     <string name="dataset_overview">Details</string>
     <string name="dataset_comments">Commentaires</string>
     <string name="saved">Enregistré!</string>
-    <string name="run_validation_rules">Voulez-vous vérifier la qualité des données?</string>
+    <string name="run_validation_rules">Voulez-vous vérifier la qualité des données\?</string>
     <string name="validation_success_title">Tout a l\'air bien!</string>
-    <string name="mark_dataset_complete">Voulez-vous également compléter l\'ensemble de données?</string>
+    <string name="mark_dataset_complete">Voulez-vous également compléter l\'ensemble de données\?</string>
     <string name="dataset_completed">Marquer comme terminé</string>
     <string name="name">Nom</string>
     <string name="formula">Formule</string>
@@ -761,14 +761,14 @@
     <string name="dataset_column_default">Valeurs</string>
     <string name="week_period_span_default_label">Semaine %d %s à %s</string>
     <string name="action_do_not_show_again">Ne pas montrer de nouveau</string>
-    <string name="wrong_date_format"> 1%s ne peut pas être analysé comme une date</string>
+    <string name="wrong_date_format"> %s ne peut pas être analysé comme une date</string>
     <string name="update_field_error">Ce champ n\'a pas pu être mis à jour. Veuillez réessayer</string>
     <string name="available">Disponible</string>
     <string name="blocked_by_completion">Ces données ne sont pas modifiables car elles sont marquées comme terminées</string>
     <string name="edition_expired">Cette donnée n\'est pas modifiable car son heure d\'édition est expirée</string>
     <string name="edition_no_write_access">Vous n\'êtes pas autorisé à modifier ces données</string>
     <string name="edition_no_catcombo_access">Vous n\'êtes pas autorisé à modifier ces données</string>
-    <string name="edition_orgunit_capture_scope">Vous ne pouvez pas modifier les données de cette unité organisationnelle</string>
+    <string name="edition_orgunit_user_scope">Vous ne pouvez pas modifier les données de cette unité organisationnelle</string>
     <string name="reload_list">Réinitialiser la recherche</string>
     <string name="error_tei_online_search_title">La recherche en ligne a renvoyé le message suivant :</string>
     <string name="program_rules_loop_warning_title">Avertissement relatif aux règles du programme</string>

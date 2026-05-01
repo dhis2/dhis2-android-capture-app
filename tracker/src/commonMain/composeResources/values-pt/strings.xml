@@ -17,5 +17,6 @@
     <string name="clear_search">Limpar pesquisa</string>
     <string name="search">Procurar</string>
     <string name="optional">Opcional</string>
-
-</resources>
+    <string name="yes">sim</string>
+    <string name="no">não</string>
+    </resources>

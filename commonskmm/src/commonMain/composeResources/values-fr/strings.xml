@@ -121,7 +121,7 @@
     <string name="no_results_found">Aucun résultat trouvé</string>
     <string name="action_done">Terminé</string>
     <string name="input_not_supported">Non supporté</string>
-    <!--*******************->
+    <!--*******************
         D2 Error Messages
     **********************-->
     <string name="login_error_null_pass">Le mot de passe est manquant. Veuillez entrer le mot de passe.</string>
@@ -136,7 +136,6 @@
     <string name="error_many_requests">Le serveur est un peu occupé en ce moment. Veuillez essayer un peu plus tard.</string>
     <string name="error_already_authenticated">L\'utilisateur est déjà connecté</string>
     <string name="error_api_invalid_query">La requête du serveur n\'est pas valide.</string>
-    <string name="error_reserve_value_on_server">Nous ne pouvions pas réserver de valeurs pour ces enregistrements. Veuillez contacter votre administrateur.</string>
     <string name="error_import_logout">Veuillez vous déconnecter pour importer une nouvelle base de données.</string>
     <string name="error_low_on_available_values">Vous êtes peut-être à court de valeurs disponibles.</string>
     <string name="error_user_no_authenticated">Il n\'y a pas d\'utilisateur authentifié.</string>
@@ -153,8 +152,13 @@
     <string name="error_min_attributes">Il n\'y a pas assez d\'attributs pour effectuer la recherche. Veuillez affiner votre recherche avec plus d\'attributs.</string>
     <string name="error_org_unit_scope">La recherche en ligne n\'est disponible que pour vos unités organisationnelles de recherche d\'utilisateurs.</string>
     <string name="error_no_internet_connection">Vous n\'êtes pas connecté. Veuillez-vous connecter et réssayer.</string>
-    <!--*******************->
+    <!--*******************
        END OF D2 Error Messages
     **********************-->
+    <string name="age_or">OR</string>
+    <string name="age">ÂGE</string>
+    <string name="date_of_birth">DATE DE NAISSANCE</string>
+    <string name="cancel">Annuler</string>
+    <string name="ok">Ok</string>
 
 </resources>

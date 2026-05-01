@@ -1,19 +1,19 @@
 [versions]
 kotlinxDatetime = "0.7.1-0.6.x-compat" #Needs to be compatible with the Rule engine, update when it's updated
-lifecycleRuntimeCompose = "2.9.5"
-navigationCompose = "2.9.1"
+lifecycleRuntimeCompose = "2.9.6"
+navigationCompose = "2.9.2"
 sdk = "36"
-minSdk = "21"
-vCode = "151"
-vName = "3.3.1"
-gradle = "8.13.2"
-kotlin = '2.2.21'
+minSdk = "23"
+vCode = "152"
+vName = "3.4.0-RC"
+gradle = "9.0.1"
+kotlin = '2.3.10'
 dagger = '2.57.2'
 jacoco = '0.8.14'
-designSystem = "0.6.1"
-dhis2sdk = "1.13.1"
-ruleEngine = "3.3.11"
-expressionParser = "1.2.2"
+designSystem = "0.7.0"
+dhis2sdk = "1.14.0"
+ruleEngine = "3.7.1"
+expressionParser = "1.4.0"
 appcompat = "1.7.1"
 annotation = "1.9.1"
 cardview = "1.0.0"
@@ -26,17 +26,16 @@ exif = "1.4.2"
 corektx = "1.17.0"
 fragmentktx = "1.8.9"
 recyclerview = "1.4.0"
-compose = "1.9.3"
-composePluginVersion = "1.9.1"
-composePaging = "3.3.6"
-pagingTesting = "3.3.6"
+compose = "1.10.4"
+composePluginVersion = "1.10.2"
+composePaging = "3.4.1"
+pagingTesting = "3.4.1"
 composeConstraintLayout = "1.1.1"
 activityCompose = "1.11.0"
 viewModelCompose = "2.9.4"
 material = "1.13.0"
 material3 = "1.4.0"
 themeAdapter = "0.36.0"
-pinlock = "2.1.0"
 fancyshowcase = "1.4.0"
 lottie = "6.6.10"
 rxjava = "2.2.21"
@@ -44,8 +43,8 @@ rxandroid = "2.1.1"
 maplibremarkerview = "3.0.2"
 maplibreannotation = "3.0.2"
 matomo = "4.4"
-sentry = "8.29.0"
-sentryPlugin = "5.12.2"
+sentry = "8.33.0"
+sentryPlugin = "6.1.0"
 timber = "5.0.1"
 rxlint = "1.7.8"
 crashactivity = "2.4.0"
@@ -84,19 +83,20 @@ material3WindowSize = "1.4.0"
 material3WindowSizeCompose = "1.8.2"
 material3AdaptiveAndroid = "1.1.0"
 koin = "4.1.1"
-junitJupiter = "6.0.1"
+junitJupiter = "6.0.3"
 ktxml = "1.0.0"
 atomicfu = "0.29.0"
 playservicesauth = "21.4.0"
-playservicesphone = "18.0.1" #Can not be updated to latest due minSDK requirement of 23
-ksp = "2.2.20-2.0.4"
+playservicesphone = "18.0.2" #Can not be updated to latest due minSDK requirement of 23
+ksp = "2.3.6"
 commonsText = "1.14.0"
 ktlint = "13.1.0"
-sonarqube = "7.0.0.6105"
+sonarqube = "7.2.3.7755"
 browser = "1.9.0"
 biometric = "1.1.0"
 coil = "3.3.0"
 cyclonedx = "2.1.0"
+workRuntimeKtx = "2.11.1"
 
 [libraries]
 gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
@@ -156,7 +156,6 @@ dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", versi
 rx-java = { group = "io.reactivex.rxjava2", name = "rxjava", version.ref = "rxjava" }
 rx-android = { group = "io.reactivex.rxjava2", name = "rxandroid", version.ref = "rxandroid" }
 rx-relay = { group = "com.jakewharton.rxrelay2", name = "rxrelay", version.ref = "rxrelay" }
-github-pinlock = { group = "com.github.aritraroy", name = "PinLockView", version.ref = "pinlock" }
 github-fancyshowcase = { group = "com.github.faruktoptas", name = "FancyShowCaseView", version.ref = "fancyshowcase" }
 github-glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 github-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
@@ -211,6 +210,7 @@ koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = 
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 koin-composeVM = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
+koin-work = { module = "io.insert-koin:koin-androidx-workmanager", version.ref = "koin" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
 koin-test-junit5 = { module = "io.insert-koin:koin-test-junit5", version.ref = "koin" }
 koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4", version.ref = "koin" }
@@ -220,23 +220,23 @@ ktxml = { module = "org.kobjects.ktxml:core", version.ref = "ktxml" }
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "commonsText" }
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil"}
 coil-network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil"}
+androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workRuntimeKtx" }
 
 [plugins]
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "gradle" }
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "kotlinx-serialization" }
 compose = { id = "org.jetbrains.compose", version.ref = "composePluginVersion" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
+legacy-kapt = { id = "com.android.legacy-kapt", version.ref = "gradle" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
 sentry = { id = "io.sentry.android.gradle", version.ref = "sentryPlugin" }
 cyclonedx = { id = "org.cyclonedx.bom", version.ref = "cyclonedx" }
 
 [bundles]
-uicomponents-implementation = ["androidx-coreKtx", "androidx-material3", "androidx-material3-window", "androidx-material3-adaptative-android", "google-material", "lottie-compose", "dhis2-mobile-designsystem"]
-uicomponents-api = ["dhis2-mobile-designsystem", "androidx-compose-constraintlayout", "androidx-compose-preview", "androidx-compose-ui", "google-material3-themeadapter"]
-uicomponents-debugapi = ["androidx-compose-uitooling"]
-uicomponents-androidtest = ["test-junit-ext"]
 analytics-implementation = ["androidx-cardview", "androidx-constraintlayout"]
 analytics-api = ["github-charts"]
 analytics-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin", "test-kotlinCoroutines", "test-archCoreTesting"]

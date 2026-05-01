@@ -307,6 +307,7 @@ class DataSetTest : BaseTest() {
         val cellId = "PGRlPlhOcmpYcVpySEQ4Ojxjb2M+SGxsdlg1MGNYQzA="
         val threeDaysFromNowStr = threeDaysFromNow.format(formatter)
         val fiveDaysAgoStr = fiveDaysAgo.format(formatter)
+
         enterDataSetStep(
             uid = dataSetUid,
             name = dataSetName,
@@ -318,19 +319,11 @@ class DataSetTest : BaseTest() {
         )
 
         checkTableIsNotEditable()
-        dataSetTableRobot(composeTestRule) {
-            tapOnSaveButton()
-        }
-        composeTestRule.waitForIdle()
+
         createDailyPeriodDataSetInstanceStep(
             date = threeDaysFromNowStr,
             orgUnit = orgUnit,
             catCombo = catCombo
-        )
-        // Wait for table to be ready after creating the second dataset instance
-        composeTestRule.waitUntilExactlyOneExists(
-            hasTestTag("TABLE_SCROLLABLE_COLUMN"),
-            timeoutMillis = 10000
         )
         tableIsVisible()
         enterDataStep(
@@ -374,24 +367,25 @@ class DataSetTest : BaseTest() {
         }
     }
 
-    private suspend fun waitForTableToBeVisible() {
-        composeTestRule.awaitIdle()
+    private fun waitForTableToBeVisible() {
+        composeTestRule.waitForIdle()
         dataSetRobot {
             clickOnDataSetAtPosition(0)
         }
         tableIsVisible()
     }
 
-    private suspend fun checkTableIsNotEditable() {
+    private fun checkTableIsNotEditable() {
         tableIsVisible()
         composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN").printToLog("TABLE_LOG")
         dataSetTableRobot(composeTestRule) {
             checkItemWithTextIsDisplayed("This data is not editable")
+            tapOnSaveButton()
+            composeTestRule.waitForIdle()
         }
-        composeTestRule.waitForIdle()
     }
 
-    private suspend fun checkContentBoxesAreDisplayed() {
+    private fun checkContentBoxesAreDisplayed() {
         tableIsVisible()
         // Check top and bottom content is displayed in initial section
         dataSetDetailRobot(composeTestRule) {
@@ -449,7 +443,7 @@ class DataSetTest : BaseTest() {
         }
     }
 
-    private suspend fun checkCategoryIsMovedToRow() {
+    private fun checkCategoryIsMovedToRow() {
         val cellIdSection8 = "PGRlPlAzakpINVR1NVZDLCA8Y28+RmJMWlMzdWVXYlE6PGNvPg=="
         val cellId2Section8 = "PGRlPkZRMm84VUJsY3JTLCA8Y28+RmJMWlMzdWVXYlE6PGNvPg=="
         val cellIdSection16 = "PGRlPkFyUzdWeXVMOTVmLCA8Y28+RmJMWlMzdWVXYlE6PGNvPg=="
@@ -560,7 +554,7 @@ class DataSetTest : BaseTest() {
         }
     }
 
-    private suspend fun checkAutomaticGroupingDisabled() {
+    private fun checkAutomaticGroupingDisabled() {
         val table19 = "t3aNCvHsoSn_0"
         val table219 = "aN8uN5b15YG_1"
         val table20 = "ck7mRNwGDjP_1"
@@ -637,7 +631,7 @@ class DataSetTest : BaseTest() {
         }
     }
 
-    private suspend fun checkPivotOptions() {
+    private fun checkPivotOptions() {
         val table5 = "aN8uN5b15YG"
         val table23 = "aN8uN5b15YG_1"
         val cellIdSection5 = "PGNvYz5ET0M3ZW1MenlSaTo8ZGU+TFNKNW1LcHlFdjE="
@@ -706,29 +700,29 @@ class DataSetTest : BaseTest() {
         }
     }
 
-    private suspend fun tableIsVisible() {
-        composeTestRule.awaitIdle()
+    private fun tableIsVisible() {
+        composeTestRule.waitForIdle()
         dataSetTableRobot(composeTestRule) {
             assertTableIsDisplayed()
         }
     }
 
-    private suspend fun checkImmunizationTableIsDisplayed() {
-        composeTestRule.awaitIdle()
+    private fun checkImmunizationTableIsDisplayed() {
+        composeTestRule.waitForIdle()
         dataSetTableRobot(composeTestRule) {
             assertImmunizationTableIsDisplayed()
         }
     }
 
-    private suspend fun syncButtonIsAvailableStep() {
-        composeTestRule.awaitIdle()
+    private fun syncButtonIsAvailableStep() {
+        composeTestRule.waitForIdle()
         dataSetTableRobot(composeTestRule) {
             syncIsAvailable()
         }
     }
 
-    private suspend fun checkTotals() {
-        composeTestRule.awaitIdle()
+    private fun checkTotals() {
+        composeTestRule.waitForIdle()
         dataSetTableRobot(composeTestRule) {
             totalsAreDisplayed(
                 tableId = "dzjKKQq0cSO",
@@ -793,14 +787,14 @@ class DataSetTest : BaseTest() {
         }
     }
 
-    private suspend fun checkIndicatorsStep() {
-        composeTestRule.awaitIdle()
+    private fun checkIndicatorsStep() {
+        composeTestRule.waitForIdle()
         dataSetTableRobot(composeTestRule) {
             indicatorTableIsDisplayed()
         }
     }
 
-    private suspend fun reenterDataSetToCheckValueSavedStep() {
+    private fun reenterDataSetToCheckValueSavedStep() {
         val cell00Id = "PGRlPnM0Nm01TVMwaHh1Ojxjb2M+UHJsdDBDMVJGMHM="
 
         dataSetTableRobot(composeTestRule) {

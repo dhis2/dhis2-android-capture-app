@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="two_fa_authentication_code">验证码</string>
     <string name="action_next">下一个</string>

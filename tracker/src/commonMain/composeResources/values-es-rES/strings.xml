@@ -7,4 +7,6 @@
     <string name="cancel">Cancelar</string>
     <string name="remove">Eliminar</string>
     <string name="search">Buscar</string>
+    <string name="yes">sí</string>
+    <string name="no">no</string>
     </resources>

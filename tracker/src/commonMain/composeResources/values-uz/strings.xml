@@ -11,5 +11,6 @@
     <string name="remove">Олиб ташлаш</string>
     <string name="search">Излаш</string>
     <string name="optional">Ихтиёрий</string>
-
-</resources>
+    <string name="yes">ҳа</string>
+    <string name="no">йўқ</string>
+    </resources>

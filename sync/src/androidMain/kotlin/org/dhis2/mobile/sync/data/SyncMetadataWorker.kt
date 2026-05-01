@@ -1,0 +1,91 @@
+package org.dhis2.mobile.sync.data
+
+import android.content.Context
+import androidx.work.CoroutineWorker
+import androidx.work.Data
+import androidx.work.ForegroundInfo
+import androidx.work.WorkerParameters
+import org.dhis2.mobile.commons.notifications.NotificationManager
+import org.dhis2.mobile.commons.notifications.WorkerNotificationInfo
+import org.dhis2.mobile.sync.R
+import org.dhis2.mobile.sync.domain.SyncMetadata
+import org.dhis2.mobile.sync.resources.Res
+import org.dhis2.mobile.sync.resources.app_name
+import org.dhis2.mobile.sync.resources.syncing_configuration
+import org.jetbrains.compose.resources.getString
+
+const val METADATA_MESSAGE = "METADATA_MESSAGE"
+
+class SyncMetadataWorker(
+    context: Context,
+    workerParams: WorkerParameters,
+    private val syncMetadata: SyncMetadata,
+    private val notificationManager: NotificationManager,
+) : CoroutineWorker(context, workerParams) {
+    private lateinit var notificationTitle: String
+    private lateinit var notificationText: String
+
+    private val isPeriodic by lazy { inputData.getBoolean(IS_PERIODIC, false) }
+
+    override suspend fun doWork(): Result {
+        if (!isPeriodic) {
+            setForeground(getForegroundInfo())
+        }
+
+        notificationTitle = getString(Res.string.app_name)
+        notificationText = getString(Res.string.syncing_configuration)
+
+        notificationManager.displayMetadataSyncNotification(
+            smallIcon = R.drawable.ic_sync,
+            contentTitle = notificationTitle,
+            contentText = notificationText,
+            progress = 0,
+        )
+
+        val result =
+            syncMetadata { progress ->
+                notificationManager.displayMetadataSyncNotification(
+                    smallIcon = R.drawable.ic_sync,
+                    contentTitle = notificationTitle,
+                    contentText = notificationText,
+                    progress = progress,
+                )
+            }
+
+        if (!isPeriodic) {
+            notificationManager.cancelMetadataSyncNotification()
+        }
+
+        return when {
+            result.isSuccess -> Result.success()
+            else ->
+                Result.failure(
+                    createOutputData(
+                        result.exceptionOrNull()?.message ?: "Unknown error",
+                    ),
+                )
+        }
+    }
+
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        val notificationModel =
+            notificationManager.getMetadataSyncNotification(
+                smallIcon = R.drawable.ic_sync,
+                contentTitle = getString(Res.string.app_name),
+                contentText = getString(Res.string.syncing_configuration),
+                progress = -1,
+            )
+        val notificationInfo =
+            notificationModel as? WorkerNotificationInfo
+                ?: throw IllegalStateException(
+                    "Expected WorkerNotificationInfo but got ${notificationModel::class.qualifiedName}",
+                )
+        return notificationInfo.foregroundInfo
+    }
+
+    private fun createOutputData(message: String) =
+        Data
+            .Builder()
+            .putString(METADATA_MESSAGE, message)
+            .build()
+}

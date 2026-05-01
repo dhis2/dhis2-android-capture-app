@@ -17,5 +17,6 @@
     <string name="clear_search">Очистить поиск</string>
     <string name="search">Поиск</string>
     <string name="optional">Опционно</string>
-
-</resources>
+    <string name="yes">Да</string>
+    <string name="no">нет</string>
+    </resources>

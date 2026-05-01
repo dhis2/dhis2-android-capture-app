@@ -1,41 +1,32 @@
 package org.dhis2.data.services
 
-import io.reactivex.Completable
 import io.reactivex.Observable
 import org.dhis2.commons.bindings.program
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.service.SyncPresenterImpl
 import org.dhis2.data.service.SyncRepository
 import org.dhis2.data.service.SyncResult
-import org.dhis2.data.service.SyncStatusController
-import org.dhis2.data.service.workManager.WorkManagerController
-import org.dhis2.utils.analytics.AnalyticsHelper
+import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.call.BaseD2Progress
 import org.hisp.dhis.android.core.arch.call.D2Progress
 import org.hisp.dhis.android.core.arch.call.D2ProgressStatus
 import org.hisp.dhis.android.core.arch.call.D2ProgressSyncStatus
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
-import org.hisp.dhis.android.core.fileresource.FileResourceDomainType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType
-import org.hisp.dhis.android.core.settings.GeneralSettings
 import org.hisp.dhis.android.core.settings.LimitScope
 import org.hisp.dhis.android.core.settings.ProgramSetting
 import org.hisp.dhis.android.core.settings.ProgramSettings
+import org.hisp.dhis.android.core.settings.SynchronizationSettings
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.tracker.exporter.TrackerD2Progress
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 
 class SyncPresenterTest {
@@ -43,8 +34,6 @@ class SyncPresenterTest {
 
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val preferences: PreferenceProvider = mock()
-    private val workManagerController: WorkManagerController = mock()
-    private val analyticsHelper: AnalyticsHelper = mock()
     private val syncStatusController: SyncStatusController = mock()
     private val syncRepository: SyncRepository = mock()
 
@@ -54,10 +43,8 @@ class SyncPresenterTest {
             SyncPresenterImpl(
                 d2,
                 preferences,
-                workManagerController,
-                analyticsHelper,
-                syncStatusController,
                 syncRepository,
+                syncStatusController,
             )
     }
 
@@ -69,8 +56,14 @@ class SyncPresenterTest {
                 200,
                 LimitScope.GLOBAL,
             )
+        val mockedSyncSettings =
+            mock<SynchronizationSettings> {
+                on { programSettings() } doReturn mockedProgramSettings
+            }
 
-        whenever(d2.settingModule().programSetting().blockingGet()) doReturn mockedProgramSettings
+        whenever(
+            d2.settingModule().synchronizationSettings().blockingGet(),
+        ) doReturn mockedSyncSettings
 
         val (eventLimit, limitByOU, limitByProgram) = presenter.getDownloadLimits()
 
@@ -86,8 +79,14 @@ class SyncPresenterTest {
                 LimitScope.PER_OU_AND_PROGRAM,
             )
 
-        whenever(d2.settingModule().programSetting().blockingGet()) doReturn mockedProgramSettings
+        val mockedSyncSettings =
+            mock<SynchronizationSettings> {
+                on { programSettings() } doReturn mockedProgramSettings
+            }
 
+        whenever(
+            d2.settingModule().synchronizationSettings().blockingGet(),
+        ) doReturn mockedSyncSettings
         val (eventLimit, limitByOU, limitByProgram) = presenter.getDownloadLimits()
 
         assertTrue(eventLimit == 200 && limitByOU && limitByProgram)
@@ -102,8 +101,14 @@ class SyncPresenterTest {
                 LimitScope.PER_PROGRAM,
             )
 
-        whenever(d2.settingModule().programSetting().blockingGet()) doReturn mockedProgramSettings
+        val mockedSyncSettings =
+            mock<SynchronizationSettings> {
+                on { programSettings() } doReturn mockedProgramSettings
+            }
 
+        whenever(
+            d2.settingModule().synchronizationSettings().blockingGet(),
+        ) doReturn mockedSyncSettings
         val (eventLimit, limitByOU, limitByProgram) = presenter.getDownloadLimits()
 
         assertTrue(eventLimit == 200 && !limitByOU && limitByProgram)
@@ -118,135 +123,17 @@ class SyncPresenterTest {
                 LimitScope.PER_ORG_UNIT,
             )
 
-        whenever(d2.settingModule().programSetting().blockingGet()) doReturn mockedProgramSettings
+        val mockedSyncSettings =
+            mock<SynchronizationSettings> {
+                on { programSettings() } doReturn mockedProgramSettings
+            }
 
+        whenever(
+            d2.settingModule().synchronizationSettings().blockingGet(),
+        ) doReturn mockedSyncSettings
         val (eventLimit, limitByOU, limitByProgram) = presenter.getDownloadLimits()
 
         assertTrue(eventLimit == 200 && limitByOU && !limitByProgram)
-    }
-
-    @Test
-    fun `Should configure secondary tracker if configuration exists`() {
-        whenever(
-            d2.metadataModule().download(),
-        ) doReturn
-            Observable.fromArray(
-                BaseD2Progress.empty(2),
-            )
-        whenever(
-            d2.settingModule().generalSetting().blockingGet(),
-        ) doReturn
-            GeneralSettings
-                .builder()
-                .encryptDB(false)
-                .matomoID(11111)
-                .matomoURL("MatomoURL")
-                .build()
-        whenever(
-            d2.mapsModule().mapLayersDownloader().downloadMetadata(),
-        ) doReturn Completable.complete()
-
-        whenever(
-            d2
-                .fileResourceModule()
-                .fileResourceDownloader()
-                .byDomainType()
-                .eq(FileResourceDomainType.ICON)
-                .download(),
-        ) doReturn Observable.just(BaseD2Progress.empty(1))
-
-        presenter.syncMetadata { }
-
-        verify(analyticsHelper, times(1)).updateMatomoSecondaryTracker(any(), any(), any())
-    }
-
-    @Test
-    fun `Should not configure secondary tracker if matomo settings is missing`() {
-        whenever(
-            d2.metadataModule().download(),
-        ) doReturn
-            Observable.fromArray(
-                BaseD2Progress.empty(2),
-            )
-        whenever(
-            d2.settingModule().generalSetting().blockingGet(),
-        ) doReturn
-            GeneralSettings
-                .builder()
-                .encryptDB(false)
-                .build()
-        whenever(
-            d2.mapsModule().mapLayersDownloader().downloadMetadata(),
-        ) doReturn Completable.complete()
-        whenever(
-            d2
-                .fileResourceModule()
-                .fileResourceDownloader()
-                .byDomainType()
-                .eq(FileResourceDomainType.ICON)
-                .download(),
-        ) doReturn Observable.just(BaseD2Progress.empty(1))
-        presenter.syncMetadata { }
-
-        verifyNoMoreInteractions(analyticsHelper)
-    }
-
-    @Test
-    fun `Should not configure secondary tracker if no configuration exists`() {
-        whenever(
-            d2.metadataModule().download(),
-        ) doReturn
-            Observable.fromArray(
-                BaseD2Progress.empty(2),
-            )
-        whenever(
-            d2.settingModule().generalSetting().blockingGet(),
-        ) doReturn null
-        whenever(
-            d2.mapsModule().mapLayersDownloader().downloadMetadata(),
-        ) doReturn Completable.complete()
-        whenever(
-            d2.mapsModule().mapLayersDownloader().downloadMetadata(),
-        ) doReturn Completable.complete()
-        whenever(
-            d2
-                .fileResourceModule()
-                .fileResourceDownloader()
-                .byDomainType()
-                .eq(FileResourceDomainType.ICON)
-                .download(),
-        ) doReturn Observable.just(BaseD2Progress.empty(1))
-        presenter.syncMetadata { }
-
-        verify(analyticsHelper, times(0)).updateMatomoSecondaryTracker(any(), any(), any())
-    }
-
-    @Test
-    fun `Should clear secondary tracker`() {
-        whenever(
-            d2.metadataModule().download(),
-        ) doReturn
-            Observable.fromArray(
-                BaseD2Progress.empty(2),
-            )
-        whenever(
-            d2.settingModule().generalSetting().blockingGet(),
-        ) doReturn null
-        whenever(
-            d2.mapsModule().mapLayersDownloader().downloadMetadata(),
-        ) doReturn Completable.complete()
-        whenever(
-            d2
-                .fileResourceModule()
-                .fileResourceDownloader()
-                .byDomainType()
-                .eq(FileResourceDomainType.ICON)
-                .download(),
-        ) doReturn Observable.just(BaseD2Progress.empty(1))
-        presenter.syncMetadata { }
-
-        verify(analyticsHelper, times(0)).updateMatomoSecondaryTracker(any(), any(), any())
-        verify(analyticsHelper).clearMatomoSecondaryTracker()
     }
 
     @Test

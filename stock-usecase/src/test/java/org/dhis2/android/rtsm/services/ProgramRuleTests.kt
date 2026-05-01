@@ -2,12 +2,12 @@ package org.dhis2.android.rtsm.services
 
 import com.google.common.collect.Lists
 import org.dhis2.mobileProgramRules.toRuleEngineInstant
-import org.dhis2.mobileProgramRules.toRuleEngineInstantWithNoTime
 import org.dhis2.mobileProgramRules.toRuleEngineLocalDate
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.rules.api.RuleEngine
 import org.hisp.dhis.rules.api.RuleEngineContext
+import org.hisp.dhis.rules.api.RuleSupplementaryData
 import org.hisp.dhis.rules.models.Rule
 import org.hisp.dhis.rules.models.RuleAction
 import org.hisp.dhis.rules.models.RuleDataValue
@@ -80,7 +80,7 @@ class ProgramRuleTests {
         return RuleEngineContext(
             rules,
             rulesVariables,
-            emptyMap(),
+            RuleSupplementaryData(),
             emptyMap(),
         )
     }
@@ -133,7 +133,8 @@ class ProgramRuleTests {
                 "test_program_stage",
                 "",
                 RuleEventStatus.ACTIVE,
-                Date().toRuleEngineInstantWithNoTime(),
+                Date().toRuleEngineLocalDate(),
+                Date().toRuleEngineInstant(),
                 Date().toRuleEngineInstant(),
                 Date().toRuleEngineLocalDate(),
                 null,
@@ -185,8 +186,9 @@ class ProgramRuleTests {
         val ruleEventAndroid =
             getRuleEvent(
                 uid = "event_android",
-                eventDate = "2025-09-25T13:04:13.783",
+                eventDate = "2025-09-25T11:04:13.783",
                 created = "2025-09-25T13:04:13.783",
+                createdAtClient = "2025-09-25T11:04:13.783",
                 dataValues =
                     listOf(
                         RuleDataValue(
@@ -195,11 +197,26 @@ class ProgramRuleTests {
                         ),
                     ),
             )
+        val ruleEventAndroidSameCreated =
+            getRuleEvent(
+                uid = "event_android",
+                eventDate = "2025-09-25T12:02:13.783",
+                created = "2025-09-25T13:04:13.783",
+                createdAtClient = "2025-09-25T12:02:13.783",
+                dataValues =
+                    listOf(
+                        RuleDataValue(
+                            dataElement1,
+                            "5",
+                        ),
+                    ),
+            )
         val ruleEventWeb =
             getRuleEvent(
                 uid = "event_web",
                 eventDate = "2025-09-25T00:00:00.000",
                 created = "2025-09-25T15:06:41.483",
+                createdAtClient = null,
                 dataValues =
                     listOf(
                         RuleDataValue(
@@ -213,6 +230,7 @@ class ProgramRuleTests {
                 uid = "event_new",
                 eventDate = "2025-09-25T18:06:41.483",
                 created = "2025-09-25T18:06:41.483",
+                createdAtClient = "2025-09-25T18:06:41.483",
                 dataValues = listOf(),
             )
 
@@ -247,24 +265,40 @@ class ProgramRuleTests {
                     ),
             )
 
-        val ruleEffects =
-            RuleEngine.getInstance().evaluate(
+        // Evaluate the Android and Web events
+        RuleEngine
+            .getInstance()
+            .evaluate(
                 ruleEventNew,
                 getEmptyRuleEnrollment(),
                 listOf(ruleEventAndroid, ruleEventWeb),
                 ruleEngineContext,
-            )
+            ).let { ruleEffects ->
+                // The rule effect must assign the value coming from event_web because its created date
+                // is most recent compared to event_android.
+                assertEquals(ruleEffects.size, 1)
+                assertEquals(ruleEffects.first().data, "10")
+            }
 
-        // The rule effect must assigned the value coming from event_web because its created date
-        // is most recent compared to event_android.
-        assertEquals(ruleEffects.size, 1)
-        assertEquals(ruleEffects.first().data, "10")
+        // Evaluate Android events with the same creation date
+        RuleEngine
+            .getInstance()
+            .evaluate(
+                ruleEventNew,
+                getEmptyRuleEnrollment(),
+                listOf(ruleEventAndroid, ruleEventAndroidSameCreated),
+                ruleEngineContext,
+            ).let { ruleEffects ->
+                assertEquals(ruleEffects.size, 1)
+                assertEquals(ruleEffects.first().data, "5")
+            }
     }
 
     private fun getRuleEvent(
         uid: String,
         eventDate: String,
         created: String,
+        createdAtClient: String?,
         dataValues: List<RuleDataValue>,
     ): RuleEvent =
         RuleEvent(
@@ -272,8 +306,9 @@ class ProgramRuleTests {
             "test_program_stage",
             "",
             RuleEventStatus.ACTIVE,
-            DateUtils.DATE_FORMAT.parse(eventDate).toRuleEngineInstantWithNoTime(),
+            DateUtils.DATE_FORMAT.parse(eventDate).toRuleEngineLocalDate(),
             DateUtils.DATE_FORMAT.parse(created).toRuleEngineInstant(),
+            createdAtClient?.let { DateUtils.DATE_FORMAT.parse(it).toRuleEngineInstant() },
             null,
             null,
             "",

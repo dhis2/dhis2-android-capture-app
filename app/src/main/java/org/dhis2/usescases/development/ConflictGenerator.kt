@@ -1,3 +1,5 @@
+@file:OptIn(LegacyDataValueApi::class)
+
 package org.dhis2.usescases.development
 
 import kotlinx.coroutines.runBlocking
@@ -8,6 +10,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.datavalue.DataValue
 import org.hisp.dhis.android.core.datavalue.DataValueConflict
+import org.hisp.dhis.android.core.datavalue.LegacyDataValueApi
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.imports.ImportStatus
@@ -125,24 +128,37 @@ class ConflictGenerator(
                     dataValueConflict.categoryOptionCombo() != null &&
                     dataValueConflict.attributeOptionCombo() != null
                 ) {
-                    val dataValue =
-                        d2
-                            .dataValueModule()
-                            .dataValues()
-                            .value(
-                                dataValueConflict.period()!!,
-                                dataValueConflict.orgUnit()!!,
-                                dataValueConflict.dataElement()!!,
-                                dataValueConflict.categoryOptionCombo()!!,
-                                dataValueConflict.attributeOptionCombo()!!,
-                            ).blockingGet()
-                    val dv =
-                        dataValue?.toBuilder()?.syncState(State.SYNCED)?.build()
-                    dv?.let {
-                        runBlocking {
-                            d2.databaseAdapter().upsertObject(it, DataValue::class)
+                    d2
+                        .dataSetModule()
+                        .dataSetCompleteRegistrations()
+                        .byPeriod()
+                        .eq(dataValueConflict.period()!!)
+                        .byOrganisationUnitUid()
+                        .eq(dataValueConflict.orgUnit()!!)
+                        .byAttributeOptionComboUid()
+                        .eq(dataValueConflict.attributeOptionCombo()!!)
+                        .blockingGet()
+                        .forEach {
+                            val dataValue =
+                                d2
+                                    .dataValueModule()
+                                    .dataValues()
+                                    .value(
+                                        dataValueConflict.period()!!,
+                                        dataValueConflict.orgUnit()!!,
+                                        dataValueConflict.dataElement()!!,
+                                        dataValueConflict.categoryOptionCombo()!!,
+                                        dataValueConflict.attributeOptionCombo()!!,
+                                        it.dataSet(),
+                                    ).blockingGet()
+                            val dv =
+                                dataValue?.toBuilder()?.syncState(State.SYNCED)?.build()
+                            dv?.let {
+                                runBlocking {
+                                    d2.databaseAdapter().upsertObject(it, DataValue::class)
+                                }
+                            }
                         }
-                    }
                 }
             }.also {
                 runBlocking {
@@ -423,7 +439,9 @@ class ConflictGenerator(
         try {
             runBlocking {
                 d2.databaseAdapter().upsertObject(conflict, TrackerImportConflict::class)
-                d2.databaseAdapter().execSQL(updateEvent(event.uid(), importStatus.toSyncState().name))
+                d2
+                    .databaseAdapter()
+                    .execSQL(updateEvent(event.uid(), importStatus.toSyncState().name))
             }
         } catch (e: Exception) {
             Timber.e(e)
@@ -529,7 +547,7 @@ class ConflictGenerator(
         syncState: String,
     ): String =
         "UPDATE Enrollment SET syncState = '$syncState'," +
-            " aggregatedSyncState = '$syncState' where uid = '$enrollmentUid'"
+                " aggregatedSyncState = '$syncState' where uid = '$enrollmentUid'"
 
     private fun updateTei(
         teiUid: String,

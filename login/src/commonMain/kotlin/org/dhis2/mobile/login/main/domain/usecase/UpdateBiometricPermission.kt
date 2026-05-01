@@ -32,20 +32,19 @@ class UpdateBiometricPermission(
                 val cancellationMessage = getString(Res.string.biometrics_permission_cancelled)
                 suspendCancellableCoroutine { continuation ->
                     val scope = CoroutineScope(continuation.context)
-                    cryptographics.getInitializedCipherForEncryption()?.let {
-                        biometrics.authenticate(it) { cryptoObjectCipher ->
-                            scope.launch {
-                                val ciphertextWrapper =
-                                    cryptographics.encryptData(password, cryptoObjectCipher)
-                                preferences.saveUserCredentialsAndCipher(
-                                    serverUrl,
-                                    username,
-                                    ciphertextWrapper,
-                                )
-                                loginRepository.updateBiometricsPermissions(granted)
-                                if (continuation.isActive) {
-                                    continuation.resume(Result.success(Unit))
-                                }
+                    val cipher = cryptographics.getInitializedCipherForEncryption()
+                    biometrics.authenticate(cipher) { cryptoObjectCipher ->
+                        scope.launch {
+                            val ciphertextWrapper =
+                                cryptographics.encryptData(password, cryptoObjectCipher)
+                            preferences.saveUserCredentialsAndCipher(
+                                serverUrl,
+                                username,
+                                ciphertextWrapper,
+                            )
+                            loginRepository.updateBiometricsPermissions(granted)
+                            if (continuation.isActive) {
+                                continuation.resume(Result.success(Unit))
                             }
                         }
                     }

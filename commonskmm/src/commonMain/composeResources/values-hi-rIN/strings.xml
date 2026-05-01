@@ -10,7 +10,7 @@
     <string name="invalid_interval">केवल 0 से 1 के मान ही अनुमति हैं</string>
     <string name="validation_url">यह मान्य URL नहीं है</string>
     <string name="update_field_error">यह फ़ील्ड अपडेट नहीं हो सका। कृपया फिर से प्रयास करें</string>
-    <string name="error">त्रुटि</string>
+    <string name="error">एरर्स</string>
     <string name="unique_warning">मान अद्वितीय होना चाहिए। समान मान मिला है। इसे सहेजा नहीं गया। कृपया जाँच करें</string>
     <string name="select_time">समय चुनें</string>
     <string name="choose_date">दिन चुनें</string>
@@ -68,8 +68,7 @@
     <string name="search_to_find_more">खोजें और अधिक पाएं</string>
     <string name="action_done">पूरा हुआ</string>
     <string name="input_not_supported">सपोर्टेड नहीं है</string>
-    <!--*******************->
-       END OF D2 Error Messages
-    **********************-->
+    <string name="cancel">रद्द करें</string>
+    <string name="ok">ठीक है</string>
 
 </resources>

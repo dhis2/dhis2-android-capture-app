@@ -26,8 +26,11 @@
     <string name="input_coordinate_longitude">لمبائی</string>
     <string name="no_results_found">کوئی نتیجہ نہیں ملا</string>
     <string name="action_done">ہو گیا</string>
-    <!--*******************->
+    <!--*******************
        END OF D2 Error Messages
     **********************-->
+    <string name="age_or">یا</string>
+    <string name="cancel">منسوخ</string>
+    <string name="ok">ٹھیک</string>
 
 </resources>

@@ -80,6 +80,7 @@ class DomainErrorMapper(
             D2ErrorCode.NO_DHIS2_SERVER,
             D2ErrorCode.SERVER_URL_NULL,
             D2ErrorCode.SERVER_URL_MALFORMED,
+            D2ErrorCode.INVALID_CONFIGURATION,
             D2ErrorCode.INVALID_DHIS_VERSION,
             -> DomainError.ConfigurationError(errorMessage)
 

@@ -47,6 +47,7 @@ class DhisEnrollmentUtilsTest {
                 .builder()
                 .uid("enrollmentUid")
                 .status(EnrollmentStatus.CANCELLED)
+                .attributeOptionCombo("attributeOptionComboUid")
                 .build()
         val result =
             dhisEnrollmentUtils.isEventEnrollmentOpen(
@@ -92,6 +93,7 @@ class DhisEnrollmentUtilsTest {
                 .builder()
                 .uid("enrollmentUid")
                 .status(EnrollmentStatus.ACTIVE)
+                .attributeOptionCombo("attributeOptionComboUid")
                 .build()
         val result =
             dhisEnrollmentUtils.isEventEnrollmentOpen(

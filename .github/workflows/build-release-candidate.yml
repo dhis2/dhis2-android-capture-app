@@ -45,7 +45,7 @@ jobs:
         encodedString: ${{ secrets.KEYSTORE }}
 
     - name: Build Release APKs
-      run: ./gradlew app:assembleDhis2Release app:assembleDhis2PlayServicesRelease
+      run: ./gradlew --dependency-verification lenient app:assembleDhis2Release app:assembleDhis2PlayServicesRelease
       env:
         SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -69,7 +69,7 @@ jobs:
         TRAINING_KEY_PASSWORD: ${{ secrets.TRAINING_KEY_PASSWORD }}
         TRAINING_STORE_PASSWORD: ${{ secrets.TRAINING_STORE_PASSWORD }}
         TRAINING_STORE_FILE: ${{ steps.decode_training_keystore.outputs.filePath }}
-      run: ./gradlew app:assembleDhis2TrainingRelease
+      run: ./gradlew --dependency-verification lenient app:assembleDhis2TrainingRelease
 
     - name: Read version name from file
       working-directory: ./gradle
@@ -78,21 +78,21 @@ jobs:
 
     # Upload DhisRelease APK
     - name: Upload DhisRelease APK
-      uses: actions/upload-artifact@v6.0.0
+      uses: actions/upload-artifact@v7.0.0
       with:
         name: ${{ env.repository_name }} - DhisRelease APK
         path: ${{ env.main_project_module }}/build/outputs/apk/dhis2/release/dhis2-v${{ steps.read-version.outputs.vName }}.apk
 
     # Upload DhisPlayServicesRelease APK
     - name: Upload DhisPlayServicesRelease APK
-      uses: actions/upload-artifact@v6.0.0
+      uses: actions/upload-artifact@v7.0.0
       with:
         name: ${{ env.repository_name }} - DhisPlayServicesRelease APK
         path: ${{ env.main_project_module }}/build/outputs/apk/dhis2PlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk
 
       # Upload Training Release APK
     - name: Upload Training Release APK
-      uses: actions/upload-artifact@v6.0.0
+      uses: actions/upload-artifact@v7.0.0
       with:
         name: ${{ env.repository_name }} - Training Release APK
         path: ${{ env.main_project_module }}/build/outputs/apk/dhis2Training/release/dhis2-v${{ steps.read-version.outputs.vName }}-training.apk

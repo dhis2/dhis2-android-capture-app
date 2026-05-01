@@ -1,5 +1,6 @@
 package org.dhis2.usescases.settings
 
+import android.text.format.DateFormat
 import io.reactivex.Single
 import org.dhis2.BuildConfig
 import org.dhis2.bindings.toSeconds
@@ -15,6 +16,7 @@ import org.dhis2.commons.prefs.Preference.Companion.TIME_DAILY
 import org.dhis2.commons.prefs.Preference.Companion.TIME_WEEKLY
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.service.SyncResult
+import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.settings.models.DataSettingsViewModel
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
 import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel
@@ -29,10 +31,13 @@ import org.hisp.dhis.android.core.settings.SynchronizationSettings
 import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase
 import timber.log.Timber
 
+private const val dateTimeFormat = "dd/MM/yyyy HH:mm"
+
 class SettingsRepository(
     val d2: D2,
     val prefs: PreferenceProvider,
     val featureConfigRepository: FeatureConfigRepository,
+    private val syncBackgroundJobAction: SyncBackgroundJobAction,
 ) {
     private val syncSettings: SynchronizationSettings?
         get() =
@@ -49,12 +54,7 @@ class SettingsRepository(
                 null
             }
     private val programSettings: ProgramSettings?
-        get() =
-            if (d2.settingModule().programSetting().blockingExists()) {
-                d2.settingModule().programSetting().blockingGet()
-            } else {
-                null
-            }
+        get() = syncSettings?.programSettings()
     private val smsConfig: ConfigCase.SmsConfig
         get() =
             d2
@@ -68,6 +68,9 @@ class SettingsRepository(
             DataSettingsViewModel(
                 dataSyncPeriod = dataPeriod(),
                 lastDataSync = prefs.getString(Constants.LAST_DATA_SYNC, "-")!!,
+                nextDataSync = syncBackgroundJobAction.getNextDataSync()?.let {
+                    DateFormat.format(dateTimeFormat, it).toString()
+                },
                 syncHasErrors = !prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true),
                 dataHasErrors = dataHasErrors(),
                 dataHasWarnings = dataHasWarning(),
@@ -85,6 +88,12 @@ class SettingsRepository(
             MetadataSettingsViewModel(
                 metadataSyncPeriod = metadataPeriod(),
                 lastMetadataSync = prefs.getString(Constants.LAST_META_SYNC, "-")!!,
+                nextMetadataSync = syncBackgroundJobAction.getNextMetadataSync()?.let {
+                    DateFormat.format(dateTimeFormat, it).toString()
+                },
+                nextSettingsSync = syncBackgroundJobAction.getNextSettingsSync()?.let {
+                    DateFormat.format(dateTimeFormat, it).toString()
+                },
                 hasErrors = !prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true),
                 canEdit = syncSettings?.metadataSync() == null,
                 syncInProgress = false,
@@ -179,13 +188,13 @@ class SettingsRepository(
                 .isNotEmpty()
 
     private fun metadataPeriod(): Int =
-        generalSettings?.metadataSync()?.toSeconds() ?: prefs.getInt(
+        syncSettings?.metadataSync()?.toSeconds() ?: prefs.getInt(
             Preference.TIME_META,
             TIME_WEEKLY,
         )
 
     private fun dataPeriod(): Int =
-        generalSettings?.dataSync()?.toSeconds() ?: prefs.getInt(
+        syncSettings?.dataSync()?.toSeconds() ?: prefs.getInt(
             Preference.TIME_DATA,
             TIME_DAILY,
         )
@@ -231,14 +240,11 @@ class SettingsRepository(
     private fun getLimitedScopeFromPreferences(): LimitScope {
         val byOrgUnit = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false)
         val byProgram = prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false)
-        return if (byOrgUnit && !byProgram) {
-            LimitScope.PER_ORG_UNIT
-        } else if (!byOrgUnit && byProgram) {
-            LimitScope.PER_PROGRAM
-        } else if (byOrgUnit && byProgram) {
-            LimitScope.PER_OU_AND_PROGRAM
-        } else {
-            LimitScope.GLOBAL
+        return when {
+            byOrgUnit && byProgram -> LimitScope.PER_OU_AND_PROGRAM
+            byOrgUnit && !byProgram -> LimitScope.PER_ORG_UNIT
+            !byOrgUnit && byProgram -> LimitScope.PER_PROGRAM
+            else -> LimitScope.GLOBAL
         }
     }
 
@@ -253,6 +259,7 @@ class SettingsRepository(
     suspend fun saveLimitScope(limitScope: LimitScope) {
         when (limitScope) {
             LimitScope.ALL_ORG_UNITS -> {
+                // Do nothing
             }
 
             LimitScope.GLOBAL -> {
@@ -289,7 +296,7 @@ class SettingsRepository(
                 .setGatewayNumber(gatewayNumber)
                 .blockingAwait()
         } catch (e: Exception) {
-            Timber.d(e.message)
+            Timber.d(e)
         }
     }
 

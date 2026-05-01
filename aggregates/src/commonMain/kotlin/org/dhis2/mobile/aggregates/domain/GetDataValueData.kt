@@ -36,6 +36,7 @@ internal class GetDataValueData(
                                     orgUnitUid = orgUnitUid,
                                     attrOptionComboUid = attrOptionComboUid,
                                     categoryOptionComboUid = key.second,
+                                    sourceDataSetUid = datasetUid,
                                 )?.first,
                     )
             }

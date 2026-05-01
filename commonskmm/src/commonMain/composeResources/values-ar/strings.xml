@@ -119,7 +119,7 @@
     <string name="search_to_find_more">ابحث للعثور على المزيد</string>
     <string name="action_done">تم</string>
     <string name="input_not_supported">غير مدعوم</string>
-    <!--*******************->
+    <!--*******************
         D2 Error Messages
     **********************-->
     <string name="login_error_null_pass">كلمة المرور مفقودة. الرجاء إدخال كلمة المرور.</string>
@@ -142,7 +142,6 @@
     <string name="error_app_version_not_set">لم يتم تعيين إصدار التطبيق.</string>
     <string name="error_create_existing_error">الغاء الإنشاء. الكائن موجود مسبقًا.</string>
     <string name="error_delete_non_existing_object">احباط عملية الحذف، الكائن غير موجود.</string>
-    <string name="error_reserve_value_on_server">لم نتمكن من الاحتفاظ بقيم لهذه السجلات. يرجى الاتصال بالمسؤول الخاص بك.</string>
     <string name="error_export_login">الرجاء تسجيل الدخول لتصدير قاعدة البيانات.</string>
     <string name="error_export_encrypted">تصدير قاعدة بيانات مشفرة غير مدعوم.</string>
     <string name="error_import_exist">أنت تستورد قاعدة بيانات موجودة مسبقًا.</string>
@@ -167,7 +166,6 @@
     <string name="error_socket_timeout">استغرق الخادم وقتًا طويلاً للاستجابة. لقد ألغينا الطلب.</string>
     <string name="error_relationship_updated">لا يمكن تحديث العلاقة.</string>
     <string name="error_too_many_periods">هناك فترات كثيرة جدا.</string>
-    <string name="error_url_not_found">لم نتمكن من العثور على URL. الرجاء التحقق منه.</string>
     <string name="error_account_disabled">تم تعطيل حساب المستخدم الخاص بك. إذا كان هذا خطأ ، اتصل بالمسؤول.</string>
     <string name="error_account_locked">حساب المستخدم الخاص بك مغلق. إذا كان هذا خطأ ، اتصل بالمسؤول.</string>
     <string name="error_set_value">تعذر تعيين القيمة.</string>
@@ -178,8 +176,11 @@
     <string name="error_org_unit_scope">البحث على الإنترنت متاح فقط للوحدات التنظيمية المتاحة للمستخدم للبحث.</string>
     <string name="error_server_unavailable">الخادم غير متوفر حالياً. حاول مرة أخرى في وقت لاحق.</string>
     <string name="error_no_internet_connection">أنت غير متصل بالإنترنت. اتصل بالإنترنت وحاول مرة أخرى.</string>
-    <!--*******************->
+    <!--*******************
        END OF D2 Error Messages
     **********************-->
+    <string name="age_or">أو</string>
+    <string name="cancel">إلغاء</string>
+    <string name="ok">موافق</string>
 
 </resources>

@@ -13,8 +13,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,8 +46,8 @@ import org.dhis2.form.data.RulesUtilsProviderConfigurationError
 import org.dhis2.form.data.scan.ScanContract
 import org.dhis2.form.data.toMessage
 import org.dhis2.form.di.Injector
-import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FormRepositoryRecords
+import org.dhis2.form.model.FormSection
 import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.UiRenderType
@@ -193,12 +193,7 @@ class FormView : Fragment() {
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
             )
             setContent {
-                val items by viewModel.items.observeAsState()
-                val sections =
-                    items?.let {
-                        formSectionMapper.mapFromFieldUiModelList(it)
-                    } ?: emptyList()
-
+                val items by viewModel.items.collectAsState(emptyList())
                 var resultDialogData: FormViewModel.FormActions.ShowResultDialog? by remember {
                     mutableStateOf(null)
                 }
@@ -216,12 +211,14 @@ class FormView : Fragment() {
                 }
 
                 Form(
-                    sections = sections,
+                    sections = items,
                     intentHandler = ::intentHandler,
                     uiEventHandler = ::uiEventHandler,
-                    resources = Injector.provideResourcesManager(context),
                 )
 
+                LaunchedEffect(items) {
+                    render(items)
+                }
                 resultDialogData?.let {
                     DataEntryBottomSheet(
                         model = it.model,
@@ -267,12 +264,6 @@ class FormView : Fragment() {
             onItemChangeListener?.let { it(rowAction) }
         }
 
-        viewModel.items.observe(
-            viewLifecycleOwner,
-        ) { items ->
-            render(items)
-        }
-
         viewModel.loading.observe(
             viewLifecycleOwner,
         ) { loading ->
@@ -308,14 +299,6 @@ class FormView : Fragment() {
         ) { percentage ->
             completionListener?.invoke(percentage)
         }
-
-        viewModel.calculationLoop.observe(
-            viewLifecycleOwner,
-        ) { displayLoopWarning ->
-            if (displayLoopWarning) {
-                showLoopWarning()
-            }
-        }
     }
 
     private fun showInfoDialog(infoUiModel: InfoUiModel) {
@@ -328,15 +311,6 @@ class FormView : Fragment() {
             Constants.DESCRIPTION_DIALOG,
             null,
         ).show()
-    }
-
-    private fun showLoopWarning() {
-        MaterialAlertDialogBuilder(requireContext(), R.style.DhisMaterialDialog)
-            .setTitle(getString(R.string.program_rules_loop_warning_title))
-            .setMessage(getString(R.string.program_rules_loop_warning_message))
-            .setPositiveButton(R.string.action_accept) { _, _ -> }
-            .setCancelable(false)
-            .show()
     }
 
     private fun uiEventHandler(uiEvent: RecyclerViewUiEvents) {
@@ -465,10 +439,9 @@ class FormView : Fragment() {
         }
     }
 
-    private fun render(items: List<FieldUiModel>) {
+    private fun render(items: List<FormSection>) {
         viewModel.calculateCompletedFields()
         viewModel.updateConfigurationErrors()
-        viewModel.displayLoopWarningIfNeeded()
         viewModel.onItemsRendered()
         onFieldItemsRendered?.invoke(items.isEmpty())
     }

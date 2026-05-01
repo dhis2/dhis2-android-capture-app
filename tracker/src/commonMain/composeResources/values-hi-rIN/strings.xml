@@ -18,5 +18,5 @@
     <string name="clear_search">खोज साफ़ करें</string>
     <string name="search">सर्च करें / खोजें</string>
     <string name="optional">वैकल्पिक</string>
-
-</resources>
+    <string name="custom_intent_launch">लॉन्च</string>
+    </resources>

@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Launches a coroutine in the ViewModel's scope for executing a use case.
@@ -13,12 +15,14 @@ import org.dhis2.mobile.commons.coroutine.CoroutineTracker
  *
  * @param block The suspend block of code to be executed within the coroutine. This is typically the use case logic.
  */
-fun ViewModel.launchUseCase(block: suspend CoroutineScope.() -> Unit) =
-    viewModelScope.launch {
-        CoroutineTracker.increment()
-        try {
-            block()
-        } finally {
-            CoroutineTracker.decrement()
-        }
+fun ViewModel.launchUseCase(
+    dispatcher: CoroutineContext = EmptyCoroutineContext,
+    block: suspend CoroutineScope.() -> Unit,
+) = viewModelScope.launch(dispatcher) {
+    CoroutineTracker.increment()
+    try {
+        block()
+    } finally {
+        CoroutineTracker.decrement()
     }
+}

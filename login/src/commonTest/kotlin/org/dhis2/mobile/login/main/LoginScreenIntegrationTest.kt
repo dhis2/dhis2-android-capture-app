@@ -2,7 +2,6 @@ package org.dhis2.mobile.login.main
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -15,8 +14,8 @@ import org.dhis2.mobile.login.main.data.LoginRepository
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
+import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
-import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
 import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
 import org.dhis2.mobile.login.pin.data.SessionRepository
@@ -35,30 +34,24 @@ class LoginScreenIntegrationTest {
     private val navigator: Navigator = mock()
     private val accountRepository: AccountRepository = mock()
     private val sessionRepository: SessionRepository = mock()
-
     private val loginRepository: LoginRepository = mock()
-    private val appLinkNavigation: AppLinkNavigation = mock()
     private val networkStatusProvider: NetworkStatusProvider = mock()
-
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val mockAppLinkFlow = MutableSharedFlow<String>()
     private val mockNetworkStatusFlow = MutableStateFlow(true)
-
     private lateinit var getInitialScreen: GetInitialScreen
-
     private lateinit var importDatabase: ImportDatabase
-
     private lateinit var validateServer: ValidateServer
+    private lateinit var processDeviceEnrollment: ProcessDeviceEnrollment
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        whenever(appLinkNavigation.appLink).thenReturn(mockAppLinkFlow)
         whenever(networkStatusProvider.connectionStatus).thenReturn(mockNetworkStatusFlow)
 
         importDatabase = ImportDatabase(repository = loginRepository)
         validateServer = ValidateServer(repository = loginRepository)
         getInitialScreen = GetInitialScreen(accountRepository, sessionRepository)
+        processDeviceEnrollment = ProcessDeviceEnrollment(repository = loginRepository)
     }
 
     @AfterTest
@@ -70,6 +63,16 @@ class LoginScreenIntegrationTest {
      *
      * Test case: ANDROAPP-7220
      * Scenario: Manage accounts screen
+     * Given the user is logged out
+     * And has <number_of_accounts> accounts stored
+     * When opens the app
+     * Then goes to <destination_screen>
+     *
+     * Examples:
+     * |number_of_accounts |destination_screen         |
+     * | none              |server configuration screen|
+     * | one               |existing account screen    |
+     * | two or more       |manage accounts screen     |
      *
      */
 
@@ -117,12 +120,13 @@ class LoginScreenIntegrationTest {
             // Then goes to existing account screen (LegacyLogin)
             verify(navigator).navigate(
                 eq(
-                    LoginScreenState.LegacyLogin(
+                    LoginScreenState.LoginCredentials(
                         selectedServer = singleAccount.serverUrl,
                         selectedUsername = singleAccount.name,
                         serverName = singleAccount.serverName,
                         selectedServerFlag = singleAccount.serverFlag,
                         allowRecovery = singleAccount.allowRecovery,
+                        oAuthEnabled = false,
                     ),
                 ),
                 any(),
@@ -145,9 +149,18 @@ class LoginScreenIntegrationTest {
             // When opening the app
             initViewModel()
 
-            // Then goes to OAuth login screen
+            // Then goes to login screen with OAuth
             verify(navigator).navigate(
-                eq(LoginScreenState.OauthLogin(selectedServer = oauthAccount.serverUrl)),
+                eq(
+                    LoginScreenState.LoginCredentials(
+                        selectedServer = oauthAccount.serverUrl,
+                        selectedUsername = oauthAccount.name,
+                        serverName = oauthAccount.serverName,
+                        selectedServerFlag = oauthAccount.serverFlag,
+                        allowRecovery = false,
+                        oAuthEnabled = true,
+                    ),
+                ),
                 any(),
             )
         }
@@ -213,7 +226,6 @@ class LoginScreenIntegrationTest {
                 getInitialScreen = getInitialScreen,
                 importDatabase = importDatabase,
                 validateServer = validateServer,
-                appLinkNavigation = appLinkNavigation,
                 networkStatusProvider = networkStatusProvider,
             )
     }

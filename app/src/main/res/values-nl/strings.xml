@@ -33,7 +33,6 @@
     <string name="sync_error_title">Synchronisatiefout</string>
     <string name="sync_error_text">Er is een fout opgetreden tijdens de synchronisatie. Probeer het opnieuw.</string>
     <string name="sync_incomplete_error_text">De synchronisatie is voltooid, maar we hebben geen serverbevestiging ontvangen voor alle records. Die gegevens zijn nog steeds gemarkeerd als \"offline\" in de app. We raden aan om de synchronisatie opnieuw te proberen.</string>
-    <string name="data_sync_warning_program">WAARSCHUWING: de meeste van uw gegevens zijn gesynchroniseerd, maar sommige velden leverden problemen op. Synchroniseer uw configuratie en probeer het opnieuw. Als de waarschuwing aanhoudt, controleer dan hun synchronisatiestatus: programma\'s, TEI\'s en gebeurtenissen met conflicten zijn gemarkeerd als @.</string>
     <string name="server_sync_error">Er is een fout opgetreden en de server heeft niet gereageerd. Neem contact op met uw beheerder.</string>
 
     <string name="search_result_text">%s resultaten gevonden</string>
@@ -466,6 +465,7 @@
     <string name="action_agree">Mee eens zijn</string>
     <string name="action_continue">Doorgaan</string>
     <string name="login_server_info_title">Server-URL</string>
+    <string name="login_server_info_message">Voer de DHIS 2-server-URL voor uw organisatie in zoals verstrekt door uw systeembeheerder.\n\nU kunt ook een QR-code scannen met de URL van uw server</string>
     <string name="forgot_your_code">Ben je je code vergeten?</string>
     <string name="event_form_end_options_title">Wat zou je willen doen voor dit evenement?</string>
     <string name="sectionSelectorEnd">EINDE</string>
@@ -648,9 +648,9 @@
     <string name="dataset_overview">Details</string>
     <string name="dataset_comments">Opmerkingen</string>
     <string name="saved">Opgeslagen!</string>
-    <string name="run_validation_rules">Wilt u de datakwaliteit controleren?</string>
+    <string name="run_validation_rules">Wilt u de datakwaliteit controleren\?</string>
     <string name="validation_success_title">Alles ziet er goed uit!</string>
-    <string name="mark_dataset_complete">Wil je ook de dataset compleet maken?</string>
+    <string name="mark_dataset_complete">Wil je ook de dataset compleet maken\?</string>
     <string name="dataset_completed">Markeer als voltooid</string>
     <string name="name">Naam</string>
     <string name="formula">Formule</string>
@@ -770,7 +770,7 @@
     <string name="edition_no_write_access">U heeft geen toestemming om deze gegevens te bewerken</string>
     <string name="event_date_not_in_orgunit_range">Deze gegevens zijn niet bewerkbaar omdat de organisatie-eenheid gesloten is</string>
     <string name="edition_no_catcombo_access">U heeft geen toestemming om deze gegevens te bewerken</string>
-    <string name="edition_orgunit_capture_scope">U kunt gegevens van deze organisatie-eenheid niet bewerken</string>
+    <string name="edition_orgunit_user_scope">U kunt gegevens van deze organisatie-eenheid niet bewerken</string>
     <string name="reload_list">Zoeken resetten</string>
     <string name="error_tei_online_search_title">De online zoekopdracht leverde het volgende bericht op:</string>
     <string name="program_rules_loop_warning_title">Waarschuwing programmaregels</string>

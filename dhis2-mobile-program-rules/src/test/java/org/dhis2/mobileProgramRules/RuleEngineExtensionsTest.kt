@@ -52,14 +52,14 @@ class RuleEngineExtensionsTest {
         val date1 = DateUtils.DATE_FORMAT.parse("2025-09-25T11:43:32.431")
         val date2 = DateUtils.DATE_FORMAT.parse("2025-09-25T00:00:00.000")
 
-        assertEquals(date1.toRuleEngineInstantWithNoTime(), date2.toRuleEngineInstantWithNoTime())
+        assertEquals(date1.toRuleEngineLocalDate(), date2.toRuleEngineLocalDate())
 
         val date3 = DateUtils.DATE_FORMAT.parse("2025-09-25T11:43:32.431")
         val date4 = DateUtils.DATE_FORMAT.parse("2025-09-26T00:00:00.000")
 
         assertNotEquals(
-            date3.toRuleEngineInstantWithNoTime(),
-            date4.toRuleEngineInstantWithNoTime(),
+            date3.toRuleEngineLocalDate(),
+            date4.toRuleEngineLocalDate(),
         )
     }
 

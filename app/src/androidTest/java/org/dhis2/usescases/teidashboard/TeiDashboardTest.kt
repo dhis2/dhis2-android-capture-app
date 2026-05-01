@@ -339,23 +339,21 @@ class TeiDashboardTest : BaseTest() {
             clickOnTimelineEvents()
             clickOnMenuMoreOptions()
             clickOnMenuProgramEnrollments()
-        }
 
-        enrollmentRobot(composeTestRule) {
-            clickOnAProgramForEnrollment(composeTestRule, womanProgram)
-            clickOnAcceptInDatePicker()
+            enrollmentRobot(composeTestRule) {
+                clickOnAProgramForEnrollment(composeTestRule, womanProgram)
+                clickOnAcceptInDatePicker()
 
-            orgUnitSelectorRobot(composeTestRule) {
-                selectTreeOrgUnit(orgUnit)
+                orgUnitSelectorRobot(composeTestRule) {
+                    selectTreeOrgUnit(orgUnit)
+                }
+
+                waitUntilActivityVisible<EnrollmentActivity>()
+                openFormSection(personAttribute)
+                typeOnInputDateField("01012000", "Date of birth")
+                clickOnSaveEnrollment()
             }
 
-            waitUntilActivityVisible<EnrollmentActivity>()
-            openFormSection(personAttribute)
-            typeOnInputDateField("01012000", "Date of birth")
-            clickOnSaveEnrollment()
-        }
-
-        teiDashboardRobot(composeTestRule) {
             waitToDebounce(1000)
             clickOnMenuMoreOptions()
             clickOnTimelineEvents()

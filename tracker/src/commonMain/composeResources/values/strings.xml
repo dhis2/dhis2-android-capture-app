@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="empty_relationships">There are no relationships, click "+" to add a new one.</string>
+    <string name="empty_relationships">There are no relationships, click \"+\" to add a new one.</string>
     <string name="relation_creation_date">Relation created on</string>
     <string name="remove_relationship_title">Remove %1$s?</string>
     <string name="remove_relationship_desc">The %1$s will be deleted. This action cannot be undone.</string>
@@ -18,5 +18,12 @@
     <string name="clear_search">Clear search</string>
     <string name="search">Search</string>
     <string name="optional">Optional</string>
-
+    <string name="custom_intent_launch">Launch</string>
+    <string name="equal_search_operator">Exact matches only</string>
+    <string name="like_search_operator">Matches any part of the value</string>
+    <string name="starts_with_search_operator">Must match the start of the value</string>
+    <string name="end_with_search_operator">Must match the end of the value</string>
+    <string name="yes">yes</string>
+    <string name="no">no</string>
+    <string name="min_characters_warning">Enter at least %1$d characters</string>
 </resources>

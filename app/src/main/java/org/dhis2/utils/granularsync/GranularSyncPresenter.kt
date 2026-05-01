@@ -59,9 +59,12 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
+import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.sms.SmsSendingService
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 
 class GranularSyncPresenter(
@@ -73,7 +76,8 @@ class GranularSyncPresenter(
     private val syncContext: SyncContext,
     private val workManagerController: WorkManagerController,
     private val smsSyncProvider: SMSSyncProvider,
-) : ViewModel() {
+) : ViewModel(),
+    KoinComponent {
     private val workerName: String
     private var disposable: CompositeDisposable = CompositeDisposable()
     private lateinit var states: MutableLiveData<List<SmsSendingService.SendingStatus>>
@@ -81,6 +85,8 @@ class GranularSyncPresenter(
     private var refreshing = false
     private val _currentState = MutableStateFlow<SyncUiState?>(null)
     val currentState: StateFlow<SyncUiState?> = _currentState
+
+    private val syncBackgroundJobAction: SyncBackgroundJobAction by inject()
 
     init {
         workerName = workerName()
@@ -172,7 +178,7 @@ class GranularSyncPresenter(
 
                 workManagerController.beginUniqueWork(workerItem)
             } else {
-                workManagerController.syncDataForWorker(Constants.DATA_NOW, Constants.INITIAL_SYNC)
+                syncBackgroundJobAction.launchDataSync(0)
             }
         }
         return observeWorkInfo()

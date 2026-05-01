@@ -105,14 +105,12 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
         binding.navigationBar.setOnItemSelectedListener(item -> {
             Fragment newFragment = null;
-            switch (item.getItemId()) {
-                case R.id.navigation_list_view:
-                    newFragment = DataSetListFragment.newInstance(dataSetUid, accessWriteData);
-                    break;
-                case R.id.navigation_analytics:
-                    presenter.trackDataSetAnalytics();
-                    newFragment = GroupAnalyticsFragment.Companion.forDataSet(dataSetUid);
-                    break;
+            int itemId = item.getItemId();
+            if (itemId == R.id.navigation_list_view) {
+                newFragment = DataSetListFragment.newInstance(dataSetUid, accessWriteData);
+            } else if (itemId == R.id.navigation_analytics) {
+                presenter.trackDataSetAnalytics();
+                newFragment = GroupAnalyticsFragment.Companion.forDataSet(dataSetUid);
             }
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             if (fragment == null ||(newFragment != null  && !fragment.getClass().toString().equals(newFragment.getClass().toString()))) {

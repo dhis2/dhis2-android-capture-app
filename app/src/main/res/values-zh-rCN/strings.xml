@@ -32,7 +32,6 @@
     <string name="sync_error_title">同步错误</string>
     <string name="sync_error_text">同步中发生错误，请重试</string>
     <string name="sync_incomplete_error_text">同步完成，但我们没有收到所有记录的服务器确认。这些记录在应用程序中仍被标记为“离线”状态。我们建议重试同步。</string>
-    <string name="data_sync_warning_program">警告：你的大多数数据已经同步，但是有些字段存在冲突，同步你的配置再试。如果警告仍然存在，检查你的同步状态：项目、跟踪实体和事件如果有冲突会标记为@。</string>
     <string name="server_sync_error">发生错误，服务器未响应。与您的管理员联系。</string>
 
     <string name="search_result_text">发现结果：1%s</string>
@@ -485,6 +484,7 @@
     <string name="action_agree">同意</string>
     <string name="action_continue">继续</string>
     <string name="login_server_info_title">服务器URL</string>
+    <string name="login_server_info_message">输入管理员提供的服务器地址。\n\n 可选的你可以扫描服务器地址 二维码</string>
     <string name="forgot_your_code">忘记你的数字口令</string>
     <string name="event_form_end_options_title">对该事件你想做什么？</string>
     <string name="sectionSelectorEnd">结束</string>
@@ -792,7 +792,7 @@
     <string name="edition_no_write_access">您无权编辑此数据</string>
     <string name="event_date_not_in_orgunit_range">此数据不可修改，因为单位部门已关闭</string>
     <string name="edition_no_catcombo_access">您无权编辑此数据</string>
-    <string name="edition_orgunit_capture_scope">您无法编辑此机构的数据</string>
+    <string name="edition_orgunit_user_scope">您无法编辑此机构的数据</string>
     <string name="reload_list">重置搜索</string>
     <string name="error_tei_online_search_title">网上搜索返回如下信息：</string>
     <string name="program_rules_loop_warning_title">项目规则警告</string>

@@ -16,6 +16,7 @@ import org.hisp.dhis.android.core.analytics.AnalyticsException
 import org.hisp.dhis.android.core.analytics.aggregated.DimensionItem
 import org.hisp.dhis.android.core.analytics.aggregated.GridAnalyticsResponse
 import org.hisp.dhis.android.core.arch.helpers.Result
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.RelativeOrganisationUnit
 import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.common.ValueType
@@ -79,6 +80,7 @@ class ChartsRepositoryTest {
                 .uid("enrollmentUid")
                 .program("programUid")
                 .trackedEntityInstance(null)
+                .attributeOptionCombo("attributeOptionComboUid")
                 .build()
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")
         assertTrue(
@@ -538,6 +540,7 @@ class ChartsRepositoryTest {
                 .uid("enrollmentUid")
                 .program("programUid")
                 .trackedEntityInstance("teiUid")
+                .attributeOptionCombo("attributeOptionComboUid")
                 .build()
     }
 
@@ -676,6 +679,7 @@ class ChartsRepositoryTest {
                 .builder()
                 .uid("de_1")
                 .valueType(ValueType.NUMBER)
+                .categoryCombo(ObjectWithUid.create("categoryOptionComboUid"))
                 .build()
         whenever(
             d2
@@ -706,7 +710,7 @@ class ChartsRepositoryTest {
                     ProgramStageDataElement
                         .builder()
                         .uid("psde_uid_1")
-                        .dataElement(DataElement.builder().uid("de_1").build())
+                        .dataElement(ObjectWithUid.create("de_1"))
                         .build(),
                 )
         }

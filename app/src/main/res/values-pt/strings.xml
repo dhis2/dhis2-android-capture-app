@@ -34,7 +34,6 @@
     <string name="sync_error_title">Erro de sincronização</string>
     <string name="sync_error_text">Ocorreu um erro durante a sincronização. Por favor tente novamente.</string>
     <string name="sync_incomplete_error_text">A sincronização foi concluída, mas não recebemos a confirmação do servidor para todos os registos. Esses registos ainda estão marcados como “offline” na aplicação. Recomendamos que tente novamente a sincronização.</string>
-    <string name="data_sync_warning_program">AVISO: A maioria dos seus dados é sincronizada, mas alguns campos apresentaram conflitos. Sincronize sua configuração e tente novamente. Se o aviso persistir, verifique o status de sincronização: programas, TEIs e eventos com conflitos são marcados como @.</string>
     <string name="server_sync_error"> Ocorreu um erro e o servidor não respondeu. Contacte o seu administrador.</string>
 
     <string name="search_result_text">%s resultados encontrados</string>
@@ -489,6 +488,7 @@
     <string name="action_agree">Aceita</string>
     <string name="action_continue">Continuar</string>
     <string name="login_server_info_title">url do servidor</string>
+    <string name="login_server_info_message">Digite o URL do servidor DHIS 2 da sua organização, conforme fornecido pelo administrador do sistema.\n\nAlternativamente, você pode digitalizar um código QR contendo o URL do seu servido</string>
     <string name="forgot_your_code">Esqueceu seu código?</string>
     <string name="event_form_end_options_title">O que você gostaria de fazer para este evento?</string>
     <string name="sectionSelectorEnd">FIM</string>
@@ -671,9 +671,9 @@
     <string name="dataset_overview">Detalhes</string>
     <string name="dataset_comments">Comentarios</string>
     <string name="saved">Gravado!</string>
-    <string name="run_validation_rules">Você quer verificar a qualidade dos dados?</string>
+    <string name="run_validation_rules">Você quer verificar a qualidade dos dados\?</string>
     <string name="validation_success_title">Tudo parece bem!</string>
-    <string name="mark_dataset_complete">Você também deseja completar o conjunto de dados?</string>
+    <string name="mark_dataset_complete">Você também deseja completar o conjunto de dados\?</string>
     <string name="dataset_completed">Marcar como completado</string>
     <string name="name">Nome</string>
     <string name="formula">Fórmula</string>
@@ -796,7 +796,7 @@
     <string name="edition_no_write_access">Não tem permissão para editar estes dados</string>
     <string name="event_date_not_in_orgunit_range">Estes dados não são editáveis porque a unidade organizacional está encerrada</string>
     <string name="edition_no_catcombo_access">Não tem permissão para editar estes dados</string>
-    <string name="edition_orgunit_capture_scope">Não é possível editar dados desta unidade organizacional</string>
+    <string name="edition_orgunit_user_scope">Não é possível editar dados desta unidade organizacional</string>
     <string name="reload_list">Repor a pesquisa</string>
     <string name="error_tei_online_search_title">A pesquisa em linha deu a seguinte mensagem:</string>
     <string name="program_rules_loop_warning_title">Aviso de regras do programa</string>

@@ -193,11 +193,6 @@
                 app:itemTextColor="@color/text_black_333"
                 app:menu="@menu/main_menu" />
 
-            <include
-                android:id="@+id/pin_layout"
-                layout="@layout/layout_pin"
-                tools:visibility="gone" />
-
         </androidx.drawerlayout.widget.DrawerLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

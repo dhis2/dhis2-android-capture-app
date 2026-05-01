@@ -89,9 +89,7 @@
         必须先填写设施字段，然后才能继续
     </string>
     <string name="mandatory_distributed_to_selection">\\n        必须填写 \"分发至 \"字段后才能继续操作</string>
-    <string name="mandatory_transaction_date_selection">
-        必须填写“分发给”字段才能继续
-    </string>
+    <string name="mandatory_transaction_date_selection">\n        必须填写“分发给”字段才能继续\n    </string>
     <string name="previous_page_lose_data_warning">\\n        您确定要返回上一屏幕吗？\\n        如果您决定继续，您将丢失刚刚输入的数据。\\n    </string>
     <string name="transaction_completed">
         交易成功完成！
@@ -195,9 +193,7 @@
     <string name="speech_timeout_error">未检测到语音输入</string>
     <string name="unknown_speech_error">出现未知错误。</string>
     <string name="non_numeric_speech_input_error">不允许非数字输入：“%s”</string>
-    <string name="negative_number_speech_input_error">
-        不允许输入负数：“%s”
-    </string>
+    <string name="negative_number_speech_input_error">\n        不允许输入负数：“%s”\n    </string>
 
     <string name="openid_config_load_error">无法加载 OpenID 配置</string>
     <string name="unexpected_openid_authentication_error">

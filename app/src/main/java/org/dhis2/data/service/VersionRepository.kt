@@ -5,11 +5,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.net.Uri
-import android.os.Build
 import android.os.Environment
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -44,7 +41,7 @@ class VersionRepository(
 
     fun download(
         context: Context,
-        onDownloadCompleted: (Uri) -> Unit,
+        onDownloadCompleted: (String) -> Unit,
         onDownloading: () -> Unit,
     ) {
         val url =
@@ -60,9 +57,8 @@ class VersionRepository(
         )}/$fileName"
 
         val apkFile = File(destination)
-        val apkUri = uriFromFile(context, apkFile)
         if (apkFile.exists()) {
-            onDownloadCompleted(apkUri)
+            onDownloadCompleted(destination)
         } else if (fileName?.endsWith("apk") == true) {
             val request =
                 DownloadManager
@@ -86,7 +82,7 @@ class VersionRepository(
                         ctxt: Context,
                         intent: Intent?,
                     ) {
-                        onDownloadCompleted(apkUri)
+                        onDownloadCompleted(destination)
                     }
                 }
             ContextCompat.registerReceiver(
@@ -96,19 +92,9 @@ class VersionRepository(
                 ContextCompat.RECEIVER_EXPORTED,
             )
         } else {
-            url?.let { onDownloadCompleted(it.toUri()) }
+            url?.let { onDownloadCompleted(url) }
         }
     }
-
-    private fun uriFromFile(
-        context: Context,
-        file: File,
-    ): Uri =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file)
-        } else {
-            Uri.fromFile(file)
-        }
 
     fun getUrl(): String? =
         d2

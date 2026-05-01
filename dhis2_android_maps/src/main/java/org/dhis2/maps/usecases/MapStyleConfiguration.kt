@@ -3,9 +3,11 @@ package org.dhis2.maps.usecases
 import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.layer.basemaps.BaseMapStyleBuilder.build
+import org.dhis2.maps.layer.basemaps.Overlay
 import org.dhis2.maps.model.MapScope
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.map.layer.MapLayerImageryProvider
+import org.hisp.dhis.android.core.map.layer.MapLayerPosition
 
 const val DEFAULT_FORCED_LOCATION_ACCURACY = -1
 
@@ -61,6 +63,8 @@ class MapStyleConfiguration(
             .mapsModule()
             .mapLayers()
             .withImageryProviders()
+            .byMapLayerPosition()
+            .eq(MapLayerPosition.BASEMAP)
             .blockingGet()
             .map { mapLayer ->
                 val id = mapLayer.displayName()
@@ -71,7 +75,35 @@ class MapStyleConfiguration(
                         mapLayer.subdomains(),
                     )
                 val attribution = mapLayer.imageryProviders().mapAttribution()
-                build(id, tileUrls, attribution, defaultMap == mapLayer.uid())
+
+                val overlays =
+                    d2
+                        .mapsModule()
+                        .mapLayers()
+                        .withImageryProviders()
+                        .byLinkedLayerUid()
+                        .eq(mapLayer.uid())
+                        .byMapLayerPosition()
+                        .eq(MapLayerPosition.OVERLAY)
+                        .blockingGet()
+
+                val basemapOverlays =
+                    overlays.map { overlay ->
+                        val id = overlay.displayName()
+                        val tileUrls =
+                            overlay.imageUrl().mapTileUrls(
+                                overlay.subdomainPlaceholder(),
+                                overlay.subdomains(),
+                            )
+                        val attribution = overlay.imageryProviders().mapAttribution()
+                        Overlay(
+                            id = id,
+                            tiles = tileUrls,
+                            attribution = attribution,
+                        )
+                    }
+
+                build(id, tileUrls, attribution, basemapOverlays, defaultMap == mapLayer.uid())
             }
     }
 

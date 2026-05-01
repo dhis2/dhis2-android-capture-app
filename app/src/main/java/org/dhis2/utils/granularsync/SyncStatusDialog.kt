@@ -90,7 +90,7 @@ class SyncStatusDialog :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NORMAL, org.dhis2.ui.R.style.CustomBottomSheetDialogTheme)
+        setStyle(STYLE_NORMAL, org.dhis2.commons.R.style.CustomBottomSheetDialogTheme)
     }
 
     override fun onCreateView(

@@ -56,7 +56,7 @@
     <string name="not_now">ບໍ່​ແມ່ນ​ຕອນ​ນີ້</string>
     <string name="save_anyway">ບັນທຶກ</string>
     <string name="keep_editing">ສຶບຕໍ່ແກ້ໄຂ</string>
-    <string name="event_can_be_completed">ທ່ານຕ້ອງການໝາຍແບບຟອມນີ້ວ່າສຳເລັດແລ້ວຫຼືບໍ?</string>
+    <string name="event_can_be_completed">ທ່ານຕ້ອງການໝາຍແບບຟອມນີ້ວ່າສຳເລັດແລ້ວຫຼືບໍ\?</string>
     <string name="discard_go_back">ຖ້າທ່ານອອກດຽວນີ້ ຂໍ້ມູນທັງໝົດໃນແບບຟອມຈະຖືກຍົກເລີກ.</string>
     <string name="share">ເຜີຍແຜ່</string>
     <string name="action_close">ປິດ</string>
@@ -103,7 +103,7 @@
     <string name="no_results_found">ບໍ່ພົບຜົນການຊອກຫາ</string>
     <string name="action_done">ສຳເລັດ</string>
     <string name="input_not_supported">ບໍ່ຮອງຮັບ</string>
-    <!--*******************->
+    <!--*******************
         D2 Error Messages
     **********************-->
     <string name="login_error_null_pass">ບໍ່ມີລະຫັດຜ່ານ. ກະລຸນາໃສ່ລະຫັດຜ່ານ.</string>
@@ -128,7 +128,6 @@
     <string name="error_access_keystore">ບໍ່ສາມາດເຂົ້າເຖິງທີ່ເກັບຂອງອຸປະກອນໄດ້.</string>
     <string name="error_create_existing_error">ການສ້າງຖືກຍົກເລີກ. ມີວັດຖຸຢູ່ແລ້ວ.</string>
     <string name="error_delete_non_existing_object">ຍົກເລິກການລົບແລ້ວ. ບໍ່ມີວັດຖຸຢູ່</string>
-    <string name="error_reserve_value_on_server">ພວກເຮົາບໍ່ສາມາດຈອງຄ່າສໍາລັບບັນທຶກເຫຼົ່ານີ້. ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
     <string name="error_export_login">ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອສົ່ງອອກຖານຂໍ້ມູນ.</string>
     <string name="error_export_encrypted">ບໍ່ຮອງຮັບການສົ່ງອອກຖານຂໍ້ມູນທີ່ຖືກເຂົ້າລະຫັດ.</string>
     <string name="error_import_exist">ທ່ານກໍາລັງນໍາເຂົ້າຖານຂໍ້ມູນທີ່ມີຢູ່ແລ້ວ.</string>
@@ -154,7 +153,6 @@
     <string name="error_socket_timeout">ເຄື່ອງຄອມພິວເຕີໜ່ວຍແມ່ໃຊ້ເວລາຕອບສະໜອງດົນເກີນໄປ. ພວກເຮົາຍົກເລິກການຮ້ອງຂໍ</string>
     <string name="error_relationship_updated">ບໍ່ສາມາດອັບເດດຄວາມສຳພັນໄດ້.</string>
     <string name="error_too_many_periods">ຊ່ວງເວລາມີຫຼາຍເກີນໄປ</string>
-    <string name="error_url_not_found">ພວກເຮົາບໍ່ສາມາດຊອກຫາ URL ໄດ້. ກະລຸນາກວດສອບມັນ.</string>
     <string name="error_account_disabled">ບັນຊີຂອງທ່ານຖືກປິດການນຳໃຊ້ແລ້ວ. ຖ້ານີ້ແມ່ນຄວາມຜິດພາດ, ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
     <string name="error_account_locked">ບັນຊີຜູ້ໃຊ້ຂອງທ່ານຖືກລັອກ. ຖ້າຫາກນີ້ແມ່ນຂໍ້ຜິດພາດ, ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
     <string name="error_set_value">ບໍ່ສາມາດຕັ້ງຄ່າໄດ້.</string>
@@ -164,8 +162,11 @@
     <string name="error_min_attributes">ຄຸນລັກສະນະບໍ່ພຽງພໍທີ່ຈະດໍາເນີນການຄົ້ນຫາ. ກະລຸນາປັບປຸງການຄົ້ນຫາຂອງທ່ານດ້ວຍຄຸນລັກສະນະເພີ່ມເຕີມ.</string>
     <string name="error_org_unit_scope">ການຄົ້ນຫາອອນລາຍໃຊ້ໄດ້ກັບຫົວຫນ່ວຍການຈັດຕັ້ງທີ່ຄົ້ນຫາຜູ້ໃຊ້ຂອງທ່ານເທົ່ານັ້ນ.</string>
     <string name="error_no_internet_connection">ທ່ານອອຟລາຍຢູ່. ເຊື່ອມຕໍ່ອິນເຕີເນັດ ແລະ ລອງໃໝ່ອີກຄັ້ງ</string>
-    <!--*******************->
+    <!--*******************
        END OF D2 Error Messages
     **********************-->
+    <string name="age_or">OR</string>
+    <string name="cancel">ຍົກເລີກ</string>
+    <string name="ok">​ຕົກ​ລົງ</string>
 
 </resources>

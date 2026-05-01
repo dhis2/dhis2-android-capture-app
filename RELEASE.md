@@ -1,75 +1,58 @@
-# Release notes - Android App for DHIS2 - 3.3.1
+# Release notes - Android App for DHIS2 - 3.4.0
 
-### Bug
+### NEW FUNCTIONALITY AND WEB PARITY
 
-[ANDROAPP-6870](https://dhis2.atlassian.net/browse/ANDROAPP-6870) Let the rule-engine apply the logic for useCodeForOptionSet in RuleVariable
+#### Tracked Entity Search Performance Configuration:
+This feature enables the configuration of the search operators for the different Tracked Entity Attributes to improve search performance.
 
-[ANDROAPP-6975](https://dhis2.atlassian.net/browse/ANDROAPP-6975) Crash when rotating the device with the save dialog open
+Tracked entity attributes can now define a preferred default search operator. This configuration is set in the Maintenance app and interpreted by the Capture Web and  Android applications, third party clients can also use the recommended operator when performing searches. Specific operators can also be restricted to protect system performance.
 
-[ANDROAPP-7211](https://dhis2.atlassian.net/browse/ANDROAPP-7211) NoSuchElementException: Collection contains no element matching the predicate.
+Sensible defaults are automatically applied to guide efficient queries. The LIKE operator—commonly associated with slow performance—is no longer selected by default; instead, EQUALS or other more efficient operators are pre-selected
 
-[ANDROAPP-7235](https://dhis2.atlassian.net/browse/ANDROAPP-7235) Program rules not triggered when moving between fields manually
+To further optimize tracked entity instance (TEI) searches, this feature adds support for specifying a minimum number of characters required for searching and for enabling trigram indexing.
 
-[ANDROAPP-7260](https://dhis2.atlassian.net/browse/ANDROAPP-7260) Incorrect behavior when creating a new event in timeline view
+[Jira](https://dhis2.atlassian.net/browse/ROADMAP-128) | [Feature card](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/releases/screenshots/43/feature-cards/43-search-performance-operators-combo.png)
 
-[ANDROAPP-7261](https://dhis2.atlassian.net/browse/ANDROAPP-7261) Keyboard blocks the last field when entering data \(screen doesn’t scroll\)
 
-[ANDROAPP-7269](https://dhis2.atlassian.net/browse/ANDROAPP-7269) Crash on search
+#### DHIS2 Custom Theme:
+DHIS2 version 43 now supports changing the theme color of your DHIS2 instance. This is done via the theme color setting under the Appearance tab in the Settings app. The color picker has a curated set of preset colors to choose from, or the user can enter a specific RGB value. The selected color is applied consistently across the headerbar on the entire instance, as well as on the Android app. A contrast algorithm automatically adjusts the text and icon color to maintain legibility against the selected background. Removing the color reverts the instance to the default blue color. The android style setting is restricted to v42 and below.
 
-[ANDROAPP-7293](https://dhis2.atlassian.net/browse/ANDROAPP-7293) Bottom sheet landscape behavior
+[Jira](https://dhis2.atlassian.net/browse/ROADMAP-622) | [Feature card](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/releases/screenshots/43/feature-cards/43-custom-color-combo-new.png)
 
-[ANDROAPP-7345](https://dhis2.atlassian.net/browse/ANDROAPP-7345) Changes to enrollment date not respected by program rules \(version 3.2.1.2\)
+#### Markdown and legend support  in Android Feedback Widget:
+Feedback messages generated through display text and key-value pair actions can now include formatted text using Markdown, enabling the display of structured content such as titles, lists, and emphasized text.
 
-[ANDROAPP-7368](https://dhis2.atlassian.net/browse/ANDROAPP-7368) crash: when trying to update fields in Tracker
+In addition, support for legend-based styling has been introduced, allowing feedback values to be visually highlighted based on predefined legend sets. This enables dynamic color-coding of key values, helping users quickly interpret results and identify important conditions.
 
-[ANDROAPP-7394](https://dhis2.atlassian.net/browse/ANDROAPP-7394) Login blocked after logout “The user is already logged in” error
+[Jira]() | [Feature card]()
 
-[ANDROAPP-7400](https://dhis2.atlassian.net/browse/ANDROAPP-7400) Crash - changing org unit and dates
+#### Program rule priority for Actions:
+Each program rule action can define an optional priority value. During rule evaluation, actions are first grouped based on their parent program rule, and then ordered by the611ir assigned priority. Actions with lower priority values are processed first, while actions without a defined priority are placed at the end.
 
-[ANDROAPP-7402](https://dhis2.atlassian.net/browse/ANDROAPP-7402) Bottom sheet org unit not displaying buttons
+This allows multiple related actions to be managed within a single program rule while still maintaining a clear and predictable execution order.
 
-[ANDROAPP-7403](https://dhis2.atlassian.net/browse/ANDROAPP-7403) Home cards lose proper layout
+[Jira](https://dhis2.atlassian.net/browse/ROADMAP-625) | [Feature card](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/releases/screenshots/43/feature-cards/43-action-priority.png)
 
-[ANDROAPP-7411](https://dhis2.atlassian.net/browse/ANDROAPP-7411) Android sync by working lists: After updating predefined list views settings, changes aren't reflected in android app after syncing
 
-[ANDROAPP-7415](https://dhis2.atlassian.net/browse/ANDROAPP-7415) Android: WORKING LIST incorrect result in app
+### USER EXPERIENCE
 
-[ANDROAPP-7419](https://dhis2.atlassian.net/browse/ANDROAPP-7419) Server selection title is missing
+#### Android Log In process improvements:
+The new PIN design provides a more modern and consistent user experience during setup. This change is part of the broader work to improve authentication related screens and prepare the foundation for future enhancements
 
-[ANDROAPP-7421](https://dhis2.atlassian.net/browse/ANDROAPP-7421) Data set table not opening after clicking next for default category combo
+[Jira](https://dhis2.atlassian.net/browse/ROADMAP-618) | [Feature card](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/releases/screenshots/43/feature-cards/Android-3-4-PIN-redesign-new.png)
 
-[ANDROAPP-7425](https://dhis2.atlassian.net/browse/ANDROAPP-7425) NullPointerException: ProgramFragment
+### PERFORMANCE & MAINTENANCE
 
-[ANDROAPP-7428](https://dhis2.atlassian.net/browse/ANDROAPP-7428) LMIS program is using completed enrollment
+#### Android Metadata Sync Improvements
+Metadata synchronization has been enhanced with more frequency options. In addition to existing intervals, automatic metadata sync can now run every 6 or 12 hours, allowing for more timely updates and better alignment with data sync behavior.
 
-[ANDROAPP-7442](https://dhis2.atlassian.net/browse/ANDROAPP-7442) Program rules not triggering for completed enrollments
+As part of the improvements, the app also performs a daily background check to detect any changes in the configuration when the sync is set to "Manual". If a change is detected from manual to an automatic sync frequency, an immediate metadata sync is triggered and the corresponding schedule is applied.
 
-### Task
+[Jira](https://dhis2.atlassian.net/browse/ROADMAP-617) | [Feature card](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/releases/screenshots/43/feature-cards/Android-3-4-new-sync-periods-new.png)
 
-[ANDROAPP-7286](https://dhis2.atlassian.net/browse/ANDROAPP-7286) Replace deprecated categoryComboUid usages with categoryCombo in Program and DataElement
+#### Improved Event ordering  for consistent sync and calculations:
+With this update, event ordering has been aligned across Web, Android, and API sources, allowing events to be processed in the correct sequence during synchronization and improving overall data consistency and reliability.
 
-[ANDROAPP-7288](https://dhis2.atlassian.net/browse/ANDROAPP-7288) Implement UseCase interface
+[Jira](https://dhis2.atlassian.net/browse/ROADMAP-619) | [Feature card](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/releases/screenshots/43/feature-cards/43-stock-management-lmis.png)
 
-[ANDROAPP-7318](https://dhis2.atlassian.net/browse/ANDROAPP-7318) Create AGENTS.md file
 
-[ANDROAPP-7349](https://dhis2.atlassian.net/browse/ANDROAPP-7349) Sonarcloud - Use full commit SHA hash for this dependency.
-
-[ANDROAPP-7373](https://dhis2.atlassian.net/browse/ANDROAPP-7373) LogoutUser use case improvements
-
-[ANDROAPP-7384](https://dhis2.atlassian.net/browse/ANDROAPP-7384) Update transifex tracker configuration
-
-[ANDROAPP-7386](https://dhis2.atlassian.net/browse/ANDROAPP-7386) QA: Remove duplicated UI modules
-
-[ANDROAPP-7388](https://dhis2.atlassian.net/browse/ANDROAPP-7388) Create sync module
-
-[ANDROAPP-7395](https://dhis2.atlassian.net/browse/ANDROAPP-7395) Review settings repository data loading for log out request
-
-[ANDROAPP-7396](https://dhis2.atlassian.net/browse/ANDROAPP-7396) Remove and update usage to design systems' deprecated methods
-
-[ANDROAPP-7424](https://dhis2.atlassian.net/browse/ANDROAPP-7424) Gradle warnings: Remove RX binding dependency and zxing dependency
-
-[ANDROAPP-7426](https://dhis2.atlassian.net/browse/ANDROAPP-7426) Upload proguard mapping on Sentry
-
-[ANDROAPP-7440](https://dhis2.atlassian.net/browse/ANDROAPP-7440) Update Expression parser to 1.2.2
-
-[ANDROAPP-7441](https://dhis2.atlassian.net/browse/ANDROAPP-7441) Remove username from Sentry reports

@@ -21,8 +21,6 @@ import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.form.data.OptionsRepository
 import org.dhis2.form.data.RulesUtilsProvider
@@ -104,7 +102,10 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun providesRepository(d2: D2): ServerSettingsRepository = ServerSettingsRepository(d2)
+    fun providesRepository(
+        d2: D2,
+        colorUtils: ColorUtils,
+    ): ServerSettingsRepository = ServerSettingsRepository(d2, colorUtils)
 
     @Provides
     @PerServer
@@ -122,11 +123,6 @@ class ServerModule {
             preferenceProvider,
             colorUtils,
         )
-
-    @Provides
-    @PerServer
-    fun providesSyncStatusController(dispatcherProvider: DispatcherProvider): SyncStatusController =
-        SyncStatusController(dispatcherProvider)
 
     @Provides
     @PerServer

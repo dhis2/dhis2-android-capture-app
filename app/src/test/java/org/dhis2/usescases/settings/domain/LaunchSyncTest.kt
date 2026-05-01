@@ -1,22 +1,19 @@
 package org.dhis2.usescases.settings.domain
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.MutableLiveData
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.ExistingWorkPolicy
-import androidx.work.WorkInfo
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.Constants
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.data.service.workManager.WorkManagerController
-import org.dhis2.data.service.workManager.WorkerItem
-import org.dhis2.data.service.workManager.WorkerType
+import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
+import org.dhis2.mobile.sync.model.SyncJobStatus
+import org.dhis2.mobile.sync.model.SyncStatus
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -39,21 +36,21 @@ class LaunchSyncTest {
     private val testingDispatcher = UnconfinedTestDispatcher()
 
     private lateinit var launchSync: LaunchSync
-    private val workManagerController: WorkManagerController = mock()
     private val preferenceProvider: PreferenceProvider = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
 
-    private val mockedMetadataWorkInfo = MutableLiveData<List<WorkInfo>>()
-    private val mockedDataWorkInfo = MutableLiveData<List<WorkInfo>>()
+    private val mockedMetadataWorkInfo = MutableStateFlow<List<SyncJobStatus>>(emptyList())
+    private val mockedDataWorkInfo = MutableStateFlow<List<SyncJobStatus>>(emptyList())
+    private val syncBackgroundJobAction: SyncBackgroundJobAction = mock()
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testingDispatcher)
-        whenever(workManagerController.getWorkInfosByTagLiveData(Constants.META_NOW)) doReturn mockedMetadataWorkInfo
-        whenever(workManagerController.getWorkInfosByTagLiveData(Constants.DATA_NOW)) doReturn mockedDataWorkInfo
+        whenever(syncBackgroundJobAction.observeMetadataJob()) doReturn mockedMetadataWorkInfo
+        whenever(syncBackgroundJobAction.observeDataJob()) doReturn mockedDataWorkInfo
         launchSync =
             LaunchSync(
-                workManagerController = workManagerController,
+                syncBackgroundJobAction = syncBackgroundJobAction,
                 preferenceProvider = preferenceProvider,
                 analyticsHelper = analyticsHelper,
             )
@@ -67,71 +64,33 @@ class LaunchSyncTest {
     @Test
     fun shouldStartSyncMetadata() =
         runTest {
-            val expectedWorkerItem =
-                WorkerItem(
-                    Constants.META_NOW,
-                    WorkerType.METADATA,
-                    null,
-                    null,
-                    ExistingWorkPolicy.KEEP,
-                    null,
-                )
             launchSync(LaunchSync.SyncAction.SyncMetadata)
-            verify(workManagerController, times(1)).syncDataForWorker(expectedWorkerItem)
+            verify(syncBackgroundJobAction, times(1)).launchMetadataSync(0)
         }
 
     @Test
     fun shouldStartSyncData() =
         runTest {
-            val expectedWorkerItem =
-                WorkerItem(
-                    Constants.DATA_NOW,
-                    WorkerType.DATA,
-                    null,
-                    null,
-                    ExistingWorkPolicy.KEEP,
-                    null,
-                )
             launchSync(LaunchSync.SyncAction.SyncData)
-            verify(workManagerController, times(1)).syncDataForWorker(expectedWorkerItem)
+            verify(syncBackgroundJobAction, times(1)).launchDataSync(0)
         }
 
     @Test
     fun shouldUpdateSyncDataPeriod() =
         runTest {
             val newPeriod = 13
-            val expectedWorkerItem =
-                WorkerItem(
-                    Constants.DATA,
-                    WorkerType.DATA,
-                    newPeriod.toLong(),
-                    null,
-                    null,
-                    ExistingPeriodicWorkPolicy.REPLACE,
-                )
             launchSync(LaunchSync.SyncAction.UpdateSyncDataPeriod(newPeriod))
             verify(preferenceProvider, times(1)).setValue(Constants.TIME_DATA, newPeriod)
-            verify(workManagerController, times(1)).cancelUniqueWork(Constants.DATA)
-            verify(workManagerController, times(1)).enqueuePeriodicWork(expectedWorkerItem)
+            verify(syncBackgroundJobAction, times(1)).launchDataSync(newPeriod.toLong())
         }
 
     @Test
     fun shouldUpdateSyncMetadataPeriod() =
         runTest {
             val newPeriod = 13
-            val expectedWorkerItem =
-                WorkerItem(
-                    Constants.META,
-                    WorkerType.METADATA,
-                    newPeriod.toLong(),
-                    null,
-                    null,
-                    ExistingPeriodicWorkPolicy.REPLACE,
-                )
             launchSync(LaunchSync.SyncAction.UpdateSyncMetadataPeriod(newPeriod))
             verify(preferenceProvider, times(1)).setValue(Constants.TIME_META, newPeriod)
-            verify(workManagerController, times(1)).cancelUniqueWork(Constants.META)
-            verify(workManagerController, times(1)).enqueuePeriodicWork(expectedWorkerItem)
+            verify(syncBackgroundJobAction, times(1)).launchMetadataSync(newPeriod.toLong())
         }
 
     @Test
@@ -139,7 +98,7 @@ class LaunchSyncTest {
         runTest {
             launchSync(LaunchSync.SyncAction.UpdateSyncDataPeriod(0))
             verify(preferenceProvider, times(1)).setValue(Constants.TIME_DATA, 0)
-            verify(workManagerController, times(1)).cancelUniqueWork(Constants.DATA)
+            verify(syncBackgroundJobAction, times(1)).cancelDataSync()
         }
 
     @Test
@@ -147,55 +106,122 @@ class LaunchSyncTest {
         runTest {
             launchSync(LaunchSync.SyncAction.UpdateSyncMetadataPeriod(0))
             verify(preferenceProvider, times(1)).setValue(Constants.TIME_META, 0)
-            verify(workManagerController, times(1)).cancelUniqueWork(Constants.META)
+            verify(syncBackgroundJobAction, times(1)).cancelMetadataSync()
         }
 
     @Test
     fun shouldUpdateProgressStatus() =
         runTest {
             val startedMetadataWorkInfo =
-                mock<WorkInfo> {
-                    on { state } doReturn WorkInfo.State.RUNNING
+                mock<SyncJobStatus> {
+                    on { status } doReturn SyncStatus.Running
                 }
             val startedDataWorkInfo =
-                mock<WorkInfo> {
-                    on { state } doReturn WorkInfo.State.RUNNING
+                mock<SyncJobStatus> {
+                    on { status } doReturn SyncStatus.Running
                 }
             val finishedMetadataWorkInfo =
-                mock<WorkInfo> {
-                    on { state } doReturn WorkInfo.State.SUCCEEDED
+                mock<SyncJobStatus> {
+                    on { status } doReturn SyncStatus.Succeed
                 }
             val finishedDataWorkInfo =
-                mock<WorkInfo> {
-                    on { state } doReturn WorkInfo.State.SUCCEEDED
+                mock<SyncJobStatus> {
+                    on { status } doReturn SyncStatus.Succeed
                 }
             launchSync.syncWorkInfo.test {
-                mockedMetadataWorkInfo.postValue(listOf(startedMetadataWorkInfo))
-                assertState(awaitItem(), LaunchSync.SyncStatus.InProgress, LaunchSync.SyncStatus.None)
-                mockedDataWorkInfo.postValue(listOf(startedDataWorkInfo))
+                awaitItem()
+                awaitItem()
+                mockedMetadataWorkInfo.emit(listOf(startedMetadataWorkInfo))
+                assertState(
+                    awaitItem(),
+                    LaunchSync.SyncStatus.InProgress,
+                    LaunchSync.SyncStatus.None
+                )
+                mockedDataWorkInfo.emit(listOf(startedDataWorkInfo))
                 with(awaitItem()) {
                     assertState(
                         this,
                         LaunchSync.SyncStatus.InProgress,
                         LaunchSync.SyncStatus.InProgress,
                     )
-                    assertFalse(this.hasSyncFinished(metadataWasRunning = true, dataWasRunning = false))
+                    assertFalse(
+                        this.hasSyncFinished(
+                            metadataWasRunning = true,
+                            dataWasRunning = false
+                        )
+                    )
                 }
 
-                mockedMetadataWorkInfo.postValue(listOf(finishedMetadataWorkInfo))
+                mockedMetadataWorkInfo.emit(listOf(finishedMetadataWorkInfo))
                 with(awaitItem()) {
                     assertState(
                         this,
                         LaunchSync.SyncStatus.Finished,
                         LaunchSync.SyncStatus.InProgress,
                     )
-                    assertTrue(this.hasSyncFinished(metadataWasRunning = true, dataWasRunning = true))
+                    assertTrue(
+                        this.hasSyncFinished(
+                            metadataWasRunning = true,
+                            dataWasRunning = true
+                        )
+                    )
                 }
-                mockedDataWorkInfo.postValue(listOf(finishedDataWorkInfo))
-                assertState(awaitItem(), LaunchSync.SyncStatus.Finished, LaunchSync.SyncStatus.Finished)
+                mockedDataWorkInfo.emit(listOf(finishedDataWorkInfo))
+                assertState(
+                    awaitItem(),
+                    LaunchSync.SyncStatus.Finished,
+                    LaunchSync.SyncStatus.Finished
+                )
                 cancelAndIgnoreRemainingEvents()
             }
         }
+
+    @Test
+    fun shouldCombineMetadataProgress() =
+        runTest {
+            launchSync.syncWorkInfo.test {
+                awaitItem()
+                awaitItem()
+                syncStatuses.forEach { metadataSyncStatus ->
+                    syncStatuses.forEach { metadataNowSyncStatus ->
+                        mockedMetadataWorkInfo.emit(
+                            listOf(
+                                metadataSyncStatus,
+                                metadataNowSyncStatus
+                            )
+                        )
+                        val expectedValue = when {
+                            (metadataSyncStatus.status is SyncStatus.Running) or (metadataNowSyncStatus.status is SyncStatus.Running) -> LaunchSync.SyncStatus.InProgress
+                            (metadataSyncStatus.status is SyncStatus.Blocked) or (metadataNowSyncStatus.status is SyncStatus.Blocked) -> LaunchSync.SyncStatus.InProgress
+                            (metadataSyncStatus.status is SyncStatus.Enqueue) and (metadataNowSyncStatus.status is SyncStatus.Enqueue) -> LaunchSync.SyncStatus.None
+                            (metadataSyncStatus.status is SyncStatus.Cancelled) and (metadataNowSyncStatus.status is SyncStatus.Cancelled) -> LaunchSync.SyncStatus.Cancelled
+                            else -> LaunchSync.SyncStatus.Finished
+
+
+                        }
+
+                        assertState(
+                            awaitItem(),
+                            expectedValue,
+                            LaunchSync.SyncStatus.None
+                        )
+                    }
+                }
+            }
+        }
+
+    private val syncStatuses = listOf(
+        mockedMetadataSyncJobStatus(SyncStatus.Enqueue),
+        mockedMetadataSyncJobStatus(SyncStatus.Running),
+        mockedMetadataSyncJobStatus(SyncStatus.Succeed),
+        mockedMetadataSyncJobStatus(SyncStatus.Failed),
+        mockedMetadataSyncJobStatus(SyncStatus.Blocked),
+        mockedMetadataSyncJobStatus(SyncStatus.Cancelled),
+    )
+
+    private fun mockedMetadataSyncJobStatus(mockedStatus: SyncStatus) = mock<SyncJobStatus> {
+        on { status } doReturn mockedStatus
+    }
 
     private fun assertState(
         syncStatusProgress: LaunchSync.SyncStatusProgress,

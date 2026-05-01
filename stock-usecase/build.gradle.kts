@@ -2,7 +2,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.library")
-    kotlin("android")
     id("kotlin-parcelize")
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.compose.compiler)
@@ -20,7 +19,6 @@ android {
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
         testOptions.targetSdk = libs.versions.sdk.get().toInt()
-        multiDexEnabled = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -86,6 +84,8 @@ dependencies {
     implementation(libs.koin.androidx.compose)
     implementation(libs.bundles.stock.implementation)
     implementation(libs.androidx.compose)
+    implementation(libs.androidx.compose.constraintlayout)
+
     testImplementation(project(":dhis_android_analytics"))
     coreLibraryDesugaring(libs.bundles.stock.core)
     testImplementation(libs.bundles.stock.test)

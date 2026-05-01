@@ -51,8 +51,13 @@ class D2ErrorMessageProviderImpl : D2ErrorMessageProvider {
             D2ErrorCode.BAD_CREDENTIALS ->
                 getString(Res.string.login_error_bad_credentials)
 
-            D2ErrorCode.UNKNOWN_HOST ->
-                getString(Res.string.login_error_unknown_host)
+            D2ErrorCode.UNKNOWN_HOST -> {
+                if (isNetworkAvailable) {
+                    getString(Res.string.login_error_unknown_host)
+                } else {
+                    getString(Res.string.error_no_internet_connection)
+                }
+            }
 
             D2ErrorCode.UNEXPECTED ->
                 getString(Res.string.error_unexpected)
@@ -203,6 +208,8 @@ class D2ErrorMessageProviderImpl : D2ErrorMessageProvider {
 
             D2ErrorCode.ORGUNIT_NOT_IN_SEARCH_SCOPE ->
                 getString(Res.string.error_org_unit_scope)
+            D2ErrorCode.INVALID_CONFIGURATION ->
+                getString(Res.string.invalid_configuration)
 
             D2ErrorCode.INVALID_CHARACTERS ->
                 getString(Res.string.error_invalid_characters)

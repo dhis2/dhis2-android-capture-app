@@ -32,7 +32,6 @@
     <string name="sync_error_title">Lỗi đồng bộ</string>
     <string name="sync_error_text">Xảy ra lỗi trong quá trình đồng bộ. Vui lòng thử lại.</string>
     <string name="sync_incomplete_error_text">Đồng bộ đã hoàn tất nhưng chúng tôi không nhận được xác nhận máy chủ cho tất cả dữ liệu. Các dữ liệu vẫn được đánh dấu là \"Ngoại tuyến\" trong Ứng dụng. Chúng tôi khuyên bạn thử đồng bộ lại.</string>
-    <string name="data_sync_warning_program">CẢNH BÁO: Hầu hết dữ liệu của bạn đã được đồng bộ nhưng một vài dữ liệu vẫn bị xung đột. Hãy thử đồng bộ cấu hình và thử lại. Nếu cảnh báo vẫn tiếp diễn, kiểm tra trạng thái đồng bộ của chương trình, các Đối Tượng Theo Dõi và các sự kiện với các dấu hiệu xung đột là @.</string>
     <string name="server_sync_error">Có lỗi và máy chủ không phản hồi. Liên hệ quản trị viên của bạn.</string>
 
     <string name="search_result_text">Tìm thấy %s kết quả</string>
@@ -486,6 +485,7 @@
     <string name="action_agree">Đồng ý</string>
     <string name="action_continue">Tiếp tục</string>
     <string name="login_server_info_title">Đường dẫn đến máy chủ</string>
+    <string name="login_server_info_message">Nhập đường dẫn liên kết đến máy chủ DHIS 2 với đơn vị được cung cấp bởi quản lý của bạn.\n\n Hoặc bạn có thể quét mã QR có chứa đường dẫn liên kết đến máy chủ.</string>
     <string name="forgot_your_code">Bạn đã quên mã của bạn phải không?</string>
     <string name="event_form_end_options_title">Bạn muốn làm gì với sự kiện này?</string>
     <string name="sectionSelectorEnd">KẾT THÚC</string>
@@ -668,9 +668,9 @@
     <string name="dataset_overview">Chi tiết</string>
     <string name="dataset_comments">Ghi chú</string>
     <string name="saved">Đã lưu!</string>
-    <string name="run_validation_rules">Ban có muốn kiểm tra chất lượng dữ liệu không?</string>
+    <string name="run_validation_rules">Ban có muốn kiểm tra chất lượng dữ liệu không\?</string>
     <string name="validation_success_title">Mọi thứ đều ổn!</string>
-    <string name="mark_dataset_complete">Bạn cũng muốn hoàn tất biểu nhập phải không?</string>
+    <string name="mark_dataset_complete">Bạn cũng muốn hoàn tất biểu nhập phải không\?</string>
     <string name="dataset_completed">Đánh dấu đã hoàn tất</string>
     <string name="name">Tên</string>
     <string name="formula">Công thức</string>
@@ -785,7 +785,7 @@
     <string name="show_radar_graph">Xem Radar</string>
     <string name="coordinate_feature_type_error">Không thể cài đặt kiểu tọa độ</string>
     <string name="filter_follow_up_label">Đã theo dõi %s</string>
-    <string name="wrong_date_format">%s không thể chuyển đổi thành Ngày</string>
+    <string name="wrong_date_format">%s không thể chuyển đổi dữ liệu Ngày</string>
     <string name="update_field_error">Không thể cập nhật trường dữ liệu này. Xin vui lòng thử lại.</string>
     <string name="edition">Chỉnh sửa</string>
     <string name="available">Hiện có</string>
@@ -794,7 +794,7 @@
     <string name="edition_no_write_access">Bạn không có quyền chỉnh sửa dữ liệu này</string>
     <string name="event_date_not_in_orgunit_range">Dữ liệu này không thể sửa bởi vì đơn vị đã bị đóng</string>
     <string name="edition_no_catcombo_access">Bạn không có quyền chỉnh sửa dữ liệu này</string>
-    <string name="edition_orgunit_capture_scope">Bạn không thể chỉnh sửa dữ liệu từ đơn vị này</string>
+    <string name="edition_orgunit_user_scope">Bạn không thể chỉnh sửa dữ liệu từ đơn vị này</string>
     <string name="reload_list">Đặt lại Tìm Kiếm</string>
     <string name="error_tei_online_search_title">Tìm kiếm trực tuyến trả về tin nhắn sau: </string>
     <string name="program_rules_loop_warning_title">Cảnh báo quy tắc chương trình</string>

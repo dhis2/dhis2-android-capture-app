@@ -46,6 +46,7 @@ class EnrollmentConfiguration(
             .withAttributes()
             .byProgramUid()
             .eq(enrollment()?.program())
+            .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
             .blockingGet()
 
     fun orgUnit(orgUnitUid: String) =

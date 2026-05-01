@@ -42,20 +42,34 @@ jobs:
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
 
+      - name: Decode Keystore
+        id: decode_keystore
+        uses: timheuer/base64-to-file@784a1a4a994315802b7d8e2084e116e783d157be
+        with:
+          fileName: 'debug.keystore'
+          encodedString: ${{ secrets.DEBUG_KEYSTORE_BASE64 }}
+
       # Create APK Debug
       - name: Build apk debug project (APK) - ${{ env.main_project_module }} module
-        run: ./gradlew assembleDhis2Debug
+        run: ./gradlew --dependency-verification lenient assembleDhis2Debug
         env:
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-
-      - name: Read version name from file
-        working-directory: ./gradle
-        id: read-version
-        run: echo "vName=$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')" >> "$GITHUB_OUTPUT"
+          DEBUG_KEYSTORE_ALIAS: ${{ secrets.DEBUG_KEYSTORE_ALIAS }}
+          DEBUG_KEY_PASS: ${{ secrets.DEBUG_KEY_PASS }}
+          DEBUG_KEYSTORE_PASSWORD: ${{ secrets.DEBUG_KEYSTORE_PASSWORD }}
+          DEBUG_KEYSTORE_PATH: ${{ steps.decode_keystore.outputs.filePath }}
+      
+      - name: Locate built APK
+        id: apk-path
+        run: |
+          echo "Searching for APKs under ${{ env.main_project_module }}/build/outputs/apk"
+          find "${{ env.main_project_module }}/build/outputs/apk" -type f -name "*.apk"
+          APK_PATH=$(find "${{ env.main_project_module }}/build/outputs/apk" -type f -name "*.apk" -print -quit)
+          echo "apk_path=$APK_PATH" >> "$GITHUB_OUTPUT"
 
       # Upload Artifact Build
       - name: Upload Android artifacts
-        uses: actions/upload-artifact@v6.0.0
+        uses: actions/upload-artifact@v7.0.0
         with:
           name: ${{ env.repository_name }} - Android APK - ${{ steps.date.outputs.date }}
-          path: ${{ env.main_project_module }}/build/outputs/apk/dhis2/debug/dhis2-v${{ steps.read-version.outputs.vName }}.apk
+          path: ${{ steps.apk-path.outputs.apk_path }}

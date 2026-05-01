@@ -17,12 +17,14 @@ import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.commons.data.FormFileProvider.init
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.mobile.login.authentication.TwoFASettingsActivity
+import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.reservedValue.ReservedValueActivity
 import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.settings.ui.SettingsScreen
 import org.dhis2.usescases.settingsprogram.SettingsProgramActivity
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import org.koin.android.ext.android.inject
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
@@ -32,6 +34,7 @@ class SyncManagerFragment : FragmentGlobalAbstract() {
     lateinit var settingsViewModelFactory: SettingsViewModelFactory
 
     private val presenter: SyncManagerPresenter by viewModels { settingsViewModelFactory }
+    private val syncBackgroundJobAction: SyncBackgroundJobAction by inject()
 
     @JvmField
     @Inject
@@ -41,7 +44,7 @@ class SyncManagerFragment : FragmentGlobalAbstract() {
         super.onAttach(context)
         app()
             .userComponent()
-            ?.plus(SyncManagerModule())
+            ?.plus(SyncManagerModule(syncBackgroundJobAction))
             ?.inject(this)
     }
 

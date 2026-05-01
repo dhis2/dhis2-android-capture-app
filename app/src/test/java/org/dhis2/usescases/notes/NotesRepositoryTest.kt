@@ -4,6 +4,7 @@ import io.reactivex.Single
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.note.Note
 import org.hisp.dhis.android.core.program.Program
@@ -94,6 +95,8 @@ class NotesRepositoryTest {
             Program
                 .builder()
                 .uid(UUID.randomUUID().toString())
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .access(
                     Access
                         .builder()
@@ -171,6 +174,11 @@ class NotesRepositoryTest {
                 .eq(teiUid)
                 .one()
                 .blockingGet(),
-        ) doReturn Enrollment.builder().uid(enrollmentUid).build()
+        ) doReturn
+            Enrollment
+                .builder()
+                .uid(enrollmentUid)
+                .attributeOptionCombo("attributeOptionComboUid")
+                .build()
     }
 }

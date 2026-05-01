@@ -7,6 +7,7 @@ import org.dhis2.data.enrollment.EnrollmentUiDataHelper
 import org.dhis2.usescases.searchTrackEntity.SearchTeiModel
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
@@ -447,6 +448,8 @@ class SearchSortingValueSetterTest {
             Program
                 .builder()
                 .uid("programUid")
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .enrollmentDateLabel("programEnrollmentDateLabel")
                 .build()
 
@@ -481,6 +484,8 @@ class SearchSortingValueSetterTest {
             Program
                 .builder()
                 .uid("programUid")
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
 
         val result =
@@ -542,6 +547,7 @@ class SearchSortingValueSetterTest {
                     .status(EnrollmentStatus.ACTIVE)
                     .program("programUid")
                     .enrollmentDate(Date.from(Instant.parse("2020-01-01T00:00:00.00Z")))
+                    .attributeOptionCombo("attributeOptionComboUid")
                     .build(),
             )
             tei =

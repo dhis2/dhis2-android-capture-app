@@ -79,7 +79,7 @@
     <string name="invalid_interval">केवल 0 से 1 के मान ही अनुमति हैं</string>
     <string name="invalid_percentage">केवल 0 से 100 के वैल्यूज़ अनुमति हैं</string>
     <string name="dialog_generate_new_event">नया इवेंट जनरेट करें</string>
-    <string name="message_generate_new_event">क्या आप एक और इवेंट बनाना चाहते हैं?</string>
+    <string name="message_generate_new_event">क्या आप एक और इवेंट बनाना चाहते हैं\?</string>
     <string name="dashboard_indicators">इंडिकेटर्स</string>
     <string name="event_indicators">इंडिकेटर्स</string>
     <string name="finish">खत्म</string>
@@ -129,7 +129,7 @@
     <string name="enrollment_status_completed">पूरा हुआ</string>
     <string name="event_data">डेटा</string>
     <string name="action_done">पूरा हुआ</string>
-    <string name="are_you_sure">क्या आप सुनिश्चित हैं?</string>
+    <string name="are_you_sure">क्या आप सुनिश्चित हैं\?</string>
     <string name="filters_title_date">तारीख</string>
     <string name="field_is_mandatory">यह फ़ील्ड आवश्यक है</string>
     <string name="customactivityoncrash_error_activity_restart_app">पीछे जाएं</string>
@@ -162,8 +162,8 @@
     <string name="event">इवेंट</string>
     <string name="clear_search">खोज साफ़ करें</string>
     <string name="optional">वैकल्पिक</string>
-    <string name="empty_search_attributes_message">उपयोग के लिए कोई खोज फ़ील्ड कॉन्फ़िगर नहीं है\nकृपया अपने एडमिन से संपर्क करें</string>
+    <string name="empty_search_attributes_message">उपयोग के लिए कोई खोज फ़ील्ड कॉन्फ़िगर नहीं है</string>
     <string name="show_more">और दिखाएँ</string>
     <string name="show_less">कम दिखाएँ</string>
-    <string name="section_misconfigured">यह सेक्शन सही तरह से कॉन्फ़िगर नहीं है\nअपने एडमिन से संपर्क करें</string>
+    <string name="section_misconfigured">यह सेक्शन सही तरह से कॉन्फ़िगर नहीं है\n अपने एडमिन से संपर्क करें</string>
     </resources>

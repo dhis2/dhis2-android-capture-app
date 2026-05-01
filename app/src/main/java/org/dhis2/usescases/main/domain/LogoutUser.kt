@@ -1,20 +1,21 @@
 package org.dhis2.usescases.main.domain
 
 import org.dhis2.commons.filters.FilterManager
-import org.dhis2.data.service.SyncStatusController
-import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.mobile.commons.domain.UseCase
+import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
+import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.dhis2.usescases.main.HomeRepository
 
 typealias AccountCount = Int
 
 class LogoutUser(
     private val repository: HomeRepository,
-    private val workManagerController: WorkManagerController,
+    private val syncBackgroundJobAction: SyncBackgroundJobAction,
     private val syncStatusController: SyncStatusController,
     private val filterManager: FilterManager,
-) {
-    suspend operator fun invoke(): Result<AccountCount> {
-        workManagerController.cancelAllWorkAndWait()
+) : UseCase<Unit, AccountCount> {
+    override suspend operator fun invoke(input: Unit): Result<AccountCount> {
+        syncBackgroundJobAction.cancelAll()
         syncStatusController.restore()
         filterManager.clearAllFilters()
 

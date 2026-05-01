@@ -124,7 +124,7 @@
     <string name="no_results_found">Nenhum resultado encontrado</string>
     <string name="action_done">Feito</string>
     <string name="input_not_supported">Não suportado</string>
-    <!--*******************->
+    <!--*******************
         D2 Error Messages
     **********************-->
     <string name="login_error_null_pass">A palavra-passe está em falta. Introduza a palavra-passe.</string>
@@ -150,7 +150,6 @@
     <string name="error_create_existing_error">Criação abortada. O objeto já existe.</string>
     <string name="error_delete_non_existing_object">Eliminação abortada. O objeto não existe.</string>
     <string name="error_instance_keystore">Não foi possível instanciar o keystore.</string>
-    <string name="error_reserve_value_on_server">Não foi possível reservar valores para este registo. Por favor, contacte o seu administrador.</string>
     <string name="error_export_login">Inicie sessão para exportar a base de dados.</string>
     <string name="error_export_encrypted">A exportação de uma base de dados encriptada não é suportada.</string>
     <string name="error_import_exist">Está a importar uma base de dados já existente.</string>
@@ -177,7 +176,6 @@
     <string name="error_socket_timeout"> O servidor demorou demasiado tempo a responder. Cancelamos a requisição.</string>
     <string name="error_relationship_updated">O relacionamento não pode ser actualizado.</string>
     <string name="error_too_many_periods">Existem muitos períodos.</string>
-    <string name="error_url_not_found"> Não foi possível encontrar a URL. Por favor, verifique-o.</string>
     <string name="error_account_disabled"> A sua conta de utilizador foi desactivada. Se isto for um erro, contacte o seu administrador.</string>
     <string name="error_account_locked"> A sua conta de utilizador está bloqueada. Se isto for um erro, contacte o seu administrador.</string>
     <string name="error_set_value">O valor não pode ser definido.</string>
@@ -189,8 +187,11 @@
     <string name="error_invalid_characters">Existem caracteres inválidos na consulta. Por favor, peça ao administrador para verificar a configuração do servidor (relaxedQueryChars,...).</string>
     <string name="error_server_unavailable">O servidor está indisponível do momento. Tente novamente mais tarde.</string>
     <string name="error_no_internet_connection">Está off-line. Ligue-se à Internet e tente novamente.</string>
-    <!--*******************->
+    <!--*******************
        END OF D2 Error Messages
     **********************-->
+    <string name="age_or">OR</string>
+    <string name="cancel">Cancelar</string>
+    <string name="ok">OK</string>
 
 </resources>

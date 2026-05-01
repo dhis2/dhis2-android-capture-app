@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="add_account">Add new account</string>
     <string name="two_fa_screen_title">Two factor authentication</string>
-    <string name="two_fa_no_connection_title">Can't connect to network</string>
+    <string name="two_fa_no_connection_title">Can\'t connect to network</string>
     <string name="two_fa_no_connection_description">You need an internet connection to turn two-factor authentication on or off.</string>
     <string name="two_fa_no_connection_button">Try to reconnect</string>
     <string name="two_fa_checking_status">Checking status...</string>
@@ -67,4 +67,6 @@
     <string name="importing_successful">Import successful</string>
     <string name="openid_process_cancelled">The login was cancelled</string>
     <string name="openid_invalid_auth_result">Invalid authorization result</string>
+    <string name="error_device_not_registered">Device not registered</string>
+    <string name="missing_username_from_oauth_login_response">Missing username from OAuth login response</string>
 </resources>

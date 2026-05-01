@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="add_account">添加新账户</string>
     <string name="two_fa_screen_title">双重身份验证</string>
@@ -67,4 +67,4 @@
     <string name="importing_successful">导入成功</string>
     <string name="openid_process_cancelled">登录被取消</string>
     <string name="openid_invalid_auth_result">授权结果无效</string>
-</resources>
+    </resources>

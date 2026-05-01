@@ -112,7 +112,7 @@
     <string name="no_results_found">Результатів не знайдено</string>
     <string name="action_done">Зроблено</string>
     <string name="input_not_supported">Не підтримується</string>
-    <!--*******************->
+    <!--*******************
         D2 Error Messages
     **********************-->
     <string name="login_error_null_pass">Пароль відсутній. Будь ласка, введіть пароль.</string>
@@ -138,7 +138,6 @@
     <string name="error_create_existing_error">Створення перервано. Об\'єкт вже існує.</string>
     <string name="error_delete_non_existing_object">Видалення перервано. Об\'єкт не існує.</string>
     <string name="error_instance_keystore">Не вдалося створити екземпляр сховища ключів.</string>
-    <string name="error_reserve_value_on_server">Ми не змогли зарезервувати значення для цих записів. Будь ласка, зверніться до свого адміністратора.</string>
     <string name="error_export_login">Увійдіть в систему, щоб експортувати базу даних.</string>
     <string name="error_export_encrypted">Експорт зашифрованої бази даних не підтримується.</string>
     <string name="error_import_exist">Ви імпортуєте вже існуючу базу даних.</string>
@@ -165,7 +164,6 @@
     <string name="error_socket_timeout">Сервер надто довго відповідав. Ми скасували запит.</string>
     <string name="error_relationship_updated">Зв\'язки не можна оновити.</string>
     <string name="error_too_many_periods">Надто багато періодів.</string>
-    <string name="error_url_not_found">Не вдалося знайти URL-адресу. Будь ласка, перевірте це.</string>
     <string name="error_account_disabled">Ваш обліковий запис користувача вимкнено. Якщо це помилка, зверніться до адміністратора.</string>
     <string name="error_account_locked">Ваш обліковий запис користувача заблоковано. Якщо це помилка, зверніться до адміністратора.</string>
     <string name="error_set_value">Не вдалося встановити значення.</string>
@@ -175,8 +173,9 @@
     <string name="error_min_attributes">Недостатньо атрибутів для виконання пошуку. Уточніть пошук за допомогою додаткових атрибутів.</string>
     <string name="error_org_unit_scope">Онлайн-пошук доступний лише для організаційних підрозділів  користувача.</string>
     <string name="error_invalid_characters">У запиті є недійсні символи. Попросіть адміністратора перевірити конфігурацію сервера (relaxedQueryChars,...).</string>
-    <!--*******************->
-       END OF D2 Error Messages
-    **********************-->
+    <string name="age">ВІК</string>
+    <string name="date_of_birth">ДАТА НАРОДЖЕННЯ</string>
+    <string name="cancel">Скасувати</string>
+    <string name="ok">ОК</string>
 
 </resources>

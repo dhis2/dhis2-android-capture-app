@@ -6,6 +6,7 @@ import org.dhis2.maps.utils.CoordinateDataElementInfo
 import org.dhis2.uicomponents.map.geometry.MapEventToFeatureCollectionTest
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
@@ -78,11 +79,13 @@ class MapDataElementToFeatureTest {
                     .builder()
                     .uid("deUid")
                     .displayFormName("deName")
+                    .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                     .build(),
                 Enrollment
                     .builder()
                     .uid("enrollmentUid")
                     .trackedEntityInstance("teiUid")
+                    .attributeOptionCombo("attributeOptionComboUid")
                     .build(),
                 Geometry
                     .builder()
@@ -105,11 +108,13 @@ class MapDataElementToFeatureTest {
                     .builder()
                     .uid("de2Uid")
                     .displayFormName("de2Name")
+                    .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                     .build(),
                 Enrollment
                     .builder()
                     .uid("enrollmentUid")
                     .trackedEntityInstance("teiUid")
+                    .attributeOptionCombo("attributeOptionComboUid")
                     .build(),
                 Geometry
                     .builder()
@@ -132,11 +137,13 @@ class MapDataElementToFeatureTest {
                     .builder()
                     .uid("deUid")
                     .displayFormName("deName")
+                    .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                     .build(),
                 Enrollment
                     .builder()
                     .uid("enrollmentUid")
                     .trackedEntityInstance("teiUid")
+                    .attributeOptionCombo("attributeOptionComboUid")
                     .build(),
                 Geometry
                     .builder()

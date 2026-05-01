@@ -72,6 +72,7 @@
     %2$s is the attribute option combo name
     -->
     <string name="period_not_in_attribute_option_combo_range">您不能编辑 %2$s中的时段%1$s的数据。</string>
+    <string name="period_not_in_data_input_periods">该数据 不可编辑，因为所选期间不在数据 输入周期内</string>
     <string name="dataset_closed">此数据不可编辑，因为已标记为关闭状态</string>
     <string name="dataset_expired">该数据不可编辑，因为其编辑时间已过</string>
 

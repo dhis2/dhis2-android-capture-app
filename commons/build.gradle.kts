@@ -2,8 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.library")
-    kotlin("android")
-    kotlin("kapt")
+    alias(libs.plugins.legacy.kapt)
     id("com.google.devtools.ksp")
     id("kotlin-parcelize")
     alias(libs.plugins.kotlin.compose.compiler)
@@ -61,9 +60,12 @@ kotlin {
     }
 }
 
+kapt {
+    correctErrorTypes = true
+}
+
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    api(project(":ui-components"))
     implementation(project(":commonskmm"))
 
     api(libs.dhis2.android.sdk) {
@@ -81,6 +83,7 @@ dependencies {
     api(libs.androidx.viewModelKtx)
     api(libs.androidx.recyclerView)
     debugApi(libs.androidx.compose.uitooling)
+    api(libs.androidx.compose.preview)
     api(libs.androidx.compose.ui)
     api(libs.androidx.compose.livedata)
     api(libs.androidx.compose.paging)
@@ -103,16 +106,16 @@ dependencies {
     api(libs.barcodeScanner.zxing.android) {
         exclude("com.google.zxing", "core")
     }
-    testApi(libs.test.junit)
-    testApi(libs.test.mockitoCore)
-    testApi(libs.test.mockitoKotlin)
-    testApi(libs.test.mockitoInline)
-    androidTestApi(libs.test.mockitoCore)
-    androidTestApi(libs.test.mockitoKotlin)
-    androidTestApi(libs.test.dexmaker.mockitoInline)
-    androidTestApi(libs.test.junit.ext)
-    androidTestApi(libs.test.espresso)
-    androidTestApi(libs.test.espresso.idlingresource)
+    testImplementation(libs.test.junit)
+    testImplementation(libs.test.mockitoCore)
+    testImplementation(libs.test.mockitoKotlin)
+    testImplementation(libs.test.mockitoInline)
+    androidTestImplementation(libs.test.mockitoCore)
+    androidTestImplementation(libs.test.mockitoKotlin)
+    androidTestImplementation(libs.test.dexmaker.mockitoInline)
+    androidTestImplementation(libs.test.junit.ext)
+    androidTestImplementation(libs.test.espresso)
+    androidTestImplementation(libs.test.espresso.idlingresource)
     api(libs.test.espresso.idlingresource)
     api(libs.test.espresso.idlingconcurrent)
     api(libs.analytics.sentry)

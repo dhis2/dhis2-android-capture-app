@@ -6,3 +6,4 @@ ktlint_standard_no-wildcard-imports = enabled
 ktlint_standard_trailing-comma-on-call-site = enabled
 ktlint_standard_trailing-comma-on-declaration-site = enabled
 ktlint_standard_import-ordering = enabled
+ktlint_experimental_no-unused-imports = enabled

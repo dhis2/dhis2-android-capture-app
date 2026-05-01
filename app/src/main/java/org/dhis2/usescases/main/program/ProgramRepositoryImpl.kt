@@ -8,7 +8,7 @@ import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
-import org.dhis2.data.service.SyncStatusData
+import org.dhis2.mobile.sync.model.SyncStatusData
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.program.Program
@@ -178,7 +178,7 @@ internal class ProgramRepositoryImpl(
     private fun getTrackerTeiCount(program: Program): Int {
         val teiIds =
             filterPresenter
-                .filteredTrackerProgram(program)
+                .filteredTrackerProgram(program.uid())
                 .offlineFirst()
                 .blockingGetUids()
         val teiCount = teiIds.size

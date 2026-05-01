@@ -3,6 +3,7 @@ package org.dhis2.mobile.login.main.ui.screen
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Login
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
@@ -37,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -57,8 +60,8 @@ import org.dhis2.mobile.login.main.ui.state.CredentialsUpdate
 import org.dhis2.mobile.login.main.ui.state.LoginState
 import org.dhis2.mobile.login.main.ui.state.OidcInfo
 import org.dhis2.mobile.login.main.ui.viewmodel.CredentialsViewModel
-import org.dhis2.mobile.login.pin.ui.components.PinBottomSheet
-import org.dhis2.mobile.login.pin.ui.components.PinMode
+import org.dhis2.mobile.login.pin.domain.model.PinMode
+import org.dhis2.mobile.login.pin.ui.components.PinDialog
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.action_log_in
 import org.dhis2.mobile.login.resources.action_manage_account
@@ -97,10 +100,17 @@ import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUISt
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+
+const val CREDENTIALS_USERNAME_INPUT_TAG = "credentials_username_input"
+const val CREDENTIALS_PASSWORD_INPUT_TAG = "credentials_password_input"
+const val CREDENTIALS_LOGIN_BUTTON_TAG = "credentials_login_button"
+const val CREDENTIALS_ERROR_INFO_BAR_TAG = "credentials_error_info_bar"
+const val CREDENTIALS_MANAGE_ACCOUNTS_BUTTON_TAG = "credentials_manage_accounts_button"
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -113,6 +123,7 @@ fun CredentialsScreen(
     allowRecovery: Boolean,
     oidcInfo: OidcInfo?,
     fromHome: Boolean,
+    oAuthEnable: Boolean,
 ) {
     val context = LocalPlatformContext.current
 
@@ -126,6 +137,7 @@ fun CredentialsScreen(
                 oidcInfo,
                 context,
                 fromHome,
+                oAuthEnable,
             )
         }
 
@@ -183,25 +195,28 @@ fun CredentialsScreen(
                 serverImageUrl = selectedServerFlag,
             )
         }
-        CredentialsContainer(
-            availableUsernames = screenState.credentialsInfo.availableUsernames,
-            username = screenState.credentialsInfo.username,
-            password = screenState.credentialsInfo.password,
-            isUsernameEditable = screenState.credentialsInfo.usernameCanBeEdited,
-            isLoggingIn = isLoggingIn,
-            onCredentialsUpdate = { credentialsUpdate ->
-                when (credentialsUpdate) {
-                    CredentialsUpdate.Complete ->
-                        viewModel.onLoginClicked()
 
-                    is CredentialsUpdate.Password ->
-                        viewModel.updatePassword(credentialsUpdate.password)
+        if (!oAuthEnable) {
+            CredentialsContainer(
+                availableUsernames = screenState.credentialsInfo.availableUsernames,
+                username = screenState.credentialsInfo.username,
+                password = screenState.credentialsInfo.password,
+                isUsernameEditable = screenState.credentialsInfo.usernameCanBeEdited,
+                isLoggingIn = isLoggingIn,
+                onCredentialsUpdate = { credentialsUpdate ->
+                    when (credentialsUpdate) {
+                        CredentialsUpdate.Complete ->
+                            viewModel.onLoginClicked()
 
-                    is CredentialsUpdate.Username ->
-                        viewModel.updateUsername(credentialsUpdate.username)
-                }
-            },
-        )
+                        is CredentialsUpdate.Password ->
+                            viewModel.updatePassword(credentialsUpdate.password)
+
+                        is CredentialsUpdate.Username ->
+                            viewModel.updateUsername(credentialsUpdate.username)
+                    }
+                },
+            )
+        }
         LoginStatus(
             isLoggingIn = isLoggingIn,
             loginErrorMessage = screenState.errorMessage,
@@ -237,7 +252,7 @@ fun CredentialsScreen(
     }
 
     if (screenState.isSessionLocked) {
-        PinBottomSheet(
+        PinDialog(
             mode = PinMode.ASK,
             onSuccess = {
                 viewModel.onPinUnlocked()
@@ -262,11 +277,13 @@ private fun handleCredentialAction(
 
         CredentialsAction.OnLoginClicked ->
             viewModel.onLoginClicked()
+
         CredentialsAction.OnManageAccounts ->
             viewModel.onManageAccountsClicked()
 
         CredentialsAction.OnOpenIdLogin ->
             viewModel.onOpenIdLogin()
+
         CredentialsAction.OnRecoverAccount ->
             viewModel.onRecoverAccountClicked()
     }
@@ -319,6 +336,11 @@ private fun ServerInfo(
             ),
         listAvatar = {
             Avatar(
+                modifier =
+                    Modifier.background(
+                        color = SurfaceColor.PrimaryContainer,
+                        shape = CircleShape,
+                    ),
                 style =
                     flag?.let { painter ->
                         AvatarStyleData.Image(painter)
@@ -384,7 +406,7 @@ private fun CredentialsContainer(
     ) {
         if (isUsernameEditable) {
             InputUser(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag(CREDENTIALS_USERNAME_INPUT_TAG),
                 uiModel =
                     InputUserModel(
                         title = stringResource(Res.string.username_hint),
@@ -417,7 +439,7 @@ private fun CredentialsContainer(
             )
         }
         InputPassword(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().testTag(CREDENTIALS_PASSWORD_INPUT_TAG),
             uiModel =
                 InputPasswordModel(
                     title = stringResource(Res.string.password_hint),
@@ -471,7 +493,7 @@ private fun LoginStatus(
         )
     } else if (loginErrorMessage != null) {
         InfoBar(
-            modifier = Modifier,
+            modifier = Modifier.testTag(CREDENTIALS_ERROR_INFO_BAR_TAG),
             text = loginErrorMessage,
             textColor = MaterialTheme.colorScheme.onErrorContainer,
             backgroundColor = MaterialTheme.colorScheme.errorContainer,
@@ -501,7 +523,7 @@ private fun CredentialActions(
         verticalArrangement = spacedBy(Spacing.Spacing0),
     ) {
         Button(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().testTag(CREDENTIALS_LOGIN_BUTTON_TAG),
             enabled = canLogin,
             text = stringResource(Res.string.action_log_in),
             style = ButtonStyle.FILLED,
@@ -591,7 +613,10 @@ private fun CredentialActions(
                 contentAlignment = Alignment.BottomCenter,
             ) {
                 Button(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .testTag(CREDENTIALS_MANAGE_ACCOUNTS_BUTTON_TAG),
                     text = stringResource(Res.string.action_manage_account),
                     style = ButtonStyle.OUTLINED,
                     onClick = {

@@ -15,7 +15,7 @@
     <string name="sign_in_to_with_oidc">ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ ICRC</string>
     <string name="username">ຊື່ຜູ້ໃຊ້</string>
     <string name="password">ລະຫັດຜ່ານ</string>
-    <string name="forgot_password">ລຶມລະຫັດຜ່ານ?</string>
+    <string name="forgot_password">ລຶມລະຫັດຜ່ານ\?</string>
 
     <!-- FloatingActionButtons -->
     <string name="proceed">ດຳເນີນ</string>
@@ -64,8 +64,7 @@
     <string name="invalid_quantity">ບໍ່ຖືກຕ້ອງ</string>
     <string name="speech_network_error">ຂໍ້ຜິດພາດທາງເຄື່ອຂ່າຍ</string>
     <string name="speech_network_timeout_error">ການເຮັດວຽກຂອງອິນເຕີເນັດໝົດເວລາແລ້ວ</string>
-    <string name="negative_number_speech_input_error">
-ບໍ່ອະນຸຍາດໃຫ້ປ້ອນຕົວເລກລົບ:\"%s\" </string>
+    <string name="negative_number_speech_input_error">\nບໍ່ອະນຸຍາດໃຫ້ປ້ອນຕົວເລກລົບ:\"%s\" </string>
 
     <string name="no_network_available">ບໍ່ມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ</string>
     <string name="unable_to_sync_data_no_network_available">

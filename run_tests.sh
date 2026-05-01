@@ -6,6 +6,6 @@ echo "Running Ktlint check..."
 ./gradlew ktlintCheck
 
 echo "Running Unit Tests..."
-./gradlew testDebugUnitTest testDhis2DebugUnitTest
+./gradlew testDebugUnitTest testDhis2DebugUnitTest testAndroidHostTest
 
 echo "All tasks completed!"

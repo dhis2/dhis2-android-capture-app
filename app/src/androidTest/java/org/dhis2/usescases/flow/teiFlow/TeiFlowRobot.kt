@@ -116,8 +116,10 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         teiDashboardRobot(composeTestRule) {
             clickOnMenuMoreOptions()
             clickOnTimelineEvents()
+            composeTestRule.waitForIdle()
             clickOnMenuMoreOptions()
             clickOnMenuComplete()
+            composeTestRule.waitForIdle()
             checkCanNotAddEvent()
             checkAllEventsAreClosed()
         }

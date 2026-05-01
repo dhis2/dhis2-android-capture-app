@@ -15,15 +15,6 @@ interface ValueStore {
         value: String?,
     ): Flowable<StoreResult>
 
-    suspend fun save(
-        orgUnitUid: String,
-        periodId: String,
-        attributeOptionComboUid: String,
-        dataElementUid: String,
-        categoryOptionComboUid: String,
-        value: String?,
-    ): Flowable<StoreResult>
-
     fun deleteOptionValues(optionCodeValuesToDelete: List<String>)
 
     fun deleteOptionValueIfSelected(

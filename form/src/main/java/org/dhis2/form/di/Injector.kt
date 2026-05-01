@@ -31,6 +31,7 @@ import org.dhis2.form.model.coroutine.FormDispatcher
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
 import org.dhis2.form.ui.FormViewModelFactory
+import org.dhis2.form.ui.mapper.FormSectionMapper
 import org.dhis2.form.ui.provider.AutoCompleteProviderImpl
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
@@ -67,6 +68,7 @@ object Injector {
             provideDispatchers(),
             openErrorLocation,
             provideFormResultDialogProvider(context),
+            FormSectionMapper(),
         )
 
     private fun provideFormResultDialogProvider(context: Context) =
@@ -237,11 +239,11 @@ object Injector {
     private fun provideEnrollmentObjectRepository(enrollmentUid: String): EnrollmentObjectRepository =
         provideD2().enrollmentModule().enrollments().uid(enrollmentUid)
 
-    private fun provideCrashReportController(context: Context) = CrashReportControllerImpl(context)
+    private fun provideCrashReportController(context: Context) = CrashReportControllerImpl(context, sentryDsn = "")
 
     private fun provideNetworkUtils(context: Context) = NetworkUtils(context)
 
-    fun provideResourcesManager(context: Context) =
+    private fun provideResourcesManager(context: Context) =
         ResourceManager(
             context,
             provideColorUtils(),

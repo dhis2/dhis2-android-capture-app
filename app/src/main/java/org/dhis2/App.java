@@ -11,8 +11,6 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
-import androidx.multidex.MultiDex;
-import androidx.multidex.MultiDexApplication;
 
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.di.dagger.PerServer;
@@ -47,8 +45,6 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.utils.granularsync.SyncStatusDialogProvider;
-import org.dhis2.utils.session.PinModule;
-import org.dhis2.utils.session.SessionComponent;
 import org.dhis2.utils.timber.DebugTree;
 import org.hisp.dhis.android.core.D2Manager;
 import org.hisp.dhis.android.core.datastore.KeyValuePair;
@@ -71,7 +67,7 @@ import io.sentry.SentryLevel;
 import io.sentry.android.core.SentryAndroid;
 import timber.log.Timber;
 
-public class App extends MultiDexApplication implements Components, LifecycleObserver {
+public class App extends android.app.Application implements Components, LifecycleObserver {
 
     @NonNull
     @Singleton
@@ -88,9 +84,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     @Nullable
     @PerActivity
     private TeiDashboardComponent dashboardComponent;
-
-    @Nullable
-    private SessionComponent sessionComponent;
 
     private boolean fromBackGround = false;
     private boolean recreated;
@@ -120,6 +113,10 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     public void initCrashController() {
         if (areTrackingPermissionGranted()) {
+            if (BuildConfig.SENTRY_DSN.isEmpty()) {
+                Timber.w("Sentry DSN is empty. Skipping Sentry initialization.");
+                return;
+            }
             SentryAndroid.init(this, options -> {
                 options.setDsn(BuildConfig.SENTRY_DSN);
                 options.setAnrReportInDebug(true);
@@ -152,12 +149,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         CaocConfig.Builder.create()
                 .errorActivity(CrashActivity.class)
                 .apply();
-    }
-
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-        MultiDex.install(this);
     }
 
     private void setUpAppComponent() {
@@ -276,15 +267,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         } else {
             recreated = false;
         }
-    }
-
-    @NotNull
-    public SessionComponent createSessionComponent(PinModule pinModule) {
-        return (sessionComponent = userComponent.plus(pinModule));
-    }
-
-    public void releaseSessionComponent() {
-        sessionComponent = null;
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)

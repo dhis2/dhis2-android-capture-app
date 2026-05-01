@@ -1,17 +1,15 @@
 package org.dhis2.usescases.sync
 
-import androidx.work.Data
-import androidx.work.WorkInfo
 import io.reactivex.Completable
 import io.reactivex.Single
-import org.dhis2.commons.Constants
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
-import org.dhis2.data.service.METADATA_MESSAGE
-import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
+import org.dhis2.mobile.sync.model.SyncJobStatus
+import org.dhis2.mobile.sync.model.SyncStatus
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -20,7 +18,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.util.UUID
 
 class SyncPresenterTest {
     lateinit var presenter: SyncPresenter
@@ -28,8 +25,9 @@ class SyncPresenterTest {
     private val userManager: UserManager =
         Mockito.mock(UserManager::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val schedulerProvider: SchedulerProvider = TrampolineSchedulerProvider()
-    private val workManagerController: WorkManagerController = mock()
     private val preferences: PreferenceProvider = mock()
+
+    private val backgroundJobAction: SyncBackgroundJobAction = mock()
 
     @Before
     fun setUp() {
@@ -38,7 +36,7 @@ class SyncPresenterTest {
                 view,
                 userManager,
                 schedulerProvider,
-                workManagerController,
+                backgroundJobAction,
                 preferences,
             )
     }
@@ -46,35 +44,31 @@ class SyncPresenterTest {
     @Test
     fun `Should start initial sync`() {
         presenter.sync()
-        verify(workManagerController, times(1)).syncMetaDataForWorker(
-            Constants.META_NOW,
-            Constants.INITIAL_SYNC,
-        )
+        verify(backgroundJobAction, times(1)).launchMetadataSync(0)
     }
 
     @Test
     fun `Should return work info live data`() {
         presenter.observeSyncProcess()
-        verify(workManagerController, times(1))
-            .getWorkInfosForUniqueWorkLiveData(Constants.INITIAL_SYNC)
+        verify(backgroundJobAction, times(1)).observeMetadataJob()
     }
 
     @Test
     fun `Should set metadata sync started`() {
-        presenter.handleSyncInfo(arrayListOf(metaWorkInfo(WorkInfo.State.RUNNING)))
+        presenter.handleSyncInfo(arrayListOf(metaSyncJobStatus(SyncStatus.Running)))
         verify(view, times(1)).setMetadataSyncStarted()
     }
 
     @Test
     fun `Should set metadata sync succeeded`() {
-        presenter.handleSyncInfo(arrayListOf(metaWorkInfo(WorkInfo.State.SUCCEEDED)))
+        presenter.handleSyncInfo(arrayListOf(metaSyncJobStatus(SyncStatus.Succeed)))
         verify(view, times(1)).setMetadataSyncSucceed()
     }
 
     @Test
     fun `Should show metadata sync error message`() {
         val message = "Error message"
-        presenter.handleSyncInfo(arrayListOf(metaWorkInfo(WorkInfo.State.FAILED, message)))
+        presenter.handleSyncInfo(arrayListOf(metaSyncJobStatus(SyncStatus.Failed, message)))
         verify(view, times(1)).showMetadataFailedMessage(message)
     }
 
@@ -97,17 +91,12 @@ class SyncPresenterTest {
         verify(view, times(1)).goToLogin()
     }
 
-    private fun metaWorkInfo(
-        state: WorkInfo.State,
+    private fun metaSyncJobStatus(
+        state: SyncStatus,
         message: String? = null,
-    ): WorkInfo =
-        WorkInfo(
-            id = UUID.randomUUID(),
-            state = state,
-            outputData = Data.Builder().apply { putString(METADATA_MESSAGE, message) }.build(),
-            tags = setOf(Constants.META_NOW),
-            progress = Data.EMPTY,
-            runAttemptCount = 0,
-            generation = 0,
-        )
+    ) = SyncJobStatus(
+        status = state,
+        message = message,
+        tags = listOf("METADATA_SYNC_NOW"),
+    )
 }

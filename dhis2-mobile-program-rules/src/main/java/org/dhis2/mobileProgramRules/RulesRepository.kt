@@ -1,22 +1,17 @@
 package org.dhis2.mobileProgramRules
 
-import android.os.Build
 import android.text.TextUtils.isEmpty
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.bindings.event
 import org.dhis2.commons.bindings.organisationUnit
 import org.dhis2.commons.bindings.program
 import org.dhis2.commons.bindings.programStage
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.ProgramRule
+import org.hisp.dhis.rules.api.RuleSupplementaryData
 import org.hisp.dhis.rules.models.Rule
 import org.hisp.dhis.rules.models.RuleAttributeValue
 import org.hisp.dhis.rules.models.RuleDataValue
@@ -33,8 +28,8 @@ class RulesRepository(
 ) {
     // ORG UNIT GROUPS
     // USER ROLES
-    suspend fun supplementaryData(orgUnitUid: String): Map<String, List<String>> {
-        val supData = HashMap<String, List<String>>()
+    suspend fun supplementaryData(orgUnitUid: String): RuleSupplementaryData {
+        val ouGroupMap = HashMap<String, List<String>>()
 
         d2
             .organisationUnitModule()
@@ -44,18 +39,19 @@ class RulesRepository(
             .blockingGet()
             .let { orgUnit ->
                 orgUnit?.organisationUnitGroups()?.map {
-                    it.code()?.let { code -> supData[code] = arrayListOf(orgUnit.uid()) }
-                    supData[it.uid()] = arrayListOf(orgUnit.uid())
+                    it.code()?.let { code -> ouGroupMap[code] = arrayListOf(orgUnit.uid()) }
+                    ouGroupMap[it.uid()] = arrayListOf(orgUnit.uid())
                 }
             }
 
         val userRoleUids = d2.userModule().userRoles().blockingGetUids()
         val userGroupUids = d2.userModule().userGroups().blockingGetUids()
-        supData["USER_ROLES"] = userRoleUids
-        supData["USER_GROUPS"] = userGroupUids
-        supData["android_version"] = listOf(Build.VERSION.SDK_INT.toString())
 
-        return supData
+        return RuleSupplementaryData(
+            userGroups = userGroupUids,
+            userRoles = userRoleUids,
+            orgUnitGroups = ouGroupMap,
+        )
     }
 
     suspend fun rules(
@@ -72,9 +68,9 @@ class RulesRepository(
                     ?.programStage()
             }
 
-        return queryRules(programUid).toRuleList().filter {
-            it.programStage == null || it.programStage == programStage
-        }
+        return queryRules(programUid)
+            .filter { it.programStage() == null || it.programStage()?.uid() == programStage }
+            .toRuleList()
     }
 
     suspend fun ruleVariables(programUid: String): List<RuleVariable> =
@@ -133,21 +129,9 @@ class RulesRepository(
                                 } else {
                                     RuleEventStatus.valueOf(event.status()!!.name)
                                 },
-                            eventDate = event.eventDate()!!.toRuleEngineInstant(),
-                            dueDate =
-                                event.dueDate()?.let {
-                                    Instant
-                                        .fromEpochMilliseconds(it.time)
-                                        .toLocalDateTime(TimeZone.currentSystemDefault())
-                                        .date
-                                },
-                            completedDate =
-                                event.completedDate()?.let {
-                                    Instant
-                                        .fromEpochMilliseconds(it.time)
-                                        .toLocalDateTime(TimeZone.currentSystemDefault())
-                                        .date
-                                },
+                            eventDate = event.eventDate()!!.toRuleEngineLocalDate(),
+                            dueDate = event.dueDate()?.toRuleEngineLocalDate(),
+                            completedDate = event.completedDate()?.toRuleEngineLocalDate(),
                             organisationUnit = event.organisationUnit()!!,
                             organisationUnitCode =
                                 d2
@@ -157,11 +141,8 @@ class RulesRepository(
                                         event.organisationUnit(),
                                     ).blockingGet()
                                     ?.code(),
-                            createdDate =
-                                event
-                                    .created()
-                                    ?.let { Instant.fromEpochMilliseconds(it.time) }
-                                    ?: Clock.System.now(),
+                            createdDate = event.created().toRuleEngineInstantOrNow(),
+                            createdAtClientDate = event.createdAtClient()?.toRuleEngineInstant(),
                             dataValues =
                                 event.trackedEntityDataValues()?.toRuleDataValue() ?: emptyList(),
                         )
@@ -186,8 +167,8 @@ class RulesRepository(
                 .byDeleted()
                 .isFalse
                 .withTrackedEntityDataValues()
-                .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .blockingGet()
+                .sortForRuleEngine()
         } else {
             d2
                 .eventModule()
@@ -205,8 +186,8 @@ class RulesRepository(
                 .byDeleted()
                 .isFalse
                 .withTrackedEntityDataValues()
-                .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .blockingGet()
+                .sortForRuleEngine()
                 .let { list ->
                     val currentEventIndex = list.indexOfFirst { it.uid() == eventToEvaluate.uid() }
 
@@ -269,7 +250,7 @@ class RulesRepository(
                         } else {
                             RuleEventStatus.valueOf(event.status()!!.name)
                         },
-                    eventDate = event.eventDate()!!.toRuleEngineInstant(),
+                    eventDate = event.eventDate()!!.toRuleEngineLocalDate(),
                     dueDate = event.dueDate()?.toRuleEngineLocalDate(),
                     completedDate = event.completedDate()?.toRuleEngineLocalDate(),
                     organisationUnit = event.organisationUnit()!!,
@@ -280,11 +261,8 @@ class RulesRepository(
                             .uid(event.organisationUnit())
                             .blockingGet()
                             ?.code(),
-                    createdDate =
-                        event
-                            .created()
-                            ?.let { Instant.fromEpochMilliseconds(it.time) }
-                            ?: Clock.System.now(),
+                    createdDate = event.created().toRuleEngineInstantOrNow(),
+                    createdAtClientDate = event.createdAtClient()?.toRuleEngineInstant(),
                     dataValues =
                         event.trackedEntityDataValues()?.toRuleDataValue() ?: emptyList(),
                 )
@@ -415,16 +393,13 @@ class RulesRepository(
             programStage = event.programStage()!!,
             programStageName = d2.programStage(event.programStage()!!)?.name()!!,
             status = RuleEventStatus.valueOf(event.status()!!.name),
-            eventDate = event.eventDate()!!.toRuleEngineInstant(),
+            eventDate = event.eventDate()!!.toRuleEngineLocalDate(),
             dueDate = event.dueDate()?.toRuleEngineLocalDate(),
             completedDate = event.completedDate()?.toRuleEngineLocalDate(),
             organisationUnit = event.organisationUnit()!!,
             organisationUnitCode = d2.organisationUnit(event.organisationUnit()!!)?.code(),
-            createdDate =
-                event
-                    .created()
-                    ?.let { Instant.fromEpochMilliseconds(it.time) }
-                    ?: Clock.System.now(),
+            createdDate = event.created().toRuleEngineInstantOrNow(),
+            createdAtClientDate = event.createdAtClient()?.toRuleEngineInstant(),
             dataValues = emptyList(),
         )
     }

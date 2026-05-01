@@ -179,6 +179,9 @@ internal class DataSetInstanceRepositoryImpl(
 
                                     DataSetNonEditableReason.EXPIRED ->
                                         NonEditableReason.Expired
+
+                                    DataSetNonEditableReason.PERIOD_NOT_IN_DATA_INPUT_PERIODS ->
+                                        NonEditableReason.PeriodNotInDataInputPeriods
                                 }
                             } ?: NonEditableReason.None,
                     )
@@ -336,7 +339,10 @@ internal class DataSetInstanceRepositoryImpl(
             .blockingGet()
             ?.let {
                 DataSetRenderingConfig(
-                    useVerticalTabs = it.displayOptions()?.tabsDirection() == TabsDirection.VERTICAL,
+                    useVerticalTabs =
+                        it
+                            .displayOptions()
+                            ?.tabsDirection() == TabsDirection.VERTICAL,
                 )
             } ?: DataSetRenderingConfig(
             useVerticalTabs = true,
@@ -415,11 +421,12 @@ internal class DataSetInstanceRepositoryImpl(
                 .dataValueModule()
                 .dataValues()
                 .value(
-                    periodId,
-                    orgUnitUid,
-                    dataElementUid,
-                    categoryOptionComboUid,
-                    attrOptionComboUid,
+                    period = periodId,
+                    organisationUnit = orgUnitUid,
+                    dataElement = dataElementUid,
+                    categoryOptionCombo = categoryOptionComboUid,
+                    attributeOptionCombo = attrOptionComboUid,
+                    sourceDataSet = dataSetUid,
                 ).blockingGet()
                 ?.syncState()
 
@@ -817,6 +824,7 @@ internal class DataSetInstanceRepositoryImpl(
         orgUnitUid: String,
         categoryOptionComboUid: String,
         attrOptionComboUid: String,
+        sourceDataSetUid: String,
     ): Pair<ColorString?, LegendLabel?>? {
         val dataElement =
             d2
@@ -847,6 +855,7 @@ internal class DataSetInstanceRepositoryImpl(
                     dataElement = dataElementUid,
                     categoryOptionCombo = categoryOptionComboUid,
                     attributeOptionCombo = attrOptionComboUid,
+                    sourceDataSet = sourceDataSetUid,
                 ).blockingGet()
                 ?.value()
                 ?.toDoubleOrNull()
@@ -982,6 +991,7 @@ internal class DataSetInstanceRepositoryImpl(
         attrOptionComboUid: String,
         dataElementUid: String,
         categoryOptionComboUid: String,
+        sourceDataSetUid: String,
     ) = d2
         .dataValueModule()
         .dataValues()
@@ -993,6 +1003,7 @@ internal class DataSetInstanceRepositoryImpl(
             dataElementUid,
             categoryOptionComboUid,
             attrOptionComboUid,
+            sourceDataSetUid,
         ).blockingGet()
         ?.value()
 
@@ -1003,6 +1014,7 @@ internal class DataSetInstanceRepositoryImpl(
         dataElementUid: String,
         categoryOptionComboUid: String,
         value: String?,
+        sourceDataSetUid: String,
     ): Result<Unit> {
         val valueRepository =
             d2
@@ -1014,6 +1026,7 @@ internal class DataSetInstanceRepositoryImpl(
                     dataElement = dataElementUid,
                     categoryOptionCombo = categoryOptionComboUid,
                     attributeOptionCombo = attrOptionComboUid,
+                    sourceDataSet = sourceDataSetUid,
                 )
 
         val dataElement =
@@ -1257,6 +1270,7 @@ internal class DataSetInstanceRepositoryImpl(
             ValidationResultStatus.valueOf(result.status().name),
             mapViolations(
                 violations = result.violations(),
+                dataSetUid = dataSetUid,
                 periodId = periodId,
                 orgUnitUid = orgUnitUid,
                 attrOptionComboUid = attrOptionComboUid,
@@ -1291,6 +1305,7 @@ internal class DataSetInstanceRepositoryImpl(
 
     private fun mapViolations(
         violations: List<ValidationResultViolation>,
+        dataSetUid: String,
         periodId: String,
         orgUnitUid: String,
         attrOptionComboUid: String,
@@ -1301,6 +1316,7 @@ internal class DataSetInstanceRepositoryImpl(
                 it.validationRule().instruction(),
                 mapDataElements(
                     dataElementUids = it.dataElementUids(),
+                    dataSetUid = dataSetUid,
                     periodId = periodId,
                     orgUnitUid = orgUnitUid,
                     attrOptionComboUid = attrOptionComboUid,
@@ -1310,6 +1326,7 @@ internal class DataSetInstanceRepositoryImpl(
 
     private fun mapDataElements(
         dataElementUids: Set<DataElementOperand>,
+        dataSetUid: String,
         periodId: String,
         orgUnitUid: String,
         attrOptionComboUid: String,
@@ -1348,21 +1365,23 @@ internal class DataSetInstanceRepositoryImpl(
                                 .dataValueModule()
                                 .dataValues()
                                 .value(
-                                    periodId,
-                                    orgUnitUid,
-                                    de.uid(),
-                                    catOptCombo.uid(),
-                                    attrOptionComboUid,
+                                    period = periodId,
+                                    organisationUnit = orgUnitUid,
+                                    dataElement = de.uid(),
+                                    categoryOptionCombo = catOptCombo.uid(),
+                                    attributeOptionCombo = attrOptionComboUid,
+                                    sourceDataSet = dataSetUid,
                                 ).blockingExists() &&
                             d2
                                 .dataValueModule()
                                 .dataValues()
                                 .value(
-                                    periodId,
-                                    orgUnitUid,
-                                    de.uid(),
-                                    catOptCombo.uid(),
-                                    attrOptionComboUid,
+                                    period = periodId,
+                                    organisationUnit = orgUnitUid,
+                                    dataElement = de.uid(),
+                                    categoryOptionCombo = catOptCombo.uid(),
+                                    attributeOptionCombo = attrOptionComboUid,
+                                    sourceDataSet = dataSetUid,
                                 ).blockingGet()
                                 ?.deleted() != true
                         ) {
@@ -1370,11 +1389,12 @@ internal class DataSetInstanceRepositoryImpl(
                                 .dataValueModule()
                                 .dataValues()
                                 .value(
-                                    periodId,
-                                    orgUnitUid,
-                                    de.uid(),
-                                    catOptCombo.uid(),
-                                    attrOptionComboUid,
+                                    period = periodId,
+                                    organisationUnit = orgUnitUid,
+                                    dataElement = de.uid(),
+                                    categoryOptionCombo = catOptCombo.uid(),
+                                    attributeOptionCombo = attrOptionComboUid,
+                                    sourceDataSet = dataSetUid,
                                 ).blockingGet()
                                 ?.value() ?: "-"
                         } else {

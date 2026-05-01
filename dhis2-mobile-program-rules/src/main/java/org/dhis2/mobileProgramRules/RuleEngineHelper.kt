@@ -84,7 +84,7 @@ class RuleEngineHelper(
                             RuleEngineContext(
                                 rules = rules.await(),
                                 ruleVariables = ruleVariables.await(),
-                                supplementaryData = supplData.await(),
+                                ruleSupplementaryData = supplData.await(),
                                 constantsValues = constants.await(),
                             ),
                         ruleEnrollment = ruleEnrollment.await(),

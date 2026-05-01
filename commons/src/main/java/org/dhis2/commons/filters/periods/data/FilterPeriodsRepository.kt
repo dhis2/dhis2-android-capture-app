@@ -25,6 +25,7 @@ class FilterPeriodsRepository(
             FilterPeriodType.WEEKLY,
             FilterPeriodType.WEEKLY_WEDNESDAY,
             FilterPeriodType.WEEKLY_THURSDAY,
+            FilterPeriodType.WEEKLY_FRIDAY,
             FilterPeriodType.WEEKLY_SATURDAY,
             FilterPeriodType.WEEKLY_SUNDAY,
             FilterPeriodType.BI_WEEKLY,
@@ -36,8 +37,11 @@ class FilterPeriodsRepository(
             FilterPeriodType.SIX_MONTHLY_APRIL,
             FilterPeriodType.SIX_MONTHLY_NOV,
             FilterPeriodType.YEARLY,
+            FilterPeriodType.FINANCIAL_FEB,
             FilterPeriodType.FINANCIAL_APRIL,
             FilterPeriodType.FINANCIAL_JULY,
+            FilterPeriodType.FINANCIAL_AUG,
+            FilterPeriodType.FINANCIAL_SEP,
             FilterPeriodType.FINANCIAL_OCT,
             FilterPeriodType.FINANCIAL_NOV,
         )
@@ -48,6 +52,7 @@ class FilterPeriodsRepository(
             FilterPeriodType.WEEKLY -> PeriodType.Weekly
             FilterPeriodType.WEEKLY_WEDNESDAY -> PeriodType.WeeklyWednesday
             FilterPeriodType.WEEKLY_THURSDAY -> PeriodType.WeeklyThursday
+            FilterPeriodType.WEEKLY_FRIDAY -> PeriodType.WeeklyFriday
             FilterPeriodType.WEEKLY_SATURDAY -> PeriodType.WeeklySaturday
             FilterPeriodType.WEEKLY_SUNDAY -> PeriodType.WeeklySunday
             FilterPeriodType.BI_WEEKLY -> PeriodType.BiWeekly
@@ -59,8 +64,11 @@ class FilterPeriodsRepository(
             FilterPeriodType.SIX_MONTHLY_APRIL -> PeriodType.SixMonthlyApril
             FilterPeriodType.SIX_MONTHLY_NOV -> PeriodType.SixMonthlyNov
             FilterPeriodType.YEARLY -> PeriodType.Yearly
+            FilterPeriodType.FINANCIAL_FEB -> PeriodType.FinancialFeb
             FilterPeriodType.FINANCIAL_APRIL -> PeriodType.FinancialApril
             FilterPeriodType.FINANCIAL_JULY -> PeriodType.FinancialJuly
+            FilterPeriodType.FINANCIAL_AUG -> PeriodType.FinancialAug
+            FilterPeriodType.FINANCIAL_SEP -> PeriodType.FinancialSep
             FilterPeriodType.FINANCIAL_OCT -> PeriodType.FinancialOct
             FilterPeriodType.FINANCIAL_NOV -> PeriodType.FinancialNov
             FilterPeriodType.NONE -> PeriodType.Daily

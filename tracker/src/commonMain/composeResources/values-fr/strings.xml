@@ -15,5 +15,7 @@
     <string name="remove">Supprimer</string>
     <string name="search">Rechercher</string>
     <string name="optional">Optional</string>
-
-</resources>
+    <string name="equal_search_operator">Correspondances exactes uniquement</string>
+    <string name="yes">oui </string>
+    <string name="no">non</string>
+    </resources>

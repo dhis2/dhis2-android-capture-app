@@ -46,7 +46,7 @@ internal class GetDataValueInputTest : KoinTest {
     private val repository =
         mock<DataSetInstanceRepository> {
             onRunBlocking { dataElementInfo(any(), any(), any()) } doReturn mockedDataElementInfo
-            onRunBlocking { value(any(), any(), any(), any(), any()) } doReturn "Current value"
+            onRunBlocking { value(any(), any(), any(), any(), any(), any()) } doReturn "Current value"
             onRunBlocking { conflicts(any(), any(), any(), any(), any(), any()) } doReturn
                 Pair(
                     emptyList(),

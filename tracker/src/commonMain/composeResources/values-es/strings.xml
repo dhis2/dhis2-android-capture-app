@@ -17,5 +17,7 @@
     <string name="clear_search">Borrar búsqueda</string>
     <string name="search">Buscar</string>
     <string name="optional">Opcional</string>
-
-</resources>
+    <string name="equal_search_operator">Solo coincidencias exactas</string>
+    <string name="yes">sí</string>
+    <string name="no">no</string>
+    </resources>

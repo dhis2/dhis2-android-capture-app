@@ -3,6 +3,7 @@ package org.dhis2.usescases.enrollment
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -35,6 +36,8 @@ class EnrollmentFormRepositoryTest {
                 .builder()
                 .uid("programUid")
                 .displayName("programName")
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
         whenever(enrollmentRepository.blockingGet()) doReturn
             Enrollment

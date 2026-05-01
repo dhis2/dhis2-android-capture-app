@@ -13,17 +13,22 @@ import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.commons.extensions.withMinimumDuration
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
+import org.dhis2.mobile.login.main.domain.model.DeviceEnrollmentInfo
 import org.dhis2.mobile.login.main.domain.model.LoginResult
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.usecase.BiometricLogin
 import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
+import org.dhis2.mobile.login.main.domain.usecase.GetDeviceEnrollmentUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
 import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
+import org.dhis2.mobile.login.main.domain.usecase.LoginUserWithOAuth
 import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
+import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
+import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
 import org.dhis2.mobile.login.main.ui.state.AfterLoginAction
 import org.dhis2.mobile.login.main.ui.state.CredentialsInfo
@@ -43,8 +48,12 @@ class CredentialsViewModel(
     private val logOutUser: LogOutUser,
     private val biometricLogin: BiometricLogin,
     private val openIdLogin: OpenIdLogin,
+    private val loginUserWithOAuth: LoginUserWithOAuth,
+    private val getDeviceEnrollmentUrl: GetDeviceEnrollmentUrl,
+    private val processDeviceEnrollment: ProcessDeviceEnrollment,
     private val updateTrackingPermission: UpdateTrackingPermission,
     private val updateBiometricPermission: UpdateBiometricPermission,
+    private val appLinkNavigation: AppLinkNavigation,
     networkStatusProvider: NetworkStatusProvider,
     private val serverName: String?,
     private val serverUrl: String,
@@ -54,6 +63,7 @@ class CredentialsViewModel(
     private val forgotPinUseCase: ForgotPinUseCase,
     private val oidcInfo: OidcInfo?,
     private val fromHome: Boolean,
+    private val oAuthEnable: Boolean,
 ) : ViewModel() {
     private val isNetworkOnline =
         networkStatusProvider.connectionStatus
@@ -87,6 +97,7 @@ class CredentialsViewModel(
             hasOtherAccounts = false,
             isSessionLocked = false,
             displayBiometricsDialog = false,
+            oAuthEnable = oAuthEnable,
         )
 
     private var loginJob: Job? = null
@@ -101,6 +112,16 @@ class CredentialsViewModel(
                 started = SharingStarted.WhileSubscribed(5000),
                 initialValue = initialState,
             )
+
+    init {
+        launchUseCase {
+            appLinkNavigation.appLink.collect { urlString ->
+                if (credentialsScreenState.value.loginState is LoginState.Running) {
+                    handleOAuthCallbacks(urlString)
+                }
+            }
+        }
+    }
 
     private fun loadData() {
         launchUseCase {
@@ -121,7 +142,7 @@ class CredentialsViewModel(
                             availableUsernames = getAvailableUsernames(),
                             usernameCanBeEdited = username == null,
                         ),
-                    loginState = LoginState.Disabled,
+                    loginState = if (oAuthEnable) LoginState.Enabled else LoginState.Disabled,
                     errorMessage = null,
                     allowRecovery = allowRecovery,
                     canUseBiometrics = getBiometricInfo(serverUrl).canUseBiometrics,
@@ -130,7 +151,115 @@ class CredentialsViewModel(
                     hasOtherAccounts = getHasOtherAccounts(),
                     isSessionLocked = getIsSessionLockedUseCase(),
                     displayBiometricsDialog = biometricInfo.canUseBiometrics && !fromHome,
+                    oAuthEnable = oAuthEnable,
                 ),
+            )
+
+            if (_credentialsScreenState.value.oAuthEnable && !fromHome) {
+                fetchOAuthEnrollmentUrl()
+            }
+        }
+    }
+
+    private fun fetchOAuthEnrollmentUrl() {
+        _credentialsScreenState.update {
+            it.copy(
+                loginState = LoginState.Running,
+            )
+        }
+        launchUseCase {
+            getDeviceEnrollmentUrl(serverUrl).fold(
+                onSuccess = { enrollmentURL ->
+                    // First OAuth call (enrollment) - clear any previous OAuth sessions
+                    navigator.navigate(
+                        LoginScreenState.OauthAuthentication(
+                            selectedServer = enrollmentURL,
+                        ),
+                    )
+                },
+                onFailure = { error ->
+                    _credentialsScreenState.update {
+                        it.copy(
+                            loginState = LoginState.Enabled,
+                            errorMessage = error.message,
+                        )
+                    }
+                },
+            )
+        }
+    }
+
+    private fun handleOAuthCallbacks(urlString: String) {
+        // First check if there is any error
+        val error = urlString.substringAfter("error=", "").substringBefore('&')
+        if (error.isNotEmpty()) {
+            _credentialsScreenState.update {
+                it.copy(
+                    errorMessage = error,
+                    loginState = LoginState.Enabled,
+                )
+            }
+            return
+        }
+
+        // Check if there is a device enrollment callback
+        val iat = urlString.substringAfter("iat=", "").substringBefore('&')
+        if (iat.isNotEmpty()) {
+            registerDevice(iat)
+            return
+        }
+
+        // Check if there is a login callback with the authorization code
+        val code = urlString.substringAfter("code=", "").substringBefore('&')
+        if (code.isNotEmpty()) {
+            loginWithOAuthCode(code)
+            return
+        }
+
+        _credentialsScreenState.update {
+            it.copy(
+                loginState = LoginState.Enabled,
+            )
+        }
+    }
+
+    private fun loginWithOAuthCode(code: String) {
+        startLoginJob {
+            loginUserWithOAuth(
+                serverUrl = serverUrl,
+                code = code,
+            )
+        }
+    }
+
+    private fun registerDevice(enrollmentIat: String) {
+        launchUseCase {
+            _credentialsScreenState.update {
+                it.copy(loginState = LoginState.Running)
+            }
+
+            processDeviceEnrollment(
+                DeviceEnrollmentInfo(
+                    iat = enrollmentIat,
+                    serverURL = serverUrl,
+                ),
+            ).fold(
+                onSuccess = { consentUrl ->
+                    // Second OAuth call (consent) - keep session from enrollment
+                    navigator.navigate(
+                        LoginScreenState.OauthAuthentication(
+                            selectedServer = consentUrl,
+                        ),
+                    )
+                },
+                onFailure = { error ->
+                    _credentialsScreenState.update {
+                        it.copy(
+                            errorMessage = error.message,
+                            loginState = LoginState.Enabled,
+                        )
+                    }
+                },
             )
         }
     }
@@ -176,13 +305,17 @@ class CredentialsViewModel(
     }
 
     fun onLoginClicked() {
-        startLoginJob {
-            loginUser(
-                serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
-                username = _credentialsScreenState.value.credentialsInfo.username,
-                password = _credentialsScreenState.value.credentialsInfo.password,
-                isNetworkAvailable = isNetworkOnline.value,
-            )
+        if (_credentialsScreenState.value.oAuthEnable) {
+            fetchOAuthEnrollmentUrl()
+        } else {
+            startLoginJob {
+                loginUser(
+                    serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
+                    username = _credentialsScreenState.value.credentialsInfo.username,
+                    password = _credentialsScreenState.value.credentialsInfo.password,
+                    isNetworkAvailable = isNetworkOnline.value,
+                )
+            }
         }
     }
 
@@ -204,6 +337,7 @@ class CredentialsViewModel(
         _credentialsScreenState.update {
             it.copy(
                 loginState = LoginState.Running,
+                errorMessage = null,
             )
         }
         loginJob =

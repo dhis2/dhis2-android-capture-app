@@ -5,6 +5,7 @@ import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.usescases.main.program.ProgramViewModelMapper
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection
 import org.hisp.dhis.android.core.program.Program
@@ -61,6 +62,8 @@ class TeiProgramListRepositoryImplTest {
                 .builder()
                 .uid("programUid")
                 .displayIncidentDate(true)
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
 
         whenever(
@@ -73,6 +76,7 @@ class TeiProgramListRepositoryImplTest {
             Enrollment
                 .builder()
                 .uid("enrollmentUid")
+                .attributeOptionCombo("attributeOptionComboUid")
                 .build()
 
         val testObservable =
@@ -125,6 +129,8 @@ class TeiProgramListRepositoryImplTest {
                 .builder()
                 .uid("programUid")
                 .displayIncidentDate(false)
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
 
         whenever(
@@ -137,6 +143,7 @@ class TeiProgramListRepositoryImplTest {
             Enrollment
                 .builder()
                 .uid("enrollmentUid")
+                .attributeOptionCombo("attributeOptionComboUid")
                 .build()
 
         val testObservable =

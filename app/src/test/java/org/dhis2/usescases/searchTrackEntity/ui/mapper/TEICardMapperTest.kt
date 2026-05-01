@@ -7,6 +7,7 @@ import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.usescases.searchTrackEntity.SearchTeiModel
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -134,6 +135,7 @@ class TEICardMapperTest {
                         .uid("EnrollmentUid")
                         .program("programUid")
                         .status(EnrollmentStatus.COMPLETED)
+                        .attributeOptionCombo("attributeOptionComboUid")
                         .build(),
                 )
                 setAttributeValues(attributeValues)
@@ -143,6 +145,8 @@ class TEICardMapperTest {
                         .builder()
                         .uid("Program1Uid")
                         .displayName("Program 1")
+                        .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                        .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                         .build(),
                     null,
                 )
@@ -151,6 +155,8 @@ class TEICardMapperTest {
                         .builder()
                         .uid("Program2Uid")
                         .displayName("Program 2")
+                        .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                        .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                         .build(),
                     null,
                 )
@@ -162,6 +168,7 @@ class TEICardMapperTest {
                         .builder()
                         .uid("EnrollmentUid")
                         .followUp(true)
+                        .attributeOptionCombo("attributeOptionComboUid")
                         .build(),
                 )
             }

@@ -35,10 +35,11 @@ fun PeriodType.datePattern(): String =
     when (this) {
         PeriodType.Daily,
         PeriodType.Weekly,
+        PeriodType.WeeklyWednesday,
+        PeriodType.WeeklyThursday,
+        PeriodType.WeeklyFriday,
         PeriodType.WeeklySaturday,
         PeriodType.WeeklySunday,
-        PeriodType.WeeklyThursday,
-        PeriodType.WeeklyWednesday,
         PeriodType.BiWeekly,
         PeriodType.Monthly,
         PeriodType.BiMonthly,
@@ -52,8 +53,11 @@ fun PeriodType.datePattern(): String =
         }
 
         PeriodType.Yearly,
+        PeriodType.FinancialFeb,
         PeriodType.FinancialApril,
         PeriodType.FinancialJuly,
+        PeriodType.FinancialAug,
+        PeriodType.FinancialSep,
         PeriodType.FinancialOct,
         PeriodType.FinancialNov,
         -> {

@@ -63,7 +63,7 @@ class CategorySelectorProviderTest {
         composeTestRule.setContent {
             ProvideCategorySelectorInput(
                 fieldUiModel = uiModel,
-                inputStyle = InputStyle.DataInputStyle(),
+                inputStyle = InputStyle.DarkInputStyle(),
             )
         }
 
@@ -115,7 +115,7 @@ class CategorySelectorProviderTest {
             Column {
                 ProvideCategorySelectorInput(
                     fieldUiModel = uiModel,
-                    inputStyle = InputStyle.DataInputStyle(),
+                    inputStyle = InputStyle.DarkInputStyle(),
                 )
             }
         }

@@ -10,8 +10,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.printToLog
-import androidx.test.platform.app.InstrumentationRegistry
-import org.dhis2.form.di.Injector
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.junit.Rule
@@ -19,8 +17,6 @@ import org.junit.Test
 
 
 class AgeProviderTest {
-    private val resourceManager =
-        Injector.provideResourcesManager(InstrumentationRegistry.getInstrumentation().getContext())
 
     companion object {
 
@@ -53,10 +49,9 @@ class AgeProviderTest {
         composeTestRule.setContent {
             ProvideInputAge(
                 modifier = Modifier.testTag(INPUT_AGE_TEST_TAG),
-                inputStyle = InputStyle.DataInputStyle(),
+                inputStyle = InputStyle.DarkInputStyle(),
                 fieldUiModel = dateValueTypeFieldUiModel,
                 intentHandler = {},
-                resources = resourceManager,
                 onNextClicked = {},
             )
         }
@@ -72,10 +67,9 @@ class AgeProviderTest {
         composeTestRule.setContent {
             ProvideInputAge(
                 modifier = Modifier.testTag(INPUT_AGE_TEST_TAG),
-                inputStyle = InputStyle.DataInputStyle(),
+                inputStyle = InputStyle.DarkInputStyle(),
                 fieldUiModel = dateValueTypeFieldUiModel,
                 intentHandler = {},
-                resources = resourceManager,
                 onNextClicked = { },
             )
         }
@@ -91,11 +85,9 @@ class AgeProviderTest {
         composeTestRule.setContent {
             ProvideInputAge(
                 modifier = Modifier.testTag(INPUT_AGE_TEST_TAG),
-
-                inputStyle = InputStyle.DataInputStyle(),
+                inputStyle = InputStyle.DarkInputStyle(),
                 fieldUiModel = dateValueTypeFieldUiModel,
                 intentHandler = {},
-                resources = resourceManager,
                 onNextClicked = {},
             )
         }
@@ -113,10 +105,9 @@ class AgeProviderTest {
         composeTestRule.setContent {
             ProvideInputAge(
                 modifier = Modifier.testTag(INPUT_AGE_TEST_TAG),
-                inputStyle = InputStyle.DataInputStyle(),
+                inputStyle = InputStyle.DarkInputStyle(),
                 fieldUiModel = dateValueTypeFieldUiModel,
                 intentHandler = {},
-                resources = resourceManager,
                 onNextClicked = {},
             )
 
@@ -135,10 +126,9 @@ class AgeProviderTest {
         composeTestRule.setContent {
             ProvideInputAge(
                 modifier = Modifier.testTag(INPUT_AGE_TEST_TAG),
-                inputStyle = InputStyle.DataInputStyle(),
+                inputStyle = InputStyle.DarkInputStyle(),
                 fieldUiModel = dateValueTypeFieldUiModel,
                 intentHandler = {},
-                resources = resourceManager,
                 onNextClicked = {},
             )
         }
@@ -162,10 +152,9 @@ class AgeProviderTest {
         composeTestRule.setContent {
             ProvideInputAge(
                 modifier = Modifier.testTag(INPUT_AGE_TEST_TAG),
-                inputStyle = InputStyle.DataInputStyle(),
+                inputStyle = InputStyle.DarkInputStyle(),
                 fieldUiModel = dateValueTypeFieldUiModel,
                 intentHandler = {},
-                resources = resourceManager,
                 onNextClicked = {},
             )
         }
@@ -183,10 +172,9 @@ class AgeProviderTest {
         composeTestRule.setContent {
             ProvideInputAge(
                 modifier = Modifier.testTag(INPUT_AGE_TEST_TAG),
-                inputStyle = InputStyle.DataInputStyle(),
+                inputStyle = InputStyle.DarkInputStyle(),
                 fieldUiModel = dateValueTypeFieldUiModel,
                 intentHandler = {},
-                resources = resourceManager,
                 onNextClicked = {},
             )
         }

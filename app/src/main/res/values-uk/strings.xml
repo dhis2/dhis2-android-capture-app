@@ -35,7 +35,6 @@
     <string name="sync_error_title">Помилка синхронізації</string>
     <string name="sync_error_text">Під час синхронізації сталася помилка. Будь ласка, повторіть спробу.</string>
     <string name="sync_incomplete_error_text">Синхронізацію завершено, але ми не отримали підтвердження від серверу для усіх записів. Ці записи все ще позначено як \"офлайн\" у програмі. Рекомендуємо повторити спробу синхронізації.</string>
-    <string name="data_sync_warning_program">ПОПЕРЕДЖЕННЯ: Більшість Ваших даних синхронізовано, але виникли конфлікти в деяких полях.  Синхронізуйте конфігурацію та повторіть спробу. Якщо попередження не зникає, перевірте стан синхронізації: програм, об’єктів, які відстежуються та випадків з конфліктами позначені як @.</string>
     <string name="server_sync_error">Сталася помилка, і сервер не відповідає. Зверніться до свого адміністратора.</string>
 
     <string name="search_result_text">%s результатів знайдено</string>
@@ -478,6 +477,7 @@
     <string name="action_agree">Погодитись</string>
     <string name="action_continue">Продовжити</string>
     <string name="login_server_info_title">URL-адреса серверу</string>
+    <string name="login_server_info_message">Введіть URL-адресу серверу DHIS 2 для Вашої організації, надану Вашим системним адміністратором. Альтернативно, Ви можете відсканувати QR-код, що містить URL-адресу Вашого сервера</string>
     <string name="forgot_your_code">Забули код?</string>
     <string name="event_form_end_options_title">Що б Ви хотіли зробити для цього випадку?</string>
     <string name="sectionSelectorEnd">КІН</string>
@@ -660,9 +660,9 @@
     <string name="dataset_overview">Деталі</string>
     <string name="dataset_comments">Коментарі</string>
     <string name="saved">Збережено!</string>
-    <string name="run_validation_rules">Хочете перевірити якість даних?</string>
+    <string name="run_validation_rules">Хочете перевірити якість даних\?</string>
     <string name="validation_success_title">Все виглядає добре!</string>
-    <string name="mark_dataset_complete">Ви бажаєте також завершити набір даних?</string>
+    <string name="mark_dataset_complete">Ви бажаєте також завершити набір даних\?</string>
     <string name="dataset_completed">Позначити як виконане</string>
     <string name="name">Ім\'я</string>
     <string name="formula">Формула</string>
@@ -783,7 +783,7 @@
     <string name="edition_no_write_access">Ви не маєте дозволу редагувати ці дані</string>
     <string name="event_date_not_in_orgunit_range">Ці дані не можна редагувати, оскільки організаційний підрозділ закрито</string>
     <string name="edition_no_catcombo_access">Ви не маєте дозволу редагувати ці дані</string>
-    <string name="edition_orgunit_capture_scope">Ви не можете редагувати дані з цього організаційного підрозділу</string>
+    <string name="edition_orgunit_user_scope">Ви не можете редагувати дані з цього організаційного підрозділу</string>
     <string name="reload_list">Скинути пошук</string>
     <string name="error_tei_online_search_title">Онлайн-пошук дав таке повідомлення:</string>
     <string name="program_rules_loop_warning_title">Попередження про правила програми</string>

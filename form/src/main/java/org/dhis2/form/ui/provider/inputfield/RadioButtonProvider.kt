@@ -2,8 +2,8 @@ package org.dhis2.form.ui.provider.inputfield
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.paging.compose.collectAsLazyPagingItems
-import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
@@ -76,7 +76,6 @@ internal fun ProvideYesNoRadioButtonInput(
     inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
-    resources: ResourceManager,
 ) {
     val data =
         listOf(
@@ -84,13 +83,13 @@ internal fun ProvideYesNoRadioButtonInput(
                 uid = "true",
                 selected = fieldUiModel.isAffirmativeChecked,
                 enabled = true,
-                textInput = resources.getString(R.string.yes),
+                textInput = stringResource(R.string.yes),
             ),
             RadioButtonData(
                 uid = "false",
                 selected = fieldUiModel.isNegativeChecked,
                 enabled = true,
-                textInput = resources.getString(R.string.no),
+                textInput = stringResource(R.string.no),
             ),
         )
 
