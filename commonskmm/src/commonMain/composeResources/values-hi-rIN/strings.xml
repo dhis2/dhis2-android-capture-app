@@ -17,12 +17,6 @@
     <string name="field_is_mandatory">यह फ़ील्ड आवश्यक है</string>
     <string name="missing_warning_fields_completed_events">आपके पास कुछ चेतावनी संदेश हैं</string>
     <string name="missing_warning_fields_events">आपके पास कुछ चेतावनी संदेश हैं\nक्या आप इस फ़ॉर्म को कम्प्लीट मार्क करना चाहते हैं\?</string>
-    <string name="unique_warning">मान अद्वितीय होना चाहिए। समान मान मिला है। इसे सहेजा नहीं गया। कृपया जाँच करें</string>
-    <string name="select_time">समय चुनें</string>
-    <string name="choose_date">दिन चुनें</string>
-    <string name="field_is_mandatory">यह फ़ील्ड आवश्यक है</string>
-    <string name="missing_warning_fields_completed_events">आपके पास कुछ चेतावनी संदेश हैं</string>
-    <string name="missing_warning_fields_events">आपके पास कुछ चेतावनी संदेश हैं\nक्या आप इस फ़ॉर्म को कम्प्लीट मार्क करना चाहते हैं\?</string>
     <string name="required">आवश्यकता है</string>
     <string name="date">तारीख</string>
     <string name="hint_year">वर्ष</string>
