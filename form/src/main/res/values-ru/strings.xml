@@ -56,7 +56,6 @@
     <string name="camera_permission_denied">Разрешение камеры запрещено.\nЧтобы использовать эту функцию, ее необходимо разрешить.</string>
     <string name="action_close">Закрыть</string>
     <string name="program_rules_loop_warning_title">Предупреждение о правилах программы</string>
-    <string name="program_rules_loop_warning_message">Существует проблема конфигурации, вызывающая зацикливание правил. Обратитесь к администратору.</string>
     <string name="copied_text">Скопировано</string>
     <string name="empty_description">Нет информации для этого поля</string>
     <string name="take_photo">Сделать фото</string>

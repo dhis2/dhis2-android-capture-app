@@ -53,7 +53,6 @@
     <string name="share">Partilha</string>
     <string name="action_close">Fechar</string>
     <string name="program_rules_loop_warning_title">Aviso de regras do programa</string>
-    <string name="program_rules_loop_warning_message">Existe um problema de configuração que está a provocar um ciclo nas regras. Contacte o seu administrador.</string>
     <string name="copied_text">Copiado</string>
     <string name="empty_description">Nenhuma informação para este campo</string>
     <string name="take_photo"> Tirar fotografia</string>

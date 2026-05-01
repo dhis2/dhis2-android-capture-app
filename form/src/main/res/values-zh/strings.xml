@@ -60,7 +60,6 @@
     <string name="camera_permission_denied">相机权限被拒绝。\n您需要启用它才能使用此功能。</string>
     <string name="action_close">关闭</string>
     <string name="program_rules_loop_warning_title">项目规则警告</string>
-    <string name="program_rules_loop_warning_message">存在导致规则循环的配置问题。联系您的管理员。</string>
     <string name="copied_text">副本</string>
     <string name="empty_description">该字段没有相关信息</string>
     <string name="take_photo">拍照</string>
