@@ -24,7 +24,7 @@
     <string name="enter_percentage">प्रतिशत दर्ज करें</string>
     <string name="enter_unit_interval">0 से 1 नंबर दर्ज करें</string>
     <string name="enter_letter">अक्षर दर्ज करें</string>
-    <string name="enter_long_text">लंबा पाठ दर्ज करें</string>
+    <string name="enter_long_text">लंबा अक्षर दर्ज करें</string>
     <string name="enter_text">पाठ दर्ज करें</string>
     <string name="form_latitude_prefix">अक्षांश</string>
     <string name="form_longitude_prefix">देशांतर</string>

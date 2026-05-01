@@ -134,7 +134,6 @@
     <string name="a_week">1 vecka</string>
     <string name="sync_max_parameters">Nuvarande synkroniseringsparametrar</string>
     <string name="sync_default_parameters">Återställ till standardvärden</string>
-    <string name="wipe_data_meesage">Databasen kommer att raderas\nDu måste logga in igen.</string>
     <string name="wipe_data_ok">Acceptera</string>
     <string name="wipe_data_no">Avbryt</string>
     <string name="SYNC_DATA">Synkronisera data nu</string>
@@ -220,7 +219,6 @@
     <string name="empty_program_list">Det finns ingen information för de valda filteren. Var god försök ändra dem.</string>
     <string name="share">Dela med sig</string>
     <string name="share_qr">Dela QR</string>
-    <string name="teiType_search_online">Sök efter typ är inte möjlig för online-sökning\nVälj ett program från listan.</string>
     <string name="max">max</string>
     <string name="current">AKTUELL</string>
     <string name="tei">TEI</string>

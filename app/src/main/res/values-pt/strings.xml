@@ -190,7 +190,6 @@
     <string name="a_week">1 Semana</string>
     <string name="sync_max_parameters">Parâmetros de sincronização atuais:</string>
     <string name="sync_default_parameters">Restaurar ao padrão</string>
-    <string name="wipe_data_meesage">O banco de dados será excluído. \nVocê será solicitado a fazer login novamente.</string>
     <string name="wipe_data_ok">Aceitar</string>
     <string name="wipe_data_no">Cancelar</string>
     <string name="SYNC_DATA">SINCRONIZAR Dados agora</string>
@@ -257,11 +256,9 @@
     <string name="missing_mandatory_fields_title">Faltam campos obrigatórios</string>
     <string name="missing_mandatory_fields_text">Alguns campos obrigatórios estão ausentes. Se você quiser voltar agora, todas as informações salvas serão excluídas.</string>
     <string name="missing_mandatory_fields_text_not_delete">Alguns campos obrigatórios estão ausentes. Se você quiser voltar, por favor preencha-os. </string>
-    <string name="missing_mandatory_fields_events"> Alguns campos requerem a sua atenção.\nDeseja rever o formulário?</string>
     <string name="title_delete_go_back">Seus dados não são salvos</string>
     <string name="delete_go_back">Se você voltar agora, todas as informações inseridas serão excluídas.</string>
     <string name="missing_mandatory_fields_go_back">Suprimir e voltar</string>
-    <string name="error_fields">Alguns campos têm erros:/n%s/nPor favor, verifique-os.</string>
     <string name="missing_mandatory_fields_finish">Alguns campos obrigatórios estão ausentes. Você pode concluir a entrada e saída de dados, mas o evento não pode ser concluído.</string>
     <string name="tei_coordinates">Coordenadas para o</string>
 
@@ -327,7 +324,6 @@
     <string name="empty_program_list">Não há informações para os filtros selecionados. Por favor, tente alterá-los.</string>
     <string name="share">Partilha</string>
     <string name="share_qr">Compartilhe QR</string>
-    <string name="teiType_search_online">Pesquisa por tipo não é possível para pesquisa online. \nPor favor selecione um programa da lista.</string>
     <string name="max">Máx</string>
     <string name="current">Corrente</string>
     <string name="tei">TEI</string>
@@ -486,7 +482,6 @@
     <string name="send_user_name_title">Enviar dados</string>
     <string name="send_user_name_mesage">Ajude o DHIS2 a melhorar este aplicativo compartilhando logs de erros associados ao seu ID de usuário.</string>
     <string name="improve_app_msg_title">Quer nos ajudar a melhorar esta aplicação?</string>
-    <string name="improve_app_msg_text"> Se disser que sim, a aplicação enviará estatísticas anónimas e registos de erros que nos ajudam a melhorar a experiência e o desempenho do utilizador.\n\nPara mais informações, consulte a nossa política de privacidade.</string>
     <string name="improve_app_msg_clickable_word">política de privacidade.</string>
     <string name="check_mandatory_field">Verificar campos</string>
     <string name="error_no_network_during_sync">Você perdeu sua conexão com a Internet ao executar sua sincronização de configuração. Por favor tente novamente mais tarde</string>
@@ -616,7 +611,6 @@
     <string name="filter_event_status_completed">Completo</string>
     <string name="filter_event_status_skipped">Ignorado</string>
     <string name="event_tei_limits">Eventos: %s max: %s %s atual: %s TEI: %s max: %s %s atual: %s</string>
-    <string name="event_tei_limits_v2">Configurações limitadas %s \nEventos: %s/%s TEI: %s/%s</string>
     <string name="enrollment_data_hide">Ocultar dados de inscrição</string>
     <string name="enrollment_data_show">Mostrar dados de inscrição</string>
     <string name="sms_enabled">Módulo SMS ativado</string>
@@ -710,8 +704,6 @@
     <string name="privacy_policy_title">Política de Privacidade</string>
     <string name="open_privacy_policy">Clique aqui para conferir nosso <a href=""> política de privacidade </a></string>
     <string name="coordinates_error">Os valores das coordenadas não são válidos</string>
-    <string name="break_glass_error">Você não pode inscrever TEIs de outras unidades organizacionais neste programa porque está protegido.\nContate seu administrador.</string>
-    <string name="break_glass_error_v2">Não é possível inscrever um  %s de outras unidades organizacionais neste programa porque está protegido.\nContacte o seu administrador.</string>
     <string name="field_is_mandatory">Este campo é obrigatório</string>
     <string name="security_debugger_message">Por razões de segurança, esta versão do aplicativo não pode ser usada com o adb. Por favor, use a versão de treinamento.</string>
 
@@ -774,7 +766,6 @@
     <string name="filter_period_last_n_biweeks">Últimas %d quinzenas</string>
     <string name="section_feedback">Retroinformacão</string>
     <string name="section_indicators">Indicadores</string>
-    <string name="camera_permission_denied">A permissão da câmara é negada.\nPrecisa de a ativar para utilizar esta funcionalidade.</string>
     <string name="value">Valor</string>
     <string name="section_charts_indicators">Gráficos e indicadores</string>
     <string name="take_photo"> Tirar fotografia</string>
@@ -825,7 +816,6 @@
     <string name="troubleshooting_pass_rule_validation">Não foram encontrados avisos</string>
     <string name="troobleshooting_pass_rule_validation_title">Tudo parece óptimo</string>
     <string name="not_saved"> Não guardado</string>
-    <string name="review_message"> Alguns campos requerem a sua atenção.\nDeseja rever o formulário?</string>
     <string name="search_loading_more">Carregar mais resultados</string>
     <string name="search_no_results_in_program">Não há mais resultados para  %s</string>
     <string name="search_outside_action">Pesquisar fora deste programa</string>
@@ -841,10 +831,7 @@
     <string name="init_search">Iniciar uma pesquisa para encontrar qualquer %s</string>
     <string name="search_or_create">É possível pesquisar ou criar um novo %s</string>
     <string name="missing_warning_fields_completed_events">Tem algumas mensagens de aviso.</string>
-    <string name="missing_warning_fields_events">Tem algumas mensagens de aviso.\nDeseja marcar este formulário como completo?</string>
-    <string name="missing_error_fields_events">Alguns campos têm erros e não são guardados. \Deseja rever o formulário?</string>
     <string name="event_can_be_completed">Deseja marcar este formulário como completo?</string>
-    <string name="event_error_on_complete">Tem algumas mensagens de erro. Quer revê-las?</string>
     <string name="changes_will_be_discarted">Se sair agora, as alterações serão rejeitadas.</string>
     <string name="re_opened">Reaberto</string>
     <string name="account_disable_title">Conta desactivada</string>
@@ -912,8 +899,6 @@
     <string name="check_for_updates">Verifique se existem atualizações</string>
     <string name="checking_for_updates">Verificação de actualizações</string>
     <string name="no_updates">Não há novas actualizações</string>
-    <string name="unknow_sources_denied">A permissão de fontes desconhecidas foi negada. É necessário activá-la para instalar a versão.</string>
-    <string name="storage_denied">A permissão de armazenamento foi negada. É necessário activá-la para instalar a versão.</string>
     <string name="app_version">Versão da aplicação</string>
     <string name="error_applying_rule_effects">Algo correu mal com a configuração do programa, não é possível carregar este evento. Contacte o administrador do sistema.</string>
     <string name="dashboard_menu_delete_person">Eliminar pessoa</string>
@@ -934,7 +919,6 @@
     <string name="sync_error">Erro de Sincronização</string>
     <string name="mark_follow_up">Marcar para acompanhamento</string>
     <string name="coordinates">Coordenadas</string>
-    <string name="no_data_access"> Não tem acesso aos dados.\nContacte o seu administrador.</string>
     <string name="sync_offline_check_connection">Parece que está offline. Por favor, verifique a sua ligação</string>
     <string name="delete_tei_dialog_title">Eliminar este %s?</string>
     <string name="delete_tei_dialog_message">Este%s e todos os seus dados em todos os programas serão eliminados. Esta ação não pode ser anulada.</string>
@@ -954,14 +938,12 @@
     <string name="optional">Opcional</string>
     <string name="database_export_downloaded">Banco de dados descarregado</string>
     <string name="importing_database">Importando base de dados</string>
-    <string name="empty_search_attributes_message">Não existem campos de pesquisa configurados para utilização. \nContacte o seu administrador.</string>
     <string name="show_more">Mostre mais</string>
     <string name="show_less">Mostre menos</string>
     <string name="sync">Sincronizar</string>
     <string name="show_fields">Mostrar campos</string>
     <string name="hide_fields">Ocultar campos</string>
     <string name="importing_successful">Importação bem sucedida</string>
-    <string name="section_misconfigured">Esta secção está mal configurada.\nContacte o seu administrador.</string>
     <string name="successful_sync">Sincronização bem sucedida</string>
     <string name="syncing_something">A sincronizar %s…</string>
     <string name="file_resources">recursos de ficheiros</string>

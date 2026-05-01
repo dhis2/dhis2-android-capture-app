@@ -325,7 +325,6 @@
     <string name="period_six_monthly_title">Za šest měsíců</string>
     <string name="period_yearly_title">Rok</string>
     <string name="period_financial_year_title">Finanční rok</string>
-    <string name="no_periods">Žádné období k dispozici\n</string>
     <string name="database_import_failed">Import databáze se nezdařil</string>
     <string name="invalid_file">Neplatný soubor</string>
     <string name="not_in_totp_2fa_enrollment_mode">Není v režimu registrace TOTP 2FA</string>

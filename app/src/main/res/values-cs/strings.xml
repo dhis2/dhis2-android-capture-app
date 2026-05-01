@@ -194,7 +194,6 @@
     <string name="a_week">1 týden</string>
     <string name="sync_max_parameters">Aktuální parametry synchronizace:</string>
     <string name="sync_default_parameters">Obnovit do základního nastavení</string>
-    <string name="wipe_data_meesage">Databáze bude smazána.\nBudete požádán o opětovné přihlášení.</string>
     <string name="wipe_data_ok">Přijmout</string>
     <string name="wipe_data_no">Zrušit</string>
     <string name="SYNC_DATA">SYNCHRONIZOVAT Data teď</string>
@@ -265,11 +264,10 @@
     <string name="missing_mandatory_fields_title">Chybí povinná pole</string>
     <string name="missing_mandatory_fields_text">Některá povinná pole chybí. Pokud se chcete vrátit zpět, budou všechny uložené informace odstraněny.</string>
     <string name="missing_mandatory_fields_text_not_delete">Některá povinná pole chybí. Pokud se chcete vrátit, vyplňte je prosím.</string>
-    <string name="missing_mandatory_fields_events">Některá pole vyžadují vaši pozornost.\nChcete formulář zkontrolovat?</string>
+    <string name="missing_mandatory_fields_events">Některé oblasti vyžadují vaši pozornost.\nChcete formulář zkontrolovat\?</string>
     <string name="title_delete_go_back">Vaše data nejsou uložena</string>
     <string name="delete_go_back">Pokud se nyní vrátíte zpět, všechny zadané informace budou smazány.</string>
     <string name="missing_mandatory_fields_go_back">Smazat a vrátit se zpět</string>
-    <string name="error_fields">Některá pole obsahují chyby:\n%s\nProsím zkontrolujte je.</string>
     <string name="missing_mandatory_fields_finish">Některá povinná pole chybí. Zadávání a ukončení dat můžete dokončit, ale událost nelze dokončit.</string>
     <string name="tei_coordinates">Souřadnice pro</string>
 
@@ -335,7 +333,6 @@
     <string name="empty_program_list">O vybraných filtrech nejsou žádné informace. Zkuste je změnit.</string>
     <string name="share">Sdílet</string>
     <string name="share_qr">Sdílet QR</string>
-    <string name="teiType_search_online">Vyhledávání podle typu není pro online vyhledávání možné. \nVyberte program ze seznamu.</string>
     <string name="max">Max</string>
     <string name="current">stávající</string>
     <string name="tei">TEI</string>
@@ -494,7 +491,6 @@
     <string name="send_user_name_title">Odeslat data</string>
     <string name="send_user_name_mesage">Pomozte DHIS2 vylepšit tuto aplikaci sdílením protokolů chyb spojených s vaším ID uživatele.</string>
     <string name="improve_app_msg_title">Chcete nám pomoci vylepšit tuto aplikaci?</string>
-    <string name="improve_app_msg_text">Pokud řeknete ano, aplikace odešle anonymní statistiky a protokoly chyb, které nám pomohou zlepšit uživatelský dojem a výkon.\n\nDalší podrobnosti naleznete v našich zásadách ochrany osobních údajů.</string>
     <string name="improve_app_msg_clickable_word">Zásady ochrany osobních údajů</string>
     <string name="check_mandatory_field">Zkontrolujte pole</string>
     <string name="error_no_network_during_sync">Při synchronizaci konfigurace jste ztratili připojení k internetu. Prosím zkuste to znovu později</string>
@@ -624,7 +620,6 @@
     <string name="filter_event_status_completed">Dokončeno</string>
     <string name="filter_event_status_skipped">Přeskočeno</string>
     <string name="event_tei_limits">Události:%smax:%s%saktuální:%s TEI:%smax:%s%saktuální:%s</string>
-    <string name="event_tei_limits_v2">Nastavení omezeno %s\nUdálosti: %s/%s TEI: %s/%s</string>
     <string name="limit_setting">Omezené nastavení %s</string>
     <string name="enrollment_data_hide">Skrýt údaje o zápisu</string>
     <string name="enrollment_data_show">Zobrazit údaje o zápisu</string>
@@ -719,8 +714,6 @@
     <string name="privacy_policy_title">Zásady ochrany osobních údajů</string>
     <string name="open_privacy_policy">Kliknutím sem zobrazíte naše <a href="">zásady ochrany osobních údajů</a></string>
     <string name="coordinates_error">Hodnoty souřadnic nejsou platné</string>
-    <string name="break_glass_error">Do tohoto programu nemůžete zapsat TEI z jiných organizačních jednotek, protože je chráněn. \nKontaktujte svého správce.</string>
-    <string name="break_glass_error_v2">Do tohoto programu nemůžete zapsat %s z jiných organizačních jednotek, protože je chráněný.\nKontaktujte svého správce.</string>
     <string name="field_is_mandatory">Toto pole je povinné</string>
     <string name="security_debugger_message">Z bezpečnostních důvodů není možné tuto verzi aplikace používat s adb. Použijte tréninkovou verzi.</string>
 
@@ -783,7 +776,7 @@
     <string name="filter_period_last_n_biweeks">Poslední %d dvoutýdny</string>
     <string name="section_feedback">Zpětná vazba</string>
     <string name="section_indicators">Indikátory</string>
-    <string name="camera_permission_denied">Povolení fotoaparátu bylo odepřeno.\nPro použití této funkce je nutné ji povolit.</string>
+    <string name="camera_permission_denied">Povolení k použití kamery je zamítnuto.\nChcete-li tuto funkci používat, musíte ji povolit.</string>
     <string name="value">Hodnota</string>
     <string name="section_charts_indicators">Grafy a indikátory</string>
     <string name="take_photo">Vyfotit</string>
@@ -834,7 +827,7 @@
     <string name="troubleshooting_pass_rule_validation">Nebyla nalezena žádná upozornění</string>
     <string name="troobleshooting_pass_rule_validation_title">Všechno vypadá skvěle</string>
     <string name="not_saved">Neuloženo</string>
-    <string name="review_message">Některá pole vyžadují vaši pozornost.\nChcete formulář zkontrolovat?</string>
+    <string name="review_message">Některé oblasti vyžadují vaši pozornost.\nChcete formulář zkontrolovat\?</string>
     <string name="search_loading_more">Načítání dalších výsledků</string>
     <string name="search_no_results_in_program">Žádné další výsledky pro %s</string>
     <string name="search_outside_action">Hledat mimo tento program</string>
@@ -850,10 +843,10 @@
     <string name="init_search">Spusťte vyhledávání a najděte jakýkoli %s</string>
     <string name="search_or_create">Můžete vyhledat nebo vytvořit nový %s</string>
     <string name="missing_warning_fields_completed_events">Máte několik varovných hlášení.</string>
-    <string name="missing_warning_fields_events">Máte nějaké varovné zprávy.\nChcete tento formulář označit jako dokončený?</string>
-    <string name="missing_error_fields_events">Některá pole obsahují chyby a neuloží se. \nChcete zkontrolovat formulář?</string>
+    <string name="missing_warning_fields_events">Máte několik varovných hlášení.\nChcete tento formulář označit jako dokončený\?</string>
+    <string name="missing_error_fields_events">Některá pole obsahují chyby a neukládají se. \nChcete formulář zkontrolovat\?</string>
     <string name="event_can_be_completed">Chcete tento formulář označit jako vyplněný?</string>
-    <string name="event_error_on_complete">Máte nějaké chybové zprávy.\nChcete je zkontrolovat?</string>
+    <string name="event_error_on_complete">Máte několik chybových hlášení.\nChcete je zkontrolovat\?</string>
     <string name="changes_will_be_discarted">Pokud nyní skončíte, změny budou zahozeny.</string>
     <string name="re_opened">Znovu otevřeno</string>
     <string name="account_disable_title">Účet zakázán</string>
@@ -923,8 +916,6 @@
     <string name="check_for_updates">Kontrola aktualizací</string>
     <string name="checking_for_updates">Kontrola aktualizací</string>
     <string name="no_updates">Nejsou žádné nové aktualizace</string>
-    <string name="unknow_sources_denied">Oprávnění k neznámým zdrojům je odepřeno.\nAbyste mohli nainstalovat verzi, musíte jej povolit.</string>
-    <string name="storage_denied">Oprávnění úložiště je odepřeno.\nAbyste mohli nainstalovat verzi, musíte jej povolit.</string>
     <string name="app_version">Verze aplikace</string>
     <string name="error_applying_rule_effects">Něco se pokazilo v konfiguraci programu, tuto událost nelze načíst. Obraťte se prosím na správce systému.</string>
     <string name="dashboard_menu_delete_person">Odstranit osobu</string>
@@ -947,7 +938,6 @@
     <string name="sync_error">Chyba synchronizace</string>
     <string name="mark_follow_up">Označit pro další sledování</string>
     <string name="coordinates">Souřadnice</string>
-    <string name="no_data_access">Nemáte přístup k datům.\nObraťte se na správce.</string>
     <string name="sync_offline_check_connection">Vypadá to, že jste offline. Zkontrolujte prosím své připojení</string>
     <string name="delete_tei_dialog_title">Smazat tuto stránku %s?</string>
     <string name="delete_tei_dialog_message">Tato stránka %s a všechna její data ve všech programech budou odstraněna. Tuto akci nelze vrátit zpět.</string>

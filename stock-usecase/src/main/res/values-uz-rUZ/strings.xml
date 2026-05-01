@@ -165,7 +165,7 @@
     <string name="unable_to_sync_data_no_network_available">Maʼlumotlarni sinxronlash imkonsiz, chunki tarmoq ulanishi mavjud emas</string>
     <string name="openid_authentication_not_successful">ICRC akkauntingiz bilan autentifikatsiya qilish imkonsiz</string>
 
-    <string name="contact_service_desk_message">Muammolar bo\'lsa, \nIltimos, ICRC  xizmat ko\'rsatish markaziga murojaat qiling</string>
+    <string name="contact_service_desk_message">Muammolar bo\'lsa, \\nIltimos, ICRC  xizmat ko\'rsatish markaziga murojaat qiling</string>
 
     <!--SDK error codes-->
     <string name="login_error_unsuccessful_response">Nimadir notoʼgʼri bajarildi. Server URL manzili, foydalanuvchi nomi va parol toʼgʼri ekanligini tekshiring va qaytadan urining.</string>

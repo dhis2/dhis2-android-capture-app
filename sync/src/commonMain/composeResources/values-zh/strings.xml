@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <!-- Add sync module strings here -->
-    <string name="app_name">DHIS2</string>
-    <string name="syncing_settings">检查网络设置</string>
-    <string name="syncing_configuration">同步配置</string>
 </resources>
 

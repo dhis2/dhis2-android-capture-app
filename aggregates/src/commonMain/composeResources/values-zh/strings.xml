@@ -44,7 +44,7 @@
     <string name="add_image">添加图片</string>
     <string name="take_photo">拍照</string>
     <string name="from_gallery">从图库添加</string>
-    <string name="empty_section_message">此部分配置错误。\n请联系您的管理员。</string>
+    <string name="empty_section_message">此部分配置错误。</string>
     <string name="empty_dataset_message">此数据集配置错误。\n请联系您的管理员。</string>
 
     <string name="indicators_label">指标</string>

@@ -185,7 +185,6 @@
     <string name="a_week">1 тиждень</string>
     <string name="sync_max_parameters">Поточні параметри синхронізації:</string>
     <string name="sync_default_parameters">Установити за замовчуванням</string>
-    <string name="wipe_data_meesage">Базу даних буде видалено. Вам буде запропоновано увійти знову.</string>
     <string name="wipe_data_ok">Прийняти</string>
     <string name="wipe_data_no">Скасувати</string>
     <string name="SYNC_DATA">СИНХРОНІЗУВАТИ дані зараз</string>
@@ -250,11 +249,9 @@
     <string name="missing_mandatory_fields_title">Не заповнено обов\'язкові поля</string>
     <string name="missing_mandatory_fields_text">Деякі обов’язкові поля не заповнено. Якщо Ви хочете повернутися зараз, уся збережена інформація буде видалена.</string>
     <string name="missing_mandatory_fields_text_not_delete">Деякі обов’язкові поля не заповнено. Якщо Ви хочете повернутися, заповніть їх. </string>
-    <string name="missing_mandatory_fields_events">Деякі поля потребують Вашої уваги. Бажаєте переглянути форму?</string>
     <string name="title_delete_go_back">Ваші дані не збережено</string>
     <string name="delete_go_back">Якщо Ви зараз повернетеся назад, уся введена інформація буде видалена.</string>
     <string name="missing_mandatory_fields_go_back">Видалити та повернутися назад</string>
-    <string name="error_fields">У деяких полях є помилки:%s Будь ласка, перевірте їх.</string>
     <string name="missing_mandatory_fields_finish">Деякі обов’язкові поля не заповнено. Ви можете завершити введення даних і вийти, але випадок не може бути завершений.</string>
     <string name="tei_coordinates">Координати для</string>
 
@@ -320,7 +317,6 @@
     <string name="empty_program_list">Немає інформації для вибраних фільтрів. Будь ласка, спробуйте змінити їх.</string>
     <string name="share">Поділитися</string>
     <string name="share_qr">Поділитись QR</string>
-    <string name="teiType_search_online">Пошук за типом неможливий для онлайн-пошуку. Будь ласка, оберіть програму зі списку.</string>
     <string name="max">Макс</string>
     <string name="current">Поточний</string>
     <string name="tei">Об’єкт, який відстежується</string>
@@ -476,7 +472,6 @@
     <string name="send_user_name_title">Надіслати дані</string>
     <string name="send_user_name_mesage">Допоможіть DHIS2 покращити цей додаток, поділившись журналами помилок, пов’язаними з Вашим ідентифікатором користувача.</string>
     <string name="improve_app_msg_title">Ви хочете допомогти нам покращити цю програму?</string>
-    <string name="improve_app_msg_text">Якщо ви погодитесь, застосунок надсилатиме анонімну статистику та журнали помилок, що допоможе нам покращити якість і продуктивність користувацького досвіду. Докладніше - у нашій політиці конфіденційності.</string>
     <string name="check_mandatory_field">Перевірте поля</string>
     <string name="error_no_network_during_sync">Під час синхронізації конфігурації з’єднання з Інтернетом було втрачено. Будь-ласка спробуйте пізніше</string>
     <string name="action_agree">Погодитись</string>
@@ -605,7 +600,6 @@
     <string name="filter_event_status_completed">Завершено</string>
     <string name="filter_event_status_skipped">Пропущено</string>
     <string name="event_tei_limits">Випадки:%sмакс:%s%sпоточн:%s Об\'єкти:%sмакс:%s%sпоточн%s</string>
-    <string name="event_tei_limits_v2">Налаштування обмежено%sВипадки: %s/%s Об\'єкти: %s/%s</string>
     <string name="enrollment_data_hide">Приховати дані реєстрації</string>
     <string name="enrollment_data_show">Показати дані реєстрації</string>
     <string name="sms_enabled">SMS-модуль включений</string>
@@ -699,8 +693,6 @@
     <string name="privacy_policy_title">Політика конфіденційності</string>
     <string name="open_privacy_policy">Натисніть тут, щоб ознайомитися з нашою <a href=""> політикою конфіденційності </a></string>
     <string name="coordinates_error">Значення координат недійсні</string>
-    <string name="break_glass_error">Ви не можете зареєструвати об\'єкт, який відстежується, з інших організаційних підрозділів у цій програмі, оскільки вона закрита для Вас. Зверніться до свого адміністратора.</string>
-    <string name="break_glass_error_v2">Ви не можете зареєструвати %s з інших організаційних підрозділів у цій програмі, оскільки вона закрита для Вас. Зверніться до свого адміністратора.</string>
     <string name="field_is_mandatory">Це поле обов\'язкове для заповнення</string>
     <string name="security_debugger_message">З міркувань безпеки цю версію додатку не можна використовувати з adb. Будь ласка, використовуйте навчальну версію.</string>
 
@@ -761,7 +753,6 @@
     <string name="filter_period_last_n_biweeks">Минулі %d двотижневі періоди</string>
     <string name="section_feedback">Відгук</string>
     <string name="section_indicators">Показники</string>
-    <string name="camera_permission_denied">Відмовлено у використанні камери. Вам потрібно ввімкнути цей дозвіл, щоб використовувати цю функцію.</string>
     <string name="value">Значення</string>
     <string name="section_charts_indicators">Діаграми та індикатори</string>
     <string name="take_photo">Зробити фото</string>
@@ -812,7 +803,6 @@
     <string name="troubleshooting_pass_rule_validation">Попереджень не знайдено</string>
     <string name="troobleshooting_pass_rule_validation_title">Все виглядає чудово</string>
     <string name="not_saved">Не збережено</string>
-    <string name="review_message">Деякі поля потребують Вашої уваги. Бажаєте переглянути форму?</string>
     <string name="search_loading_more">Завантаження результатів</string>
     <string name="search_no_results_in_program">Результатів для %s не знайдено</string>
     <string name="search_outside_action">Пошук за межами цієї програми</string>
@@ -827,10 +817,7 @@
     <string name="action_ok">OK</string>
     <string name="init_search">Почніть пошук, щоб знайти будь-який %s</string>
     <string name="search_or_create">Ви можете знайти або створити новий %s</string>
-    <string name="missing_warning_fields_events">У вас є кілька попереджень. Ви хочете позначити цю форму як завершену?</string>
-    <string name="missing_error_fields_events">Деякі поля містять помилки і не були збережені. Бажаєте переглянути форму?</string>
     <string name="event_can_be_completed">Ви бажаєте позначити цю форму як завершену?</string>
-    <string name="event_error_on_complete">У вас є кілька повідомлень про помилки. Бажаєте їх переглянути?</string>
     <string name="changes_will_be_discarted">Якщо Ви зараз вийдете, зміни буде скасовано.</string>
     <string name="re_opened">Відкрито знову</string>
     <string name="account_disable_title">Обліковий запис вимкнено</string>

@@ -173,7 +173,6 @@
     <string name="a_week">Semanal</string>
     <string name="sync_max_parameters">Ajustes actuales de sincronización:</string>
     <string name="sync_default_parameters">Volver a los valores por defecto</string>
-    <string name="wipe_data_meesage">Se borrará la base de datos. \nTendrá que volver a iniciar sesión.</string>
     <string name="wipe_data_ok">Aceptar</string>
     <string name="wipe_data_no">Cancelar</string>
     <string name="SYNC_DATA">Sincronizar datos Ahora</string>
@@ -234,11 +233,9 @@
     <string name="missing_mandatory_fields_title">Los campos obligatorios no pueden estar vacios</string>
     <string name="missing_mandatory_fields_text">Algunos campos obligatorios están vacíos. Si desea ir atrás ahora, toda la información guardada se borrará.</string>
     <string name="missing_mandatory_fields_text_not_delete">Faltan campos obligatorios. Rellénelos para ir atrás. </string>
-    <string name="missing_mandatory_fields_events">Algunos campos necesitan su atención.\n¿Desea revisar el formulario?</string>
     <string name="title_delete_go_back">Los datos no se han guardado</string>
     <string name="delete_go_back">Si vuelve ahora la información registrada se perderá </string>
     <string name="missing_mandatory_fields_go_back">Borrar y salir.</string>
-    <string name="error_fields">Algunos campos tienen errores:\n%s\nRevíselos, por favor.</string>
     <string name="missing_mandatory_fields_finish">Algunos campos obligatorios están vacíos. Puede terminar la entrada de datos y salir, pero el evento no podrá ser completado.</string>
     <string name="tei_coordinates">Coordenadas para</string>
 
@@ -304,7 +301,6 @@
     <string name="empty_program_list">No hay información para los filtros seleccionados. Pruebe modificándolos.</string>
     <string name="share">Compartir</string>
     <string name="share_qr">Compartir QR</string>
-    <string name="teiType_search_online">La búsqueda por tipo no está disponible de manera online.\nPor favor, seleccione un programa de la lista.</string>
     <string name="max">Máx</string>
     <string name="current">En uso</string>
     <string name="tei">TEI</string>
@@ -327,10 +323,10 @@
     <string name="about_sdk">Versión del SDK: %s</string>
     <string name="about_connected">Conectado a: %s</string>
     <string name="about_user">Usuario actual: %s</string>
-    <string name="about_more">Más sobre esta app: lea \"<a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">aquí</a>\" sobre lo que está y no está soportado</string>
-    <string name="about_git">\"Esta versión de la app y versiones anteriores, así como el código fuente está disponible en \"<a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>\". DHIS 2 Android Capture tiene licencia según los términos del GNU General Public License publicada por la Free Software Foundation - ver \"<a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
-    <string name="about_dev">\"Desarrollada y mantenida por el proyecto \"<a href="https://www.dhis2.org/">DHIS2</a>\", parte de la Universidad de Oslo, \"<a href="https://www.mn.uio.no/ifi/english/">departamento de informática</a>.</string>
-    <string name="about_contact">\"Para más información o preguntas sobre la aplicación, por favor escriba a \"<a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
+    <string name="about_more">Más sobre esta app: lea <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">aquí</a> sobre lo que está y no está soportado</string>
+    <string name="about_git">Esta versión de la app y versiones anteriores, así como el código fuente está disponible en <a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>. DHIS 2 Android Capture tiene licencia según los términos del GNU General Public License publicada por la Free Software Foundation - ver <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
+    <string name="about_dev">Desarrollada y mantenida por el proyecto <a href="https://www.dhis2.org/">DHIS2</a>, parte de la Universidad de Oslo, <a href="https://www.mn.uio.no/ifi/english/">departamento de informática</a>.</string>
+    <string name="about_contact">Para más información o preguntas sobre la aplicación, por favor escriba a <a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
 
     <string name="login_error_null_pass">La contraseña está vacía. Complete este campo por favor.</string>
     <string name="login_error_null_username">El usuario está vacío. Complete este campo por favor.</string>
@@ -587,7 +583,6 @@
     <string name="filter_event_status_completed">Completado</string>
     <string name="filter_event_status_skipped">Omitido</string>
     <string name="event_tei_limits">Eventos:%smax:%s%sactual:%sEntidades:%smax:%s%sactual:%s</string>
-    <string name="event_tei_limits_v2">Configuración limitada %s\nEventos: %s/%s Entidades: %s/%s</string>
     <string name="enrollment_data_hide">Ocultar datos de registro</string>
     <string name="enrollment_data_show">Mostrar datos de registro</string>
     <string name="sms_enabled">Módulo de SMS activado</string>
@@ -681,8 +676,6 @@
     <string name="privacy_policy_title">Política de privacidad</string>
     <string name="open_privacy_policy">Pulse aquí para comprobar nuestra <a href="">política de privacidad</a></string>
     <string name="coordinates_error">El valor de las coordenadas no es válido</string>
-    <string name="break_glass_error">No puede registrar TEIs de otras unidades organizativas en este programa porque está protegido.\nContacte con su administrador.</string>
-    <string name="break_glass_error_v2">No puede registrar un/una %s desde otras unidades organizativas en este programa por que está protegido.\nContacte con su administrador.</string>
     <string name="field_is_mandatory">El campo es obligatorio</string>
     <string name="security_debugger_message">Por razones de seguridad, esta versión de la app no permite el uso de adb. Por favor use la versión de formación.</string>
 
@@ -741,7 +734,6 @@
     <string name="filter_period_last_n_biweeks">Últimas %d quincenas</string>
     <string name="section_feedback">Retroalimentación</string>
     <string name="section_indicators">Indicadores</string>
-    <string name="camera_permission_denied">El permiso de la cámara está denegado.\nDebe habilitarlo para usar esta función.</string>
     <string name="value">Valor</string>
     <string name="section_charts_indicators">Gráficos e indicadores</string>
     <string name="take_photo">Tomar foto</string>
@@ -792,7 +784,6 @@
     <string name="troubleshooting_pass_rule_validation">No se encontraron advertencias</string>
     <string name="troobleshooting_pass_rule_validation_title">¡Parece que todo está bien!</string>
     <string name="not_saved">No guardado</string>
-    <string name="review_message">Algunos campos necesitan su atención.\n¿Desea revisar el formulario?</string>
     <string name="search_loading_more">Cargando más resultados</string>
     <string name="search_no_results_in_program">No hay más resultados para %s</string>
     <string name="search_outside_action">Búsqueda fuera del programa</string>
@@ -806,10 +797,7 @@
     <string name="action_ok">De acuerdo</string>
     <string name="init_search">Empieza una búsqueda para encontrar %s</string>
     <string name="search_or_create">Puedes buscar o crear un nuevo %s</string>
-    <string name="missing_warning_fields_events">Tienes algunos mensajes de alerta.\n¿Desea marcar el formulario como Completo?</string>
-    <string name="missing_error_fields_events">Algunos campos tienen errores y no serán guardados. \n¿Desea revisar el formulario?</string>
     <string name="event_can_be_completed">¿Desea marcar este formulario como completo?</string>
-    <string name="event_error_on_complete">Tiene algunos mensajes de error. \n¿Desea revisarlos?</string>
     <string name="changes_will_be_discarted">Si sales los cambios serán descartados.</string>
     <string name="re_opened">Reabrir</string>
     <string name="account_disable_title">Cuenta deshabilitada</string>

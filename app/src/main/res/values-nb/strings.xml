@@ -170,7 +170,6 @@
     <string name="a_week">1 uke</string>
     <string name="sync_max_parameters">Gjeldende synkroniseringsparametre</string>
     <string name="sync_default_parameters">Tilbakestill til standard</string>
-    <string name="wipe_data_meesage">Databasen vil bli slettet. Du vil bli spurt om å logge inn igjen.</string>
     <string name="wipe_data_ok">Aksepter</string>
     <string name="wipe_data_no">Avbryt</string>
     <string name="SYNC_DATA">SYNK data nå</string>
@@ -233,7 +232,6 @@
     <string name="title_delete_go_back">Dine data er ikke lagret</string>
     <string name="delete_go_back">Hvis du går tilbake nå, vil all informasjon som har blitt lagt inn bli slettet.</string>
     <string name="missing_mandatory_fields_go_back">Slett og gå tilbake</string>
-    <string name="error_fields">Noen felt har feil:\n%s\nVennligst, sjekk dem.</string>
     <string name="missing_mandatory_fields_finish">Noen obligatoriske felter mangler. Du kan fullføre dataregistrering og gå ut, men hendelsen kan ikke fullføres.</string>
     <string name="tei_coordinates">Koordinater for</string>
 
@@ -299,7 +297,6 @@
     <string name="empty_program_list">Det er ikke noe informasjon for de valgte filtre. Vennligst prøv å endre dem.</string>
     <string name="share">Del</string>
     <string name="share_qr">Del QR</string>
-    <string name="teiType_search_online">Søk etter type er ikke mulig for online søk.\nVennligst velg et program fra listen.</string>
     <string name="max">Max</string>
     <string name="current">Nåværende</string>
     <string name="tei">TEI</string>
@@ -576,7 +573,6 @@
     <string name="filter_event_status_completed">Fullført</string>
     <string name="filter_event_status_skipped">Hoppet over</string>
     <string name="event_tei_limits">Hendelser: %sMax: %s%sGjeldende:%sTEI: %sMax:%s%sGjeldende%s</string>
-    <string name="event_tei_limits_v2">Begrensede innstillinger : %s\nEvents: %s/%sTEI: %s/%s</string>
     <string name="enrollment_data_hide">Skjul registreringsdata</string>
     <string name="enrollment_data_show">Vis registreringsdata</string>
     <string name="sms_enabled">SMS modul er aktivert.</string>
@@ -670,7 +666,6 @@
     <string name="privacy_policy_title">Personvernregler</string>
     <string name="open_privacy_policy">Klikk her for å sjekke<a href="">personvernreglene</a> våre</string>
     <string name="coordinates_error">Koordinatverdiene er ikke gyldige</string>
-    <string name="break_glass_error">Du kan ikke registrere enheter fra andre organisasjonsenheter i dette programmet fordi det er beskyttet. Kontakt administratoren din.</string>
     <string name="field_is_mandatory">Dette feltet er obligatorisk</string>
     <string name="security_debugger_message">Av sikkerhetsgrunner, så er denne versjonen av appen ikke tillatt til å bli brukt med adb. Vennligst bruk treningsversjonen.</string>
 

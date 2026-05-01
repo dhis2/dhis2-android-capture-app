@@ -132,7 +132,7 @@
     <string name="select_language">Selecteer uw gewenste taal</string>
 
     <string name="restart_later">Later opnieuw opstarten</string>
-    <string name="confirm_app_restart_message">        De toepassing moet opnieuw worden gestart om de wijzigingen door te voeren, maar        alle niet-opgeslagen wijzigingen gaan verloren.\n\nWilt u doorgaan met de herstart\?    </string>
+    <string name="confirm_app_restart_message">        De toepassing moet opnieuw worden gestart om de wijzigingen door te voeren, maar        alle niet-opgeslagen wijzigingen gaan verloren.\\n\\nWilt u doorgaan met de herstart\?    </string>
     <string name="language_change_dialog_title">Bevestig opnieuw opstarten</string>
     <string name="scan_canceled">Scan geannuleerd!</string>
     <string name="logout_error_message">        Er is een fout opgetreden tijdens het uitloggen. Probeer het later opnieuw.    </string>
@@ -165,7 +165,7 @@
     <string name="unable_to_sync_data_no_network_available">        Kan gegevens niet synchroniseren omdat er geen netwerkverbinding beschikbaar is    </string>
     <string name="openid_authentication_not_successful">        Kan niet verifiëren met uw ICRC-account    </string>
 
-    <string name="contact_service_desk_message">        Neem bij problemen \ncontact op met de ICRC-servicedesk    </string>
+    <string name="contact_service_desk_message">        Neem bij problemen \\ncontact op met de ICRC-servicedesk    </string>
 
     <!--SDK error codes-->
     <string name="login_error_unsuccessful_response">Er is iets fout gegaan. Controleer of de server-URL, gebruikersnaam en wachtwoord juist zijn en probeer het opnieuw.</string>

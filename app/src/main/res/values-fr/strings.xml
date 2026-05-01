@@ -174,7 +174,6 @@
     <string name="a_week">1 Semaine</string>
     <string name="sync_max_parameters">Paramètres de synchronisation actuels</string>
     <string name="sync_default_parameters">Retour aux valeurs par défaut</string>
-    <string name="wipe_data_meesage">La base de données sera supprimée.\nVous devez donc entrer de nouveau</string>
     <string name="wipe_data_ok">Accepter</string>
     <string name="wipe_data_no">Annuler</string>
     <string name="SYNC_DATA">Synchroniser les données mainténant</string>
@@ -240,11 +239,9 @@
     <string name="missing_mandatory_fields_title">Les champs obligatoires sont manquant</string>
     <string name="missing_mandatory_fields_text">Certains des champs obligatoires sont manquant. Si vous voulez retourner, tout l´information sera supprimer</string>
     <string name="missing_mandatory_fields_text_not_delete">Certains champs obligatoires sont vides. Si vous voulez retourner, veuillez les renseigner. </string>
-    <string name="missing_mandatory_fields_events">Certains champs nécessitent votre attention. \n Voulez-vous revoir le formulaire ?</string>
     <string name="title_delete_go_back">Vos données n\'ont pas été sauvegardées</string>
     <string name="delete_go_back">Si vous retournez maintenant, toute information saisie sera supprimée.</string>
     <string name="missing_mandatory_fields_go_back">Supprimer et retourner</string>
-    <string name="error_fields">Certains champs ont des erreurs:\n%s\nVeuillez les vérifier.</string>
     <string name="missing_mandatory_fields_finish">Des champs obligatoires ne sont pas renseignés. Vous pouvez terminer la saisie et quitter, mais l\'évènement ne peut être complété.</string>
     <string name="tei_coordinates">Coordonnées pour</string>
 
@@ -310,7 +307,6 @@
     <string name="empty_program_list">Il n\'y a pas d\'information pour les critères choisis. Veuillez les changer</string>
     <string name="share">Partager</string>
     <string name="share_qr">Partager le QR</string>
-    <string name="teiType_search_online">La recherche par type n\'est pas disponible en ligne.\nVeuillez sélectionner un programme dans la liste</string>
     <string name="max">Max</string>
     <string name="current">Courant</string>
     <string name="tei">TEI</string>
@@ -333,10 +329,10 @@
     <string name="about_sdk">Version de SDK: %s</string>
     <string name="about_connected">Connectée à: %s</string>
     <string name="about_user">Utilisateur actuel: %s</string>
-    <string name="about_more">\"Plus d\'informations sur l\'application: lisez \"<a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">ici</a>ce qui est supporté et ce qui n\'est pas supporté</string>
-    <string name="about_git">\"Cette version et les versions précédentes de cette application sont disponibles sur \"<a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>\". DHIS2 Android Capture est sous licence de la GNU General Public License telle que publiée par la Free Software Foundation, voir \"<a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
-    <string name="about_dev">\"Développé et entretenu par le \"<a href="https://www.dhis2.org/">DHIS2</a>\" projet, partie de l\'Université d\'Oslo, \"<a href="https://www.mn.uio.no/ifi/english/">département d\'informatique</a>.</string>
-    <string name="about_contact">\"Pour plus d\'informations ou des questions sur cette application, veuillez écrire à \"<a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
+    <string name="about_more">Plus d\'informations sur l\'application: lisez <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">ici</a>ce qui est supporté et ce qui n\'est pas supporté</string>
+    <string name="about_git">Cette version et les versions précédentes de cette application sont disponibles sur <a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>. DHIS2 Android Capture est sous licence de la GNU General Public License telle que publiée par la Free Software Foundation, voir <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
+    <string name="about_dev">Développé et entretenu par le <a href="https://www.dhis2.org/">DHIS2</a> projet, partie de l\'Université d\'Oslo, <a href="https://www.mn.uio.no/ifi/english/">département d\'informatique</a>.</string>
+    <string name="about_contact">Pour plus d\'informations ou des questions sur cette application, veuillez écrire à <a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
 
     <string name="login_error_null_pass">Le mot de passe est manquant. Veuillez compléter ce champ</string>
     <string name="login_error_null_username">Le nom d\'utilisateur est manquant. Veuillez compléter ce champ</string>
@@ -466,7 +462,6 @@
     <string name="send_user_name_title">Envoyer les données</string>
     <string name="send_user_name_mesage">Aidez DHIS2 à améliorer cette appli en partageant les registres d\'erreurs associés avec votre identifiant utilisateur. </string>
     <string name="improve_app_msg_title">Voudriez-vous nous aider à améliorer cette application?</string>
-    <string name="improve_app_msg_text">Si vous selectionnez oui, l\'application envoyera des statistiques annonymes et journaux des erreurs qui permettront d\'améliorer l\'experience et la performance de l\'utilisation. Pour plus de détails, veuillez-vous référer à notre politique de confidentialité.</string>
     <string name="improve_app_msg_clickable_word">Politique de confidentialité</string>
     <string name="check_mandatory_field">Vérifier les champs</string>
     <string name="error_no_network_during_sync">Vous avez perdu la connexion lors de la synchronisation de la configuration. Veuillez ressayer plus tard.</string>
@@ -596,7 +591,6 @@
     <string name="filter_event_status_completed">Terminé</string>
     <string name="filter_event_status_skipped">Sauté</string>
     <string name="event_tei_limits">Événements: %s max:%s %s courant:%s TEI:%s max:%s%s courant:%s</string>
-    <string name="event_tei_limits_v2">Paramètres limités %s \nEvénements: %s/%s TEI: %s/%s</string>
     <string name="enrollment_data_hide">Masquer les données d\'inscription</string>
     <string name="enrollment_data_show">Afficher les données d\'inscription</string>
     <string name="sms_enabled">Le module SMS est activé</string>
@@ -690,7 +684,6 @@
     <string name="privacy_policy_title">Politique de confidentialité</string>
     <string name="open_privacy_policy">Cliquez ici pour consulter notre <a href=""> politique de confidentialité </a></string>
     <string name="coordinates_error">Les valeurs des coordonnées ne sont pas valides</string>
-    <string name="break_glass_error">Vous ne pouvez pas inscrire des TEI d\'autres unités organisationnelles dans ce programme parce qu\'il est protégé.\nContactez votre administrateur.</string>
     <string name="field_is_mandatory">Ce champ est obligatoire</string>
     <string name="security_debugger_message">Pour des raisons de sécurité, cette version de l\'application ne peut pas être utilisée avec adb. Veuillez utiliser la version de formation.</string>
 
@@ -751,7 +744,6 @@
     <string name="filter_period_last_n_biweeks">%dDernier bimensuel</string>
     <string name="section_feedback">Réaction</string>
     <string name="section_indicators">Indicateurs</string>
-    <string name="camera_permission_denied">L\'autorisation de la caméra est refusée. \nVous devez l\'activer pour utiliser cette fonctionnalité.</string>
     <string name="value">Valeur</string>
     <string name="section_charts_indicators">Graphiques et indicateurs</string>
     <string name="take_photo">Prendre une photo</string>
@@ -788,7 +780,6 @@
     <string name="manage_accounts">Gérer les comptes</string>
     <string name="troubleshooting_language_title">Langue</string>
     <string name="not_saved">Non enregistré!</string>
-    <string name="review_message">Certains champs nécessitent votre attention. \n Voulez-vous revoir le formulaire ?</string>
     <string name="search_no_results">Il n\'y a pas de résultats pour cette recherche</string>
     <string name="search_too_many_results">Résultats trop nombreux</string>
     <string name="search_create_new">Créer nouveau</string>
@@ -796,10 +787,7 @@
     <string name="init_search">Lancez une recherche pour trouver 1%s</string>
     <string name="search_or_create">Vous pouvez rechercher ou créer un nouveau 1%s</string>
     <string name="missing_warning_fields_completed_events">Vous avez des messages d\'avertissement.</string>
-    <string name="missing_warning_fields_events">Vous avez des messages d\'avertissement.\nVoulez-vous marquer ce formulaire comme terminé ?</string>
-    <string name="missing_error_fields_events">Certains champs contiennent des erreurs et ils ne sont pas enregistrés. \ nVoulez-vous revoir le formulaire ?</string>
     <string name="event_can_be_completed">Voulez-vous marquer ce formulaire comme complet?</string>
-    <string name="event_error_on_complete">Vous avez des messages d\'erreur.\nVoulez-vous les consulter ?</string>
     <string name="changes_will_be_discarted">Si vous quittez maintenant, les modifications seront ignorées.</string>
     <string name="re_opened">Réouvert</string>
     <string name="account_disable_title">Compte désactivé</string>

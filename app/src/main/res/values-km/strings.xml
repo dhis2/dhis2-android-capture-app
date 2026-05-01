@@ -135,7 +135,6 @@
     <string name="a_week">១សប្តាហ៍</string>
     <string name="sync_max_parameters">ប៉ារ៉ាម៉ែត្រដែលកំពុងធ្វើការបញ្ជូន</string>
     <string name="sync_default_parameters">ធ្វើអោយទោលំនាំដើម</string>
-    <string name="wipe_data_meesage">ប្រព័ន្ធទិន្នន័យនឹងត្រូវលុបចោល\nអ្នកត្រូវចូលមកប្រើម្ដងទៀតដោយបញ្ចុលឈ្មោះ និង លេខសំងាត់​</string>
     <string name="wipe_data_ok">ទទួលយក</string>
     <string name="wipe_data_no">បោះបង់</string>
     <string name="SYNC_DATA">បញ្ជូនទិន្នន័យឥឡូវនេះ</string>
@@ -221,7 +220,6 @@
     <string name="empty_program_list">មិនមានព៌ត័មានដែលអ្នកបានច្រោះមើលនេះទេ, សូមប្ដូរចេញ​</string>
     <string name="share">ចែករំលែក</string>
     <string name="share_qr">ចែករំលែកលេខកូដ QR</string>
-    <string name="teiType_search_online">ការស្វែងរកតាមរយៈបញ្ចូលមិនដំណើរការតាមរយៈការស្វែងរកតាមអនឡានទេ\nសូមជ្រើសរើសកម្មវិធីពីក្នុងបញ្ជី​</string>
     <string name="max">អតិបរមា</string>
     <string name="current">បច្ចុប្បន្ន</string>
     <string name="tei">TEI</string>
@@ -239,9 +237,9 @@
     <string name="about_sdk">កំណែរ SDK: %s</string>
     <string name="about_connected">បានភ្ជាប់ទៅ %s</string>
     <string name="about_user">ឈ្មោះអ្នកប្រើប្រាស់បច្ចុប្បន្ន %s</string>
-    <string name="about_more">\"ព៌ត័មានបន្ថែមពីកម្មវិធីនេះសូមចូលទៅ \"<a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">​ទីនេះ</a>​ តើកម្មវិធីអាចធ្វើអ្វីបាន និង មិនអាចធ្វើអ្វីបាន</string>
-    <string name="about_git">កំណែនេះ និង កំណែមុននៃកម្មវិធីនេះ ក៏ដូចជាប្រភពកូដ អាចរកបាននៅ​<a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>\"DHIS2 Android Capture is licensed under the terms of the GNU General Public License as published by the Free Software Foundation - see \"<a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a></string>
-    <string name="about_dev">\"Developed and maintained by the \"<a href="https://www.dhis2.org/">DHIS2</a>\" project, part of University of Oslo, \"<a href="https://www.mn.uio.no/ifi/english/">department of informatics</a></string>
+    <string name="about_more">ព៌ត័មានបន្ថែមពីកម្មវិធីនេះសូមចូលទៅ <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">​ទីនេះ</a>​ តើកម្មវិធីអាចធ្វើអ្វីបាន និង មិនអាចធ្វើអ្វីបាន</string>
+    <string name="about_git">កំណែនេះ និង កំណែមុននៃកម្មវិធីនេះ ក៏ដូចជាប្រភពកូដ អាចរកបាននៅ​<a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>DHIS2 Android Capture is licensed under the terms of the GNU General Public License as published by the Free Software Foundation - see <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a></string>
+    <string name="about_dev">Developed and maintained by the <a href="https://www.dhis2.org/">DHIS2</a> project, part of University of Oslo, <a href="https://www.mn.uio.no/ifi/english/">department of informatics</a></string>
     <string name="about_contact">សម្រាប់ព៌ត័មានបន្ថែម រឺ ក៏មានសំនួរអំពីកម្មវិធីនេះ, សូមសរសេរមកកាន់<a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
 
     <string name="login_error_null_pass">មិនមានលេខសំងាត់, សូមបំពេញ​</string>
