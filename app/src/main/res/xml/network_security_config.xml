@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+    <!--
+    Example: to allow cleartext HTTP to a specific host (e.g. a local dev
+    DHIS2 instance), uncomment and edit the block below. Prefer overriding
+    this file in a debug-only manifest rather than permitting cleartext in
+    release builds.
+
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">play.dhis2.org</domain>
+    </domain-config>
+    -->
+</network-security-config>
