@@ -56,7 +56,7 @@
     <string name="not_now">ບໍ່​ແມ່ນ​ຕອນ​ນີ້</string>
     <string name="save_anyway">ບັນທຶກ</string>
     <string name="keep_editing">ສຶບຕໍ່ແກ້ໄຂ</string>
-    <string name="event_can_be_completed">ທ່ານຕ້ອງການໝາຍແບບຟອມນີ້ວ່າສຳເລັດແລ້ວຫຼືບໍ\?</string>
+    <string name="event_can_be_completed">ທ່ານຕ້ອງການໝາຍແບບຟອມນີ້ວ່າສຳເລັດແລ້ວຫຼືບໍ?</string>
     <string name="discard_go_back">ຖ້າທ່ານອອກດຽວນີ້ ຂໍ້ມູນທັງໝົດໃນແບບຟອມຈະຖືກຍົກເລີກ.</string>
     <string name="share">ເຜີຍແຜ່</string>
     <string name="action_close">ປິດ</string>
