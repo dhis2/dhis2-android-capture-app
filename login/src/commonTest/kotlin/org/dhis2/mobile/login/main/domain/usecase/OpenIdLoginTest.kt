@@ -284,6 +284,25 @@ class OpenIdLoginTest {
         }
 
     @Test
+    fun `GIVEN null prompt WHEN OpenID login succeeds THEN null prompt is passed to repository`() =
+        runTest {
+            // GIVEN - No prompt configured (SDK will use its default)
+            val configNullPrompt = defaultConfig.copy(prompt = null)
+            whenever(repository.loginWithOpenId(configNullPrompt)) doReturn Result.success(Unit)
+            whenever(repository.getUsername()) doReturn username
+            whenever(repository.numberOfAccounts()) doReturn 0
+            whenever(repository.displayTrackingMessage()) doReturn false
+            whenever(repository.initialSyncDone(serverUrl, username)) doReturn true
+
+            // WHEN - User logs in without a prompt override
+            val result = openIdLogin(configNullPrompt)
+
+            // THEN - Login succeeds and null prompt is forwarded to the repository
+            assertIs<LoginResult.Success>(result)
+            verify(repository).loginWithOpenId(configNullPrompt)
+        }
+
+    @Test
     fun `GIVEN username with special characters WHEN OpenID login succeeds THEN username is handled correctly`() =
         runTest {
             // GIVEN - Username contains special characters
