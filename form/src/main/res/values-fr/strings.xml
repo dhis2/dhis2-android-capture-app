@@ -51,7 +51,6 @@
     <string name="share">Partager</string>
     <string name="action_close">Fermer</string>
     <string name="program_rules_loop_warning_title">Avertissement relatif aux règles du programme</string>
-    <string name="program_rules_loop_warning_message">Il y a un problème de configuration provoquant une boucle dans les règles. Contactez votre administrateur.</string>
     <string name="copied_text">Copié</string>
     <string name="empty_description">Pas d\'information pour ce champ</string>
     <string name="take_photo">Prendre une photo</string>

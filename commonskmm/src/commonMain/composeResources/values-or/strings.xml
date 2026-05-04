@@ -15,8 +15,4 @@
     <string name="input_coordinate_latitude">ଅକ୍ଷାଂଶ</string>
     <string name="input_coordinate_longitude">ଦ୍ରାଘିମା</string>
     <string name="action_done">ହୋଇଗଲା</string>
-    <!--*******************->
-       END OF D2 Error Messages
-    **********************-->
-
-</resources>
+    </resources>

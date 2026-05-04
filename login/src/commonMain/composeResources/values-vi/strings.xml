@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="two_fa_screen_title">Xác thực hai yếu tố</string>
     <string name="two_fa_authentication_code">Mã xác thực</string>

@@ -331,6 +331,5 @@
     <string name="period_monthly_title">Месяц</string>
     <string name="period_quarter_title">Квартал</string>
     <string name="period_yearly_title">Год</string>
-    <string name="no_periods">Нет доступных периодов </string>
     <string name="action_clear_all">Очистить все</string>
 </resources>

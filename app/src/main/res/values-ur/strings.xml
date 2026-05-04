@@ -113,6 +113,7 @@
     <string name="sms_bar_state_sending">کام جاری ہے</string>
     <string name="sms_bar_state_failed">ناکام</string>
 
+    <string name="polygon_captured">کثیر الاضلاع (حدود) محفوظ کر لی گئیں</string>
     <string name="polygon">کثیر زبان</string>
     <string name="filters_title_period">مدت</string>
     <string name="filters_title_sorting">ترتیب دیں</string>

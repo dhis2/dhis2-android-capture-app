@@ -202,7 +202,7 @@
     <string name="error_settings_app_not_supported">Phiên bản của Cài Đặt Ứng Dụng Web này không hỗ trợ</string>
     <string name="error_settings_app_not_intalled">Cài Đặt Ứng Dụng Web không được cài trong máy chủ.</string>
     <string name="error_socket_timeout">Máy chủ mất quá nhiều thời gian để trả lời. Chúng tôi đã hủy yêu cầu.</string>
-    <string name="error_relationship_updated">Mối quan hệ không thể cập nhật.</string>
+    <string name="error_relationship_updated">Không thể cập nhật mối quan hệ với bệnh nhân</string>
     <string name="error_too_many_periods">Có quá nhiều thời điểm</string>
     <string name="error_url_not_found">Chúng tôi không thể tìm thấy đường dẫn liên kết. Vui lòng kiểm tra nó.</string>
     <string name="error_account_disabled">Tài khoảng của bạn đã bị vô hiệu. Nếu đây là lỗi, vui lòng liên hệ quản lý của bạn.</string>
