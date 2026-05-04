@@ -17,6 +17,7 @@ import org.dhis2.mobile.commons.reporting.AnalyticActions
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider
 import org.dhis2.mobile.login.authentication.OpenIdController
+import org.dhis2.mobile.login.main.domain.model.OpenIdLoginConfiguration
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.error_device_not_registered
@@ -341,15 +342,7 @@ class LoginRepositoryImpl(
         }
     }
 
-    override suspend fun loginWithOpenId(
-        serverUrl: String,
-        isNetworkAvailable: Boolean,
-        clientId: String,
-        redirectUri: String,
-        discoveryUri: String?,
-        authorizationUri: String?,
-        tokenUrl: String?,
-    ): kotlin.Result<Unit> =
+    override suspend fun loginWithOpenId(openIdLoginConfiguration: OpenIdLoginConfiguration): kotlin.Result<Unit> =
         withContext(dispatcher.io) {
             suspendCancellableCoroutine { continuation ->
                 val intent =
@@ -358,11 +351,12 @@ class LoginRepositoryImpl(
                         .openIdHandler()
                         .blockingLogIn(
                             OpenIDConnectConfig(
-                                clientId = clientId,
-                                redirectUri = redirectUri.toUri(),
-                                discoveryUri = discoveryUri?.toUri(),
-                                authorizationUri = authorizationUri,
-                                tokenUrl = tokenUrl,
+                                clientId = openIdLoginConfiguration.clientId,
+                                redirectUri = openIdLoginConfiguration.redirectUri.toUri(),
+                                discoveryUri = openIdLoginConfiguration.discoveryUri?.toUri(),
+                                authorizationUri = openIdLoginConfiguration.authorizationUri,
+                                tokenUrl = openIdLoginConfiguration.tokenUrl,
+                                prompt = openIdLoginConfiguration.prompt,
                             ),
                         )
                 openIdController.handleIntent(intent) { resultIntent ->
@@ -389,7 +383,7 @@ class LoginRepositoryImpl(
                                             .userModule()
                                             .openIdHandler()
                                             .blockingHandleLogInResponse(
-                                                serverUrl = serverUrl,
+                                                serverUrl = openIdLoginConfiguration.serverUrl,
                                                 intent = intent.intent,
                                                 requestCode = intent.requestCode,
                                             )
@@ -400,7 +394,7 @@ class LoginRepositoryImpl(
                                             Exception(
                                                 d2ErrorMessageProvider.getErrorMessage(
                                                     e,
-                                                    isNetworkAvailable,
+                                                    openIdLoginConfiguration.isNetworkAvailable,
                                                 ),
                                             ),
                                         )

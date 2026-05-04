@@ -41,6 +41,7 @@ object KoinInitialization {
                     "openIdAuthorizationUrl" to BuildConfig.OPEN_ID_AUTHORIZATION_URL,
                     "openIdTokenUrl" to BuildConfig.OPEN_ID_TOKEN_URL,
                     "openIdButtonText" to BuildConfig.OPEN_ID_BUTTON_TEXT,
+                    "openIdPrompt" to BuildConfig.OPEN_ID_PROMPT,
                 ),
             )
             workManagerFactory()
