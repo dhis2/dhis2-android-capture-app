@@ -6,6 +6,11 @@ on:
       - main
       - develop
       - release/*
+    paths:
+      - 'gradle/libs.versions.toml'
+      - 'gradle/verification-metadata.xml'
+      - '**/*.gradle.kts'
+      - '**/build.gradle'
 
 jobs:
   verify-dependency-metadata:
@@ -58,7 +63,7 @@ jobs:
           TRAINING_STORE_PASSWORD: ${{ secrets.TRAINING_STORE_PASSWORD }}
           TRAINING_STORE_FILE: ${{ steps.decode_training_keystore.outputs.filePath }}
         run: |
-          ./gradlew --write-verification-metadata sha256 --dry-run --no-daemon \
+          ./gradlew --write-verification-metadata sha256 --no-daemon \
             help \
             app:assembleDhis2Release \
             app:assembleDhis2PlayServicesRelease \
