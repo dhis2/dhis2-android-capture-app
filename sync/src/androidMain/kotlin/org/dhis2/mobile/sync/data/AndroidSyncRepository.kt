@@ -185,6 +185,14 @@ class AndroidSyncRepository(
             Result.success(uids)
         }
 
+    override suspend fun saveDataSyncError(stackTrace: String) {
+        d2
+            .dataStoreModule()
+            .localDataStore()
+            .value("DATASYNCERROR")
+            .blockingSet(stackTrace)
+    }
+
     private suspend fun syncResult(): SyncResult {
         val eventsOk =
             d2

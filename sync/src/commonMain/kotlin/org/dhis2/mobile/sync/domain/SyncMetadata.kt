@@ -48,13 +48,16 @@ class SyncMetadata(
         }
 
     private suspend fun handleMetadataPeriodChange(
-        initialMetadataSyncPeriod: SyncPeriod,
-        finalMetadataSyncPeriod: SyncPeriod,
+        initialMetadataSyncPeriod: SyncPeriod?,
+        finalMetadataSyncPeriod: SyncPeriod?,
     ) {
         val metadataSyncPeriodChanged =
             initialMetadataSyncPeriod != finalMetadataSyncPeriod
         val metadataSyncPeriodChangedToManual =
             initialMetadataSyncPeriod !is SyncPeriod.Manual && finalMetadataSyncPeriod is SyncPeriod.Manual
+
+        val notScheduled =
+            syncBackgroundJobAction.getNextMetadataSync() == null && finalMetadataSyncPeriod !is SyncPeriod.Manual
 
         when {
             metadataSyncPeriodChangedToManual -> {
@@ -62,27 +65,34 @@ class SyncMetadata(
                 syncBackgroundJobAction.launchSyncSettings()
             }
 
-            metadataSyncPeriodChanged -> {
-                syncBackgroundJobAction.launchMetadataSync(finalMetadataSyncPeriod.toSeconds())
+            metadataSyncPeriodChanged || notScheduled -> {
+                syncBackgroundJobAction.launchMetadataSync(
+                    finalMetadataSyncPeriod?.toSeconds() ?: SyncPeriod.Every7Days.toSeconds(),
+                )
             }
         }
     }
 
     private suspend fun handleDataPeriodChange(
-        initialDataSyncPeriod: SyncPeriod,
-        finalDataSyncPeriod: SyncPeriod,
+        initialDataSyncPeriod: SyncPeriod?,
+        finalDataSyncPeriod: SyncPeriod?,
     ) {
         val dataSyncPeriodChanged = initialDataSyncPeriod != finalDataSyncPeriod
         val dataSyncPeriodChangedToManual =
             initialDataSyncPeriod !is SyncPeriod.Manual && finalDataSyncPeriod is SyncPeriod.Manual
+
+        val notScheduled =
+            syncBackgroundJobAction.getNextDataSync() == null && finalDataSyncPeriod !is SyncPeriod.Manual
 
         when {
             dataSyncPeriodChangedToManual -> {
                 syncBackgroundJobAction.cancelDataSync()
             }
 
-            dataSyncPeriodChanged -> {
-                syncBackgroundJobAction.launchDataSync(finalDataSyncPeriod.toSeconds())
+            dataSyncPeriodChanged || notScheduled -> {
+                syncBackgroundJobAction.launchDataSync(
+                    finalDataSyncPeriod?.toSeconds() ?: SyncPeriod.Every24Hour.toSeconds(),
+                )
             }
         }
     }

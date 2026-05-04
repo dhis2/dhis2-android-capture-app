@@ -104,6 +104,8 @@
     <string name="every_12_hours">12h</string>
     <string name="Manual">ຄູ່ມື</string>
     <string name="a_week">1 ອາທິດ</string>
+    <string name="sync_max_parameters">ຂອບເຂດທີ່ຕັ້ງໄວ້ໃຫ້ລະບົບທໍາງານຮ່ວມກັນໃນປະຈຸບັນ</string>
+    <string name="sync_default_parameters">ປັບລະບົບໃຫ້ທໍາງານໃນຄ່າປົກະຕິ</string>
     <string name="wipe_data_meesage">ຖານຂໍ້ມູນຈະຖືກລືບ.\nທ່ານຈະໄດ້ເຂົ້າລະບົບໃໝ່</string>
     <string name="wipe_data_ok">ຍອມຮັບ</string>
     <string name="wipe_data_no">ຍົກເລີກ</string>
@@ -146,7 +148,15 @@
     <string name="write_new_note">ຂຽນບົດບັນທຶກໃໝ່</string>
     <string name="clear">ຈັດມ້ຽນ</string>
     <string name="add_note">ຂຽນບັນທຶກລົງ</string>
+    <string name="revert">ກັບຄືນສູ່ສະພາບເດີມ</string>
+    <string name="activated">ເປີດການນໍາໃຊ້ແລ້ວ</string>
+    <string name="missing_mandatory_fields_title">ຫ້ອງປ້ອນຂໍ້ມູນທີ່ຈໍາເປັນ ບໍ່ເຫັນ</string>
+    <string name="missing_mandatory_fields_text">ຫ້ອງປ້ອນຂໍ້ມູນຈໍານວນໜື່ງບໍ່ເຫັນ. ຖ້າທ່ານຕ້ອງການກັບຄືນດຽວນີ້, ຂໍ້ມູນທັງໝົດທີ່ໄດ້ບັນທຶກແລ້ວຈະຖືກລືບ</string>
+    <string name="missing_mandatory_fields_text_not_delete">ຊ່ອງທີປ້ອນຂ້ໍມູນບາງຊ່ອງບໍເຫັນ. ຖ້າທ່ານຕ້ອງການກັບຄືນ, ກະລຸນາຕື່ມຂໍ້ມູນໃສ່ໃຫ້ຄົບ</string>
     <string name="title_delete_go_back">ຂໍ້ມູນຂອງທ່ານບໍ່ໄດ້ບັນທຶກ</string>
+    <string name="delete_go_back">ຖ້າທ່ານກັບຄືນຕອນນີ້ ຂໍ້ມູນທີ່ປ້ອນທັ້ງໝົດຈະຖຶກລົບ</string>
+    <string name="missing_mandatory_fields_go_back">ລືບຂໍ້ມູນ ແລະ ກັບຄືນ</string>
+    <string name="missing_mandatory_fields_finish">ຊ່ອງປ້ອນຂໍ້ມູນຈໍານວນໜື່ງບໍ່ເຫັນ. ທ່ານສາມາດປ້ອນຂໍ້ມູນ ແລະ ອອກໄດ້, ແຕ່ເຫດການຈະບໍ່ສາມາດເຮັດໃຫ້ສຳເລັດໄດ້</string>
     <string name="tei_coordinates">ປະສານງານຫາ</string>
 
     <!--EVENT SUMMARY-->
@@ -188,6 +198,8 @@
     <string name="programs_to_enroll">ໂປຣແກຣມເພື່ອລົງທະບຽນ</string>
     <string name="share">ແລກປ່ຽນ</string>
     <string name="share_qr">ແລກປ່ຽນ QR</string>
+    <string name="max">ຄ່າໃຫ່ຍສຸດ</string>
+    <string name="current">ປະຈຸບັນ</string>
     <string name="tei">ຈໍານວນກໍລະນີທີ່ປ້ອນເຂົ້າ</string>
     <string name="wipe_data">ຕັ້ງຄ່າໂປຣແກຣມຄືນໃໝ່</string>
     <string name="warning_error_on_complete_title">ກວດເບີ່ງອັນນີ້</string>
@@ -199,10 +211,10 @@
     <string name="about_sdk">SDK ລຸ້ນ: %s</string>
     <string name="about_connected">ເຊື່ອມຕໍ່ເຂົ້າກັບ: %s</string>
     <string name="about_user">ຜູ້ນໍາໃຊ້ປະຈຸບັນນີ້: %s</string>
-    <string name="about_more">\"ຂໍ້ມູນເພີ່ມຕື່ມກ່ຽວກັບໂປຣແກຣມນີ້: ອ່ານໄດ້ທີ່ \"<a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">here</a>. ໃຊ້ໄດ້ກັບໂທລະສັບລຸ້ນໃດ ແລະ ໃຊ້ບໍ່ໄດ້ກັບລຸ້ນໃດ</string>
-    <string name="about_git">\"ລຸ້ນນີ້ ແລະ ລຸ້ນກ່ອນໆ ຂອງໂປຣແກຣມນີ້ ກໍ່ຄື ລະບົບໂປຣແກຣມຂອງມັນແມ່ນເບີ່ງໄດ້ທີ່ at \"<a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>\". ໂປຣແກຣມ DHIS2 Android Capture ແມ່ນໄດ້ຮັບອະນຸຍາດພາຍໃຕ້ເງື່ອນໄຂຂອງ GNU General Public License ແລະ ປະກາດນໍາໃຊ້ໂດຍມຸນນິທິຊອບແວບໍ່ໄດ້ເສຍຄ່າ - ເບີ່ງໄດ້ທີ \"<a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a></string>
-    <string name="about_dev">\"ຖືກພັດທະນາ ແລະ ບໍາລຸງຮັກສາໂດຍ \"<a href="https://www.dhis2.org/">DHIS2</a>\" ໂຄງການເຊີ່ງເປັນພາກສ່ວນໜື່ງຂອງມຫາວິທະຍາໄລ ໂອສໂລ, ກົມຂໍ້ມູນຂ່າວສານ\"<a href="https://www.mn.uio.no/ifi/english/">department of informatics</a>.</string>
-    <string name="about_contact">\"ສໍາລັບຂໍ້ມູນເພີມຕື່ມ ຫຼື ມີຄໍາຖາມກ່ຽວກັບໂປຣແກຣມນີ້, ກະລຸນາ ຂຽນໄປສອບຖາມໄດ້ທີ \"<a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
+    <string name="about_more">ຂໍ້ມູນເພີ່ມຕື່ມກ່ຽວກັບໂປຣແກຣມນີ້: ອ່ານໄດ້ທີ່ <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">here</a>. ໃຊ້ໄດ້ກັບໂທລະສັບລຸ້ນໃດ ແລະ ໃຊ້ບໍ່ໄດ້ກັບລຸ້ນໃດ</string>
+    <string name="about_git">ລຸ້ນນີ້ ແລະ ລຸ້ນກ່ອນໆ ຂອງໂປຣແກຣມນີ້ ກໍ່ຄື ລະບົບໂປຣແກຣມຂອງມັນແມ່ນເບີ່ງໄດ້ທີ່ at <a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>. ໂປຣແກຣມ DHIS2 Android Capture ແມ່ນໄດ້ຮັບອະນຸຍາດພາຍໃຕ້ເງື່ອນໄຂຂອງ GNU General Public License ແລະ ປະກາດນໍາໃຊ້ໂດຍມຸນນິທິຊອບແວບໍ່ໄດ້ເສຍຄ່າ - ເບີ່ງໄດ້ທີ <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a></string>
+    <string name="about_dev">ຖືກພັດທະນາ ແລະ ບໍາລຸງຮັກສາໂດຍ <a href="https://www.dhis2.org/">DHIS2</a> ໂຄງການເຊີ່ງເປັນພາກສ່ວນໜື່ງຂອງມຫາວິທະຍາໄລ ໂອສໂລ, ກົມຂໍ້ມູນຂ່າວສານ<a href="https://www.mn.uio.no/ifi/english/">department of informatics</a>.</string>
+    <string name="about_contact">ສໍາລັບຂໍ້ມູນເພີມຕື່ມ ຫຼື ມີຄໍາຖາມກ່ຽວກັບໂປຣແກຣມນີ້, ກະລຸນາ ຂຽນໄປສອບຖາມໄດ້ທີ <a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
 
     <string name="search_program_not_selected">ເລືອກໂປຣແກຣມເພື່ອໃຫ້ສາມາດຂື້ນທະບຽນໄດ້</string>
     <string name="search_access_error">ທ່ານບໍ່ໄດ້ຮັບອະນຸຍາດຕາມທີ່ໄດ້ຮ້ອງຂໍ</string>
@@ -317,6 +329,9 @@
     <string name="filter_event_status_visited">ເຂົ້າຊົມ</string>
     <string name="filter_event_status_completed">ສໍາເລັດແລ້ວ</string>
     <string name="filter_event_status_skipped">ຂ້າມໄປ</string>
+    <string name="event_tei_limits">ເຫດການ%sສູງສຸດ%s%sປະຈຸບັນ%sTEI%sສູງສຸດ%s%sປະຈຸບັນ%s</string>
+    <string name="enrollment_data_hide">ເຊື່ອງຂໍ້ມູນການລົງທະບຽນ</string>
+    <string name="enrollment_data_show">ສະແດງຂໍ້ມູນການລົງທະບຽນ</string>
     <string name="sms_enabled">ເປິດໃຊ້ງານໂມດູນຂໍ້ຄວາມ</string>
     <string name="sms_disabled">ໂມດູນຂໍ້ຄວາມຖືກປິດໃຊ້ງານ</string>
     <string name="sms_downloading_data">ກຳລັງດາວໂຫຼດຂໍ້ມູນສຳລັບໂມດູນຂໍ້ຄວາມ. ກະ​ລຸ​ນາ​ລໍ​ຖ້າ</string>
@@ -380,6 +395,7 @@
     <string name="filters_title_date">ວັນທີ່</string>
     <string name="privacy_policy_title">ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ</string>
     <string name="open_privacy_policy">ກົດບ່ອນນີ້ເພື່ອກວດສອບ<a href="">ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ</a>ຂອງພວກເຮົາ</string>
+    <string name="coordinates_error">ປະສານງານບໍ່ຖືກຕ້ອງ</string>
     <string name="field_is_mandatory">ຊ່ອງປ້ອນຂໍ້ມູນນີ້ແມ່ນຈໍາເປັນຕ້ອງປ້ອນຂໍ້ມູນໃສ່</string>
     <string name="security_debugger_message">ເຫດຜົນດ້ານຄວາມປອດໄພ, ແອັບເວີຊັ່ນນີ້ບໍ່ອະນຸຍາດໃຫ້ໃຊ້ກັບ adb. ກະລຸນາໃຊ້ເວີຊັ່ນທີ່ໃຊ້ສະເພາະການຝຶກອົບຮົມ.</string>
 
@@ -432,6 +448,7 @@
     <string name="filter_period_last_n_biweeks">%dສອງອາທິດຜ່ານມາ</string>
     <string name="section_feedback">ຜົນຕອບຮັບ</string>
     <string name="section_indicators">ຕົວຊີ້ວັດ</string>
+    <string name="value">Value</string>
     <string name="camera_permission_denied">ການ​ອະ​ນຸ​ຍາດ​ໃຊ້ກ້ອງ​ຖ່າຍ​ຮູບ​ຖືກ​ປະ​ຕິ​ເສດ. ທ່ານ​​ຕ້ອງ​ເປີດ​ໃຊ້​ງານເພື່ອ​ໃຊ້​ຄຸນ​ສົມ​ບັດ​ນີ້​.</string>
     <string name="section_charts_indicators">ແຜນວາດ ແລະ ຕົວຊີ້ວັດ</string>
     <string name="take_photo">ຖ່າຍຮູບ</string>
@@ -461,7 +478,6 @@
     <string name="troubleshooting_ongoing_rule_validation">ກຳລັງກວດສອບຄວາມຖຶກຕ້ອງຂອງສາຍງານ...</string>
     <string name="troubleshooting_pass_rule_validation">ບໍ່ພົບຂໍ້ຄວນລະວັງ</string>
     <string name="not_saved">ບໍ່ໄດ້ບັນທຶກ</string>
-    <string name="review_message">ບາງຊ່ອງຂໍ້ມູນຈຳເປັນຕ້ອງດຳເນີນການຂອງທ່ານ.\n ທ່ານຕ້ອງການກວດສອບແບບຟອມຫຼືບໍ?</string>
     <string name="search_loading_more">ກຳລັງໂຫຼດຫາຜົນລັບເພີ່ມເຕີມ</string>
     <string name="search_no_results_in_program">ບໍ່ມີຜົນໄດ້ຮັບເພີ່ມເຕີມສໍາລັບ%s</string>
     <string name="search_outside_action">ຄົ້ນຫານອກສາຍງານນີ້</string>
@@ -473,8 +489,8 @@
     <string name="action_ok">ຕົກລົງ</string>
     <string name="init_search">ເລີ່ມການຄົ້ນຫາເພື່ອຊອກຫາອັນໃດນຶ່ງ%s</string>
     <string name="search_or_create">ທ່ານສາມາດຄົ້ນຫາຫຼືສ້າງໃຫມ່%s</string>
-    <string name="missing_warning_fields_events">ທ່ານມີບາງຂໍ້ຄວາມເຕືອນ.\nທ່ານຕ້ອງການໝາຍແບບຟອມນີ້ວ່າສຳເລັດແລ້ວຫຼືບໍ?</string>
     <string name="event_can_be_completed">ທ່ານຕ້ອງການໝາຍແບບຟອມນີ້ວ່າສຳເລັດແລ້ວຫຼືບໍ?</string>
+    <string name="changes_will_be_discarted">ຖ້າທ່ານອອກດຽວນີ້, ການປ່ຽນແປງຈະຖືກຍົກເລີກ.</string>
     <string name="event_error_on_complete">ທ່ານມີຂໍ້ຜິດພາດໃນບາງຂໍ້ຄວາມ.\nທ່ານຕ້ອງການກວດເບິ່ງຄືນບໍ?</string>
     <string name="re_opened">ເປີດຄືນໃໝ່</string>
     <string name="account_disable_title">ບັນຊີຖືກປິດ</string>

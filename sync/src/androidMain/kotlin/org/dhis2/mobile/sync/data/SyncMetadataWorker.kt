@@ -22,11 +22,18 @@ class SyncMetadataWorker(
     private val syncMetadata: SyncMetadata,
     private val notificationManager: NotificationManager,
 ) : CoroutineWorker(context, workerParams) {
-    override suspend fun doWork(): Result {
-        setForegroundAsync(getForegroundInfo())
+    private lateinit var notificationTitle: String
+    private lateinit var notificationText: String
 
-        val notificationTitle = getString(Res.string.app_name)
-        val notificationText = getString(Res.string.syncing_configuration)
+    private val isPeriodic by lazy { inputData.getBoolean(IS_PERIODIC, false) }
+
+    override suspend fun doWork(): Result {
+        if (!isPeriodic) {
+            setForeground(getForegroundInfo())
+        }
+
+        notificationTitle = getString(Res.string.app_name)
+        notificationText = getString(Res.string.syncing_configuration)
 
         notificationManager.displayMetadataSyncNotification(
             smallIcon = R.drawable.ic_sync,
@@ -45,7 +52,10 @@ class SyncMetadataWorker(
                 )
             }
 
-        notificationManager.cancelMetadataSyncNotification()
+        if (!isPeriodic) {
+            notificationManager.cancelMetadataSyncNotification()
+        }
+
         return when {
             result.isSuccess -> Result.success()
             else ->

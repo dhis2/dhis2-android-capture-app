@@ -1,7 +1,10 @@
-This is a patch version that fixes:
-- ANDROAPP-7269 Crash on search
-- ANDROAPP-7293 Bottom sheet landscape behavior
-- ANDROAPP-7345 Changes to enrollment date not respected by program rules
-- ANDROAPP-7368 Crash when trying to update fields in Tracker
-....
-You can find all the details on Jira and Github.
+Version 3.4.0 includes:
+- Search performance: configure operators and min characters for TEI searches
+- Custom theme: DHIS2 instance color reflected in the Android app
+- Feedback widget: Markdown formatting and legend-based color coding
+- Program rule action priority ordering
+- Redesigned PIN login screen
+- Metadata sync: new 6h and 12h intervals with daily config detection
+- Improved event ordering for consistent sync and calculations
+
+Details: github.com/dhis2/dhis2-android-capture-app

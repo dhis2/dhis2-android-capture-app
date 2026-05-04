@@ -95,6 +95,8 @@
     <string name="every_12_hours">12 uur</string>
     <string name="Manual">Handmatig</string>
     <string name="a_week">1 week</string>
+    <string name="sync_max_parameters">Huidige synchronisatieparameters:</string>
+    <string name="sync_default_parameters">Resetten naar standaard</string>
     <string name="wipe_data_meesage">Database wordt verwijderd.\nU wordt gevraagd opnieuw in te loggen.</string>
     <string name="wipe_data_ok">Aanvaarden</string>
     <string name="wipe_data_no">Annuleren</string>
@@ -139,7 +141,15 @@
     <string name="write_new_note">Schrijf een nieuwe notitie</string>
     <string name="clear">Verwijder</string>
     <string name="add_note">Notitie toevoegen</string>
+    <string name="revert">Terugdraaien</string>
+    <string name="activated">Geactiveerd</string>
+    <string name="missing_mandatory_fields_title">Verplichte velden ontbreken</string>
+    <string name="missing_mandatory_fields_text">Sommige verplichte velden ontbreken. Als u nu terug wilt gaan, wordt alle opgeslagen informatie verwijderd.</string>
+    <string name="missing_mandatory_fields_text_not_delete">Sommige verplichte velden ontbreken. Als je terug wilt gaan, vul ze dan in.</string>
     <string name="title_delete_go_back">Uw gegevens worden niet bewaard</string>
+    <string name="delete_go_back">Als u nu teruggaat, wordt alle ingevoerde informatie verwijderd.</string>
+    <string name="missing_mandatory_fields_go_back">Verwijderen en teruggaan</string>
+    <string name="missing_mandatory_fields_finish">Sommige verplichte velden ontbreken. U kunt het invoeren en afsluiten van gegevens voltooien, maar de gebeurtenis kan niet worden voltooid.</string>
     <string name="tei_coordinates">Coördinaten voor de</string>
 
     <!--EVENT SUMMARY-->
@@ -181,6 +191,8 @@
     <string name="programs_to_enroll">Programma\'s om in te schrijven</string>
     <string name="share">Deel</string>
     <string name="share_qr">QR delen</string>
+    <string name="max">Max</string>
+    <string name="current">Huidig</string>
     <string name="tei">TEI</string>
     <string name="teis">TEI\'s</string>
     <string name="wipe_data">Reset app-gegevens &amp;-configuratie</string>
@@ -236,6 +248,20 @@
     <string name="delete_local_data_message">Niet-gesynchroniseerde gegevens gaan verloren. Wil je echt doorgaan?</string>
     <string name="delete_local_data_error">Gegevens konden niet worden verwijderd. Probeer het opnieuw.</string>
     <string name="delete_local_data_done">Verwijderen van lokale gegevens is voltooid.</string>
+    <string name="org_unit_selection_warning">Er moet ten minste één organisatie-eenheid worden geselecteerd</string>
+    <string name="send_user_name_title">Verstuur data</string>
+    <string name="send_user_name_mesage">Help DHIS2 deze app te verbeteren door foutenlogboeken te delen die zijn gekoppeld aan uw gebruikers-ID.</string>
+    <string name="improve_app_msg_title">Wil je ons helpen deze app te verbeteren?</string>
+    <string name="improve_app_msg_clickable_word">privacybeleid</string>
+    <string name="check_mandatory_field">Velden controleren</string>
+    <string name="error_no_network_during_sync">Je internetverbinding is verbroken tijdens het uitvoeren van je configuratiesynchronisatie. Probeer het later opnieuw</string>
+    <string name="action_agree">Mee eens zijn</string>
+    <string name="action_continue">Doorgaan</string>
+    <string name="login_server_info_title">Server-URL</string>
+    <string name="login_server_info_message">Voer de DHIS 2-server-URL voor uw organisatie in zoals verstrekt door uw systeembeheerder.\n\nU kunt ook een QR-code scannen met de URL van uw server</string>
+    <string name="forgot_your_code">Ben je je code vergeten?</string>
+    <string name="event_form_end_options_title">Wat zou je willen doen voor dit evenement?</string>
+    <string name="sectionSelectorEnd">EINDE</string>
     <string name="resource_not_found">%s niet gevonden</string>
     <string name="relationship_not_found_message">Het record dat u probeert te openen, is niet beschikbaar. Wil je ernaar zoeken?</string>
     <string name="sync_by_sms">Gesynchroniseerd via sms</string>
@@ -313,6 +339,9 @@
     <string name="filter_event_status_visited">Bezocht</string>
     <string name="filter_event_status_completed">Voltooid</string>
     <string name="filter_event_status_skipped">Overgeslaten</string>
+    <string name="event_tei_limits">Evenementen:%smax:%s%shuidig:%s TEI:%smax:%s%shuidig:%s</string>
+    <string name="enrollment_data_hide">Inschrijvingsgegevens verbergen</string>
+    <string name="enrollment_data_show">Toon inschrijvingsgegevens</string>
     <string name="sms_enabled">SMS-module ingeschakeld</string>
     <string name="sms_disabled">SMS-module uitgeschakeld</string>
     <string name="sms_downloading_data">Gegevens downloaden voor SMS-module. Even geduld aub</string>
@@ -378,6 +407,7 @@
     <string name="filters_title_date">Datum</string>
     <string name="privacy_policy_title">Privacybeleid</string>
     <string name="open_privacy_policy">Klik hier om ons privacybeleid <a href=""> te bekijken </a></string>
+    <string name="coordinates_error">Coördinatenwaarden zijn niet geldig</string>
     <string name="break_glass_error_v2">U kunt een %s van andere organisatie-eenheden niet inschrijven in dit programma omdat deze beveiligd is.\nNeem contact op met uw beheerder.</string>
     <string name="field_is_mandatory">Dit veld is verplicht</string>
     <string name="security_debugger_message">Om veiligheidsredenen mag deze versie van de app niet worden gebruikt met adb. Gebruik de trainingsversie.</string>
@@ -431,6 +461,7 @@
     <string name="filter_period_last_n_biweeks">Laatste %d twee weken</string>
     <string name="section_feedback">Feedback</string>
     <string name="section_indicators">Indicatoren</string>
+    <string name="value">Waarde</string>
     <string name="camera_permission_denied">Cameratoestemming is geweigerd.\Je moet deze inschakelen om deze functie te gebruiken.</string>
     <string name="section_charts_indicators">Grafieken en indicatoren</string>
     <string name="take_photo">Neem foto</string>
@@ -461,7 +492,6 @@
     <string name="troubleshooting_pass_rule_validation">Geen waarschuwingen gevonden</string>
     <string name="troobleshooting_pass_rule_validation_title">Alles ziet er geweldig uit</string>
     <string name="not_saved">Niet opgeslagen</string>
-    <string name="review_message">Sommige velden hebben uw aandacht nodig.\Wilt u het formulier bekijken?</string>
     <string name="search_loading_more">Meer resultaten laden</string>
     <string name="search_no_results_in_program">Geen resultaten meer voor %s</string>
     <string name="search_outside_action">Zoek buiten dit programma</string>
@@ -473,9 +503,8 @@
     <string name="action_ok">OK</string>
     <string name="init_search">Start een zoekopdracht om een %s</string>
     <string name="search_or_create">U kunt zoeken of een nieuwe creëren %s</string>
-    <string name="missing_warning_fields_events">U heeft enkele waarschuwingsberichten.\nWilt u dit formulier als voltooid markeren?</string>
-    <string name="missing_error_fields_events">Sommige velden bevatten fouten en worden niet opgeslagen. \nWilt u het formulier bekijken?</string>
     <string name="event_can_be_completed">Wilt u dit formulier als voltooid markeren?</string>
+    <string name="changes_will_be_discarted">Als u nu afsluit, worden de wijzigingen verwijderd.</string>
     <string name="event_error_on_complete">U heeft een aantal foutmeldingen.\nWilt u deze bekijken?</string>
     <string name="re_opened">heropend</string>
     <string name="account_disable_title">Account ongebruikelijk gemaakt</string>
@@ -512,8 +541,6 @@
     <string name="download_now">Download nu</string>
     <string name="check_for_updates">Controleer op updates</string>
     <string name="no_updates">Er zijn geen nieuwe updates</string>
-    <string name="unknow_sources_denied">Onbekende bronnen toestemming is geweigerd.\nU moet deze inschakelen om de versie te installeren.</string>
-    <string name="storage_denied">Opslagtoestemming is geweigerd.\nU moet deze inschakelen om de versie te installeren.</string>
     <string name="app_version">App versie</string>
     <string name="error_applying_rule_effects">Er is iets misgegaan met de programmaconfiguratie, we kunnen dit evenement niet laden. Neem contact op met uw systeembeheerder.</string>
     <string name="marked_follow_up">Gemarkeerd voor vervolg</string>

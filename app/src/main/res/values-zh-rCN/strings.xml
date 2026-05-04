@@ -110,6 +110,8 @@
     <string name="every_12_hours">12小时</string>
     <string name="Manual">手工</string>
     <string name="a_week">一周</string>
+    <string name="sync_max_parameters">当前同步参数</string>
+    <string name="sync_default_parameters">复位缺省值</string>
     <string name="wipe_data_meesage">数据库将被删除，\n 你将被要求再次登录。</string>
     <string name="wipe_data_ok">接受</string>
     <string name="wipe_data_no">取消</string>
@@ -155,7 +157,15 @@
     <string name="write_new_note">书写新笔记</string>
     <string name="clear">清除</string>
     <string name="add_note">添加笔记</string>
+    <string name="revert">反转</string>
+    <string name="activated">激活</string>
+    <string name="missing_mandatory_fields_title">强制字段缺失</string>
+    <string name="missing_mandatory_fields_text">有些强制字段缺失，如果你后退，所有保存的信息将被删除。</string>
+    <string name="missing_mandatory_fields_text_not_delete">有些强制字段缺失，如果你后退，请填充他们</string>
     <string name="title_delete_go_back">你的数据已经被保存</string>
+    <string name="delete_go_back">如果退回，所有输入信息将被删除</string>
+    <string name="missing_mandatory_fields_go_back">删除并后退</string>
+    <string name="missing_mandatory_fields_finish">有些强制字段缺失。你可以完成数据录入并退出，但不能完成该事件。</string>
     <string name="tei_coordinates">坐标</string>
 
     <!--EVENT SUMMARY-->
@@ -197,6 +207,8 @@
     <string name="programs_to_enroll">注册的项目</string>
     <string name="share">共享</string>
     <string name="share_qr">共享二维码</string>
+    <string name="max">最大</string>
+    <string name="current">当前</string>
     <string name="tei">跟踪实体</string>
     <string name="teis">跟踪实体</string>
     <string name="wipe_data">重置应用数据和配置</string>
@@ -253,6 +265,20 @@
     <string name="delete_local_data_message">没有同步的数据不会丢失，你真想要继续</string>
     <string name="delete_local_data_error">数据不能删除，请重试</string>
     <string name="delete_local_data_done">删除本地数据成功完成</string>
+    <string name="org_unit_selection_warning">至少得选择一个机构</string>
+    <string name="send_user_name_title">发送数据</string>
+    <string name="send_user_name_mesage">帮助提升该应用通过分享你的错误日志。</string>
+    <string name="improve_app_msg_title">你想帮助我们改进这个应用程序吗？</string>
+    <string name="improve_app_msg_clickable_word">隐私政策</string>
+    <string name="check_mandatory_field">检查字段</string>
+    <string name="error_no_network_during_sync">你丢掉了互联网连接，当执行配置同步的时候。稍后再试。</string>
+    <string name="action_agree">同意</string>
+    <string name="action_continue">继续</string>
+    <string name="login_server_info_title">服务器URL</string>
+    <string name="login_server_info_message">输入管理员提供的服务器地址。\n\n 可选的你可以扫描服务器地址 二维码</string>
+    <string name="forgot_your_code">忘记你的数字口令</string>
+    <string name="event_form_end_options_title">对该事件你想做什么？</string>
+    <string name="sectionSelectorEnd">结束</string>
     <string name="resource_not_found">%s没有发现</string>
     <string name="relationship_not_found_message">你试图访问的记录不可用。你想搜索吗？</string>
     <string name="sync_by_sms">通过短信同步。</string>
@@ -330,6 +356,9 @@
     <string name="filter_event_status_visited">已随访</string>
     <string name="filter_event_status_completed">已完成</string>
     <string name="filter_event_status_skipped">跳过的</string>
+    <string name="event_tei_limits">事件：%s 最大：%s%s 当前：%s ，实体：%s 最大：%s%s 当前：%s</string>
+    <string name="enrollment_data_hide">隐藏注册数据</string>
+    <string name="enrollment_data_show">显示注册数据</string>
     <string name="sms_enabled">短信模块被激活</string>
     <string name="sms_disabled">短信模块被关闭</string>
     <string name="sms_downloading_data">下载短信模块，请等待。</string>
@@ -395,6 +424,7 @@
     <string name="filters_title_date">日期</string>
     <string name="privacy_policy_title">私有策略</string>
     <string name="open_privacy_policy">点击这里检查<a href="">隐私策略</a></string>
+    <string name="coordinates_error">坐标值无效</string>
     <string name="break_glass_error_v2">您无法在此项目中加入来自其他组织单位的 %s，因为它受到保护。\n请与您的管理员联系。</string>
     <string name="field_is_mandatory">此字段是必填字段</string>
     <string name="security_debugger_message">出于安全原因，此版本的应用程序不允许与adb一起使用。请使用培训版本。</string>
@@ -451,6 +481,7 @@
     <string name="filter_period_last_n_biweeks">最近%d双周</string>
     <string name="section_feedback">反馈</string>
     <string name="section_indicators">指标</string>
+    <string name="value">值</string>
     <string name="camera_permission_denied">相机权限被拒绝。\n 您需要启用它才能使用此功能。</string>
     <string name="section_charts_indicators">图表和指标</string>
     <string name="take_photo">拍照</string>
@@ -481,7 +512,6 @@
     <string name="troubleshooting_pass_rule_validation">未发现任何警告</string>
     <string name="troobleshooting_pass_rule_validation_title">一切看起来都很棒</string>
     <string name="not_saved">未保存</string>
-    <string name="review_message">有些字段需要您注意。\n您要复查表单吗？</string>
     <string name="search_loading_more">加载更多结果</string>
     <string name="search_no_results_in_program">%s 没有更多结果</string>
     <string name="search_outside_action">在此项目之外搜索</string>
@@ -495,9 +525,8 @@
     <string name="init_search">开始搜索以找到任何 %s</string>
     <string name="search_or_create">您可以搜索或创建一个新的 %s</string>
     <string name="missing_warning_fields_completed_events">您收到了一些警告信息。</string>
-    <string name="missing_warning_fields_events">您有一些警告消息。\n您想将此表单标记为完成吗？</string>
-    <string name="missing_error_fields_events">一些字段有错误并且它们没有被保存。 \n您要查看表单吗？</string>
     <string name="event_can_be_completed">您想将此表单标记为已完成吗？</string>
+    <string name="changes_will_be_discarted">如果您现在退出，更改将被丢弃。</string>
     <string name="event_error_on_complete">您有一些错误消息。\n您要查看它们吗？</string>
     <string name="re_opened">重新开放</string>
     <string name="account_disable_title">帐户已禁用</string>
@@ -537,8 +566,6 @@
     <string name="download_now">现在下载</string>
     <string name="check_for_updates">检查更新</string>
     <string name="no_updates">没有新的更新</string>
-    <string name="unknow_sources_denied">未知来源权限被拒绝。\n您需要启用它才能安装版本。</string>
-    <string name="storage_denied">存储权限被拒绝。\n您需要启用它才能安装版本。</string>
     <string name="app_version">应用版本</string>
     <string name="error_applying_rule_effects">程序配置出了问题，我们无法加载此事件。请联系您的系统管理员。</string>
     <string name="dashboard_menu_delete_person">删除人员</string>
@@ -559,7 +586,6 @@
     <string name="sync_error">同步错误</string>
     <string name="mark_follow_up">后续标记</string>
     <string name="coordinates">坐标</string>
-    <string name="no_data_access">您无权访问数据。\n请与您的管理员联系。</string>
     <string name="sync_offline_check_connection">您似乎已离线。请检查您的连接</string>
     <string name="delete_tei_dialog_title">删除此%s？</string>
     <string name="delete_tei_dialog_message">此 %s 及其所有程序中的所有数据都将被删除。此操作无法撤消。</string>
@@ -576,9 +602,13 @@
     <string name="event">事件</string>
     <string name="timeline">时间线</string>
     <string name="database_export_downloaded">数据库已下载</string>
+    <string name="importing_database">导入数据库</string>
     <string name="show_more">更多</string>
     <string name="show_less">显示较少</string>
     <string name="sync">同步</string>
+    <string name="show_fields">显示字段</string>
+    <string name="hide_fields">隐藏字段</string>
+    <string name="importing_successful">导入成功</string>
     <string name="successful_sync">成功同步</string>
     <string name="syncing_something">正在同步 %s…</string>
     <string name="file_resources">文件资源</string>

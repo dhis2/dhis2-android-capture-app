@@ -94,6 +94,8 @@
     <string name="every_12_hours">12 Jam</string>
     <string name="Manual">Manual</string>
     <string name="a_week">1 Minggu</string>
+    <string name="sync_max_parameters">Parameter sinkronisasi saat ini:</string>
+    <string name="sync_default_parameters">Kembalikan ke default</string>
     <string name="wipe_data_meesage">Database akan dihapus. Anda akan diminta masuk lagi</string>
     <string name="wipe_data_ok">Terima</string>
     <string name="wipe_data_no">batal</string>
@@ -136,6 +138,9 @@
     <string name="clear">Kosongkan</string>
     <string name="add_note">Tambah catatan</string>
     <string name="title_delete_go_back">Data Anda tidak disimpan</string>
+    <string name="delete_go_back">Jika Anda kembali sekarang, semua informasi yang dimasukkan akan dihapus.</string>
+    <string name="missing_mandatory_fields_go_back">Hapus dan kembali</string>
+    <string name="missing_mandatory_fields_finish">Beberapa bidang wajib tidak ada. Anda dapat menyelesaikan entri data dan keluar, tetapi even tidak dapat diselesaikan.</string>
     <string name="tei_coordinates">Koordinat untuk</string>
 
     <!--EVENT SUMMARY-->
