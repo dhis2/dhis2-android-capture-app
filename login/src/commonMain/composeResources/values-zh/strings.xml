@@ -66,6 +66,9 @@
     <string name="importing_successful">导入成功</string>
     <string name="openid_process_cancelled">登录被取消</string>
     <string name="openid_invalid_auth_result">授权结果无效</string>
+    <string name="openid_error_expected_intent">预期 IntentWithRequestCode</string>
+    <string name="openid_error_controller_not_bounded">OpenIdController 未绑定到生命周期作用域</string>
+    <string name="openid_login_cancelled">认证已取消</string>
     <string name="error_device_not_registered">设备未注册</string>
     <string name="missing_username_from_oauth_login_response">OAuth 登录响应中缺少用户名</string>
 </resources>
