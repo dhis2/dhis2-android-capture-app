@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.kotlin.compose.compiler)
 }
 
+apply(from = "${project.rootDir}/jacoco/jacoco-kmp.gradle.kts")
+
 kotlin {
     androidLibrary {
         namespace = "org.dhis2.mobile.aggregates"
