@@ -13,6 +13,7 @@ import org.dhis2.mobileProgramRules.RuleConstants
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidGeneratorImpl
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.program.ProgramIndicator
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.rules.models.RuleEffect
@@ -102,6 +103,8 @@ abstract class BaseIndicatorRepository(
 
     private fun applyRuleEffectForIndicators(calcResult: Result<List<RuleEffect>>): List<IndicatorModel> {
         val indicators = arrayListOf<IndicatorModel>()
+        val defaultCategoryCombo =
+            d2.categoryModule().categoryCombos().byIsDefault().eq(true).blockingGet().first()
 
         if (calcResult.isFailure) {
             Timber.e(calcResult.exceptionOrNull())
@@ -120,6 +123,8 @@ abstract class BaseIndicatorRepository(
                                 .builder()
                                 .uid(UidGeneratorImpl().generate())
                                 .displayName((ruleAction).content())
+                                .categoryCombo(ObjectWithUid.create(defaultCategoryCombo.uid()))
+                                .attributeCombo(ObjectWithUid.create(defaultCategoryCombo.uid()))
                                 .build(),
                             ruleEffect.data,
                             color,
@@ -134,6 +139,8 @@ abstract class BaseIndicatorRepository(
                             ProgramIndicator
                                 .builder()
                                 .uid(UidGeneratorImpl().generate())
+                                .attributeCombo(ObjectWithUid.create(defaultCategoryCombo.uid()))
+                                .categoryCombo(ObjectWithUid.create(defaultCategoryCombo.uid()))
                                 .displayName("${ruleAction.content() ?: ""}${ruleEffect.data}")
                                 .build(),
                             "",
@@ -242,7 +249,7 @@ abstract class BaseIndicatorRepository(
                         addAll(
                             ruleIndicators.filter {
                                 it is IndicatorModel &&
-                                    it.location == LOCATION_INDICATOR_WIDGET
+                                        it.location == LOCATION_INDICATOR_WIDGET
                             },
                         )
                     }.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
