@@ -734,7 +734,9 @@ class SearchTEIViewModel(
         }
     }
 
-    private fun canPerformSearch(): Boolean = minAttributesToSearchCheck() || displayFrontPageList()
+    private fun canPerformSearch(): Boolean =
+        minAttributesToSearchCheck() || displayFrontPageList() ||
+            searchRepository.canCreateInProgramWithoutSearch()
 
     private fun minAttributesToSearchCheck(): Boolean =
         searchRepository.getProgram(initialProgramUid)?.let { program ->
