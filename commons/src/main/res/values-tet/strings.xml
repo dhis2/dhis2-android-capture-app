@@ -6,14 +6,11 @@
     <string name="yes">Sim</string>
     <string name="no">Lae</string>
     <string name="navigation_tei_data">Detalles</string>
-    <string name="event_overview">Detalles</string>
     <string name="select_option">Hili opsaun</string>
     <string name="data_sets">Pakote dadus</string>
     <string name="filters_title_period">Períodu</string>
-    <string name="filters_title_status">Estadu</string>
     <string name="filters_title_date">Data</string>
     <string name="select_period">Hili Tipu períodu</string>
-    <string name="daily_period">Diáriu</string>
     <string name="weekly">Semanal</string>
     <string name="monthly">Mensal</string>
     <string name="bi_monthly">Bimensal</string>
@@ -45,8 +42,6 @@
     <string name="section_feedback">Feedback</string>
     <string name="section_indicators">Indikadores</string>
     <string name="complete">Kompletu</string>
-    <string name="default_table_header_label">Valor</string>
-    <string name="default_empty_dataset_section_label">Dadus</string>
     <string name="remove">Hasai</string>
     <string name="period_daily_title">Diáriu</string>
     <string name="period_yearly_title">Tinan</string>

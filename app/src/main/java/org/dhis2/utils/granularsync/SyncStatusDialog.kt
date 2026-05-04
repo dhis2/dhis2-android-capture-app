@@ -41,7 +41,7 @@ import org.dhis2.commons.ui.icons.SyncStateIcon
 import org.dhis2.usescases.sms.SmsSendingService
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.customviews.MessageAmountDialog
-import org.hisp.dhis.android.core.common.State
+import org.dhis2.utils.granularsync.domain.SyncStatus
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import javax.inject.Inject
 
@@ -113,7 +113,7 @@ class SyncStatusDialog :
                     syncState?.let { syncUiState ->
                         when {
                             syncUiState.shouldDismissOnUpdate -> dismiss()
-                            syncing && syncUiState.syncState == State.SYNCED -> {
+                            syncing && syncUiState.syncState == SyncStatus.SYNCED -> {
                                 dismiss()
                                 Toast
                                     .makeText(
@@ -149,7 +149,7 @@ class SyncStatusDialog :
                                 dismiss()
                             },
                             icon = {
-                                SyncStateIcon(state = syncUiState.syncState)
+                                SyncUiStatusIcon(status = syncUiState.syncState)
                             },
                             extraContent =
                                 if (syncUiState.content.isNotEmpty()) {

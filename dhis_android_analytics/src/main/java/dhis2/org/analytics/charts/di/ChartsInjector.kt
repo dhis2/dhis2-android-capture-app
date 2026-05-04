@@ -8,6 +8,7 @@ import dhis2.org.analytics.charts.Charts
 import dhis2.org.analytics.charts.ChartsRepository
 import dhis2.org.analytics.charts.ChartsRepositoryImpl
 import dhis2.org.analytics.charts.DhisAnalyticCharts
+import dhis2.org.analytics.charts.domain.GetEnrollmentAnalyticsUseCase
 import dhis2.org.analytics.charts.data.AnalyticResources
 import dhis2.org.analytics.charts.mappers.AnalyticDataElementToDataElementData
 import dhis2.org.analytics.charts.mappers.AnalyticIndicatorToIndicatorData
@@ -36,6 +37,7 @@ import javax.inject.Singleton
 )
 interface ChartsComponent {
     fun charts(): Charts
+    fun getEnrollmentAnalyticsUseCase(): GetEnrollmentAnalyticsUseCase
 }
 
 @Module
@@ -138,4 +140,10 @@ class ChartsModule {
 
     @Provides
     internal fun bindStorageFeatureImpl(analyticsCharts: DhisAnalyticCharts): Charts = analyticsCharts
+
+    @Provides
+    internal fun provideGetEnrollmentAnalyticsUseCase(
+        chartsRepository: ChartsRepository,
+        dispatcherProvider: DispatcherProvider,
+    ): GetEnrollmentAnalyticsUseCase = GetEnrollmentAnalyticsUseCase(chartsRepository, dispatcherProvider)
 }

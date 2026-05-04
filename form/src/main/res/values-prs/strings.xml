@@ -2,10 +2,6 @@
 <resources>
     <string name="error">خطا</string>
     <string name="required">ضروری</string>
-    <string name="date">تاریخ</string>
-    <string name="hint_year">سالانه</string>
-    <string name="hint_month">ماه ها</string>
-    <string name="hint_day">روزها</string>
     <string name="polygon">چند ضلعی</string>
     <string name="latitude">عرض البلد</string>
     <string name="longitude">طول البلد</string>

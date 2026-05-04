@@ -5,20 +5,19 @@ navigationCompose = "2.9.2"
 sdk = "36"
 minSdk = "23"
 vCode = "153"
-vName = "3.4.0"
+vName = "3.4.1"
 gradle = "9.0.1"
-kotlin = '2.3.10'
+kotlin = '2.3.20'
 dagger = '2.57.2'
 jacoco = '0.8.14'
-designSystem = "0.7.0"
-dhis2sdk = "1.14.0"
-ruleEngine = "3.7.1"
-expressionParser = "1.4.0"
+designSystem = "0.7.1-SNAPSHOT"
+dhis2sdk = "1.14.1-SNAPSHOT"
+ruleEngine = "3.7.2"
+expressionParser = "1.4.1"
 appcompat = "1.7.1"
 annotation = "1.9.1"
 cardview = "1.0.0"
 legacysupport = "1.0.0"
-multidex = "2.0.1"
 constraintlayout = "2.2.1"
 lifecycle = "2.9.4"
 work = "2.10.5"
@@ -26,16 +25,15 @@ exif = "1.4.2"
 corektx = "1.17.0"
 fragmentktx = "1.8.9"
 recyclerview = "1.4.0"
-compose = "1.10.4"
-composePluginVersion = "1.10.2"
-composePaging = "3.4.1"
-pagingTesting = "3.4.1"
+compose = "1.10.6"
+composePluginVersion = "1.10.3"
+composePaging = "3.4.2"
+pagingTesting = "3.4.2"
 composeConstraintLayout = "1.1.1"
 activityCompose = "1.11.0"
 viewModelCompose = "2.9.4"
 material = "1.13.0"
 material3 = "1.4.0"
-themeAdapter = "0.36.0"
 fancyshowcase = "1.4.0"
 lottie = "6.6.10"
 rxjava = "2.2.21"
@@ -50,12 +48,12 @@ rxlint = "1.7.8"
 crashactivity = "2.4.0"
 zxing = "3.5.4"
 zxingandroid = "4.3.0"
-root = "0.1.1"
+root = "0.1.2"
 openid = "0.11.1"
 conscrypt = "2.5.3"
 gson = "2.13.2"
 okhttp = "4.12.0"
-jodatime = "2.14.0"
+jodatime = "2.14.1"
 glide = "5.0.5"
 guava = "33.5.0-android"
 mockito = "5.20.0"
@@ -96,7 +94,8 @@ browser = "1.9.0"
 biometric = "1.1.0"
 coil = "3.3.0"
 cyclonedx = "2.1.0"
-workRuntimeKtx = "2.11.1"
+jetbrains-material3="1.9.0"
+materialIconsExtended = "1.7.3"
 
 [libraries]
 gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
@@ -129,7 +128,6 @@ androidx-activity-compose = { group = "androidx.activity", name = "activity-comp
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
 androidx-cardview = { group = "androidx.cardview", name = "cardview", version.ref = "cardview" }
 androidx-legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacysupport" }
-androidx-multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 androidx-work = { group = "androidx.work", name = "work-runtime", version.ref = "work" }
 androidx-workrx = { group = "androidx.work", name = "work-rxjava2", version.ref = "work" }
@@ -146,7 +144,6 @@ google-guava = { group = "com.google.guava", name = "guava", version.ref = "guav
 google-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playservicesauth" }
 google-auth-apiphone = { group = "com.google.android.gms", name = "play-services-auth-api-phone", version.ref = "playservicesphone" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-google-material3-themeadapter = { group = "com.google.accompanist", name = "accompanist-themeadapter-material3", version.ref = "themeAdapter" }
 google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 network-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
@@ -220,7 +217,14 @@ ktxml = { module = "org.kobjects.ktxml:core", version.ref = "ktxml" }
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "commonsText" }
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil"}
 coil-network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil"}
-androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workRuntimeKtx" }
+compose-runtime = { group = "org.jetbrains.compose.runtime", name = "runtime", version.ref = "composePluginVersion" }
+compose-foundation = { group = "org.jetbrains.compose.foundation", name = "foundation", version.ref = "composePluginVersion" }
+compose-ui = { group = "org.jetbrains.compose.ui", name = "ui", version.ref = "composePluginVersion" }
+compose-ui-uiToolingPreview = { group = "org.jetbrains.compose.ui", name = "ui-tooling-preview", version.ref = "composePluginVersion" }
+compose-material3 = { group = "org.jetbrains.compose.material3", name = "material3", version.ref = "jetbrains-material3" }
+compose-components-resources = { group = "org.jetbrains.compose.components", name = "components-resources", version.ref = "composePluginVersion" }
+compose-desktop-common = { group = "org.jetbrains.compose.desktop", name = "desktop", version.ref = "composePluginVersion" }
+compose-material3-iconsExtendend = { group = "org.jetbrains.compose.material", name = "material-icons-extended", version.ref = "materialIconsExtended" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -249,5 +253,3 @@ table-androidTest = ["test-compose-ui-test", "test-uiautomator", "test-junitKtx"
 stock-implementation = ["androidx-activity-compose", "androidx-annotation", "rx-relay", "security-openId", "androidx-preferenceKtx", "androidx-work", "androidx-activityKtx", "androidx-lifecycle-viewmodel-compose", "analytics-customactivityoncrash"]
 stock-core = ["desugar"]
 stock-test = ["test-mockitoKotlin", "test-mockitoInline", "test-archCoreTesting", "test-javafaker", "test-kotlinCoroutines"]
-tracker-implementation = ["androidx-lifecycle-viewmodel-compose", "androidx-activity-compose"]
-tracker-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin", "test-testCore", "test-archCoreTesting", "test-kotlinCoroutines"]

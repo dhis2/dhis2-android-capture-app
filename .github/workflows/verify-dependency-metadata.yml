@@ -1,0 +1,58 @@
+name: Verify Dependency Metadata
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+      - release/*
+
+jobs:
+  verify-dependency-metadata:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+          token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
+
+      - name: Set Up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+
+      - name: Regenerate verification metadata
+        run: ./gradlew --write-verification-metadata sha256 help --no-daemon
+
+      - name: Check if metadata changed
+        id: check-diff
+        run: |
+          if git diff --quiet gradle/verification-metadata.xml; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "✅ verification-metadata.xml is up to date."
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Fail for fork PRs with outdated metadata
+        if: steps.check-diff.outputs.changed == 'true' && github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo "⚠️ Fork PR: verification-metadata.xml is out of date but cannot be auto-committed."
+          echo "Please run './gradlew --write-verification-metadata sha256 help' locally and commit the result."
+          exit 1
+
+      - name: Commit updated metadata
+        if: steps.check-diff.outputs.changed == 'true' && github.event.pull_request.head.repo.full_name == github.repository
+        uses: flex-development/gh-commit@177be4b5bca1b102400ca7220932d9ff7980fddb
+        with:
+          message: 'chore: update dependency verification metadata'
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}

@@ -37,11 +37,11 @@ kotlin {
             dependencies {
                 implementation(project(":commonskmm"))
 
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.ui)
-                implementation(compose.material3)
-                implementation(compose.components.resources)
+                implementation(libs.compose.runtime)
+                implementation(libs.compose.foundation)
+                implementation(libs.compose.ui)
+                implementation(libs.compose.material3)
+                implementation(libs.compose.components.resources)
                 implementation(libs.compose.material3.window)
                 implementation(libs.lifecycle.runtime.compose)
 
@@ -86,7 +86,7 @@ kotlin {
 
         val desktopMain by getting {
             dependencies {
-                implementation(compose.desktop.common)
+                implementation(libs.compose.desktop.common)
             }
         }
     }

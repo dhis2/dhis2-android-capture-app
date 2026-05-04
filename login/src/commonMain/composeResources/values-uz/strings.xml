@@ -2,7 +2,6 @@
 <resources>
     <string name="two_fa_authentication_code">Аутентификация коди</string>
     <string name="action_next">Кейинги</string>
-    <string name="two_fa_code">Аутентификация коди</string>
     <string name="username_hint">Фойдаланувчи исми</string>
     <string name="password_hint">Пароль</string>
     <string name="logging_in">Кириш...</string>

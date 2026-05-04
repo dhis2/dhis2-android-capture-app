@@ -33,5 +33,7 @@ enum class TrackerInputType {
     SEQUENTIAL,
     DROPDOWN,
     NOT_SUPPORTED,
+    COORDINATES,
+    IMAGE,
     CUSTOM_INTENT,
 }

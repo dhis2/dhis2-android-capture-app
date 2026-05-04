@@ -1,14 +1,19 @@
 package org.dhis2.usescases.tracker
 
 import org.dhis2.commons.date.DateLabelProvider
+import org.dhis2.commons.filters.sorting.SortingItem
 import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.data.sorting.SearchSortingValueSetter
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.model.RelatedInfo
 import org.dhis2.maps.model.RelationshipDirection
 import org.dhis2.mobile.commons.model.AvatarProviderConfiguration
 import org.dhis2.mobile.commons.model.AvatarProviderConfiguration.Metadata
 import org.dhis2.mobile.commons.model.AvatarProviderConfiguration.ProfilePic
+import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.tracker.data.ProfilePictureProvider
+import org.dhis2.tracker.search.model.TrackedEntitySearchItemAttributeDomain
+import org.dhis2.usescases.searchTrackEntity.SearchTeiModel
 import org.dhis2.utils.ValueUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -27,6 +32,7 @@ class TrackedEntityInstanceInfoProvider(
     private val profilePictureProvider: ProfilePictureProvider,
     private val dateLabelProvider: DateLabelProvider,
     private val metadataIconProvider: MetadataIconProvider,
+    private val sortingValueSetter: SearchSortingValueSetter,
 ) {
     fun getAvatar(
         tei: TrackedEntityInstance,
@@ -75,6 +81,10 @@ class TrackedEntityInstanceInfoProvider(
         }
     }
 
+    fun getMetadataIcon(style: ObjectStyle) : MetadataIconData {
+        return metadataIconProvider.invoke(style)
+    }
+
     fun getTeiTitle(
         header: String?,
         attributeValues: List<AdditionalInfoItem>,
@@ -90,7 +100,7 @@ class TrackedEntityInstanceInfoProvider(
 
     fun getTeiLastUpdated(tei: TrackedEntitySearchItem) = dateLabelProvider.span(tei.lastUpdated)
 
-    fun getTeiAdditionalInfoList(attributeValues: List<TrackedEntitySearchItemAttribute>): List<AdditionalInfoItem> =
+    fun getTeiAdditionalInfoListForMap(attributeValues: List<TrackedEntitySearchItemAttribute>): List<AdditionalInfoItem> =
         attributeValues
             .filter { attribute ->
                 attribute.displayInList &&
@@ -105,7 +115,7 @@ class TrackedEntityInstanceInfoProvider(
                     key = attribute.displayFormName,
                     value =
                         if (attribute.value != null) {
-                            ValueUtils.transformValue(
+                            ValueUtils.transformValueLegacy(
                                 d2,
                                 attribute.value,
                                 attribute.valueType,
@@ -116,6 +126,19 @@ class TrackedEntityInstanceInfoProvider(
                         },
                 )
             }
+
+    fun getTransformedValue(attr: TrackedEntitySearchItemAttributeDomain) : String? {
+        return if (attr.value != null) {
+            ValueUtils.transformValue(
+                d2,
+                attr.value,
+                attr.valueType,
+                attr.optionSet,
+            )
+        } else {
+            null
+        }
+    }
 
     fun getRelatedInfo(
         searchItem: TrackedEntitySearchItem,
@@ -203,4 +226,14 @@ class TrackedEntityInstanceInfoProvider(
                 ),
         )
     }
+
+    fun getUnknownLabel(): String {
+        return sortingValueSetter.unknownLabel
+    }
+
+    fun getSortingKeyValue(searchTei: SearchTeiModel, sortingItem: SortingItem): Pair<String, String>? {
+        return sortingValueSetter.setSortingItem(searchTei, sortingItem)
+    }
+
+
 }

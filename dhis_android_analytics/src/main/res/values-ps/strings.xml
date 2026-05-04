@@ -2,7 +2,6 @@
 <resources>
     <string name="action_accept">د منلو وړ</string>
     <string name="period">معیاد</string>
-    <string name="none">هېڅ یو</string>
     <string name="daily">ورځني [ د مودې ډول ]</string>
     <string name="today">نن ورځ</string>
     <string name="other">نور</string>

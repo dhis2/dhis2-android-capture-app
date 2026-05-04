@@ -8,7 +8,6 @@
     <string name="dialog_layer_base_map_bing_dark">Bing داكن</string>
     <string name="dialog_layer_base_map_bing_aerial">Bing جوي</string>
     <string name="action_apply">تطبيق</string>
-    <string name="dialog_layer_satellite">إظهار عرض القمر الصناعي</string>
     <string name="dialog_layer_event">إظهار الأحداث</string>
     <string name="dialog_layer_tei_coordinates">إظهار إحداثيات tei</string>
     <string name="dialog_layer_heatmap">إظهار طبقة مخطط الحرارة</string>

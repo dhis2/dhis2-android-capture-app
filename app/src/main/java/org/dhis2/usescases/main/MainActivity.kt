@@ -15,30 +15,20 @@ import android.view.View
 import android.webkit.MimeTypeMap
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
+import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
-import androidx.databinding.DataBindingUtil
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.launch
 import org.dhis2.BuildConfig
 import org.dhis2.R
-import org.dhis2.bindings.app
 import org.dhis2.bindings.hasPermissions
-import org.dhis2.commons.animations.hide
-import org.dhis2.commons.animations.show
-import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.FiltersAdapter
@@ -48,63 +38,51 @@ import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityMainBinding
-import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.development.DevelopmentActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.ui.NewVersionDialog
-import org.dhis2.utils.analytics.CLICK
-import org.dhis2.utils.analytics.CLOSE_SESSION
-import org.dhis2.utils.customviews.navigationbar.NavigationPage
-import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
-import org.dhis2.utils.extension.navigateTo
+import org.dhis2.usescases.main.ui.TAG
+import org.dhis2.usescases.main.ui.model.HomeEffect
+import org.dhis2.usescases.main.ui.model.HomeScreenState
+import org.dhis2.usescases.main.ui.model.VersionToUpdateState
+import org.dhis2.usescases.main.ui.screens.MainScreen
 import org.dhis2.utils.granularsync.SyncStatusDialog
-import org.dhis2.mobile.login.pin.addPinBottomSheet
-import org.dhis2.mobile.login.pin.domain.model.PinMode
-import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
-import org.koin.android.ext.android.inject
-import java.io.File
-import javax.inject.Inject
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 private const val FRAGMENT = "Fragment"
-private const val SINGLE_PROGRAM_NAVIGATION = "SINGLE_PROGRAM_NAVIGATION"
 private const val INIT_DATA_SYNC = "INIT_DATA_SYNC"
 private const val WIPE_NOTIFICATION = "wipe_notification"
 private const val RESTART = "Restart"
 const val AVOID_SYNC = "AvoidSync"
 
-class MainActivity :
-    ActivityGlobalAbstract(),
-    MainView,
-    DrawerLayout.DrawerListener {
+class MainActivity : ActivityGlobalAbstract() {
     private lateinit var binding: ActivityMainBinding
+    private val mainViewModel: MainViewModel by viewModel(parameters = {
+        parametersOf(
+            context,
+            supportFragmentManager,
+            intent.getBooleanExtra(AVOID_SYNC, false),
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                intent.getParcelableExtra(FRAGMENT, MainScreenType::class.java)
+                    ?: MainScreenType.Home(
+                        HomeScreen.Programs
+                    )
+            } else {
+                @Suppress("DEPRECATION")
+                intent.getParcelableExtra(FRAGMENT) ?: MainScreenType.Home(HomeScreen.Programs)
+            }
+        )
+    })
 
-    lateinit var mainComponent: MainComponent
-
-    @Inject
-    lateinit var presenter: MainPresenter
-
-    @Inject
-    lateinit var newAdapter: FiltersAdapter
-
-    @Inject
-    lateinit var pageConfigurator: NavigationPageConfigurator
-
-    private val syncBackgroundJobAction: SyncBackgroundJobAction by inject()
-
-    private val getDevActivityContent =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            // no-op
-        }
+    private val filtersAdapter: FiltersAdapter = FiltersAdapter()
 
     private var backDropActive = false
-    private var pinComposeView: ComposeView? = null
-
     private val requestWritePermissions =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                onDownloadNewVersion()
-            } else if (granted) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R || granted) {
                 onDownloadNewVersion()
             } else {
                 Toast
@@ -116,30 +94,30 @@ class MainActivity :
             }
         }
 
-    private lateinit var mainNavigator: MainNavigator
-
     private val navigationLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
 
     companion object {
         fun intent(
             context: Context,
-            initScreen: MainNavigator.MainScreen? = null,
+            initScreen: MainScreenType? = null,
             launchDataSync: Boolean = false,
         ): Intent =
             Intent(context, MainActivity::class.java).apply {
-                initScreen?.let {
-                    putExtra(FRAGMENT, initScreen.name)
-                }
-                putExtra(INIT_DATA_SYNC, launchDataSync)
+                putExtras(
+                    bundle(
+                        initScreen = initScreen,
+                        launchDataSync = launchDataSync
+                    )
+                )
             }
 
         fun bundle(
-            initScreen: MainNavigator.MainScreen? = null,
+            initScreen: MainScreenType? = null,
             launchDataSync: Boolean = false,
         ) = Bundle().apply {
             initScreen?.let {
-                putString(FRAGMENT, initScreen.name)
+                putParcelable(FRAGMENT, initScreen)
             }
             putBoolean(INIT_DATA_SYNC, launchDataSync)
         }
@@ -147,99 +125,120 @@ class MainActivity :
 
     //region LIFECYCLE
     override fun onCreate(savedInstanceState: Bundle?) {
-        app().userComponent()?.let {
-            mainComponent =
-                it.plus(
-                    MainModule(
-                        view = this,
-                        syncStatusController = syncStatusController,
-                        syncBackgroundJobAction = syncBackgroundJobAction,
-                        forceToNotSynced = intent.getBooleanExtra(AVOID_SYNC, false),
-                    ),
-                )
-            mainComponent.inject(this@MainActivity)
-        } ?: navigateTo<LoginActivity>(true)
-        mainNavigator =
-            MainNavigator(
-                dispatcherProvider = presenter.dispatcherProvider,
-                supportFragmentManager,
-                {
-                    if (backDropActive) {
-                        showHideFilter()
-                    }
-                },
-            ) { titleRes, showFilterButton, showBottomNavigation ->
-                setTitle(getString(titleRes))
-                setFilterButtonVisibility(showFilterButton)
-                setBottomNavigationVisibility(showBottomNavigation)
-            }
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        if (::presenter.isInitialized) {
-            binding.presenter = presenter
-        } else {
-            navigateTo<LoginActivity>(true)
+        setContent {
+            DHIS2Theme {
+                val screenState by mainViewModel.homeScreenState.collectAsState()
+                MainScreen(
+                    screenState = screenState,
+                    effects = mainViewModel.homeEffects,
+                    onAction = mainViewModel::onAction,
+                    onEffect = { effect ->
+                        when (effect) {
+                            HomeEffect.BlockSession -> finish()
+                            is HomeEffect.GoToLogin -> goToLogin(
+                                accountsCount = effect.accountsCount,
+                                isDeletion = effect.isDeletion,
+                            )
+                            HomeEffect.OrgUnitFilterRequest -> openOrgUnitTreeSelector()
+                            is HomeEffect.PeriodFilterRequest -> showPeriodRequest(effect.periodRequest)
+                            HomeEffect.ShowDeleteNotification -> showProgressDeleteNotification()
+                            HomeEffect.ShowGranularSync -> showGranularSync()
+                            is HomeEffect.SingleProgramNavigation -> navigationLauncher.navigateTo(
+                                this@MainActivity,
+                                effect.homeItemData,
+                            )
+                            HomeEffect.ShowPinDialog -> { /*handled in composable*/ }
+                            HomeEffect.ToggleSideMenu -> openDrawer()
+                            HomeEffect.ToggleFilters -> showHideFilter()
+                        }
+                    },
+                    onNewState = { state ->
+                        if (::binding.isInitialized) {
+                            updateScreen(state)
+                        }
+                    },
+                    onNewScreen = { currentScreen ->
+                        if (backDropActive) {
+                            showHideFilter()
+                        }
+                        val navigationId = when (currentScreen) {
+                            MainScreenType.About -> R.id.menu_about
+                            is MainScreenType.Home -> R.id.menu_home
+                            MainScreenType.Loading -> null
+                            MainScreenType.QRScanner -> R.id.qr_scan
+                            MainScreenType.Settings -> R.id.sync_manager
+                            MainScreenType.TroubleShooting -> R.id.menu_troubleshooting
+                        }
+                        navigationId?.let {
+                            changeFragment(it)
+                            initCurrentScreen()
+                        }
+                    },
+                    onLayoutInflated = {
+                        binding = it
+                        initBinding()
+                    },
+                )
+            }
         }
+    }
 
+    private fun initBinding() {
         binding.navView.setNavigationItemSelectedListener { item ->
             changeFragment(item.itemId)
             false
         }
 
-        binding.mainDrawerLayout.addDrawerListener(this)
+        binding.mainDrawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) = Unit
 
-        binding.filterRecycler.adapter = newAdapter
+            override fun onDrawerOpened(drawerView: View) = Unit
 
-        setUpNavigationBar()
-        setUpDevelopmentMode()
-
-        val restoreScreenName = savedInstanceState?.getString(FRAGMENT)
-        presenter.updateSingleProgramNavigationDone(
-            savedInstanceState?.getBoolean(
-                SINGLE_PROGRAM_NAVIGATION,
-            ) ?: false,
-        )
-
-        val openScreen = intent.getStringExtra(FRAGMENT)
-
-        when {
-            openScreen != null || restoreScreenName != null -> {
-                changeFragment(
-                    mainNavigator.currentNavigationViewItemId(
-                        openScreen ?: restoreScreenName!!,
-                    ),
-                )
-                mainNavigator.restoreScreen(
-                    screenToRestoreName = openScreen ?: restoreScreenName!!,
-                    languageSelectorOpened =
-                        openScreen != null &&
-                            MainNavigator.MainScreen.valueOf(openScreen) ==
-                            MainNavigator.MainScreen.TROUBLESHOOTING,
-                )
-            }
-
-            else -> {
-                changeFragment(R.id.menu_home)
+            override fun onDrawerClosed(drawerView: View) {
                 initCurrentScreen()
             }
+
+            override fun onDrawerStateChanged(newState: Int) = Unit
+        })
+
+        binding.filterRecycler.adapter = filtersAdapter
+
+        if (BuildConfig.DEBUG || BuildConfig.FLAVOR == "dhis2Training") {
+            binding.navView.menu
+                .findItem(R.id.menu_troubleshooting)
+                .isVisible = true
+            binding.navView.menu
+                .findItem(R.id.menu_dev)
+                .isVisible = true
         }
-
-        observeSyncState()
-        observeVersionUpdate()
-        observeSingleProgram()
-
-        if (!presenter.wasSyncAlreadyDone()) {
-            presenter.launchInitialDataSync()
-        } else {
-            presenter.checkSingleProgramNavigation()
-        }
-
         checkNotificationPermission()
-
-        registerOnBackPressedCallback()
     }
 
+    private fun updateScreen(screenState: HomeScreenState) {
+        binding.navView.getHeaderView(0).findViewById<TextView>(R.id.user_info)
+            .text = screenState.userName
+
+        if (screenState.homeFilters.isNotEmpty()) {
+            filtersAdapter.submitList(screenState.homeFilters)
+        }
+
+        when (val versionState = screenState.versionToUpdate) {
+            VersionToUpdateState.Downloading ->
+                binding.toolbarProgress.show()
+
+            is VersionToUpdateState.New ->
+                if (supportFragmentManager.findFragmentByTag(TAG) == null) {
+                    showNewVersionAlert(versionState.version)
+                }
+
+            VersionToUpdateState.None ->
+                binding.toolbarProgress.hide()
+        }
+    }
+
+    /*TODO: MOVE TO BE HANDLED AFTER LOGIN*/
     private fun checkNotificationPermission() {
         if (!hasPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS)) and
             (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
@@ -248,133 +247,7 @@ class MainActivity :
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putBoolean(SINGLE_PROGRAM_NAVIGATION, presenter.isSingleProgramNavigationDone())
-        outState.putString(FRAGMENT, mainNavigator.currentScreenName())
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (sessionManagerServiceImpl.isUserLoggedIn()) {
-            presenter.init()
-            presenter.initFilters()
-            binding.totalFilters = FilterManager.getInstance().totalFilters
-        }
-    }
-
-    override fun onPause() {
-        presenter.onDetach()
-        removePinBottomSheet()
-        super.onPause()
-    }
-
-    private fun setUpDevelopmentMode() {
-        if (BuildConfig.DEBUG || BuildConfig.FLAVOR == "dhis2Training") {
-            binding.navView.menu
-                .findItem(R.id.menu_troubleshooting)
-                .isVisible = true
-            binding.menu.setOnLongClickListener {
-                getDevActivityContent.launch(Intent(this, DevelopmentActivity::class.java))
-                false
-            }
-        }
-    }
-
-    private fun registerOnBackPressedCallback() {
-        onBackPressedDispatcher.addCallback(
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    backPressed()
-                }
-            },
-        )
-    }
-
-    private fun setUpNavigationBar() {
-        binding.navigationBar.apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                val currentScreen by mainNavigator.selectedScreen.observeAsState()
-                val selectedItemIndex by remember {
-                    derivedStateOf {
-                        when (currentScreen) {
-                            MainNavigator.MainScreen.PROGRAMS -> 0
-                            MainNavigator.MainScreen.VISUALIZATIONS -> 1
-                            else -> null
-                        }
-                    }
-                }
-                if (pageConfigurator.navigationItems().size > 1) {
-                    NavigationBar(
-                        items = pageConfigurator.navigationItems(),
-                        selectedItemIndex = selectedItemIndex ?: 0,
-                    ) { navigationPage ->
-                        when (navigationPage) {
-                            NavigationPage.ANALYTICS -> {
-                                presenter.trackHomeAnalytics()
-                                mainNavigator.openVisualizations()
-                            }
-
-                            NavigationPage.PROGRAMS -> mainNavigator.openPrograms()
-                            else -> {
-                                // no-op
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun observeSyncState() {
-        lifecycleScope.launch {
-            presenter.observeDataSync().collect {
-                when (it.running) {
-                    true -> {
-                        binding.syncActionButton.visibility = View.GONE
-                        setFilterButtonVisibility(false)
-                        setBottomNavigationVisibility(false)
-                    }
-
-                    false -> {
-                        setFilterButtonVisibility(true)
-                        binding.syncActionButton.visibility = View.VISIBLE
-                        setBottomNavigationVisibility(true)
-                        presenter.onDataSuccess()
-                        presenter.checkSingleProgramNavigation()
-                    }
-
-                    else -> {
-                        // no action
-                    }
-                }
-            }
-        }
-    }
-
-    private fun observeVersionUpdate() {
-        presenter.versionToUpdate.observe(this) { versionName ->
-            versionName?.takeIf { it.isNotEmpty() }?.let { showNewVersionAlert(it) }
-        }
-        presenter.downloadingVersion.observe(this) { downloading ->
-            if (downloading) {
-                binding.toolbarProgress.show()
-            } else {
-                binding.toolbarProgress.hide()
-            }
-        }
-    }
-
-    private fun observeSingleProgram() {
-        lifecycleScope.launch {
-            presenter.singleProgramNavigationChannel.collect { homeItemData ->
-                navigationLauncher.navigateTo(this@MainActivity, homeItemData)
-            }
-        }
-    }
-
-    override fun showHideFilter() {
+    private fun showHideFilter() {
         val transition = ChangeBounds()
         transition.duration = 200
         TransitionManager.beginDelayedTransition(binding.backdropLayout, transition)
@@ -389,21 +262,21 @@ class MainActivity :
                 ConstraintSet.BOTTOM,
                 50,
             )
-            binding.navigationBar.hide()
+            mainViewModel.updateNavigationBarVisibility(false)
         } else {
             initSet.connect(
                 R.id.fragment_container,
                 ConstraintSet.TOP,
-                R.id.toolbar,
+                R.id.toolbarProgress,
                 ConstraintSet.BOTTOM,
                 0,
             )
-            binding.navigationBar.show()
+            mainViewModel.updateNavigationBarVisibility(true)
         }
         initSet.applyTo(binding.backdropLayout)
     }
 
-    override fun showGranularSync() {
+    private fun showGranularSync() {
         SyncStatusDialog
             .Builder()
             .withContext(this)
@@ -411,9 +284,7 @@ class MainActivity :
             .onDismissListener(
                 object : OnDismissListener {
                     override fun onDismiss(hasChanged: Boolean) {
-                        if (hasChanged) {
-                            mainNavigator.getCurrentIfProgram()?.programViewModel?.updateProgramQueries()
-                        }
+                        mainViewModel.onGranularSyncFinished(hasChanged)
                     }
                 },
             ).onNoConnectionListener {
@@ -427,11 +298,7 @@ class MainActivity :
             }.show("ALL_SYNC")
     }
 
-    override fun updateFilters(totalFilters: Int) {
-        binding.totalFilters = totalFilters
-    }
-
-    override fun showPeriodRequest(periodRequest: FilterManager.PeriodRequest) {
+    private fun showPeriodRequest(periodRequest: FilterManager.PeriodRequest) {
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
             FilterPeriodsDialog
                 .newPeriodsFilter(filterType = Filters.PERIOD, isFromToFilter = true)
@@ -443,7 +310,7 @@ class MainActivity :
         }
     }
 
-    override fun openOrgUnitTreeSelector() {
+    private fun openOrgUnitTreeSelector() {
         OUTreeFragment
             .Builder()
             .withPreselectedOrgUnits(
@@ -452,13 +319,12 @@ class MainActivity :
                     .orgUnitFilters
                     .map { it.uid() }
                     .toMutableList(),
-            ).onSelection { selectedOrgUnits ->
-                presenter.setOrgUnitFilters(selectedOrgUnits)
-            }.build()
+            ).onSelection(mainViewModel::setOrgUnitFilters)
+            .build()
             .show(supportFragmentManager, "OUTreeFragment")
     }
 
-    override fun goToLogin(
+    private fun goToLogin(
         accountsCount: Int,
         isDeletion: Boolean,
     ) {
@@ -469,158 +335,54 @@ class MainActivity :
                 isDeletion = isDeletion,
                 fromMainActivity = true,
             ),
-            true,
-            true,
-            null,
+            finishCurrent = true,
+            finishAll = true,
+            transition = null,
         )
     }
 
-    override fun renderUsername(username: String) {
-        binding.userName = username
-        (binding.navView.getHeaderView(0).findViewById<View>(R.id.user_info) as TextView)
-            .text = username
-        binding.executePendingBindings()
-    }
-
-    private fun setFilterButtonVisibility(showFilterButton: Boolean) {
-        binding.filterActionButton.visibility =
-            if (showFilterButton && presenter.hasFilters()) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
-        binding.syncActionButton.visibility =
-            if (showFilterButton) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
-    }
-
-    override fun openDrawer(gravity: Int) {
-        if (!binding.mainDrawerLayout.isDrawerOpen(gravity)) {
-            binding.mainDrawerLayout.openDrawer(gravity)
+    private fun openDrawer() {
+        if (!binding.mainDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.mainDrawerLayout.openDrawer(GravityCompat.START)
         } else {
-            binding.mainDrawerLayout.closeDrawer(gravity)
+            binding.mainDrawerLayout.closeDrawer(GravityCompat.START)
         }
     }
 
-    override fun setFilters(filters: List<FilterItem>) {
-        newAdapter.submitList(filters)
-    }
-
-    override fun hideFilters() {
-        binding.filterActionButton.visibility = View.GONE
-    }
-
-    override fun onLockClick() {
-        if (!presenter.isPinStored()) {
-            if (pinComposeView != null) return
-            binding.mainDrawerLayout.closeDrawers()
-            pinComposeView = addPinBottomSheet(
-                mode = PinMode.SET,
-                onSuccess = {
-                    removePinBottomSheet()
-                    presenter.blockSession()
-                },
-                onDismiss = { removePinBottomSheet() },
-            )
-        } else {
-            presenter.blockSession()
-        }
-    }
-
-    private fun removePinBottomSheet() {
-        pinComposeView?.let { view ->
-            (window?.decorView as? android.view.ViewGroup)?.removeView(view)
-        }
-        pinComposeView = null
-    }
-
-    private fun backPressed() {
-        when {
-            !mainNavigator.isHome() -> presenter.onNavigateBackToHome()
-            else -> back()
-        }
-    }
-
-    override fun goToHome() {
-        mainNavigator.openHome()
-    }
-
-    override fun changeFragment(id: Int) {
+    private fun changeFragment(id: Int) {
         binding.navView.setCheckedItem(id)
         binding.mainDrawerLayout.closeDrawers()
     }
 
-    fun setTitle(title: String) {
-        binding.title.text = title
-    }
-
-    private fun setBottomNavigationVisibility(showBottomNavigation: Boolean) {
-        if (showBottomNavigation) {
-            binding.navigationBar.show()
-        } else {
-            binding.navigationBar.hide()
-        }
-    }
-
-    override fun onDrawerStateChanged(newState: Int) {
-        // no op
-    }
-
-    override fun onDrawerSlide(
-        drawerView: View,
-        slideOffset: Float,
-    ) {
-        // no op
-    }
-
-    override fun onDrawerClosed(drawerView: View) {
-        initCurrentScreen()
-    }
-
-    override fun onDrawerOpened(drawerView: View) {
-        // no op
-    }
-
     private fun initCurrentScreen() {
         when (binding.navView.checkedItem?.itemId) {
-            R.id.sync_manager -> {
-                presenter.onClickSyncManager()
-                mainNavigator.openSettings()
-            }
+            R.id.sync_manager ->
+                mainViewModel.onChangeScreen(MainScreenType.Settings)
 
-            R.id.qr_scan -> {
-                presenter.trackQRScanner()
-                mainNavigator.openQR()
-            }
+            R.id.qr_scan ->
+                mainViewModel.onChangeScreen(MainScreenType.QRScanner)
 
-            R.id.menu_about -> {
-                mainNavigator.openAbout()
-            }
+            R.id.menu_about ->
+                mainViewModel.onChangeScreen(MainScreenType.About)
 
-            R.id.block_button -> {
-                presenter.trackPinDialog()
-                onLockClick()
-            }
+            R.id.block_button ->
+                mainViewModel.onBlockSession()
 
-            R.id.logout_button -> {
-                analyticsHelper.setEvent(CLOSE_SESSION, CLICK, CLOSE_SESSION)
-                presenter.logOut()
-            }
+            R.id.logout_button ->
+                mainViewModel.logOut()
 
-            R.id.menu_home -> {
-                mainNavigator.openHome()
-            }
+            R.id.menu_home ->
+                mainViewModel.onChangeToHome()
 
-            R.id.menu_troubleshooting -> {
-                mainNavigator.openTroubleShooting()
-            }
+            R.id.menu_troubleshooting ->
+                mainViewModel.onChangeScreen(MainScreenType.TroubleShooting)
 
-            R.id.delete_account -> {
+            R.id.menu_dev ->
+                startActivity(Intent(this, DevelopmentActivity::class.java))
+
+            R.id.delete_account ->
                 confirmAccountDelete()
-            }
+
         }
     }
 
@@ -629,14 +391,13 @@ class MainActivity :
             .setTitle(getString(R.string.delete_account))
             .setMessage(getString(R.string.wipe_data_meesage))
             .setView(R.layout.warning_layout)
-            .setPositiveButton(getString(R.string.wipe_data_ok)) { _, _ ->
-                presenter.onDeleteAccount()
-            }.setNegativeButton(getString(R.string.wipe_data_no)) { dialog, _ ->
+            .setPositiveButton(getString(R.string.wipe_data_ok)) { _, _ -> mainViewModel.onDeleteAccount() }
+            .setNegativeButton(getString(R.string.wipe_data_no)) { dialog, _ ->
                 dialog.dismiss()
             }.show()
     }
 
-    override fun showProgressDeleteNotification() {
+    private fun showProgressDeleteNotification() {
         val notificationManager =
             context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -661,18 +422,10 @@ class MainActivity :
         notificationManager.notify(123456, notificationBuilder.build())
     }
 
-    override fun obtainFileView(): File? = this.cacheDir
-
-    override fun cancelNotifications() {
-        val notificationManager: NotificationManager =
-            getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.cancelAll()
-    }
-
     private fun showNewVersionAlert(version: String) {
         NewVersionDialog(
             newVersion = version,
-            onRemindMeLater = presenter::remindLaterAlertNewVersion,
+            onRemindMeLater = mainViewModel::remindLaterAlertNewVersion,
             onDownloadVersion = {
                 if (hasPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE))) {
                     onDownloadNewVersion()
@@ -684,8 +437,7 @@ class MainActivity :
     }
 
     private fun onDownloadNewVersion() {
-        presenter.downloadVersion(
-            context = context,
+        mainViewModel.downloadVersion(
             onDownloadCompleted = ::installAPK,
             onLaunchUrl = ::launchUrl,
         )
@@ -716,7 +468,7 @@ class MainActivity :
 
     private fun hasNoPermissionToInstall(): Boolean =
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-            !packageManager.canRequestPackageInstalls()
+                !packageManager.canRequestPackageInstalls()
 
     private val manageUnknownSources =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -750,25 +502,24 @@ class MainActivity :
 
     private val requestNotificationPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            if (granted) {
-                Toast
-                    .makeText(
-                        context,
-                        getString(R.string.permission_notification_granted),
-                        Toast.LENGTH_SHORT,
-                    ).show()
+            val message = if (granted) {
+                getString(R.string.permission_notification_granted)
             } else {
-                Toast
-                    .makeText(
-                        context,
-                        getString(R.string.permission_notification_denied),
-                        Toast.LENGTH_SHORT,
-                    ).show()
+                getString(R.string.permission_notification_denied)
             }
+
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
 
     private fun launchUrl(uri: Uri) {
         val intent = Intent(Intent.ACTION_VIEW, uri)
         startActivity(intent)
+    }
+
+    /** Required by QrReaderFragment. It should retrieve the activity mainViewModel and call
+     * onChangeToHome directly
+     * */
+    fun goToHome() {
+        mainViewModel.onChangeToHome()
     }
 }

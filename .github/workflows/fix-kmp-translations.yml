@@ -1,0 +1,61 @@
+name: Fix KMP Translations
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  fix-kmp-translations:
+    if: startsWith(github.head_ref, 'develop-transifex-')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Remove escaped question marks from KMP compose resources
+        run: |
+          for dir in \
+            "tracker/src/commonMain/composeResources" \
+            "aggregates/src/commonMain/composeResources" \
+            "commonskmm/src/commonMain/composeResources" \
+            "login/src/commonMain/composeResources" \
+            "sync/src/commonMain/composeResources"; do
+            if [ -d "$dir" ]; then
+              find "$dir" -name "*.xml" -exec sed -i 's/\\?/?/g' {} \;
+            fi
+          done
+          git add -A
+
+      - name: Check if meaningful changes remain vs base branch
+        id: check
+        run: |
+          if git diff --cached --quiet origin/${{ github.base_ref }}; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push fix
+        if: steps.check.outputs.has_changes == 'true'
+        run: |
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git commit -m "fix(translations): remove KMP-incompatible escaped question marks [skip ci]"
+            git push
+          fi
+
+      - name: Close PR — no meaningful changes remain
+        if: steps.check.outputs.has_changes == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} \
+            --body "Closing automatically: after removing Android-style escaped \`\?\` characters (incompatible with KMP Compose resources), no translation changes remain."
+          gh pr close ${{ github.event.pull_request.number }} --delete-branch

@@ -7,7 +7,6 @@
     <string name="done">කළා</string>
 
     <string name="filters_title_date">දිනය</string>
-    <string name="daily_period">දිනපතා</string>
     <string name="weekly">සතිපතා</string>
     <string name="bi_weekly">දෙසතියකට වරක්</string>
     <string name="monthly">මාස්පතා</string>
@@ -38,9 +37,7 @@
     <string name="interval_yesterday">ඊයේ</string>
 
     <string name="section_charts">ප්‍රස්ථාර</string>
-    <string name="default_table_header_label">අගය</string>
     <string name="discard_changes">වෙනස් කිරීම් ඉවතලන්න</string>
-    <string name="default_empty_dataset_section_label">දත්ත</string>
     <string name="overdue_today">අද</string>
     <string name="remove">ඉවත් කරන්න</string>
     <string name="period_daily_title">දිනපතා</string>

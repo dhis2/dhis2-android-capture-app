@@ -93,6 +93,7 @@ class HomeRepositoryImpl(
     override suspend fun logOut() =
         execute {
             d2.userModule().blockingLogOut()
+            Result.success(Unit)
         }
 
     override suspend fun clearPin() =
@@ -103,6 +104,7 @@ class HomeRepositoryImpl(
                 .localDataStore()
                 .value(PIN)
                 .blockingDeleteIfExist()
+            Result.success(Unit)
         }
 
     override suspend fun hasHomeAnalytics(): Boolean =

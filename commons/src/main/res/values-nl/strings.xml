@@ -9,7 +9,6 @@
     <string name="cancel">Annuleren</string>
     <string name="yes">Ja</string>
     <string name="no">Nee</string>
-    <string name="clear_all">duidelijke selectie</string>
     <string name="navigation_list_view">Lijstweergave</string>
     <string name="navigation_table_view">Tabel weergave</string>
     <string name="navigation_map_view">Kaartweergave</string>
@@ -20,7 +19,6 @@
     <string name="navigation_notes">Notities</string>
     <string name="navigation_data_entry">Gegevensinvoer</string>
     <string name="navigation_tei_data">Details</string>
-    <string name="event_overview">Details</string>
     <string name="select_option">Selecteer optie</string>
     <string name="search">Zoek</string>
     <string name="events">evenementen</string>
@@ -34,13 +32,10 @@
     <string name="filters_disabled">Geen filters toegepast</string>
     <string name="filters_title_period">Periode</string>
     <string name="filters_title_org_unit">Org. Eenheid</string>
-    <string name="filters_title_sorting">Sorteren</string>
-    <string name="filters_title_status">status</string>
     <string name="filters_title_state">Synchroniseren</string>
     <string name="filters_title_assigned">Toegewezen aan mij</string>
     <string name="filters_title_date">Datum</string>
     <string name="filter_follow_up_label">Gevolgd %s</string>
-    <string name="daily_period">Dagelijks</string>
     <string name="weekly">Wekelijks</string>
     <string name="bi_weekly">Tweewekelijks</string>
     <string name="monthly">Maandelijks</string>
@@ -52,7 +47,6 @@
     <string name="state_synced">Synchroniseren</string>
     <string name="state_to_post">Versturen</string>
     <string name="state_to_update">Updaten</string>
-    <string name="state_to_delete">Verwijderen</string>
     <string name="state_error">Fout</string>
     <string name="state_warning">Waarschuwing</string>
     <string name="state_uploading">Uploaden</string>
@@ -142,7 +136,6 @@
     <!--SDK error codes-->
     <string name="login_error_null_pass">Wachtwoord ontbreekt. Voer wachtwoord in alstublieft.</string>
     <string name="login_error_null_username">Gebruikersnaam ontbreekt. Voer gebruikersnaam in.</string>
-    <string name="login_error_dhis_version">Deze server draait een andere versie dan 2.29. Werk uw serverversie bij of gebruik de testomgeving om verder te gaan.</string>
     <string name="login_error_dhis_version_v2">Deze server draait een andere DHIS2-versie dan %s. Werk uw serverversie bij of neem contact op met uw beheerder.</string>
     <string name="login_error_unsuccessful_response">Er is iets fout gegaan. Controleer of de server-URL, gebruikersnaam en wachtwoord juist zijn en probeer het opnieuw.</string>
     <string name="login_error_error_response">Sorry! Er is iets misgegaan aan de serverzijde.</string>
@@ -200,7 +193,6 @@
     <string name="error_min_attributes">Er zijn niet genoeg attributen om de zoekopdracht uit te voeren. Verfijn uw zoekopdracht met meer attributen.</string>
     <string name="error_org_unit_scope">Online zoeken is alleen beschikbaar voor uw organisatie-eenheden voor het zoeken van gebruikers.</string>
     <string name="error_invalid_characters">Er zijn ongeldige tekens in de vraag. Vraag de beheerder om de serverconfiguratie te verifiëren (relaxedQueryChars,...).</string>
-    <string name="unsupported_field_description">Dit veld is niet beschikbaar voor mobiel vastleggen</string>
     <string name="add_image">Voeg afbeelding toe</string>
     <string name="add_file">Bestand toevoegen</string>
     <string name="action_ok">OK</string>
@@ -209,9 +201,7 @@
     <string name="not_now">Niet nu</string>
     <string name="review">Beoordeling</string>
     <string name="complete">Compleet</string>
-    <string name="default_table_header_label">Waarde</string>
     <string name="discard_changes">Veranderingen ongedaan maken</string>
-    <string name="default_empty_dataset_section_label">Gegevens</string>
     <string name="title_network_connection_unavailable">Netwerkverbinding niet beschikbaar</string>
     <string name="msg_network_connection_maps">Voor het gebruik van maps is een internetverbinding vereist.</string>
 
@@ -221,8 +211,6 @@
     <string name="enrolling_ou">Ingeschreven in:</string>
     <string name="delete_event_label">Verwijder %s</string>
     <string name="week_period_span_default_label">Week %d %s tot %s</string>
-    <string name="enrollment_reopen">heropenen</string>
-
     <string name="syncing">Synchroniseren...</string>
     <string name="remove">Verwijderen</string>
     <string name="period_daily_title">Dagelijks</string>

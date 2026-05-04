@@ -1,35 +1,22 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="title_activity_home">Home</string>
-    <string name="title_activity_review">审查</string>
-    <string name="action_settings">设置</string>
 
     <string name="discard">放弃</string>
-    <string name="sign_in">登记</string>
+    <!-- Sign in -->
     <string name="username">用户名</string>
-    <string name="password">口令</string>
-    <string name="forgot_password">忘记口令</string>
 
     <!-- FloatingActionButtons -->
-    <string name="proceed">处理</string>
     <string name="review">审查</string>
 
     <string name="delete">删除</string>
     <string name="ok">OK</string>
     <string name="cancel">取消</string>
+
     <string name="from">从</string>
-    <string name="language">语言</string>
-    <string name="logout">退出</string>
+    <!-- Content descriptions for accessibility -->
 
-
-    <!-- Stock table -->
-    <string name="item">条目</string>
-    <string name="prompt_email">邮件</string>
-    <string name="prompt_password">口令</string>
-    <string name="action_sign_in">注册</string>
-    <string name="action_sign_in_short">登记</string>
-    <string name="content_desc_search">搜索</string>
     <string name="confirm_transaction_label">确认</string>
-    <string name="invalid_quantity">无效</string>
+
     <string name="speech_network_error">网络错误</string>
     <string name="unknown_speech_error">出现未知错误。</string>
     <!--SDK error codes-->
@@ -63,8 +50,6 @@
     <string name="error_ssl">服务器证书有问题。请联系您的管理员。</string>
     <string name="done_task">Home</string>
     <string name="back">后退</string>
-    <string name="no_conflicts_message">该项目没有冲突。</string>
-    <string name="action_sync">发送</string>
     <string name="not_saved">未保存</string>
     <string name="count">计数</string>
     <string name="formatting_error">格式化错误</string>

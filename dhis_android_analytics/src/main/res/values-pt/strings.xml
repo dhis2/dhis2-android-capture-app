@@ -9,7 +9,6 @@
     <string name="action_accept">Aceitar</string>
     <string name="period">Período</string>
     <string name="orgUnit">UnidOrg</string>
-    <string name="none">Nenhum</string>
     <string name="daily">Diário</string>
     <string name="today">Hoje</string>
     <string name="other">Outro</string>
@@ -45,7 +44,6 @@
     <string name="include_this_period_body">Inclui o período actual no gráfico</string>
     <string name="no_data_for_selected_filters">Não tem dados associados aos filtros aplicados</string>
     <string name="no_data_to_display">Não existem dados para mostrar</string>
-    <string name="visualization_error">Algo de errado existe com esta visualização</string>
     <string name="visualization_failure">Algo de errado existe com estas visualizações</string>
     <string name="visualization_groups_failure">Algo de errado existe com a visualização dos grupos</string>
     <string name="pie_chart_no_data">Todos os dados são zero</string>
@@ -61,7 +59,6 @@
     <string name="error_invalid_program_indicator">Não tem acesso ao indicador de programa %s</string>
     <string name="error_invalid_visualization">A visualização %s está em falta</string>
     <string name="error_parsing_visualization">A visualização não está bem configurada, contacte o seu admin</string>
-    <string name="error_invalid_custom_boundaries">Limites personalizados não são suportados para o indicador de programa %s</string>
     <string name="error_database">Não consegue aceder a base de dados. Favor contactar o seu administrador.</string>
     <string name="error_invalid_program">Não tem acesso ao programa%s</string>
     <string name="error_invalid_attribute">Não tem acesso ao atributo %s</string>

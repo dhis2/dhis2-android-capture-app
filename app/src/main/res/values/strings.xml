@@ -1,36 +1,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!--GENERAL-->
     <string name="app_name">Dhis2</string>
-    <string name="logo_text">dhis</string>
-    <string name="logo_number">2</string>
-    <string name="tab" translatable="false">\u0009</string>
-    <string name="default_notification_channel_id" translatable="false">20180901</string>
     <!-- Warnings and error messages -->
     <string name="error">Error</string>
-    <plurals name="error_message">
-        <item quantity="one">Error</item>
-        <item quantity="other">Errors</item>
-    </plurals>
-    <string name="error_wrong_server_url">Wrong server url</string>
-    <string name="error_wrong_credentials">Wrong credentials</string>
-    <string name="error_unexpected_error">Unexpected error</string>
-    <string name="error_internal_server_error">Internal server error</string>
-    <string name="no_value">no value</string>
     <string name="no_reserved_values">There are no more reserved values. Contact your system administrator</string>
-    <string name="no_reserved_values_connection">There are no more reserved values. Connect to the network to refill them</string>
-    <string name="errors">errors</string>
     <string name="something_wrong">Something went wrong</string>
     <!-- SyncService strings: -->
-    <string name="sync_now">Synchronise now</string>
-    <string name="sync_text">Synchronising with server</string>
-    <string name="sync_title">Syncing now</string>
 
-    <string name="sync_metadata">Metadata</string>
     <string name="sync_events">Events</string>
-    <string name="sync_tei">Tracked entities</string>
-
-    <string name="sync_complete_title">Finished</string>
-    <string name="sync_complete_text">Sync complete</string>
 
     <string name="sync_error_title">Sync Error</string>
     <string name="sync_error_text">An error has occurred during synchronisation. Please retry.</string>
@@ -38,32 +15,19 @@
     <string name="metadata_sync_error">FAIL: Something went wrong in the sync process. If you have connection please try again. If the error persists, contact your administrator.</string>
     <string name="data_sync_warning_v2">There are conflicts in your data. Please sync your configuration, review your data and try syncing again.</string>
     <string name="data_sync_error_v2">Some of your data failed to sync.</string>
-    <string name="server_sync_error">There was an error and the server did not respond. Contact your administrator.</string>
 
-    <string name="search_result_text">%s results found</string>
-    <string name="add_new">Add new</string>
-    <string name="add">Add</string>
     <string name="enter_event_data">Enter %s</string>
     <string name="enter_cancel_event_data">Enter / Skip %s</string>
-    <string name="schedule_new">Schedule new</string>
     <string name="lorem" translatable="false">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat</string>
     <string name="referral">Referral</string>
 
     <!-- Login -->
-    <string name="url_hint">Server url</string>
-    <string name="user_hint">Username</string>
-    <string name="password_hint">Password</string>
-    <string name="log_in_button">Log In</string>
-    <string name="unlock_button">Unlock session</string>
     <string name="syncing_configuration">Syncing your Configuration</string>
     <string name="syncing_data_shortly">Your Data will shortly be synced</string>
     <string name="syncing_data">Syncing your Data</string>
     <string name="configuration_ready">Your Configuration is ready</string>
     <string name="data_ready">Your Data is ready</string>
-    <string name="configuration_sync_failed">Configuration sync failed</string>
-    <string name="data_sync_failed">Data sync failed</string>
     <string name="account_recovery">Account recovery</string>
-    <string name="no_network_to_recover_account">A network connection is needed to recover your account.</string>
 
     <!--PERIOD-->
     <string name="DAILY">Daily</string>
@@ -84,141 +48,86 @@
     <string name="enter_text">Enter text</string>
     <string name="enter_long_text">Enter long text</string>
     <string name="enter_number">Enter number</string>
-    <string name="enter_integer">Enter integer</string>
     <string name="enter_negative_integer">Enter negative integer</string>
     <string name="enter_positive_integer_or_zero">Enter positive integer or zero</string>
     <string name="enter_positive_integer">Enter positive integer</string>
-    <string name="filter_options">Filter options</string>
     <string name="choose_date">Choose date</string>
-    <string name="change_calendar">Change calendar</string>
 
     <!-- Status -->
-    <string name="program_completed">Program Completed</string>
-    <string name="program_inactive">Program inactive</string>
 
     <string name="event_open">Open</string>
     <string name="event_not_completed">Not completed</string>
     <string name="event_completed">Event completed</string>
     <string name="read_only">Read only</string>
-    <string name="finish_and_complete">Finish and complete</string>
     <string name="completed">Completed</string>
     <string name="cancelled">Cancelled</string>
     <string name="re_open">Re-open</string>
-    <string name="re_open_form">Re-open form</string>
-    <string name="activate">Activate</string>
     <string name="active">Active</string>
 
     <!-- State -->
     <string name="state_synced">Sync</string>
     <string name="state_to_post">To send</string>
     <string name="state_to_update">To update</string>
-    <string name="state_to_delete">To delete</string>
     <string name="state_error">Error</string>
-    <string name="action_sync">SYNC</string>
-    <string name="action_send">SEND</string>
-    <string name="action_sync_sms">SYNC SMS</string>
 
     <!--Completion-->
-    <string name="completion">Completion</string>
 
     <!--Event initial-->
-    <string name="create">Create</string>
     <string name="update">Update</string>
-    <string name="date">Date</string>
     <string name="org_unit">Org unit</string>
     <string name="no_org_units">There aren\'t any open Organization Units for the selected date. Please select another date or another Organisation Unit.</string>
-    <string name="category_option">Category option</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
-    <string name="new_event">New event</string>
-    <string name="fake_program_stage_description" translatable="false">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</string>
-    <string name="one_time">One time</string>
-    <string name="permanent">Permanent</string>
 
     <!--DataSet initial-->
     <string name="report_period">Report period</string>
-    <string name="cat_option">Cat option</string>
-    <string name="field_required">If you set a value, the whole row needs all of values to complete the Data Set.</string>
-    <string name="field_mandatory">Some values required are missing. You need set mandatory values to complete the Data Set.</string>
-    <string name="field_mandatory_v2">There are missing mandatory fields. Please, fill them to complete the data set.</string>
-    <string name="datavalue_saved">Value is saved!</string>
-    <string name="there_is_no_available_period">There is no available periods to select.</string>
     <!--Event Detail-->
     <string name="due_date">Due date</string>
     <string name="next_event">Next %1$s</string>
     <string name="cat_combo">Cat combo</string>
-    <string name="date_default">DD/MM/YYYY</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
-    <string name="total">Total</string>
     <string name="most_recent_event_date">Most recent event date</string>
     <string name="no_options">No options available</string>
 
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Enrollment list</string>
     <string name="active_programs">Active programs</string>
-    <string name="to_enroll_programs">Programs to enroll</string>
     <string name="enroll">Enroll</string>
-    <string name="last_visit">Last Visit:</string>
-    <string name="apply">apply</string>
 
     <!--TEI DASHBOARD-->
-    <string name="see_details">See Details</string>
-    <string name="view_more">VIEW MORE</string>
     <string name="edit">Edit</string>
-    <string name="follow_up">Follow up</string>
-    <string name="follow_up_enabled">Follow up enabled</string>
-    <string name="follow_up_disabled">Follow up disabled</string>
     <string name="deactivate">Deactivate</string>
     <string name="program_not_allow_events">This program does not allow more events</string>
 
     <!--DONE TASKS-->
-    <string name="events_no_data">No data</string>
     <string name="events">events</string>
     <string name="done_task">Home</string>
-    <string name="app_info">App Info</string>
     <string name="log_out">Log Out</string>
-    <string name="block_session">Block Session</string>
     <string name="show_more_events">Show %s more…</string>
     <string name="show_less_events">Show less…</string>
 
     <!-- SYNC -->
-    <string name="a_minute">1 Minute</string>
-    <string name="fifteen_minute">15 Minutes</string>
     <string name="thirty_minutes">30 Minutes</string>
     <string name="a_hour">1 Hour</string>
     <string name="every_6_hours">6h</string>
     <string name="a_day">1 Day (Default)</string>
     <string name="every_12_hours">12h</string>
-    <string name="Automatic_Sync_Data">Automatic Sync Data every:</string>
     <string name="Manual">Manual</string>
-    <string name="Automatic_Sync_Metadata">Automatic Sync Configuration every:</string>
     <string name="a_week">1 Week</string>
-    <string name="sync_max_parameters">Current sync parameters:</string>
-    <string name="sync_default_parameters">Reset to default</string>
     <string name="wipe_data_meesage">Database will be deleted.\nYou will be asked to log in again.</string>
     <string name="wipe_data_ok">Accept</string>
     <string name="wipe_data_no">Cancel</string>
     <string name="SYNC_DATA">SYNC Data Now</string>
     <string name="SYNC_META">SYNC Configuration Now</string>
     <string name="SYNC_MANAGER">Settings</string>
-    <string name="last_data_sync_date">Last sync on: %s</string>
     <string name="last_data_sync">Last sync on</string>
-    <string name="last_metadata_sync_date">Last sync on: %s</string>
     <string name="refill_reserved_values">Refill</string>
-    <string name="settings_sms_module_title">SMS module:</string>
     <string name="settings_sms_receiver_number">SMS gateway</string>
     <string name="settings_sms_result_sender_number">SMS result sender</string>
     <string name="settings_sms_result_timeout">SMS result timeout (sec)</string>
-    <string name="settings_sms_result_timeout_hint">seconds</string>
-    <string name="settings_sms_result_sender_hint">number</string>
-    <string name="settings_sms_receiver_number_hint">number</string>
     <string name="settings_sms_module_switch">Enable SMS submission</string>
     <string name="settings_sms_response_wait_switch">Wait for SMS result response</string>
-    <plurals name="settings_specific_programs">
-        <item quantity="one">There is %s program with specific settings</item>
-        <item quantity="other">There are %s programs with specific settings</item>
-    </plurals>
     <string name="settings_sync_period_v2">Sync period</string>
     <string name="settings_limit_scope">Settings limited</string>
     <string name="settings_limit_globally">Globally</string>
@@ -237,20 +146,15 @@
     <string name="settingsErrorLog_descr">This log contains all errors caused by syncing your data and metadata.</string>
     <string name="settingsDeleteLocalData">Delete local data</string>
     <string name="settingsDeleteLocalData_descr">All Capture App data stored in your device will be deleted. Data which is not synced to the server will be lost.</string>
-    <string name="settingsReset">Reset app data &amp; configuration</string>
-    <string name="settingsReset_descr">Your configuration and App data stored in the device will be deleted. You will be asked to log in again and data which is not synced to the server will be lost.</string>
     <string name="settingsSms">SMS Settings</string>
     <string name="settingsSms_descr">Check and edit parameters related to the sms gateway</string>
     <string name="settingsCheckVersion">Software update</string>
-    <string name="settingsCheckVersionMessage">Software</string>
     <string name="settingsExportDB">Export database</string>
     <string name="settingsExportDBMessage">Export your database and share it with your administrator</string>
     <string name="settingTwoFA">Two factor authentication</string>
     <string name="settingsTwoFAStatus">Status</string>
     <string name="settingTwoFADescr">Enable or disable the authentication in two steps.</string>
     <!--endregion-->
-
-    <string name="enrollmment_date">Enrollment date</string>
 
     <!-- SEARCH OPTION SET -->
     <string name="search_optionset">Search</string>
@@ -260,43 +164,19 @@
     <string name="write_new_note">Write new note</string>
     <string name="clear">clear</string>
     <string name="add_note">Add note</string>
-    <string name="revert">Revert</string>
-    <string name="activated">Activated</string>
-    <string name="missing_mandatory_fields_title">Mandatory fields are missing</string>
-    <string name="missing_mandatory_fields_text">Some mandatory fields are missing. If you want to go back now, all saved information will be deleted.</string>
-    <string name="missing_mandatory_fields_text_not_delete">Some mandatory fields are missing. If you want to go back, please fill them.</string>
-    <string name="missing_mandatory_fields_events">Some fields need your attention.\nDo you want to review the form?</string>
     <string name="title_delete_go_back">Your data is not saved</string>
-    <string name="delete_go_back">If you go back now all information entered will be deleted.</string>
-    <string name="missing_mandatory_fields_go_back">Delete and go back</string>
-    <string name="error_fields">Some fields have errors:\n%s\nPlease, check them.</string>
-    <string name="missing_mandatory_fields_finish">Some mandatory fields are missing. You can finish data entry and exit, but the event cannot be completed.</string>
     <string name="tei_coordinates">Coordinates for the</string>
 
     <!--EVENT SUMMARY-->
-    <string name="section_list">Section list</string>
-    <string name="event_summary_header" formatted="false">%s questions of %s completed</string>
-    <string name="event_summary_sections_header" formatted="false">%s of %s completed</string>
-    <string name="complete_and_close">Complete and close</string>
 
     <!--AGE CUSTOM VIEW-->
-    <string name="hint_day">Days</string>
-    <string name="hint_month">Months</string>
-    <string name="hint_year">Years</string>
-    <string name="week">Weeks</string>
     <string name="incident_date">Incident date</string>
-    <string name="local_results">Local results</string>
-    <string name="online_results">Online results</string>
     <string name="past_programs">Past programs</string>
 
     <!--PERMISSIONS-->
     <string name="permission_denied">You don\'t have the required permission to perform this action</string>
-    <string name="add_relation_button">Add as…</string>
 
-    <string name="date_dialog_clear">Clear</string>
     <string name="period">Period</string>
-    <string name="org_unit_filter">(%d) Org Unit</string>
-    <string name="org_unit_select_level">Level %d</string>
     <string name="tuto_main_1">Welcome to dhis2</string>
     <string name="tuto_main_2">Here you can see your activities</string>
     <string name="tuto_main_3">You can apply a filter…</string>
@@ -305,17 +185,11 @@
     <string name="tuto_main_6">Check other actions on the main menu</string>
 
     <!-- RELATIONSHIPS -->
-    <string name="default_relationship_label">Create relationship</string>
     <string name="next">Next</string>
     <string name="search_min_num_attr">You need to enter at least %d of the attributes to do a search</string>
-    <string name="search_attr">You need to enter at least one of the attributes to do a search</string>
-    <string name="search_max_tei_reached">There is more than %d results. Please enter further search criteria</string>
-    <string name="search_criteria_not_met">Your search criteria didn\'t return any result.\nRevise your criteria or enroll a new %s</string>
-    <string name="search_init">Enter your search criteria</string>
 
     <!-- QR -->
     <string name="QR_SCANNER">Import QR data</string>
-    <string name="SAVE">Save</string>
     <string name="button_ok">OK</string>
     <string name="qr_id">Identification</string>
     <string name="qr_attributes">Attributes</string>
@@ -327,32 +201,17 @@
     <string name="qr_no_data">no data</string>
     <string name="qr_error_id">Invalid QR code</string>
     <string name="qr_error_attr">This attribute can\'t be added</string>
-    <string name="qr_error_enrollment">This enrollment can\'t be added</string>
 
     <string name="about">About</string>
     <string name="programs_to_enroll">Programs to enroll</string>
-    <string name="select_all">select all</string>
-    <string name="clear_all">clear selection</string>
-    <string name="empty_program_list">There is no information for the filters selected. Please try changing them.</string>
     <string name="share">Share</string>
     <string name="share_qr">Share QR</string>
-    <string name="teiType_search_online">Search by type is not possible for online search.\nPlease select a program from the list.</string>
-    <string name="max">Max</string>
-    <string name="current">Current</string>
     <string name="tei">TEI</string>
     <string name="teis">TEIs</string>
-    <string name="limit_by_organisation_unit">Limit by organisation unit</string>
-    <string name="limit_by_program">Limit by program</string>
-    <string name="programs_list">Program list</string>
     <string name="wipe_data">Reset app data &amp; configuration</string>
-    <string name="add_relationship_error">It\'s not possible to add this relationship</string>
     <string name="warning_error_on_complete_title">Check this!</string>
-    <string name="warning_on_complete_title">Warning</string>
-    <string name="error_on_complete_title">Error</string>
     <string name="save">Save</string>
     <string name="reserved_value">Reserved Values</string>
-
-    <string name="downloaded_confirm">Do you want to add more data from QR?</string>
 
     <!--ABOUT-->
     <string name="about_app">App Version: %s</string>
@@ -364,148 +223,45 @@
     <string name="about_dev">Developed and maintained by the <a href="https://www.dhis2.org/">DHIS2</a> project, part of University of Oslo, <a href="https://www.mn.uio.no/ifi/english/">department of informatics</a>.</string>
     <string name="about_contact">For more information or questions about this application, please write to <a href="mailto:android@dhis2.org">android@dhis2.org</a></string>
 
-    <string name="login_error_null_pass">Password is missing. Please fill this field.</string>
-    <string name="login_error_null_username">Username is missing. Please fill this field.</string>
-    <string name="login_error_dhis_version">This server is running a dhis version different than 2.29. Update your server version or use the testing environment to proceed.</string>
-    <string name="login_error_dhis_version_v2">This server is running a dhis version different than %s. Update your server version or use the testing environment to proceed.</string>
-    <string name="login_error_unsuccessful_response">Something went wrong. Please check that server url, username and password are correct and try again.</string>
-    <string name="login_error_error_response">The server could not complete this request.</string>
-    <string name="login_error_default">There has been a problem while trying to log into the server.</string>
-    <string name="login_error">Login error</string>
-    <string name="missing_mandatory_fields">Mandatory fields are missing</string>
-    <string name="online_search_unexpected">Unexpected error while searching online</string>
-    <string name="online_search_parsing_error">Error while parsing results</string>
-    <string name="online_search_error">Searching online returned an error</string>
-    <string name="online_search_response_error">Something went wrong in the server</string>
     <string name="search_program_not_selected">Select a program to enable enrolling</string>
     <string name="search_access_error">You don\'t have the requiered permission</string>
-    <string name="feature_unavaible">This functionality is not ready yet.</string>
-    <string name="relationship_label_error">Error getting relationship label</string>
     <string name="all_tei_type">All %s</string>
     <string name="invalid_phone_number">This is not a valid phone number</string>
-    <string name="invalid_email">This is not a valid email</string>
-    <string name="invalid_negative_number">Only negative numbers are allowed</string>
     <string name="invalid_possitive_zero">Only positive numbers or zero allowed</string>
-    <string name="invalid_possitive">Only positive numbers are allowed</string>
-    <string name="invalid_interval">Only values from 0 to 1 are allowed</string>
-    <string name="invalid_percentage">Only values from 0 to 100 are allowed</string>
-    <string name="date_dialog_tigle">Select dates to filter</string>
     <string name="select_option">Select option</string>
-    <string name="issue_reported">Issue reported</string>
-    <string name="dialog_generate_new_event">Generate new event</string>
-    <string name="message_generate_new_event">Do you want to create another event?</string>
     <string name="event_completed_title">Events Completed</string>
     <string name="event_completed_message">All events in this program are completed. Would you like to close the program as well?</string>
-    <string name="complete_enrollment_message">Would you like to complete the enrollment as well?</string>
     <string name="complete_enrollment_message_V2">Would you like to complete the %s as well?</string>
     <string name="check_event">Check</string>
 
     <string name="menu_home">Home</string>
     <string name="appwidget_text">EXAMPLE</string>
-    <string name="add_widget">Add widget</string>
     <string name="showHelp">Show help</string>
-    <string name="tuto_settings_1">Synchronize your data…</string>
-    <string name="tuto_settings_2">…your configuration…</string>
-    <string name="tuto_settings_3">…set how many records to download from server…</string>
-    <string name="tuto_settings_reserved">Check and manage how many reserved values are left</string>
-    <string name="tuto_settings_errors">Check if a connection to the server failed</string>
-    <string name="tuto_settings_reset">Free some disk space</string>
-    <string name="tuto_settings_4">…or delete everything to start over.</string>
-    <string name="tuto_search_1_v2">Find your entities both in your local device and the online server.</string>
-    <string name="tuto_search_2">You can switch to other programs</string>
-    <string name="tuto_search_3_v2">Search or Add new entities. You need to search before you can add a new one!</string>
-    <string name="tuto_search_4_v2">Click here to clean the fields and restart the search.</string>
     <string name="tuto_dashboard_1">This is the entity dashboard</string>
     <string name="tuto_dashboard_2">See entities profile information…</string>
-    <string name="tuto_dashboard_3">…Share information via QR or SMS…</string>
-    <string name="tuto_dashboard_4">…Or mark the entity for follow-up</string>
-    <string name="tuto_dashboard_5">Click to create or schedule an event or refer to another Org Unit.</string>
     <string name="tuto_dashboard_6">Here you will see all events. Click to see an event detail.</string>
     <string name="tuto_dashboard_7">Navigate through the menu to add relationships, see indicators or write notes.</string>
-    <string name="tuto_dashboard_8">Click to see all enrollments of your entity or create a new one.</string>
-    <string name="tuto_tei_event_1">Click to delete this event. This action can not be undone.</string>
-    <string name="tuto_tei_event_2">Complete the event.</string>
-    <string name="tuto_program_event_1">All events related to this program will be listed here.</string>
-    <string name="tuto_program_event_2">Click to add a new event</string>
     <string name="tuto_event_initial_new_1">Enter all data to create the event</string>
     <string name="tuto_event_initial_1">Click to check the event completion status.</string>
-    <string name="tuto_event_summary">Click to complete or re-open an event</string>
-    <string name="tuto_main_7">Read and store information from other devices via QR</string>
-    <string name="tuto_main_8">Synchronize your data with the server</string>
-    <string name="tuto_main_9">Block session with a 4 digit code. Do not forget your code!</string>
-    <string name="tuto_main_10">Log out to change user or server. You will be able to log in again even if there is no internet connection.</string>
-    <string name="text_plus_colon">%s:</string>
     <string name="relationships">relationships</string>
     <string name="empty_tei_add">There are no events registered, click \"+\" to add a new one.</string>
-    <string name="empty_tei_no_add">There are no events registered.</string>
     <string name="qr_data_values">Data values</string>
     <string name="info">Info</string>
     <string name="qr_no_id_error">Could not read this Id</string>
     <string name="delete_local_data">Delete local data</string>
     <string name="dashboard_overview">Overview</string>
-    <string name="dashboard_relationships">Relationships</string>
-    <string name="dashboard_indicators">Indicators</string>
-    <string name="dashboard_analytics">Analytics</string>
     <string name="empty_indicators">There are no indicators for this program.</string>
-    <string name="dashboard_notes">Notes</string>
-    <string name="unable_to_complete">Unable to complete</string>
-    <string name="unable_to_save">Unable to save</string>
-    <string name="warnings_in_form">There are warnings in the form</string>
-    <string name="what_to_do">What do yo want to do?</string>
-    <string name="field_errors">Some fields have errors. Please, check them to be able to complete</string>
     <string name="unselect_enrollment">All enrollments</string>
     <string name="unselect_enrollment_description">Show dashboard with all active programs</string>
-    <string name="CHECK_SYNC_ERRORS">Open sync errors log</string>
     <string name="error_dialog_title">Sync error log</string>
     <string name="share_with">Share with...</string>
-    <string name="errors_during_sync">Your configuration sync has failed. There  could be errors in your server. Click here for more information.</string>
-    <string name="sectionSelectorPrev">PREV</string>
-    <string name="sectionSelectorNext">NEXT</string>
-    <string name="event_overview">Details</string>
-    <string name="event_indicators">Indicators</string>
-    <string name="event_notes">Notes</string>
-    <string name="complete_add_new"><![CDATA[Complete & add new]]></string>
-    <string name="complete_later">Complete later</string>
-    <string name="finish_add_new"><![CDATA[Finish & add new]]></string>
-    <string name="finish">Finish</string>
-    <string name="error_fields_title">Fields with errors</string>
-    <string name="error_fields_events">Some fields have errors. They have not been saved. Please, check them.</string>
     <string name="unique_warning">The value should be unique, a coincidence has been found. It has not been saved. Please check it.</string>
-    <string name="unique_coincidence_found">A coincidence in a unique field has been found. Please check form to save Enrollment.</string>
     <string name="please_wait">Please wait</string>
     <string name="skip">Skip</string>
-    <string name="reschedule">Reschedule</string>
     <string name="no_intructions">There is no information for this screen</string>
-    <string name="event_overdue">Overdue</string>
-    <string name="unsupported_program_rule">There is one program rule which is not supported. Please check the documentation</string>
-    <string name="empty_description">No info for this field</string>
-    <string name="biometrics_dialog_title">Empty Credentials</string>
-    <string name="biometrics_first_use_text">To be able to log in using the fingerprint scanner you first need to use the default way</string>
-    <string name="biometrics_security_title">Biometric Security</string>
-    <string name="biometrics_login_title">Quick login</string>
-    <string name="biometrics_login_text">Would you like to use your fingerprint or another biometric method to log in?</string>
-    <string name="tab_tables">Tables</string>
-    <string name="table">Table</string>
-    <string name="login_https">https://</string>
     <string name="delete_local_data_message">Non synchronized data will be lost. Do you really want to continue?</string>
-    <string name="local_data_accept">Accept</string>
     <string name="delete_local_data_error">Data could not be deleted. Please retry.</string>
     <string name="delete_local_data_done">Delete local data finished successfully.</string>
-    <string name="org_unit_selection_warning">At least one organisation unit must be selected</string>
-    <string name="send_user_name_title">Send data</string>
-    <string name="send_user_name_mesage">Help DHIS2 improve this app by sharing error logs associated to your user id.</string>
-    <string name="improve_app_msg_title">Do you want to help us improve this app?</string>
-    <string name="improve_app_msg_text">If you say yes the app will send anonymous statistics and error logs which help us improve user experience and performance.\n\nFor further details, please refer to our privacy policy.</string>
-    <string name="improve_app_msg_clickable_word">privacy policy</string>
-    <string name="check_mandatory_field">Check fields</string>
-    <string name="error_no_network_during_sync">You lost your internet connection while performing your configuration sync. Please try again later</string>
-    <string name="action_agree">Agree</string>
-    <string name="action_continue">Continue</string>
-    <string name="login_server_info_title">Server url</string>
-    <string name="login_server_info_message">Enter the DHIS 2 server url for your organisation as provided by your system administrator.\n\nAlternatively, you can scan a QR code containing the URL of your server</string>
-    <string name="forgot_your_code">Forgot your code?</string>
-    <string name="event_form_end_options_title">What would you like to do for this event?</string>
-    <string name="sectionSelectorEnd">END</string>
     <string name="resource_not_found">%s not found</string>
     <string name="relationship_not_found_message">The record you are trying to access is not available. Would you like to search for it?</string>
     <string name="sync_by_sms">Synced by SMS</string>
@@ -513,33 +269,16 @@
     <string name="state_uploading">Uploading</string>
     <string name="state_relationship">Relationship</string>
     <string name="sent_by_sms">Sent by sms</string>
-    <string name="no_conflicts_message">There are no conflicts for this program</string>
-    <string name="network_unavailable_sms">Network connection is not available, but it looks like there is phone services - you can use SMS.</string>
-    <string name="network_unavailable">Network connection is not available.</string>
     <string name="action_close">Close</string>
     <string name="tuto_main_11">Now you can check sync information by clicking here</string>
-    <string name="no_conflicts_update_message">This data is stored in your device only, it is not synced with the server.</string>
-    <string name="no_conflicts_synced_message">You are up to date! All your data is sent to the server.</string>
     <string name="relationship_error_recursive">You can\'t relate a record with itself</string>
-    <string name="unblock_session">Unblock session</string>
-    <string name="data_set_complete">Complete</string>
-    <string name="data_set_open">Open</string>
-    <string name="unsupported_value_type">Unsupported value type</string>
     <string name="change_calendar_view">Change calendar view</string>
-    <string name="data_every_fifteen_minutes">15 minutes</string>
-    <string name="data_every_hour">Every hour</string>
-    <string name="data_every_day">Daily</string>
-    <string name="data_every_week">Weekly</string>
-    <string name="period_week">Week</string>
-    <string name="sync_setting">Synchronization setting: %s</string>
     <string name="relationship_without_enrollment">The record you are trying to access has no enrollment. You can\'t access the dashboard.</string>
     <string name="formatting_error">Formatting error</string>
     <string name="dashboard_menu_delete_tei_v2">Delete %s</string>
     <string name="delete_authority_error">You do not have the authority to delete this record</string>
-    <string name="validation_url">This is not a valid url</string>
     <string name="adjusting_form">Adjusting form…</string>
 
-    <string name="sms_receiver_number">Receiver number</string>
     <string name="sms_amount_question">Do you accept to send %d messages?</string>
     <string name="sms_sending">Sending %1$d/%2$d</string>
     <string name="sms_waiting_amount_confirm">Waiting amount confirmation - %d</string>
@@ -557,51 +296,29 @@
     <string name="sms_error_no_gateway_set">No gateway set</string>
     <string name="sms_error_no_user_login">User not logged in</string>
     <string name="sms_error_module_disabled">SMS module is disabled</string>
-    <string name="sms_error_ongoing_sunmission">Another SMS submission ongoing</string>
     <string name="sms_metadata_empty">SMS module not initiated, not found required metadata</string>
-    <string name="sms_completed">Completed</string>
     <string name="sms_count_error">SMS count not accepted</string>
     <string name="sms_state_started">Started sms submission</string>
     <string name="sms_state_converted">Data read and converted. Submission id: %d</string>
-    <string name="sms_general_error">Error sending sms submission</string>
     <string name="sms_title_enrollment">SMS TEI registration and enrollment</string>
     <string name="sms_title_event">SMS event submission</string>
     <string name="sms_title_data_set">SMS data set submission</string>
-    <string name="sms_bar_state_starting">Starting</string>
-    <string name="sms_bar_state_sending">In progress</string>
-    <string name="sms_bar_state_sent">Sent</string>
-    <string name="sms_bar_state_failed">Failed</string>
 
-    <string name="start_sync_granular">Starting synchronization.</string>
     <string name="syncing">Synchronizing...</string>
-    <string name="end_sync_granular">Synchronization completed.</string>
-    <string name="error_sync">Error has happened during synchronization.</string>
-    <string name="error_sync_check_logs">An error has happened during synchronization. Click here to check error logs</string>
-    <string name="cancel_sync">Cancelled synchronization.</string>
 
     <string name="copied_text">Copied</string>
-    <string name="image_selected">Image selected</string>
-    <string name="show_in_map">Show in map</string>
-    <string name="show_list">Show list</string>
 
     <!--region TRACKER IMPORT CONFLICT MESSAGES-->
-    <string name="value_required_but_not_provided">%s is mandatory but has not been provided.</string>
-    <string name="polygon_captured">Polygon captured</string>
     <string name="polygon">Polygon</string>
     <!--endregion-->
 
-    <string name="fingerprint_title">Fingerprint</string>
-    <string name="fingerprint_message">Please, put your finger in your fingerprint reader.</string>
     <string name="security_title">Security</string>
     <string name="security_rooted_message">For security reasons, this version of the app is not allow to be used in rooted devices. Please use the training version.</string>
-    <string name="fix_error">There are some errors. Please fix them before continuing.</string>
 
     <string name="filters_active">Filters applying</string>
     <string name="filters_disabled">No filters applied</string>
     <string name="filters_title_period">Period</string>
     <string name="filters_title_org_unit">Org. Unit</string>
-    <string name="filters_title_sorting">Sorting</string>
-    <string name="filters_title_status">Status</string>
     <string name="filters_title_state">Sync</string>
     <string name="filters_title_assigned">Assigned to me</string>
     <string name="filter_period_today">Today</string>
@@ -616,26 +333,19 @@
     <string name="filter_period_form_to">From - To</string>
     <string name="filter_period_other">Other</string>
     <string name="filter_period_any">Anytime</string>
-    <string name="data_values_error_sync_message">Sync failed. Sync failed. Check the data values to try to fix the problem and try again. If it keeps failing contact your system administrator</string>
-    <string name="sms_synced_message">This data has been sent to the server but it is not guaranteed to have been stored</string>
     <string name="filter_event_status_open">Open</string>
     <string name="filter_event_status_schedule">Schedule</string>
     <string name="filter_event_status_overdue">Overdue</string>
     <string name="filter_event_status_visited">Visited</string>
     <string name="filter_event_status_completed">Completed</string>
     <string name="filter_event_status_skipped">Skipped</string>
-    <string name="event_tei_limits">Events:%smax:%s%scurrent:%s TEI:%smax:%s%scurrent:%s</string>
-    <string name="event_tei_limits_v2">Settings limited %s\nEvents: %s/%s TEI: %s/%s</string>
     <string name="limit_setting">Settings limited %s</string>
-    <string name="enrollment_data_hide">Hide enrollment data</string>
-    <string name="enrollment_data_show">Show enrollment data</string>
     <string name="sms_enabled">SMS module enabled</string>
     <string name="sms_disabled">SMS module disabled</string>
     <string name="sms_downloading_data">Downloading data for SMS module. Please wait</string>
     <string name="sms_empty_gateway">SMS gateway can\'t be empty</string>
     <string name="granular_sync_enrollments_empty">There are no enrollments to upload</string>
     <string name="granular_sync_unsupported_task">This convertTask is not supported</string>
-    <string name="disable_pin_locked">Don´t show again lock screen</string>
     <string name="set_pin">Set pin</string>
     <string name="conflict">Conflict</string>
     <string name="change_event_date">Change date</string>
@@ -665,11 +375,7 @@
     <string name="choose_ou">Choose organisation unit</string>
     <string name="enter_url">Enter url</string>
     <string name="enter_value">Enter value</string>
-    <string name="choose_image">Choose image</string>
-    <string name="scan_code">Scan code</string>
-    <string name="choose_option">Choose option</string>
     <string name="reserved_values_hint">Reserved values downloaded per TEI attribute</string>
-    <string name="settings_reserved_values_message">Reserved values downloaded per TEI attribute</string>
     <string name="reserved_values_left">%s reserved values left</string>
     <string name="manage_reserved_values_button">Manage reserved values</string>
     <string name="events_to_download">Events to download</string>
@@ -689,60 +395,31 @@
     <string name="filter_sync_not_synced">Not Synced</string>
     <string name="filter_sync_error">Sync Error</string>
     <string name="filter_sync_sms">SMS Synced</string>
-    <string name="dataset_overview">Details</string>
-    <string name="dataset_comments">Comments</string>
     <string name="saved">Saved!</string>
-    <string name="run_validation_rules">Do you want to check data quality?</string>
-    <string name="validation_success_title">Everything looks good!</string>
-    <string name="mark_dataset_complete">Do you also want to complete the data set?</string>
-    <string name="dataset_completed">Mark as completed</string>
-    <string name="name">Name</string>
-    <string name="formula">Formula</string>
-    <string name="complete_anyway">Complete anyway</string>
     <string name="fk_message">Missing %s %s from %s %s</string>
     <string name="filters_title_event_status">Event status</string>
     <string name="filters_title_enrollment_status" translatable="false">@string/enrollment_status</string>
-    <string name="enrollment_date">Enrollment date</string>
     <string name="dataset_empty_list_can_create">There are no data. Click \"+\" to add new a new record</string>
     <string name="dataset_emtpy_list_can_not_create">There are no data. You don\'t have permission to add new records.</string>
     <string name="validation_rules_empty_description">No description or instruction provided</string>
     <string name="validation_rules_data_to_review">Data to review</string>
-    <string name="dataset_saved_completed">Saved and completed!</string>
     <string name="status_change_error_active_exist">There is already an active enrollment</string>
     <string name="enrollment_status_active">Open</string>
     <string name="enrollment_status_completed">Complete</string>
     <string name="enrollment_status_cancelled">Cancelled</string>
     <string name="unknownValue" translatable="false">-</string>
-    <string name="event_data">Data</string>
     <string name="download_tei_error">The selected %s could not be downloaded.</string>
-    <string name="completed_by">Completed by %s: %s</string>
-    <string name="updated_time">Updated: %s</string>
-    <string name="action_done">Done</string>
-    <string name="validation_internal_error_datasets">We could not check data quality. Contact your administrator</string>
-    <string name="are_you_sure">Are you sure?</string>
-    <string name="reopen_question">Do you want to re-open the data set?</string>
     <string name="filters_title_date">Date</string>
-    <string name="filters_title_event_date">Event date</string>
-    <string name="tei_type_has_no_attributes">%s has no public attributes. Please select a program</string>
     <string name="privacy_policy_title">Privacy Policy</string>
     <string name="open_privacy_policy">Click here to check our <a href="">privacy policy</a> </string>
-    <string name="coordinates_error">Coordinates values are not valid</string>
-    <string name="break_glass_error">You cannot enroll TEIs from other org units in this program because it is protected.\nContact your administrator.</string>
     <string name="break_glass_error_v2">You cannot enroll a %s from other org units in this program because it is protected.\nContact your administrator.</string>
     <string name="field_is_mandatory">This field is mandatory</string>
     <string name="security_debugger_message">For security reasons, this version of the app is not allow to be used with adb. Please use the training version.</string>
 
     <string name="customactivityoncrash_error_activity_error_occurred_explanation">Oops! Something didn\'t go as planned.\nLet us get you back in action.</string>
     <string name="customactivityoncrash_error_activity_restart_app">Go back</string>
-    <string name="customactivityoncrash_error_activity_close_app">Close app</string>
-    <string name="customactivityoncrash_error_activity_error_details">More details</string>
-    <string name="customactivityoncrash_error_activity_error_details_title">More details</string>
-    <string name="customactivityoncrash_error_activity_error_details_close">Close</string>
     <string name="customactivityoncrash_error_activity_error_details_copy">Copy to clipboard</string>
-    <string name="customactivityoncrash_error_activity_error_details_copied">Copied to clipboard</string>
-    <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Error information</string>
     <string name="metada_first_sync_error">We found an error when syncing with your server. Share the error with your system administrator if possible.</string>
-    <string name="error_init_session">We could not init the session with your user</string>
     <string name="enrollment_date_edition_warning">There are planned events that won\'t be re-scheduled</string>
     <string name="section_charts">Charts</string>
     <string name="navigation_list_view">List</string>
@@ -794,49 +471,28 @@
     <string name="section_feedback">Feedback</string>
     <string name="section_indicators">Indicators</string>
     <string name="camera_permission_denied">Camera permission is denied.\nYou need to enable it to use this feature.</string>
-    <string name="value">Value</string>
     <string name="section_charts_indicators">Charts and indicators</string>
     <string name="take_photo">Take Photo</string>
-    <string name="from_gallery">Choose from gallery</string>
-    <string name="data_set_quality_check_done">Done!</string>
     <string name="break_glass_dialog_title">This program is protected</string>
     <string name="break_glass_hint">Describe the reason here</string>
-    <string name="authenticating">Authenticating</string>
-    <string name="login_error_no_dhis_instance">Provided server url is not a dhis instance</string>
-    <string name="login_error_bad_credentials">Wrong credentials</string>
-    <string name="login_error_unknown_host">Unknown server</string>
-    <string name="invalid_integer">Value must be an integer</string>
     <string name="openid_session_expired">The session has expired</string>
     <string name="openid_session_expired_message">Your current session has expired. For security reasons you will need to provide your credentials again</string>
-    <string name="dataset_column_default">Values</string>
     <string name="period_span_default_label" translatable="false">%s - %s</string>
     <string name="week_period_span_default_label">Week %d %s to %s</string>
     <string name="biweek_period_span_default_label" translatable="false">%d %s - %d %s</string>
     <string name="action_do_not_show_again">Do not show again</string>
     <string name="feature_configuration">Feature Configuration</string>
     <string name="show_radar_graph">Show as Radar</string>
-    <string name="coordinate_feature_type_error">Can not set coordinate type</string>
     <string name="filter_follow_up_label">Followed up %s</string>
-    <string name="wrong_date_format">%s can\'t be parsed as a date</string>
     <string name="update_field_error">This field could not be updated. Please try again</string>
-    <string name="edition">Edition</string>
-    <string name="available">Available</string>
     <string name="blocked_by_completion">This data is not editable because is marked as completed</string>
     <string name="edition_expired">This data is not editable because its edition time is expired</string>
     <string name="edition_no_write_access">You do not have permission to edit this data</string>
     <string name="event_date_not_in_orgunit_range">This data is not editable because the organization unit is closed</string>
     <string name="edition_no_catcombo_access">You do not have permission to edit this data</string>
     <string name="edition_orgunit_user_scope">You cannot edit data from this organisation unit</string>
-    <string name="reload_list">Reset search</string>
     <string name="error_tei_online_search_title">The online search returned the following message:</string>
-    <string name="program_rules_loop_warning_title">Program rules warning</string>
-    <string name="program_rules_loop_warning_message">There is a configuration issue causing a loop in the rules. Contact you administrator.</string>
-    <string name="granular_sync_refresh">REFRESH</string>
-    <string name="unknown_date">Unknown</string>
-    <string name="granular_sync_refresh_title">Refresh all data</string>
-    <string name="max_accounts_text">You have reached the maximum number of accounts (%d). To add a new account, log in and delete one of your accounts</string>
     <string name="delete_account">Delete Account</string>
-    <string name="manage_accounts">Manage Accounts</string>
     <string name="main_menu_troubleshooting">Configuration troubleshooting</string>
     <string name="troubleshooting_language_title">Language</string>
     <string name="troubleshooting_language_description">Tap here to change the language of the application</string>
@@ -855,9 +511,7 @@
     <string name="search_no_results">There are no results for this search</string>
     <string name="search_too_many_results">Too many results</string>
     <string name="search_too_many_results_message">Try changing  your search to narrow down the results.</string>
-    <string name="search_create_new">Create new</string>
     <string name="search_new_te_type">New %s</string>
-    <string name="search_min_attributes_message">It is necessary to enter at least %s attributes to search</string>
     <string name="action_ok">Ok</string>
     <string name="init_search">Start a search to find any %s</string>
     <string name="search_or_create">You can search or create a new %s</string>
@@ -866,7 +520,6 @@
     <string name="missing_error_fields_events">Some fields have errors and they are not saved. \nDo you want to review the form?</string>
     <string name="event_can_be_completed">Do you want to mark this form as complete?</string>
     <string name="event_error_on_complete">You have some error messages.\nDo you want to review them?</string>
-    <string name="changes_will_be_discarted">If you exit now the changes will be discarded.</string>
     <string name="re_opened">Re-opened</string>
     <string name="account_disable_title">Account disabled</string>
     <string name="account_disable_message">Your account has been disabled by an administrator.</string>
@@ -876,27 +529,10 @@
     <string name="customactivityoncrash_error_activity_current_date">Current date: %s</string>
     <string name="customactivityoncrash_error_activity_device">Device: %s</string>
     <string name="customactivityoncrash_error_activity_os_version">Os version: %s</string>
-    <string name="open_details">Open %s details</string>
-    <string name="tracked_entity_type_details">%s details</string>
     <string name="syncing_resource">Syncing %s…</string>
-    <string name="sms_sync_waiting_for_response">SMS sent. Waiting for server response.</string>
-    <string name="sms_sync_sms_reached_server">SMS confirmed to reach server. Updating Status</string>
-    <string name="sms_sync_sms_reached_server_error">We can\'t confirm the SMS reached the server. Updating Status</string>
-    <string name="sms_sync_sent">SMS sent. Updating status.</string>
-    <string name="sms_sync_not_sent">SMS not sent.</string>
-    <string name="sms_sync_opening_app">Opening SMS app. Do not modify the message please.</string>
     <string name="sms_sync_sms_app_chooser_title">Send Sms with</string>
     <string name="sms_sync_is_sms_sent">Did you send the sms?</string>
-    <string name="sms_sync_manual_confirmation">Awaiting manual confirmation</string>
-    <string name="syncing_events">Syncing events</string>
-    <string name="syncing_teis">Syncing tracked entities</string>
-    <string name="syncing_data_sets">Syncing data sets</string>
-    <string name="syncing_resources">Syncing resources</string>
-    <string name="syncing_done">Syncing done</string>
-    <string name="sms_available_for_individual_records">SMS sync is available but has to be accessed for each individual record</string>
     <string name="downloading_image_resources">Downloading images...</string>
-    <string name="program_description">Program description</string>
-    <string name="wrong_pin">Wrong pin</string>
     <string name="enrolledIn">Enrolled in</string>
     <string name="ownedBy">Owned by</string>
     <string name="sync_dialog_title_not_synced">Sync needed</string>
@@ -916,20 +552,11 @@
     <string name="sync_dialog_action_refresh">Refresh</string>
     <string name="sync_dialog_action_not_now">Not now</string>
     <string name="tap_to_explore_action">Tap here to explore</string>
-    <plurals name="error_count_label">
-        <item quantity="one">%s error</item>
-        <item quantity="other">%s errors</item>
-    </plurals>
-    <plurals name="warning_count_label">
-        <item quantity="one">%s warning</item>
-        <item quantity="other">%s warnings</item>
-    </plurals>
     <string name="new_version_message">App version <b>%s</b> is now available. Do you want to download it?</string>
     <string name="software_update">Software update</string>
     <string name="remind_me_later">Later</string>
     <string name="download_now">Download now</string>
     <string name="check_for_updates">Check for updates</string>
-    <string name="checking_for_updates">Checking for updates</string>
     <string name="no_updates">There are no new updates</string>
     <string name="unknow_sources_denied">Unknown sources permission is denied.\nYou need to enable it to install version.</string>
     <string name="storage_denied">Storage permission is denied.\nYou need to enable it to install version.</string>
@@ -971,18 +598,10 @@
     <string name="program_stage">Program stage</string>
     <string name="event">event</string>
     <string name="timeline">Timeline</string>
-    <string name="clear_search">Clear search</string>
-    <string name="optional">Optional</string>
     <string name="database_export_downloaded">Database downloaded</string>
-    <string name="importing_database">Importing database</string>
-    <string name="empty_search_attributes_message">There are no search fields configured to use.\nPlease contact your admin.</string>
     <string name="show_more">Show more</string>
     <string name="show_less">Show less</string>
     <string name="sync">Sync</string>
-    <string name="show_fields">Show fields</string>
-    <string name="hide_fields">Hide fields</string>
-    <string name="importing_successful">Import successful</string>
-    <string name="section_misconfigured">This section is misconfigured.\nContact your administrator.</string>
     <string name="successful_sync">Successful sync</string>
     <string name="syncing_something">Syncing %s…</string>
     <string name="file_resources">file resources</string>
@@ -999,4 +618,20 @@
     <string name="complete_enrollment_label">Complete %s</string>
     <string name="deactivate_enrollment_label">Deactivate %s</string>
     <string name="reopen_enrollment_label">Re-open %s</string>
+    <string name="main_menu_developer_scree">Developer options</string>
+
+    <plurals name="error_count_label">
+        <item quantity="one">%s error</item>
+        <item quantity="other">%s errors</item>
+    </plurals>
+
+    <plurals name="warning_count_label">
+        <item quantity="one">%s warning</item>
+        <item quantity="other">%s warnings</item>
+    </plurals>
+
+    <plurals name="settings_specific_programs">
+        <item quantity="one">There is %s program with specific settings</item>
+        <item quantity="other">There are %s programs with specific settings</item>
+    </plurals>
 </resources>

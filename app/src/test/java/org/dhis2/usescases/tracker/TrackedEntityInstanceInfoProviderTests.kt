@@ -3,6 +3,7 @@ package org.dhis2.usescases.tracker
 import androidx.compose.ui.graphics.Color
 import org.dhis2.commons.date.DateLabelProvider
 import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.data.sorting.SearchSortingValueSetter
 import org.dhis2.mobile.commons.model.AvatarProviderConfiguration
 import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.tracker.data.ProfilePictureProvider
@@ -27,6 +28,7 @@ class TrackedEntityInstanceInfoProviderTests {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val profilePictureProvider: ProfilePictureProvider = mock()
     private val dateLabelProvider: DateLabelProvider = mock()
+    private val searchSortingValueSetter: SearchSortingValueSetter = mock()
     private val metadataIconProvider: MetadataIconProvider =
         mock {
             on { invoke(any()) } doReturn MetadataIconData.defaultIcon()
@@ -40,6 +42,8 @@ class TrackedEntityInstanceInfoProviderTests {
                 profilePictureProvider,
                 dateLabelProvider,
                 metadataIconProvider,
+                searchSortingValueSetter,
+
             )
     }
 

@@ -2,13 +2,14 @@ package org.dhis2.mobile.login.main.di
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
-import org.dhis2.mobile.commons.auth.OpenIdController
-import org.dhis2.mobile.commons.auth.OpenIdControllerImpl
 import org.dhis2.mobile.login.accounts.data.repository.AccountRepository
 import org.dhis2.mobile.login.accounts.data.repository.AccountRepositoryImpl
 import org.dhis2.mobile.login.accounts.ui.viewmodel.AccountsViewModel
+import org.dhis2.mobile.login.authentication.OpenIdController
+import org.dhis2.mobile.login.authentication.OpenIdControllerImpl
 import org.dhis2.mobile.login.main.data.LoginRepository
 import org.dhis2.mobile.login.main.data.LoginRepositoryImpl
+import org.dhis2.mobile.login.main.ui.state.OidcInfo
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
@@ -26,11 +27,32 @@ internal actual val accountModule =
             )
         }
 
-        single<OpenIdController> { params ->
-            OpenIdControllerImpl(params.get())
+        single<OpenIdController> { OpenIdControllerImpl() }
+
+        single {
+            when (getProperty("openIdType", "")) {
+                "token" ->
+                    OidcInfo.Token(
+                        server = getProperty("openIdServer", ""),
+                        loginLabel = getProperty("openIdButtonText", ""),
+                        clientId = getProperty("openIdClient", ""),
+                        redirectUri = getProperty("openIdRedirectUri", ""),
+                        authorizationUrl = getProperty("openIdAuthorizationUrl", ""),
+                        tokenUrl = getProperty("openIdTokenUrl", ""),
+                    )
+
+                else ->
+                    OidcInfo.Discovery(
+                        server = getProperty("openIdServer", ""),
+                        loginButtonText = getProperty("openIdButtonText", ""),
+                        clientId = getProperty("openIdClient", ""),
+                        redirectUri = getProperty("openIdRedirectUri", ""),
+                        discoveryUri = getProperty("openIdDiscoveryUri", ""),
+                    )
+            }
         }
 
-        factory<LoginRepository> { params ->
+        factory<LoginRepository> { _ ->
             LoginRepositoryImpl(
                 d2 = get(),
                 authenticator = get(),
@@ -39,7 +61,7 @@ internal actual val accountModule =
                 d2ErrorMessageProvider = get(),
                 crashReportController = get(),
                 analyticActions = get(),
-                openIdController = get { parametersOf(params.get()) },
+                openIdController = get(),
                 dispatcher = get(),
                 domainErrorMapper = get(),
             )

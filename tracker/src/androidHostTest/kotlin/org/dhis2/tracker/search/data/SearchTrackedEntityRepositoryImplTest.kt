@@ -2,9 +2,11 @@ package org.dhis2.tracker.search.data
 
 import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.filters.data.FilterPresenter
+import org.dhis2.tracker.data.ProfilePictureProvider
 import org.dhis2.tracker.search.model.SearchOperator
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchCollectionRepository
@@ -25,7 +27,7 @@ class SearchTrackedEntityRepositoryImplTest {
 
     private val d2: D2 = mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
     private val filterPresenter: FilterPresenter = mock()
-
+    private val profilePictureProvider: ProfilePictureProvider = mock()
     private val teType = "personType"
     private val programUid = "programUid"
 
@@ -35,6 +37,7 @@ class SearchTrackedEntityRepositoryImplTest {
             SearchTrackedEntityRepositoryImpl(
                 d2 = d2,
                 filterPresenter = filterPresenter,
+                profilePictureProvider = profilePictureProvider,
             )
     }
 
@@ -187,7 +190,7 @@ class SearchTrackedEntityRepositoryImplTest {
                     .uid(attributeUid)
                     .unique(false)
                     .optionSet(
-                        org.hisp.dhis.android.core.common.ObjectWithUid
+                        ObjectWithUid
                             .create("optionSetUid"),
                     ).build()
 
@@ -395,6 +398,7 @@ class SearchTrackedEntityRepositoryImplTest {
                     isOnline = false,
                     hasStateFilters = false,
                     allowCache = true,
+                    selectedProgram = programUid,
                 )
 
             // Then
@@ -418,6 +422,7 @@ class SearchTrackedEntityRepositoryImplTest {
                     isOnline = true,
                     hasStateFilters = false,
                     allowCache = false,
+                    selectedProgram = programUid,
                 )
 
             // Then
@@ -440,6 +445,7 @@ class SearchTrackedEntityRepositoryImplTest {
                 isOnline = true,
                 hasStateFilters = false,
                 allowCache = true,
+                selectedProgram = programUid,
             )
 
             // Then
@@ -456,6 +462,7 @@ class SearchTrackedEntityRepositoryImplTest {
                 isOnline = false,
                 hasStateFilters = false,
                 allowCache = true,
+                selectedProgram = programUid,
             )
 
             // Then - exception is thrown

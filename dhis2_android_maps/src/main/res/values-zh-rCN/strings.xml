@@ -9,7 +9,6 @@
     <string name="dialog_layer_base_map_bing_aerial">Bing空间图</string>
     <string name="dialog_layer_base_map_bing_aerial_label">Bing空间标示图</string>
     <string name="action_apply">应用</string>
-    <string name="dialog_layer_satellite">显示卫星视图</string>
     <string name="dialog_layer_event">显示事件</string>
     <string name="dialog_layer_tei_coordinates">显示跟踪实体坐标</string>
     <string name="dialog_layer_heatmap">显示热力图</string>

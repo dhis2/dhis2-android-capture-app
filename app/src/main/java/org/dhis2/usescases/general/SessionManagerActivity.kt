@@ -47,8 +47,7 @@ abstract class SessionManagerActivity :
 
     open var handleEdgeToEdge = true
 
-    @Inject
-    lateinit var analyticsHelper: AnalyticsHelper
+    val analyticsHelper: AnalyticsHelper by inject()
 
     private var pinComposeView: androidx.compose.ui.platform.ComposeView? = null
 
@@ -70,7 +69,6 @@ abstract class SessionManagerActivity :
                         true,
                         null,
                     )
-                    Unit
                 }
             if (serverComponent.userManager().isUserLoggedIn().blockingFirst() &&
                 !serverComponent.userManager().allowScreenShare()
@@ -194,7 +192,7 @@ abstract class SessionManagerActivity :
         resultCode: Int,
         data: Intent?,
     ) {
-        if (activityResultObserver != null && sessionManagerServiceImpl.isUserLoggedIn()) {
+        if (activityResultObserver != null && ::sessionManagerServiceImpl.isInitialized && sessionManagerServiceImpl.isUserLoggedIn()) {
             comesFromImageSource = true
             activityResultObserver!!.onActivityResult(requestCode, resultCode, data)
             activityResultObserver = null
@@ -267,7 +265,7 @@ abstract class SessionManagerActivity :
     private fun navigateToLogin(accountsCount: Int) {
         startActivity(
             LoginActivity::class.java,
-            LoginActivity.bundle(
+            bundle(
                 accountsCount = accountsCount,
                 isDeletion = false,
             ),

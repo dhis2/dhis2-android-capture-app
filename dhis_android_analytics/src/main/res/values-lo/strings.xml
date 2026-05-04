@@ -8,7 +8,6 @@
     <string name="action_accept">ຍອມຮັບ</string>
     <string name="period">ຊ່ວງເວລາ</string>
     <string name="orgUnit">ຫົວໜ່ວຍອົງກອນ</string>
-    <string name="none">ບໍ່ມີ</string>
     <string name="daily">ທຸກໆມື້</string>
     <string name="today">ມື້ນີ້</string>
     <string name="other">ອື່ນໆ</string>
@@ -44,7 +43,6 @@
     <string name="include_this_period_body">ມັນຈະສະແດງຊ່ວງເວລາປະຈຸບັນໃນແຜນວາດ</string>
     <string name="no_data_for_selected_filters">ຕົວກອງທີ່ທ່ານໃຊ້ບໍ່ໄດ້ສົ່ງຂໍ້ມູນຄືນໃດໆ</string>
     <string name="no_data_to_display">ທ່ານບໍ່ມີຂໍ້ມູນໃດໆທີ່ຈະສະແດງ</string>
-    <string name="visualization_error">ມີບາງຢ່າງຜິດພາດກັບການສະແດງພາບນີ້</string>
     <string name="visualization_failure">ມີບາງຢ່າງຜິດພາດກັບການເບິ່ງເຫັນ</string>
     <string name="visualization_groups_failure">ມີບາງຢ່າງຜິດພາດກັບກຸ່ມການເບິ່ງເຫັນ</string>
     <string name="pie_chart_no_data">ຂໍ້ມູນທັງໝົດເປັນສູນ</string>
@@ -60,7 +58,6 @@
     <string name="error_invalid_program_indicator">ທ່ານບໍ່ໄດ້ຮັບອານຸຍາດເຂົ້າເຖິງສາຍງານຕົວຊີ້ວັດ%s</string>
     <string name="error_invalid_visualization">ການສະແດງພາບ%sຂາດຫາຍໄປ</string>
     <string name="error_parsing_visualization">ການສະແດງພາບນີ້ບໍ່ໄດ້ຖືກຕັ້ງຄ່າໄດ້ດີ, ກະລຸນາຕິດຕໍ່ຜູ້ດູແລຂອງທ່ານ.</string>
-    <string name="error_invalid_custom_boundaries">ບໍ່ຮອງຮັບຂອບເຂດກຳນົດເອງສຳລັບຕົວຊີ້ວັດຂອງສາຍງານ%s</string>
     <string name="error_database">ບໍ່ສາມາດເຂົ້າເຖິງຖານຂໍ້ມູນໄດ້. ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບ</string>
     <string name="error_invalid_program">ທ່ານບໍ່ໄດ້ຮັບອານຸຍາດເຂົ້າເຖີງໂປຣແກຣມ %s</string>
     <string name="error_unsupported_aggregation_type">ປະເພດການສັງລວມບໍ່ໄດ້ສະໜັບສະໜູນ %s</string>

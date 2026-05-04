@@ -12,18 +12,14 @@
     <string name="navigation_notes">یاداشت ها</string>
     <string name="navigation_data_entry">وارد کردن معلومات</string>
     <string name="navigation_tei_data">جزئیات</string>
-    <string name="event_overview">جزئیات</string>
     <string name="select_option">انتخاب گزینه</string>
     <string name="search">جستجو</string>
     <string name="data_sets">دیتا سیت ها</string>
     <string name="done">انجام شد</string>
 
     <string name="filters_title_period">دوره</string>
-    <string name="filters_title_sorting">تنظیم کردن</string>
-    <string name="filters_title_status">وضعیت</string>
     <string name="filters_title_date">تاریخ</string>
     <string name="select_period">انتخاب نوع دوره</string>
-    <string name="daily_period">روزنه</string>
     <string name="weekly">هفته وار</string>
     <string name="monthly">ماهانه</string>
     <string name="bi_monthly">دوبار در- ماه</string>
@@ -73,8 +69,6 @@
     <string name="section_charts">چارت ها</string>
     <string name="action_ok">او کی\!</string>
     <string name="complete">تکمیل</string>
-    <string name="default_table_header_label">مقدار</string>
-    <string name="default_empty_dataset_section_label">دیتا</string>
     <string name="overdue_today">امروز</string>
     <string name="remove">حذف</string>
     <string name="period_daily_title">روزنه</string>

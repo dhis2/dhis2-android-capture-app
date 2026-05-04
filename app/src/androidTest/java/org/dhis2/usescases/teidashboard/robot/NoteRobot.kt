@@ -2,6 +2,7 @@ package org.dhis2.usescases.teidashboard.robot
 
 import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
@@ -67,6 +68,10 @@ class NoteRobot : BaseRobot() {
     }
 
     fun checkNewNoteWasCreated(text: String) {
+        // First wait for the RecyclerView to be visible
+        waitForView(withId(R.id.notes_recycler), waitMillis = NOTES_WAIT_TIMEOUT_MS)
+            .check(matches(isDisplayed()))
+        // Now check for the note content
         waitForView(
             allOf(
                 withId(R.id.notes_recycler),
@@ -81,7 +86,7 @@ class NoteRobot : BaseRobot() {
     fun clickOnClearButton() {
         waitForView(withText(R.string.clear))
             .check(matches(allOf(isDisplayed(), isEnabled())))
-            .perform(click())
+            .perform(closeSoftKeyboard(), click())
     }
 
     fun checkNoteDetails(user: String, noteText: String) {
@@ -92,7 +97,8 @@ class NoteRobot : BaseRobot() {
                 withId(R.id.storeBy),
                 withEffectiveVisibility(Visibility.VISIBLE),
                 withText(user)
-            )
+            ),
+            waitMillis = NOTES_WAIT_TIMEOUT_MS,
         )
             .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
         waitForView(
@@ -100,7 +106,8 @@ class NoteRobot : BaseRobot() {
                 withId(R.id.note_text),
                 withEffectiveVisibility(Visibility.VISIBLE),
                 withText(noteText)
-            )
+            ),
+            waitMillis = NOTES_WAIT_TIMEOUT_MS,
         )
             .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
     }

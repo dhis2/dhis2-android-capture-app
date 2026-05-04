@@ -28,7 +28,6 @@
     <string name="two_fa_disable_title">Turning off two-factor authentication</string>
     <string name="two_fa_disable_desc_1">To disable two-factor authentication open your authenticator app.</string>
     <string name="two_fa_disable_desc_2">Enter the code from your authenticator app below.</string>
-    <string name="two_fa_code">Authentication code</string>
     <string name="two_fa_disable_button">Turn off</string>
     <string name="two_fa_disabling_button">Turning off...</string>
     <string name="two_fa_disable_error">Fail to turn two factor authentication off.</string>
@@ -67,6 +66,9 @@
     <string name="importing_successful">Import successful</string>
     <string name="openid_process_cancelled">The login was cancelled</string>
     <string name="openid_invalid_auth_result">Invalid authorization result</string>
+    <string name="openid_error_expected_intent">Expected IntentWithRequestCode</string>
+    <string name="openid_error_controller_not_bounded">OpenIdController is not bound to a lifecycle scope</string>
+    <string name="openid_login_cancelled">Authentication cancelled</string>
     <string name="error_device_not_registered">Device not registered</string>
     <string name="missing_username_from_oauth_login_response">Missing username from OAuth login response</string>
 </resources>

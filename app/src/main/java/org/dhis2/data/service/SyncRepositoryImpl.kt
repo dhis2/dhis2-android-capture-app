@@ -1,8 +1,6 @@
 package org.dhis2.data.service
 
-import io.reactivex.Observable
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.call.D2Progress
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
@@ -57,13 +55,16 @@ class SyncRepositoryImpl(
             .eq(eventUid)
             .upload()
 
-    override fun downLoadEvent(eventUid: String): Observable<out D2Progress> =
-        d2
-            .eventModule()
-            .eventDownloader()
-            .byUid()
-            .eq(eventUid)
-            .download()
+    override fun downLoadEvent(
+        eventUid: String,
+        programUid: String,
+    ) = d2
+        .eventModule()
+        .eventDownloader()
+        .byProgramUid(programUid)
+        .byUid()
+        .eq(eventUid)
+        .download()
 
     override fun downloadEventFiles(eventUid: String) =
         d2

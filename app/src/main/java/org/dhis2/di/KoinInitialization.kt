@@ -1,6 +1,7 @@
 package org.dhis2.di
 
 import android.app.Application
+import dhis2.org.analytics.charts.di.chartsModule
 import org.dhis2.BuildConfig
 import org.dhis2.android.rtsm.di.stockModule
 import org.dhis2.appModule
@@ -32,6 +33,14 @@ object KoinInitialization {
                 mapOf(
                     "sentryDsn" to BuildConfig.SENTRY_DSN,
                     "isTrainingFlavor" to (BuildConfig.FLAVOR == "dhis2Training"),
+                    "openIdType" to BuildConfig.OPEN_ID_TYPE,
+                    "openIdServer" to BuildConfig.OPEN_ID_SERVER,
+                    "openIdClient" to BuildConfig.OPEN_ID_CLIENT,
+                    "openIdRedirectUri" to BuildConfig.OPEN_ID_REDIRECT_URI,
+                    "openIdDiscoveryUri" to BuildConfig.OPEN_ID_DISCOVERY_URI,
+                    "openIdAuthorizationUrl" to BuildConfig.OPEN_ID_AUTHORIZATION_URL,
+                    "openIdTokenUrl" to BuildConfig.OPEN_ID_TOKEN_URL,
+                    "openIdButtonText" to BuildConfig.OPEN_ID_BUTTON_TEXT,
                 ),
             )
             workManagerFactory()
@@ -52,6 +61,7 @@ object KoinInitialization {
                 biometricModule,
                 matomoModule,
                 syncModule,
+                chartsModule,
             )
         }
     }

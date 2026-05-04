@@ -10,7 +10,6 @@
     <string name="events">evenimente</string>
     <string name="done">Terminat</string>
 
-    <string name="filters_title_status">Stare</string>
     <string name="filters_title_date">Data</string>
     <string name="select_period">Selectați tipul perioadei</string>
     <string name="monthly">Lunar</string>

@@ -111,6 +111,77 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Test
+    fun shouldFollowTBProgramSearchFlow() {
+        mockWebServerRobot.addResponse(
+            ResponseController.GET,
+            API_TRACKED_ENTITY_PATH,
+            API_TRACKED_ENTITY_EMPTY_RESPONSE,
+        )
+
+        prepareTBIntentAndLaunchActivity(rule)
+
+        searchTeiRobot(composeTestRule) {
+            waitUntilActivityVisible<SearchTEActivity>()
+
+            // ANDROAPP-5971: Verify the button is displayed and enabled before opening search
+            checkAddNewTEIButtonIsDisplayedAndEnabled()
+
+            // Open the search parameters panel
+            clickOnOpenSearch()
+
+            // ANDROAPP-5861: Unique attribute (TB identifier) is first after sort ordering
+            checkFirstSearchParamIsBarcodeOrQROrUnique(TB_IDENTIFIER_LABEL)
+
+            // Check that all 9 search fields are displayed
+            checkSearchParamCount(9)
+
+            // ANDROAPP-5862: Search button is disabled when no values are entered
+            checkSearchButtonIsDisabled()
+
+            // Enter a value to enable the search button (Part A entry)
+            typeOnSearchParameter(TB_SEARCH_ATTR_CITY, TB_SEARCH_CITY_SHORT)
+
+            // ANDROAPP-5862: Search button is now enabled
+            checkSearchButtonIsEnabled()
+
+            // Re-enter a short value (1 char) to enable the button
+            checkFocusedFieldShowsOperatorSupportingText()
+            typeOnSearchParameter(TB_SEARCH_ATTR_STATE, TB_SEARCH_CITY_SHORT)
+            checkFocusedFieldShowsOperatorSupportingText()
+            typeOnSearchParameter(TB_SEARCH_ATTR_TB_NUMBER, TB_SEARCH_CITY_SHORT)
+
+            // Click Search – triggers per-field min-character validation
+            clickOnSearch()
+
+            // ANDROAPP-7489/7490 & ANDROAPP-1056/7491:
+            checkMinCharactersErrorIsDisplayed(
+                TB_SEARCH_ATTR_CITY,
+                TB_SEARCH_ATTR_STATE,
+                TB_SEARCH_ATTR_TB_NUMBER,
+            )
+            clickOnClearSearch()
+            closeKeyboard()
+
+            // Update to valid search values and search again
+            openNextSearchParameter(TB_SEARCH_ATTR_CITY)
+            typeOnSearchParameter(TB_SEARCH_ATTR_CITY, TB_SEARCH_CITY)
+            closeKeyboard()
+            openNextSearchParameter(TB_SEARCH_ATTR_STATE)
+            typeOnSearchParameter(TB_SEARCH_ATTR_STATE, TB_SEARCH_STATE)
+            closeKeyboard()
+            typeOnSearchParameter(TB_SEARCH_ATTR_TB_NUMBER, TB_SEARCH_TB_NUMBER)
+
+            // Click Search with valid values
+            clickOnSearch()
+
+            // Verify results: Lynn Dunn and Inés Bebea are displayed
+            checkSearchResultDisplayed(TB_RESULT_DUNN)
+            checkSearchResultDisplayed(TB_RESULT_BEBEA)
+
+        }
+    }
+
     private fun createRegisterTEI() = RegisterTEIUIModel(
         "Claire",
         "Jones",
@@ -139,5 +210,20 @@ class SearchTETest : BaseTest() {
 
         const val CHILD_TE_TYPE_VALUE = "nEenWmSyUEp"
         const val CHILD_TE_TYPE = "TRACKED_ENTITY_UID"
+
+        // TB Program search flow test constants
+        const val TB_IDENTIFIER_LABEL = "TB identifier"
+
+        const val TB_SEARCH_ATTR_CITY = "City"
+        const val TB_SEARCH_ATTR_STATE = "State"
+        const val TB_SEARCH_ATTR_TB_NUMBER = "TB number"
+
+        const val TB_SEARCH_CITY_SHORT = "C"
+        const val TB_SEARCH_CITY = "Cit"
+        const val TB_SEARCH_STATE = "Sta"
+        const val TB_SEARCH_TB_NUMBER = "34567"
+
+        const val TB_RESULT_DUNN = "Dunn"
+        const val TB_RESULT_BEBEA = "Bebea"
     }
 }
