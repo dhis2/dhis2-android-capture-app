@@ -16,6 +16,7 @@ import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.main.domain.model.DeviceEnrollmentInfo
 import org.dhis2.mobile.login.main.domain.model.LoginResult
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
+import org.dhis2.mobile.login.main.domain.model.OpenIdLoginConfiguration
 import org.dhis2.mobile.login.main.domain.usecase.BiometricLogin
 import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
@@ -322,13 +323,16 @@ class CredentialsViewModel(
     fun onOpenIdLogin() {
         startLoginJob {
             openIdLogin(
-                serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
-                isNetworkAvailable = isNetworkOnline.value,
-                clientId = _credentialsScreenState.value.oidcInfo?.oidcClientId ?: "",
-                redirectUri = _credentialsScreenState.value.oidcInfo?.oidcRedirectUri ?: "",
-                discoveryUri = _credentialsScreenState.value.oidcInfo?.discoveryUri(),
-                authorizationUri = _credentialsScreenState.value.oidcInfo?.authorizationUri(),
-                tokenUrl = _credentialsScreenState.value.oidcInfo?.tokenUrl(),
+                OpenIdLoginConfiguration(
+                    serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
+                    isNetworkAvailable = isNetworkOnline.value,
+                    clientId = _credentialsScreenState.value.oidcInfo?.oidcClientId ?: "",
+                    redirectUri = _credentialsScreenState.value.oidcInfo?.oidcRedirectUri ?: "",
+                    discoveryUri = _credentialsScreenState.value.oidcInfo?.discoveryUri(),
+                    authorizationUri = _credentialsScreenState.value.oidcInfo?.authorizationUri(),
+                    tokenUrl = _credentialsScreenState.value.oidcInfo?.tokenUrl(),
+                    prompt = _credentialsScreenState.value.oidcInfo?.userPrompt,
+                ),
             )
         }
     }

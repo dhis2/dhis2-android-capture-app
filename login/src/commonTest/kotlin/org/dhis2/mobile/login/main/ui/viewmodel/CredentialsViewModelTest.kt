@@ -14,6 +14,7 @@ import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.main.domain.model.BiometricsInfo
 import org.dhis2.mobile.login.main.domain.model.LoginResult
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
+import org.dhis2.mobile.login.main.domain.model.OpenIdLoginConfiguration
 import org.dhis2.mobile.login.main.domain.usecase.BiometricLogin
 import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
@@ -29,6 +30,7 @@ import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
 import org.dhis2.mobile.login.main.ui.state.LoginState
+import org.dhis2.mobile.login.main.ui.state.OidcInfo
 import org.dhis2.mobile.login.pin.domain.usecase.ForgotPinUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.GetIsSessionLockedUseCase
 import org.mockito.kotlin.any
@@ -694,6 +696,166 @@ class CredentialsViewModelTest {
             }
         }
 
+    @Test
+    fun `GIVEN oidcInfo is Discovery with prompt WHEN onOpenIdLogin is called THEN discoveryUri and prompt are forwarded`() =
+        runTest {
+            val serverUrl = "https://test.server.org"
+            val prompt = "select_account"
+            val discoveryUri = "https://test.server.org/.well-known/openid-configuration"
+            val clientId = "client-123"
+            val redirectUri = "dhis2://oauth"
+            val oidcInfo =
+                OidcInfo.Discovery(
+                    server = serverUrl,
+                    loginButtonText = null,
+                    clientId = clientId,
+                    redirectUri = redirectUri,
+                    discoveryUri = discoveryUri,
+                    prompt = prompt,
+                )
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(openIdLogin.invoke(any())) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
+
+            initViewModel(serverUrl = serverUrl, oidcInfo = oidcInfo)
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                awaitItem()
+                awaitItem()
+
+                viewModel.onOpenIdLogin()
+
+                val runningState = awaitItem()
+                assertEquals(LoginState.Running, runningState.loginState)
+
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                verify(openIdLogin).invoke(
+                    OpenIdLoginConfiguration(
+                        serverUrl = serverUrl,
+                        isNetworkAvailable = true,
+                        clientId = clientId,
+                        redirectUri = redirectUri,
+                        discoveryUri = discoveryUri,
+                        authorizationUri = null,
+                        tokenUrl = null,
+                        prompt = prompt,
+                    ),
+                )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN oidcInfo is Token with prompt WHEN onOpenIdLogin is called THEN tokenUrl, authorizationUri and prompt are forwarded`() =
+        runTest {
+            val serverUrl = "https://test.server.org"
+            val prompt = "login"
+            val authorizationUrl = "https://test.server.org/oauth/authorize"
+            val tokenUrl = "https://test.server.org/oauth/token"
+            val clientId = "client-456"
+            val redirectUri = "dhis2://oauth"
+            val oidcInfo =
+                OidcInfo.Token(
+                    server = serverUrl,
+                    loginLabel = null,
+                    clientId = clientId,
+                    redirectUri = redirectUri,
+                    authorizationUrl = authorizationUrl,
+                    tokenUrl = tokenUrl,
+                    prompt = prompt,
+                )
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(openIdLogin.invoke(any())) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
+
+            initViewModel(serverUrl = serverUrl, oidcInfo = oidcInfo)
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                awaitItem()
+                awaitItem()
+
+                viewModel.onOpenIdLogin()
+
+                val runningState = awaitItem()
+                assertEquals(LoginState.Running, runningState.loginState)
+
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                verify(openIdLogin).invoke(
+                    OpenIdLoginConfiguration(
+                        serverUrl = serverUrl,
+                        isNetworkAvailable = true,
+                        clientId = clientId,
+                        redirectUri = redirectUri,
+                        discoveryUri = null,
+                        authorizationUri = authorizationUrl,
+                        tokenUrl = tokenUrl,
+                        prompt = prompt,
+                    ),
+                )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN oidcInfo with null prompt WHEN onOpenIdLogin is called THEN null prompt is forwarded`() =
+        runTest {
+            val serverUrl = "https://test.server.org"
+            val oidcInfo =
+                OidcInfo.Discovery(
+                    server = serverUrl,
+                    loginButtonText = null,
+                    clientId = "client-789",
+                    redirectUri = "dhis2://oauth",
+                    discoveryUri = "https://test.server.org/.well-known/openid-configuration",
+                    prompt = null,
+                )
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(openIdLogin.invoke(any())) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
+
+            initViewModel(serverUrl = serverUrl, oidcInfo = oidcInfo)
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                awaitItem()
+                awaitItem()
+
+                viewModel.onOpenIdLogin()
+
+                val runningState = awaitItem()
+                assertEquals(LoginState.Running, runningState.loginState)
+
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                verify(openIdLogin).invoke(
+                    OpenIdLoginConfiguration(
+                        serverUrl = serverUrl,
+                        isNetworkAvailable = true,
+                        clientId = "client-789",
+                        redirectUri = "dhis2://oauth",
+                        discoveryUri = "https://test.server.org/.well-known/openid-configuration",
+                        authorizationUri = null,
+                        tokenUrl = null,
+                        prompt = null,
+                    ),
+                )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
     private fun initViewModel(
         serverName: String? = "Test Server",
         serverUrl: String = "https://test.server.org",
@@ -701,6 +863,7 @@ class CredentialsViewModelTest {
         allowRecovery: Boolean = true,
         oAuthEnable: Boolean = false,
         fromHome: Boolean = false,
+        oidcInfo: OidcInfo? = null,
     ) {
         viewModel =
             CredentialsViewModel(
@@ -725,7 +888,7 @@ class CredentialsViewModelTest {
                 allowRecovery,
                 getIsSessionLockedUseCase,
                 forgotPinUseCase,
-                oidcInfo = null,
+                oidcInfo = oidcInfo,
                 fromHome = fromHome,
                 oAuthEnable = oAuthEnable,
             )

@@ -161,6 +161,9 @@ android {
 
         val openIdButtonText = envOrLocal("OPEN_ID_BUTTON_TEXT")
         buildConfigField("String", "OPEN_ID_BUTTON_TEXT", "\"$openIdButtonText\"")
+
+        val openIdPrompt = envOrLocal("OPEN_ID_PROMPT")
+        buildConfigField("String", "OPEN_ID_PROMPT", "\"$openIdPrompt\"")
     }
     packaging {
         jniLibs {
