@@ -30,6 +30,9 @@
     <string name="enter_text">पाठ दर्ज करें</string>
     <string name="enter_long_text">लंबा अक्षर दर्ज करें</string>
     <string name="enter_number">नंबर दर्ज करें</string>
+    <string name="enter_negative_integer">नेगेटिव इंटीजर दर्ज करें</string>
+    <string name="enter_positive_integer_or_zero">पॉजिटिव इंटीजर या शून्य दर्ज करें</string>
+    <string name="enter_positive_integer">पॉजिटिव इंटीजर दर्ज करें</string>
     <string name="choose_date">दिन चुनें</string>
     <string name="event_open">खोलें</string>
     <string name="event_completed">इवेंट कंप्लीटेड</string>
@@ -44,6 +47,8 @@
     <string name="new_event">नया इवेंट</string>
     <string name="field_required">यदि आप कोई वैल्यू दर्ज करते हैं, तो डेटा सेट पूरा करने के लिए पूरी पंक्ति के सभी वैल्यू आवश्यक हैं।</string>
     <string name="field_mandatory_v2">कुछ अनिवार्य फ़ील्ड खाली हैं। डेटा सेट पूरा करने के लिए उन्हें भरें।</string>
+    <!--Event Detail-->
+    <string name="due_date">नियत तिथि</string>
     <string name="cancel">रद्द करें</string>
     <string name="delete">हटाएं</string>
     <string name="edit">संपादन करें</string>
@@ -63,6 +68,7 @@
     <string name="hint_year">वर्ष</string>
     <string name="week">सप्ताह</string>
     <string name="date_dialog_clear">साफ़ करें</string>
+    <string name="period">पीरियड</string>
     <string name="next">आगे</string>
     <string name="SAVE">सहेजें</string>
     <string name="button_ok">ठीक है</string>
@@ -79,7 +85,7 @@
     <string name="invalid_interval">केवल 0 से 1 के मान ही अनुमति हैं</string>
     <string name="invalid_percentage">केवल 0 से 100 के वैल्यूज़ अनुमति हैं</string>
     <string name="dialog_generate_new_event">नया इवेंट जनरेट करें</string>
-    <string name="message_generate_new_event">क्या आप एक और इवेंट बनाना चाहते हैं\?</string>
+    <string name="message_generate_new_event">क्या आप एक और इवेंट बनाना चाहते हैं?</string>
     <string name="dashboard_indicators">इंडिकेटर्स</string>
     <string name="event_indicators">इंडिकेटर्स</string>
     <string name="finish">खत्म</string>
@@ -96,12 +102,14 @@
     <string name="validation_url">यह मान्य URL नहीं है</string>
     <string name="sms_completed">पूरा हुआ</string>
     <string name="syncing">सिंक हो रहा है…</string>
+    <string name="filters_title_period">पीरियड</string>
     <string name="filter_period_today">आज</string>
     <string name="filter_period_yesterday">कल (बिता हुआ)</string>
     <string name="filter_period_this_week">इस सप्ताह</string>
     <string name="filter_period_last_week">पिछला सप्ताह</string>
     <string name="filter_period_this_month">इस महीने</string>
     <string name="filter_period_last_month">पिछला महीना</string>
+    <string name="filter_period_other">दूसरा</string>
     <string name="filter_event_status_open">खोलें</string>
     <string name="filter_event_status_overdue">अतिदेय</string>
     <string name="filter_event_status_visited">विज़िट की गई</string>
@@ -129,11 +137,16 @@
     <string name="enrollment_status_completed">पूरा हुआ</string>
     <string name="event_data">डेटा</string>
     <string name="action_done">पूरा हुआ</string>
-    <string name="are_you_sure">क्या आप सुनिश्चित हैं\?</string>
+    <string name="are_you_sure">क्या आप सुनिश्चित हैं?</string>
     <string name="filters_title_date">तारीख</string>
     <string name="field_is_mandatory">यह फ़ील्ड आवश्यक है</string>
     <string name="customactivityoncrash_error_activity_restart_app">पीछे जाएं</string>
     <string name="customactivityoncrash_error_activity_error_details_close">बंद करें</string>
+    <string name="show_bar_graph">बार व्यू</string>
+    <string name="show_line_graph">लाइन व्यू</string>
+    <string name="show_table_graph">टेबल व्यू</string>
+    <string name="show_table_value">वैल्यू व्यू</string>
+    <string name="show_pie_value">पाई व्यू</string>
     <string name="filter_period_this_year">इस वर्ष</string>
     <string name="filter_period_last_quarter">पिछली तिमाही</string>
     <string name="filter_period_last_year">पिछला वर्ष</string>
@@ -142,7 +155,9 @@
     <string name="take_photo">फ़ोटो लें</string>
     <string name="break_glass_dialog_title">यह प्रोग्राम सुरक्षित है</string>
     <string name="login_error_bad_credentials">गलत लॉगिन जानकारी</string>
+    <string name="invalid_integer">वैल्यू इंटीजर होनी चाहिए</string>
     <string name="dataset_column_default">वैल्यू</string>
+    <string name="show_radar_graph">रेडार व्यू</string>
     <string name="wrong_date_format">%s डेट के रूप में पढ़ा नहीं जा सकता</string>
     <string name="update_field_error">यह फ़ील्ड अपडेट नहीं हो सका। कृपया फिर से प्रयास करें</string>
     <string name="available">उपलब्ध</string>
@@ -154,6 +169,7 @@
     <string name="search_create_new">नया बनाएँ</string>
     <string name="missing_warning_fields_completed_events">आपके पास कुछ चेतावनी संदेश हैं</string>
     <string name="missing_warning_fields_events">आपके पास कुछ चेतावनी संदेश हैं\nक्या आप इस फ़ॉर्म को कम्प्लीट मार्क करना चाहते हैं\?</string>
+    <string name="event_error_on_complete">आपके पास कुछ एरर संदेश हैं\nक्या आप उन्हें समीक्षा करना चाहते हैं\?</string>
     <string name="sync_dialog_title_syncing">सिंक हो रहा है</string>
     <string name="sync_dialog_action_not_now">अभी नहीं</string>
     <string name="view_only">केवल देखें</string>
@@ -162,8 +178,8 @@
     <string name="event">इवेंट</string>
     <string name="clear_search">खोज साफ़ करें</string>
     <string name="optional">वैकल्पिक</string>
-    <string name="empty_search_attributes_message">उपयोग के लिए कोई खोज फ़ील्ड कॉन्फ़िगर नहीं है</string>
+    <string name="empty_search_attributes_message">उपयोग के लिए कोई खोज फ़ील्ड कॉन्फ़िगर नहीं है\nकृपया अपने एडमिन से संपर्क करें</string>
     <string name="show_more">और दिखाएँ</string>
     <string name="show_less">कम दिखाएँ</string>
-    <string name="section_misconfigured">यह सेक्शन सही तरह से कॉन्फ़िगर नहीं है\n अपने एडमिन से संपर्क करें</string>
+    <string name="section_misconfigured">यह सेक्शन सही तरह से कॉन्फ़िगर नहीं है\nअपने एडमिन से संपर्क करें</string>
     </resources>

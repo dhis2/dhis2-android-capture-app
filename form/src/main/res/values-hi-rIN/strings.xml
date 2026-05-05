@@ -5,6 +5,8 @@
     <string name="unique_warning">मान अद्वितीय होना चाहिए। समान मान मिला है। इसे सहेजा नहीं गया। कृपया जाँच करें</string>
     <string name="select_time">समय चुनें</string>
     <string name="choose_date">दिन चुनें</string>
+    <string name="conf_error_value_to_assign_option_set">प्रोग्राम रूल %s वैल्यू %s असाइन कर रहा है, जो ऑप्शन सेट %s में नहीं है</string>
+    <string name="conf_error_value_option_set">फील्ड का मान %s के ऑप्शन सेट %s में नहीं है</string>
     <string name="field_is_mandatory">यह फ़ील्ड आवश्यक है</string>
     <string name="missing_warning_fields_completed_events">आपके पास कुछ चेतावनी संदेश हैं</string>
     <string name="missing_warning_fields_events">आपके पास कुछ चेतावनी संदेश हैं\nक्या आप इस फ़ॉर्म को कम्प्लीट मार्क करना चाहते हैं\?</string>
@@ -20,12 +22,16 @@
     <string name="enter_url">URL दर्ज करें</string>
     <string name="enter_email">ईमेल दर्ज करें</string>
     <string name="enter_phone_number">फ़ोन नंबर दर्ज करें</string>
+    <string name="enter_positive_integer_or_zero">पॉजिटिव इंटीजर या शून्य दर्ज करें</string>
+    <string name="enter_negative_integer">नेगेटिव इंटीजर दर्ज करें</string>
+    <string name="enter_positive_integer">पॉजिटिव इंटीजर दर्ज करें</string>
     <string name="enter_number">नंबर दर्ज करें</string>
     <string name="enter_percentage">प्रतिशत दर्ज करें</string>
     <string name="enter_unit_interval">0 से 1 नंबर दर्ज करें</string>
     <string name="enter_letter">अक्षर दर्ज करें</string>
     <string name="enter_long_text">लंबा अक्षर दर्ज करें</string>
     <string name="enter_text">पाठ दर्ज करें</string>
+    <string name="due_date">नियत तिथि</string>
     <string name="form_latitude_prefix">अक्षांश</string>
     <string name="form_longitude_prefix">देशांतर</string>
     <string name="not_saved">सेव नहीं</string>
@@ -33,6 +39,7 @@
     <string name="complete">पूरा हुआ</string>
     <string name="discard_changes">बदलावों को छोड़ना है</string>
     <string name="saved">सेव</string>
+    <string name="event_error_on_complete">आपके पास कुछ एरर संदेश हैं\nक्या आप उन्हें समीक्षा करना चाहते हैं\?</string>
     <string name="not_now">अभी नहीं</string>
     <string name="save_anyway">सेव करें</string>
     <string name="keep_editing">संपादन करते रहें</string>
