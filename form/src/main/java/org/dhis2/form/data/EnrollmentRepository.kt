@@ -351,7 +351,7 @@ class EnrollmentRepository(
 
         enrollmentDataList.add(
             getEnrollmentDateField(
-                conf.program()?.displayEnrollmentLabel()
+                conf.program()?.displayEnrollmentDateLabel()
                     ?: enrollmentFormLabelsProvider.provideEnrollmentDateDefaultLabel(programUid!!),
                 conf.program()?.selectEnrollmentDatesInFuture(),
             ),
