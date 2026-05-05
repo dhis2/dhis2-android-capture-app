@@ -21,7 +21,7 @@
     <string name="conf_error_value_option_set">फील्ड का मान %s के ऑप्शन सेट %s में नहीं है</string>
     <string name="field_is_mandatory">यह फ़ील्ड आवश्यक है</string>
     <string name="missing_warning_fields_completed_events">आपके पास कुछ चेतावनी संदेश हैं</string>
-    <string name="missing_warning_fields_events">आपके पास कुछ चेतावनी संदेश हैं\nक्या आप इस फ़ॉर्म को कम्प्लीट मार्क करना चाहते हैं\?</string>
+    <string name="missing_warning_fields_events">आपके पास कुछ चेतावनी संदेश हैं\nक्या आप इस फ़ॉर्म को कम्प्लीट मार्क करना चाहते हैं?</string>
     <string name="required">आवश्यकता है</string>
     <string name="latitude">अक्षांश</string>
     <string name="longitude">देशांतर</string>
@@ -44,7 +44,7 @@
     <string name="complete">पूरा हुआ</string>
     <string name="discard_changes">बदलावों को छोड़ना है</string>
     <string name="saved">सेव</string>
-    <string name="event_error_on_complete">आपके पास कुछ एरर संदेश हैं\nक्या आप उन्हें समीक्षा करना चाहते हैं\?</string>
+    <string name="event_error_on_complete">आपके पास कुछ एरर संदेश हैं\nक्या आप उन्हें समीक्षा करना चाहते हैं?</string>
     <string name="not_now">अभी नहीं</string>
     <string name="keep_editing">संपादन करते रहें</string>
     <string name="share">साझा करें</string>
