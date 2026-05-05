@@ -20,6 +20,9 @@
     <string name="enter_text">पाठ दर्ज करें</string>
     <string name="enter_long_text">लंबा अक्षर दर्ज करें</string>
     <string name="enter_number">नंबर दर्ज करें</string>
+    <string name="enter_negative_integer">नेगेटिव इंटीजर दर्ज करें</string>
+    <string name="enter_positive_integer_or_zero">पॉजिटिव इंटीजर या शून्य दर्ज करें</string>
+    <string name="enter_positive_integer">पॉजिटिव इंटीजर दर्ज करें</string>
     <string name="choose_date">दिन चुनें</string>
 
     <!-- Status -->
@@ -36,6 +39,8 @@
     <string name="latitude">अक्षांश</string>
     <string name="longitude">देशांतर</string>
 
+    <!--Event Detail-->
+    <string name="due_date">नियत तिथि</string>
     <string name="cancel">रद्द करें</string>
     <string name="delete">हटाएं</string>
     <!--TEI DASHBOARD-->
@@ -50,6 +55,7 @@
     <!-- SEARCH OPTION SET -->
     <string name="search_optionset">सर्च करें / खोजें</string>
     <string name="add_file">फ़ाइल जोड़ें</string>
+    <string name="period">पीरियड</string>
     <!-- RELATIONSHIPS -->
     <string name="next">आगे</string>
     <string name="button_ok">ठीक है</string>
@@ -64,12 +70,14 @@
     <string name="action_close">बंद करें</string>
     <string name="syncing">सिंक हो रहा है…</string>
 
+    <string name="filters_title_period">पीरियड</string>
     <string name="filter_period_today">आज</string>
     <string name="filter_period_yesterday">कल (बिता हुआ)</string>
     <string name="filter_period_this_week">इस सप्ताह</string>
     <string name="filter_period_last_week">पिछला सप्ताह</string>
     <string name="filter_period_this_month">इस महीने</string>
     <string name="filter_period_last_month">पिछला महीना</string>
+    <string name="filter_period_other">दूसरा</string>
     <string name="filter_event_status_open">खोलें</string>
     <string name="filter_event_status_overdue">अतिदेय</string>
     <string name="filter_event_status_visited">विज़िट की गई</string>
@@ -93,12 +101,18 @@
     <string name="filters_title_date">तारीख</string>
     <string name="field_is_mandatory">यह फ़ील्ड आवश्यक है</string>
     <string name="customactivityoncrash_error_activity_restart_app">पीछे जाएं</string>
+    <string name="show_bar_graph">बार व्यू</string>
+    <string name="show_line_graph">लाइन व्यू</string>
+    <string name="show_table_graph">टेबल व्यू</string>
+    <string name="show_table_value">वैल्यू व्यू</string>
+    <string name="show_pie_value">पाई व्यू</string>
     <string name="filter_period_this_year">इस वर्ष</string>
     <string name="filter_period_last_quarter">पिछली तिमाही</string>
     <string name="filter_period_last_year">पिछला वर्ष</string>
     <string name="section_indicators">इंडिकेटर्स</string>
     <string name="take_photo">फ़ोटो लें</string>
     <string name="break_glass_dialog_title">यह प्रोग्राम सुरक्षित है</string>
+    <string name="show_radar_graph">रेडार व्यू</string>
     <string name="update_field_error">यह फ़ील्ड अपडेट नहीं हो सका। कृपया फिर से प्रयास करें</string>
     <string name="edition_no_write_access">इस डेटा को संपादित करने की अनुमति नहीं है</string>
     <string name="edition_no_catcombo_access">इस डेटा को संपादित करने की अनुमति नहीं है</string>
@@ -106,6 +120,7 @@
     <string name="not_saved">सेव नहीं</string>
     <string name="missing_warning_fields_completed_events">आपके पास कुछ चेतावनी संदेश हैं</string>
     <string name="missing_warning_fields_events">आपके पास कुछ चेतावनी संदेश हैं\nक्या आप इस फ़ॉर्म को कम्प्लीट मार्क करना चाहते हैं\?</string>
+    <string name="event_error_on_complete">आपके पास कुछ एरर संदेश हैं\nक्या आप उन्हें समीक्षा करना चाहते हैं\?</string>
     <string name="sync_dialog_title_syncing">सिंक हो रहा है</string>
     <string name="sync_dialog_action_not_now">अभी नहीं</string>
     <string name="view_only">केवल देखें</string>
