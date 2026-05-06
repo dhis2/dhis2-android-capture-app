@@ -6,6 +6,11 @@ on:
       - main
       - develop
       - release/*
+    paths:
+      - 'gradle/libs.versions.toml'
+      - 'gradle/verification-metadata.xml'
+      - '**/*.gradle.kts'
+      - '**/build.gradle'
 
 jobs:
   verify-dependency-metadata:
@@ -29,8 +34,40 @@ jobs:
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
 
+      - name: Decode Keystore
+        id: decode_keystore
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: timheuer/base64-to-file@784a1a4a994315802b7d8e2084e116e783d157be
+        with:
+          fileName: 'dhis_keystore.jks'
+          encodedString: ${{ secrets.KEYSTORE }}
+
+      - name: Decode Training Keystore
+        id: decode_training_keystore
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: timheuer/base64-to-file@784a1a4a994315802b7d8e2084e116e783d157be
+        with:
+          fileName: 'dhis_training_keystore.jks'
+          encodedString: ${{ secrets.TRAINING_KEYSTORE_BASE64 }}
+
       - name: Regenerate verification metadata
-        run: ./gradlew --write-verification-metadata sha256 help --no-daemon
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          SIGNING_KEYSTORE_PATH: ${{ steps.decode_keystore.outputs.filePath }}
+          TRAINING_KEY_ALIAS: ${{ secrets.TRAINING_KEY_ALIAS }}
+          TRAINING_KEY_PASSWORD: ${{ secrets.TRAINING_KEY_PASSWORD }}
+          TRAINING_STORE_PASSWORD: ${{ secrets.TRAINING_STORE_PASSWORD }}
+          TRAINING_STORE_FILE: ${{ steps.decode_training_keystore.outputs.filePath }}
+        run: |
+          ./gradlew --write-verification-metadata sha256 --no-daemon \
+            help \
+            app:assembleDhis2Release \
+            app:assembleDhis2PlayServicesRelease \
+            app:assembleDhis2TrainingRelease
 
       - name: Check if metadata changed
         id: check-diff
