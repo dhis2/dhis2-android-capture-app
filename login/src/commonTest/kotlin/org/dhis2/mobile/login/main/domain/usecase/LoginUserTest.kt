@@ -5,6 +5,7 @@ import org.dhis2.mobile.login.main.data.LoginRepository
 import org.dhis2.mobile.login.main.domain.model.LoginResult
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.reset
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -343,6 +344,7 @@ class LoginUserTest {
             val usernameVariants = listOf("  testUser" to "testUser", "testUser  " to "testUser", "  testUser  " to "testUser", "   " to "")
 
             for ((input, trimmed) in usernameVariants) {
+                reset(repository)
                 whenever(repository.loginUser(serverUrl, trimmed, password, isNetworkAvailable)) doReturn
                     Result.success(Unit)
                 whenever(repository.numberOfAccounts()) doReturn 0
