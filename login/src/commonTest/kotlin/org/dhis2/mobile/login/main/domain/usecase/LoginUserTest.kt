@@ -335,4 +335,28 @@ class LoginUserTest {
             assertIs<LoginResult.Success>(result)
             assertEquals(false, result.initialSyncDone)
         }
+
+    @Test
+    fun `GIVEN username with surrounding whitespace WHEN user logs in THEN trimmed username is passed to repository`() =
+        runTest {
+            // GIVEN - Usernames with various whitespace patterns and their expected trimmed values
+            val usernameVariants = listOf("  testUser" to "testUser", "testUser  " to "testUser", "  testUser  " to "testUser", "   " to "")
+
+            for ((input, trimmed) in usernameVariants) {
+                whenever(repository.loginUser(serverUrl, trimmed, password, isNetworkAvailable)) doReturn
+                    Result.success(Unit)
+                whenever(repository.numberOfAccounts()) doReturn 0
+                whenever(repository.displayTrackingMessage()) doReturn false
+                whenever(repository.initialSyncDone(serverUrl, trimmed)) doReturn true
+
+                // WHEN - User logs in with whitespace in username
+                val result = loginUser(serverUrl, input, password, isNetworkAvailable)
+
+                // THEN - Repository receives the trimmed username
+                assertIs<LoginResult.Success>(result)
+                verify(repository).loginUser(serverUrl, trimmed, password, isNetworkAvailable)
+                verify(repository).updateAvailableUsers(trimmed)
+                verify(repository).initialSyncDone(serverUrl, trimmed)
+            }
+        }
 }
