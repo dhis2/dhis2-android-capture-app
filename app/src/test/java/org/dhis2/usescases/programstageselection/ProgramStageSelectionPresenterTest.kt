@@ -276,7 +276,7 @@ class ProgramStageSelectionPresenterTest {
                 .builder()
                 .uid("programStage")
                 .access(
-                    Access.builder().data(DataAccess.builder().write(true).build()).build(),
+                    Access.builder().read(true).write(true).data(DataAccess.builder().read(true).write(true).build()).build(),
                 ).build()
 
         presenter.onProgramStageClick(programStage)
@@ -291,7 +291,7 @@ class ProgramStageSelectionPresenterTest {
                 .builder()
                 .uid("programStage")
                 .access(
-                    Access.builder().data(DataAccess.builder().write(false).build()).build(),
+                    Access.builder().read(true).write(false).data(DataAccess.builder().read(true).write(false).build()).build(),
                 ).build()
 
         presenter.onProgramStageClick(programStage)
