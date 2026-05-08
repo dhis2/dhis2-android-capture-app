@@ -26,16 +26,8 @@ class LoginViewModel(
     private val getInitialScreen: GetInitialScreen,
     private val importDatabase: ImportDatabase,
     private val validateServer: ValidateServer,
-    networkStatusProvider: NetworkStatusProvider,
+    private val networkStatusProvider: NetworkStatusProvider,
 ) : ViewModel() {
-    private val isNetworkOnline =
-        networkStatusProvider.connectionStatus
-            .stateIn(
-                viewModelScope,
-                SharingStarted.Eagerly,
-                false,
-            )
-
     private val _serverValidationState = MutableStateFlow(ServerValidationUiState())
     val serverValidationState = _serverValidationState.asStateFlow()
 
@@ -72,8 +64,15 @@ class LoginViewModel(
         }
         serverValidationJob =
             launchUseCase {
+                val isNetworkOnline =
+                    networkStatusProvider.connectionStatus
+                        .stateIn(
+                            viewModelScope,
+                            SharingStarted.Eagerly,
+                            false,
+                        ).value
                 val result =
-                    withMinimumDuration { validateServer(serverUrl, isNetworkOnline.value) }
+                    withMinimumDuration { validateServer(serverUrl, isNetworkOnline) }
                 when (result) {
                     is ServerValidationResult.Error -> {
                         _serverValidationState.update {
