@@ -43,7 +43,7 @@ class NoteRobot : BaseRobot() {
     }
 
     fun clickOnSaveButton() {
-        waitForView(allOf(withId(R.id.saveButton), withText(R.string.save)))
+        waitForView(allOf(withId(R.id.saveButton), withText(R.string.save)),5000)
             .check(matches(allOf(isDisplayed(), isEnabled())))
             .perform(click())
     }
