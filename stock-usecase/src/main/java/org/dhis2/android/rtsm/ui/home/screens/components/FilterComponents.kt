@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import org.dhis2.android.rtsm.data.OperationState
@@ -26,7 +25,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 fun FilterList(
     viewModel: HomeViewModel,
     dataEntryUiState: DataEntryUiState,
-    themeColor: Color,
     supportFragmentManager: FragmentManager,
     launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
     onTransitionSelected: (transition: TransactionItem) -> Unit,
@@ -55,7 +53,6 @@ fun FilterList(
                 settingsUiState,
                 onTransitionSelected,
                 dataEntryUiState.hasUnsavedData,
-                themeColor,
                 launchDialog,
             )
         }
@@ -65,7 +62,6 @@ fun FilterList(
                 settingsUiState,
                 onFacilitySelected,
                 dataEntryUiState.hasUnsavedData,
-                themeColor,
                 supportFragmentManager,
                 getFacilities(facilities),
                 launchDialog,
@@ -78,7 +74,6 @@ fun FilterList(
                 DropdownComponentDistributedTo(
                     onDestinationSelected,
                     dataEntryUiState,
-                    themeColor,
                     result,
                     launchDialog = launchDialog,
                     deliverToLabel = settingsUiState.deliverToLabel.ifEmpty { settingsUiState.deliverToLabel()?.asString() },

@@ -1,9 +1,7 @@
 package org.dhis2.android.rtsm.ui.home.screens.components
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import androidx.activity.compose.BackHandler
-import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.material.BackdropScaffold
 import androidx.compose.material.BackdropValue
 import androidx.compose.material.ExperimentalMaterialApi
@@ -22,15 +20,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
-import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
+import org.dhis2.android.rtsm.ui.home.LocalThemeColor
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.home.model.EditionDialogResult
 import org.dhis2.android.rtsm.ui.home.model.SettingsUiState
@@ -43,16 +43,16 @@ import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Backdrop(
-    activity: Activity,
     viewModel: HomeViewModel,
     manageStockViewModel: ManageStockViewModel,
     modifier: Modifier = Modifier,
-    themeColor: Color,
     supportFragmentManager: FragmentManager,
-    barcodeLauncher: ActivityResultLauncher<ScanOptions>,
     scaffoldState: ScaffoldState,
     syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
+    onFinish: () -> Unit
 ) {
+    val context = LocalContext.current
+
     val backdropState = rememberBackdropScaffoldState(BackdropValue.Revealed)
     var isFrontLayerDisabled by remember { mutableStateOf<Boolean?>(null) }
     val settingsUiState by viewModel.settingsUiState.collectAsState()
@@ -61,15 +61,15 @@ fun Backdrop(
     val bottomSheetState = manageStockViewModel.bottomSheetState.collectAsState()
     if (bottomSheetState.value) {
         launchBottomSheet(
-            activity.getString(R.string.not_saved),
-            activity.getString(R.string.transaction_not_confirmed),
+            stringResource(R.string.not_saved),
+            stringResource(R.string.transaction_not_confirmed),
             supportFragmentManager,
             onKeepEdition = {
                 manageStockViewModel.onBottomSheetClosed()
             },
             onDiscard = {
                 manageStockViewModel.onBottomSheetClosed()
-                activity.finish()
+                onFinish()
             },
         )
     }
@@ -87,7 +87,7 @@ fun Backdrop(
                 settingsUiState.selectedTransactionItem.label,
                 settingsUiState.fromFacilitiesLabel().asString(),
                 settingsUiState.deliverToLabel()?.asString(),
-                themeColor,
+                LocalThemeColor.current,
                 launchBottomSheet = {
                     manageStockViewModel.onHandleBackNavigation()
                 },
@@ -98,17 +98,16 @@ fun Backdrop(
                 settingsUiState.hasDestinationSelected(),
             )
         },
-        backLayerBackgroundColor = themeColor,
+        backLayerBackgroundColor = LocalThemeColor.current,
         backLayerContent = {
             FilterList(
                 viewModel,
                 dataEntryUiState,
-                themeColor,
                 supportFragmentManager,
                 launchDialog = { msg, result ->
                     launchBottomSheet(
-                        activity.getString(R.string.not_saved),
-                        activity.getString(msg),
+                        context.getString(R.string.not_saved),
+                        context.getString(msg),
                         supportFragmentManager,
                         onKeepEdition = {
                             result.invoke(EditionDialogResult.KEEP)
@@ -135,10 +134,8 @@ fun Backdrop(
             MainContent(
                 backdropState,
                 isFrontLayerDisabled,
-                themeColor,
                 viewModel,
                 manageStockViewModel,
-                barcodeLauncher,
             )
         },
         scaffoldState = backdropState,
