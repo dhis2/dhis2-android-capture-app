@@ -100,6 +100,8 @@ class NotesRepositoryTest {
                 .access(
                     Access
                         .builder()
+                        .read(true)
+                        .write(true)
                         .data(
                             DataAccess
                                 .builder()

@@ -285,7 +285,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
 
     private boolean canCreateTei() {
-        boolean programAccess = selectedProgram.access().data().write() != null && selectedProgram.access().data().write();
+        boolean programAccess = selectedProgram.access().data().write();
         boolean teTypeAccess = d2.trackedEntityModule().trackedEntityTypes().uid(
                 Objects.requireNonNull(selectedProgram.trackedEntityType()).uid()
         ).blockingGet().access().data().write();
