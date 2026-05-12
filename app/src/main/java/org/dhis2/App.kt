@@ -1,360 +1,301 @@
-package org.dhis2;
+package org.dhis2
 
-import static org.dhis2.utils.analytics.AnalyticsConstants.DATA_STORE_ANALYTICS_PERMISSION_KEY;
+import android.app.Application
+import android.os.Looper
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ProcessLifecycleOwner
+import cat.ereza.customactivityoncrash.config.CaocConfig
+import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentComponent
+import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule
+import io.reactivex.android.plugins.RxAndroidPlugins
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.exceptions.UndeliverableException
+import io.reactivex.plugins.RxJavaPlugins
+import io.sentry.SentryLevel
+import io.sentry.SentryOptions
+import io.sentry.android.core.SentryAndroid
+import org.dhis2.commons.di.dagger.PerActivity
+import org.dhis2.commons.di.dagger.PerServer
+import org.dhis2.commons.di.dagger.PerUser
+import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerComponent
+import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerModule
+import org.dhis2.commons.featureconfig.di.FeatureConfigActivityComponent
+import org.dhis2.commons.featureconfig.di.FeatureConfigActivityModule
+import org.dhis2.commons.featureconfig.di.FeatureConfigModule
+import org.dhis2.commons.filters.data.FilterPresenter
+import org.dhis2.commons.network.NetworkUtilsModule
+import org.dhis2.commons.orgunitselector.OUTreeComponent
+import org.dhis2.commons.orgunitselector.OUTreeModule
+import org.dhis2.commons.prefs.Preference
+import org.dhis2.commons.prefs.PreferenceModule
+import org.dhis2.commons.schedulers.SchedulerModule
+import org.dhis2.commons.schedulers.SchedulersProviderImpl
+import org.dhis2.commons.service.SessionManagerModule
+import org.dhis2.commons.sync.SyncComponentProvider
+import org.dhis2.data.dispatcher.DispatcherModule
+import org.dhis2.data.server.SSLContextInitializer
+import org.dhis2.data.server.ServerComponent
+import org.dhis2.data.server.ServerModule
+import org.dhis2.data.server.ServerModule.Companion.getD2Configuration
+import org.dhis2.data.service.workManager.WorkManagerModule
+import org.dhis2.data.user.UserComponent
+import org.dhis2.data.user.UserModule
+import org.dhis2.di.KoinInitialization.invoke
+import org.dhis2.maps.MapController
+import org.dhis2.usescases.crash.CrashActivity
+import org.dhis2.usescases.teiDashboard.TeiDashboardComponent
+import org.dhis2.usescases.teiDashboard.TeiDashboardModule
+import org.dhis2.utils.analytics.AnalyticsModule
+import org.dhis2.utils.analytics.DATA_STORE_ANALYTICS_PERMISSION_KEY
+import org.dhis2.utils.granularsync.SyncStatusDialogProvider
+import org.dhis2.utils.timber.DebugTree
+import org.hisp.dhis.android.core.D2Manager
+import timber.log.Timber
+import timber.log.Timber.Forest.plant
+import java.io.IOException
+import javax.inject.Singleton
 
-import android.content.Context;
-import android.os.Looper;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleObserver;
-import androidx.lifecycle.OnLifecycleEvent;
-import androidx.lifecycle.ProcessLifecycleOwner;
-
-import org.dhis2.commons.di.dagger.PerActivity;
-import org.dhis2.commons.di.dagger.PerServer;
-import org.dhis2.commons.di.dagger.PerUser;
-import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerComponent;
-import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerModule;
-import org.dhis2.commons.featureconfig.di.FeatureConfigActivityComponent;
-import org.dhis2.commons.featureconfig.di.FeatureConfigActivityModule;
-import org.dhis2.commons.featureconfig.di.FeatureConfigModule;
-import org.dhis2.commons.filters.data.FilterPresenter;
-import org.dhis2.commons.network.NetworkUtilsModule;
-import org.dhis2.commons.orgunitselector.OUTreeComponent;
-import org.dhis2.commons.orgunitselector.OUTreeModule;
-import org.dhis2.commons.prefs.Preference;
-import org.dhis2.commons.prefs.PreferenceModule;
-import org.dhis2.commons.schedulers.SchedulerModule;
-import org.dhis2.commons.schedulers.SchedulersProviderImpl;
-import org.dhis2.commons.service.SessionManagerModule;
-import org.dhis2.commons.sync.SyncComponentProvider;
-import org.dhis2.data.dispatcher.DispatcherModule;
-import org.dhis2.data.server.SSLContextInitializer;
-import org.dhis2.data.server.ServerComponent;
-import org.dhis2.data.server.ServerModule;
-import org.dhis2.data.server.UserManager;
-import org.dhis2.data.service.workManager.WorkManagerModule;
-import org.dhis2.data.user.UserComponent;
-import org.dhis2.data.user.UserModule;
-import org.dhis2.di.KoinInitialization;
-import org.dhis2.maps.MapController;
-import org.dhis2.usescases.crash.CrashActivity;
-import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
-import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
-import org.dhis2.utils.analytics.AnalyticsModule;
-import org.dhis2.utils.granularsync.SyncStatusDialogProvider;
-import org.dhis2.utils.timber.DebugTree;
-import org.hisp.dhis.android.core.D2Manager;
-import org.hisp.dhis.android.core.datastore.KeyValuePair;
-import org.jetbrains.annotations.NotNull;
-
-import java.io.IOException;
-import java.net.SocketException;
-
-import javax.inject.Singleton;
-
-import cat.ereza.customactivityoncrash.config.CaocConfig;
-import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentComponent;
-import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule;
-import io.reactivex.Scheduler;
-import io.reactivex.android.plugins.RxAndroidPlugins;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.exceptions.UndeliverableException;
-import io.reactivex.plugins.RxJavaPlugins;
-import io.sentry.SentryLevel;
-import io.sentry.android.core.SentryAndroid;
-import timber.log.Timber;
-
-public class App extends android.app.Application implements Components, LifecycleObserver {
-
-    @NonNull
+open class App : Application(), Components, DefaultLifecycleObserver {
     @Singleton
-    AppComponent appComponent;
+    lateinit var appComponent: AppComponent
 
-    @Nullable
     @PerServer
-    protected ServerComponent serverComponent;
+    var serverComponent: ServerComponent? = null
+        protected set
 
-    @Nullable
     @PerUser
-    protected UserComponent userComponent;
+    protected var userComponent: UserComponent? = null
 
-    @Nullable
     @PerActivity
-    private TeiDashboardComponent dashboardComponent;
+    private var dashboardComponent: TeiDashboardComponent? = null
 
-    private boolean fromBackGround = false;
-    private boolean recreated;
+    private var fromBackGround = false
+    private var recreated = false
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
+    override fun onCreate() {
+        super<Application>.onCreate()
 
-        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
+        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 
-        MapController.Companion.init(this);
+        MapController.init(this)
 
-        setUpAppComponent();
+        setUpAppComponent()
         if (BuildConfig.DEBUG) {
-            Timber.plant(new DebugTree());
+            plant(DebugTree())
         }
 
-        setUpSecurityProvider();
-        setUpServerComponent();
+        setUpSecurityProvider()
+        setUpServerComponent()
 
-        KoinInitialization.INSTANCE.invoke(this, ServerModule.getD2Configuration(this));
+        this(getD2Configuration(this))
 
-        initCrashController();
-        setUpRxPlugin();
-        initCustomCrashActivity();
+        initCrashController()
+        setUpRxPlugin()
+        initCustomCrashActivity()
     }
 
-    public void initCrashController() {
+    fun initCrashController() {
         if (areTrackingPermissionGranted()) {
             if (BuildConfig.SENTRY_DSN.isEmpty()) {
-                Timber.w("Sentry DSN is empty. Skipping Sentry initialization.");
-                return;
+                Timber.w("Sentry DSN is empty. Skipping Sentry initialization.")
+                return
             }
-            SentryAndroid.init(this, options -> {
-                options.setDsn(BuildConfig.SENTRY_DSN);
-                options.setAnrReportInDebug(true);
+            SentryAndroid.init(this) { options ->
+                options.setDsn(BuildConfig.SENTRY_DSN)
+                options.isAnrReportInDebug = true
 
                 // Add a callback that will be used before the event is sent to Sentry.
                 // With this callback, you can modify the event or, when returning null, also discard the event.
-                options.setBeforeSend((event, hint) -> {
-                    if (SentryLevel.DEBUG.equals(event.getLevel()))
-                        return null;
-                    else
-                        return event;
-                });
-                options.setEnvironment(BuildConfig.DEBUG ? "debug" : "production");
-                options.setDebug(BuildConfig.DEBUG);
+                options.beforeSend =
+                    SentryOptions.BeforeSendCallback { event, _ ->
+                        if (SentryLevel.DEBUG == event.level) null else event
+                    }
+                options.environment = if (BuildConfig.DEBUG) "debug" else "production"
+                options.isDebug = BuildConfig.DEBUG
                 // Enable view hierarchy for crashes
-                options.setAttachViewHierarchy(true);
+                options.isAttachViewHierarchy = true
                 // Enable the performance API by setting a sample-rate
-                options.setTracesSampleRate(BuildConfig.DEBUG ? 1.0 : 0.1);
+                options.setTracesSampleRate(if (BuildConfig.DEBUG) 1.0 else 0.1)
                 // Enable profiling when starting transactions
-                options.setProfilesSampleRate(BuildConfig.DEBUG ? 1.0 : 0.1);
-            });
+                options.setProfilesSampleRate(if (BuildConfig.DEBUG) 1.0 else 0.1)
+            }
         }
     }
 
-    private void setUpSecurityProvider() {
-        SSLContextInitializer.INSTANCE.initializeSSLContext(this);
+    private fun setUpSecurityProvider() {
+        SSLContextInitializer.initializeSSLContext(this)
     }
 
-    private void initCustomCrashActivity() {
+    private fun initCustomCrashActivity() {
         CaocConfig.Builder.create()
-                .errorActivity(CrashActivity.class)
-                .apply();
+            .errorActivity(CrashActivity::class.java)
+            .apply()
     }
 
-    private void setUpAppComponent() {
-        appComponent = prepareAppComponent().build();
-        appComponent.inject(this);
+    private fun setUpAppComponent() {
+        appComponent = prepareAppComponent().build()
+        appComponent.inject(this)
     }
 
-    protected void setUpServerComponent() {
-        serverComponent = appComponent.plus(new ServerModule());
-        if (Boolean.TRUE.equals(serverComponent.userManager().isUserLoggedIn().blockingFirst()))
-            setUpUserComponent();
+    protected open fun setUpServerComponent() {
+        serverComponent = appComponent.plus(ServerModule())
+        if (serverComponent?.userManager()?.isUserLoggedIn()
+                ?.blockingFirst() == true
+        ) setUpUserComponent()
     }
 
 
-    protected void setUpUserComponent() {
-        UserManager userManager = serverComponent == null
-                ? null : serverComponent.userManager();
-        if (userManager != null && userManager.isUserLoggedIn().blockingFirst()) {
-            userComponent = serverComponent.plus(new UserModule());
+    protected open fun setUpUserComponent() {
+        serverComponent?.userManager()?.takeIf { it.isUserLoggedIn.blockingFirst() }?.let {
+            userComponent = serverComponent!!.plus(UserModule())
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////
-    // App component
-
-    /// /////////////////////////////////////////////////////////////////////
-    @NonNull
-    protected AppComponent.Builder prepareAppComponent() {
+    protected open fun prepareAppComponent(): AppComponent.Builder {
         return DaggerAppComponent.builder()
-                .appModule(new AppModule(this))
-                .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()))
-                .analyticsModule(new AnalyticsModule())
-                .preferenceModule(new PreferenceModule())
-                .networkUtilsModule(new NetworkUtilsModule())
-                .workManagerController(new WorkManagerModule())
-                .sessionManagerService(new SessionManagerModule())
-                .coroutineDispatchers(new DispatcherModule())
-                .featureConfigModule(new FeatureConfigModule());
+            .appModule(AppModule(this))
+            .schedulerModule(SchedulerModule(SchedulersProviderImpl()))
+            .analyticsModule(AnalyticsModule())
+            .preferenceModule(PreferenceModule())
+            .networkUtilsModule(NetworkUtilsModule())
+            .workManagerController(WorkManagerModule())
+            .sessionManagerService(SessionManagerModule())
+            .coroutineDispatchers(DispatcherModule())
+            .featureConfigModule(FeatureConfigModule())
     }
 
-    @NonNull
-    @Override
-    public AppComponent appComponent() {
-        return appComponent;
+    override fun appComponent(): AppComponent {
+        return appComponent
     }
 
-    ////////////////////////////////////////////////////////////////////////
-    // Server component
-
-    /// /////////////////////////////////////////////////////////////////////
-
-    @Override
-    public ServerComponent createServerComponent() {
-        if (!D2Manager.INSTANCE.isD2Instantiated())
-            setUpServerComponent();
-        return serverComponent;
+    override fun createServerComponent(): ServerComponent {
+        if (!D2Manager.isD2Instantiated()) setUpServerComponent()
+        return serverComponent!!
     }
 
-    @Nullable
-    @Override
-    public ServerComponent serverComponent() {
-        return serverComponent;
+    override fun serverComponent(): ServerComponent? {
+        return serverComponent
     }
 
-    @Override
-    public void releaseServerComponent() {
-        serverComponent = null;
+    override fun releaseServerComponent() {
+        serverComponent = null
     }
 
-    @Nullable
-    public ServerComponent getServerComponent() {
-        return serverComponent;
+    override fun createUserComponent(): UserComponent {
+        return (serverComponent!!.plus(UserModule()).also { userComponent = it })
     }
 
-    ////////////////////////////////////////////////////////////////////////
-    // User component
-
-    /// /////////////////////////////////////////////////////////////////////
-
-    @Override
-    public UserComponent createUserComponent() {
-        return (userComponent = serverComponent.plus(new UserModule()));
+    override fun userComponent(): UserComponent? {
+        return userComponent
     }
 
-    @Override
-    public UserComponent userComponent() {
-        return userComponent;
+    override fun releaseUserComponent() {
+        userComponent = null
     }
 
-    @Override
-    public void releaseUserComponent() {
-        userComponent = null;
-    }
-
-    ////////////////////////////////////////////////////////////////////////
-    // Dashboard component
-
-    /// /////////////////////////////////////////////////////////////////////
-    @NonNull
-    public TeiDashboardComponent createDashboardComponent(@NonNull TeiDashboardModule dashboardModule) {
+    fun createDashboardComponent(dashboardModule: TeiDashboardModule): TeiDashboardComponent {
         if (dashboardComponent != null) {
-            this.recreated = true;
+            this.recreated = true
         }
-        dashboardComponent = userComponent.plus(dashboardModule);
-        return dashboardComponent;
+        dashboardComponent = userComponent?.plus(dashboardModule)
+        return dashboardComponent!!
     }
 
-    @Nullable
-    public TeiDashboardComponent dashboardComponent() {
-        return dashboardComponent;
+    fun dashboardComponent(): TeiDashboardComponent? {
+        return dashboardComponent
     }
 
-    public void releaseDashboardComponent() {
+    fun releaseDashboardComponent() {
         if (!this.recreated) {
-            dashboardComponent = null;
+            dashboardComponent = null
         } else {
-            recreated = false;
+            recreated = false
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    public void onAppBackgrounded() {
-        Timber.tag("BG").d("App in background");
+    override fun onStop(owner: LifecycleOwner) {
+        Timber.tag("BG").d("App in background")
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    public void onAppForegrounded() {
-        Timber.tag("BG").d("App in foreground");
-        fromBackGround = true;
+    override fun onStart(owner: LifecycleOwner) {
+        Timber.tag("BG").d("App in foreground")
+        fromBackGround = true
     }
 
-    public void disableBackGroundFlag() {
-        fromBackGround = false;
+    fun disableBackGroundFlag() {
+        fromBackGround = false
     }
 
-    public boolean isSessionBlocked() {
-        boolean shouldShowPinDialog = fromBackGround && appComponent().preferenceProvider().getBoolean(Preference.SESSION_LOCKED, false);
-        fromBackGround = false;
-        return shouldShowPinDialog;
-    }
+    val isSessionBlocked: Boolean
+        get() {
+            val shouldShowPinDialog =
+                fromBackGround && appComponent().preferenceProvider()
+                    .getBoolean(Preference.SESSION_LOCKED, false)
+            fromBackGround = false
+            return shouldShowPinDialog
+        }
 
-    private void setUpRxPlugin() {
-        Scheduler asyncMainThreadScheduler = AndroidSchedulers.from(Looper.getMainLooper(), true);
-        RxAndroidPlugins.setInitMainThreadSchedulerHandler(schedulerCallable -> asyncMainThreadScheduler);
-        RxJavaPlugins.setErrorHandler(e -> {
-            if (e instanceof UndeliverableException) {
-                e = e.getCause();
+    private fun setUpRxPlugin() {
+        val asyncMainThreadScheduler = AndroidSchedulers.from(Looper.getMainLooper(), true)
+        RxAndroidPlugins.setInitMainThreadSchedulerHandler { asyncMainThreadScheduler }
+        RxJavaPlugins.setErrorHandler { e ->
+            var e = e
+            if (e is UndeliverableException) {
+                e = e.cause
             }
-            if ((e instanceof IOException) || (e instanceof SocketException)) {
-                return;
+            if (e is IOException) {
+                return@setErrorHandler
             }
-            if ((e instanceof NullPointerException) || (e instanceof IllegalArgumentException)) {
-                Timber.d("Error in app");
-                Thread.currentThread().getUncaughtExceptionHandler()
-                        .uncaughtException(Thread.currentThread(), e);
+            if ((e is NullPointerException) || (e is IllegalArgumentException)) {
+                Timber.d("Error in app")
+                Thread.currentThread().uncaughtExceptionHandler?.uncaughtException(
+                    Thread.currentThread(),
+                    e
+                )
             }
-            if (e instanceof IllegalStateException) {
-                Timber.d("Error in RxJava");
-                Thread.currentThread().getUncaughtExceptionHandler()
-                        .uncaughtException(Thread.currentThread(), e);
+            if (e is IllegalStateException) {
+                Timber.d("Error in RxJava")
+                Thread.currentThread().uncaughtExceptionHandler?.uncaughtException(
+                    Thread.currentThread(),
+                    e
+                )
             }
-            Timber.d(e);
-        });
+            Timber.d(e)
+        }
     }
 
-    @Override
-    public FeatureConfigActivityComponent provideFeatureConfigActivityComponent() {
-        return userComponent.plus(new FeatureConfigActivityModule());
+    override fun provideFeatureConfigActivityComponent(): FeatureConfigActivityComponent? {
+        return userComponent?.plus(FeatureConfigActivityModule())
     }
 
-    @Override
-    public CalendarPickerComponent provideCalendarPickerComponent() {
-        return userComponent.plus(new CalendarPickerModule());
+    override fun provideCalendarPickerComponent(): CalendarPickerComponent? {
+        return userComponent?.plus(CalendarPickerModule())
     }
 
-    @Override
-    public AnalyticsFragmentComponent provideAnalyticsFragmentComponent(AnalyticsFragmentModule module) {
-        return userComponent.plus(module);
+    override fun provideAnalyticsFragmentComponent(module: AnalyticsFragmentModule?): AnalyticsFragmentComponent? {
+        return userComponent?.plus(module)
     }
 
-    @Override
-    public FilterPresenter provideFilterPresenter() {
-        return userComponent.filterPresenter();
+    override fun provideFilterPresenter(): FilterPresenter? {
+        return userComponent?.filterPresenter()
     }
 
-    @org.jetbrains.annotations.Nullable
-    @Override
-    public OUTreeComponent provideOUTreeComponent(@NotNull OUTreeModule module) {
-        return serverComponent.plus(module);
+    override fun provideOUTreeComponent(module: OUTreeModule): OUTreeComponent? {
+        return serverComponent?.plus(module)
     }
 
-    @NonNull
-    @Override
-    public SyncComponentProvider getSyncComponentProvider() {
-        return new SyncStatusDialogProvider();
-    }
+    override val syncComponentProvider: SyncComponentProvider
+        get() = SyncStatusDialogProvider()
 
-    private boolean areTrackingPermissionGranted() {
-        boolean isUserLoggedIn = serverComponent != null &&
-                serverComponent.userManager().isUserLoggedIn().blockingFirst();
+    private fun areTrackingPermissionGranted(): Boolean {
+        val isUserLoggedIn = serverComponent != null &&
+                serverComponent!!.userManager().isUserLoggedIn().blockingFirst()
         if (!D2Manager.isD2Instantiated() || !isUserLoggedIn) {
-            return false;
+            return false
         }
-        KeyValuePair granted = D2Manager.getD2().dataStoreModule().localDataStore()
-                .value(DATA_STORE_ANALYTICS_PERMISSION_KEY).blockingGet();
-        return granted != null && Boolean.parseBoolean(granted.value());
+        val granted = D2Manager.getD2().dataStoreModule().localDataStore()
+            .value(DATA_STORE_ANALYTICS_PERMISSION_KEY).blockingGet()
+        return granted != null && granted.value().toBoolean()
     }
-
 }
