@@ -193,6 +193,41 @@ class AndroidSyncRepository(
             .blockingSet(stackTrace)
     }
 
+    override suspend fun isServerAvailable(syncJobName: String): Boolean {
+        val isServerAvailable =
+            try {
+                d2.systemInfoModule().ping().blockingGet()
+                true
+            } catch (e: Exception) {
+                false
+            }
+
+        return isServerAvailable
+    }
+
+    override suspend fun setUnnavailableFlag(syncJobName: String) {
+        d2
+            .dataStoreModule()
+            .localDataStore()
+            .value(syncJobName)
+            .blockingSet("unavailable")
+    }
+
+    override suspend fun removeUnnavailableFlag(syncJobName: String) {
+        d2
+            .dataStoreModule()
+            .localDataStore()
+            .value(syncJobName)
+            .blockingDeleteIfExist()
+    }
+
+    override suspend fun isPeriodicJobFlagged(syncJobName: String): Boolean =
+        d2
+            .dataStoreModule()
+            .localDataStore()
+            .value(syncJobName)
+            .blockingExists()
+
     private suspend fun syncResult(): SyncResult {
         val eventsOk =
             d2

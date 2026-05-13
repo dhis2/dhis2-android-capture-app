@@ -15,6 +15,11 @@ import io.reactivex.plugins.RxJavaPlugins
 import io.sentry.SentryLevel
 import io.sentry.SentryOptions
 import io.sentry.android.core.SentryAndroid
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.launch
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.di.dagger.PerServer
 import org.dhis2.commons.di.dagger.PerUser
@@ -43,6 +48,9 @@ import org.dhis2.data.user.UserComponent
 import org.dhis2.data.user.UserModule
 import org.dhis2.di.KoinInitialization.invoke
 import org.dhis2.maps.MapController
+import org.dhis2.mobile.commons.domain.invoke
+import org.dhis2.mobile.commons.network.NetworkStatusProvider
+import org.dhis2.mobile.sync.domain.CheckPeriodicJobs
 import org.dhis2.usescases.crash.CrashActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule
@@ -51,6 +59,7 @@ import org.dhis2.utils.analytics.DATA_STORE_ANALYTICS_PERMISSION_KEY
 import org.dhis2.utils.granularsync.SyncStatusDialogProvider
 import org.dhis2.utils.timber.DebugTree
 import org.hisp.dhis.android.core.D2Manager
+import org.koin.android.ext.android.inject
 import timber.log.Timber
 import timber.log.Timber.Forest.plant
 import java.io.IOException
@@ -69,6 +78,10 @@ open class App : Application(), Components, DefaultLifecycleObserver {
 
     @PerActivity
     private var dashboardComponent: TeiDashboardComponent? = null
+
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val networkStatusProvider: NetworkStatusProvider by inject()
+    private val checkPeriodicJobs: CheckPeriodicJobs by inject()
 
     private var fromBackGround = false
     private var recreated = false
@@ -93,6 +106,24 @@ open class App : Application(), Components, DefaultLifecycleObserver {
         initCrashController()
         setUpRxPlugin()
         initCustomCrashActivity()
+        observeConnectivity()
+    }
+
+
+    private fun observeConnectivity() {
+        scope.launch {
+            networkStatusProvider.connectionStatus
+                .filter { it }
+                .collect {
+                    checkAndEnqueueSyncJobs()
+                }
+        }
+    }
+
+    private fun checkAndEnqueueSyncJobs() {
+        scope.launch {
+            checkPeriodicJobs()
+        }
     }
 
     fun initCrashController() {
