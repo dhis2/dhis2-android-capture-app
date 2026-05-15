@@ -1,12 +1,10 @@
 package org.dhis2.mobile.login.main.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.commons.extensions.withMinimumDuration
@@ -64,15 +62,11 @@ class LoginViewModel(
         }
         serverValidationJob =
             launchUseCase {
-                val isNetworkOnline =
-                    networkStatusProvider.connectionStatus
-                        .stateIn(
-                            viewModelScope,
-                            SharingStarted.Eagerly,
-                            false,
-                        ).value
+                val isOnline = networkStatusProvider.connectionStatus.firstOrNull() ?: false
                 val result =
-                    withMinimumDuration { validateServer(serverUrl, isNetworkOnline) }
+                    withMinimumDuration {
+                        validateServer(serverUrl, isOnline)
+                    }
                 when (result) {
                     is ServerValidationResult.Error -> {
                         _serverValidationState.update {
