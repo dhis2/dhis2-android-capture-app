@@ -65,7 +65,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @NonNull
     @Override
     public Flowable<String> programStageName() {
-        return d2.programModule().programStages().uid(getCurrentEvent().programStage()).get()
+        Event currentEvent = getCurrentEvent();
+        if (currentEvent == null || currentEvent.programStage() == null) {
+            return Flowable.empty();
+        }
+        return d2.programModule().programStages().uid(currentEvent.programStage()).get()
                 .map(BaseIdentifiableObject::displayName)
                 .toFlowable();
     }
@@ -116,7 +120,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @NonNull
     @Override
     public Observable<String> programStage() {
-        return Observable.just(Objects.requireNonNull(getCurrentEvent().programStage()));
+        Event currentEvent = getCurrentEvent();
+        if (currentEvent == null || currentEvent.programStage() == null) {
+            return Observable.empty();
+        }
+        return Observable.just(currentEvent.programStage());
     }
 
     @Override
@@ -186,6 +194,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public boolean hasAnalytics() {
         Event currentEvent = getCurrentEvent();
+        if (currentEvent == null || currentEvent.program() == null) {
+            return false;
+        }
         boolean hasProgramIndicators = !d2.programModule().programIndicators().byProgramUid().eq(currentEvent.program()).blockingIsEmpty();
         List<ProgramRule> programRules = d2.programModule().programRules().withProgramRuleActions()
                 .byProgramUid().eq(currentEvent.program()).blockingGet();
