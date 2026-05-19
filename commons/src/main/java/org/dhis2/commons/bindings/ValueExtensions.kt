@@ -197,17 +197,22 @@ fun TrackedEntityDataValueObjectRepository.blockingSetCheck(
     d2: D2,
     deUid: String,
     value: String,
-): Boolean =
-    d2.dataElementModule().dataElements().uid(deUid).blockingGet()?.let {
+): Boolean {
+    return d2.dataElementModule().dataElements().uid(deUid).blockingGet()?.let {
         if (check(d2, it.valueType(), it.optionSet()?.uid(), value)) {
             val finalValue = assureCodeForOptionSet(d2, it.optionSet()?.uid(), value)
-            blockingSet(finalValue)
+            try {
+                blockingSet(finalValue)
+            } catch (e: Exception) {
+                return false
+            }
             true
         } else {
             blockingDeleteIfExist()
             false
         }
     } ?: false
+}
 
 fun String?.withValueTypeCheck(valueType: ValueType?): String? {
     return this?.let {
