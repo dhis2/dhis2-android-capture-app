@@ -219,7 +219,11 @@ Sentry's GitHub integration scans PR bodies and commit messages for `Fixes <SHOR
 (e.g. `Fixes DHIS2-ANDROID-CAPTURE-83MK`) and automatically links the PR on the Sentry
 issue page — no extra API call needed.
 
-Always include the following line in the PR body under a `## Sentry issue` section:
+Always include both lines in the PR body under a `## Sentry issue` section:
 ```
 Fixes <SENTRY-SHORT-ID>
+https://dhis2.sentry.io/issues/<SENTRY-SHORT-ID>/
 ```
+
+- `Fixes <SENTRY-SHORT-ID>` — triggers Sentry's GitHub integration to auto-link the PR on the issue page
+- The URL — provides a direct clickable link from the PR to the Sentry issue
