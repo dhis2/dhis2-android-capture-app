@@ -14,6 +14,31 @@ Stack traces are deobfuscated (ProGuard mappings uploaded on release builds).
 
 ---
 
+## Prerequisites — Sentry MCP plugin
+
+This skill requires the `sentry@claude-plugins-official` plugin. Before running any step,
+verify the plugin is available by checking whether `mcp__plugin_sentry_sentry__find_releases`
+is listed as an available tool.
+
+If the plugin is **not installed**, stop and tell the user:
+
+> The Sentry MCP plugin is not enabled in this session. To install it locally, run:
+> ```
+> /config
+> ```
+> Then navigate to **Extensions → Plugins**, find **Sentry**, and enable it. Alternatively,
+> add the following to your `~/.claude/settings.json` (user-level, not committed to the repo):
+> ```json
+> {
+>   "enabledPlugins": {
+>     "sentry@claude-plugins-official": true
+>   }
+> }
+> ```
+> Once enabled, restart the session and run `/sentry-triage` again.
+
+---
+
 ## Step 1 — Resolve the latest production version
 
 Do **not** read `gradle/libs.versions.toml` — the working branch is always ahead of what is
