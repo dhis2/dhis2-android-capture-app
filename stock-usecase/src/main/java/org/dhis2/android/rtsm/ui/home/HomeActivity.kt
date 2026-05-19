@@ -104,7 +104,7 @@ class HomeActivity : AppCompatActivity() {
                 theme = R.style.correction
             }
         }
-        if (color != -1) {
+        return if (color != -1) {
             this.theme.applyStyle(theme, true)
 
             val window = window
@@ -114,9 +114,9 @@ class HomeActivity : AppCompatActivity() {
             val colorToReturn = a.getColor(0, 0)
             a.recycle()
             window.statusBarColor = colorToReturn
-            return Color(ContextCompat.getColor(this, color))
+            Color(ContextCompat.getColor(this, color))
         } else {
-            return Color(ContextCompat.getColor(this, R.color.colorPrimary))
+            Color(ContextCompat.getColor(this, R.color.colorPrimary))
         }
     }
 
