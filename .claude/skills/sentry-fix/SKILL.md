@@ -233,8 +233,9 @@ git commit -m "fix: <short description of fix>\n\nCo-Authored-By: Claude Sonnet 
 # 4. Push
 git push -u origin fix/sentry-<issue-id-lowercase>
 
-# 5. Open PR targeting BASE_BRANCH (not main/develop)
+# 5. Open PR as draft targeting BASE_BRANCH (not main/develop)
 gh pr create \
+  --draft \
   --base "$BASE_BRANCH" \
   --title "fix: <short description>" \
   --body "..."
