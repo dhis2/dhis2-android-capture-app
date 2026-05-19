@@ -33,20 +33,23 @@ class SplashPresenter internal constructor(
                 userManager.isUserLoggedIn
                     .delay(2000, TimeUnit.MILLISECONDS, schedulerProvider.io())
                     .subscribeOn(schedulerProvider.io())
+                    .map { userLogged ->
+                        if (userLogged && trackingPermissionGranted()) {
+                            val systemInfo =
+                                userManager.d2
+                                    .systemInfoModule()
+                                    .systemInfo()
+                                    .blockingGet()
+                            trackUserInfo(
+                                serverUrl = systemInfo?.contextPath() ?: "",
+                                serverVersion = systemInfo?.version() ?: "",
+                            )
+                        }
+                        userLogged
+                    }
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
                         { userLogged ->
-                            if (userLogged && trackingPermissionGranted()) {
-                                val systemInfo =
-                                    userManager.d2
-                                        .systemInfoModule()
-                                        .systemInfo()
-                                        .blockingGet()
-                                trackUserInfo(
-                                    serverUrl = systemInfo?.contextPath() ?: "",
-                                    serverVersion = systemInfo?.version() ?: "",
-                                )
-                            }
                             view.goToNextScreen(
                                 userLogged,
                                 preferenceProvider.getBoolean(
