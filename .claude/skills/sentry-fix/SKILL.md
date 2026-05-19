@@ -215,5 +215,11 @@ gh pr create \
   --body "..."
 ```
 
-To annotate Sentry after the PR is open: call `mcp__sentry__create_comment` with the root
-cause summary and the PR URL.
+Sentry's GitHub integration scans PR bodies and commit messages for `Fixes <SHORT-ID>`
+(e.g. `Fixes DHIS2-ANDROID-CAPTURE-83MK`) and automatically links the PR on the Sentry
+issue page — no extra API call needed.
+
+Always include the following line in the PR body under a `## Sentry issue` section:
+```
+Fixes <SENTRY-SHORT-ID>
+```
