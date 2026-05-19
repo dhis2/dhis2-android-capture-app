@@ -197,16 +197,15 @@ For patterns, examples, and common mistakes load the **android-testing** skill.
 
 Two custom skills for Sentry error triage and remediation:
 
-- **`/sentry-triage`** — Resolves the latest production release from Sentry/GitHub (not
-  `libs.versions.toml`), queries `dhis2/dhis2-android-capture` for top unresolved issues,
-  scores each by Impact (1-5) and Effort (1-5), and outputs a prioritized impact/effort
-  quadrant report. Requires `sentry@claude-plugins-official` enabled in
-  `.claude/settings.local.json`.
+- **`/sentry-triage`** — Resolves the latest production release and queries the configured
+  Sentry project for top unresolved issues, scores each by Impact (1-5) and Effort (1-5),
+  and outputs a prioritized impact/effort quadrant report. Requires the
+  `sentry@claude-plugins-official` plugin installed locally in `~/.claude/settings.json`.
 
 - **`/sentry-fix <issue-id>`** — Fetches the full Sentry event and stack trace, reads the
   relevant Kotlin source files, implements a fix following these AGENTS.md guidelines,
   writes unit tests (load `android-testing` skill), and runs `ktlintFormat`, `ktlintCheck`,
   and the relevant test task. Usable standalone or from a `/sentry-triage` report.
 
-Sentry org: `dhis2`, project: `dhis2-android-capture`.
 Stack traces are deobfuscated (ProGuard mappings are uploaded on every release build).
+Sentry org and project are resolved dynamically from the plugin at runtime.

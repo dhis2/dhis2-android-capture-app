@@ -1,15 +1,14 @@
 ---
 name: sentry-triage
 description: >
-  Fetches unresolved Sentry issues for the latest production release of
-  dhis2-android-capture, scores each issue on Impact (1-5) and Effort (1-5),
-  and outputs a prioritized impact/effort quadrant report with ready-to-run
-  /sentry-fix commands. Use when you want to decide what to fix next.
+  Fetches unresolved Sentry issues for the latest production release,
+  scores each issue on Impact (1-5) and Effort (1-5), and outputs a
+  prioritized impact/effort quadrant report with ready-to-run /sentry-fix
+  commands. Use when you want to decide what to fix next.
 ---
 
 # Sentry Triage Skill
 
-Org: `dhis2` · Project: `dhis2-android-capture`
 Stack traces are deobfuscated (ProGuard mappings uploaded on release builds).
 
 ---
@@ -39,16 +38,30 @@ If the plugin is **not installed**, stop and tell the user:
 
 ---
 
+## Step 0 — Discover Sentry org and project
+
+Call `mcp__plugin_sentry_sentry__find_organizations` to list accessible orgs. If there is
+only one, use it. If there are multiple, pick the one whose slug matches the GitHub org of
+the current repo (run `gh repo view --json owner -q .owner.login` to get it).
+
+Store the result as `ORG_SLUG` and the org's `regionUrl` as `REGION_URL`.
+
+Then call `mcp__plugin_sentry_sentry__find_projects` with `organizationSlug: ORG_SLUG`.
+Match the project whose slug or name most closely corresponds to this Android app (look for
+`android`, `capture`, or the repo name). Store this as `PROJECT_SLUG`.
+
+---
+
 ## Step 1 — Resolve the latest production version
 
 Do **not** read `gradle/libs.versions.toml` — the working branch is always ahead of what is
 shipped. Determine the last production release using one of these methods, in order:
 
-1. Call `mcp__sentry__list_releases` for project `dhis2-android-capture`, filter by environment
+1. Call `mcp__plugin_sentry_sentry__find_releases` for `PROJECT_SLUG`, filter by environment
    `production`, sort by `date` descending, take the first entry's `version` string.
-2. If that tool is unavailable or returns no results, run:
+2. If that returns no results, run:
    ```
-   gh release list --repo dhis2/dhis2-android-capture-app --limit 5
+   gh repo view --json nameWithOwner -q .nameWithOwner | xargs -I{} gh release list --repo {} --limit 5
    ```
    and pick the most recent non-prerelease tag. Strip a leading `v` if present.
 
@@ -58,9 +71,9 @@ Store this as `PROD_VERSION` for use in all subsequent queries.
 
 ## Step 2 — Query top unresolved issues
 
-Call `mcp__sentry__list_issues` with:
-- `organization_slug`: `dhis2`
-- `project_slug`: `dhis2-android-capture`
+Call `mcp__plugin_sentry_sentry__search_issues` with:
+- `organization_slug`: `ORG_SLUG`
+- `project_slug`: `PROJECT_SLUG`
 - `query`: `is:unresolved release:<PROD_VERSION> !is:ignored`
 - `sort`: `users`
 - `limit`: 10
@@ -76,7 +89,7 @@ If 0 results come back, retry in this order:
 
 ## Step 3 — Fetch latest event per issue
 
-For each issue, call `mcp__sentry__get_issue_events` (limit: 3). From the most recent event
+For each issue, call `mcp__plugin_sentry_sentry__search_issue_events` (limit: 3). From the most recent event
 extract:
 - `exception.values[0].stacktrace.frames` — full frame list
 - `breadcrumbs.values` — last 10 entries (reveals the user flow)
@@ -170,7 +183,7 @@ Take the **highest** matching base score, then apply modifiers:
 Produce a markdown report with this structure:
 
 ```
-## Sentry Triage Report — dhis2-android-capture
+## Sentry Triage Report — <PROJECT_SLUG>
 Production release: <PROD_VERSION>
 Generated: <today's date>
 [Note if release filter was relaxed and why]
@@ -204,5 +217,5 @@ Generated: <today's date>
 - **To fix**: `/sentry-fix SENTRY-X`
 ```
 
-If no issues were found even after relaxing the filter, state that clearly and suggest the
-user verify that the Sentry project name and org slug are correct.
+If no issues were found even after relaxing the filter, state clearly which org and project
+were resolved in Step 0, and suggest the user verify they are correct.

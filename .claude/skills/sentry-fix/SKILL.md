@@ -10,10 +10,9 @@ description: >
 
 # Sentry Fix Skill
 
-Org: `dhis2` · Project: `dhis2-android-capture`
 Stack traces are deobfuscated (ProGuard mappings uploaded on release builds).
 
-**Input**: one Sentry issue ID, e.g. `DHIS2-ANDROID-1234` or the full numeric ID.
+**Input**: one Sentry issue ID, e.g. `PROJ-1234` or the full numeric ID.
 
 ---
 
@@ -39,14 +38,27 @@ If the plugin is **not installed**, stop and tell the user:
 > }
 > ```
 > Once enabled, restart the session and run `/sentry-fix <issue-id>` again.
+
 If invoked from a `/sentry-triage` report, the issue ID is in the "To fix" line of
 each issue entry.
 
 ---
 
+## Step 0 — Discover Sentry org
+
+Call `mcp__plugin_sentry_sentry__find_organizations` to list accessible orgs. If there is
+only one, use it. If there are multiple, pick the one whose slug matches the GitHub org of
+the current repo (run `gh repo view --json owner -q .owner.login` to get it).
+
+Store the result as `ORG_SLUG` and the org's `regionUrl` as `REGION_URL`. These are used
+for all subsequent Sentry tool calls and to construct the Sentry issue URL:
+`https://<ORG_SLUG>.sentry.io/issues/<ISSUE-SHORT-ID>/`
+
+---
+
 ## Step 1 — Fetch full issue and recent events
 
-Call `mcp__sentry__get_issue` with the issue ID. Note: title, culprit, `firstSeen`,
+Call `mcp__plugin_sentry_sentry__get_sentry_resource` with the issue ID and `ORG_SLUG`. Note: title, culprit, `firstSeen`,
 `lastSeen`, `userCount`, `count`, any linked tags.
 
 Then call `mcp__sentry__get_issue_events` with `limit: 5`. For each event extract:
@@ -242,14 +254,13 @@ gh pr create \
 ```
 
 Sentry's GitHub integration scans PR bodies and commit messages for `Fixes <SHORT-ID>`
-(e.g. `Fixes DHIS2-ANDROID-CAPTURE-83MK`) and automatically links the PR on the Sentry
-issue page — no extra API call needed.
+and automatically links the PR on the Sentry issue page — no extra API call needed.
 
 Always include both lines in the PR body under a `## Sentry issue` section:
 ```
 Fixes <SENTRY-SHORT-ID>
-https://dhis2.sentry.io/issues/<SENTRY-SHORT-ID>/
+https://<ORG_SLUG>.sentry.io/issues/<SENTRY-SHORT-ID>/
 ```
 
 - `Fixes <SENTRY-SHORT-ID>` — triggers Sentry's GitHub integration to auto-link the PR on the issue page
-- The URL — provides a direct clickable link from the PR to the Sentry issue
+- The URL (constructed from `ORG_SLUG` resolved in Step 0) — direct clickable link from the PR to the Sentry issue
