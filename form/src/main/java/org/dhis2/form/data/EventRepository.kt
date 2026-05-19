@@ -216,10 +216,12 @@ class EventRepository(
     override fun isEvent(): Boolean = true
 
     override fun isEventEditable() =
-        d2
-            .eventModule()
-            .eventService()
-            .blockingIsEditable(eventUid)
+        runCatching {
+            d2
+                .eventModule()
+                .eventService()
+                .blockingIsEditable(eventUid)
+        }.getOrDefault(false)
 
     override fun eventMode(): EventMode = eventMode
 
