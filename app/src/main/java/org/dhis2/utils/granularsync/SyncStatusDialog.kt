@@ -112,9 +112,9 @@ class SyncStatusDialog :
                     val syncState by viewModel.currentState.collectAsState()
                     syncState?.let { syncUiState ->
                         when {
-                            syncUiState.shouldDismissOnUpdate -> dismiss()
+                            syncUiState.shouldDismissOnUpdate -> dismissAllowingStateLoss()
                             syncing && syncUiState.syncState == SyncStatus.SYNCED -> {
-                                dismiss()
+                                dismissAllowingStateLoss()
                                 Toast
                                     .makeText(
                                         requireContext(),
