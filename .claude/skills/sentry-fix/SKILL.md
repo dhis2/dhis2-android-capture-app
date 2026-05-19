@@ -179,12 +179,41 @@ Output a summary in this format:
 - `path/to/FileTest.kt` — <tests added>
 **Lint**: passed
 **Tests**: passed (<test class>::<method>, ...)
-
-Next steps: create a PR targeting `develop`.
-To annotate Sentry: call mcp__sentry__create_comment with the root cause summary and PR URL.
 ```
 
 If you cannot determine a safe fix (e.g. the root cause is inside the DHIS2 Android SDK
 with no workaround), state that clearly with a recommended action (e.g. file a bug against
 the SDK, add a defensive guard to prevent the crash from surfacing to users, add a Sentry
 breadcrumb to improve future diagnosis).
+
+---
+
+## Step 9 — Create branch and open PR
+
+**CRITICAL**: The fix branch must be created FROM the branch where this skill is triggered,
+and the PR must target that same branch. Never use `main`, `develop`, or `origin/main` as
+the base unless you are explicitly told to.
+
+```bash
+# 1. Record the current branch BEFORE creating the fix branch
+BASE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# 2. Create fix branch FROM that base — never from main or origin/main
+git checkout -b fix/sentry-<issue-id-lowercase> "$BASE_BRANCH"
+
+# 3. Stage and commit
+git add <files>
+git commit -m "fix: <short description of fix>\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
+
+# 4. Push
+git push -u origin fix/sentry-<issue-id-lowercase>
+
+# 5. Open PR targeting BASE_BRANCH (not main/develop)
+gh pr create \
+  --base "$BASE_BRANCH" \
+  --title "fix: <short description>" \
+  --body "..."
+```
+
+To annotate Sentry after the PR is open: call `mcp__sentry__create_comment` with the root
+cause summary and the PR URL.
