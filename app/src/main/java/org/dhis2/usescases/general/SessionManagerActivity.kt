@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.launch
 import org.dhis2.App
+import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.commons.ActivityResultObservable
@@ -19,6 +20,8 @@ import org.dhis2.commons.service.SessionManagerServiceImpl
 import org.dhis2.commons.ui.extensions.handleInsets
 import org.dhis2.data.server.OpenIdSession.LogOutReason
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.mobile.login.pin.addPinBottomSheet
+import org.dhis2.mobile.login.pin.domain.model.PinMode
 import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.login.LoginActivity.Companion.bundle
@@ -28,8 +31,6 @@ import org.dhis2.usescases.splash.SplashActivity
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.FORGOT_CODE
-import org.dhis2.mobile.login.pin.addPinBottomSheet
-import org.dhis2.mobile.login.pin.domain.model.PinMode
 import org.koin.android.ext.android.inject
 import javax.inject.Inject
 
@@ -70,9 +71,11 @@ abstract class SessionManagerActivity :
                         null,
                     )
                 }
-            if (serverComponent.userManager().isUserLoggedIn().blockingFirst() &&
-                !serverComponent.userManager().allowScreenShare()
-            ) {
+            val isTraining = BuildConfig.FLAVOR == "dhis2Training"
+            val screenShareAllowed =
+                serverComponent.userManager().isUserLoggedIn().blockingFirst() &&
+                        !serverComponent.userManager().allowScreenShare()
+            if (!isTraining && screenShareAllowed) {
                 window.setFlags(
                     WindowManager.LayoutParams.FLAG_SECURE,
                     WindowManager.LayoutParams.FLAG_SECURE,
