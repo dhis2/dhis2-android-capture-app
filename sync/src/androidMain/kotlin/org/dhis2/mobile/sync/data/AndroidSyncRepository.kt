@@ -280,36 +280,56 @@ class AndroidSyncRepository(
             Result.success(Unit)
         }
 
-    override suspend fun setUpSMS(): Result<Unit> =
+    override suspend fun setUpSMS(): Result<Boolean> =
         execute {
+            var enableSMS = false
             d2.settingModule().generalSetting().blockingGet()?.let { globalSettings ->
                 globalSettings
                     .smsGateway()
-                    ?.let {
+                    ?.let { gateway ->
+                        enableSMS = true
                         d2
                             .smsModule()
                             .configCase()
-                            .setGatewayNumber(it)
+                            .setGatewayNumber(gateway)
                             .blockingAwait()
                     }
-                globalSettings.smsResultSender()?.let {
+                globalSettings.smsResultSender()?.let { smsResult ->
                     d2
                         .smsModule()
                         .configCase()
-                        .setConfirmationSenderNumber(it)
+                        .setConfirmationSenderNumber(smsResult)
                         .blockingAwait()
                 }
+            }
+            Result.success(enableSMS)
+        }
+
+    override suspend fun toggleSMS(enable: Boolean): Result<Unit> =
+        execute {
+            val currentStatus =
                 d2
                     .smsModule()
                     .configCase()
-                    .setModuleEnabled(true)
+                    .getSmsModuleConfig()
+                    .blockingGet()
+                    .isModuleEnabled
+            if (currentStatus != enable) {
+                d2
+                    .smsModule()
+                    .configCase()
+                    .setModuleEnabled(enable)
                     .blockingAwait()
+            }
+
+            if (currentStatus.not() && enable) {
                 d2
                     .smsModule()
                     .configCase()
                     .refreshMetadataIds()
                     .blockingAwait()
             }
+
             Result.success(Unit)
         }
 

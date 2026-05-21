@@ -22,7 +22,8 @@ class SyncMetadata(
             if (syncMetadataResult.isSuccess) {
                 repository.updateProjectAnalytics()
                 input(40)
-                repository.setUpSMS()
+                val enableSMS = repository.setUpSMS().getOrDefault(false)
+                repository.toggleSMS(enableSMS)
                 input(50)
                 repository.downloadMapMetadata()
                 input(60)

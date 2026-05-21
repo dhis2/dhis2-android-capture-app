@@ -46,6 +46,8 @@ class SyncMetadataTest {
             )
             whenever(repository.currentDataSyncPeriod()) doReturn SyncPeriod.Manual
             whenever(repository.syncMetadata(any())) doReturn Result.success(Unit)
+            whenever(repository.setUpSMS()) doReturn Result.success(true)
+            whenever(repository.toggleSMS(true)) doReturn Result.success(Unit)
 
             syncMetadata.invoke { }
 
@@ -62,6 +64,8 @@ class SyncMetadataTest {
             )
             whenever(repository.currentDataSyncPeriod()) doReturn SyncPeriod.Manual
             whenever(repository.syncMetadata(any())) doReturn Result.success(Unit)
+            whenever(repository.setUpSMS()) doReturn Result.success(true)
+            whenever(repository.toggleSMS(true)) doReturn Result.success(Unit)
 
             syncMetadata.invoke { }
 
@@ -77,6 +81,8 @@ class SyncMetadataTest {
                 SyncPeriod.Manual,
             )
             whenever(repository.syncMetadata(any())) doReturn Result.success(Unit)
+            whenever(repository.setUpSMS()) doReturn Result.success(true)
+            whenever(repository.toggleSMS(true)) doReturn Result.success(Unit)
 
             syncMetadata.invoke { }
 
@@ -92,6 +98,8 @@ class SyncMetadataTest {
                 SyncPeriod.Every7Days,
             )
             whenever(repository.syncMetadata(any())) doReturn Result.success(Unit)
+            whenever(repository.setUpSMS()) doReturn Result.success(true)
+            whenever(repository.toggleSMS(true)) doReturn Result.success(Unit)
 
             syncMetadata.invoke { }
 
@@ -105,6 +113,8 @@ class SyncMetadataTest {
             whenever(repository.currentMetadataSyncPeriod()) doReturn SyncPeriod.Manual
             whenever(repository.currentDataSyncPeriod()) doReturn SyncPeriod.Manual
             whenever(repository.syncMetadata(any())) doReturn Result.failure(exception)
+            whenever(repository.setUpSMS()) doReturn Result.success(true)
+            whenever(repository.toggleSMS(true)) doReturn Result.success(Unit)
 
             val result = syncMetadata.invoke { }
 

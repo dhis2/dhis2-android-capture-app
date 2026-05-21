@@ -14,7 +14,7 @@ interface SyncRepository {
 
     suspend fun updateProjectAnalytics(): Result<Unit>
 
-    suspend fun setUpSMS(): Result<Unit>
+    suspend fun setUpSMS(): Result<Boolean>
 
     suspend fun downloadMapMetadata(): Result<Unit>
 
@@ -49,4 +49,6 @@ interface SyncRepository {
     suspend fun getAllDataSets(): Result<List<String>>
 
     suspend fun saveDataSyncError(stackTrace: String)
+
+    suspend fun toggleSMS(enable: Boolean): Result<Unit>
 }
