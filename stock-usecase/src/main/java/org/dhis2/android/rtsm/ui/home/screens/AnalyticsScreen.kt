@@ -20,6 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment
 import kotlinx.coroutines.CoroutineScope
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
+import org.dhis2.android.rtsm.ui.home.LocalThemeColor
 import org.dhis2.android.rtsm.ui.home.screens.components.AnalyticsTopBar
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -28,7 +29,6 @@ fun AnalyticsScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(),
     backAction: () -> Unit,
-    themeColor: Color,
     scaffoldState: ScaffoldState,
     syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
     supportFragmentManager: FragmentManager,
@@ -40,7 +40,7 @@ fun AnalyticsScreen(
         appBar = {
             AnalyticsTopBar(
                 title = settingsUiState.programName,
-                themeColor = themeColor,
+                themeColor = LocalThemeColor.current,
                 backAction = {
                     backAction.invoke()
                 },
@@ -48,7 +48,7 @@ fun AnalyticsScreen(
                 syncAction = syncAction,
             )
         },
-        backLayerBackgroundColor = themeColor,
+        backLayerBackgroundColor = LocalThemeColor.current,
         backLayerContent = {
         },
         frontLayerElevation = 0.dp,
