@@ -389,14 +389,19 @@ class LoginRepositoryImpl(
                                             )
 
                                         kotlin.Result.success(Unit)
-                                    } catch (e: Exception) {
+                                    } catch (d2Error: D2Error) {
                                         kotlin.Result.failure(
                                             Exception(
                                                 d2ErrorMessageProvider.getErrorMessage(
-                                                    e,
+                                                    d2Error,
                                                     openIdLoginConfiguration.isNetworkAvailable,
                                                 ),
                                             ),
+                                        )
+                                    } catch (_: Exception) {
+                                        kotlin.Result.failure(
+                                            resultIntent.exceptionOrNull()
+                                                ?: Exception(getString(Res.string.openid_process_cancelled)),
                                         )
                                     }
                                 }
