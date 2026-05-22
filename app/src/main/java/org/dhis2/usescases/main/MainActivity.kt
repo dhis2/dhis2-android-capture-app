@@ -127,6 +127,14 @@ class MainActivity : ActivityGlobalAbstract() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // On recreation (e.g. rotation), the ViewModel survives but its MainNavigator holds a
+        // stale FragmentManager from the destroyed Activity. Update it before rendering so any
+        // fragment transaction below uses the correct, live FragmentManager.
+        var needsScreenRefresh = savedInstanceState != null
+        if (needsScreenRefresh) {
+            mainViewModel.mainNavigator.updateFragmentManager(supportFragmentManager)
+        }
+
         setContent {
             DHIS2Theme {
                 val screenState by mainViewModel.homeScreenState.collectAsState()
@@ -173,7 +181,15 @@ class MainActivity : ActivityGlobalAbstract() {
                         }
                         navigationId?.let {
                             changeFragment(it)
-                            initCurrentScreen()
+                            // On recreation the ViewModel screen hasn't changed so
+                            // navigateToScreen() would early-return without ever opening the
+                            // fragment. Bypass it once to repopulate the fresh container.
+                            if (needsScreenRefresh) {
+                                needsScreenRefresh = false
+                                mainViewModel.refreshCurrentScreen()
+                            } else {
+                                initCurrentScreen()
+                            }
                         }
                     },
                     onLayoutInflated = {
