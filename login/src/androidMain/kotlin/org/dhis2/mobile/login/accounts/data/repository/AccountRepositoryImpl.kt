@@ -62,7 +62,7 @@ class AccountRepositoryImpl(
             oidcIcon = oidcProviders?.icon,
             oidcLoginText = oidcProviders?.loginText,
             oidcUrl = oidcProviders?.url,
-            isOauthEnabled = databaseAccount.loginConfig()?.isOauthEnabled() == true,
+            isOauthEnabled = databaseAccount.loginConfig()?.isOauthEnabled == true,
         )
     }
 }
