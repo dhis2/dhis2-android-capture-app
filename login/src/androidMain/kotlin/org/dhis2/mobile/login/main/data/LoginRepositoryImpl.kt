@@ -2,6 +2,7 @@ package org.dhis2.mobile.login.main.data
 
 import androidx.core.net.toUri
 import coil3.PlatformContext
+import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import org.dhis2.mobile.commons.biometrics.BiometricActions
@@ -360,56 +361,68 @@ class LoginRepositoryImpl(
                             ),
                         )
                 openIdController.handleIntent(intent) { resultIntent ->
-                    withContext(dispatcher.io) {
-                        val result =
-                            when {
-                                resultIntent.isFailure -> {
-                                    kotlin.Result.failure(
-                                        resultIntent.exceptionOrNull()
-                                            ?: Exception(getString(Res.string.openid_process_cancelled)),
-                                    )
-                                }
-
-                                resultIntent.isSuccess and (resultIntent.getOrNull() !is IntentWithRequestCode) -> {
-                                    kotlin.Result.failure(Exception(getString(Res.string.openid_invalid_auth_result)))
-                                }
-
-                                else -> {
-                                    try {
-                                        val intent =
-                                            resultIntent.getOrNull() as IntentWithRequestCode
-
-                                        d2
-                                            .userModule()
-                                            .openIdHandler()
-                                            .blockingHandleLogInResponse(
-                                                serverUrl = openIdLoginConfiguration.serverUrl,
-                                                intent = intent.intent,
-                                                requestCode = intent.requestCode,
-                                            )
-
-                                        kotlin.Result.success(Unit)
-                                    } catch (e: Exception) {
-                                        kotlin.Result.failure(
-                                            Exception(
-                                                d2ErrorMessageProvider.getErrorMessage(
-                                                    e,
-                                                    openIdLoginConfiguration.isNetworkAvailable,
-                                                ),
-                                            ),
-                                        )
-                                    }
-                                }
-                            }
-
-                        continuation.resume(value = result) { _, _, _ -> }
-                    }
+                    manageIntentResult(resultIntent, openIdLoginConfiguration, continuation)
                 }
                 continuation.invokeOnCancellation {
                     kotlin.Result.failure<Unit>(Exception(""))
                 }
             }
         }
+
+    private suspend fun manageIntentResult(
+        resultIntent: kotlin.Result<Any>,
+        openIdLoginConfiguration: OpenIdLoginConfiguration,
+        continuation: CancellableContinuation<kotlin.Result<Unit>>,
+    ) {
+        withContext(dispatcher.io) {
+            val result =
+                when {
+                    resultIntent.isFailure -> {
+                        kotlin.Result.failure(
+                            resultIntent.exceptionOrNull()
+                                ?: Exception(getString(Res.string.openid_process_cancelled)),
+                        )
+                    }
+
+                    resultIntent.isSuccess and (resultIntent.getOrNull() !is IntentWithRequestCode) -> {
+                        kotlin.Result.failure(Exception(getString(Res.string.openid_invalid_auth_result)))
+                    }
+
+                    else -> {
+                        try {
+                            val intent =
+                                resultIntent.getOrNull() as IntentWithRequestCode
+
+                            d2
+                                .userModule()
+                                .openIdHandler()
+                                .blockingHandleLogInResponse(
+                                    serverUrl = openIdLoginConfiguration.serverUrl,
+                                    intent = intent.intent,
+                                    requestCode = intent.requestCode,
+                                )
+
+                            kotlin.Result.success(Unit)
+                        } catch (d2Error: D2Error) {
+                            kotlin.Result.failure(
+                                Exception(
+                                    d2ErrorMessageProvider.getErrorMessage(
+                                        d2Error,
+                                        openIdLoginConfiguration.isNetworkAvailable,
+                                    ),
+                                ),
+                            )
+                        } catch (_: Exception) {
+                            kotlin.Result.failure(
+                                resultIntent.exceptionOrNull()
+                                    ?: Exception(getString(Res.string.openid_process_cancelled)),
+                            )
+                        }
+                    }
+                }
+            continuation.resume(value = result) { _, _, _ -> }
+        }
+    }
 
     override suspend fun getUsername(): String =
         withContext(dispatcher.io) {
