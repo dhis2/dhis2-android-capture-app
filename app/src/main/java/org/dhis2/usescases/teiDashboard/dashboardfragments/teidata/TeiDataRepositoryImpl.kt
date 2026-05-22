@@ -553,7 +553,7 @@ class TeiDataRepositoryImpl(
                 .uid(teiUid)
                 .blockingGet()
                 ?.programOwners()
-                ?.first {
+                ?.firstOrNull {
                     it.trackedEntityInstance() == teiUid
                 }?.ownerOrgUnit()
     }
