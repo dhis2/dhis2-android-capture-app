@@ -309,6 +309,7 @@ class AndroidSyncRepository(
                         .smsModule()
                         .configCase()
                         .deleteGatewayNumber()
+                        .blockingAwait()
                     if (isEnabled) {
                         result = SMSConfigResult.DisableModule
                     }
