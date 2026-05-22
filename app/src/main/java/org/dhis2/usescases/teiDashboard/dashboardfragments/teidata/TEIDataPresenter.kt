@@ -415,7 +415,13 @@ class TEIDataPresenter(
                 EventCreationType.ADDNEW ->
                     programUid?.let { program ->
                         val orgUnitUid = d2.enrollment(enrollmentUid)?.organisationUnit()
-                        orgUnitUid?.let { onNewEventSelected(orgUnitUid, stage.uid()) }
+                        val ownerOrgUnit = teiDataRepository.ownerOrgUnit(teiUid)
+                        val eventOrgUnit = if (ownerOrgUnit != null && ownerOrgUnit != orgUnitUid) {
+                            ownerOrgUnit
+                        } else {
+                            orgUnitUid
+                        }
+                        eventOrgUnit?.let { onNewEventSelected(eventOrgUnit, stage.uid()) }
                             ?: checkOrgUnitCount(program, stage.uid())
                     }
 
