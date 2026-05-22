@@ -23,6 +23,7 @@ import org.dhis2.mobile.commons.providers.TEI_MAX
 import org.dhis2.mobile.commons.providers.TEI_MAX_DEFAULT
 import org.dhis2.mobile.commons.reporting.AnalyticActions
 import org.dhis2.mobile.sync.model.DataSyncProgressStatus
+import org.dhis2.mobile.sync.model.SMSConfigResult
 import org.dhis2.mobile.sync.model.SyncResult
 import org.dhis2.mobile.sync.model.toSyncPeriod
 import org.hisp.dhis.android.core.D2
@@ -280,29 +281,46 @@ class AndroidSyncRepository(
             Result.success(Unit)
         }
 
-    override suspend fun setUpSMS(): Result<Boolean> =
+    override suspend fun setUpSMS(): Result<SMSConfigResult> =
         execute {
-            var enableSMS = false
+            val smsConfig =
+                d2
+                    .smsModule()
+                    .configCase()
+                    .getSmsModuleConfig()
+                    .blockingGet()
+            val isEnabled = smsConfig.isModuleEnabled
+
+            var result: SMSConfigResult = SMSConfigResult.DoNothing
             d2.settingModule().generalSetting().blockingGet()?.let { globalSettings ->
-                globalSettings
-                    .smsGateway()
-                    ?.let { gateway ->
-                        enableSMS = true
-                        d2
-                            .smsModule()
-                            .configCase()
-                            .setGatewayNumber(gateway)
-                            .blockingAwait()
-                    }
-                globalSettings.smsResultSender()?.let { smsResult ->
+                val gateway = globalSettings.smsGateway()
+
+                if (gateway.isNullOrEmpty().not()) {
                     d2
                         .smsModule()
                         .configCase()
-                        .setConfirmationSenderNumber(smsResult)
+                        .setGatewayNumber(gateway)
                         .blockingAwait()
+                    if (!isEnabled) {
+                        result = SMSConfigResult.EnableModule
+                    }
+                } else {
+                    d2
+                        .smsModule()
+                        .configCase()
+                        .deleteGatewayNumber()
+                    if (isEnabled) {
+                        result = SMSConfigResult.DisableModule
+                    }
                 }
+
+                d2
+                    .smsModule()
+                    .configCase()
+                    .setConfirmationSenderNumber(globalSettings.smsResultSender())
+                    .blockingAwait()
             }
-            Result.success(enableSMS)
+            Result.success(result)
         }
 
     override suspend fun toggleSMS(enable: Boolean): Result<Unit> =
