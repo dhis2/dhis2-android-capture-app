@@ -546,7 +546,7 @@ class TeiDataRepositoryImpl(
 
     override fun ownerOrgUnit(teiUid: String): String? {
 
-         return    d2
+         return d2
                 .trackedEntityModule()
                 .trackedEntityInstances()
                 .withProgramOwners()
@@ -557,9 +557,6 @@ class TeiDataRepositoryImpl(
                     it.trackedEntityInstance() == teiUid
                 }?.ownerOrgUnit()
     }
-
-
-
 
     override fun enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit: String): Boolean =
         !getOrgUnitCollectionRepositoryByCaptureScope()

@@ -400,6 +400,103 @@ class TeiDataPresenterTest {
         verify(teiDataContractHandler).createEvent(any())
     }
 
+    @Test
+    fun `should use enrollment org unit when owner org unit is null`() =
+        runBlocking {
+            val enrollmentOrgUnitUid = "enrollmentOrgUnit"
+            val programStageUid = "programStageUid"
+            val eventUid = "eventUid"
+            val programStage = ProgramStage.builder().uid(programStageUid).build()
+
+            val mockedEnrollment: Enrollment =
+                mock {
+                    on { organisationUnit() } doReturn enrollmentOrgUnitUid
+                }
+            whenever(d2.enrollment(enrollmentUid)) doReturn mockedEnrollment
+            whenever(teiDataRepository.ownerOrgUnit(teiUid)) doReturn null
+            whenever(
+                createEventUseCase.invoke(
+                    programUid,
+                    enrollmentOrgUnitUid,
+                    programStageUid,
+                    enrollmentUid,
+                ),
+            ) doReturn Result.success(eventUid)
+
+            teiDataPresenter.onAddNewEventOptionSelected(
+                eventCreationType = EventCreationType.ADDNEW,
+                stage = programStage,
+            )
+
+            verify(createEventUseCase).invoke(programUid, enrollmentOrgUnitUid, programStageUid, enrollmentUid)
+            verify(view).goToEventDetails(eventUid, EventMode.NEW, programUid)
+        }
+
+    @Test
+    fun `should use owner org unit when it is the same as enrollment org unit`() =
+        runBlocking {
+            val orgUnitUid = "enrollmentOrgUnit"
+            val programStageUid = "programStageUid"
+            val eventUid = "eventUid"
+            val programStage = ProgramStage.builder().uid(programStageUid).build()
+
+            val mockedEnrollment: Enrollment =
+                mock {
+                    on { organisationUnit() } doReturn orgUnitUid
+                }
+            whenever(d2.enrollment(enrollmentUid)) doReturn mockedEnrollment
+            whenever(teiDataRepository.ownerOrgUnit(teiUid)) doReturn orgUnitUid
+            whenever(
+                createEventUseCase.invoke(
+                    programUid,
+                    orgUnitUid,
+                    programStageUid,
+                    enrollmentUid,
+                ),
+            ) doReturn Result.success(eventUid)
+
+            teiDataPresenter.onAddNewEventOptionSelected(
+                eventCreationType = EventCreationType.ADDNEW,
+                stage = programStage,
+            )
+
+            verify(createEventUseCase).invoke(programUid, orgUnitUid, programStageUid, enrollmentUid)
+            verify(view).goToEventDetails(eventUid, EventMode.NEW, programUid)
+        }
+
+    @Test
+    fun `should use owner org unit when it is different from enrollment org unit`() =
+        runBlocking {
+            val enrollmentOrgUnitUid = "enrollmentOrgUnit"
+            val ownerOrgUnitUid = "ownerOrgUnit"
+            val programStageUid = "programStageUid"
+            val eventUid = "eventUid"
+            val programStage = ProgramStage.builder().uid(programStageUid).build()
+
+            val mockedEnrollment: Enrollment =
+                mock {
+                    on { organisationUnit() } doReturn enrollmentOrgUnitUid
+                }
+            whenever(d2.enrollment(enrollmentUid)) doReturn mockedEnrollment
+            whenever(teiDataRepository.ownerOrgUnit(teiUid)) doReturn ownerOrgUnitUid
+            whenever(
+                createEventUseCase.invoke(
+                    programUid,
+                    ownerOrgUnitUid,
+                    programStageUid,
+                    enrollmentUid,
+                ),
+            ) doReturn Result.success(eventUid)
+
+            teiDataPresenter.onAddNewEventOptionSelected(
+                eventCreationType = EventCreationType.ADDNEW,
+                stage = programStage,
+            )
+
+            verify(createEventUseCase).invoke(programUid, ownerOrgUnitUid, programStageUid, enrollmentUid)
+            verify(view).goToEventDetails(eventUid, EventMode.NEW, programUid)
+        }
+
     private fun fakeModel(
         eventCount: Int = 0,
         type: EventViewModelType = EventViewModelType.STAGE,
