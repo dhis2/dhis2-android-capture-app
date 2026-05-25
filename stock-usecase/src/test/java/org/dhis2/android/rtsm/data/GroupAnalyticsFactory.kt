@@ -4,6 +4,7 @@ import com.github.javafaker.Faker
 import org.hisp.dhis.android.core.arch.helpers.UidGenerator
 import org.hisp.dhis.android.core.arch.helpers.UidGeneratorImpl
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualization
+import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationScope
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationType
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 
@@ -35,6 +36,9 @@ object VisualizationsFactory {
         return AnalyticsDhisVisualization
             .builder()
             .name(name)
+            .groupUid(uidGenerator.generate())
+            .groupName(name)
+            .scope(AnalyticsDhisVisualizationScope.PROGRAM)
             .uid(uidGenerator.generate())
             .type(AnalyticsDhisVisualizationType.VISUALIZATION)
             .build()
