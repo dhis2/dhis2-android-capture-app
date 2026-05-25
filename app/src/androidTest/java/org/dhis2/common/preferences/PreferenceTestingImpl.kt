@@ -4,11 +4,12 @@ import android.content.Context
 import android.content.SharedPreferences
 import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.Constants
+import org.dhis2.mobile.commons.providers.createSecureSharedPreferences
 
 class PreferenceTestingImpl(context: Context) : PreferenceProviderImpl(context) {
 
     private val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+        createSecureSharedPreferences(context, Constants.SHARE_PREFS)
 
     override fun setValue(key: String, value: Any?) {
         value?.let {
