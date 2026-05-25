@@ -12,6 +12,8 @@ class CheckPeriodicJobs(
     private val syncBackgroundJobAction: SyncBackgroundJobAction,
 ) : UseCase<Unit, Unit> {
     override suspend fun invoke(input: Unit): Result<Unit> {
+        if (!syncRepository.isLoggedIn()) return Result.failure(Exception("User not logged in"))
+
         val isMetadataSyncFlagged = syncRepository.isPeriodicJobFlagged(SYNC_METADATA_NAME)
         val isDataSyncFlagged = syncRepository.isPeriodicJobFlagged(SYNC_DATA_NAME)
 

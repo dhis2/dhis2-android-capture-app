@@ -57,4 +57,6 @@ interface SyncRepository {
     suspend fun removeUnnavailableFlag(syncJobName: String)
 
     suspend fun isPeriodicJobFlagged(syncJobName: String): Boolean
+
+    suspend fun isLoggedIn(): Boolean
 }

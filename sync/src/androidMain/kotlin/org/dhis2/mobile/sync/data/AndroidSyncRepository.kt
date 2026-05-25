@@ -26,6 +26,7 @@ import org.dhis2.mobile.sync.model.DataSyncProgressStatus
 import org.dhis2.mobile.sync.model.SyncResult
 import org.dhis2.mobile.sync.model.toSyncPeriod
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.arch.call.D2ProgressStatus
 import org.hisp.dhis.android.core.arch.call.D2ProgressSyncStatus
 import org.hisp.dhis.android.core.common.State
@@ -192,6 +193,8 @@ class AndroidSyncRepository(
             .value("DATASYNCERROR")
             .blockingSet(stackTrace)
     }
+
+    override suspend fun isLoggedIn() = D2Manager.isD2Instantiated() && d2.userModule().blockingIsLogged()
 
     override suspend fun isServerAvailable(syncJobName: String): Boolean {
         val isServerAvailable =
