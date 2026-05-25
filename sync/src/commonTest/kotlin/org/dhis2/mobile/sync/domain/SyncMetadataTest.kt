@@ -3,6 +3,7 @@ package org.dhis2.mobile.sync.domain
 import kotlinx.coroutines.runBlocking
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.data.SyncRepository
+import org.dhis2.mobile.sync.model.SMSConfigResult
 import org.dhis2.mobile.sync.model.SyncPeriod
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -46,6 +47,8 @@ class SyncMetadataTest {
             )
             whenever(repository.currentDataSyncPeriod()) doReturn SyncPeriod.Manual
             whenever(repository.syncMetadata(any())) doReturn Result.success(Unit)
+            whenever(repository.setUpSMS()) doReturn Result.success(SMSConfigResult.DoNothing)
+            whenever(repository.toggleSMS(true)) doReturn Result.success(Unit)
 
             syncMetadata.invoke { }
 
@@ -62,6 +65,8 @@ class SyncMetadataTest {
             )
             whenever(repository.currentDataSyncPeriod()) doReturn SyncPeriod.Manual
             whenever(repository.syncMetadata(any())) doReturn Result.success(Unit)
+            whenever(repository.setUpSMS()) doReturn Result.success(SMSConfigResult.DoNothing)
+            whenever(repository.toggleSMS(true)) doReturn Result.success(Unit)
 
             syncMetadata.invoke { }
 
@@ -77,6 +82,8 @@ class SyncMetadataTest {
                 SyncPeriod.Manual,
             )
             whenever(repository.syncMetadata(any())) doReturn Result.success(Unit)
+            whenever(repository.setUpSMS()) doReturn Result.success(SMSConfigResult.DoNothing)
+            whenever(repository.toggleSMS(true)) doReturn Result.success(Unit)
 
             syncMetadata.invoke { }
 
@@ -92,6 +99,8 @@ class SyncMetadataTest {
                 SyncPeriod.Every7Days,
             )
             whenever(repository.syncMetadata(any())) doReturn Result.success(Unit)
+            whenever(repository.setUpSMS()) doReturn Result.success(SMSConfigResult.DoNothing)
+            whenever(repository.toggleSMS(true)) doReturn Result.success(Unit)
 
             syncMetadata.invoke { }
 
@@ -105,6 +114,8 @@ class SyncMetadataTest {
             whenever(repository.currentMetadataSyncPeriod()) doReturn SyncPeriod.Manual
             whenever(repository.currentDataSyncPeriod()) doReturn SyncPeriod.Manual
             whenever(repository.syncMetadata(any())) doReturn Result.failure(exception)
+            whenever(repository.setUpSMS()) doReturn Result.success(SMSConfigResult.DoNothing)
+            whenever(repository.toggleSMS(true)) doReturn Result.success(Unit)
 
             val result = syncMetadata.invoke { }
 
