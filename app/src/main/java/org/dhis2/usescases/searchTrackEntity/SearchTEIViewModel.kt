@@ -18,6 +18,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -25,6 +26,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
@@ -119,8 +122,8 @@ class SearchTEIViewModel(
     private val _refreshData = MutableLiveData(Unit)
     val refreshData: LiveData<Unit> = _refreshData
 
-    private val _mapResults = Channel<TrackerMapData>()
-    val mapResults: Flow<TrackerMapData> = _mapResults.receiveAsFlow()
+    private val _mapResults = MutableSharedFlow<TrackerMapData>(replay = 1)
+    val mapResults: SharedFlow<TrackerMapData> = _mapResults.asSharedFlow()
 
     private val _mapItemClicked = MutableSharedFlow<String>()
     val mapItemClicked: Flow<String> = _mapItemClicked
@@ -662,7 +665,9 @@ class SearchTEIViewModel(
                         queryDataAsMap(),
                         layersVisibility,
                     )
-                _mapResults.send(data)
+                _mapResults.emit(data)
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 Timber.e(e)
             } finally {
