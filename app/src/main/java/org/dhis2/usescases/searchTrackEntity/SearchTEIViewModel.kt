@@ -749,7 +749,7 @@ class SearchTEIViewModel(
     }
 
     private fun shouldDisplayFrontPageList(): Boolean =
-      displayFrontPageListSettingIsConfigured() || searchRepository.canCreateInProgramWithoutSearch()
+      displayFrontPageListSettingIsConfigured()
 
     private fun hasMinNumberOfAttributesToSearch(): Boolean =
         searchRepository.getProgram(initialProgramUid)?.let { program ->
