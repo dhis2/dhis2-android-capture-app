@@ -213,10 +213,23 @@ fun LoginScreen() {
 ## DHIS2 Design System Inputs
 
 DHIS2 input components are composite. Click the wrapper to focus, then target the
-inner `"INPUT_TEXT_FIELD"` node. Use `performTextInput()`, never `performTextReplacement()`.
+inner field. Use `performTextInput()`, never `performTextReplacement()`.
+
+The inner-field tag depends on the component. Most text-style inputs follow the
+pattern `INPUT_<COMPONENT_NAME>_FIELD` — e.g. `InputText` uses `INPUT_TEXT_FIELD`,
+`InputEmail` uses `INPUT_EMAIL_FIELD`, `InputNumber` uses `INPUT_NUMBER_FIELD`,
+`InputPhoneNumber` uses `INPUT_PHONE_NUMBER_FIELD`, and so on. Non-text inputs
+(checkboxes, dropdowns, dialogs, pickers, org-unit, coordinate, etc.) use their
+own tag schemes.
+
+To find the exact testTag for any design-system component, check the API docs:
+<https://dhis2.github.io/dhis2-mobile-ui/api/-mobile%20-u-i/org.hisp.dhis.mobile.ui.designsystem.component/index.html>
+— or open the component source in
+`../dhis2-mobile-ui/designsystem/src/commonMain/kotlin/org/hisp/dhis/mobile/ui/designsystem/component/<Component>.kt`
+and grep for `testTag(`.
 
 ```kotlin
-// ✅ CORRECT
+// ✅ CORRECT — InputText example
 rule.onNodeWithTag(USERNAME_TAG).performClick()
 rule.onAllNodesWithTag("INPUT_TEXT_FIELD")[0].performTextInput(username)
 
