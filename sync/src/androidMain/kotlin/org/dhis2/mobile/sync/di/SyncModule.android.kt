@@ -8,6 +8,7 @@ import org.dhis2.mobile.sync.data.SyncDataWorker
 import org.dhis2.mobile.sync.data.SyncMetadataWorker
 import org.dhis2.mobile.sync.data.SyncRepository
 import org.dhis2.mobile.sync.data.SyncSettingsWorker
+import org.dhis2.mobile.sync.domain.CheckPeriodicJobs
 import org.dhis2.mobile.sync.domain.SyncData
 import org.dhis2.mobile.sync.domain.SyncMetadata
 import org.dhis2.mobile.sync.domain.SyncSettings
@@ -40,6 +41,8 @@ actual val syncModule =
         factoryOf(::SyncData)
 
         factoryOf(::SyncSettings)
+
+        factoryOf(::CheckPeriodicJobs)
 
         workerOf(::SyncDataWorker)
         workerOf(::SyncMetadataWorker)

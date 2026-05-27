@@ -27,6 +27,7 @@ import org.dhis2.mobile.sync.model.SMSConfigResult
 import org.dhis2.mobile.sync.model.SyncResult
 import org.dhis2.mobile.sync.model.toSyncPeriod
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.arch.call.D2ProgressStatus
 import org.hisp.dhis.android.core.arch.call.D2ProgressSyncStatus
 import org.hisp.dhis.android.core.common.State
@@ -193,6 +194,43 @@ class AndroidSyncRepository(
             .value("DATASYNCERROR")
             .blockingSet(stackTrace)
     }
+
+    override suspend fun isLoggedIn() = D2Manager.isD2Instantiated() && d2.userModule().blockingIsLogged()
+
+    override suspend fun isServerAvailable(syncJobName: String): Boolean {
+        val isServerAvailable =
+            try {
+                d2.systemInfoModule().ping().blockingGet()
+                true
+            } catch (e: Exception) {
+                false
+            }
+
+        return isServerAvailable
+    }
+
+    override suspend fun setUnnavailableFlag(syncJobName: String) {
+        d2
+            .dataStoreModule()
+            .localDataStore()
+            .value(syncJobName)
+            .blockingSet("unavailable")
+    }
+
+    override suspend fun removeUnnavailableFlag(syncJobName: String) {
+        d2
+            .dataStoreModule()
+            .localDataStore()
+            .value(syncJobName)
+            .blockingDeleteIfExist()
+    }
+
+    override suspend fun isPeriodicJobFlagged(syncJobName: String): Boolean =
+        d2
+            .dataStoreModule()
+            .localDataStore()
+            .value(syncJobName)
+            .blockingExists()
 
     private suspend fun syncResult(): SyncResult {
         val eventsOk =
