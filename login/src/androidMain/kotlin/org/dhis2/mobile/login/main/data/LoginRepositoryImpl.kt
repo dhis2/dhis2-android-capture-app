@@ -77,7 +77,7 @@ class LoginRepositoryImpl(
                         oidcIcon = oidcProvider?.icon,
                         oidcLoginText = oidcProvider?.loginText,
                         oidcUrl = oidcProvider?.url,
-                        oAuthEnabled = result.value.isOauthEnabled(),
+                        oAuthEnabled = result.value.isOauthEnabled,
                     )
                 }
 

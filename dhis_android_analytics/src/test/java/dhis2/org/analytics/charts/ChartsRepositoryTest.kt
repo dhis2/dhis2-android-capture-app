@@ -321,7 +321,7 @@ class ChartsRepositoryTest {
 
     @Test
     fun `Should return home visualization`() {
-        mockVisualizationSettings(returnHome = true)
+        mockVisualizationSettings("", returnHome = true)
         mockVisualization()
         mockedVisualizationPeriodFilterWithValue()
         mockedVisualizationOrgUnitFilterWithValue()
@@ -339,7 +339,7 @@ class ChartsRepositoryTest {
 
     @Test
     fun `Should add error visualization`() {
-        mockVisualizationSettings(returnHome = true)
+        mockVisualizationSettings("", returnHome = true)
         mockVisualization()
         mockedVisualizationPeriodFilterWithValue()
         mockedVisualizationOrgUnitFilterWithValue()
@@ -400,7 +400,7 @@ class ChartsRepositoryTest {
     }
 
     private fun mockVisualizationSettings(
-        settingsUid: String? = null,
+        settingsUid: String,
         returnProgram: Boolean = false,
         returnDataSet: Boolean = false,
         returnHome: Boolean = false,
