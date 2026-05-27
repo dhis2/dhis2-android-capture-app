@@ -110,8 +110,6 @@ fun TwoFASettingsScreen(
                 Snackbar(
                     modifier = Modifier.dropShadow(shape = SnackbarDefaults.shape),
                     snackbarData = data,
-                    containerColor = SurfaceColor.SurfaceBright,
-                    contentColor = TextColor.OnSurface,
                 )
             }
         },
