@@ -71,8 +71,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.menu.DropDownMenu
 import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemData
 import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuLeadingElement
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
-import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
-import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.dropShadow
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
@@ -139,8 +137,6 @@ fun LoginScreen(
                 Snackbar(
                     modifier = Modifier.dropShadow(shape = SnackbarDefaults.shape),
                     snackbarData = data,
-                    containerColor = SurfaceColor.SurfaceBright,
-                    contentColor = TextColor.OnSurface,
                 )
             }
         },
