@@ -7,10 +7,13 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dhis2.org.analytics.charts.Charts
+import io.ktor.utils.io.ioDispatcher
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.R
@@ -23,6 +26,7 @@ import org.dhis2.android.rtsm.exceptions.UserIntentParcelCreationException
 import org.dhis2.android.rtsm.services.MetadataManager
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.ui.base.BaseViewModel
+import org.dhis2.android.rtsm.ui.home.model.ScreenAction
 import org.dhis2.android.rtsm.ui.home.model.SettingsUiState
 import org.dhis2.android.rtsm.ui.home.screens.BottomNavigation
 import org.dhis2.android.rtsm.utils.ParcelUtils
@@ -71,11 +75,15 @@ class HomeViewModel(
     val destinationsList: StateFlow<OperationState<List<Option>>>
         get() = _destinationsList
 
-    private val _settingsUiState = MutableStateFlow(SettingsUiState(programUid = program, transactionItems = transactionItems))
+    private val _settingsUiState =
+        MutableStateFlow(SettingsUiState(programUid = program, transactionItems = transactionItems))
     val settingsUiState: StateFlow<SettingsUiState> = _settingsUiState
 
     private val _helperText = MutableStateFlow<String?>(null)
     val helperText = _helperText.asStateFlow()
+
+    private val _actions = Channel<ScreenAction>()
+    val action = _actions.consumeAsFlow()
 
     init {
         loadStockUseCases(program)
@@ -128,8 +136,8 @@ class HomeViewModel(
                     {
                         Timber.e(it)
                         _destinationsList.value = (
-                            OperationState.Error(R.string.destinations_load_error)
-                        )
+                                OperationState.Error(R.string.destinations_load_error)
+                                )
                     },
                 ),
         )
@@ -321,7 +329,11 @@ class HomeViewModel(
                 TransactionType.DISTRIBUTION,
                 TransactionType.DISTRIBUTION.name,
             ),
-            TransactionItem(R.drawable.ic_discard, TransactionType.DISCARD, TransactionType.DISCARD.name),
+            TransactionItem(
+                R.drawable.ic_discard,
+                TransactionType.DISCARD,
+                TransactionType.DISCARD.name
+            ),
             TransactionItem(
                 R.drawable.ic_correction,
                 TransactionType.CORRECTION,
@@ -336,11 +348,30 @@ class HomeViewModel(
                     currentUiState.copy(selectedScreen = BottomNavigation.DATA_ENTRY)
                 }
             }
+
             BottomNavigation.ANALYTICS.id -> {
                 _settingsUiState.update { currentUiState ->
                     currentUiState.copy(selectedScreen = BottomNavigation.ANALYTICS)
                 }
             }
+        }
+    }
+
+    fun openAnalyticsScreen(frameId: Int) {
+        viewModelScope.launch(ioDispatcher()) {
+            _actions.send(ScreenAction.OpenAnalytics(frameId))
+        }
+    }
+
+    fun onOpenOrgUnitTreeSelector() {
+        viewModelScope.launch(ioDispatcher()) {
+            _actions.send(ScreenAction.OpenOrgUnitTree)
+        }
+    }
+
+    fun onOpenManageStockBottomSheet() {
+        viewModelScope.launch(ioDispatcher()) {
+            _actions.send(ScreenAction.OpenManageStockBottomSheet)
         }
     }
 }
