@@ -66,4 +66,5 @@
     <string name="importing_successful">Import byl úspěšný</string>
     <string name="openid_process_cancelled">Přihlášení bylo zrušeno</string>
     <string name="openid_invalid_auth_result">Neplatný výsledek autorizace</string>
+    <string name="openid_login_cancelled">Ověřování zrušeno</string>
     </resources>
