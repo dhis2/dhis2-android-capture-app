@@ -28,6 +28,8 @@ sealed class WorkingListScope {
     abstract fun assignCount(): Int
 
     abstract fun value(filterType: Filters): String
+
+    abstract fun workingListUid(): String?
 }
 
 data class EmptyWorkingList(
@@ -54,9 +56,12 @@ data class EmptyWorkingList(
     override fun assignCount(): Int = 0
 
     override fun value(filterType: Filters) = ""
+
+    override fun workingListUid() = null
 }
 
 data class TeiWorkingListScope(
+    val workingListUid: String?,
     val enrollmentStatusList: List<String>?,
     val enrollmentDate: String?,
     val eventStatusList: List<String>?,
@@ -99,9 +104,12 @@ data class TeiWorkingListScope(
             Filters.ENROLLMENT_STATUS -> enrollmentStatusList?.joinToString() ?: ""
             else -> ""
         }
+
+    override fun workingListUid(): String? = workingListUid
 }
 
 data class EventWorkingListScope(
+    val workingListUid: String?,
     val stageUid: String?,
     val eventDate: String?,
     val eventStatusList: List<String>?,
@@ -133,10 +141,13 @@ data class EventWorkingListScope(
             Filters.EVENT_STATUS -> eventStatusList?.joinToString() ?: ""
             else -> ""
         }
+
+    override fun workingListUid(): String? = workingListUid
 }
 
-fun TrackedEntityInstanceQueryRepositoryScope.mapToWorkingListScope(resources: FilterResources): TeiWorkingListScope =
+fun TrackedEntityInstanceQueryRepositoryScope.mapToWorkingListScope(resources: FilterResources, workingListUid: String?): TeiWorkingListScope =
     TeiWorkingListScope(
+        workingListUid,
         enrollmentStatus()?.let { resources.enrollmentStatusToText(it) },
         programDate()?.let { resources.dateFilterPeriodToText(it) },
         resources.eventStatusToText(
@@ -154,8 +165,9 @@ fun TrackedEntityInstanceQueryRepositoryScope.mapToWorkingListScope(resources: F
         dataValue().associateBy({ it.key() }, { it.value() }),
     )
 
-fun EventQueryRepositoryScope.mapToEventWorkingListScope(resources: FilterResources): EventWorkingListScope =
+fun EventQueryRepositoryScope.mapToEventWorkingListScope(resources: FilterResources, workingListUid: String?): EventWorkingListScope =
     EventWorkingListScope(
+        workingListUid,
         programStage(),
         eventDate()?.let { resources.dateFilterPeriodToText(it) },
         eventStatus()?.let { resources.eventStatusToText(it) },

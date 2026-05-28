@@ -9,7 +9,6 @@
     <string name="action_accept">Chấp nhận</string>
     <string name="period">Thời điểm</string>
     <string name="orgUnit">Đơn vị</string>
-    <string name="none">Không</string>
     <string name="daily">Hàng ngày</string>
     <string name="today">Hôm nay</string>
     <string name="other">Khác</string>
@@ -45,7 +44,6 @@
     <string name="include_this_period_body">Nó sẽ hiển thị thời điểm hiện tại trong biểu đồ</string>
     <string name="no_data_for_selected_filters">Các yếu tố lọc bạn đã chọn không trả về kết quả nào</string>
     <string name="no_data_to_display">Bạn không có dữ liệu nào để hiển thị</string>
-    <string name="visualization_error">Có gì đó không đúng với biểu đồ này</string>
     <string name="visualization_failure">Có gì đó không đúng với các biểu đồ này</string>
     <string name="visualization_groups_failure">Có gì đó không đúng với các nhóm biểu đồ này</string>
     <string name="pie_chart_no_data">Tất cả dữ liệu là 0</string>
@@ -61,7 +59,6 @@
     <string name="error_invalid_program_indicator">Bạn không được truy cập Chỉ Số Chương Trình %s</string>
     <string name="error_invalid_visualization">Biểu đồ %s không hiển thị</string>
     <string name="error_parsing_visualization">Biểu đồ này cấu hình chưa đúng, xin vui lòng liên hệ quản lý của bạn</string>
-    <string name="error_invalid_custom_boundaries">Phạm vi tự chọn không được hỗ trợ cho Chỉ Số Chương Trình %s</string>
     <string name="error_database">Không thể truy cập cơ sở dữ liệu. Xin vui lòng liên hệ quản lý của bạn. </string>
     <string name="error_invalid_program">Bạn không có quyền truy cập đến chương trình %s</string>
     <string name="error_invalid_attribute">Bạn không có quyền truy cập đến thuộc tính %s</string>

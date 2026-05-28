@@ -4,6 +4,7 @@ import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.sorting.SortingItem
 import org.dhis2.commons.filters.sorting.SortingStatus
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper
+import org.dhis2.mobile.commons.extensions.toJavaDate
 import org.dhis2.usescases.searchTrackEntity.SearchTeiModel
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -52,7 +53,7 @@ class SearchSortingValueSetter(
                 .eventModule()
                 .events()
                 .byEnrollmentUid()
-                .eq(teiModel.selectedEnrollment?.uid() ?: "")
+                .eq(teiModel.selectedEnrollment?.uid ?: "")
                 .byDeleted()
                 .isFalse
                 .orderByTimeline(
@@ -62,7 +63,7 @@ class SearchSortingValueSetter(
                         RepositoryScope.OrderByDirection.DESC
                     },
                 ).blockingGet()
-        if (sortedEvents != null && sortedEvents.isNotEmpty()) {
+        if (sortedEvents.isNotEmpty()) {
             val sortedEvent = sortedEvents.first()
             val sortedDate: Date? =
                 if (sortedEvent.status() == EventStatus.SCHEDULE ||
@@ -85,7 +86,7 @@ class SearchSortingValueSetter(
         if (teiModel.selectedEnrollment != null) {
             enrollmentStatusValue =
                 enrollmentUiDataHelper.getEnrollmentStatusClientName(
-                    teiModel.selectedEnrollment.status()!!,
+                    teiModel.selectedEnrollment.status,
                 )
         }
         return Pair(enrollmentStatusLabel, enrollmentStatusValue)
@@ -97,12 +98,12 @@ class SearchSortingValueSetter(
                 d2
                     .programModule()
                     .programs()
-                    .uid(it.program())
+                    .uid(it.program)
                     .blockingGet()
-                    ?.enrollmentDateLabel() ?: enrollmentDateDefaultLabel
+                    ?.displayEnrollmentDateLabel() ?: enrollmentDateDefaultLabel
             val enrollmentDateValue =
                 SimpleDateFormat(uiDateFormat, Locale.getDefault())
-                    .format(teiModel.selectedEnrollment.enrollmentDate())
+                    .format(teiModel.selectedEnrollment.enrollmentDate?.toJavaDate())
             Pair(enrollmentDateLabel, enrollmentDateValue)
         } ?: Pair(enrollmentDateDefaultLabel, unknownLabel)
 }

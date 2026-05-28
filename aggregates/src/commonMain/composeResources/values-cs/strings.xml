@@ -16,8 +16,6 @@
     <string name="input_date_out_of_range">Mimo rozsah</string>
     <string name="format_error">Nesprávný formát</string>
     <string name="input_not_supported">Není podporováno</string>
-    <string name="completion_dialog_title">Vše vypadá dobře</string>
-    <string name="completion_dialog_description">Chcete také doplnit datovou sadu?</string>
     <string name="validation_success_title">Vše vypadá dobře</string>
     <string name="mark_dataset_complete">Chcete také vyplnit soubor dat?</string>
     <string name="not_now">Teď ne</string>

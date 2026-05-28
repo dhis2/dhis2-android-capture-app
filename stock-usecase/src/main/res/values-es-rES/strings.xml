@@ -1,23 +1,17 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="title_activity_home">Inicio</string>
-    <string name="title_activity_review">Revisar</string>
-    <string name="action_settings">Configuración</string>
 
+    <!-- Sign in -->
     <string name="username">Nombre de usuario</string>
-    <string name="password">Contraseña</string>
+
+    <!-- FloatingActionButtons -->
     <string name="review">Revisar</string>
 
     <string name="delete">Borrar</string>
     <string name="ok">Correcto</string>
     <string name="cancel">Cancelar</string>
+
     <string name="from">De</string>
-    <string name="language">Idioma</string>
-    <string name="logout">Cerrar sesión</string>
-
-
-    <string name="prompt_password">Contraseña</string>
-    <string name="content_desc_search">Buscar</string>
-    <string name="content_desc_remove">Quitar elemento</string>
     <!--SDK error codes-->
     <string name="login_error_unsuccessful_response">Algo ha ido mal. Por favor, compruebe que tanto la url del servidor como el usuario y contraseña son correctos y pruebe otra vez.</string>
     <string name="login_error_unknown_host">Servidor desconocido</string>
@@ -49,7 +43,6 @@
     <string name="error_ssl">Hay un problema con los certificados del servidor. Por favor contacte con su administrador.</string>
     <string name="done_task">Inicio</string>
     <string name="back">Atrás</string>
-    <string name="no_conflicts_message">Este programa no tiene conflictos</string>
     <string name="not_saved">No guardado</string>
     <string name="formatting_error">Error de formato</string>
     <string name="invalid_possitive_zero">Solo se permiten números positivos o cero</string>

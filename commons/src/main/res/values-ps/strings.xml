@@ -12,16 +12,13 @@
     <string name="navigation_notes">یادداښتونه</string>
     <string name="navigation_data_entry">د ډاټا یا مالوماتو داخلول</string>
     <string name="navigation_tei_data">جزیات [ ژباړه ـ جزیات ]</string>
-    <string name="event_overview">جزیات [ ژباړه ـ جزیات ]</string>
     <string name="search">جستجو</string>
     <string name="data_sets">د مالوماتو یا ډاټا ټولګې</string>
     <string name="done">ترسره شو</string>
 
     <string name="filters_title_period">معیاد</string>
-    <string name="filters_title_status">وضعیت</string>
     <string name="filters_title_date">نېټه</string>
     <string name="select_period">د مودې ډول غوره کړئ.</string>
-    <string name="daily_period">ورځني [ د مودې ډول ]</string>
     <string name="weekly">اوونیز</string>
     <string name="monthly">میاشتنۍ</string>
     <string name="bi_monthly">دوه میاشتنۍ</string>
@@ -73,8 +70,6 @@
     <string name="section_indicators">شاخصونه</string>
     <string name="section_charts">چارټونه</string>
     <string name="complete">بشپړ یې کړئ</string>
-    <string name="default_table_header_label">ارزښت یا رقم</string>
-    <string name="default_empty_dataset_section_label">مالومات (ډاټا)</string>
     <string name="overdue_today">نن ورځ</string>
     <string name="remove">لرې کول</string>
     <string name="period_daily_title">ورځني [ د مودې ډول ]</string>

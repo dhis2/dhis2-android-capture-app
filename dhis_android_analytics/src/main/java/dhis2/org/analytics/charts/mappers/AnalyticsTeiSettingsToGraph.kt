@@ -20,16 +20,16 @@ class AnalyticsTeiSettingsToGraph(
     private val periodStepProvider: PeriodStepProvider,
     private val chartCoordinatesProvider: ChartCoordinatesProvider,
 ) {
-    fun map(
+    suspend fun map(
         teiUid: String,
-        analytycsTeiSettings: List<AnalyticsTeiSetting>,
+        analyticsTeiSettings: List<AnalyticsTeiSetting>,
         selectedRelativePeriodProvider: (String) -> List<RelativePeriod>?,
         selectedOrgUnitProvider: (String) -> List<String>?,
         dataElementNameProvider: (String) -> String,
         indicatorNameProvider: (String) -> String,
         teiGenderProvider: (NutritionGenderData) -> Boolean,
     ): List<Graph> =
-        analytycsTeiSettings.map { analyticsTeiSettings ->
+        analyticsTeiSettings.map { analyticsTeiSettings ->
             val analyticsSetting = analyticsSettingsMapper.map(analyticsTeiSettings)
             val selectedRelativePeriod = selectedRelativePeriodProvider(analyticsTeiSettings.uid())
             val selectedOrgUnits = selectedOrgUnitProvider(analyticsTeiSettings.uid())

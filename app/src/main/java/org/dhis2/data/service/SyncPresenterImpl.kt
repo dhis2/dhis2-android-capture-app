@@ -7,6 +7,7 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.bindings.enrollment
+import org.dhis2.commons.bindings.event
 import org.dhis2.commons.bindings.program
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.prefs.Preference.Companion.EVENT_MAX
@@ -57,10 +58,13 @@ class SyncPresenterImpl(
 
     override fun syncGranularEvent(eventUid: String): Observable<D2Progress> {
         Completable.fromObservable(syncRepository.uploadEvent(eventUid)).blockingAwait()
-        return syncRepository
-            .downLoadEvent(eventUid)
-            .map { it as D2Progress }
-            .mergeWith(syncRepository.downloadEventFiles(eventUid))
+        val programUid = d2.event(eventUid)?.program()
+        return programUid?.let {
+            syncRepository
+                .downLoadEvent(eventUid, programUid)
+                .map { it as D2Progress }
+                .mergeWith(syncRepository.downloadEventFiles(eventUid))
+        } ?: Observable.empty()
     }
 
     override fun blockSyncGranularProgram(programUid: String): ListenableWorker.Result {

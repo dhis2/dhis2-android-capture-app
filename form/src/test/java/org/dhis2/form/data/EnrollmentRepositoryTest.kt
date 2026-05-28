@@ -58,7 +58,7 @@ class EnrollmentRepositoryTest {
         whenever(conf.program()?.selectIncidentDatesInFuture()) doReturn true
         whenever(conf.captureOrgUnitsCount()) doReturn 10
 
-        whenever(conf.program()?.enrollmentDateLabel()) doReturn "Enrollment Date"
+        whenever(conf.program()?.displayEnrollmentDateLabel()) doReturn "Enrollment Date"
         whenever(enrolmentFormLabelsProvider.provideEnrollmentDateDefaultLabel("Program_UID")) doReturn "Enrollment Date"
 
         whenever(

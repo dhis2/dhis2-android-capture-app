@@ -3,11 +3,9 @@
     <string name="yes">ହଁ</string>
     <string name="no">ନାହିଁ</string>
     <string name="navigation_tei_data">ବିବରଣୀ</string>
-    <string name="event_overview">ବିବରଣୀ</string>
     <string name="info">ସୂଚନା</string>
     <string name="done">ହୋଇଗଲା</string>
 
-    <string name="filters_title_sorting">ସଜାଣି</string>
     <string name="weekly">ସାପ୍ତାହିକ</string>
     <string name="monthly">ମାସିକ</string>
     <string name="yearly">ବାର୍ଷିକ</string>

@@ -13,7 +13,7 @@ class ProgramIndicatorToGraph(
     private val periodStepProvider: PeriodStepProvider,
     private val chartCoordinatesProvider: ChartCoordinatesProvider,
 ) {
-    fun map(
+    suspend fun map(
         programIndicator: ProgramIndicator,
         stageUid: String,
         teiUid: String,

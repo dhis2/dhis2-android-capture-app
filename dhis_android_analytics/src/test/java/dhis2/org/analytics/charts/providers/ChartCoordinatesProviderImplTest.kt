@@ -12,6 +12,7 @@ import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import kotlinx.coroutines.test.runTest
 import java.util.Date
 
 class ChartCoordinatesProviderImplTest {
@@ -22,7 +23,7 @@ class ChartCoordinatesProviderImplTest {
         ChartCoordinatesProviderImpl(d2, periodStepProvider, resourceManager)
 
     @Test
-    fun `Should get coordinates for data elements`() {
+    fun `Should get coordinates for data elements`() = runTest {
         mockedLineListResponse(false)
         val result =
             coordinatesProvider.dataElementCoordinates(
@@ -38,7 +39,7 @@ class ChartCoordinatesProviderImplTest {
     }
 
     @Test
-    fun `Should return empty coordinates for data elements`() {
+    fun `Should return empty coordinates for data elements`() = runTest {
         mockedLineListResponse(true)
         val result =
             coordinatesProvider.dataElementCoordinates(
@@ -54,7 +55,7 @@ class ChartCoordinatesProviderImplTest {
     }
 
     @Test
-    fun `Should get coordinates for indicators`() {
+    fun `Should get coordinates for indicators`() = runTest {
         mockedIndicatorLineListResponse(false)
         val result =
             coordinatesProvider.indicatorCoordinates(
@@ -70,7 +71,7 @@ class ChartCoordinatesProviderImplTest {
     }
 
     @Test
-    fun `Should return empty coordinates for indicator`() {
+    fun `Should return empty coordinates for indicator`() = runTest {
         mockedIndicatorLineListResponse(true)
         val result =
             coordinatesProvider.indicatorCoordinates(

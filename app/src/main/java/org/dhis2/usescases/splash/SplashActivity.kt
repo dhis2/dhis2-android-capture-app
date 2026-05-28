@@ -55,7 +55,7 @@ class SplashActivity :
     override fun onResume() {
         super.onResume()
 
-        val isRooted = !BuildConfig.DEBUG && RootBeer(this).isRootedWithBusyBoxCheck
+        val isRooted = (!BuildConfig.DEBUG && BuildConfig.FLAVOR != "dhis2Training")  && RootBeer(this).isRootedWithBusyBoxCheck
         val isDebuggerActive = isDebuggerEnable() && detectDebugger()
 
         when {

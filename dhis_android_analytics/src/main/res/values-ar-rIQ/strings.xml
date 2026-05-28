@@ -2,7 +2,6 @@
 <resources>
     <string name="show_table_graph">عرض كجدول</string>
     <string name="action_accept">قبول</string>
-    <string name="none">لا شيء</string>
     <string name="daily">يومي</string>
     <string name="today">اليوم</string>
     <string name="yesterday">الأمس</string>

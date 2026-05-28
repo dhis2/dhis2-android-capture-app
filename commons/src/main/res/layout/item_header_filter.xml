@@ -41,7 +41,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/white"
+                app:tint="?onToolbarColor"
                 tools:src="@drawable/ic_calendar_positive" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -57,6 +57,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/ic_oval_shape_white"
+                    android:backgroundTint="?onToolbarColor"
                     android:gravity="center"
                     android:includeFontPadding="false"
                     android:text='@{""+filterCount}'
@@ -78,7 +79,7 @@
                 android:maxLines="1"
                 android:text="@{filterItem.filterLabel}"
                 android:textAllCaps="true"
-                android:textColor="@color/white"
+                android:textColor="?onToolbarColor"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toTopOf="@id/filterValues"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -97,7 +98,7 @@
                 android:fontFamily="@font/rubik_light"
                 android:maxLines="1"
                 android:text="@{filterItem.observeCount() > 0 ? filterItem.getFilterValue(@string/filters_active) : @string/filters_disabled}"
-                android:textColor="@color/white"
+                android:textColor="?onToolbarColor"
                 android:textSize="10sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -120,7 +121,8 @@
             app:layout_constraintEnd_toStartOf="@id/filterArrow"
             app:layout_constraintStart_toEndOf="@id/filterTextLayout"
             app:sortingItem="@{filterItem.sortingItem}"
-            app:srcCompat="@drawable/ic_sort_deactivated" />
+            app:srcCompat="@drawable/ic_sort_deactivated"
+            app:tint="?onToolbarColor" />
 
 
         <ImageView
@@ -138,7 +140,7 @@
             app:layout_constraintStart_toEndOf="@id/sortingIcon"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_arrow_down"
-            app:tint="@color/white" />
+            app:tint="?onToolbarColor" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

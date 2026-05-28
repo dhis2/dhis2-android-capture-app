@@ -2,7 +2,6 @@
 <resources>
     <string name="action_accept">Acceptera</string>
     <string name="period">Period</string>
-    <string name="none">Ingen</string>
     <string name="daily">Dagligen</string>
     <string name="other">Övrig</string>
     <string name="weekly">Varje vecka</string>

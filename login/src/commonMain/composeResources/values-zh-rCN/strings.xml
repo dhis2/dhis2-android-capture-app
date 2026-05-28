@@ -2,7 +2,6 @@
 <resources>
     <string name="two_fa_authentication_code">验证码</string>
     <string name="action_next">下一个</string>
-    <string name="two_fa_code">验证码</string>
     <string name="biometrics_login_title">快速登录</string>
     <string name="biometrics_login_text">您想使用指纹或其他生物识别方法登录吗？</string>
     <string name="username_hint">用户名</string>

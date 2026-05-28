@@ -13,7 +13,6 @@
     <string name="dialog_layer_base_map_azure_aerial">Azure Aerial</string>
     <string name="dialog_layer_base_map_azure_aerial_label">Azure Aerial Labels</string>
     <string name="action_apply">Použít</string>
-    <string name="dialog_layer_satellite">Zobrazit satelitní pohled</string>
     <string name="dialog_layer_event">Zobrazit události</string>
     <string name="dialog_layer_tei_coordinates">Zobrazit TEI souřadnice</string>
     <string name="dialog_layer_heatmap">Zobrazit vrstvu teplotní mapy</string>

@@ -1,11 +1,15 @@
 package org.dhis2.tracker.search.data
 
+import org.dhis2.mobile.commons.extensions.toKtxInstant
 import org.dhis2.tracker.input.model.TrackerInputType
+import org.dhis2.tracker.relationships.model.RelationshipModel
+import org.dhis2.tracker.search.model.DomainEnrollment
+import org.dhis2.tracker.search.model.DomainProgram
+import org.dhis2.tracker.search.model.EnrollmentStatus
 import org.dhis2.tracker.search.model.GeometryFeatureType
 import org.dhis2.tracker.search.model.SyncState
 import org.dhis2.tracker.search.model.TrackedEntityGeometry
 import org.dhis2.tracker.search.model.TrackedEntitySearchItemAttributeDomain
-import org.dhis2.tracker.search.model.TrackedEntitySearchItemProgramOwnerDomain
 import org.dhis2.tracker.search.model.TrackedEntitySearchItemResult
 import org.dhis2.tracker.search.model.TrackedEntityTypeAttributeDomain
 import org.dhis2.tracker.search.model.TrackedEntityTypeDomain
@@ -13,29 +17,70 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItem
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItemAttribute
-import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItemProgramOwner
+import kotlin.time.Instant
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus as SDKEnrollmentStatus
 
-fun TrackedEntitySearchItem.toTrackedEntitySearchItemResult(): TrackedEntitySearchItemResult =
+fun TrackedEntitySearchItem.toTrackedEntitySearchItemResult(
+    selectedEnrollment: DomainEnrollment?,
+    isOnline: Boolean,
+    overDueDate: Instant?,
+    ownerOrgUnit: String?,
+    enrollmentOrgUnit: String?,
+    shouldDisplayOrgUnit: Boolean,
+    profilePicture: String?,
+    enrollments: List<DomainEnrollment>?,
+    enrolledPrograms: List<DomainProgram>?,
+    relationships: List<RelationshipModel>?,
+): TrackedEntitySearchItemResult =
     TrackedEntitySearchItemResult(
         uid = this.uid,
-        created = this.created,
-        lastUpdated = this.lastUpdated,
-        createdAtClient = this.createdAtClient,
-        lastUpdatedAtClient = this.lastUpdatedAtClient,
-        organisationUnit = this.organisationUnit,
+        created = this.created?.toKtxInstant(),
+        lastUpdated = this.lastUpdated?.toKtxInstant(),
+        createdAtClient = this.createdAtClient?.toKtxInstant(),
+        lastUpdatedAtClient = this.lastUpdatedAtClient?.toKtxInstant(),
+        ownerOrgUnit = ownerOrgUnit,
+        enrollmentOrgUnit = enrollmentOrgUnit,
+        shouldDisplayOrgUnit = shouldDisplayOrgUnit,
         geometry = this.geometry.toDomainGeometry(),
         syncState = this.syncState?.toSyncState(),
         aggregatedSyncState = this.aggregatedSyncState?.toSyncState(),
         deleted = this.deleted,
-        isOnline = this.isOnline,
+        isOnline = isOnline,
+        teTypeName = this.type.displayName(),
         type = this.type.toTrackedEntityType(),
         header = this.header,
+        overDueDate = overDueDate,
+        selectedEnrollment = selectedEnrollment,
+        profilePicture = profilePicture,
+        enrolledPrograms = enrolledPrograms,
+        defaultTypeIcon = this.type.style()?.icon(),
+        enrollments = enrollments,
+        relationships = relationships,
         attributeValues = this.attributeValues?.map { it.toTrackedEntitySearchItemAttribute() } ?: emptyList(),
-        programOwners = this.programOwners?.map { it.toTrackedEntitySearchItemProgramOwner() } ?: emptyList(),
+    )
+
+fun Enrollment.toDomainEnrollment(): DomainEnrollment =
+    DomainEnrollment(
+        uid = this.uid(),
+        orgUnit = this.organisationUnit(),
+        program = this.program(),
+        enrollmentDate = this.enrollmentDate()?.toKtxInstant(),
+        incidentDate = this.incidentDate()?.toKtxInstant(),
+        completedDate = this.completedDate()?.toKtxInstant(),
+        followUp = this.followUp() ?: false,
+        status =
+            when (this.status()) {
+                SDKEnrollmentStatus.ACTIVE -> EnrollmentStatus.ACTIVE
+                SDKEnrollmentStatus.COMPLETED -> EnrollmentStatus.COMPLETED
+                SDKEnrollmentStatus.CANCELLED -> EnrollmentStatus.CANCELLED
+                null -> EnrollmentStatus.ACTIVE
+            },
+        trackedEntityInstance = this.trackedEntityInstance(),
     )
 
 private fun Geometry?.toDomainGeometry(): TrackedEntityGeometry? =
@@ -92,8 +137,6 @@ private fun TrackedEntitySearchItemAttribute.toTrackedEntitySearchItemAttribute(
         displayName = this.displayName,
         displayFormName = this.displayFormName,
         value = this.value,
-        created = this.created,
-        lastUpdated = this.lastUpdated,
         valueType = this.valueType.toTrackerInputType(),
         displayInList = this.displayInList,
         optionSet = this.optionSet,
@@ -131,8 +174,15 @@ private fun ValueType.toTrackerInputType(): TrackerInputType =
         ValueType.MULTI_TEXT -> TrackerInputType.MULTI_SELECTION
     }
 
-private fun TrackedEntitySearchItemProgramOwner.toTrackedEntitySearchItemProgramOwner(): TrackedEntitySearchItemProgramOwnerDomain =
-    TrackedEntitySearchItemProgramOwnerDomain(
-        program = this.program,
-        organisationUnit = this.ownerOrgUnit,
-    )
+fun SyncState.toSDKState(): State =
+    when (this) {
+        SyncState.SYNCED -> State.SYNCED
+        SyncState.TO_POST -> State.TO_POST
+        SyncState.TO_UPDATE -> State.TO_UPDATE
+        SyncState.ERROR -> State.ERROR
+        SyncState.WARNING -> State.WARNING
+        SyncState.UPLOADING -> State.UPLOADING
+        SyncState.RELATIONSHIP -> State.RELATIONSHIP
+        SyncState.SENT_VIA_SMS -> State.SENT_VIA_SMS
+        SyncState.SYNCED_VIA_SMS -> State.SYNCED_VIA_SMS
+    }

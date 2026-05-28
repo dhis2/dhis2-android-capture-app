@@ -1,90 +1,38 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">药房库存管理</string>
     <string name="title_activity_home">首页</string>
-    <string name="title_activity_review">审查</string>
-    <string name="action_settings">设置</string>
 
     <string name="distribution">分配</string>
     <string name="discard">放弃</string>
     <string name="correction">更正</string>
-    <string name="select_transaction">选择交易</string>
-    <string name="transaction_date">交易日期</string>
-    <string name="recent_activity">近期活动</string>
-    <string name="last_synced">上次同步：</string>
-    <string name="select_facility">选择机构设施</string>
-    <string name="distributed_to">分发给</string>
-    <string name="select_one">选择一个</string>
 
     <!-- Sign in -->
-    <string name="server">服务器：</string>
-    <string name="sign_in">登录</string>
-    <string name="sign_in_to_your_account">登录到您的帐户</string>
-    <string name="sign_in_to_with_oidc">使用红十字国际委员会账户登录</string>
-    <string name="non_icrc_staff_members">仅适用于非红十字国际委员会工作人员</string>
-    <string name="icrc_staff_members">仅适用于红十字国际委员会工作人员</string>
     <string name="username">用户名</string>
-    <string name="password">口令</string>
-    <string name="forgot_password">忘记密码\？</string>
-
-    <string name="recent_activities_loading_message">正在加载最近的活动&#8230;</string>
-    <string name="recent_activities_empty_message">您尚未执行任何活动</string>
 
     <!-- Sync -->
-    <string name="metadata_sync_in_progress">同步元数据&#8230;</string>
     <string name="metadata_sync_error">无法完成元数据同步</string>
-    <string name="data_sync_in_progress">同步数据&#8230;</string>
-    <string name="data_sync_error">无法完成数据同步</string>
-    <string name="metadata_sync_completed">元数据同步完成！</string>
-    <string name="sync_completed">同步完成！</string>
 
     <!-- FloatingActionButtons -->
-    <string name="proceed">处理</string>
     <string name="review">审查</string>
 
-    <string name="scan_barcode">扫描条码</string>
-    <string name="scanning">扫描&#8230;</string>
     <string name="search">搜索项目</string>
     <string name="search_placeholder">搜索…</string>
     <string name="delete">删除</string>
     <string name="ok">好</string>
     <string name="cancel">取消</string>
-    <string name="confirmation">确认</string>
 
     <string name="from">从</string>
     <string name="to">送货至……</string>
     <string name="subtitle">%s</string>
-    <string name="to_arg">至 %s</string>
 
     <!-- Languages -->
-    <string name="language_english">英语</string>
-    <string name="language_french">法语</string>
-    <string name="language_spanish">西班牙语</string>
-    <string name="language_arabic">阿拉伯</string>
-    <string name="language_russian">俄语</string>
 
     <!-- Settings -->
-    <string name="use_microphone_for_data_entry">使用麦克风输入数据</string>
-    <string name="language">语言</string>
-    <string name="force_data_sync">强制数据同步</string>
-    <string name="logout">退出</string>
-
 
     <!-- Stock table -->
-    <string name="item">条目</string>
-    <string name="stock_on_hand">现货</string>
     <string name="quantity">数量</string>
-    <string name="items_available">可用项目</string>
-    <string name="positive_value">
-         <b> 正值 </b> = \"缺失数量\" ( <i> 实物库存小于计算值 </i> )
-    </string>
-    <string name="negative_value">
-         <b> <span style="color: #C81818"> 负值 </span> </b> = \"found in stock\" (<i> 实物库存大于计算值 </i> )
-    </string>
 
     <!-- Messages -->
-    <string name="mandatory_transaction_selection">
-        必须选择交易类型并且必须填写所有字段才能继续
-    </string>
     <string name="mandatory_facility_selection">
         必须先填写设施字段，然后才能继续
     </string>
@@ -120,42 +68,14 @@
     <string name="resync">重新同步</string>
 
     <!-- Errors -->
-    <string name="login_error">无法登入</string>
-    <string name="config_file_error">无法加载配置文件</string>
-    <string name="config_file_program_error">
-        配置文件中没有设置股票节目id
-    </string>
-    <string name="recent_activities_load_error">无法加载您最近的活动</string>
     <string name="facilities_load_error">无法加载可用设施列表</string>
     <string name="destinations_load_error">
         无法加载可用目的地列表
     </string>
-    <string name="distribution_data_element_load_error">
-        无法加载分布数据元素
-    </string>
-    <string name="correction_data_element_load_error">
-        无法加载校正数据元素
-    </string>
-    <string name="discard_data_element_load_error">无法加载丢弃的数据元素</string>
 
     <!-- Content descriptions for accessibility -->
-    <string name="content_desc_sync_info">同步信息</string>
-    <string name="content_desc_search">搜索</string>
-    <string name="content_desc_clear_text">明文</string>
-    <string name="content_desc_transaction_date">显示日期选择器</string>
-    <string name="content_desc_distributed_to">分发给</string>
-    <string name="content_desc_last_sync">上次同步</string>
-    <string name="content_desc_quantity_info">有关数量的更多信息</string>
-    <string name="content_desc_remove">除去项目</string>
-    <string name="content_desc_recent_activity">方向箭头</string>
-    <string name="content_desc_recent_activity_status">近期活动状态</string>
-    <string name="content_desc_close_info_guide">关闭信息指南</string>
 
     <string name="confirm_transaction_label">确认</string>
-    <string name="missing_configuration">
-        配置文件中缺少一个或多个必填字段
-    </string>
-    <string name="select_language">选择您想要的语言</string>
 
     <string name="restart_later">稍后重启</string>
     <string name="confirm_app_restart_message">\\n        需要重新启动应用程序才能使更改生效，但是，\\n        任何未保存的更改都将丢失。\\n\\n您要继续重启\吗？\\n    </string>
@@ -169,9 +89,6 @@
     <string name="invalid_quantity">无效</string>
     <string name="stock_on_hand_exceeded_message">
         手头的可用库存不能超过
-    </string>
-    <string name="reviewed_item_cannot_be_empty_message">
-        审核中的股票不能为空。如果不需要，您可以删除该项目
     </string>
 
     <string name="permission_granted">许可授予</string>
@@ -195,20 +112,8 @@
     <string name="non_numeric_speech_input_error">不允许非数字输入：“%s”</string>
     <string name="negative_number_speech_input_error">\n        不允许输入负数：“%s”\n    </string>
 
-    <string name="openid_config_load_error">无法加载 OpenID 配置</string>
-    <string name="unexpected_openid_authentication_error">
-        使用 OpenID 进行身份验证时发生意外错误
-    </string>
-    <string name="no_network_available">没有可用的网络连接</string>
     <string name="unable_to_sync_data_no_network_available">
         无法同步数据，因为没有可用的网络连接
-    </string>
-    <string name="openid_authentication_not_successful">
-        无法使用您的红十字国际委员会账户进行身份验证
-    </string>
-
-    <string name="contact_service_desk_message">
-        如有问题，\n请联系红十字国际委员会服务台
     </string>
 
     <!--SDK error codes-->
@@ -247,8 +152,6 @@
     <string name="error_ssl">服务器证书有问题。请联系您的管理员。</string>
     <string name="done_task">首页</string>
     <string name="back">后退</string>
-    <string name="no_conflicts_message">该项目没有冲突。</string>
-    <string name="action_sync">发送</string>
     <string name="from_facility">从设施</string>
     <string name="to_facility">到设施</string>
     <string name="stock">库存</string>

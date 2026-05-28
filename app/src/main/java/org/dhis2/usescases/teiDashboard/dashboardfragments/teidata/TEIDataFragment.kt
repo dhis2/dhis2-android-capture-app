@@ -682,6 +682,7 @@ class TEIDataFragment :
         eventMode: EventMode,
         programUid: String,
     ) {
+        if (!isAdded) return
         val intent =
             EventCaptureActivity.intent(
                 context = requireContext(),
@@ -696,6 +697,7 @@ class TEIDataFragment :
         programUid: String,
         programStageUid: String,
     ) {
+        if (!isAdded) return
         OUTreeFragment
             .Builder()
             .singleSelection()

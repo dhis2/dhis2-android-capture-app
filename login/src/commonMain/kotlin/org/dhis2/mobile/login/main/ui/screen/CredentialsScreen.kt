@@ -590,7 +590,9 @@ private fun CredentialActions(
             }
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                text = oidcInfo.buttonText ?: stringResource(Res.string.action_openid_log_in),
+                text =
+                    oidcInfo.buttonText.takeIf { !it.isNullOrEmpty() }
+                        ?: stringResource(Res.string.action_openid_log_in),
                 icon = {
                     Icon(
                         imageVector = Icons.AutoMirrored.Outlined.Login,

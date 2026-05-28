@@ -120,7 +120,7 @@ class DashboardViewModel(
         }
     }
 
-    private fun loadNavigationBarItems() {
+    private suspend fun loadNavigationBarItems() {
         val enrollmentItems = mutableListOf<NavigationBarItem<TEIDashboardItems>>()
 
         if (isPortrait()) {
@@ -134,7 +134,7 @@ class DashboardViewModel(
             )
         }
 
-        if (pageConfigurator.displayAnalytics()) {
+        if (withContext(dispatcher.io()) { repository.programHasAnalytics() }) {
             enrollmentItems.add(
                 NavigationBarItem(
                     id = TEIDashboardItems.ANALYTICS,
@@ -255,7 +255,7 @@ class DashboardViewModel(
             try {
                 val hasMoreEnrollments = result.await()
                 onSuccess(hasMoreEnrollments)
-            } catch (e: AuthorityException) {
+            } catch (_: AuthorityException) {
                 onAuthorityError()
             } catch (e: Exception) {
                 Timber.e(e)

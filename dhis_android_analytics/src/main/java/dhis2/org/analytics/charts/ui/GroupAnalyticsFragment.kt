@@ -8,6 +8,9 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.github.mikephil.charting.utils.Utils
 import dhis2.org.R
 import dhis2.org.analytics.charts.data.AnalyticGroup
@@ -18,6 +21,7 @@ import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule
 import dhis2.org.analytics.charts.ui.dialog.SearchColumnDialog
 import dhis2.org.databinding.AnalyticsGroupBinding
 import dhis2.org.databinding.AnalyticsItemBinding
+import kotlinx.coroutines.launch
 import org.dhis2.commons.bindings.clipWithRoundedCorners
 import org.dhis2.commons.bindings.scrollToPosition
 import org.dhis2.commons.dialogs.AlertBottomDialog
@@ -220,47 +224,57 @@ class GroupAnalyticsFragment : Fragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        groupViewModel.chipItems.observe(viewLifecycleOwner) { chipResult ->
-            when {
-                chipResult.isSuccess -> {
-                    val chips = chipResult.getOrDefault(emptyList())
-                    if (chips.isEmpty() || chips.size < MIN_SIZE_TO_SHOW) {
-                        binding?.analyticChipGroup?.visibility = View.GONE
-                    } else {
-                        binding?.analyticChipGroup?.visibility = View.VISIBLE
-                        disableToolbarElevation?.invoke()
-                        addChips(chips)
-                    }
-                }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    groupViewModel.chipItems.collect { chipResult ->
+                        chipResult ?: return@collect
+                        when {
+                            chipResult.isSuccess -> {
+                                val chips = chipResult.getOrDefault(emptyList())
+                                if (chips.isEmpty() || chips.size < MIN_SIZE_TO_SHOW) {
+                                    binding?.analyticChipGroup?.visibility = View.GONE
+                                } else {
+                                    binding?.analyticChipGroup?.visibility = View.VISIBLE
+                                    disableToolbarElevation?.invoke()
+                                    addChips(chips)
+                                }
+                            }
 
-                chipResult.isFailure -> {
-                    binding?.progressLayout?.visibility = View.GONE
-                    binding?.emptyAnalytics?.apply {
-                        visibility = View.VISIBLE
-                        text = getString(R.string.visualization_groups_failure)
+                            chipResult.isFailure -> {
+                                binding?.progressLayout?.visibility = View.GONE
+                                binding?.emptyAnalytics?.apply {
+                                    visibility = View.VISIBLE
+                                    text = getString(R.string.visualization_groups_failure)
+                                }
+                            }
+                        }
+                        startPostponedEnterTransition()
                     }
                 }
-            }
-            startPostponedEnterTransition()
-        }
-        groupViewModel.analytics.observe(viewLifecycleOwner) { analytics ->
-            try {
-                when {
-                    analytics.isSuccess ->
-                        adapter.submitList(analytics.getOrDefault(emptyList())) {
-                            binding?.progressLayout?.visibility = View.GONE
-                        }
+                launch {
+                    groupViewModel.analytics.collect { analytics ->
+                        analytics ?: return@collect
+                        try {
+                            when {
+                                analytics.isSuccess ->
+                                    adapter.submitList(analytics.getOrDefault(emptyList())) {
+                                        binding?.progressLayout?.visibility = View.GONE
+                                    }
 
-                    analytics.isFailure -> {
-                        binding?.progressLayout?.visibility = View.GONE
-                        binding?.emptyAnalytics?.apply {
-                            visibility = View.VISIBLE
-                            text = getString(R.string.visualization_failure)
+                                analytics.isFailure -> {
+                                    binding?.progressLayout?.visibility = View.GONE
+                                    binding?.emptyAnalytics?.apply {
+                                        visibility = View.VISIBLE
+                                        text = getString(R.string.visualization_failure)
+                                    }
+                                }
+                            }
+                        } finally {
+                            AnalyticsCountingIdlingResource.decrement()
                         }
                     }
                 }
-            } finally {
-                AnalyticsCountingIdlingResource.decrement()
             }
         }
     }

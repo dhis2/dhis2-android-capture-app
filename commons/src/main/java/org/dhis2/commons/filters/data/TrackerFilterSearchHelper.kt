@@ -46,7 +46,10 @@ class TrackerFilterSearchHelper
                         filterManager.currentWorkingList(),
                     ).also {
                         filterManager.setWorkingListScope(
-                            it.scope.mapToWorkingListScope(filterRepository.resources),
+                            it.scope.mapToWorkingListScope(
+                                filterRepository.resources,
+                                filterManager.currentWorkingList()?.uid,
+                            ),
                         )
                     }
             } else {

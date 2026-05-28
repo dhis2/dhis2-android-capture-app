@@ -2,9 +2,9 @@
 <resources>
     <string name="empty_relationships">कोई संबंध नहीं है, नया जोड़ने के लिए “+” पर क्लिक करें</string>
     <string name="relation_creation_date">संबंध बनाया गया</string>
-    <string name="remove_relationship_title">हटाएँ %1$s\?</string>
+    <string name="remove_relationship_title">हटाएँ %1$s?</string>
     <string name="remove_relationship_desc">%1$s हटा दिया जाएगा। यह कार्रवाई वापस नहीं की जा सकती</string>
-    <string name="remove_some_relationships_title">%1$d संबंध हटाएँ\?</string>
+    <string name="remove_some_relationships_title">%1$d संबंध हटाएँ?</string>
     <string name="remove_some_relationships_desc">%1$d हटा दिया जाएगा। यह कार्रवाई वापस नहीं की जा सकती</string>
     <string name="show_number_more">%1$d और दिखाएँ</string>
     <string name="relationship">संबंध</string>

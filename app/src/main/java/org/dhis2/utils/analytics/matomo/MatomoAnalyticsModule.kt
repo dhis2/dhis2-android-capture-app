@@ -6,6 +6,7 @@ import dagger.Provides
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.mobile.commons.reporting.AnalyticActions
 import org.dhis2.utils.analytics.AnalyticsHelper
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.matomo.sdk.Matomo
 import org.matomo.sdk.extra.DownloadTracker
@@ -34,5 +35,5 @@ val matomoModule =
         single { DownloadTracker.Extra.ApkChecksum(get()) }
         single { Matomo.getInstance(get()) }
         single<MatomoAnalyticsController> { MatomoAnalyticsControllerImpl(get(), get()) }
-        single<AnalyticActions> { AnalyticsHelper(get()) }
+        single { AnalyticsHelper(get()) } bind AnalyticActions::class
     }

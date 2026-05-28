@@ -16,8 +16,6 @@
     <string name="input_date_out_of_range">Ngoài phạm vi</string>
     <string name="format_error">Định dạng không chính xác</string>
     <string name="input_not_supported">Không được hỗ trợ</string>
-    <string name="completion_dialog_title">Mọi thứ đều ổn</string>
-    <string name="completion_dialog_description">Bạn cũng muốn hoàn tất biểu nhập phải không?</string>
     <string name="validation_success_title">Mọi thứ đều ổn</string>
     <string name="mark_dataset_complete">Bạn cũng muốn hoàn tất biểu nhập phải không?</string>
     <string name="not_now">Không phải bây giờ</string>

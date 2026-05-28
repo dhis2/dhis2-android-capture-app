@@ -39,6 +39,7 @@ class TeiMapManager(
     private var fieldFeatureCollections: Map<String, FeatureCollection> = emptyMap()
     private var teiFeatureCollections: HashMap<String, FeatureCollection>? = null
     private var eventsFeatureCollection: Map<String, FeatureCollection>? = null
+    private var hasPerformedInitialAutoSelection = false
     var mapStyle: MapStyle? = null
     private var teiImages: HashMap<String, Bitmap> = hashMapOf()
     var teiFeatureType: FeatureType? = FeatureType.POINT
@@ -298,6 +299,47 @@ class TeiMapManager(
         DrawableCompat.setTint(wrappedDrawable, color)
 
         return wrappedDrawable
+    }
+
+    fun autoSelectFirstLayerWithData(): Boolean {
+        if (hasPerformedInitialAutoSelection) return false
+        hasPerformedInitialAutoSelection = true
+
+        val firstSource = findFirstSourceWithData() ?: return false
+
+        mapLayerManager.mapLayers.keys.forEach { sourceId ->
+            mapLayerManager.handleLayer(sourceId, sourceId == firstSource)
+        }
+        return true
+    }
+
+    private fun findFirstSourceWithData(): String? {
+        listOf(TEIS_SOURCE_ID, ENROLLMENT_SOURCE_ID).forEach { sourceId ->
+            if (teiFeatureCollections?.get(sourceId)?.features()?.isNotEmpty() == true &&
+                mapLayerManager.mapLayers.containsKey(sourceId)
+            ) return sourceId
+        }
+        eventsFeatureCollection?.forEach { (sourceId, fc) ->
+            if (fc.features()?.isNotEmpty() == true && mapLayerManager.mapLayers.containsKey(sourceId)) {
+                return sourceId
+            }
+        }
+        fieldFeatureCollections.forEach { (sourceId, fc) ->
+            if (fc.features()?.isNotEmpty() == true && mapLayerManager.mapLayers.containsKey(sourceId)) {
+                return sourceId
+            }
+        }
+        teiFeatureCollections
+            ?.filterKeys {
+                it != TEIS_SOURCE_ID &&
+                    it != ENROLLMENT_SOURCE_ID &&
+                    eventsFeatureCollection?.containsKey(it) == false
+            }?.forEach { (sourceId, fc) ->
+                if (fc.features()?.isNotEmpty() == true && mapLayerManager.mapLayers.containsKey(sourceId)) {
+                    return sourceId
+                }
+            }
+        return null
     }
 
     override fun findFeature(

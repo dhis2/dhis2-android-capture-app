@@ -10,7 +10,6 @@
     <string name="cancel">Cancel</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="clear_all">clear selection</string>
     <string name="navigation_list_view">List view</string>
     <string name="navigation_table_view">Table view</string>
     <string name="navigation_map_view">Map view</string>
@@ -22,7 +21,6 @@
     <string name="navigation_notes">Notes</string>
     <string name="navigation_data_entry">Data entry</string>
     <string name="navigation_tei_data">Details</string>
-    <string name="event_overview">Details</string>
     <string name="select_option">Select option</string>
     <string name="search">Search</string>
     <string name="events">events</string>
@@ -36,8 +34,6 @@
     <string name="filters_disabled">No filters applied</string>
     <string name="filters_title_period">Period</string>
     <string name="filters_title_org_unit">Org. Unit</string>
-    <string name="filters_title_sorting">Sorting</string>
-    <string name="filters_title_status">Status</string>
     <string name="filters_title_state">Sync</string>
     <string name="filters_title_assigned">Assigned to me</string>
     <string name="filters_title_date">Date</string>
@@ -46,7 +42,6 @@
     <string name="filters_title_enrollment_status">@string/enrollment_status</string>
     <string name="filter_follow_up_label">Followed up %s</string>
     <string name="select_period">Select period type</string>
-    <string name="daily_period">Daily</string>
     <string name="weekly">Weekly</string>
     <string name="bi_weekly">Bi-weekly</string>
     <string name="weekly_start_wednesday">Weekly starting Wednesday</string>
@@ -60,7 +55,6 @@
     <string name="quarterly_nov">Quarterly Nov</string>
     <string name="six_monthly">Six-monthly</string>
     <string name="six_monthly_april">Six-monthly starting April</string>
-    <string name="six_monthly_july">Six-monthly starting July</string>
     <string name="six_monthly_nov">Six-monthly starting November</string>
     <string name="yearly">Yearly</string>
     <string name="financial_year_february">Financial year starting February</string>
@@ -71,13 +65,10 @@
     <string name="financial_year_october">Financial year starting October</string>
     <string name="financial_year_november">Financial year starting November</string>
 
-
-
     <!-- State -->
     <string name="state_synced">Sync</string>
     <string name="state_to_post">To send</string>
     <string name="state_to_update">To update</string>
-    <string name="state_to_delete">To delete</string>
     <string name="state_error">Error</string>
     <string name="state_warning">Warning</string>
     <string name="state_uploading">Uploading</string>
@@ -171,7 +162,6 @@
     <!--SDK error codes-->
     <string name="login_error_null_pass">Password is missing. Please enter password.</string>
     <string name="login_error_null_username">Username is missing. Please enter username.</string>
-    <string name="login_error_dhis_version">This server is running a dhis version different than 2.29. Update your server version or use the testing environment to proceed.</string>
     <string name="login_error_dhis_version_v2">This server is running a DHIS2 version different than %s. Update your server version or contact your admin.</string>
     <string name="login_error_unsuccessful_response">Something went wrong. Please check that server URL, username and password are correct and try again.</string>
     <string name="login_error_error_response">Sorry! Something failed on the server side.</string>
@@ -231,9 +221,7 @@
     <string name="error_invalid_characters">There are invalid characters in the query. Please ask the administrator to verify the server configuration (relaxedQueryChars,...).</string>
     <string name="error_server_unavailable">The server is currently unavailable. Try again later.</string>
     <string name="error_no_internet_connection">You are offline. Connect to the internet and try again.</string>
-    <string name="unsupported_field_description">This field is not available for mobile capture</string>
     <string name="add_image">Add Image</string>
-    <string name="add_signature">Add signature</string>
     <string name="add_file">Add file</string>
     <string name="action_ok">Ok</string>
     <string name="enable_location_message">Your device location is disconnected. Please enable it to capture coordinates</string>
@@ -241,9 +229,7 @@
     <string name="not_now">Not now</string>
     <string name="review">Review</string>
     <string name="complete">Complete</string>
-    <string name="default_table_header_label">Value</string>
     <string name="discard_changes">Discard changes</string>
-    <string name="default_empty_dataset_section_label">Data</string>
     <string name="title_network_connection_unavailable">Network connection unavailable</string>
     <string name="msg_network_connection_maps">An internet connection is required in order to use maps.</string>
 
@@ -279,7 +265,6 @@
 
     <string name="file_downloaded">File downloaded successfully</string>
 
-
     <!--Enrollment labels-->
     <plurals name="enrollment">
         <item quantity="one">enrollment</item>
@@ -289,7 +274,6 @@
     <string name="enrollment_data_section_label_V2">%s data</string>
     <string name="enrollment_coordinates_V2">%s coordinates</string>
     <string name="enrollment_date_V2">%s date</string>
-    <string name="enrollment_status">%s status</string>
     <string name="break_glass_dialog_description_V2">You must provide a reason to check for %s in this protected program. All activity will be logged.</string>
     <string name="break_glass_reason_V2">Reason to check for %s</string>
     <string name="edition_enrollment_is_no_open_V2">This data is not editable because the %s is completed or cancelled</string>
@@ -297,13 +281,11 @@
     <string name="enrollment_cancelled_V2">%s cancelled</string>
     <string name="new_enrollment">New %s</string>
     <string name="enrolling_ou">Enrolled in:</string>
-    <string name="program_selector_V2">Program %s</string>
     <string name="more_enrollments">More enrollments</string>
     <string name="remove_from">Remove from</string>
     <string name="refresh_this_record">Refresh this record</string>
     <string name="view_timeline">View timeline</string>
     <string name="group_by_stage">Group by stage</string>
-
 
     <!-- Event -->
     <plurals name="event_label">
@@ -325,12 +307,9 @@
     <string name="period_span_default_label" translatable="false">%s - %s</string>
     <string name="week_period_span_default_label">Week %d %s to %s</string>
     <string name="biweek_period_span_default_label" translatable="false">%d %s - %d %s</string>
-    <string name="group_event_label_by_stage">Group %s by stage</string>
-    <string name="show_event_label_timeline">Show %s timeline</string>
     <string name="empty_tei_event_label_add">There are no %s registered, click \"+\" to add a new one.</string>
     <string name="empty_tei_event_label_no_add">There are no %s registered.</string>
     <string name="enrollment_date_edition_warning_event_label">There are planned %s that won\'t be re-scheduled</string>
-    <string name="enrollment_reopen">re-open</string>
 
     <string name="sync_retry">Retry sync</string>
     <string name="syncing">Synchronizing...</string>
@@ -350,4 +329,6 @@
     <string name="not_in_totp_2fa_enrollment_mode">Not in TOTP 2FA enrollment mode</string>
 
     <string name="action_clear_all">Clear all</string>
+
+    <string name="enrollment_status">%s status</string>
 </resources>

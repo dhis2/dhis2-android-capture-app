@@ -64,8 +64,8 @@ class EventCaptureRepositoryImplTest {
 
         val repository =
             EventCaptureRepositoryImpl(
-                eventUid,
                 d2,
+                eventUid,
             )
 
         assertTrue(repository.isEnrollmentOpen)
@@ -82,8 +82,8 @@ class EventCaptureRepositoryImplTest {
 
         val repository =
             EventCaptureRepositoryImpl(
-                eventUid,
                 d2,
+                eventUid,
             )
 
         repository.isEnrollmentOpen
@@ -107,8 +107,8 @@ class EventCaptureRepositoryImplTest {
 
         val repository =
             EventCaptureRepositoryImpl(
-                eventUid,
                 d2,
+                eventUid,
             )
 
         assertTrue(!repository.isEnrollmentCancelled)
@@ -135,8 +135,8 @@ class EventCaptureRepositoryImplTest {
 
         val repository =
             EventCaptureRepositoryImpl(
-                eventUid,
                 d2,
+                eventUid,
             )
 
         assertTrue(repository.isEnrollmentCancelled)
@@ -149,8 +149,8 @@ class EventCaptureRepositoryImplTest {
 
         val repository =
             EventCaptureRepositoryImpl(
-                eventUid,
                 d2,
+                eventUid,
             )
 
         repository.isEventEditable(eventUid)
@@ -182,8 +182,8 @@ class EventCaptureRepositoryImplTest {
 
         val repository =
             EventCaptureRepositoryImpl(
-                eventUid,
                 d2,
+                eventUid,
             )
 
         val testObserver = repository.programStageName().test()
@@ -199,8 +199,8 @@ class EventCaptureRepositoryImplTest {
 
         val repository =
             EventCaptureRepositoryImpl(
-                eventUid,
                 d2,
+                eventUid,
             )
 
         whenever(
@@ -229,8 +229,8 @@ class EventCaptureRepositoryImplTest {
 
         val repository =
             EventCaptureRepositoryImpl(
-                eventUid,
                 d2,
+                eventUid,
             )
 
         whenever(
@@ -255,8 +255,8 @@ class EventCaptureRepositoryImplTest {
 
         val repository =
             EventCaptureRepositoryImpl(
-                eventUid,
                 d2,
+                eventUid,
             )
         val testStatus = EventStatus.SKIPPED
         whenever(
@@ -277,8 +277,8 @@ class EventCaptureRepositoryImplTest {
 
         val repository =
             EventCaptureRepositoryImpl(
-                eventUid,
                 d2,
+                eventUid,
             )
         val testNewDate = GregorianCalendar(3021, 11, 1).time
         whenever(
@@ -302,8 +302,8 @@ class EventCaptureRepositoryImplTest {
 
         val repository =
             EventCaptureRepositoryImpl(
-                eventUid,
                 d2,
+                eventUid,
             )
 
         repository
@@ -318,7 +318,7 @@ class EventCaptureRepositoryImplTest {
         mockEvent()
         mockSections()
 
-        val repository = EventCaptureRepositoryImpl(eventUid, d2)
+        val repository = EventCaptureRepositoryImpl(d2 = d2, eventUid = eventUid)
 
         whenever(
             d2
@@ -337,7 +337,7 @@ class EventCaptureRepositoryImplTest {
         mockEvent()
         mockSections()
 
-        val repository = EventCaptureRepositoryImpl(eventUid, d2)
+        val repository = EventCaptureRepositoryImpl(d2 = d2, eventUid = eventUid)
 
         whenever(
             d2
@@ -356,11 +356,7 @@ class EventCaptureRepositoryImplTest {
         mockEvent()
         mockSections()
 
-        val repository =
-            EventCaptureRepositoryImpl(
-                eventUid,
-                d2,
-            )
+        val repository = EventCaptureRepositoryImpl(d2 = d2, eventUid = eventUid)
 
         repository
             .eventStatus()
@@ -374,11 +370,7 @@ class EventCaptureRepositoryImplTest {
         mockEvent()
         mockSections()
 
-        val repository =
-            EventCaptureRepositoryImpl(
-                eventUid,
-                d2,
-            )
+        val repository = EventCaptureRepositoryImpl(d2 = d2, eventUid = eventUid)
 
         whenever(
             d2
@@ -426,11 +418,7 @@ class EventCaptureRepositoryImplTest {
         mockEvent(status = EventStatus.COMPLETED)
         mockSections()
 
-        val repository =
-            EventCaptureRepositoryImpl(
-                eventUid,
-                d2,
-            )
+        val repository = EventCaptureRepositoryImpl(d2 = d2, eventUid = eventUid)
 
         whenever(
             d2.eventModule().eventService().getEditableStatus(eventUid),
@@ -451,11 +439,7 @@ class EventCaptureRepositoryImplTest {
         mockEvent(status = EventStatus.COMPLETED)
         mockSections()
 
-        val repository =
-            EventCaptureRepositoryImpl(
-                eventUid,
-                d2,
-            )
+        val repository = EventCaptureRepositoryImpl(d2 = d2, eventUid = eventUid)
 
         whenever(
             d2.eventModule().eventService().getEditableStatus(eventUid),
@@ -476,11 +460,7 @@ class EventCaptureRepositoryImplTest {
         mockEvent()
         mockSections()
 
-        val repository =
-            EventCaptureRepositoryImpl(
-                eventUid,
-                d2,
-            )
+        val repository = EventCaptureRepositoryImpl(d2 = d2, eventUid = eventUid)
 
         repository
             .eventIntegrityCheck()
@@ -494,11 +474,7 @@ class EventCaptureRepositoryImplTest {
         mockEvent(eventDate = GregorianCalendar(3021, 0, 1).time)
         mockSections()
 
-        val repository =
-            EventCaptureRepositoryImpl(
-                eventUid,
-                d2,
-            )
+        val repository = EventCaptureRepositoryImpl(d2 = d2, eventUid = eventUid)
 
         repository
             .eventIntegrityCheck()
@@ -512,11 +488,8 @@ class EventCaptureRepositoryImplTest {
         mockEvent()
         mockSections()
 
-        val repository =
-            EventCaptureRepositoryImpl(
-                eventUid,
-                d2,
-            )
+        val repository = EventCaptureRepositoryImpl(d2 = d2, eventUid = eventUid)
+
         val numberOfNotes = 12
         whenever(
             d2.noteModule().notes().byEventUid(),
@@ -548,11 +521,7 @@ class EventCaptureRepositoryImplTest {
         mockEvent()
         mockSections()
 
-        val repository =
-            EventCaptureRepositoryImpl(
-                eventUid,
-                d2,
-            )
+        val repository = EventCaptureRepositoryImpl(d2 = d2, eventUid = eventUid)
 
         whenever(
             d2.settingModule().appearanceSettings().blockingExists(),
@@ -566,11 +535,7 @@ class EventCaptureRepositoryImplTest {
         mockEvent()
         mockSections()
 
-        val repository =
-            EventCaptureRepositoryImpl(
-                eventUid,
-                d2,
-            )
+        val repository = EventCaptureRepositoryImpl(d2 = d2, eventUid = eventUid)
 
         whenever(
             d2.settingModule().appearanceSettings().blockingExists(),
@@ -595,11 +560,7 @@ class EventCaptureRepositoryImplTest {
         mockEvent()
         mockSections()
 
-        val repository =
-            EventCaptureRepositoryImpl(
-                eventUid,
-                d2,
-            )
+        val repository = EventCaptureRepositoryImpl(d2 = d2, eventUid = eventUid)
 
         whenever(
             d2.settingModule().appearanceSettings().blockingExists(),
@@ -624,11 +585,8 @@ class EventCaptureRepositoryImplTest {
         mockEvent()
         mockSections()
 
-        val repository =
-            EventCaptureRepositoryImpl(
-                eventUid,
-                d2,
-            )
+        val repository = EventCaptureRepositoryImpl(d2 = d2, eventUid = eventUid)
+
         whenever(
             d2
                 .programModule()

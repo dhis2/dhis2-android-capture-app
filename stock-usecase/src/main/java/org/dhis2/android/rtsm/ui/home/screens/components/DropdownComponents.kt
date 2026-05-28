@@ -45,6 +45,7 @@ import androidx.compose.ui.zIndex
 import androidx.fragment.app.FragmentManager
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.models.TransactionItem
+import org.dhis2.android.rtsm.ui.home.LocalThemeColor
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.home.model.EditionDialogResult
@@ -61,7 +62,6 @@ fun DropdownComponentTransactions(
     settingsUiState: SettingsUiState,
     onTransitionSelected: (transition: TransactionItem) -> Unit,
     hasUnsavedData: Boolean,
-    themeColor: Color = colorResource(R.color.colorPrimary),
     launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -99,12 +99,14 @@ fun DropdownComponentTransactions(
                     .fillMaxWidth()
                     .onGloballyPositioned { coordinates ->
                         textFieldSize = coordinates.size.toSize()
-                    }.shadow(
+                    }
+                    .shadow(
                         elevation = 8.dp,
                         ambientColor = Color.Black.copy(alpha = 0.1f),
                         shape = RoundedCornerShape(30.dp),
                         clip = false,
-                    ).offset(0.dp, 0.dp)
+                    )
+                    .offset(0.dp, 0.dp)
                     .background(color = Color.White, shape = RoundedCornerShape(30.dp)),
             readOnly = true,
             singleLine = true,
@@ -115,7 +117,7 @@ fun DropdownComponentTransactions(
                     Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(16.dp),
-                    tint = themeColor,
+                    tint = LocalThemeColor.current,
                 )
             },
             trailingIcon = {
@@ -124,7 +126,7 @@ fun DropdownComponentTransactions(
                         isExpanded = !isExpanded
                     },
                     icon = {
-                        Icon(icon, contentDescription = null, tint = themeColor)
+                        Icon(icon, contentDescription = null, tint = LocalThemeColor.current)
                     },
                 )
             },
@@ -188,7 +190,8 @@ fun DropdownComponentTransactions(
                                                 Color.White
                                             },
                                         shape = RoundedCornerShape(16.dp),
-                                    ).padding(paddingValue),
+                                    )
+                                    .padding(paddingValue),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Start,
                         ) {
@@ -196,7 +199,7 @@ fun DropdownComponentTransactions(
                                 painter = painterResource(item.icon),
                                 contentDescription = null,
                                 Modifier.padding(6.dp),
-                                tint = themeColor,
+                                tint = LocalThemeColor.current,
                             )
                             Text(text = capitalizeText(item.label))
                         }
@@ -212,7 +215,6 @@ fun DropdownComponentFacilities(
     settingsUiState: SettingsUiState,
     onFacilitySelected: (facility: OrganisationUnit) -> Unit,
     hasUnsavedData: Boolean,
-    themeColor: Color = colorResource(R.color.colorPrimary),
     supportFragmentManager: FragmentManager,
     data: List<OrganisationUnit>,
     launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
@@ -245,12 +247,14 @@ fun DropdownComponentFacilities(
                     .fillMaxWidth()
                     .onGloballyPositioned { coordinates ->
                         textFieldSize = coordinates.size.toSize()
-                    }.shadow(
+                    }
+                    .shadow(
                         elevation = 8.dp,
                         ambientColor = Color.Black.copy(alpha = 0.1f),
                         shape = RoundedCornerShape(30.dp),
                         clip = false,
-                    ).offset(0.dp, 0.dp)
+                    )
+                    .offset(0.dp, 0.dp)
                     .background(color = Color.White, shape = RoundedCornerShape(30.dp)),
             readOnly = true,
             singleLine = true,
@@ -261,7 +265,7 @@ fun DropdownComponentFacilities(
                     Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(16.dp),
-                    tint = themeColor,
+                    tint = LocalThemeColor.current,
                 )
             },
             trailingIcon = {
@@ -279,7 +283,7 @@ fun DropdownComponentFacilities(
                         Icon(
                             painterResource(id = R.drawable.ic_arrow_drop_down),
                             contentDescription = null,
-                            tint = themeColor,
+                            tint = LocalThemeColor.current,
                         )
                     },
                 )
@@ -303,7 +307,6 @@ fun DropdownComponentFacilities(
 fun DropdownComponentDistributedTo(
     onDestinationSelected: (destination: Option) -> Unit,
     dataEntryUiState: DataEntryUiState,
-    themeColor: Color = colorResource(R.color.colorPrimary),
     data: List<Option>,
     isDestinationSelected: (value: String) -> Unit = { },
     deliverToLabel: String? = null,
@@ -355,13 +358,15 @@ fun DropdownComponentDistributedTo(
                     .fillMaxWidth()
                     .onGloballyPositioned { coordinates ->
                         textFieldSize = coordinates.size.toSize()
-                    }.zIndex(1f)
+                    }
+                    .zIndex(1f)
                     .shadow(
                         elevation = 8.dp,
                         ambientColor = Color.Black.copy(alpha = 0.1f),
                         shape = RoundedCornerShape(30.dp),
                         clip = false,
-                    ).offset(0.dp, 1.dp)
+                    )
+                    .offset(0.dp, 1.dp)
                     .background(color = Color.White, shape = RoundedCornerShape(30.dp)),
             readOnly = true,
             singleLine = true,
@@ -372,7 +377,7 @@ fun DropdownComponentDistributedTo(
                     Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(16.dp),
-                    tint = themeColor,
+                    tint = LocalThemeColor.current,
                 )
             },
             trailingIcon = {
@@ -381,7 +386,7 @@ fun DropdownComponentDistributedTo(
                         isExpanded = !isExpanded
                     },
                     icon = {
-                        Icon(icon, contentDescription = null, tint = themeColor)
+                        Icon(icon, contentDescription = null, tint = LocalThemeColor.current)
                     },
                 )
             },
@@ -448,7 +453,8 @@ fun DropdownComponentDistributedTo(
                                                 Color.White
                                             },
                                         shape = RoundedCornerShape(16.dp),
-                                    ).padding(
+                                    )
+                                    .padding(
                                         start = 8.dp,
                                         top = paddingValue,
                                         end = 8.dp,

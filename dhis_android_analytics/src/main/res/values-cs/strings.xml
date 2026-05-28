@@ -9,7 +9,6 @@
     <string name="action_accept">Přijmout</string>
     <string name="period">Období</string>
     <string name="orgUnit">Org. Jednotka</string>
-    <string name="none">Žádný</string>
     <string name="daily">Denně</string>
     <string name="today">Dnes</string>
     <string name="other">jiný</string>
@@ -45,7 +44,6 @@
     <string name="include_this_period_body">V grafu se zobrazí aktuální období.</string>
     <string name="no_data_for_selected_filters">Použité filtry nevracejí žádná data</string>
     <string name="no_data_to_display">K zobrazení nemáte žádná data</string>
-    <string name="visualization_error">S touto vizualizací není něco v pořádku</string>
     <string name="visualization_failure">S vizualizacemi není něco v pořádku</string>
     <string name="visualization_groups_failure">Něco není v pořádku se skupinami vizualizace</string>
     <string name="pie_chart_no_data">Všechny údaje jsou nulové</string>
@@ -61,7 +59,6 @@
     <string name="error_invalid_program_indicator">Nemáte přístup k indikátoru programu %s</string>
     <string name="error_invalid_visualization">Chybí vizualizace %s</string>
     <string name="error_parsing_visualization">Tato vizualizace není dobře nakonfigurována, kontaktujte svého administrátora.</string>
-    <string name="error_invalid_custom_boundaries">Vlastní hranice nejsou podporovány pro programový indikátor %s</string>
     <string name="error_database">Nelze získat přístup k databázi. Kontaktujte prosím svého správce.</string>
     <string name="error_invalid_program">Nemáte přístup k programu %s</string>
     <string name="error_invalid_attribute">Nemáte přístup k atributu %s</string>

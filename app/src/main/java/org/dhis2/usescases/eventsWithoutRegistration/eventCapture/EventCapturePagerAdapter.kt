@@ -25,6 +25,7 @@ class EventCapturePagerAdapter(
 ) : FragmentStateAdapter(fragmentActivity) {
     private val landscapePages: MutableList<EventPageType> = ArrayList()
     private val portraitPages: MutableList<EventPageType> = ArrayList()
+    private val itemIds: MutableList<Long> = ArrayList()
 
     fun isFormScreenShown(currentItem: Int?): Boolean = currentItem != null && portraitPages[currentItem] == EventPageType.DATA_ENTRY
 
@@ -50,6 +51,12 @@ class EventCapturePagerAdapter(
         }
         portraitPages.add(EventPageType.NOTES)
         landscapePages.add(EventPageType.NOTES)
+
+        if (isPortrait) {
+            portraitPages.forEach { itemIds.add(it.ordinal * 1000L) }
+        } else {
+            landscapePages.forEach { itemIds.add(it.ordinal * 1000L) }
+        }
     }
 
     override fun createFragment(position: Int): Fragment =
@@ -124,5 +131,15 @@ class EventCapturePagerAdapter(
 
     companion object {
         const val NO_POSITION: Int = -1
+    }
+
+    fun refreshDataEntry() {
+        val index = portraitPages.indexOf(EventPageType.DATA_ENTRY)
+        itemIds[index] = itemIds[index] + 1
+        notifyItemChanged(index)
+    }
+
+    override fun getItemId(position: Int): Long {
+        return itemIds[position]
     }
 }

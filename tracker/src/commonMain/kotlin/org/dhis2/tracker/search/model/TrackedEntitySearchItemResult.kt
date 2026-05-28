@@ -1,33 +1,70 @@
 package org.dhis2.tracker.search.model
 
 import org.dhis2.tracker.input.model.TrackerInputType
-import java.util.Date
+import org.dhis2.tracker.relationships.model.RelationshipModel
+import kotlin.time.Instant
 
 data class TrackedEntitySearchItemResult(
     val uid: String,
-    val created: Date?,
-    val lastUpdated: Date?,
-    val createdAtClient: Date?,
-    val lastUpdatedAtClient: Date?,
-    val organisationUnit: String?,
+    val created: Instant?,
+    val lastUpdated: Instant?,
+    val createdAtClient: Instant?,
+    val lastUpdatedAtClient: Instant?,
+    val ownerOrgUnit: String?,
+    val enrollmentOrgUnit: String?,
+    val shouldDisplayOrgUnit: Boolean,
     val geometry: TrackedEntityGeometry?,
     val syncState: SyncState?,
     val aggregatedSyncState: SyncState?,
     val deleted: Boolean,
-    val isOnline: Boolean = false,
+    val isOnline: Boolean,
+    val teTypeName: String?,
     val type: TrackedEntityTypeDomain,
-    val header: String? = null,
+    val header: String?,
+    val overDueDate: Instant?,
+    val selectedEnrollment: DomainEnrollment?,
+    val profilePicture: String?,
+    val enrolledPrograms: List<DomainProgram>?,
+    val enrollments: List<DomainEnrollment>?,
+    val relationships: List<RelationshipModel>?,
+    val defaultTypeIcon: String?,
     val attributeValues: List<TrackedEntitySearchItemAttributeDomain>,
-    val programOwners: List<TrackedEntitySearchItemProgramOwnerDomain>,
 )
+
+class DomainEnrollment(
+    val uid: String,
+    val orgUnit: String?,
+    val program: String?,
+    val enrollmentDate: Instant?,
+    val incidentDate: Instant?,
+    val completedDate: Instant?,
+    val followUp: Boolean,
+    val status: EnrollmentStatus,
+    val trackedEntityInstance: String?,
+)
+
+class DomainProgram(
+    val uid: String,
+    val displayName: String,
+    val style: DomainObjectStyle,
+)
+
+class DomainObjectStyle(
+    val icon: String?,
+    val color: String?,
+)
+
+enum class EnrollmentStatus {
+    ACTIVE,
+    COMPLETED,
+    CANCELLED,
+}
 
 data class TrackedEntitySearchItemAttributeDomain(
     val attribute: String,
     val displayName: String,
     val displayFormName: String,
     val value: String?,
-    val created: Date?,
-    val lastUpdated: Date?,
     val valueType: TrackerInputType,
     val displayInList: Boolean,
     val optionSet: String?,
@@ -45,11 +82,6 @@ data class TrackedEntityTypeAttributeDomain(
     val mandatory: Boolean,
     val searchable: Boolean,
     val sortOrder: Int,
-)
-
-data class TrackedEntitySearchItemProgramOwnerDomain(
-    val program: String,
-    val organisationUnit: String,
 )
 
 data class TrackedEntityGeometry(

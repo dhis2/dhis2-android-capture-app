@@ -48,8 +48,6 @@ public interface SearchRepository {
 
     TeiDownloadResult download(String teiUid, @Nullable String enrollmentUid, String reason);
 
-    SearchTeiModel transform(TrackedEntitySearchItem searchItem, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem);
-
     TrackedEntitySearchCollectionRepository getFilteredRepository(SearchParametersModel searchParametersModel);
 
     void setCurrentProgram(@Nullable String currentProgram);

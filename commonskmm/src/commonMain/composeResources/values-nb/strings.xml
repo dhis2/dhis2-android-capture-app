@@ -18,15 +18,9 @@
     <string name="choose_ou">Velg organisasjonsenhet</string>
     <string name="field_is_mandatory">Dette feltet er obligatorisk</string>
     <string name="required">Påkrevd</string>
-    <string name="date">Dato</string>
-    <string name="hint_year">År</string>
-    <string name="hint_month">Måneder</string>
-    <string name="hint_day">Dager</string>
     <string name="polygon">Polygon</string>
     <string name="latitude">Breddegrad</string>
     <string name="longitude">Lengdegrad</string>
-    <string name="coordinates_error">Koordinatverdiene er ikke gyldige</string>
-    <string name="polygon_captured">Polygon oppfanget</string>
     <string name="enter_value">Legg inn verdi</string>
     <string name="enter_url">Legg inn URL</string>
     <string name="enter_email">Legg inn e-post</string>
@@ -44,12 +38,10 @@
     <string name="complete">Fullfør</string>
     <string name="discard_changes">Forkast endringer</string>
     <string name="saved">Lagret!</string>
-    <string name="save_anyway">Lagre likevel</string>
     <string name="keep_editing">Fortsett å rediger</string>
     <string name="share">Del</string>
     <string name="action_close">Lukk</string>
     <string name="copied_text">Kopiert</string>
-    <string name="empty_description">Ingen info for dette feltet</string>
     <string name="warning_error_on_complete_title">Sjekk dette!</string>
     <string name="enrollment_single_section_label">Attributter - %s</string>
     <string name="tei_coordinates">Koordinater for</string>
@@ -75,7 +67,6 @@
     <string name="no_results_found">Ingen resultater funnet</string>
     <string name="action_done">Fullfør</string>
     <string name="input_not_supported">Ikke støttet</string>
-    <string name="login_error_dhis_version">Denne serveren kjører en dhis versjon som er forskjellig fra 2.29. Oppdater din serverversjon eller bruk testmiljøet for å fortsette.</string>
     <string name="online_search_parsing_error">Feil under analyse av resultater</string>
     <!--*******************
        END OF D2 Error Messages

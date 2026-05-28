@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="period">Давра</string>
-    <string name="none">Ягонто</string>
     <string name="daily">Ҳаррӯза</string>
     <string name="today">Имрӯз</string>
     <string name="other">Дигар</string>

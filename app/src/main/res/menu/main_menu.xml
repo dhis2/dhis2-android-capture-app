@@ -51,6 +51,12 @@
             android:title="@string/main_menu_troubleshooting"/>
 
         <item
+            android:id="@+id/menu_dev"
+            android:icon="@drawable/ic_doctor_positive"
+            android:title="@string/main_menu_developer_scree"
+            android:visible="false" />
+
+        <item
             android:id="@+id/menu_about"
             android:icon="@drawable/ic_menu_info"
             android:title="@string/about" />

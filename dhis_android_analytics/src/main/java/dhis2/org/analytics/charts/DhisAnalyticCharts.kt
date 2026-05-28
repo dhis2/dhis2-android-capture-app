@@ -18,7 +18,7 @@ class DhisAnalyticCharts
         override fun getVisualizationGroups(uid: String?): List<AnalyticsDhisVisualizationsGroup> =
             chartsRepository.getVisualizationGroups(uid)
 
-        override fun geEnrollmentCharts(enrollmentUid: String): List<Graph> = chartsRepository.getAnalyticsForEnrollment(enrollmentUid)
+        override suspend fun geEnrollmentCharts(enrollmentUid: String): List<Graph> = chartsRepository.getAnalyticsForEnrollment(enrollmentUid)
 
         override fun getProgramVisualizations(
             groupUid: String?,

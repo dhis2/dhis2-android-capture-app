@@ -6,7 +6,7 @@ import org.hisp.dhis.android.core.analytics.aggregated.MetadataItem
 import org.hisp.dhis.android.core.common.RelativePeriod
 
 interface ChartCoordinatesProvider {
-    fun dataElementCoordinates(
+    suspend fun dataElementCoordinates(
         stageUid: String,
         teiUid: String,
         dataElementUid: String,
@@ -15,7 +15,7 @@ interface ChartCoordinatesProvider {
         isDefault: Boolean = false,
     ): List<GraphPoint>
 
-    fun indicatorCoordinates(
+    suspend fun indicatorCoordinates(
         stageUid: String,
         teiUid: String,
         indicatorUid: String,
@@ -24,7 +24,7 @@ interface ChartCoordinatesProvider {
         isDefault: Boolean = false,
     ): List<GraphPoint>
 
-    fun nutritionCoordinates(
+    suspend fun nutritionCoordinates(
         stageUid: String,
         teiUid: String,
         zScoreValueContainerUid: String,
@@ -35,7 +35,7 @@ interface ChartCoordinatesProvider {
         selectedOrgUnits: List<String>?,
     ): List<GraphPoint>
 
-    fun pieChartCoordinates(
+    suspend fun pieChartCoordinates(
         stageUid: String,
         teiUid: String,
         dataElementUid: String,

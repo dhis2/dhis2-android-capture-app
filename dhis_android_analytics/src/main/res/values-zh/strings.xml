@@ -9,7 +9,6 @@
     <string name="action_accept">接受</string>
     <string name="period">期间</string>
     <string name="orgUnit">组织单位</string>
-    <string name="none">没有</string>
     <string name="daily">每日</string>
     <string name="today">今天</string>
     <string name="other">其它</string>
@@ -45,7 +44,6 @@
     <string name="include_this_period_body">它将在图表中显示当前周期。</string>
     <string name="no_data_for_selected_filters">您应用的过滤器不返回任何数据</string>
     <string name="no_data_to_display">您没有任何要显示的数据</string>
-    <string name="visualization_error">此可视化有问题</string>
     <string name="visualization_failure">可视化有问题</string>
     <string name="visualization_groups_failure">可视化组有问题</string>
     <string name="pie_chart_no_data">所有数据为零</string>
@@ -61,7 +59,6 @@
     <string name="error_invalid_program_indicator">您无权访问项目指标 %s</string>
     <string name="error_invalid_visualization">缺少可视化 %s</string>
     <string name="error_parsing_visualization">此可视化未正确配置，请联系您的管理员。</string>
-    <string name="error_invalid_custom_boundaries">项目指标 %s 不支持自定义边界</string>
     <string name="error_database">无法访问数据库。请联系您的管理员。</string>
     <string name="error_invalid_program">您无权访问项目%s</string>
     <string name="error_invalid_attribute">您无权访问属性 %s</string>

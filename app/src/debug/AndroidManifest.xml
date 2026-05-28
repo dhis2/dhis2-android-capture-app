@@ -19,7 +19,6 @@
         android:icon="@mipmap/ic_launcher">
 
         <activity android:name=".usescases.development.DevelopmentActivity" />
-
     </application>
 
 </manifest>

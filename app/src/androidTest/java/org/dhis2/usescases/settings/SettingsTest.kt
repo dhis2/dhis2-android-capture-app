@@ -1,15 +1,13 @@
 package org.dhis2.usescases.settings
 
-import android.content.Intent
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
-import org.dhis2.usescases.main.AVOID_SYNC
 import org.dhis2.usescases.main.MainActivity
-import org.dhis2.usescases.main.homeRobot
+import org.dhis2.usescases.main.MainScreenType
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -33,12 +31,6 @@ class SettingsTest : BaseTest() {
     @Test
     fun shouldFindEditPeriodDisabledWhenClickOnSyncData() {
         startActivity()
-
-        homeRobot(composeTestRule) {
-            clickOnNavigationDrawerMenu()
-            clickOnSettings()
-        }
-
         settingsRobot(composeTestRule) {
             clickOnSyncData()
             checkEditPeriodIsDisableForData()
@@ -48,12 +40,6 @@ class SettingsTest : BaseTest() {
     @Test
     fun shouldFindEditDisabledWhenClickOnSyncConfiguration() {
         startActivity()
-
-        homeRobot(composeTestRule) {
-            clickOnNavigationDrawerMenu()
-            clickOnSettings()
-        }
-
         settingsRobot(composeTestRule) {
             clickOnSyncConfiguration()
             checkEditPeriodIsDisableForConfiguration()
@@ -63,12 +49,6 @@ class SettingsTest : BaseTest() {
     @Test
     fun shouldFindEditDisableWhenClickOnSyncParameters() {
         startActivity()
-
-        homeRobot(composeTestRule) {
-            clickOnNavigationDrawerMenu()
-            clickOnSettings()
-        }
-
         settingsRobot(composeTestRule) {
             clickOnSyncParameters()
             checkEditPeriodIsDisableForParameters()
@@ -78,12 +58,6 @@ class SettingsTest : BaseTest() {
     @Test
     fun shouldRefillValuesWhenClickOnReservedValues() {
         startActivity()
-
-        homeRobot(composeTestRule) {
-            clickOnNavigationDrawerMenu()
-            clickOnSettings()
-        }
-
         settingsRobot(composeTestRule) {
             clickOnReservedValues()
             clickOnManageReservedValues()
@@ -93,12 +67,6 @@ class SettingsTest : BaseTest() {
     @Test
     fun shouldSuccessfullyOpenLogs() {
         startActivity()
-
-        homeRobot(composeTestRule) {
-            clickOnNavigationDrawerMenu()
-            clickOnSettings()
-        }
-
         settingsRobot(composeTestRule) {
             clickOnOpenSyncErrorLog()
             checkLogViewIsDisplayed()
@@ -109,14 +77,7 @@ class SettingsTest : BaseTest() {
     @Test
     fun shouldNotShowTwoFAOption() {
         disableFeatureConfigValue(Feature.TWO_FACTOR_AUTHENTICATION)
-
         startActivity()
-
-        homeRobot(composeTestRule) {
-            clickOnNavigationDrawerMenu()
-            clickOnSettings()
-        }
-
         settingsRobot(composeTestRule) {
             checkTwoFAOptionIsNotDisplayed()
         }
@@ -128,12 +89,6 @@ class SettingsTest : BaseTest() {
         enableFeatureConfigValue(Feature.TWO_FACTOR_AUTHENTICATION)
 
         startActivity()
-
-        homeRobot(composeTestRule) {
-            clickOnNavigationDrawerMenu()
-            clickOnSettings()
-        }
-
         settingsRobot(composeTestRule) {
             checkTwoFAOptionIsDisplayed()
             clickOnTwoFASettings()
@@ -142,10 +97,10 @@ class SettingsTest : BaseTest() {
     }
 
     private fun startActivity() {
-        val intent = Intent(
+        val intent = MainActivity.intent(
             ApplicationProvider.getApplicationContext(),
-            MainActivity::class.java
-        ).putExtra(AVOID_SYNC, true)
+            MainScreenType.Settings
+        )
         rule.launch(intent)
     }
 }

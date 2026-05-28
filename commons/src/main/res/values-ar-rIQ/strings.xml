@@ -8,13 +8,10 @@
     <string name="navigation_programs">البرامج</string>
     <string name="navigation_relationships">علاقات</string>
     <string name="navigation_tei_data">التفاصيل</string>
-    <string name="event_overview">التفاصيل</string>
     <string name="search">البحث</string>
     <string name="data_sets">حزم البيانات</string>
-    <string name="filters_title_status">الحالة</string>
     <string name="filters_title_date">التاريخ</string>
     <string name="select_period">تحديد نوع الفترة الزمنية</string>
-    <string name="daily_period">يومي</string>
     <string name="weekly">أسبوعي</string>
     <string name="bi_weekly">كل اسبوعين</string>
     <string name="monthly">شهري</string>
@@ -62,8 +59,6 @@
     <string name="section_indicators">المؤشرات</string>
     <string name="section_charts">المخططات البيانية</string>
     <string name="complete">مكتمل</string>
-    <string name="default_table_header_label">القيمة</string>
-    <string name="default_empty_dataset_section_label">البيانات</string>
     <string name="overdue_today">اليوم</string>
     <string name="remove">إزالة</string>
     <string name="period_daily_title">يومي</string>

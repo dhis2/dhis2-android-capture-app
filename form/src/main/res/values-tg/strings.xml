@@ -2,9 +2,6 @@
 <resources>
     <string name="error">Хатогӣ</string>
     <string name="required">Ҳатмӣ</string>
-    <string name="date">Сана</string>
-    <string name="hint_year">Солҳо</string>
-    <string name="hint_month">Моҳҳо</string>
     <string name="polygon">Бисёркунҷа</string>
     <string name="latitude">Тӯл</string>
     <string name="longitude">Арз</string>

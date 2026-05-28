@@ -20,8 +20,6 @@ fun D2.programs(): List<Program> = programModule().programs().blockingGet()
 
 fun D2.program(programUid: String): Program? = programModule().programs().uid(programUid).blockingGet()
 
-fun D2.observeProgram(programUid: String): Single<Program?> = programModule().programs().uid(programUid).get()
-
 fun D2.isStockProgram(programUid: String): Boolean =
     useCaseModule()
         .stockUseCases()
@@ -74,12 +72,6 @@ fun D2.tei(teiUid: String) =
         .uid(teiUid)
         .blockingGet()
 
-fun D2.observeTei(teiUid: String) =
-    trackedEntityModule()
-        .trackedEntityInstances()
-        .uid(teiUid)
-        .get()
-
 fun D2.teisBy(
     programs: List<String>? = null,
     aggregatedSynStates: List<State>? = null,
@@ -91,13 +83,6 @@ fun D2.teisBy(
             ?: repository
     return repository.blockingGet()
 }
-
-fun D2.teiImportConflicts(teiUid: String): List<TrackerImportConflict> =
-    importModule()
-        .trackerImportConflicts()
-        .byTrackedEntityInstanceUid()
-        .eq(teiUid)
-        .blockingGet()
 
 fun D2.teiImportConflictsBy(
     teiUid: String? = null,
@@ -217,12 +202,6 @@ fun D2.event(uid: String) =
         .uid(uid)
         .blockingGet()
 
-fun D2.observeEvent(uid: String) =
-    eventModule()
-        .events()
-        .uid(uid)
-        .get()
-
 fun D2.eventsBy(
     programUid: String? = null,
     enrollmentUid: String? = null,
@@ -268,26 +247,6 @@ fun D2.dataSetInstancesBy(
     return repository.blockingGet()
 }
 
-fun D2.observeDataSetInstancesBy(
-    dataSetUid: String? = null,
-    orgUnitUid: String? = null,
-    periodId: String? = null,
-    attrOptionComboUid: String? = null,
-    states: List<State>? = null,
-): Single<List<DataSetInstance>> {
-    var repository = dataSetModule().dataSetInstances()
-    repository = dataSetUid?.let { repository.byDataSetUid().eq(dataSetUid) } ?: repository
-    repository = states?.let {
-        repository.byState().`in`(states)
-    } ?: repository
-    repository = orgUnitUid?.let { repository.byOrganisationUnitUid().eq(orgUnitUid) } ?: repository
-    repository = periodId?.let { repository.byPeriod().eq(periodId) } ?: repository
-    repository = attrOptionComboUid?.let {
-        repository.byAttributeOptionComboUid().eq(attrOptionComboUid)
-    } ?: repository
-    return repository.get()
-}
-
 fun D2.dataValueConflictsBy(dataSetUid: String): List<DataValueConflict> =
     dataValueModule()
         .dataValueConflicts()
@@ -310,23 +269,6 @@ fun D2.dataValueConflicts(
         .byAttributeOptionCombo()
         .eq(attrOptionComboUid)
         .blockingGet()
-
-fun D2.countDataValueConflicts(
-    dataSetUid: String,
-    periodId: String,
-    orgUnitUid: String,
-    attrOptionComboUid: String,
-): Int =
-    dataValueModule()
-        .dataValueConflicts()
-        .byDataSet(dataSetUid)
-        .byPeriod()
-        .eq(periodId)
-        .byOrganisationUnitUid()
-        .eq(orgUnitUid)
-        .byAttributeOptionCombo()
-        .eq(attrOptionComboUid)
-        .blockingCount()
 
 fun D2.period(periodId: String) =
     periodModule()

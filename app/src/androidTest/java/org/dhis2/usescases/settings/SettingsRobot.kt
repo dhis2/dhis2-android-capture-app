@@ -1,8 +1,8 @@
 package org.dhis2.usescases.settings
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
-import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
@@ -77,13 +77,13 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnReservedValues() {
         composeTestRule.onNodeWithTag(SettingItem.RESERVED_VALUES.name).performClick()
+        composeTestRule.waitForIdle()
     }
 
     fun clickOnManageReservedValues() {
         composeTestRule.onNode(
                     hasText(getString(R.string.manage_reserved_values_button), ignoreCase = true)
         ).performClick()
-
         Intents.intended(IntentMatchers.hasComponent(ReservedValueActivity::class.java.name))
     }
 
@@ -95,7 +95,12 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         waitForView(withId(R.id.errorRecycler)).check(matches(isDisplayed()))
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun checkTwoFAOptionIsDisplayed() {
+        composeTestRule.waitUntilAtLeastOneExists(
+            hasTestTag(SettingItem.TWO_FACTOR_AUTH.name),
+            TIMEOUT
+        )
         composeTestRule.onNodeWithTag(SettingItem.TWO_FACTOR_AUTH.name).assertIsDisplayed()
     }
 

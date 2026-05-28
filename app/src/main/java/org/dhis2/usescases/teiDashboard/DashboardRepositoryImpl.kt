@@ -12,6 +12,9 @@ import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.data.dhislogic.AUTH_ALL
+import org.dhis2.data.dhislogic.AUTH_ENROLLMENT_CASCADE_DELETE
+import org.dhis2.data.dhislogic.AUTH_TEI_CASCADE_DELETE
 import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.utils.ValueUtils
 import org.hisp.dhis.android.core.D2
@@ -573,7 +576,7 @@ class DashboardRepositoryImpl(
     override fun getTeiActivePrograms(
         teiUid: String,
         showOnlyActive: Boolean,
-    ): Observable<List<kotlin.Pair<Program, MetadataIconData>>> {
+    ): Observable<List<Pair<Program, MetadataIconData>>> {
         val enrollmentRepo =
             d2
                 .enrollmentModule()
@@ -643,7 +646,7 @@ class DashboardRepositoryImpl(
                 .userModule()
                 .authorities()
                 .byName()
-                .eq("F_TEI_CASCADE_DELETE")
+                .`in`(AUTH_TEI_CASCADE_DELETE, AUTH_ALL)
                 .one()
                 .blockingExists()
 
@@ -671,7 +674,7 @@ class DashboardRepositoryImpl(
                 .userModule()
                 .authorities()
                 .byName()
-                .eq("F_ENROLLMENT_CASCADE_DELETE")
+                .`in`(AUTH_ENROLLMENT_CASCADE_DELETE, AUTH_ALL)
                 .one()
                 .blockingExists()
 
@@ -746,7 +749,7 @@ class DashboardRepositoryImpl(
             } else {
                 Observable.just(StatusChangeResultCode.WRITE_PERMISSION_FAIL)
             }
-        } catch (error: D2Error) {
+        } catch (_: D2Error) {
             Observable.just(StatusChangeResultCode.FAILED)
         }
 
@@ -778,7 +781,7 @@ class DashboardRepositoryImpl(
             false
         }
 
-    override fun programHasAnalytics(): Boolean =
+    override suspend fun programHasAnalytics(): Boolean =
         if (!programUid.isNullOrEmpty()) {
             val enrollmentScopeRulesUids =
                 d2
@@ -887,12 +890,12 @@ class DashboardRepositoryImpl(
     override fun getAttributesMap(
         programUid: String,
         teiUid: String,
-    ): Observable<List<kotlin.Pair<TrackedEntityAttribute, TrackedEntityAttributeValue>>> =
+    ): Observable<List<Pair<TrackedEntityAttribute, TrackedEntityAttributeValue>>> =
         teiAttributesProvider
             .getProgramTrackedEntityAttributesByProgram(programUid, teiUid)
             .toObservable()
-            .flatMapIterable { list: List<kotlin.Pair<TrackedEntityAttribute?, TrackedEntityAttributeValue?>>? -> list }
-            .map { (attribute, attributeValue): kotlin.Pair<TrackedEntityAttribute?, TrackedEntityAttributeValue?> ->
+            .flatMapIterable { list: List<Pair<TrackedEntityAttribute?, TrackedEntityAttributeValue?>>? -> list }
+            .map { (attribute, attributeValue): Pair<TrackedEntityAttribute?, TrackedEntityAttributeValue?> ->
                 val formattedAttributeValue: TrackedEntityAttributeValue =
                     if (attributeValue != null && attribute!!.valueType() != ValueType.IMAGE) {
                         ValueUtils.transform(
