@@ -414,9 +414,15 @@ class TEIDataPresenter(
             when (eventCreationType) {
                 EventCreationType.ADDNEW ->
                     programUid?.let { program ->
-                        val orgUnitUid = d2.enrollment(enrollmentUid)?.organisationUnit()
-                        orgUnitUid?.let { onNewEventSelected(orgUnitUid, stage.uid()) }
-                            ?: checkOrgUnitCount(program, stage.uid())
+                        CoroutineScope(dispatcher.io()).launch {
+                            val enrollmentOrgUnitUid = d2.enrollment(enrollmentUid)?.organisationUnit()
+                            val ownerOrgUnit = teiDataRepository.ownerOrgUnit(teiUid)
+                            val eventOrgUnit = ownerOrgUnit ?: enrollmentOrgUnitUid
+                            withContext(dispatcher.ui()) {
+                                eventOrgUnit?.let { onNewEventSelected(eventOrgUnit, stage.uid()) }
+                                    ?: checkOrgUnitCount(program, stage.uid())
+                            }
+                        }
                     }
 
                 EventCreationType.SCHEDULE -> {
