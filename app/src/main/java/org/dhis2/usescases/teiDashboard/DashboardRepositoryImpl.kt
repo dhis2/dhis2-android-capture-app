@@ -12,6 +12,9 @@ import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.data.dhislogic.AUTH_ALL
+import org.dhis2.data.dhislogic.AUTH_ENROLLMENT_CASCADE_DELETE
+import org.dhis2.data.dhislogic.AUTH_TEI_CASCADE_DELETE
 import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.utils.ValueUtils
 import org.hisp.dhis.android.core.D2
@@ -643,7 +646,7 @@ class DashboardRepositoryImpl(
                 .userModule()
                 .authorities()
                 .byName()
-                .eq("F_TEI_CASCADE_DELETE")
+                .`in`(AUTH_TEI_CASCADE_DELETE, AUTH_ALL)
                 .one()
                 .blockingExists()
 
@@ -671,7 +674,7 @@ class DashboardRepositoryImpl(
                 .userModule()
                 .authorities()
                 .byName()
-                .eq("F_ENROLLMENT_CASCADE_DELETE")
+                .`in`(AUTH_ENROLLMENT_CASCADE_DELETE, AUTH_ALL)
                 .one()
                 .blockingExists()
 

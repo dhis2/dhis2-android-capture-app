@@ -3,6 +3,7 @@ package org.dhis2.usescases.datasets.datasetDetail
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Single
 import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.data.dhislogic.AUTH_ALL
 import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryCombo
@@ -103,14 +104,14 @@ class DataSetDetailRepositoryTest {
                 .userModule()
                 .authorities()
                 .byName()
-                .eq(AUTH_DATAVALUE_ADD),
+                .`in`(AUTH_DATAVALUE_ADD, AUTH_ALL),
         ) doReturn mock()
         whenever(
             d2
                 .userModule()
                 .authorities()
                 .byName()
-                .eq(AUTH_DATAVALUE_ADD)
+                .`in`(AUTH_DATAVALUE_ADD, AUTH_ALL)
                 .blockingIsEmpty(),
         ) doReturn false
 
@@ -165,14 +166,14 @@ class DataSetDetailRepositoryTest {
                 .userModule()
                 .authorities()
                 .byName()
-                .eq(AUTH_DATAVALUE_ADD),
+                .`in`(AUTH_DATAVALUE_ADD, AUTH_ALL),
         ) doReturn mock()
         whenever(
             d2
                 .userModule()
                 .authorities()
                 .byName()
-                .eq(AUTH_DATAVALUE_ADD)
+                .`in`(AUTH_DATAVALUE_ADD, AUTH_ALL)
                 .blockingIsEmpty(),
         ) doReturn true
 
@@ -235,14 +236,14 @@ class DataSetDetailRepositoryTest {
                 .userModule()
                 .authorities()
                 .byName()
-                .eq(AUTH_DATAVALUE_ADD),
+                .`in`(AUTH_DATAVALUE_ADD, AUTH_ALL),
         ) doReturn mock()
         whenever(
             d2
                 .userModule()
                 .authorities()
                 .byName()
-                .eq(AUTH_DATAVALUE_ADD)
+                .`in`(AUTH_DATAVALUE_ADD, AUTH_ALL)
                 .blockingIsEmpty(),
         ) doReturn false
 
@@ -311,14 +312,14 @@ class DataSetDetailRepositoryTest {
                 .userModule()
                 .authorities()
                 .byName()
-                .eq(AUTH_DATAVALUE_ADD),
+                .`in`(AUTH_DATAVALUE_ADD, AUTH_ALL),
         ) doReturn mock()
         whenever(
             d2
                 .userModule()
                 .authorities()
                 .byName()
-                .eq(AUTH_DATAVALUE_ADD)
+                .`in`(AUTH_DATAVALUE_ADD, AUTH_ALL)
                 .blockingIsEmpty(),
         ) doReturn false
 
