@@ -86,7 +86,7 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="24dp"
                 android:padding="2dp"
-                android:visibility="gone"
+                android:visibility="@{totalFilters>0?View.VISIBLE:View.GONE}"
                 app:layout_constraintStart_toStartOf="@id/filter"
                 app:layout_constraintTop_toTopOf="@id/filter"
                 tools:visibility="visible">
@@ -102,7 +102,6 @@
                     android:text='@{""+totalFilters}'
                     android:textColor="?colorPrimary"
                     android:textSize="10sp"
-                    android:visibility="@{totalFilters>0?View.VISIBLE:View.GONE}"
                     tools:ignore="SmallSp"
                     tools:text="1" />
             </androidx.constraintlayout.widget.ConstraintLayout>
