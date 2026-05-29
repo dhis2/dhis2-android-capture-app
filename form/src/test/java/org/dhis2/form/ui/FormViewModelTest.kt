@@ -39,10 +39,11 @@ class FormViewModelTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
-    private val repository: FormRepository = mock {
-        on { runBlocking { fetchFormItems(any()) } } doReturn emptyList()
-        on { runBlocking { composeList(any()) } } doReturn emptyList()
-    }
+    private val repository: FormRepository =
+        mock {
+            on { runBlocking { fetchFormItems(any()) } } doReturn emptyList()
+            on { runBlocking { composeList(any()) } } doReturn emptyList()
+        }
     private val testingDispatcher = StandardTestDispatcher()
     private val dispatcher: DispatcherProvider =
         mock {

@@ -34,104 +34,108 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
-val mainModule = module {
+val mainModule =
+    module {
 
-    val dispatcher = object : DispatcherProvider {
-        override fun io() = Dispatchers.IO
-        override fun computation() = Dispatchers.Unconfined
-        override fun ui() = Dispatchers.Main
-    }
+        val dispatcher =
+            object : DispatcherProvider {
+                override fun io() = Dispatchers.IO
 
-    factory<WorkManagerController> {
-        WorkManagerControllerImpl(WorkManager.getInstance(androidContext()))
-    }
+                override fun computation() = Dispatchers.Unconfined
 
-    factory<HomeRepository> {
-        HomeRepositoryImpl(
-            d2 = get(),
-            charts = get(),
-            preferences = get(),
-            workManagerController = get(),
-            syncStatusController = get(),
-            domainErrorMapper = get(),
-            dispatcher = get(),
-        )
-    }
-    factory {
-        FilterManager.getInstance()
-    }
-    singleOf(::VersionRepository)
-    factoryOf(::ResourceManager)
-    factory { params ->
-        MainNavigator(
-            fragmentManager = params.get(),
-        )
-    }
-    factory { params ->
-        GetUserName(
-            homeRepository = get { parametersOf(params.get()) }
-        )
-    }
-    factory { params ->
-        ConfigureHomeNavigationBar(
-            homeRepository = get { parametersOf(params.get()) },
-            resourceManager = get()
-        )
-    }
-    factoryOf(::GetHomeFilters)
-    factoryOf(::DownloadNewVersion)
-    factoryOf(::LogoutUser)
-    factoryOf(::DeleteAccount)
-    factoryOf(::GetLockAction)
-    factoryOf(::UpdateInitialSyncStatus)
-    factoryOf(::CheckSingleNavigation)
-    factoryOf(::LaunchInitialSync)
-    factory {
-        ScheduleNewVersionAlert(
-            workManagerController = get(),
-            versionRepository = get()
-        )
-    }
+                override fun ui() = Dispatchers.Main
+            }
 
-    viewModel { params ->
-        val context = params.get<Context>()
-        val fragmentManager: FragmentManager = params.get()
-        val skipInitialSync = params.get<Boolean>()
-        val initialScreen = params.get<MainScreenType>()
+        factory<WorkManagerController> {
+            WorkManagerControllerImpl(WorkManager.getInstance(androidContext()))
+        }
 
-        MainViewModel(
-            preferences = get { parametersOf(context) },
-            filterManager = get(),
-            matomoAnalyticsController = get(),
-            syncStatusController = get(),
-            mainNavigator = get { parametersOf(fragmentManager) },
-            getUserName = get { parametersOf(context) },
-            configureHomeNavigationBar = get { parametersOf(context) },
-            getHomeFilters = get(),
-            downloadNewVersion = get(),
-            logOutUser = get { parametersOf(context) },
-            deleteAccount = get(),
-            getLockAction = get(),
-            updateInitialSyncStatus = get(),
-            checkSingleNavigation = get { parametersOf(skipInitialSync) },
-            launchInitialSync = get(),
-            scheduleNewVersionAlert = get(),
-            syncBackgroundJobAction = get(),
-            initialScreen = initialScreen,
-            dispatcher = dispatcher,
-        )
-    }
+        factory<HomeRepository> {
+            HomeRepositoryImpl(
+                d2 = get(),
+                charts = get(),
+                preferences = get(),
+                workManagerController = get(),
+                syncStatusController = get(),
+                domainErrorMapper = get(),
+                dispatcher = get(),
+            )
+        }
+        factory {
+            FilterManager.getInstance()
+        }
+        singleOf(::VersionRepository)
+        factoryOf(::ResourceManager)
+        factory { params ->
+            MainNavigator(
+                fragmentManager = params.get(),
+            )
+        }
+        factory { params ->
+            GetUserName(
+                homeRepository = get { parametersOf(params.get()) },
+            )
+        }
+        factory { params ->
+            ConfigureHomeNavigationBar(
+                homeRepository = get { parametersOf(params.get()) },
+                resourceManager = get(),
+            )
+        }
+        factoryOf(::GetHomeFilters)
+        factoryOf(::DownloadNewVersion)
+        factoryOf(::LogoutUser)
+        factoryOf(::DeleteAccount)
+        factoryOf(::GetLockAction)
+        factoryOf(::UpdateInitialSyncStatus)
+        factoryOf(::CheckSingleNavigation)
+        factoryOf(::LaunchInitialSync)
+        factory {
+            ScheduleNewVersionAlert(
+                workManagerController = get(),
+                versionRepository = get(),
+            )
+        }
 
-    factoryOf(::MetadataIconProvider)
-    factoryOf(::TroubleshootingRepository)
-    factory {
-        LocaleSelector(androidContext(), get())
+        viewModel { params ->
+            val context = params.get<Context>()
+            val fragmentManager: FragmentManager = params.get()
+            val skipInitialSync = params.get<Boolean>()
+            val initialScreen = params.get<MainScreenType>()
+
+            MainViewModel(
+                preferences = get { parametersOf(context) },
+                filterManager = get(),
+                matomoAnalyticsController = get(),
+                syncStatusController = get(),
+                mainNavigator = get { parametersOf(fragmentManager) },
+                getUserName = get { parametersOf(context) },
+                configureHomeNavigationBar = get { parametersOf(context) },
+                getHomeFilters = get(),
+                downloadNewVersion = get(),
+                logOutUser = get { parametersOf(context) },
+                deleteAccount = get(),
+                getLockAction = get(),
+                updateInitialSyncStatus = get(),
+                checkSingleNavigation = get { parametersOf(skipInitialSync) },
+                launchInitialSync = get(),
+                scheduleNewVersionAlert = get(),
+                syncBackgroundJobAction = get(),
+                initialScreen = initialScreen,
+                dispatcher = dispatcher,
+            )
+        }
+
+        factoryOf(::MetadataIconProvider)
+        factoryOf(::TroubleshootingRepository)
+        factory {
+            LocaleSelector(androidContext(), get())
+        }
+        viewModel { params ->
+            TroubleshootingViewModel(
+                localeSelector = get(),
+                repository = get(),
+                openLanguageSection = params.get(),
+            )
+        }
     }
-    viewModel { params ->
-        TroubleshootingViewModel(
-            localeSelector = get(),
-            repository = get(),
-            openLanguageSection = params.get()
-        )
-    }
-}

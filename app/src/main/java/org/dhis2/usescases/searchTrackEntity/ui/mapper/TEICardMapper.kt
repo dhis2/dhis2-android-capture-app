@@ -54,7 +54,10 @@ class TEICardMapper(
         ListCardUiModel(
             avatar = { ProvideAvatar(searchTEIModel, onImageClick) },
             title = getTitle(searchTEIModel),
-            lastUpdated = searchTEIModel.tei.lastUpdated?.toJavaDate().toDateSpan(context),
+            lastUpdated =
+                searchTEIModel.tei.lastUpdated
+                    ?.toJavaDate()
+                    .toDateSpan(context),
             additionalInfo = getAdditionalInfoList(searchTEIModel),
             actionButton = { ProvideSyncButton(searchTEIModel, onSyncIconClick) },
             expandLabelText = resourceManager.getString(R.string.show_more),
@@ -168,7 +171,7 @@ class TEICardMapper(
             checkEnrollmentStatus(
                 programUid = programUid,
                 list = list,
-                status = searchTEIModel.selectedEnrollment?.status?: EnrollmentStatus.ACTIVE,
+                status = searchTEIModel.selectedEnrollment?.status ?: EnrollmentStatus.ACTIVE,
             )
 
             checkOverdue(
@@ -211,7 +214,6 @@ class TEICardMapper(
                 )
             }
         }
-
     }
 
     private fun checkEnrollmentStatus(
@@ -299,7 +301,6 @@ class TEICardMapper(
                 ),
             )
         }
-
     }
 
     private fun addOwnedBy(
@@ -324,13 +325,13 @@ class TEICardMapper(
             when (searchTEIModel.tei.syncState) {
                 SyncState.TO_POST,
                 SyncState.TO_UPDATE,
-                    -> {
+                -> {
                     resourceManager.getString(R.string.sync)
                 }
 
                 SyncState.ERROR,
                 SyncState.WARNING,
-                    -> {
+                -> {
                     resourceManager.getString(R.string.sync_retry)
                 }
 
@@ -385,7 +386,7 @@ class TEICardMapper(
             when (state) {
                 SyncState.TO_POST,
                 SyncState.TO_UPDATE,
-                    -> {
+                -> {
                     AdditionalInfoItem(
                         icon = {
                             Icon(

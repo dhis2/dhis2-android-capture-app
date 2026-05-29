@@ -24,10 +24,11 @@ import org.mockito.kotlin.whenever
 @OptIn(ExperimentalCoroutinesApi::class)
 class IndicatorsPresenterTest {
     private val testDispatcher = StandardTestDispatcher()
-    private val dispatcherProvider: DispatcherProvider = mock {
-        on { io() } doReturn testDispatcher
-        on { ui() } doReturn testDispatcher
-    }
+    private val dispatcherProvider: DispatcherProvider =
+        mock {
+            on { io() } doReturn testDispatcher
+            on { ui() } doReturn testDispatcher
+        }
     private val view: IndicatorsView = mock()
     private val indicatorRepository: IndicatorRepository = mock()
     private lateinit var presenter: IndicatorsPresenter

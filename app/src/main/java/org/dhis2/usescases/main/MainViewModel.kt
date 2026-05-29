@@ -6,7 +6,6 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.launchIn
@@ -16,6 +15,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.reactive.asFlow
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.Actions.Companion.BLOCK_SESSION_PIN
 import org.dhis2.commons.matomo.Actions.Companion.OPEN_ANALYTICS
@@ -267,7 +267,8 @@ class MainViewModel(
             _homeEffects.send(HomeEffect.ToggleFilters)
             _homeScreenState.update {
                 it.copy(
-                    bottomNavigationBarVisible = !it.bottomNavigationBarVisible && it.currentScreen.isHome() && it.navigationBarItems.size > 1,
+                    bottomNavigationBarVisible =
+                        !it.bottomNavigationBarVisible && it.currentScreen.isHome() && it.navigationBarItems.size > 1,
                 )
             }
         }
@@ -364,7 +365,10 @@ class MainViewModel(
     fun updateNavigationBarVisibility(bottomNavigationBarIsVisible: Boolean) {
         launchUseCase(dispatcher.io()) {
             _homeScreenState.update {
-                it.copy(bottomNavigationBarVisible = bottomNavigationBarIsVisible && it.currentScreen.isHome() && it.navigationBarItems.size > 1)
+                it.copy(
+                    bottomNavigationBarVisible =
+                        bottomNavigationBarIsVisible && it.currentScreen.isHome() && it.navigationBarItems.size > 1,
+                )
             }
         }
     }
@@ -402,7 +406,7 @@ class MainViewModel(
             }
 
             MainScreenType.Loading -> {
-                /*no-op*/
+                // no-op
             }
 
             MainScreenType.QRScanner -> {
@@ -417,7 +421,6 @@ class MainViewModel(
 
             MainScreenType.TroubleShooting ->
                 mainNavigator.openTroubleShooting()
-
         }
     }
 

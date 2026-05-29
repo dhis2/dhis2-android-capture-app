@@ -11,11 +11,8 @@ class SearchAdapterDiffCallback : DiffUtil.ItemCallback<SearchTeiModel>() {
 
     override fun areContentsTheSame(
         oldItem: SearchTeiModel,
-        newItem: SearchTeiModel
-    ): Boolean {
-        return oldItem.tei == newItem.tei
-    }
-
+        newItem: SearchTeiModel,
+    ): Boolean = oldItem.tei == newItem.tei
 
     override fun getChangePayload(
         oldItem: SearchTeiModel,

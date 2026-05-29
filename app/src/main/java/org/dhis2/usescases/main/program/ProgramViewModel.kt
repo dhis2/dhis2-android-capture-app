@@ -8,9 +8,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.mobile.commons.featureconfig.model.Feature
-import org.dhis2.mobile.commons.featureconfig.model.FeatureOptions
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.Actions.Companion.SYNC_BTN
 import org.dhis2.commons.matomo.Categories.Companion.HOME
@@ -18,6 +15,9 @@ import org.dhis2.commons.matomo.Labels.Companion.CLICK_ON
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.mobile.commons.featureconfig.model.Feature
+import org.dhis2.mobile.commons.featureconfig.model.FeatureOptions
 import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.koin.core.component.KoinComponent
 import timber.log.Timber
