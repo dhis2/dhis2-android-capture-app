@@ -4,8 +4,6 @@ import io.reactivex.Single
 import org.dhis2.BuildConfig
 import org.dhis2.bindings.toSeconds
 import org.dhis2.commons.Constants
-import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.mobile.commons.featureconfig.model.Feature
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_NUMBER_RV
 import org.dhis2.commons.prefs.Preference.Companion.LIMIT_BY_ORG_UNIT
@@ -15,6 +13,8 @@ import org.dhis2.commons.prefs.Preference.Companion.TIME_DAILY
 import org.dhis2.commons.prefs.Preference.Companion.TIME_WEEKLY
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.service.SyncResult
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.mobile.commons.featureconfig.model.Feature
 import org.dhis2.usescases.settings.models.DataSettingsViewModel
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
 import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel

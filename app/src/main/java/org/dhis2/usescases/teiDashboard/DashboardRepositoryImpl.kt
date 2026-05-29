@@ -8,10 +8,10 @@ import io.reactivex.Single
 import io.reactivex.functions.Function
 import org.dhis2.bindings.profilePicturePath
 import org.dhis2.commons.data.ProgramConfigurationRepository
-import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.utils.ValueUtils
 import org.hisp.dhis.android.core.D2
@@ -126,8 +126,7 @@ class DashboardRepositoryImpl(
                 .getValuesFromProgramTrackedEntityAttributesByProgram(
                     programUid,
                     teiUid,
-                )
-                .map<List<TrackedEntityAttributeValue>> { attributesValues: List<TrackedEntityAttributeValue> ->
+                ).map<List<TrackedEntityAttributeValue>> { attributesValues: List<TrackedEntityAttributeValue> ->
                     val formattedValues = formatProgramAttributeValues(attributesValues)
                     formattedValues
                 }.toObservable()
@@ -317,15 +316,15 @@ class DashboardRepositoryImpl(
 
     override fun setFollowUp(enrollmentUid: String?): Boolean {
         val followUp = (
-                java.lang.Boolean.TRUE
-                        ==
-                        d2
-                            .enrollmentModule()
-                            .enrollments()
-                            .uid(enrollmentUid)
-                            .blockingGet()!!
-                            .followUp()
-                )
+            java.lang.Boolean.TRUE
+                ==
+                d2
+                    .enrollmentModule()
+                    .enrollments()
+                    .uid(enrollmentUid)
+                    .blockingGet()!!
+                    .followUp()
+        )
         return try {
             d2
                 .enrollmentModule()
@@ -753,16 +752,16 @@ class DashboardRepositoryImpl(
 
     private fun reopenCheck(status: EnrollmentStatus): Boolean =
         status != EnrollmentStatus.ACTIVE ||
-                d2
-                    .enrollmentModule()
-                    .enrollments()
-                    .byProgram()
-                    .eq(programUid)
-                    .byTrackedEntityInstance()
-                    .eq(teiUid)
-                    .byStatus()
-                    .eq(EnrollmentStatus.ACTIVE)
-                    .blockingIsEmpty()
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .byProgram()
+                .eq(programUid)
+                .byTrackedEntityInstance()
+                .eq(teiUid)
+                .byStatus()
+                .eq(EnrollmentStatus.ACTIVE)
+                .blockingIsEmpty()
 
     override fun programHasRelationships(): Boolean =
         if (!programUid.isNullOrEmpty()) {
@@ -799,9 +798,8 @@ class DashboardRepositoryImpl(
                     .byProgramRuleActionType()
                     .`in`(
                         ProgramRuleActionType.DISPLAYKEYVALUEPAIR,
-                        ProgramRuleActionType.DISPLAYTEXT
-                    )
-                    .blockingIsEmpty()
+                        ProgramRuleActionType.DISPLAYTEXT,
+                    ).blockingIsEmpty()
             val hasProgramIndicator =
                 !d2
                     .programModule()
@@ -853,7 +851,7 @@ class DashboardRepositoryImpl(
         }
 
         return orgUnits.size > 1 ||
-                orgUnits.first().uid() != getOwnerOrgUnit(teiUid)?.uid()
+            orgUnits.first().uid() != getOwnerOrgUnit(teiUid)?.uid()
     }
 
     override fun enrollmentHasWriteAccess(): Boolean =

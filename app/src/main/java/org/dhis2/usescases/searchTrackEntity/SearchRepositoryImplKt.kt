@@ -62,9 +62,9 @@ class SearchRepositoryImplKt(
         }
         val allowCache =
             queryData == savedSearchParameters.queryData &&
-                    FilterManager
-                        .getInstance()
-                        .sameFilters(savedFilters)
+                FilterManager
+                    .getInstance()
+                    .sameFilters(savedFilters)
         savedSearchParameters = savedSearchParameters.copy(queryData = queryData)
         savedFilters = FilterManager.getInstance().copy()
         return allowCache
@@ -191,15 +191,15 @@ class SearchRepositoryImplKt(
             TrackerInputType.VERTICAL_CHECKBOXES,
             TrackerInputType.HORIZONTAL_RADIOBUTTONS,
             TrackerInputType.VERTICAL_RADIOBUTTONS,
-                -> ValueType.BOOLEAN
+            -> ValueType.BOOLEAN
 
             TrackerInputType.YES_ONLY_SWITCH,
             TrackerInputType.YES_ONLY_CHECKBOX,
-                -> ValueType.TRUE_ONLY
+            -> ValueType.TRUE_ONLY
 
             TrackerInputType.QR_CODE,
             TrackerInputType.BAR_CODE,
-                -> ValueType.TEXT
+            -> ValueType.TEXT
 
             TrackerInputType.MULTI_SELECTION -> ValueType.MULTI_TEXT
             TrackerInputType.DROPDOWN,
@@ -208,29 +208,37 @@ class SearchRepositoryImplKt(
             TrackerInputType.SEQUENTIAL,
             TrackerInputType.NOT_SUPPORTED,
             TrackerInputType.CUSTOM_INTENT,
-                -> ValueType.TEXT
+            -> ValueType.TEXT
         }
 
     override fun mapTrackedEntitySearchItemResultToSearchTeiModel(
         searchItemResult: TrackedEntitySearchItemResult,
         sortingItem: SortingItem?,
-        ): SearchTeiModel {
+    ): SearchTeiModel {
         val searchTeiModel = SearchTeiModel()
         searchTeiModel.tei = searchItemResult
         searchItemResult.enrolledPrograms?.forEach {
             searchTeiModel.addProgramInfo(
                 it.uid,
                 trackedEntityInstanceInfoProvider.getMetadataIcon(
-                    ObjectStyle.builder().icon(it.style.icon).color(it.style.color).build()
-                )
+                    ObjectStyle
+                        .builder()
+                        .icon(it.style.icon)
+                        .color(it.style.color)
+                        .build(),
+                ),
             )
         }
         searchItemResult.attributeValues.forEach { attr ->
             if (attr.displayInList && isAcceptedValueType(attr.valueType)) {
-               val transformedValue = if (attr.value != null)
-                   trackedEntityInstanceInfoProvider.getTransformedValue(attr) else trackedEntityInstanceInfoProvider.getUnknownLabel()
+                val transformedValue =
+                    if (attr.value != null) {
+                        trackedEntityInstanceInfoProvider.getTransformedValue(attr)
+                    } else {
+                        trackedEntityInstanceInfoProvider.getUnknownLabel()
+                    }
                 searchTeiModel.addAttributeValue(attr.displayName, attr.copy(value = transformedValue))
-                if(attr.valueType == TrackerInputType.TEXT || attr.valueType == TrackerInputType.LONG_TEXT){
+                if (attr.valueType == TrackerInputType.TEXT || attr.valueType == TrackerInputType.LONG_TEXT) {
                     searchTeiModel.addTextAttribute(attr.displayFormName, attr.copy(value = transformedValue))
                 }
             }
@@ -239,7 +247,6 @@ class SearchRepositoryImplKt(
             searchTeiModel.setSortingValue(trackedEntityInstanceInfoProvider.getSortingKeyValue(searchTeiModel, sortingItem))
         }
         return searchTeiModel
-
     }
 
     override fun searchRelationshipsForMap(
@@ -284,7 +291,7 @@ class SearchRepositoryImplKt(
 
                         when {
                             relationshipTarget?.trackedEntityInstance() != null &&
-                                    teis.none { it.uid == relationshipTarget.elementUid() } -> {
+                                teis.none { it.uid == relationshipTarget.elementUid() } -> {
                                 val trackedEntityType =
                                     d2
                                         .trackedEntityModule()
@@ -390,10 +397,9 @@ class SearchRepositoryImplKt(
             )
         }
 
-    private fun isAcceptedValueType(valueType: TrackerInputType): Boolean {
-        return when (valueType) {
+    private fun isAcceptedValueType(valueType: TrackerInputType): Boolean =
+        when (valueType) {
             TrackerInputType.NOT_SUPPORTED -> false
             else -> true
         }
-    }
 }
