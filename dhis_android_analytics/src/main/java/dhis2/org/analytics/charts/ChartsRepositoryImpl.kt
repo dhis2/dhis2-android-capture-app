@@ -404,13 +404,14 @@ class ChartsRepositoryImpl(
     }
 
     private suspend fun getSettingsAnalytics(enrollment: Enrollment): List<Graph> {
-        val analyticsSettings = d2
-            .settingModule()
-            .analyticsSetting()
-            .teis()
-            .byProgram()
-            .eq(enrollment.program())
-            .blockingGet()
+        val analyticsSettings =
+            d2
+                .settingModule()
+                .analyticsSetting()
+                .teis()
+                .byProgram()
+                .eq(enrollment.program())
+                .blockingGet()
         if (analyticsSettings.isEmpty()) return emptyList()
         return analyticsTeiSettingsToGraph.map(
             enrollment.trackedEntityInstance()!!,
@@ -458,14 +459,14 @@ class ChartsRepositoryImpl(
                         val selectedRelativePeriod =
                             analyticsFilterProvider.visualizationPeriod(
                                 enrollment.trackedEntityInstance()!! +
-                                        programStage.uid() +
-                                        dataElement.uid(),
+                                    programStage.uid() +
+                                    dataElement.uid(),
                             )
                         val selectedOrgUnits =
                             analyticsFilterProvider.visualizationOrgUnits(
                                 enrollment.trackedEntityInstance()!! +
-                                        programStage.uid() +
-                                        dataElement.uid(),
+                                    programStage.uid() +
+                                    dataElement.uid(),
                             )
                         dataElementToGraph.map(
                             dataElement,
@@ -481,14 +482,14 @@ class ChartsRepositoryImpl(
                             val selectedRelativePeriod =
                                 analyticsFilterProvider.visualizationPeriod(
                                     enrollment.trackedEntityInstance()!! +
-                                            programStage.uid() +
-                                            programIndicator.uid(),
+                                        programStage.uid() +
+                                        programIndicator.uid(),
                                 )
                             val selectedOrgUnits =
                                 analyticsFilterProvider.visualizationOrgUnits(
                                     enrollment.trackedEntityInstance()!! +
-                                            programStage.uid() +
-                                            programIndicator.uid(),
+                                        programStage.uid() +
+                                        programIndicator.uid(),
                                 )
                             programIndicatorToGraph.map(
                                 programIndicator,

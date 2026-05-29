@@ -18,12 +18,10 @@ class MainNavigator(
     private var currentFragment: Fragment? = null
     private var lastHomeFragment: Fragment? = null
 
-    fun getCurrentIfProgram(): ProgramFragment? =
-        currentFragment?.takeIf { it is ProgramFragment } as? ProgramFragment
+    fun getCurrentIfProgram(): ProgramFragment? = currentFragment?.takeIf { it is ProgramFragment } as? ProgramFragment
 
-
-    fun openHome(): MainScreenType {
-        return when {
+    fun openHome(): MainScreenType =
+        when {
             lastHomeFragment is GroupAnalyticsFragment -> {
                 MainScreenType.Home(HomeScreen.Visualizations)
             }
@@ -32,7 +30,6 @@ class MainNavigator(
                 MainScreenType.Home(HomeScreen.Programs)
             }
         }
-    }
 
     fun openPrograms() {
         val programFragment = ProgramFragment()
@@ -87,7 +84,8 @@ class MainNavigator(
         useFadeInTransition: Boolean = false,
     ) {
         currentFragment = fragment
-        fragmentManager.beginTransaction()
+        fragmentManager
+            .beginTransaction()
             .apply {
                 if (sharedView == null) {
                     val (enterAnimation, exitAnimation) = getEnterExitAnimation(useFadeInTransition)

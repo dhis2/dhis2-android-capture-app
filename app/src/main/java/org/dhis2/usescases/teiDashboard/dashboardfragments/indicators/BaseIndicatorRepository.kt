@@ -104,7 +104,13 @@ abstract class BaseIndicatorRepository(
     private fun applyRuleEffectForIndicators(calcResult: Result<List<RuleEffect>>): List<IndicatorModel> {
         val indicators = arrayListOf<IndicatorModel>()
         val defaultCategoryCombo =
-            d2.categoryModule().categoryCombos().byIsDefault().eq(true).blockingGet().first()
+            d2
+                .categoryModule()
+                .categoryCombos()
+                .byIsDefault()
+                .eq(true)
+                .blockingGet()
+                .first()
 
         if (calcResult.isFailure) {
             Timber.e(calcResult.exceptionOrNull())
@@ -249,7 +255,7 @@ abstract class BaseIndicatorRepository(
                         addAll(
                             ruleIndicators.filter {
                                 it is IndicatorModel &&
-                                        it.location == LOCATION_INDICATOR_WIDGET
+                                    it.location == LOCATION_INDICATOR_WIDGET
                             },
                         )
                     }.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
@@ -277,12 +283,11 @@ abstract class BaseIndicatorRepository(
     companion object {
         private val NUMBER_REGEX = """-?\b(\d{1,3}(,\d{3})*(\.\d+)?|\d+(\.\d+)?)\b""".toRegex()
 
-        internal fun getNumberValue(data: String): Double? {
-            return NUMBER_REGEX
+        internal fun getNumberValue(data: String): Double? =
+            NUMBER_REGEX
                 .find(data)
                 ?.value
                 ?.replace(",", "")
                 ?.toDoubleOrNull()
-        }
     }
 }
