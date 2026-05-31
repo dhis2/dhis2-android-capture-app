@@ -85,7 +85,6 @@ import org.hisp.dhis.mobile.ui.designsystem.files.buildPainterForFile
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2TextStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
-import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.dropShadow
 import org.hisp.dhis.mobile.ui.designsystem.theme.getTextStyle
@@ -117,8 +116,6 @@ fun RelationShipsScreen(
                 Snackbar(
                     modifier = Modifier.dropShadow(shape = SnackbarDefaults.shape),
                     snackbarData = data,
-                    containerColor = SurfaceColor.SurfaceBright,
-                    contentColor = TextColor.OnSurface,
                 )
             }
         },
