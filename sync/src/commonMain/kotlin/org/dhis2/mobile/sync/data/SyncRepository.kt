@@ -49,4 +49,14 @@ interface SyncRepository {
     suspend fun getAllDataSets(): Result<List<String>>
 
     suspend fun saveDataSyncError(stackTrace: String)
+
+    suspend fun isServerAvailable(syncJobName: String): Boolean
+
+    suspend fun setUnnavailableFlag(syncJobName: String)
+
+    suspend fun removeUnnavailableFlag(syncJobName: String)
+
+    suspend fun isPeriodicJobFlagged(syncJobName: String): Boolean
+
+    suspend fun isLoggedIn(): Boolean
 }
