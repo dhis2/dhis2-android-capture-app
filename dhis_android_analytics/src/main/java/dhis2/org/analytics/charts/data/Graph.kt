@@ -214,24 +214,30 @@ data class GraphPoint(
 ) {
     fun numericValue() =
         when (fieldValue) {
-            is GraphFieldValue.Numeric -> fieldValue.value
             is GraphFieldValue.Text -> 0f
+            is GraphFieldValue.Decimal -> fieldValue.value
+            is GraphFieldValue.Integer -> fieldValue.value.toFloat()
         }
 
     fun textValue() =
         when (fieldValue) {
-            is GraphFieldValue.Numeric -> fieldValue.value.toString()
             is GraphFieldValue.Text -> fieldValue.value
+            is GraphFieldValue.Decimal -> fieldValue.value.toString()
+            is GraphFieldValue.Integer -> fieldValue.value.toString()
         }
 }
 
 sealed class GraphFieldValue {
-    data class Numeric(
+    data class Decimal(
         val value: Float,
     ) : GraphFieldValue()
 
     data class Text(
         val value: String,
+    ) : GraphFieldValue()
+
+    data class Integer(
+        val value: Int,
     ) : GraphFieldValue()
 }
 
