@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.update
 import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.commons.extensions.withMinimumDuration
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
+import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState.LoginCredentials
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
@@ -94,8 +95,12 @@ class LoginViewModel(
                                     selectedServer = serverUrl,
                                     selectedServerFlag = result.countryFlag,
                                     selectedUsername = null,
-                                    oAuthEnabled = result.oAuthEnabled,
-                                    authorizationMethod = null,
+                                    entryMode =
+                                        if (result.oAuthEnabled) {
+                                            CredentialsEntryMode.NEW_ACCOUNT_OAUTH
+                                        } else {
+                                            CredentialsEntryMode.NEW_ACCOUNT_BASIC
+                                        },
                                 ),
                         )
                         stopValidation()

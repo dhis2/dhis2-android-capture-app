@@ -13,7 +13,7 @@ import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.commons.extensions.withMinimumDuration
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
-import org.dhis2.mobile.login.accounts.domain.model.AuthorizationMethod
+import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
 import org.dhis2.mobile.login.main.domain.model.DeviceEnrollmentInfo
 import org.dhis2.mobile.login.main.domain.model.LoginResult
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
@@ -64,8 +64,7 @@ class CredentialsViewModel(
     private val forgotPinUseCase: ForgotPinUseCase,
     private val oidcInfo: OidcInfo?,
     private val fromHome: Boolean,
-    private val oAuthEnable: Boolean,
-    private val authorizationMethod: AuthorizationMethod?,
+    private val entryMode: CredentialsEntryMode,
 ) : ViewModel() {
     private val isNetworkOnline =
         networkStatusProvider.connectionStatus
@@ -93,7 +92,6 @@ class CredentialsViewModel(
             hasOtherAccounts = false,
             isSessionLocked = false,
             displayBiometricsDialog = false,
-            oAuthEnable = oAuthEnable,
         )
 
     private var loginJob: Job? = null
@@ -118,106 +116,93 @@ class CredentialsViewModel(
     }
 
     private fun loadData() {
-        // Check if it is a new or a stored account
-        if (authorizationMethod != null) {
-            // it is a login offline
-            handleLoginOffline(authorizationMethod)
-        } else {
-            // It is a new user
-            handleNewAccount()
+        when (entryMode) {
+            CredentialsEntryMode.NEW_ACCOUNT_BASIC -> handleNewBasicAccount()
+            CredentialsEntryMode.NEW_ACCOUNT_OAUTH -> fetchOAuthEnrollmentUrl()
+            CredentialsEntryMode.EXISTING_OAUTH -> handleExistingOAuthAccount()
+            CredentialsEntryMode.EXISTING_BASIC,
+            CredentialsEntryMode.EXISTING_OPEN_ID,
+            -> handleExistingPasswordAccount()
         }
     }
 
-    private fun handleNewAccount() {
+    private fun handleNewBasicAccount() {
         launchUseCase {
             val biometricInfo = getBiometricInfo(serverUrl)
+            _credentialsScreenState.update { current ->
+                current.copy(
+                    credentialsInfo =
+                        CredentialsInfo(
+                            username = username ?: "",
+                            password = "",
+                            availableUsernames = getAvailableUsernames(),
+                            usernameCanBeEdited = username == null,
+                        ),
+                    errorMessage = null,
+                    allowRecovery = allowRecovery,
+                    canUseBiometrics = biometricInfo.canUseBiometrics,
+                    oidcInfo = oidcInfo,
+                    afterLoginActions = emptyList(),
+                    hasOtherAccounts = getHasOtherAccounts(),
+                    displayBiometricsDialog = biometricInfo.canUseBiometrics && !fromHome,
+                )
+            }
+        }
+    }
 
-            if (oAuthEnable) {
-                fetchOAuthEnrollmentUrl()
-            } else {
-                _credentialsScreenState.update { current ->
-                    current.copy(
-                        credentialsInfo =
-                            CredentialsInfo(
-                                username = username ?: "",
-                                password = "",
-                                availableUsernames = getAvailableUsernames(),
-                                usernameCanBeEdited = username == null,
-                            ),
-                        errorMessage = null,
-                        allowRecovery = allowRecovery,
-                        canUseBiometrics = biometricInfo.canUseBiometrics,
-                        oidcInfo = oidcInfo,
-                        afterLoginActions = emptyList(),
-                        hasOtherAccounts = getHasOtherAccounts(),
-                        displayBiometricsDialog = biometricInfo.canUseBiometrics && !fromHome,
-                        oAuthEnable = false,
+    private fun handleExistingOAuthAccount() {
+        launchUseCase {
+            val biometricInfo = getBiometricInfo(serverUrl)
+            _credentialsScreenState.update { current ->
+                current.copy(
+                    loginState = LoginState.Enabled,
+                    errorMessage = null,
+                    allowRecovery = allowRecovery,
+                    canUseBiometrics = biometricInfo.canUseBiometrics,
+                    oidcInfo = oidcInfo,
+                    afterLoginActions = emptyList(),
+                    hasOtherAccounts = getHasOtherAccounts(),
+                    isSessionLocked = getIsSessionLockedUseCase(),
+                    displayBiometricsDialog = biometricInfo.canUseBiometrics && !fromHome,
+                )
+            }
+
+            if (!fromHome) {
+                // TODO Here we need to ask for the pin to the user
+                startLoginJob {
+                    loginUser(
+                        serverUrl = serverUrl,
+                        username = username ?: "",
+                        password = "",
+                        isNetworkAvailable = isNetworkOnline.value,
                     )
                 }
             }
         }
     }
 
-    private fun handleLoginOffline(authorizationMethod: AuthorizationMethod) {
-        // if it comes from home, let the user log ig manually, if not log direct
+    private fun handleExistingPasswordAccount() {
         launchUseCase {
             val biometricInfo = getBiometricInfo(serverUrl)
-
-            when (authorizationMethod) {
-                AuthorizationMethod.OAUTH2 -> {
-                    _credentialsScreenState.update { current ->
-                        current.copy(
-                            loginState = LoginState.Enabled,
-                            errorMessage = null,
-                            allowRecovery = allowRecovery,
-                            canUseBiometrics = biometricInfo.canUseBiometrics,
-                            oidcInfo = oidcInfo,
-                            afterLoginActions = emptyList(),
-                            hasOtherAccounts = getHasOtherAccounts(),
-                            isSessionLocked = getIsSessionLockedUseCase(),
-                            displayBiometricsDialog = biometricInfo.canUseBiometrics && !fromHome,
-                            oAuthEnable = true,
-                        )
-                    }
-
-                    if (!fromHome) {
-                        // TODO Here we need to ask for the pin to the user
-                        startLoginJob {
-                            loginUser(
-                                serverUrl = serverUrl,
-                                username = username ?: "",
-                                password = "",
-                                isNetworkAvailable = isNetworkOnline.value,
-                            )
-                        }
-                    }
-                }
-
-                AuthorizationMethod.OPEN_ID_CONNECT,
-                AuthorizationMethod.BASIC,
-                -> {
-                    _credentialsScreenState.update { current ->
-                        current.copy(
-                            credentialsInfo =
-                                CredentialsInfo(
-                                    username = username ?: "",
-                                    password = "",
-                                    availableUsernames = getAvailableUsernames(),
-                                    usernameCanBeEdited = false,
-                                ),
-                            loginState = LoginState.Disabled,
-                            errorMessage = null,
-                            allowRecovery = allowRecovery,
-                            canUseBiometrics = biometricInfo.canUseBiometrics,
-                            oidcInfo = oidcInfo,
-                            afterLoginActions = emptyList(),
-                            hasOtherAccounts = getHasOtherAccounts(),
-                            isSessionLocked = getIsSessionLockedUseCase(),
-                            displayBiometricsDialog = biometricInfo.canUseBiometrics && !fromHome,
-                            oAuthEnable = false,
-                        )
-                    }
-                }
+            _credentialsScreenState.update { current ->
+                current.copy(
+                    credentialsInfo =
+                        CredentialsInfo(
+                            username = username ?: "",
+                            password = "",
+                            availableUsernames = getAvailableUsernames(),
+                            usernameCanBeEdited = false,
+                        ),
+                    loginState = LoginState.Disabled,
+                    errorMessage = null,
+                    allowRecovery = allowRecovery,
+                    canUseBiometrics = biometricInfo.canUseBiometrics,
+                    oidcInfo = oidcInfo,
+                    afterLoginActions = emptyList(),
+                    hasOtherAccounts = getHasOtherAccounts(),
+                    isSessionLocked = getIsSessionLockedUseCase(),
+                    displayBiometricsDialog = biometricInfo.canUseBiometrics && !fromHome,
+                )
             }
         }
     }
@@ -366,17 +351,17 @@ class CredentialsViewModel(
     }
 
     fun onLoginClicked() {
-        if (oAuthEnable && authorizationMethod == null) {
-            fetchOAuthEnrollmentUrl()
-        } else {
-            startLoginJob {
-                loginUser(
-                    serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
-                    username = _credentialsScreenState.value.username(),
-                    password = _credentialsScreenState.value.credentialsInfo?.password ?: "",
-                    isNetworkAvailable = isNetworkOnline.value,
-                )
-            }
+        when (entryMode) {
+            CredentialsEntryMode.NEW_ACCOUNT_OAUTH -> fetchOAuthEnrollmentUrl()
+            else ->
+                startLoginJob {
+                    loginUser(
+                        serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
+                        username = _credentialsScreenState.value.username(),
+                        password = _credentialsScreenState.value.credentialsInfo?.password ?: "",
+                        isNetworkAvailable = isNetworkOnline.value,
+                    )
+                }
         }
     }
 
