@@ -559,8 +559,6 @@
     <string name="overdue">Zpoždění %s</string>
     <string name="registered_in">Registrováno v</string>
     <string name="view_only">Pouze zobrazení</string>
-    <string name="at_enroll_org_unit">Na %s.</string>
-    <string name="no_access_to_it">Nemáte k tomu přístup.</string>
     <string name="scheduled">Plánováno: %s</string>
     <string name="scheduled_for">Naplánováno na %s</string>
     <string name="skipped">Přeskočeno</string>
