@@ -95,6 +95,7 @@ class LoginViewModel(
                                     selectedServerFlag = result.countryFlag,
                                     selectedUsername = null,
                                     oAuthEnabled = result.oAuthEnabled,
+                                    authorizationMethod = null,
                                 ),
                         )
                         stopValidation()

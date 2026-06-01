@@ -43,6 +43,7 @@ class AccountsViewModel(
                     selectedServerFlag = account.serverFlag,
                     allowRecovery = account.allowRecovery,
                     oAuthEnabled = account.isOauthEnabled,
+                    authorizationMethod = account.authorizationMethod,
                 ),
             )
         }

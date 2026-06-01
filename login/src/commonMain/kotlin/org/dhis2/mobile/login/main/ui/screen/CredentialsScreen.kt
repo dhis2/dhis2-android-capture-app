@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import coil3.PlatformContext
 import coil3.compose.LocalPlatformContext
 import org.dhis2.mobile.commons.resources.getDrawableResource
+import org.dhis2.mobile.login.accounts.domain.model.AuthorizationMethod
 import org.dhis2.mobile.login.main.ui.components.TaskExecutorButton
 import org.dhis2.mobile.login.main.ui.state.AfterLoginAction
 import org.dhis2.mobile.login.main.ui.state.CredentialsAction
@@ -124,6 +125,7 @@ fun CredentialsScreen(
     oidcInfo: OidcInfo?,
     fromHome: Boolean,
     oAuthEnable: Boolean,
+    authorizationMethod: AuthorizationMethod?,
 ) {
     val context = LocalPlatformContext.current
 
@@ -138,6 +140,7 @@ fun CredentialsScreen(
                 context,
                 fromHome,
                 oAuthEnable,
+                authorizationMethod,
             )
         }
 
@@ -196,12 +199,12 @@ fun CredentialsScreen(
             )
         }
 
-        if (!oAuthEnable) {
+        if (screenState.credentialsInfo != null) {
             CredentialsContainer(
-                availableUsernames = screenState.credentialsInfo.availableUsernames,
-                username = screenState.credentialsInfo.username,
-                password = screenState.credentialsInfo.password,
-                isUsernameEditable = screenState.credentialsInfo.usernameCanBeEdited,
+                availableUsernames = screenState.credentialsInfo!!.availableUsernames,
+                username = screenState.credentialsInfo!!.username,
+                password = screenState.credentialsInfo!!.password,
+                isUsernameEditable = screenState.credentialsInfo!!.usernameCanBeEdited,
                 isLoggingIn = isLoggingIn,
                 onCredentialsUpdate = { credentialsUpdate ->
                     when (credentialsUpdate) {

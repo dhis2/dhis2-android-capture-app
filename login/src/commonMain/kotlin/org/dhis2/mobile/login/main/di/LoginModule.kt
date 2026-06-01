@@ -1,6 +1,7 @@
 package org.dhis2.mobile.login.main.di
 
 import coil3.PlatformContext
+import org.dhis2.mobile.login.accounts.domain.model.AuthorizationMethod
 import org.dhis2.mobile.login.authentication.di.twoFAModule
 import org.dhis2.mobile.login.main.domain.usecase.BiometricLogin
 import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
@@ -106,6 +107,7 @@ internal val mainLoginModule =
             val context = parameters[5] as PlatformContext
             val fromHome = parameters[6] as Boolean
             val oAuthEnable = parameters[7] as Boolean
+            val authorizationMethod = parameters[8] as AuthorizationMethod?
             CredentialsViewModel(
                 navigator = get(),
                 getAvailableUsernames = get { parametersOf(context) },
@@ -131,6 +133,7 @@ internal val mainLoginModule =
                 forgotPinUseCase = get(),
                 fromHome = fromHome,
                 oAuthEnable = oAuthEnable,
+                authorizationMethod = authorizationMethod,
             )
         }
     }

@@ -219,6 +219,7 @@ fun LoginScreen(
                             },
                         fromHome = fromHome,
                         oAuthEnable = arg.oAuthEnabled,
+                        authorizationMethod = arg.authorizationMethod,
                     )
                 }
                 composable<LoginScreenState.OauthAuthentication> {

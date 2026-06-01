@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 data class CredentialsUiState(
     val serverInfo: ServerInfo,
-    val credentialsInfo: CredentialsInfo,
+    val credentialsInfo: CredentialsInfo?,
     val loginState: LoginState,
     val allowRecovery: Boolean,
     val canUseBiometrics: Boolean,
@@ -16,7 +16,7 @@ data class CredentialsUiState(
     val isSessionLocked: Boolean,
     val oAuthEnable: Boolean,
 ) {
-    fun username() = serverInfo.username ?: credentialsInfo.username
+    fun username() = serverInfo.username ?: credentialsInfo?.username ?: ""
 }
 
 data class ServerInfo(

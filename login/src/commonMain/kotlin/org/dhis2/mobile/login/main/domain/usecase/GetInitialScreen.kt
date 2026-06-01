@@ -34,6 +34,7 @@ class GetInitialScreen(
             selectedServerFlag = account.serverFlag,
             allowRecovery = account.allowRecovery,
             oAuthEnabled = account.isOauthEnabled,
+            authorizationMethod = account.authorizationMethod,
         )
 
     private suspend fun handleLockedSession(): LoginScreenState {
@@ -45,6 +46,7 @@ class GetInitialScreen(
             selectedServerFlag = activeAccount.serverFlag,
             allowRecovery = activeAccount.allowRecovery,
             oAuthEnabled = activeAccount.isOauthEnabled,
+            authorizationMethod = activeAccount.authorizationMethod,
         )
     }
 }

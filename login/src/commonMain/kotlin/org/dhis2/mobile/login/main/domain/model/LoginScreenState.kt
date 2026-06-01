@@ -1,6 +1,7 @@
 package org.dhis2.mobile.login.main.domain.model
 
 import kotlinx.serialization.Serializable
+import org.dhis2.mobile.login.accounts.domain.model.AuthorizationMethod
 
 sealed interface LoginScreenState {
     @Serializable
@@ -23,6 +24,7 @@ sealed interface LoginScreenState {
         val selectedServerFlag: String?,
         val allowRecovery: Boolean,
         val oAuthEnabled: Boolean,
+        val authorizationMethod: AuthorizationMethod?,
     ) : LoginScreenState
 
     @Serializable
