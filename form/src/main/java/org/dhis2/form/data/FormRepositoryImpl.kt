@@ -530,7 +530,7 @@ class FormRepositoryImpl(
                 item.uid == uid
             }?.let { item ->
                 updated(indexOf(item), item.setFocus())
-            } ?: this
+            }
         } ?: this
 
     private suspend fun List<FieldUiModel>.setOpenedSection(): List<FieldUiModel> =

@@ -343,12 +343,12 @@ class StockManagerImpl(
             }
 
             try {
-                transaction.distributedTo?.let {
+                transaction.distributedTo.let {
                     val destination =
                         d2
                             .optionModule()
                             .options()
-                            .uid(it.uid)
+                            .uid(it?.uid)
                             .blockingGet()
 
                     d2
