@@ -40,7 +40,7 @@ class RuleEngineNutritionDataProviderImpl : NutritionDataProvider {
                     GraphPoint(
                         eventDate = GregorianCalendar(2021, 0, 1).time,
                         position = parameter,
-                        fieldValue = GraphFieldValue.Numeric(values[dataIndex]),
+                        fieldValue = GraphFieldValue.Decimal(values[dataIndex]),
                     ),
                 )
             }
