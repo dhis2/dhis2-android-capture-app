@@ -13,6 +13,7 @@ import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.commons.extensions.withMinimumDuration
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
+import org.dhis2.mobile.login.accounts.domain.model.AuthorizationMethod
 import org.dhis2.mobile.login.main.domain.model.DeviceEnrollmentInfo
 import org.dhis2.mobile.login.main.domain.model.LoginResult
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
@@ -64,6 +65,7 @@ class CredentialsViewModel(
     private val oidcInfo: OidcInfo?,
     private val fromHome: Boolean,
     private val oAuthEnable: Boolean,
+    private val authorizationMethod: AuthorizationMethod?,
 ) : ViewModel() {
     private val isNetworkOnline =
         networkStatusProvider.connectionStatus
@@ -81,14 +83,8 @@ class CredentialsViewModel(
                     serverUrl = serverUrl,
                     username = username,
                 ),
-            credentialsInfo =
-                CredentialsInfo(
-                    username = username ?: "",
-                    password = "",
-                    availableUsernames = emptyList(),
-                    usernameCanBeEdited = username == null,
-                ),
-            loginState = if (oAuthEnable) LoginState.Enabled else LoginState.Disabled,
+            credentialsInfo = null,
+            loginState = LoginState.Disabled,
             errorMessage = null,
             allowRecovery = false,
             canUseBiometrics = false,
@@ -119,40 +115,109 @@ class CredentialsViewModel(
                 handleOAuthCallbacks(urlString)
             }
         }
-        if (oAuthEnable && !fromHome) {
-            fetchOAuthEnrollmentUrl()
-        }
     }
 
     private fun loadData() {
+        // Check if it is a new or a stored account
+        if (authorizationMethod != null) {
+            // it is a login offline
+            handleLoginOffline(authorizationMethod)
+        } else {
+            // It is a new user
+            handleNewAccount()
+        }
+    }
+
+    private fun handleNewAccount() {
         launchUseCase {
             val biometricInfo = getBiometricInfo(serverUrl)
 
-            _credentialsScreenState.update { current ->
-                current.copy(
-                    serverInfo =
-                        ServerInfo(
-                            serverName = serverName,
-                            serverUrl = serverUrl,
-                            username = username,
-                        ),
-                    credentialsInfo =
-                        CredentialsInfo(
-                            username = username ?: "",
-                            password = "",
-                            availableUsernames = getAvailableUsernames(),
-                            usernameCanBeEdited = username == null,
-                        ),
-                    errorMessage = null,
-                    allowRecovery = allowRecovery,
-                    canUseBiometrics = biometricInfo.canUseBiometrics,
-                    oidcInfo = oidcInfo,
-                    afterLoginActions = emptyList(),
-                    hasOtherAccounts = getHasOtherAccounts(),
-                    isSessionLocked = getIsSessionLockedUseCase(),
-                    displayBiometricsDialog = biometricInfo.canUseBiometrics && !fromHome,
-                    oAuthEnable = oAuthEnable,
-                )
+            if (oAuthEnable) {
+                fetchOAuthEnrollmentUrl()
+            } else {
+                _credentialsScreenState.update { current ->
+                    current.copy(
+                        credentialsInfo =
+                            CredentialsInfo(
+                                username = username ?: "",
+                                password = "",
+                                availableUsernames = getAvailableUsernames(),
+                                usernameCanBeEdited = username == null,
+                            ),
+                        errorMessage = null,
+                        allowRecovery = allowRecovery,
+                        canUseBiometrics = biometricInfo.canUseBiometrics,
+                        oidcInfo = oidcInfo,
+                        afterLoginActions = emptyList(),
+                        hasOtherAccounts = getHasOtherAccounts(),
+                        displayBiometricsDialog = biometricInfo.canUseBiometrics && !fromHome,
+                        oAuthEnable = false,
+                    )
+                }
+            }
+        }
+    }
+
+    private fun handleLoginOffline(authorizationMethod: AuthorizationMethod) {
+        // if it comes from home, let the user log ig manually, if not log direct
+        launchUseCase {
+            val biometricInfo = getBiometricInfo(serverUrl)
+
+            when (authorizationMethod) {
+                AuthorizationMethod.OAUTH2 -> {
+                    _credentialsScreenState.update { current ->
+                        current.copy(
+                            loginState = LoginState.Enabled,
+                            errorMessage = null,
+                            allowRecovery = allowRecovery,
+                            canUseBiometrics = biometricInfo.canUseBiometrics,
+                            oidcInfo = oidcInfo,
+                            afterLoginActions = emptyList(),
+                            hasOtherAccounts = getHasOtherAccounts(),
+                            isSessionLocked = getIsSessionLockedUseCase(),
+                            displayBiometricsDialog = biometricInfo.canUseBiometrics && !fromHome,
+                            oAuthEnable = true,
+                        )
+                    }
+
+                    if (!fromHome) {
+                        // TODO Here we need to ask for the pin to the user
+                        startLoginJob {
+                            loginUser(
+                                serverUrl = serverUrl,
+                                username = username ?: "",
+                                password = "",
+                                isNetworkAvailable = isNetworkOnline.value,
+                            )
+                        }
+                    }
+                }
+
+                AuthorizationMethod.OPEN_ID_CONNECT,
+                AuthorizationMethod.BASIC,
+                -> {
+                    _credentialsScreenState.update { current ->
+                        current.copy(
+                            credentialsInfo =
+                                CredentialsInfo(
+                                    username = username ?: "",
+                                    password = "",
+                                    availableUsernames = getAvailableUsernames(),
+                                    usernameCanBeEdited = false,
+                                ),
+                            loginState = LoginState.Disabled,
+                            errorMessage = null,
+                            allowRecovery = allowRecovery,
+                            canUseBiometrics = biometricInfo.canUseBiometrics,
+                            oidcInfo = oidcInfo,
+                            afterLoginActions = emptyList(),
+                            hasOtherAccounts = getHasOtherAccounts(),
+                            isSessionLocked = getIsSessionLockedUseCase(),
+                            displayBiometricsDialog = biometricInfo.canUseBiometrics && !fromHome,
+                            oAuthEnable = false,
+                        )
+                    }
+                }
             }
         }
     }
@@ -264,12 +329,12 @@ class CredentialsViewModel(
         _credentialsScreenState.update {
             it.copy(
                 credentialsInfo =
-                    it.credentialsInfo.copy(
+                    it.credentialsInfo?.copy(
                         username = username,
                     ),
                 loginState =
                     if (username.isNotBlank() &&
-                        it.credentialsInfo.password.isNotBlank()
+                        it.credentialsInfo?.password?.isNotBlank() == true
                     ) {
                         LoginState.Enabled
                     } else {
@@ -284,12 +349,12 @@ class CredentialsViewModel(
         _credentialsScreenState.update {
             it.copy(
                 credentialsInfo =
-                    it.credentialsInfo.copy(
+                    it.credentialsInfo?.copy(
                         password = password,
                     ),
                 loginState =
                     if (password.isNotBlank() &&
-                        it.credentialsInfo.username.isNotBlank()
+                        it.credentialsInfo?.username?.isNotBlank() == true
                     ) {
                         LoginState.Enabled
                     } else {
@@ -301,14 +366,14 @@ class CredentialsViewModel(
     }
 
     fun onLoginClicked() {
-        if (_credentialsScreenState.value.oAuthEnable) {
+        if (oAuthEnable && authorizationMethod == null) {
             fetchOAuthEnrollmentUrl()
         } else {
             startLoginJob {
                 loginUser(
                     serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
-                    username = _credentialsScreenState.value.credentialsInfo.username,
-                    password = _credentialsScreenState.value.credentialsInfo.password,
+                    username = _credentialsScreenState.value.username(),
+                    password = _credentialsScreenState.value.credentialsInfo?.password ?: "",
                     isNetworkAvailable = isNetworkOnline.value,
                 )
             }
@@ -385,6 +450,12 @@ class CredentialsViewModel(
         loginJob?.cancel()
         launchUseCase {
             logOutUser.invoke()
+            _credentialsScreenState.update {
+                it.copy(
+                    loginState = LoginState.Enabled,
+                    errorMessage = null,
+                )
+            }
         }
     }
 
@@ -457,8 +528,8 @@ class CredentialsViewModel(
         launchUseCase {
             updateBiometricPermission(
                 serverUrl,
-                credentialsScreenState.value.credentialsInfo.username,
-                credentialsScreenState.value.credentialsInfo.password,
+                credentialsScreenState.value.credentialsInfo?.username ?: "",
+                credentialsScreenState.value.credentialsInfo?.password ?: "",
                 granted,
             )
             _credentialsScreenState.update {
