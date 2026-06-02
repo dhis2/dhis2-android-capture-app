@@ -69,7 +69,7 @@ class ChartCoordinatesProviderImpl(
                                         lineListResponse.period,
                                     ).toFloat()
                             },
-                        fieldValue = GraphFieldValue.Numeric(value.toFloatOrNull() ?: 0f),
+                        fieldValue = formatToNumericFieldValue(value),
                         legendValue = createLegendValue(legend),
                     )
                 }
@@ -122,7 +122,6 @@ class ChartCoordinatesProviderImpl(
                     if (initialPeriod == null) initialPeriod = lineListResponse.period
 
                     val legend = getLegend(lineListResponseValue.legend)
-
                     GraphPoint(
                         eventDate = formattedDate(lineListResponse.date),
                         position =
@@ -135,7 +134,7 @@ class ChartCoordinatesProviderImpl(
                                         lineListResponse.period,
                                     ).toFloat()
                             },
-                        fieldValue = GraphFieldValue.Numeric(value.toFloat()),
+                        fieldValue = formatToNumericFieldValue(value),
                         legendValue = createLegendValue(legend),
                     )
                 }
@@ -199,7 +198,7 @@ class ChartCoordinatesProviderImpl(
                     GraphPoint(
                         eventDate = formattedDate(lineListResponse.date),
                         position = xAxisValue.toFloat(),
-                        fieldValue = GraphFieldValue.Numeric(zScoreValue.toFloat()),
+                        fieldValue = formatToNumericFieldValue(zScoreValue),
                     )
                 }
             }
@@ -235,7 +234,7 @@ class ChartCoordinatesProviderImpl(
         return eventList.groupBy { it.values.first().value }.mapNotNull {
             GraphPoint(
                 eventDate = formattedDate(it.value.first().date),
-                fieldValue = GraphFieldValue.Numeric(it.value.size.toFloat()),
+                fieldValue = GraphFieldValue.Integer(it.value.size),
                 legend = it.key,
             )
         }
@@ -283,7 +282,7 @@ class ChartCoordinatesProviderImpl(
                 GraphPoint(
                     eventDate = GregorianCalendar(2021, 0, 1).time,
                     position = position.toFloat(),
-                    fieldValue = GraphFieldValue.Numeric(gridResponseValue.value!!.toFloat()),
+                    fieldValue = formatToNumericFieldValue(gridResponseValue.value),
                     legend = columnLegend,
                     legendValue = createLegendValue(legend?.item),
                 )
@@ -315,5 +314,12 @@ class ChartCoordinatesProviderImpl(
                 ),
                 it.displayName(),
             )
+        }
+
+    private fun formatToNumericFieldValue(value: String?): GraphFieldValue =
+        if (value?.contains(".") == true || value?.contains(",") == true) {
+            GraphFieldValue.Decimal(value.toFloatOrNull() ?: 0f)
+        } else {
+            GraphFieldValue.Integer(value?.toIntOrNull() ?: 0)
         }
 }

@@ -77,13 +77,13 @@ class AnalyticsModelTest {
                             GraphPoint(
                                 GregorianCalendar(2021, 0, 1).time,
                                 0f,
-                                GraphFieldValue.Numeric(0f),
+                                GraphFieldValue.Decimal(0f),
                                 null,
                             ),
                             GraphPoint(
                                 GregorianCalendar(2021, 0, 1).time,
                                 1f,
-                                GraphFieldValue.Numeric(0f),
+                                GraphFieldValue.Decimal(0f),
                                 null,
                             ),
                         ),

@@ -177,7 +177,7 @@ class SearchTEIViewModel(
                     emitAll(
                         when {
                             searching -> loadSearchResults()
-                            displayFrontPageList() -> loadDisplayInListResults()
+                            shouldDisplayFrontPageList() -> loadDisplayInListResults()
                             else -> emptyFlow()
                         },
                     )
@@ -445,7 +445,7 @@ class SearchTEIViewModel(
     }
 
     fun refreshData() {
-        performSearch()
+        if(shouldDisplayFrontPageList()) performSearch()
     }
 
     private fun updateQuery(
@@ -678,15 +678,18 @@ class SearchTEIViewModel(
     }
 
     fun onSearch() {
-        searchRepository.clearFetchedList()
-        performSearch()
+        if(hasMinNumberOfAttributesToSearch()) {
+            searchRepository.clearFetchedList()
+            performSearch()
+        } else {
+            displayNotEnoughAttributesToSearchMessage()
+        }
     }
 
     private fun performSearch() {
         viewModelScope.launch(dispatchers.io()) {
             CoroutineTracker.increment()
             try {
-                if (canPerformSearch()) {
                     searching = queryDataList.isNotEmpty()
                     searchParametersUiState =
                         searchParametersUiState.copy(
@@ -708,7 +711,19 @@ class SearchTEIViewModel(
 
                         else -> searching = false
                     }
-                } else {
+
+            } catch (e: Exception) {
+                Timber.d(e)
+            } finally {
+                CoroutineTracker.decrement()
+            }
+        }
+    }
+
+    private fun displayNotEnoughAttributesToSearchMessage() {
+        viewModelScope.launch(dispatchers.io()) {
+            CoroutineTracker.increment()
+            try {
                     val minAttributesToSearch =
                         searchRepository
                             .getProgram(initialProgramUid)
@@ -725,7 +740,6 @@ class SearchTEIViewModel(
                     setSearchScreen()
                     _refreshData.postValue(Unit)
                     onNewSearch.emit(Unit)
-                }
             } catch (e: Exception) {
                 Timber.d(e)
             } finally {
@@ -734,14 +748,15 @@ class SearchTEIViewModel(
         }
     }
 
-    private fun canPerformSearch(): Boolean = minAttributesToSearchCheck() || displayFrontPageList()
+    private fun shouldDisplayFrontPageList(): Boolean =
+      displayFrontPageListSettingIsConfigured()
 
-    private fun minAttributesToSearchCheck(): Boolean =
+    private fun hasMinNumberOfAttributesToSearch(): Boolean =
         searchRepository.getProgram(initialProgramUid)?.let { program ->
             (program.minAttributesRequiredToSearch() ?: 0) <= queryDataList.size
         } ?: true
 
-    private fun displayFrontPageList(): Boolean =
+    private fun displayFrontPageListSettingIsConfigured(): Boolean =
         searchRepository.getProgram(initialProgramUid)?.let { program ->
             program.displayFrontPageList() == true && queryDataList.isEmpty()
         } ?: false
@@ -851,7 +866,7 @@ class SearchTEIViewModel(
                 hasProgramResults,
                 hasGlobalResults,
             )
-        } else if (displayFrontPageList()) {
+        } else if (shouldDisplayFrontPageList()) {
             handleDisplayInListResult(hasProgramResults)
         } else {
             handleInitWithoutData()
