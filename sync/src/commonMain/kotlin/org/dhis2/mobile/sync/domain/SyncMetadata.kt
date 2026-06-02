@@ -3,6 +3,7 @@ package org.dhis2.mobile.sync.domain
 import org.dhis2.mobile.commons.domain.UseCase
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.data.SyncRepository
+import org.dhis2.mobile.sync.model.SMSConfigResult
 import org.dhis2.mobile.sync.model.SyncPeriod
 
 class SyncMetadata(
@@ -22,7 +23,14 @@ class SyncMetadata(
             if (syncMetadataResult.isSuccess) {
                 repository.updateProjectAnalytics()
                 input(40)
-                repository.setUpSMS()
+                val smsConfigResult = repository.setUpSMS().getOrDefault(SMSConfigResult.DoNothing)
+                when (smsConfigResult) {
+                    SMSConfigResult.DisableModule -> repository.toggleSMS(false)
+                    SMSConfigResult.EnableModule -> repository.toggleSMS(true)
+                    SMSConfigResult.DoNothing -> {
+                        // no-op
+                    }
+                }
                 input(50)
                 repository.downloadMapMetadata()
                 input(60)
