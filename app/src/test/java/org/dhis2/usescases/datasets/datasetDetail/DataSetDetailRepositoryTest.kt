@@ -337,16 +337,8 @@ class DataSetDetailRepositoryTest {
             .builder()
             .uid(dataSetUid)
             .displayName("DataSet")
-            .categoryCombo(ObjectWithUid.fromIdentifiable(dummyCategoryCombo()))
+            .categoryCombo(ObjectWithUid.create("categoryCombo"))
             .access(Access.create(true, true, DataAccess.create(true, canWrite)))
-            .build()
-
-    private fun dummyCategoryCombo(isDefault: Boolean = false) =
-        CategoryCombo
-            .builder()
-            .uid("categoryCombo")
-            .categoryOptionCombos(dummyCategoryOptionsCombos())
-            .isDefault(isDefault)
             .build()
 
     private fun dummyCategoryOptionsCombos(canWrite: Boolean = true): MutableList<CategoryOptionCombo> {
