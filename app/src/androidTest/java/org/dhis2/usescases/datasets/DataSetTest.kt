@@ -836,7 +836,7 @@ class DataSetTest : BaseTest() {
             clickOnFilterBy(filter = "Period")
             clickOnFromToDate()
             chooseDate("08082024")
-            chooseDate("09092026")
+            chooseDate("09092027")
             checkFilterCounter("2")
         }
 
