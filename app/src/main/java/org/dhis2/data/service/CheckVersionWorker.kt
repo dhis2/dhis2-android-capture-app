@@ -9,7 +9,6 @@ class CheckVersionWorker(
     workerParams: WorkerParameters,
     private val versionRepository: VersionRepository,
 ) : CoroutineWorker(context, workerParams) {
-
     override suspend fun doWork(): Result {
         versionRepository.checkVersionUpdates()
         return Result.success()

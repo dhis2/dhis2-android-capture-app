@@ -43,8 +43,8 @@ import org.dhis2.commons.sync.SyncStatusItem
 import org.dhis2.commons.sync.SyncStatusType
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
-import org.dhis2.utils.granularsync.domain.MissingSyncTargetException
 import org.dhis2.utils.granularsync.SyncDate
+import org.dhis2.utils.granularsync.domain.MissingSyncTargetException
 import org.dhis2.utils.granularsync.domain.SyncStatus
 import org.dhis2.utils.granularsync.domain.SyncStatusData
 import org.hisp.dhis.android.core.D2
@@ -917,8 +917,7 @@ class GranularSyncRepository(
             State.SYNCED_VIA_SMS -> SyncStatus.SYNCED_VIA_SMS
         }
 
-    private fun missingSyncTargetException(): MissingSyncTargetException =
-        MissingSyncTargetException(syncContext.recordUid())
+    private fun missingSyncTargetException(): MissingSyncTargetException = MissingSyncTargetException(syncContext.recordUid())
 
     private fun getTitle(): String =
         when (syncContext.conflictType()) {

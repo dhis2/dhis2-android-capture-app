@@ -76,8 +76,7 @@ fun Form(
                             bottomStart = Spacing.Spacing0,
                             bottomEnd = Spacing.Spacing0,
                         ),
-                )
-                .clickable(
+                ).clickable(
                     interactionSource =
                         remember {
                             MutableInteractionSource()

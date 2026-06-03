@@ -90,9 +90,11 @@ class FormViewModel(
 
     private val _items = MutableSharedFlow<List<FieldUiModel>>()
 
-    val items = _items.map { items ->
-        formSectionMapper.mapFromFieldUiModelList(items)
-    }.shareIn(viewModelScope, SharingStarted.Eagerly, 0)
+    val items =
+        _items
+            .map { items ->
+                formSectionMapper.mapFromFieldUiModelList(items)
+            }.shareIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     var previousActionItem: RowAction? = null
 
@@ -443,26 +445,26 @@ class FormViewModel(
             false
         } else {
             valueType.isNumeric ||
-                    valueType.isText &&
-                    renderType?.isPolygon() != true ||
-                    valueType == ValueType.URL ||
-                    valueType == ValueType.EMAIL ||
-                    valueType == ValueType.PHONE_NUMBER
+                valueType.isText &&
+                renderType?.isPolygon() != true ||
+                valueType == ValueType.URL ||
+                valueType == ValueType.EMAIL ||
+                valueType == ValueType.PHONE_NUMBER
         }
 
     private fun getLastFocusedTextItem() =
         repository.currentFocusedItem()?.takeIf {
             it.optionSet == null &&
-                    (
-                            valueTypeIsTextField(
-                                it.valueType,
-                                it.renderingType,
-                            ) ||
-                                    it.valueType == ValueType.AGE ||
-                                    it.valueType == ValueType.DATETIME ||
-                                    it.valueType == ValueType.DATE ||
-                                    it.valueType == ValueType.TIME
-                            )
+                (
+                    valueTypeIsTextField(
+                        it.valueType,
+                        it.renderingType,
+                    ) ||
+                        it.valueType == ValueType.AGE ||
+                        it.valueType == ValueType.DATETIME ||
+                        it.valueType == ValueType.DATE ||
+                        it.valueType == ValueType.TIME
+                )
         }
 
     private fun rowActionFromIntent(intent: FormIntent): RowAction =
@@ -881,7 +883,7 @@ class FormViewModel(
             EventStatus.SCHEDULE,
             EventStatus.VISITED,
             EventStatus.OVERDUE,
-                -> FormActions.OnFinish
+            -> FormActions.OnFinish
         }
 
     private fun provideShowResultDialog(result: DataIntegrityCheckResult): FormActions.ShowResultDialog? =
@@ -949,7 +951,7 @@ class FormViewModel(
             val result =
                 async(dispatcher.io()) {
                     repository.completedFieldsPercentage(
-                        value = _items.firstOrNull() ?: emptyList()
+                        value = _items.firstOrNull() ?: emptyList(),
                     )
                 }
             try {

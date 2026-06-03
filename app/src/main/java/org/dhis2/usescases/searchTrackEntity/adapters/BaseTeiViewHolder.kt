@@ -48,7 +48,10 @@ abstract class BaseTeiViewHolder(
             attribute = teiModel.attributeValues.values.toList()
             attributeNames = teiModel.attributeValues.keys
             attributeListOpened = teiModel.isAttributeListOpen
-            lastUpdated.text = teiModel.tei.lastUpdated?.toJavaDate()?.toDateSpan(itemView.context)
+            lastUpdated.text =
+                teiModel.tei.lastUpdated
+                    ?.toJavaDate()
+                    ?.toDateSpan(itemView.context)
             sortingValue = teiModel.sortingValue
         }
 

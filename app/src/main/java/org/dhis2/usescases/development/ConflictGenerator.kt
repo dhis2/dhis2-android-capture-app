@@ -547,7 +547,7 @@ class ConflictGenerator(
         syncState: String,
     ): String =
         "UPDATE Enrollment SET syncState = '$syncState'," +
-                " aggregatedSyncState = '$syncState' where uid = '$enrollmentUid'"
+            " aggregatedSyncState = '$syncState' where uid = '$enrollmentUid'"
 
     private fun updateTei(
         teiUid: String,

@@ -38,7 +38,6 @@ import org.dhis2.bindings.isKeyboardOpened
 import org.dhis2.bindings.overrideHeight
 import org.dhis2.commons.Constants
 import org.dhis2.commons.extensions.closeKeyboard
-import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FilterManager.PeriodRequest
@@ -54,6 +53,7 @@ import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.sync.SyncContext.TrackerProgramTei
 import org.dhis2.data.forms.dataentry.ProgramAdapter
 import org.dhis2.databinding.ActivitySearchBinding
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.dhis2.tracker.NavigationBarUIState
 import org.dhis2.ui.ThemeManager

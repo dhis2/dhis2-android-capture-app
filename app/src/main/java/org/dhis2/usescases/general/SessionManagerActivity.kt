@@ -19,6 +19,8 @@ import org.dhis2.commons.service.SessionManagerServiceImpl
 import org.dhis2.commons.ui.extensions.handleInsets
 import org.dhis2.data.server.OpenIdSession.LogOutReason
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.mobile.login.pin.addPinBottomSheet
+import org.dhis2.mobile.login.pin.domain.model.PinMode
 import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.login.LoginActivity.Companion.bundle
@@ -28,8 +30,6 @@ import org.dhis2.usescases.splash.SplashActivity
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.FORGOT_CODE
-import org.dhis2.mobile.login.pin.addPinBottomSheet
-import org.dhis2.mobile.login.pin.domain.model.PinMode
 import org.koin.android.ext.android.inject
 import javax.inject.Inject
 
@@ -135,18 +135,19 @@ abstract class SessionManagerActivity :
 
     private fun showPinBottomSheet() {
         if (pinComposeView != null) return
-        pinComposeView = addPinBottomSheet(
-            mode = PinMode.ASK,
-            onSuccess = {
-                startActivity(MainActivity::class.java, null, true, true, null)
-            },
-            onDismiss = {
-                analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
-                if (this !is LoginActivity) {
-                    startActivity(LoginActivity::class.java, null, true, true, null)
-                }
-            },
-        )
+        pinComposeView =
+            addPinBottomSheet(
+                mode = PinMode.ASK,
+                onSuccess = {
+                    startActivity(MainActivity::class.java, null, true, true, null)
+                },
+                onDismiss = {
+                    analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
+                    if (this !is LoginActivity) {
+                        startActivity(LoginActivity::class.java, null, true, true, null)
+                    }
+                },
+            )
     }
 
     private fun removePinBottomSheet() {

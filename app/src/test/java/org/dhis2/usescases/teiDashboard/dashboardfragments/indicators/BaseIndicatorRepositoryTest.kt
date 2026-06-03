@@ -4,7 +4,6 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.BaseIndica
 import org.junit.Test
 
 class BaseIndicatorRepositoryTest {
-
     @Test
     fun `Should parse number value`() {
         assert(getNumberValue("54") == 54.0)
