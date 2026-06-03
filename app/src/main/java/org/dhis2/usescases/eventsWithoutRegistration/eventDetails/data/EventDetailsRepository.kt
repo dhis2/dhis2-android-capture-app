@@ -481,14 +481,23 @@ class EventDetailsRepository(
             cal[Calendar.SECOND] = 0
             cal[Calendar.MILLISECOND] = 0
 
+            val stageUid =
+                requireNotNull(programStageUid ?: getProgramStage()?.uid()) {
+                    "Program stage is required to schedule an event"
+                }
+            val orgUnit =
+                requireNotNull(orgUnitUid) {
+                    "Org unit is required to schedule an event"
+                }
+
             val uid =
                 d2.eventModule().events().blockingAdd(
                     EventCreateProjection
                         .builder()
                         .enrollment(enrollmentUid)
                         .program(programUid)
-                        .programStage(programStageUid)
-                        .organisationUnit(orgUnitUid)
+                        .programStage(stageUid)
+                        .organisationUnit(orgUnit)
                         .attributeOptionCombo(categoryOptionComboUid)
                         .build(),
                 )

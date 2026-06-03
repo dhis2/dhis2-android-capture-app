@@ -15,7 +15,7 @@ class CreateEventUseCaseRepositoryImpl(
     override suspend fun createEvent(
         enrollmentUid: String?,
         programUid: String,
-        programStageUid: String?,
+        programStageUid: String,
         orgUnitUid: String,
     ): Result<String> =
         try {
