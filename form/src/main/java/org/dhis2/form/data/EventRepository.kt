@@ -328,7 +328,7 @@ class EventRepository(
             map
         }
 
-    private fun getCategories(categories: MutableList<Category>?): List<EventCategory> =
+    private fun getCategories(categories: List<Category>?): List<EventCategory> =
         categories?.map { category ->
             EventCategory(
                 uid = category.uid(),

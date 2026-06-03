@@ -345,7 +345,6 @@ class DataSetDetailRepositoryTest {
         CategoryCombo
             .builder()
             .uid("categoryCombo")
-            .categoryOptionCombos(dummyCategoryOptionsCombos())
             .isDefault(isDefault)
             .build()
 
