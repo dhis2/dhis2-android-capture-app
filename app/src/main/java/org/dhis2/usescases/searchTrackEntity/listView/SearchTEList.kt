@@ -331,6 +331,10 @@ class SearchTEList : FragmentGlobalAbstract() {
         }
 
         liveAdapter.addLoadStateListener { state ->
+            val adapterDetached = !listAdapter.adapters.contains(liveAdapter)
+            if (adapterDetached && state.refresh is LoadState.NotLoading) {
+                restoreProgramAdapterAfterRefresh()
+            }
             if (state.append == LoadState.Loading) {
                 displayResult(
                     listOf(SearchResult(SearchResult.SearchResultType.LOADING)),
@@ -373,6 +377,7 @@ class SearchTEList : FragmentGlobalAbstract() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.searchPagingData.collect { data ->
+                    hideStaleProgramResults()
                     liveAdapter.addOnPagesUpdatedListener {
                         onInitDataLoaded()
                         CoroutineTracker.decrement()
@@ -442,5 +447,15 @@ class SearchTEList : FragmentGlobalAbstract() {
         recycler.post {
             resultAdapter.submitList(result)
         }
+    }
+
+    private fun hideStaleProgramResults() {
+        listAdapter.removeAdapter(liveAdapter)
+        initLoading(listOf(SearchResult(SearchResult.SearchResultType.LOADING)))
+    }
+
+    private fun restoreProgramAdapterAfterRefresh() {
+        listAdapter.addAdapter(1, liveAdapter)
+        initLoading(null)
     }
 }
