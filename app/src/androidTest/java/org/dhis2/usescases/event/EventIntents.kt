@@ -25,20 +25,17 @@ const val ENROLLMENT_EVENT_DELETE_UID = "SolDyMgW3oc"
 const val PROGRAM_STAGE_TO_SHARE = "EPEcjy3FWmI"
 
 // ── Flow A: Event Data Entry Form (ANDROAPP-7620) ────────────────────────────
-// Program "XX MAL RDT - Case Registration" — reserved for Flow A.
-// See the Confluence Flow Plan for the program configuration applied
-// server-side and mirrored into `dhis_test.db`.
-const val FLOW_A_PROGRAM_UID = "MoUd5BTQ3lY"
-const val FLOW_A_STAGE_UID = "Ge7Eo3FNnbl"
+const val FLOW_A_PROGRAM_UID = ANTENATAL_CARE_PROGRAM_UID  // lxAQ7Zs9VYR
+const val FLOW_A_STAGE_UID = "dBwrot7S420"                 // Antenatal care visit stage (validationStrategy = ON_COMPLETE)
 
-// Seeded events at Ngelehun CHC (DiszpKrYNg8)
-const val FLOW_A_EVENT_EMPTY_MANDATORY_UID = "RunQZXYCoUI" // ACTIVE, Diagnosis Method empty, Age=32
-const val FLOW_A_EVENT_FILLED_UID = "Hm5qJlu6Fql"          // ACTIVE, all required DEs filled (Microscope, 28, Female)
-const val FLOW_A_EVENT_COMPLETED_UID = "mC05P8lXqN7"       // COMPLETED (RDT, 45, Male)
+// Events at Ngelehun CHC (DiszpKrYNg8)
+const val FLOW_A_EVENT_EMPTY_MANDATORY_UID = "PioiWEmVPY7" // ACTIVE, mandatory WHOMCH Smoking empty
+const val FLOW_A_EVENT_FILLED_UID = "A7vnB73x5Xw"          // ACTIVE, mandatory smoking=true
+const val FLOW_A_EVENT_COMPLETED_UID = ANTENATAL_CARE_EVENT_UID // ohAH6BXIMad — COMPLETED
 
 // Flow A data-element UIDs (referenced by tests for field-level assertions)
-const val FLOW_A_DE_DIAGNOSIS_METHOD = "lWLkpWMHqEq" // mandatory; formName = "Diagnosis method"
-const val FLOW_A_DE_AGE = "vcSXdYGa5St"              // INTEGER; triggers warning rule when > 100
+const val FLOW_A_DE_MANDATORY_SMOKING = "sWoqcoByYmD" // mandatory: WHOMCH Smoking
+const val FLOW_A_DE_ADMISSION_DATE = "eMyVanycQSC"    // displayName="Admission Date", formName="Date of admission"
 
 fun prepareFlowAEventEmptyMandatoryAndLaunchActivity(
     rule: LazyActivityScenarioRule<EventCaptureActivity>,
