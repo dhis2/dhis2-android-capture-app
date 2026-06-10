@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.commons.databinding.FeatureItemBinding
-import org.dhis2.commons.featureconfig.model.FeatureState
+import org.dhis2.mobile.commons.featureconfig.model.FeatureState
 
 class FeatureListAdapter(
     private val viewModel: FeatureConfigViewModel,

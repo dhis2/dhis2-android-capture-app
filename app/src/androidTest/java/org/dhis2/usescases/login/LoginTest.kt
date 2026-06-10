@@ -53,6 +53,7 @@ class LoginTest : BaseTest() {
 
             // Step: Enter correct server URL and validate - should proceed to credentials
             mockWebServerRobot.addResponse(GET, API_LOGIN_CONFIG, API_LOGIN_CONFIG_RESPONSE, 200)
+            mockWebServerRobot.addResponse(GET,OAUTH_LOGIN_CONFIG_REQUEST, OAUTH_LOGIN_CONFIG_UNAUTHORIZE_RESPONSE,404)
             typeServerToValidate(MOCK_SERVER_URL)
             clickOnValidateServerButton()
 
@@ -116,6 +117,8 @@ class LoginTest : BaseTest() {
         const val API_LOGIN_CONFIG_RESPONSE = "mocks/loginconfig/legacy_flow_config.json"
         const val API_ME_RESPONSE_OK = "mocks/user/user.json"
         const val API_ME_UNAUTHORIZE = "mocks/user/unauthorize.json"
+        const val OAUTH_LOGIN_CONFIG_REQUEST = "/.well-known/oauth-authorization-server"
+        const val OAUTH_LOGIN_CONFIG_UNAUTHORIZE_RESPONSE = "mocks/loginconfig/oauth_login_config_unauthorize_respose.json"
         const val API_SYSTEM_INFO_RESPONSE_OK = "mocks/systeminfo/systeminfo.json"
         const val API_METADATA_SETTINGS_RESPONSE_OK =
             "mocks/settingswebapp/generalsettings.json"

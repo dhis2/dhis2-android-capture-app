@@ -43,6 +43,11 @@ sonarqube {
         property("sonar.host.url", "https://sonarcloud.io")
         property("sonar.projectName", "android capture app")
 
+        // Workaround for SCANGRADLE-410: sonar-scanner-gradle 7.3.0.8198 leaves
+        // sonar.java.binaries empty under AGP 9, breaking analysis of remaining
+        // .java sources. Remove once the upstream fix is released.
+        property("sonar.exclusions", "**/*.java")
+
         if (pullRequestId == null) {
             property("sonar.branch.name", branch)
         } else {

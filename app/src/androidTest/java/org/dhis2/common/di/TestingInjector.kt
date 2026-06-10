@@ -8,7 +8,7 @@ import org.dhis2.common.keystore.KeyStoreRobot
 import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferenceTestingImpl
 import org.dhis2.common.preferences.PreferencesRobot
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepositoryImpl
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepositoryImpl
 import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.arch.storage.internal.AndroidSecureStore
 import org.hisp.dhis.android.core.mockwebserver.Dhis2MockServer

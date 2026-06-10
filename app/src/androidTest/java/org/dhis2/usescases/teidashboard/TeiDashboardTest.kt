@@ -48,7 +48,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
+    fun shouldHandleNotesWorkflow() {
         enableIntents()
         mockWebServerRobot.addResponse(
             method = ResponseController.GET,
@@ -66,61 +66,24 @@ class TeiDashboardTest : BaseTest() {
         }
 
         noteRobot {
-            clickOnFabAddNewNote()
-            verifyNoteDetailActivityIsLaunched()
-            typeNote(NOTE_VALID)
-            clickOnSaveButton()
-            checkNewNoteWasCreated(NOTE_VALID)
-        }
+            checkNotesListIsEmpty()
 
-    }
-
-    @Test
-    fun shouldNotCreateANoteWhenClickClear() {
-        enableIntents()
-        mockWebServerRobot.addResponse(
-            method = ResponseController.GET,
-            path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
-            sdkResource = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE,
-            responseCode = 200,
-        )
-
-        prepareTeiCompletedProgrammeAndLaunchActivity(rule)
-
-        teiDashboardRobot(composeTestRule) {
-            goToNotes()
-        }
-
-        noteRobot {
             clickOnFabAddNewNote()
             verifyNoteDetailActivityIsLaunched()
             typeNote(NOTE_INVALID)
             clickOnClearButton()
             clickYesOnAlertDialog()
+            waitUntilBackOnNotesList()
             checkNoteWasNotCreated(NOTE_INVALID)
-        }
-    }
 
-    @Test
-    fun shouldOpenNotesDetailsWhenClickOnNote() {
-        mockWebServerRobot.addResponse(
-            method = ResponseController.GET,
-            path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
-            sdkResource = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE,
-            responseCode = 200,
-        )
-
-        prepareTeiWithExistingNoteAndLaunchActivity(rule)
-
-        teiDashboardRobot(composeTestRule) {
-            goToNotes()
-        }
-
-        noteRobot {
             clickOnFabAddNewNote()
-            typeNote(NOTE_EXISTING_TEXT)
+            typeNote(NOTE_VALID)
             clickOnSaveButton()
-            checkNoteDetails("@$USER", NOTE_EXISTING_TEXT)
+            waitUntilBackOnNotesList()
+            checkNewNoteWasCreated(NOTE_VALID)
+
+            clickOnNoteAtPosition(0)
+            checkNoteDetailScreenShows("@$USER", NOTE_VALID)
         }
     }
 
@@ -409,7 +372,6 @@ class TeiDashboardTest : BaseTest() {
     companion object {
         const val NOTE_VALID = "ThisIsJustATest"
         const val NOTE_INVALID = "InvalidNote"
-        const val NOTE_EXISTING_TEXT = "This is a note test"
         const val USER = "android"
 
         const val LAB_MONITORING = "Lab monitoring"

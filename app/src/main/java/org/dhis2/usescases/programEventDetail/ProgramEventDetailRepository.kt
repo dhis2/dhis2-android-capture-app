@@ -18,7 +18,7 @@ interface ProgramEventDetailRepository {
 
     fun filteredEventsForMap(layersVisibility: Map<String, MapLayer>): Flowable<ProgramEventMapData>
 
-    fun program(): Single<Program?>
+    fun program(): Single<Program>
 
     fun getAccessDataWrite(): Boolean
 
@@ -30,7 +30,7 @@ interface ProgramEventDetailRepository {
 
     fun workingLists(): Single<List<EventFilter>>
 
-    fun programStage(): Single<ProgramStage?>
+    fun programStage(): Single<ProgramStage>
 
     fun programHasCoordinates(): Boolean
 

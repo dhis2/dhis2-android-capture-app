@@ -6,6 +6,10 @@ import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.repositories.filters.internal.BooleanFilterConnector
+import org.hisp.dhis.android.core.category.CategoryCombo
+import org.hisp.dhis.android.core.category.CategoryComboCollectionRepository
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.ProgramIndicator
 import org.hisp.dhis.android.core.program.ProgramRuleAction
@@ -28,6 +32,7 @@ class EventIndicatorRepositoryTest {
 
     @Before
     fun setUp() {
+        stubDefaultCategoryComboChain()
         whenever(
             d2
                 .enrollmentModule()
@@ -98,137 +103,138 @@ class EventIndicatorRepositoryTest {
     }
 
     @Test
-    fun `Should fetch analytic data for tracker`() = runTest {
-        whenever(
-            d2
-                .programModule()
-                .programIndicators()
-                .byDisplayInForm()
-                .isTrue,
-        ) doReturn mock()
-        whenever(
-            d2
-                .programModule()
-                .programIndicators()
-                .byDisplayInForm()
-                .isTrue
-                .byProgramUid(),
-        ) doReturn mock()
-        whenever(
-            d2
-                .programModule()
-                .programIndicators()
-                .byDisplayInForm()
-                .isTrue
-                .byProgramUid()
-                .eq("programUid"),
-        ) doReturn mock()
-        whenever(
-            d2
-                .programModule()
-                .programIndicators()
-                .byDisplayInForm()
-                .isTrue
-                .byProgramUid()
-                .eq("programUid")
-                .withLegendSets(),
-        ) doReturn mock()
-        whenever(
-            d2
-                .programModule()
-                .programIndicators()
-                .byDisplayInForm()
-                .isTrue
-                .byProgramUid()
-                .eq("programUid")
-                .withLegendSets()
-                .get(),
-        ) doReturn Single.just(mockedProgramIndicatorList())
+    fun `Should fetch analytic data for tracker`() =
+        runTest {
+            whenever(
+                d2
+                    .programModule()
+                    .programIndicators()
+                    .byDisplayInForm()
+                    .isTrue,
+            ) doReturn mock()
+            whenever(
+                d2
+                    .programModule()
+                    .programIndicators()
+                    .byDisplayInForm()
+                    .isTrue
+                    .byProgramUid(),
+            ) doReturn mock()
+            whenever(
+                d2
+                    .programModule()
+                    .programIndicators()
+                    .byDisplayInForm()
+                    .isTrue
+                    .byProgramUid()
+                    .eq("programUid"),
+            ) doReturn mock()
+            whenever(
+                d2
+                    .programModule()
+                    .programIndicators()
+                    .byDisplayInForm()
+                    .isTrue
+                    .byProgramUid()
+                    .eq("programUid")
+                    .withLegendSets(),
+            ) doReturn mock()
+            whenever(
+                d2
+                    .programModule()
+                    .programIndicators()
+                    .byDisplayInForm()
+                    .isTrue
+                    .byProgramUid()
+                    .eq("programUid")
+                    .withLegendSets()
+                    .get(),
+            ) doReturn Single.just(mockedProgramIndicatorList())
 
-        whenever(
-            d2.programModule().programIndicatorEngine(),
-        ) doReturn mock()
+            whenever(
+                d2.programModule().programIndicatorEngine(),
+            ) doReturn mock()
 
-        whenever(
-            d2.programModule().programIndicatorEngine().getEventProgramIndicatorValue(
-                "eventUid",
-                "programIndicatorUid_1",
-            ),
-        ) doReturn "1.0"
-
-        whenever(
-            d2
-                .programModule()
-                .programRules()
-                .byProgramUid()
-                .eq("programUid"),
-        ) doReturn mock()
-        whenever(
-            d2
-                .programModule()
-                .programRules()
-                .byProgramUid()
-                .eq("programUid")
-                .getUids(),
-        ) doReturn Single.just(mockedRuleUids())
-        whenever(
-            d2
-                .programModule()
-                .programRuleActions()
-                .byProgramRuleUid(),
-        ) doReturn mock()
-        whenever(
-            d2
-                .programModule()
-                .programRuleActions()
-                .byProgramRuleUid()
-                .`in`(mockedRuleUids()),
-        ) doReturn mock()
-        whenever(
-            d2
-                .programModule()
-                .programRuleActions()
-                .byProgramRuleUid()
-                .`in`(mockedRuleUids())
-                .byProgramRuleActionType(),
-        ) doReturn mock()
-        whenever(
-            d2
-                .programModule()
-                .programRuleActions()
-                .byProgramRuleUid()
-                .`in`(mockedRuleUids())
-                .byProgramRuleActionType()
-                .`in`(
-                    ProgramRuleActionType.DISPLAYKEYVALUEPAIR,
-                    ProgramRuleActionType.DISPLAYTEXT,
+            whenever(
+                d2.programModule().programIndicatorEngine().getEventProgramIndicatorValue(
+                    "eventUid",
+                    "programIndicatorUid_1",
                 ),
-        ) doReturn mock()
-        whenever(
-            d2
-                .programModule()
-                .programRuleActions()
-                .byProgramRuleUid()
-                .`in`(mockedRuleUids())
-                .byProgramRuleActionType()
-                .`in`(
-                    ProgramRuleActionType.DISPLAYKEYVALUEPAIR,
-                    ProgramRuleActionType.DISPLAYTEXT,
-                ).get(),
-        ) doReturn Single.just(mockedActions())
-        whenever(
-            ruleEngineHelper.evaluate(),
-        ) doReturn mockedEffects()
+            ) doReturn "1.0"
 
-        val result = repository.fetchData()
-        assertTrue(
-            result.size == 5 &&
-                result[0] is SectionTitle &&
-                (result[0] as SectionTitle).title == "Feedback" &&
-                result[2] is SectionTitle &&
-                (result[2] as SectionTitle).title == "Indicators",
-        )
-    }
+            whenever(
+                d2
+                    .programModule()
+                    .programRules()
+                    .byProgramUid()
+                    .eq("programUid"),
+            ) doReturn mock()
+            whenever(
+                d2
+                    .programModule()
+                    .programRules()
+                    .byProgramUid()
+                    .eq("programUid")
+                    .getUids(),
+            ) doReturn Single.just(mockedRuleUids())
+            whenever(
+                d2
+                    .programModule()
+                    .programRuleActions()
+                    .byProgramRuleUid(),
+            ) doReturn mock()
+            whenever(
+                d2
+                    .programModule()
+                    .programRuleActions()
+                    .byProgramRuleUid()
+                    .`in`(mockedRuleUids()),
+            ) doReturn mock()
+            whenever(
+                d2
+                    .programModule()
+                    .programRuleActions()
+                    .byProgramRuleUid()
+                    .`in`(mockedRuleUids())
+                    .byProgramRuleActionType(),
+            ) doReturn mock()
+            whenever(
+                d2
+                    .programModule()
+                    .programRuleActions()
+                    .byProgramRuleUid()
+                    .`in`(mockedRuleUids())
+                    .byProgramRuleActionType()
+                    .`in`(
+                        ProgramRuleActionType.DISPLAYKEYVALUEPAIR,
+                        ProgramRuleActionType.DISPLAYTEXT,
+                    ),
+            ) doReturn mock()
+            whenever(
+                d2
+                    .programModule()
+                    .programRuleActions()
+                    .byProgramRuleUid()
+                    .`in`(mockedRuleUids())
+                    .byProgramRuleActionType()
+                    .`in`(
+                        ProgramRuleActionType.DISPLAYKEYVALUEPAIR,
+                        ProgramRuleActionType.DISPLAYTEXT,
+                    ).get(),
+            ) doReturn Single.just(mockedActions())
+            whenever(
+                ruleEngineHelper.evaluate(),
+            ) doReturn mockedEffects()
+
+            val result = repository.fetchData()
+            assertTrue(
+                result.size == 5 &&
+                    result[0] is SectionTitle &&
+                    (result[0] as SectionTitle).title == "Feedback" &&
+                    result[2] is SectionTitle &&
+                    (result[2] as SectionTitle).title == "Indicators",
+            )
+        }
 
     private fun mockedProgramIndicatorList(): List<ProgramIndicator> =
         listOf(
@@ -236,11 +242,15 @@ class EventIndicatorRepositoryTest {
                 .builder()
                 .uid("programIndicatorUid_1")
                 .displayInForm(true)
+                .attributeCombo(ObjectWithUid.create("defaultCC"))
+                .categoryCombo(ObjectWithUid.create("defaultCC"))
                 .build(),
             ProgramIndicator
                 .builder()
                 .uid("programIndicatorUid_2")
                 .displayInForm(false)
+                .attributeCombo(ObjectWithUid.create("defaultCC"))
+                .categoryCombo(ObjectWithUid.create("defaultCC"))
                 .build(),
         )
 
@@ -278,4 +288,15 @@ class EventIndicatorRepositoryTest {
                 ),
             ),
         )
+
+    private fun stubDefaultCategoryComboChain() {
+        val booleanFilter: BooleanFilterConnector<CategoryComboCollectionRepository> = mock()
+        val categoryCombosRepo: CategoryComboCollectionRepository =
+            mock {
+                on { byIsDefault() } doReturn booleanFilter
+                on { blockingGet() } doReturn listOf(CategoryCombo.builder().uid("defaultCC").build())
+            }
+        doReturn(categoryCombosRepo).whenever(booleanFilter).eq(true)
+        whenever(d2.categoryModule().categoryCombos()) doReturn categoryCombosRepo
+    }
 }

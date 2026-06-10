@@ -241,7 +241,7 @@ class TeiAttributesProviderTest {
 
     private fun mockProgramTrackedEntityAttributes(
         teType: String,
-        program: String? = "program",
+        program: String = "program",
     ) {
         whenever(d2.programModule().programs()) doReturn mock()
         whenever(d2.programModule().programs().byTrackedEntityTypeUid()) doReturn mock()

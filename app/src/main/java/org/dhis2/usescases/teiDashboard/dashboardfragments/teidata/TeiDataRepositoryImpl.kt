@@ -53,21 +53,21 @@ class TeiDataRepositoryImpl(
         }
     }
 
-    override fun getEnrollment(): Single<Enrollment?> =
+    override fun getEnrollment(): Single<Enrollment> =
         d2
             .enrollmentModule()
             .enrollments()
             .uid(enrollmentUid)
             .get()
 
-    override fun getEnrollmentProgram(): Single<Program?> =
+    override fun getEnrollmentProgram(): Single<Program> =
         d2
             .programModule()
             .programs()
             .uid(programUid)
             .get()
 
-    override fun getTrackedEntityInstance(): Single<TrackedEntityInstance?> =
+    override fun getTrackedEntityInstance(): Single<TrackedEntityInstance> =
         d2
             .trackedEntityModule()
             .trackedEntityInstances()

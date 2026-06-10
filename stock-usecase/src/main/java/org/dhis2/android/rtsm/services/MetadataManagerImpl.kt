@@ -15,7 +15,7 @@ class MetadataManagerImpl(
     private val d2: D2,
     private val dispatcher: StockDispatcherProvider,
 ) : MetadataManager {
-    override fun stockManagementProgram(programUid: String): Single<Program?> {
+    override fun stockManagementProgram(programUid: String): Single<Program> {
         if (programUid.isBlank()) {
             throw InitializationException(
                 "The program config has not been set in the configuration file",

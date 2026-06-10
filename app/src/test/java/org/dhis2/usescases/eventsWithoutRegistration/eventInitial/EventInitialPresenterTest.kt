@@ -360,9 +360,9 @@ class EventInitialPresenterTest {
     }
 
     private fun initMocks(
-        uid: String?,
+        uid: String,
         eventId: String?,
-        programStageUid: String?,
+        programStageUid: String,
         moreOrgUnits: Boolean = false,
     ) {
         val program =

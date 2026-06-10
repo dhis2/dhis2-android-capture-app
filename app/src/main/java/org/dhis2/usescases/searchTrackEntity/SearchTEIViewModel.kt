@@ -310,9 +310,9 @@ class SearchTEIViewModel(
             searchRepository.getProgram(initialProgramUid)?.displayFrontPageList() ?: true
         val shouldOpenSearch =
             !displayFrontPageList &&
-                    !searchRepository.canCreateInProgramWithoutSearch() &&
-                    !searching &&
-                    filtersActive.value == false
+                !searchRepository.canCreateInProgramWithoutSearch() &&
+                !searching &&
+                filtersActive.value == false
 
         createButtonScrollVisibility.postValue(
             if (searching) {
@@ -766,17 +766,17 @@ class SearchTEIViewModel(
         onlineTooManyResults: Boolean,
     ): Boolean =
         !onlineTooManyResults &&
-                when (initialProgramUid) {
-                    null -> itemCount <= TEI_TYPE_SEARCH_MAX_RESULTS
-                    else ->
-                        searchRepository
-                            .getProgram(initialProgramUid)
-                            ?.maxTeiCountToReturn()
-                            ?.takeIf { it != 0 }
-                            ?.let { maxTeiCount ->
-                                itemCount <= maxTeiCount
-                            } ?: true
-                }
+            when (initialProgramUid) {
+                null -> itemCount <= TEI_TYPE_SEARCH_MAX_RESULTS
+                else ->
+                    searchRepository
+                        .getProgram(initialProgramUid)
+                        ?.maxTeiCountToReturn()
+                        ?.takeIf { it != 0 }
+                        ?.let { maxTeiCount ->
+                            itemCount <= maxTeiCount
+                        } ?: true
+            }
 
     fun queryDataByProgram(programUid: String?): MutableMap<String, List<String>> =
         searchRepository.filterQueryForProgram(queryDataAsMap(), programUid)
@@ -906,10 +906,11 @@ class SearchTEIViewModel(
                 }
 
                 hasGlobalResults == null &&
-                        searchRepository.getProgram(initialProgramUid) != null &&
-                        searchRepository.filterQueryForProgram(queryDataAsMap(), null)
-                            .isNotEmpty() &&
-                        searchRepository.filtersApplyOnGlobalSearch() -> {
+                    searchRepository.getProgram(initialProgramUid) != null &&
+                    searchRepository
+                        .filterQueryForProgram(queryDataAsMap(), null)
+                        .isNotEmpty() &&
+                    searchRepository.filtersApplyOnGlobalSearch() -> {
                     listOf(
                         SearchResult(
                             SearchResult.SearchResultType.SEARCH_OUTSIDE,
@@ -919,9 +920,9 @@ class SearchTEIViewModel(
                 }
 
                 hasGlobalResults == null &&
-                        searchRepository.getProgram(initialProgramUid) != null &&
-                        searchRepository.trackedEntityTypeFields().isNotEmpty() &&
-                        searchRepository.filtersApplyOnGlobalSearch() -> {
+                    searchRepository.getProgram(initialProgramUid) != null &&
+                    searchRepository.trackedEntityTypeFields().isNotEmpty() &&
+                    searchRepository.filtersApplyOnGlobalSearch() -> {
                     listOf(
                         SearchResult(
                             type = SearchResult.SearchResultType.UNABLE_SEARCH_OUTSIDE,
@@ -1229,7 +1230,7 @@ class SearchTEIViewModel(
                     TrackerInputType.VERTICAL_RADIOBUTTONS,
                     TrackerInputType.HORIZONTAL_CHECKBOXES,
                     TrackerInputType.VERTICAL_CHECKBOXES,
-                        -> {
+                    -> {
                         item.value?.let {
                             if (it == "true" || it == "false") {
                                 map[item.uid] = "${item.label}: $it"

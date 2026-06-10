@@ -8,6 +8,8 @@ import org.dhis2.mobile.commons.data.TableDimensionRepositoryImpl
 import org.dhis2.mobile.commons.data.ValueParser
 import org.dhis2.mobile.commons.data.ValueParserImpl
 import org.dhis2.mobile.commons.error.DomainErrorMapper
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepositoryImpl
 import org.dhis2.mobile.commons.files.FileController
 import org.dhis2.mobile.commons.files.FileControllerImpl
 import org.dhis2.mobile.commons.files.FileHandler
@@ -72,5 +74,9 @@ actual val commonsModule: Module
                     d2ErrorMessageProvider = get(),
                     networkStatusProvider = get(),
                 )
+            }
+
+            single<FeatureConfigRepository> {
+                FeatureConfigRepositoryImpl(get())
             }
         }

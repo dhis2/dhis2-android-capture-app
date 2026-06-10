@@ -68,12 +68,12 @@ class MainActivity : ActivityGlobalAbstract() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 intent.getParcelableExtra(FRAGMENT, MainScreenType::class.java)
                     ?: MainScreenType.Home(
-                        HomeScreen.Programs
+                        HomeScreen.Programs,
                     )
             } else {
                 @Suppress("DEPRECATION")
                 intent.getParcelableExtra(FRAGMENT) ?: MainScreenType.Home(HomeScreen.Programs)
-            }
+            },
         )
     })
 
@@ -107,8 +107,8 @@ class MainActivity : ActivityGlobalAbstract() {
                 putExtras(
                     bundle(
                         initScreen = initScreen,
-                        launchDataSync = launchDataSync
-                    )
+                        launchDataSync = launchDataSync,
+                    ),
                 )
             }
 
@@ -145,18 +145,20 @@ class MainActivity : ActivityGlobalAbstract() {
                     onEffect = { effect ->
                         when (effect) {
                             HomeEffect.BlockSession -> finish()
-                            is HomeEffect.GoToLogin -> goToLogin(
-                                accountsCount = effect.accountsCount,
-                                isDeletion = effect.isDeletion,
-                            )
+                            is HomeEffect.GoToLogin ->
+                                goToLogin(
+                                    accountsCount = effect.accountsCount,
+                                    isDeletion = effect.isDeletion,
+                                )
                             HomeEffect.OrgUnitFilterRequest -> openOrgUnitTreeSelector()
                             is HomeEffect.PeriodFilterRequest -> showPeriodRequest(effect.periodRequest)
                             HomeEffect.ShowDeleteNotification -> showProgressDeleteNotification()
                             HomeEffect.ShowGranularSync -> showGranularSync()
-                            is HomeEffect.SingleProgramNavigation -> navigationLauncher.navigateTo(
-                                this@MainActivity,
-                                effect.homeItemData,
-                            )
+                            is HomeEffect.SingleProgramNavigation ->
+                                navigationLauncher.navigateTo(
+                                    this@MainActivity,
+                                    effect.homeItemData,
+                                )
                             HomeEffect.ShowPinDialog -> { /*handled in composable*/ }
                             HomeEffect.ToggleSideMenu -> openDrawer()
                             HomeEffect.ToggleFilters -> showHideFilter()
@@ -171,14 +173,15 @@ class MainActivity : ActivityGlobalAbstract() {
                         if (backDropActive) {
                             showHideFilter()
                         }
-                        val navigationId = when (currentScreen) {
-                            MainScreenType.About -> R.id.menu_about
-                            is MainScreenType.Home -> R.id.menu_home
-                            MainScreenType.Loading -> null
-                            MainScreenType.QRScanner -> R.id.qr_scan
-                            MainScreenType.Settings -> R.id.sync_manager
-                            MainScreenType.TroubleShooting -> R.id.menu_troubleshooting
-                        }
+                        val navigationId =
+                            when (currentScreen) {
+                                MainScreenType.About -> R.id.menu_about
+                                is MainScreenType.Home -> R.id.menu_home
+                                MainScreenType.Loading -> null
+                                MainScreenType.QRScanner -> R.id.qr_scan
+                                MainScreenType.Settings -> R.id.sync_manager
+                                MainScreenType.TroubleShooting -> R.id.menu_troubleshooting
+                            }
                         navigationId?.let {
                             changeFragment(it)
                             // On recreation the ViewModel screen hasn't changed so
@@ -207,17 +210,22 @@ class MainActivity : ActivityGlobalAbstract() {
             false
         }
 
-        binding.mainDrawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
-            override fun onDrawerSlide(drawerView: View, slideOffset: Float) = Unit
+        binding.mainDrawerLayout.addDrawerListener(
+            object : DrawerLayout.DrawerListener {
+                override fun onDrawerSlide(
+                    drawerView: View,
+                    slideOffset: Float,
+                ) = Unit
 
-            override fun onDrawerOpened(drawerView: View) = Unit
+                override fun onDrawerOpened(drawerView: View) = Unit
 
-            override fun onDrawerClosed(drawerView: View) {
-                initCurrentScreen()
-            }
+                override fun onDrawerClosed(drawerView: View) {
+                    initCurrentScreen()
+                }
 
-            override fun onDrawerStateChanged(newState: Int) = Unit
-        })
+                override fun onDrawerStateChanged(newState: Int) = Unit
+            },
+        )
 
         binding.filterRecycler.adapter = filtersAdapter
 
@@ -233,7 +241,9 @@ class MainActivity : ActivityGlobalAbstract() {
     }
 
     private fun updateScreen(screenState: HomeScreenState) {
-        binding.navView.getHeaderView(0).findViewById<TextView>(R.id.user_info)
+        binding.navView
+            .getHeaderView(0)
+            .findViewById<TextView>(R.id.user_info)
             .text = screenState.userName
 
         if (screenState.homeFilters.isNotEmpty()) {
@@ -254,7 +264,7 @@ class MainActivity : ActivityGlobalAbstract() {
         }
     }
 
-    /*TODO: MOVE TO BE HANDLED AFTER LOGIN*/
+    // TODO: MOVE TO BE HANDLED AFTER LOGIN
     private fun checkNotificationPermission() {
         if (!hasPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS)) and
             (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
@@ -398,7 +408,6 @@ class MainActivity : ActivityGlobalAbstract() {
 
             R.id.delete_account ->
                 confirmAccountDelete()
-
         }
     }
 
@@ -484,7 +493,7 @@ class MainActivity : ActivityGlobalAbstract() {
 
     private fun hasNoPermissionToInstall(): Boolean =
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-                !packageManager.canRequestPackageInstalls()
+            !packageManager.canRequestPackageInstalls()
 
     private val manageUnknownSources =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -518,11 +527,12 @@ class MainActivity : ActivityGlobalAbstract() {
 
     private val requestNotificationPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            val message = if (granted) {
-                getString(R.string.permission_notification_granted)
-            } else {
-                getString(R.string.permission_notification_denied)
-            }
+            val message =
+                if (granted) {
+                    getString(R.string.permission_notification_granted)
+                } else {
+                    getString(R.string.permission_notification_denied)
+                }
 
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }

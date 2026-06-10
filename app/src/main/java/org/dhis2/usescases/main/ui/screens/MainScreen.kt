@@ -99,9 +99,10 @@ fun MainScreen(
         },
     ) { paddingValues ->
         AndroidView(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
             factory = { context ->
                 ActivityMainBinding
                     .inflate(LayoutInflater.from(context))
@@ -222,9 +223,10 @@ fun HomeBottomBar(
         }
     }
     NavigationBar(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
         items = navigationItems,
         selectedItemIndex = selectedItemIndex ?: 0,
         onItemClick = { navigationPage -> onNavigationSelected(navigationPage) },
