@@ -83,7 +83,7 @@ class HomeViewModel(
     val helperText = _helperText.asStateFlow()
 
     private val _actions = Channel<ScreenAction>()
-    val action = _actions.consumeAsFlow()
+    val actions = _actions.consumeAsFlow()
 
     init {
         loadStockUseCases(program)
@@ -136,8 +136,8 @@ class HomeViewModel(
                     {
                         Timber.e(it)
                         _destinationsList.value = (
-                                OperationState.Error(R.string.destinations_load_error)
-                                )
+                            OperationState.Error(R.string.destinations_load_error)
+                        )
                     },
                 ),
         )
@@ -332,7 +332,7 @@ class HomeViewModel(
             TransactionItem(
                 R.drawable.ic_discard,
                 TransactionType.DISCARD,
-                TransactionType.DISCARD.name
+                TransactionType.DISCARD.name,
             ),
             TransactionItem(
                 R.drawable.ic_correction,

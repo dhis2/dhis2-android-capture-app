@@ -68,7 +68,7 @@ class HomeActivity : AppCompatActivity() {
             manageStockViewModel.setHelperText(helperText)
             DHIS2Theme {
                 CompositionLocalProvider(
-                    LocalThemeColor provides themeColor
+                    LocalThemeColor provides themeColor,
                 ) {
                     HomeScreen(
                         viewModel = viewModel,
@@ -86,9 +86,8 @@ class HomeActivity : AppCompatActivity() {
                                 .beginTransaction()
                                 .add(
                                     containerId,
-                                    GroupAnalyticsFragment.forProgram(settingsUiState.programUid)
-                                )
-                                .commit()
+                                    GroupAnalyticsFragment.forProgram(settingsUiState.programUid),
+                                ).commit()
                         },
                         onOpenOrgUnitTree = { hasUnsavedData ->
                             OUTreeFragment
@@ -96,10 +95,9 @@ class HomeActivity : AppCompatActivity() {
                                 .singleSelection()
                                 .orgUnitScope(
                                     OrgUnitSelectorScope.ProgramCaptureScope(
-                                        settingsUiState.programUid
-                                    )
-                                )
-                                .withPreselectedOrgUnits(
+                                        settingsUiState.programUid,
+                                    ),
+                                ).withPreselectedOrgUnits(
                                     settingsUiState.facility?.let { listOf(it.uid()) }
                                         ?: emptyList(),
                                 ).onSelection { selectedOrgUnits ->
@@ -115,8 +113,8 @@ class HomeActivity : AppCompatActivity() {
                                                     manageStockViewModel.onHandleBackNavigation()
                                                 },
                                                 onKeepEdition = {
-                                                    /*do nothing*/
-                                                }
+                                                    // do nothing
+                                                },
                                             )
                                         } else {
                                             viewModel.setFacility(selectedOrgUnit)
@@ -147,7 +145,7 @@ class HomeActivity : AppCompatActivity() {
                                     manageStockViewModel.cleanItemsFromCache()
                                     onResult(EditionDialogResult.DISCARD)
                                     manageStockViewModel.onHandleBackNavigation()
-                                }
+                                },
                             )
                         },
                     )

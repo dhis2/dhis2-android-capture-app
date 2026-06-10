@@ -48,7 +48,7 @@ fun HomeScreen(
     onOpenOrgUnitTree: (hasUnsavedData: Boolean) -> Unit,
     onOpenManageStockBottomSheet: () -> Unit,
     onOpenDiscardTransactionBottomSheet: (
-            (result: EditionDialogResult) -> Unit
+        (result: EditionDialogResult) -> Unit,
     ) -> Unit,
 ) {
     val scaffoldState = rememberScaffoldState()
@@ -71,7 +71,7 @@ fun HomeScreen(
         )
 
     ObserveAsEvents(
-        flow = viewModel.action,
+        flow = viewModel.actions,
     ) { action ->
         when (action) {
             is ScreenAction.OpenAnalytics -> onOpenAnalytics(action.containerId)
