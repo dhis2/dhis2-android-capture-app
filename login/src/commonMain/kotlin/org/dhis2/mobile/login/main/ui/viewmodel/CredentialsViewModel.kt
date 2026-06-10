@@ -223,6 +223,11 @@ class CredentialsViewModel(
                             selectedServer = enrollmentURL,
                         ),
                     )
+                    _credentialsScreenState.update {
+                        it.copy(
+                            loginState = LoginState.Enabled,
+                        )
+                    }
                 },
                 onFailure = { error ->
                     _credentialsScreenState.update {
