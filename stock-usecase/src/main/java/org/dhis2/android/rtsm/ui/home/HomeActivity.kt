@@ -16,20 +16,27 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
+import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.TransactionType
+import org.dhis2.android.rtsm.ui.home.model.EditionDialogResult
 import org.dhis2.android.rtsm.ui.home.screens.HomeScreen
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.android.rtsm.utils.NetworkUtils
 import org.dhis2.commons.Constants
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle
+import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.OnSyncNavigationListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.sync.SyncDialog
 import org.dhis2.commons.sync.SyncStatusItem
 import org.dhis2.mobile.commons.extensions.toColor
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -61,16 +68,12 @@ class HomeActivity : AppCompatActivity() {
             manageStockViewModel.setHelperText(helperText)
             DHIS2Theme {
                 CompositionLocalProvider(
-                    LocalThemeColor provides themeColor,
+                    LocalThemeColor provides themeColor
                 ) {
                     HomeScreen(
                         viewModel = viewModel,
                         manageStockViewModel = manageStockViewModel,
-                        supportFragmentManager = supportFragmentManager,
                         proceedAction = { _, _ -> manageStockViewModel.onButtonClick() },
-                        onFinish = {
-                            finish()
-                        },
                         syncAction = { scope, scaffold ->
                             synchronizeData(
                                 scope,
@@ -78,9 +81,105 @@ class HomeActivity : AppCompatActivity() {
                                 settingsUiState.programUid,
                             )
                         },
+                        onOpenAnalytics = { containerId ->
+                            supportFragmentManager
+                                .beginTransaction()
+                                .add(
+                                    containerId,
+                                    GroupAnalyticsFragment.forProgram(settingsUiState.programUid)
+                                )
+                                .commit()
+                        },
+                        onOpenOrgUnitTree = { hasUnsavedData ->
+                            OUTreeFragment
+                                .Builder()
+                                .singleSelection()
+                                .orgUnitScope(
+                                    OrgUnitSelectorScope.ProgramCaptureScope(
+                                        settingsUiState.programUid
+                                    )
+                                )
+                                .withPreselectedOrgUnits(
+                                    settingsUiState.facility?.let { listOf(it.uid()) }
+                                        ?: emptyList(),
+                                ).onSelection { selectedOrgUnits ->
+                                    val selectedOrgUnit = selectedOrgUnits.firstOrNull()
+                                    if (selectedOrgUnit != null) {
+                                        if (settingsUiState.facility != selectedOrgUnit && hasUnsavedData) {
+                                            launchBottomSheet(
+                                                title = getString(R.string.not_saved),
+                                                subtitle = getString(R.string.transaction_discarted),
+                                                onDiscard = {
+                                                    manageStockViewModel.cleanItemsFromCache()
+                                                    viewModel.setFacility(selectedOrgUnit)
+                                                    manageStockViewModel.onHandleBackNavigation()
+                                                },
+                                                onKeepEdition = {
+                                                    /*do nothing*/
+                                                }
+                                            )
+                                        } else {
+                                            viewModel.setFacility(selectedOrgUnit)
+                                        }
+                                    }
+                                }.build()
+                                .show(supportFragmentManager, "")
+                        },
+                        onOpenManageStockBottomSheet = {
+                            launchBottomSheet(
+                                getString(R.string.not_saved),
+                                getString(R.string.transaction_not_confirmed),
+                                onKeepEdition = {
+                                    manageStockViewModel.onBottomSheetClosed()
+                                },
+                                onDiscard = {
+                                    manageStockViewModel.onBottomSheetClosed()
+                                    finish()
+                                },
+                            )
+                        },
+                        onOpenDiscardTransactionBottomSheet = { onResult ->
+                            launchBottomSheet(
+                                title = getString(R.string.not_saved),
+                                subtitle = getString(R.string.transaction_discarted),
+                                onKeepEdition = { onResult(EditionDialogResult.KEEP) },
+                                onDiscard = {
+                                    manageStockViewModel.cleanItemsFromCache()
+                                    onResult(EditionDialogResult.DISCARD)
+                                    manageStockViewModel.onHandleBackNavigation()
+                                }
+                            )
+                        },
                     )
                 }
             }
+        }
+    }
+
+    private fun launchBottomSheet(
+        title: String,
+        subtitle: String,
+        onDiscard: () -> Unit, // Perform the transaction change and clear data
+        onKeepEdition: () -> Unit, // Leave it as it was
+    ) {
+        BottomSheetDialog(
+            bottomSheetDialogUiModel =
+                BottomSheetDialogUiModel(
+                    title = title,
+                    message = subtitle,
+                    iconResource = R.drawable.ic_outline_error_36,
+                    mainButton = DialogButtonStyle.MainButton(org.dhis2.commons.R.string.keep_editing),
+                    secondaryButton = DialogButtonStyle.DiscardButton(),
+                ),
+            onMainButtonClicked = {
+                supportFragmentManager.popBackStack()
+                onKeepEdition.invoke()
+            },
+            onSecondaryButtonClicked = { onDiscard.invoke() },
+            showTopDivider = true,
+        ).apply {
+            this.show(supportFragmentManager.beginTransaction(), "DIALOG")
+            this.isCancelable = false
         }
     }
 

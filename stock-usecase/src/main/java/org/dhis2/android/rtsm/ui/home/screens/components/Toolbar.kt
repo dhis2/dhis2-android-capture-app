@@ -32,6 +32,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.TransactionType
+import org.dhis2.android.rtsm.ui.home.LocalThemeColor
 import org.dhis2.android.rtsm.utils.Utils.Companion.capitalizeText
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
@@ -184,7 +185,6 @@ fun ColumnScope.ProvideToolBarIcons(
 @Composable
 fun AnalyticsTopBar(
     title: String,
-    themeColor: Color,
     backAction: () -> Unit,
     scaffoldState: ScaffoldState,
     syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
@@ -241,7 +241,7 @@ fun AnalyticsTopBar(
                 )
             }
         },
-        backgroundColor = themeColor,
+        backgroundColor = LocalThemeColor.current,
         contentColor = Color.White,
         elevation = 0.dp,
     )

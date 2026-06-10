@@ -24,14 +24,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.CoroutineScope
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
+import org.dhis2.android.rtsm.ui.home.model.EditionDialogResult
+import org.dhis2.android.rtsm.ui.home.model.ScreenAction
 import org.dhis2.android.rtsm.ui.home.screens.components.Backdrop
 import org.dhis2.android.rtsm.ui.home.screens.components.CompletionDialog
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
+import org.dhis2.mobile.commons.extensions.ObserveAsEvents
 import org.hisp.dhis.mobile.ui.designsystem.component.ExtendedFAB
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem
@@ -40,10 +42,14 @@ import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBa
 fun HomeScreen(
     viewModel: HomeViewModel = viewModel(),
     manageStockViewModel: ManageStockViewModel = viewModel(),
-    supportFragmentManager: FragmentManager,
     proceedAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
     syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
-    onFinish: () -> Unit,
+    onOpenAnalytics: (containerId: Int) -> Unit,
+    onOpenOrgUnitTree: (hasUnsavedData: Boolean) -> Unit,
+    onOpenManageStockBottomSheet: () -> Unit,
+    onOpenDiscardTransactionBottomSheet: (
+            (result: EditionDialogResult) -> Unit
+    ) -> Unit,
 ) {
     val scaffoldState = rememberScaffoldState()
 
@@ -63,6 +69,18 @@ fun HomeScreen(
                 label = stringResource(R.string.section_charts),
             ),
         )
+
+    ObserveAsEvents(
+        flow = viewModel.action,
+    ) { action ->
+        when (action) {
+            is ScreenAction.OpenAnalytics -> onOpenAnalytics(action.containerId)
+            ScreenAction.OpenOrgUnitTree -> onOpenOrgUnitTree(manageStockViewModel.dataEntryUiState.value.hasUnsavedData)
+            ScreenAction.OpenManageStockBottomSheet -> onOpenManageStockBottomSheet()
+            is ScreenAction.OnDiscardTransaction -> onOpenDiscardTransactionBottomSheet(action.onResult)
+        }
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         contentWindowInsets = WindowInsets.safeDrawing,
@@ -116,7 +134,6 @@ fun HomeScreen(
                         backAction = { manageStockViewModel.onHandleBackNavigation() },
                         modifier = Modifier.padding(paddingValues),
                         scaffoldState = scaffoldState,
-                        supportFragmentManager = supportFragmentManager,
                     )
                 }
 
@@ -125,9 +142,7 @@ fun HomeScreen(
                         viewModel = viewModel,
                         manageStockViewModel = manageStockViewModel,
                         modifier = Modifier.padding(paddingValues),
-                        supportFragmentManager = supportFragmentManager,
                         scaffoldState = scaffoldState,
-                        onFinish = onFinish,
                         syncAction = syncAction,
                     )
                 }

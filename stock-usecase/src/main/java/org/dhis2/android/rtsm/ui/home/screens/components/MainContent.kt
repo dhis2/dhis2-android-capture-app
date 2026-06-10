@@ -95,14 +95,13 @@ fun MainContent(
         mutableStateOf<TableResizeActions?>(null)
     }
 
-    val barcodeLauncher =
-        rememberLauncherForActivityResult(
-            contract = ScanContract(),
-        ) { scanIntentResult ->
-            scanIntentResult.contents?.let { data ->
-                manageStockViewModel.onSearchQueryChanged(data)
-            } ?: Toast.makeText(context, "Scan cancelled!", Toast.LENGTH_SHORT).show()
-        }
+    val barcodeLauncher = rememberLauncherForActivityResult(
+        contract = ScanContract(),
+    ) { scanIntentResult ->
+        scanIntentResult.contents?.let { data ->
+            manageStockViewModel.onSearchQueryChanged(data)
+        } ?: Toast.makeText(context, "Scan cancelled!", Toast.LENGTH_SHORT).show()
+    }
 
     Column(
         modifier =
