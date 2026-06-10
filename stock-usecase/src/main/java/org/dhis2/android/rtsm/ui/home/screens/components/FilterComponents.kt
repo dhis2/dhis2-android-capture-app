@@ -58,7 +58,7 @@ fun FilterList(
                 settingsUiState = settingsUiState,
                 openOrgUnitTreeSelector = {
                     viewModel.onOpenOrgUnitTreeSelector()
-                }
+                },
             )
         }
 
@@ -70,7 +70,7 @@ fun FilterList(
                     dataEntryUiState = dataEntryUiState,
                     data = result,
                     deliverToLabel = settingsUiState.deliverToLabel.ifEmpty { settingsUiState.deliverToLabel()?.asString() },
-                    onDiscardTransaction = viewModel::onTransitionDiscarted
+                    onDiscardTransaction = viewModel::onTransitionDiscarted,
                 )
             }
         }
