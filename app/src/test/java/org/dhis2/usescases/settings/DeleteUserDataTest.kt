@@ -21,10 +21,11 @@ class DeleteUserDataTest {
     private val filterManager: FilterManager = mock()
     private val preferencesProvider: PreferenceProvider = mock()
     private val testingDispatcher = UnconfinedTestDispatcher()
-    private val dispatcherProvider: DispatcherProvider = mock {
-        on { io() } doReturn testingDispatcher
-        on { ui() } doReturn testingDispatcher
-    }
+    private val dispatcherProvider: DispatcherProvider =
+        mock {
+            on { io() } doReturn testingDispatcher
+            on { ui() } doReturn testingDispatcher
+        }
 
     @Before
     fun setup() {
@@ -33,11 +34,12 @@ class DeleteUserDataTest {
     }
 
     @Test
-    fun `Should delete user data`() = runTest {
-        deleteUserData.wipeCacheAndPreferences(null)
+    fun `Should delete user data`() =
+        runTest {
+            deleteUserData.wipeCacheAndPreferences(null)
 
-        verify(workManagerController).cancelAllWork()
-        verify(workManagerController).pruneWork()
-        verify(preferencesProvider).clear()
-    }
+            verify(workManagerController).cancelAllWork()
+            verify(workManagerController).pruneWork()
+            verify(preferencesProvider).clear()
+        }
 }

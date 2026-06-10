@@ -81,7 +81,7 @@ internal fun SyncDataSettingItem(
                     dataSettings.dataSyncPeriod,
                     dataSettings.lastDataSync,
                     dataSettings.nextDataSync,
-                    context
+                    context,
                 )
             }
         }
@@ -101,13 +101,13 @@ internal fun SyncDataSettingItem(
             ) {
                 if (dataSettings.canEdit) {
                     var selectedItem by
-                    remember {
-                        mutableStateOf(
-                            DropdownItem(
-                                label = syncPeriodLabel(dataSettings.dataSyncPeriod, context),
-                            ),
-                        )
-                    }
+                        remember {
+                            mutableStateOf(
+                                DropdownItem(
+                                    label = syncPeriodLabel(dataSettings.dataSyncPeriod, context),
+                                ),
+                            )
+                        }
                     val dataSyncPeriods =
                         listOf(
                             stringResource(R.string.thirty_minutes),
@@ -187,14 +187,14 @@ private fun provideDefaultInfoItems(
             AdditionalInfoItem(
                 key = stringResource(R.string.settings_sync_period_v2),
                 value = syncPeriodLabel(dataSyncPeriod, context),
-            )
+            ),
         )
         add(
             AdditionalInfoItem(
                 key = stringResource(R.string.last_data_sync),
                 value = lastDataSync,
                 color = TextColor.OnSurface,
-            )
+            ),
         )
         nextDataSync?.takeIf { BuildConfig.DEBUG }?.let {
             add(
@@ -202,7 +202,7 @@ private fun provideDefaultInfoItems(
                     key = "Next Sync On",
                     value = nextDataSync,
                     color = TextColor.OnSurface,
-                )
+                ),
             )
         }
     }

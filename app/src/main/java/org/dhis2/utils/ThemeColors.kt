@@ -17,11 +17,12 @@ fun getThemePrimaryColor(): Color {
 @Composable
 fun getOnToolbarColor(): Color {
     val context = LocalContext.current
-    val onToolbarColor = remember(context) {
-        val ta = context.obtainStyledAttributes(intArrayOf(R.attr.onToolbarColor))
-        val color = Color(ta.getColor(0, android.graphics.Color.WHITE))
-        ta.recycle()
-        color
-    }
+    val onToolbarColor =
+        remember(context) {
+            val ta = context.obtainStyledAttributes(intArrayOf(R.attr.onToolbarColor))
+            val color = Color(ta.getColor(0, android.graphics.Color.WHITE))
+            ta.recycle()
+            color
+        }
     return onToolbarColor
 }

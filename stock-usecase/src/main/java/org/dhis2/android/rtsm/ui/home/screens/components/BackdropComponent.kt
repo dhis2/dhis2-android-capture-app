@@ -49,7 +49,7 @@ fun Backdrop(
     supportFragmentManager: FragmentManager,
     scaffoldState: ScaffoldState,
     syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
-    onFinish: () -> Unit
+    onFinish: () -> Unit,
 ) {
     val context = LocalContext.current
 

@@ -61,7 +61,7 @@ class HomeActivity : AppCompatActivity() {
             manageStockViewModel.setHelperText(helperText)
             DHIS2Theme {
                 CompositionLocalProvider(
-                    LocalThemeColor provides themeColor
+                    LocalThemeColor provides themeColor,
                 ) {
                     HomeScreen(
                         viewModel = viewModel,
@@ -77,7 +77,7 @@ class HomeActivity : AppCompatActivity() {
                                 scaffold,
                                 settingsUiState.programUid,
                             )
-                        }
+                        },
                     )
                 }
             }

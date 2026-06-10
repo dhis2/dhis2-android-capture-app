@@ -199,10 +199,11 @@ fun HomeTopBar(
                 )
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors().copy(
-            containerColor = primaryColor,
-            titleContentColor = onToolbarColor,
-        ),
+        colors =
+            TopAppBarDefaults.topAppBarColors().copy(
+                containerColor = primaryColor,
+                titleContentColor = onToolbarColor,
+            ),
     )
 }
 
