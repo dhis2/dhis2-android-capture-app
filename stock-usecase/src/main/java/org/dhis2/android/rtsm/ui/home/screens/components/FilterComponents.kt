@@ -10,15 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.FragmentManager
 import org.dhis2.android.rtsm.data.OperationState
 import org.dhis2.android.rtsm.data.TransactionType.DISTRIBUTION
-import org.dhis2.android.rtsm.data.models.TransactionItem
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
-import org.dhis2.android.rtsm.ui.home.model.EditionDialogResult
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
@@ -26,12 +22,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 fun FilterList(
     viewModel: HomeViewModel,
     dataEntryUiState: DataEntryUiState,
-    themeColor: Color,
-    supportFragmentManager: FragmentManager,
-    launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
-    onTransitionSelected: (transition: TransactionItem) -> Unit,
-    onFacilitySelected: (facility: OrganisationUnit) -> Unit,
-    onDestinationSelected: (destination: Option) -> Unit,
 ) {
     val facilities = viewModel.facilities.collectAsState().value
     val destinations = viewModel.destinationsList.collectAsState().value
@@ -52,23 +42,23 @@ fun FilterList(
     ) {
         item {
             DropdownComponentTransactions(
-                settingsUiState,
-                onTransitionSelected,
-                dataEntryUiState.hasUnsavedData,
-                themeColor,
-                launchDialog,
+                settingsUiState = settingsUiState,
+                onTransitionSelected = viewModel::selectTransaction,
+                hasUnsavedData = dataEntryUiState.hasUnsavedData,
+                onDiscardTransaction = viewModel::onTransitionDiscarted,
             )
         }
 
         item {
+            val data = getFacilities(facilities)
+            if (data.size == 1) {
+                viewModel.setFacility(data[0])
+            }
             DropdownComponentFacilities(
-                settingsUiState,
-                onFacilitySelected,
-                dataEntryUiState.hasUnsavedData,
-                themeColor,
-                supportFragmentManager,
-                getFacilities(facilities),
-                launchDialog,
+                settingsUiState = settingsUiState,
+                openOrgUnitTreeSelector = {
+                    viewModel.onOpenOrgUnitTreeSelector()
+                }
             )
         }
 
@@ -76,12 +66,11 @@ fun FilterList(
             val result = destinations.result as List<Option>
             item {
                 DropdownComponentDistributedTo(
-                    onDestinationSelected,
-                    dataEntryUiState,
-                    themeColor,
-                    result,
-                    launchDialog = launchDialog,
+                    onDestinationSelected = viewModel::setDestination,
+                    dataEntryUiState = dataEntryUiState,
+                    data = result,
                     deliverToLabel = settingsUiState.deliverToLabel.ifEmpty { settingsUiState.deliverToLabel()?.asString() },
+                    onDiscardTransaction = viewModel::onTransitionDiscarted
                 )
             }
         }
