@@ -52,12 +52,12 @@ class ScheduledEventPresenterImpl(
                             .programModule()
                             .programStages()
                             .uid(it.programStage())
-                            .get(),
+                            .rxGet(),
                         d2
                             .programModule()
                             .programs()
                             .uid(it.program())
-                            .get(),
+                            .rxGet(),
                     ) { stage, program ->
                         Triple(stage, program, it)
                     }

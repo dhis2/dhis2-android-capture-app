@@ -7,6 +7,7 @@ import org.dhis2.form.data.FormRepository
 import org.dhis2.form.ui.mapper.FormSectionMapper
 import org.dhis2.form.ui.provider.FormResultDialogProvider
 
+@Suppress("UNCHECKED_CAST")
 class FormViewModelFactory(
     private val repository: FormRepository,
     private val dispatcher: DispatcherProvider,

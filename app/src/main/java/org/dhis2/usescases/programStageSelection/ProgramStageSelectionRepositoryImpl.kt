@@ -31,7 +31,7 @@ class ProgramStageSelectionRepositoryImpl internal constructor(
             .eq(enrollmentUid ?: "")
             .byDeleted()
             .isFalse
-            .get()
+            .rxGet()
             .toFlowable()
             .flatMapIterable { events: List<Event>? -> events }
             .map { event: Event -> event.programStage() }
@@ -46,18 +46,17 @@ class ProgramStageSelectionRepositoryImpl internal constructor(
                         repository.byHideDueDate().eq(false)
                 }
                 repository
-                    .get()
+                    .rxGet()
                     .toFlowable()
                     .flatMapIterable { stages: List<ProgramStage>? -> stages }
-                    .filter { programStage: ProgramStage ->
+                    .filter { programStage ->
                         programStage
                             .access()
                             .data()
-                            .write() == true &&
-                            (
-                                !currentProgramStagesUids.contains(programStage.uid()) ||
-                                    programStage.repeatable()!!
-                            )
+                            .write() && (
+                            !currentProgramStagesUids.contains(programStage.uid()) ||
+                                programStage.repeatable()!!
+                        )
                     }.toList()
             }.toFlowable()
 

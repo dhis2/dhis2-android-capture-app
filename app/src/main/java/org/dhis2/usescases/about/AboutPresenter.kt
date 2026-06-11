@@ -23,7 +23,7 @@ class AboutPresenter(
                     d2
                         .systemInfoModule()
                         .systemInfo()
-                        .get()
+                        .rxGet()
                         .toFlowable()
                         .map { it.contextPath() ?: "" },
                 ) { fields, result -> Pair(fields, result) }
