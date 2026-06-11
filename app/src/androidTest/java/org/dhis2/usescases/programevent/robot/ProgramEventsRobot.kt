@@ -6,6 +6,7 @@ import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -57,8 +58,8 @@ class ProgramEventsRobot(val composeTestRule: ComposeContentTestRule) : BaseRobo
     @OptIn(ExperimentalTestApi::class)
     fun checkEventIsComplete(eventDate: String) {
         composeTestRule.waitUntilAtLeastOneExists(hasText("Event completed", true), TIMEOUT)
-        composeTestRule.onNodeWithText(eventDate,true).assertIsDisplayed()
-        composeTestRule.onNodeWithText("Event completed",true).assertIsDisplayed()
+        composeTestRule.onNodeWithText(eventDate, true).assertIsDisplayed()
+        composeTestRule.onAllNodesWithText("Event completed", true)[0].assertIsDisplayed()
     }
 
     fun checkEventWasDeleted(eventDate: String) {
