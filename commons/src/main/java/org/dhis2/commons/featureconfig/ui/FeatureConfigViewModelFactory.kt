@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 
+@Suppress("UNCHECKED_CAST")
 class FeatureConfigViewModelFactory(
     val repository: FeatureConfigRepository,
 ) : ViewModelProvider.Factory {

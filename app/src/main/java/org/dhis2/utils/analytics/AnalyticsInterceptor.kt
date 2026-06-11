@@ -78,7 +78,7 @@ class AnalyticsInterceptor(
             .getD2()
             .systemInfoModule()
             .systemInfo()
-            .get()
+            .rxGet()
             .map { it.version() }
 
     private fun isLogged(): Boolean = D2Manager.getD2().userModule().blockingIsLogged()

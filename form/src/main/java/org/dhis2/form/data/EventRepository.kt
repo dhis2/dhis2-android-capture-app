@@ -176,7 +176,7 @@ class EventRepository(
             .eq(programStage?.uid())
             .withDataElements()
             .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-            .get()
+            .rxGet()
             .flatMap { programStageSection ->
                 if (programStageSection.isEmpty()) {
                     getFieldsForSingleSection()
@@ -363,14 +363,14 @@ class EventRepository(
             .programModule()
             .programs()
             .uid(programUid)
-            .get()
+            .rxGet()
             .flatMap { program: Program ->
                 d2
                     .categoryModule()
                     .categoryCombos()
                     .withCategories()
                     .uid(program.categoryCombo().uid())
-                    .get()
+                    .rxGet()
             }.blockingGet()
 
     private fun createCategoryComboSection(): FieldUiModel =
@@ -449,7 +449,7 @@ class EventRepository(
         d2
             .eventModule()
             .eventService()
-            .isEditable(eventUid)
+            .rxIsEditable(eventUid)
             .blockingGet()
 
     private fun createEventOrgUnitField(): FieldUiModel =

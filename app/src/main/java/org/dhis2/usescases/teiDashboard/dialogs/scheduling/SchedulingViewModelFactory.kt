@@ -13,6 +13,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.D2
 
+@Suppress("UNCHECKED_CAST")
 class SchedulingViewModelFactory
     @AssistedInject
     constructor(

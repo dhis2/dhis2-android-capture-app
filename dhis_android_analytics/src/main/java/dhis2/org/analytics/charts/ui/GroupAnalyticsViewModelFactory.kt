@@ -7,6 +7,7 @@ import dhis2.org.analytics.charts.domain.GetEnrollmentAnalyticsUseCase
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.viewmodel.DispatcherProvider
 
+@Suppress("UNCHECKED_CAST")
 class GroupAnalyticsViewModelFactory(
     private val mode: AnalyticMode,
     private val uid: String?,
