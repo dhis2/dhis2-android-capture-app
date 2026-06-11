@@ -67,7 +67,7 @@ class DashboardRepositoryImplTest {
                 .eventModule()
                 .events()
                 .uid("event_uid")
-                .get(),
+                .rxGet(),
         ) doReturn
             Single.just(getMockSingleEvent())
 
@@ -146,7 +146,7 @@ class DashboardRepositoryImplTest {
                 .eq(teiUid)
                 .byDeleted()
                 .eq(false)
-                .get(),
+                .rxGet(),
         ) doReturn Single.just(enrollments)
 
         val testObserver = repository.getTEIEnrollments(teiUid).test()
