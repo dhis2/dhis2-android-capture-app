@@ -145,25 +145,12 @@ class EventTest : BaseTest() {
         }
         composeTestRule.waitForIdle()
 
-        // ── Step 7 — verify the event is completed ─────────────────────────
-        // The SDK confirms completion authoritatively (the list activity is
-        // foregrounded but its card view caches the pre-completion render —
-        // a known cosmetic lag that ALSO affects the legacy
-        // `shouldCompleteAnEventAndReopenIt` test, which uses a permissive
-        // text-anywhere check rather than a card-scoped one). We assert:
-        //   (a) the event is COMPLETED in the SDK (truth), AND
-        //   (b) the list card with our date is still rendered (UI returned).
-        run {
-            val d2 = org.hisp.dhis.android.core.D2Manager.getD2()
-            val storedStatus =
-                d2.eventModule().events().uid(event.uid).blockingGet()?.status()?.name
-            assertTrue(
-                "Event $event.uid should be COMPLETED in the SDK, was $storedStatus",
-                storedStatus == "COMPLETED",
-            )
+        // ── Step 7 — list shows the event as completed ─────────────────────
+        programEventsRobot(composeTestRule) {
+            checkEventIsComplete(event.displayDate)
         }
+
         // ── Step 8 — re-tap the event from the list ────────────────────────
-        // (also serves as the proof that the list rendered our event card)
         programEventsRobot(composeTestRule) {
             clickOnEvent(event.displayDate)
         }
