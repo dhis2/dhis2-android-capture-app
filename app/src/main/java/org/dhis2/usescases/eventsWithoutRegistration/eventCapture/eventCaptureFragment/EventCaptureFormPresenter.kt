@@ -30,7 +30,7 @@ class EventCaptureFormPresenter(
             d2
                 .eventModule()
                 .eventService()
-                .getEditableStatus(eventUid = eventUid)
+                .rxGetEditableStatus(eventUid = eventUid)
                 .blockingGet()
 
         when (isEditable) {

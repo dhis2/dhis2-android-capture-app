@@ -20,7 +20,7 @@ class MapCoordinateFieldToFeature(
             hashMapOf(
                 PROPERTY_FEATURE_SOURCE to FeatureSource.FIELD.name,
                 FIELD_NAME to coordinateDataElementInfo.dataElement.displayFormName()!!,
-                EVENT to coordinateDataElementInfo.event.uid()!!,
+                EVENT to coordinateDataElementInfo.event.uid(),
                 STAGE to coordinateDataElementInfo.stage.displayName()!!,
             ).apply {
                 coordinateDataElementInfo.enrollment?.let { enrollment ->
@@ -38,7 +38,7 @@ class MapCoordinateFieldToFeature(
             hashMapOf(
                 PROPERTY_FEATURE_SOURCE to FeatureSource.FIELD.name,
                 FIELD_NAME to coordinateAttributeInfo.attribute.displayFormName()!!,
-                TEI to coordinateAttributeInfo.tei.uid()!!,
+                TEI to coordinateAttributeInfo.tei.uid(),
             ),
         )
 }

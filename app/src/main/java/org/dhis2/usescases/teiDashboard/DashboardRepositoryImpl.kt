@@ -77,7 +77,7 @@ class DashboardRepositoryImpl(
             .programStages()
             .byProgramUid()
             .eq(programUid)
-            .get()
+            .rxGet()
             .toObservable()
 
     override fun getEnrollment(): Observable<Enrollment> =
@@ -85,7 +85,7 @@ class DashboardRepositoryImpl(
             .enrollmentModule()
             .enrollments()
             .uid(enrollmentUid)
-            .get()
+            .rxGet()
             .map { it }
             .toObservable()
 
@@ -98,7 +98,7 @@ class DashboardRepositoryImpl(
             .events()
             .byEnrollmentUid()
             .eq(enrollmentUid)
-            .get()
+            .rxGet()
             .toObservable()
             .map { events: List<Event> ->
                 val finalEvents: MutableList<Event> =
@@ -377,14 +377,14 @@ class DashboardRepositoryImpl(
             .eventModule()
             .events()
             .uid(eventUid)
-            .get()
+            .rxGet()
             .map<String> { obj: Event -> obj.programStage() }
             .flatMap { stageUid: String ->
                 d2
                     .programModule()
                     .programStages()
                     .uid(stageUid)
-                    .get()
+                    .rxGet()
             }.map { it }
             .toObservable()
 
@@ -392,7 +392,7 @@ class DashboardRepositoryImpl(
         return d2
             .systemInfoModule()
             .systemInfo()
-            .get()
+            .rxGet()
             .toObservable()
             .map<String?>(Function { obj: SystemInfo -> obj.version() })
             .flatMap { version: String? ->
@@ -400,7 +400,7 @@ class DashboardRepositoryImpl(
                     d2
                         .relationshipModule()
                         .relationshipTypes()
-                        .get()
+                        .rxGet()
                         .toObservable()
                         .flatMapIterable<RelationshipType?> { list: List<RelationshipType?>? -> list }
                         .map { relationshipType: RelationshipType? ->
@@ -415,8 +415,8 @@ class DashboardRepositoryImpl(
                         .relationshipModule()
                         .relationshipTypes()
                         .withConstraints()
-                        .get()
-                        .map<List<Pair<RelationshipType?, String>>> { relationshipTypes: List<RelationshipType> ->
+                        .rxGet()
+                        .map { relationshipTypes: List<RelationshipType> ->
                             val relTypeList = mapRelationShipTypes(relationshipTypes, teType)
                             relTypeList.toList()
                         }.toObservable()
@@ -450,7 +450,7 @@ class DashboardRepositoryImpl(
                 .byProgram()
                 .eq(programUid)
                 .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                .get()
+                .rxGet()
                 .toObservable()
         } else {
             Observable
@@ -502,7 +502,7 @@ class DashboardRepositoryImpl(
             enrollmentRepo = enrollmentRepo.byProgram().eq(programUid)
         }
 
-        return enrollmentRepo.get().toObservable().map { enrollments: List<Enrollment> ->
+        return enrollmentRepo.rxGet().toObservable().map { enrollments: List<Enrollment> ->
             val orgUnitIds: MutableList<String> =
                 java.util.ArrayList()
             for (enrollment in enrollments) {
@@ -585,7 +585,7 @@ class DashboardRepositoryImpl(
         if (showOnlyActive) enrollmentRepo.byStatus().eq(EnrollmentStatus.ACTIVE)
 
         return enrollmentRepo
-            .get()
+            .rxGet()
             .toObservable()
             .flatMapIterable { enrollments: List<Enrollment>? -> enrollments }
             .map { obj: Enrollment -> obj.program() }
@@ -612,7 +612,7 @@ class DashboardRepositoryImpl(
             .eq(teiUid)
             .byDeleted()
             .eq(false)
-            .get()
+            .rxGet()
             .toObservable()
 
     override fun saveCatOption(
@@ -655,7 +655,7 @@ class DashboardRepositoryImpl(
             .trackedEntityModule()
             .trackedEntityInstances()
             .uid(teiUid)
-            .delete()
+            .rxDelete()
             .andThen(Single.fromCallable { true })
 
     override fun checkIfDeleteEnrollmentIsPossible(enrollmentUid: String): Boolean {
@@ -708,7 +708,7 @@ class DashboardRepositoryImpl(
             .enrollments()
             .withNotes()
             .uid(enrollmentUid)
-            .get()
+            .rxGet()
             .map(Function { enrollment: Enrollment -> if (enrollment.notes() != null) enrollment.notes()!!.size else 0 })
 
     override fun getEnrollmentStatus(enrollmentUid: String?): EnrollmentStatus? =
@@ -881,7 +881,7 @@ class DashboardRepositoryImpl(
                     .trackedEntityModule()
                     .trackedEntityTypes()
                     .uid(tei.trackedEntityType())
-                    .get()
+                    .rxGet()
                     .toObservable()
             }.blockingFirst()
             ?.displayName()

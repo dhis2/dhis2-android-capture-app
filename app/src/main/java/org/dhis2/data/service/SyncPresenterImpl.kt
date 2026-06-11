@@ -59,7 +59,7 @@ class SyncPresenterImpl(
         Completable.fromObservable(syncRepository.uploadEvent(eventUid)).blockingAwait()
         return syncRepository
             .downLoadEvent(eventUid)
-            .map { it as D2Progress }
+            .map { it }
             .mergeWith(syncRepository.downloadEventFiles(eventUid))
     }
 
