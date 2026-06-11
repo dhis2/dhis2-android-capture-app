@@ -15,7 +15,7 @@ class NoteDetailRepositoryImpl(
             .noteModule()
             .notes()
             .uid(noteId)
-            .get()
+            .rxGet()
 
     override fun saveNote(
         type: NoteType,
@@ -24,7 +24,7 @@ class NoteDetailRepositoryImpl(
     ): Single<String> =
         when (type) {
             NoteType.ENROLLMENT -> {
-                d2.noteModule().notes().add(
+                d2.noteModule().notes().rxAdd(
                     NoteCreateProjection
                         .builder()
                         .noteType(Note.NoteType.ENROLLMENT_NOTE)
@@ -44,7 +44,7 @@ class NoteDetailRepositoryImpl(
                 )
             }
             NoteType.EVENT -> {
-                d2.noteModule().notes().add(
+                d2.noteModule().notes().rxAdd(
                     NoteCreateProjection
                         .builder()
                         .noteType(Note.NoteType.EVENT_NOTE)

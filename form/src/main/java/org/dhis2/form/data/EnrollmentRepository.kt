@@ -200,9 +200,7 @@ class EnrollmentRepository(
         val generated = attribute.generated() ?: false
 
         var dataValue: String? =
-            attribute
-                .uid()
-                ?.let { conf.attributeValue(it) }
+            conf.attributeValue(attribute.uid())
 
         var optionSetConfig: OptionSetConfiguration? = null
         if (!optionSet.isNullOrEmpty()) {

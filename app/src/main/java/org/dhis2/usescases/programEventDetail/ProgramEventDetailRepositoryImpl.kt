@@ -54,7 +54,7 @@ class ProgramEventDetailRepositoryImpl internal constructor(
 
     override fun filteredEventsForMap(layersVisibility: Map<String, MapLayer>): Flowable<ProgramEventMapData> =
         filterRepository
-            ?.get()
+            ?.rxGet()
             ?.map { listEvents ->
                 val (first, second) = mapUtils.eventsToFeatureCollection(listEvents)
                 val programEventFeatures = HashMap<String, FeatureCollection>()
@@ -100,7 +100,7 @@ class ProgramEventDetailRepositoryImpl internal constructor(
             .events()
             .withTrackedEntityDataValues()
             .uid(eventUid)
-            .get()
+            .rxGet()
             .map(mapper::eventToProgramEvent)
             .toFlowable()
 
@@ -111,7 +111,7 @@ class ProgramEventDetailRepositoryImpl internal constructor(
             .byProgramUid()
             .eq(programUid)
             .one()
-            .get()
+            .rxGet()
             .map { stage ->
                 if (stage.featureType() != null) {
                     return@map stage.featureType()
@@ -128,7 +128,7 @@ class ProgramEventDetailRepositoryImpl internal constructor(
             .uid(selectedCatOptionCombo)
             .blockingGet()
 
-    override fun program(): Single<Program> = programRepository.get()
+    override fun program(): Single<Program> = programRepository.rxGet()
 
     override fun getAccessDataWrite(): Boolean {
         var canWrite =
@@ -158,9 +158,9 @@ class ProgramEventDetailRepositoryImpl internal constructor(
             .withEventDataFilters()
             .byProgram()
             .eq(programUid)
-            .get()
+            .rxGet()
 
-    override fun programStage(): Single<ProgramStage> = stageRepository.one().get()
+    override fun programStage(): Single<ProgramStage> = stageRepository.one().rxGet()
 
     override fun programHasCoordinates(): Boolean {
         val programStageHasCoordinates =
@@ -170,7 +170,7 @@ class ProgramEventDetailRepositoryImpl internal constructor(
                 }.blockingGet()
         val eventDataElementHasCoordinates =
             filterRepository
-                ?.get()
+                ?.rxGet()
                 ?.map { events ->
                     events.any { event -> event.geometry() != null }
                 }?.blockingGet() == true

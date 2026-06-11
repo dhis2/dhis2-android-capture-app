@@ -168,6 +168,7 @@ class SearchTEIViewModel(
     private val _searchActions = Channel<TrackerInputAction>()
     val searchActions = _searchActions.receiveAsFlow()
 
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val searchPagingData =
         onNewSearch
             .onStart { emit(Unit) }

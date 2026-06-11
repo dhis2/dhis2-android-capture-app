@@ -260,7 +260,7 @@ class GranularSyncRepository(
                                     if (d2.isStockProgram(program.uid())) {
                                         SyncStatusType.StockProgram(
                                             programUid = program.uid(),
-                                            stockUsecase = d2.stockUseCase(program.uid() ?: "")!!,
+                                            stockUsecase = d2.stockUseCase(program.uid())!!,
                                         )
                                     } else {
                                         SyncStatusType.TrackerProgram(

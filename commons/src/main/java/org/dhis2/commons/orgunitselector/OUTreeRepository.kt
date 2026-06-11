@@ -9,13 +9,13 @@ class OUTreeRepository(
 
     fun orgUnits(name: String? = null): List<OrganisationUnit> {
         availableOrgUnits = orgUnitRepositoryConfiguration.orgUnitRepository(name)
-        return availableOrgUnits.order().sortedBy { it.displayNamePath()?.joinToString(" ") }
+        return availableOrgUnits.order().sortedBy { it.displayNamePath().joinToString(" ") }
     }
 
     fun childrenOrgUnits(parentUid: String): List<OrganisationUnit> =
         availableOrgUnits
             .filter { it.uid() != parentUid && it.path()?.contains(parentUid) == true }
-            .sortedBy { it.displayNamePath()?.joinToString(" ") }
+            .sortedBy { it.displayNamePath().joinToString(" ") }
 
     fun orgUnit(uid: String): OrganisationUnit? = availableOrgUnits.firstOrNull { it.uid() == uid }
 

@@ -273,6 +273,7 @@ class MapSelectorViewModel(
         }
     }
 
+    @OptIn(kotlinx.coroutines.FlowPreview::class)
     private fun registerSearchListener() {
         searchLocationQuery
             .debounce(1000)
