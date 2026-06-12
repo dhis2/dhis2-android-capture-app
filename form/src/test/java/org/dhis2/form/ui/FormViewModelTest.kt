@@ -4,15 +4,20 @@ import android.content.Intent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.form.data.EventResultDetails
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
+import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.model.ActionType
+import org.dhis2.form.model.EventMode
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
@@ -21,12 +26,14 @@ import org.dhis2.form.ui.mapper.FormSectionMapper
 import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.mobile.commons.model.CustomIntentRequestArgumentModel
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.event.EventStatus
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -201,4 +208,50 @@ class FormViewModelTest {
 
             verify(repository).save(fieldUid, null, null)
         }
+
+    @Test
+    fun `Should not show result dialog for an already completed event with no issues`() =
+        runTest {
+            givenACompletedEventWithNoIssues()
+
+            viewModel.runDataIntegrityCheck()
+            advanceUntilIdle()
+
+            val action = viewModel.actionsChannel.first()
+            assertEquals(FormViewModel.FormActions.OnFinish, action)
+        }
+
+    private suspend fun givenACompletedEventWithNoIssues() {
+        val result =
+            SuccessfulResult(
+                canComplete = true,
+                onCompleteMessage = null,
+                eventResultDetails =
+                    EventResultDetails(
+                        eventStatus = EventStatus.COMPLETED,
+                        eventMode = EventMode.CHECK,
+                        validationStrategy = null,
+                    ),
+            )
+        whenever(repository.isEvent()) doReturn true
+        whenever(repository.isEventEditable()) doReturn true
+        whenever(repository.runDataIntegrityCheck(backPressed = false)) doReturn result
+        whenever(repository.composeList()) doReturn emptyList()
+        whenever(
+            resultDialogUiProvider(
+                canComplete = any(),
+                onCompleteMessage = anyOrNull(),
+                errorFields = any(),
+                emptyMandatoryFields = any(),
+                warningFields = any(),
+                eventMode = anyOrNull(),
+                eventState = anyOrNull(),
+                result = any(),
+            ),
+        ) doReturn
+            Pair(
+                BottomSheetDialogUiModel(title = "title", iconResource = 0),
+                emptyList(),
+            )
+    }
 }
