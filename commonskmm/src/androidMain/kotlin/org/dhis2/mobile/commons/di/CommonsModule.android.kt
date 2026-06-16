@@ -18,6 +18,8 @@ import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.commons.network.NetworkStatusProviderImpl
 import org.dhis2.mobile.commons.notifications.NotificationManager
 import org.dhis2.mobile.commons.notifications.NotificationManagerImpl
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
+import org.dhis2.mobile.commons.providers.CustomLabelProviderImpl
 import org.dhis2.mobile.commons.providers.PreferenceProvider
 import org.dhis2.mobile.commons.providers.PreferenceProviderImpl
 import org.dhis2.mobile.commons.reporting.CrashReportController
@@ -78,5 +80,9 @@ actual val commonsModule: Module
 
             single<FeatureConfigRepository> {
                 FeatureConfigRepositoryImpl(get())
+            }
+
+            single<CustomLabelProvider> {
+                CustomLabelProviderImpl(get())
             }
         }
