@@ -25,21 +25,31 @@ class EventCaptureRepositoryImpl(
 ) : EventCaptureRepository {
     private val currentEvent by lazy {
         requireNotNull(
-            d2.eventModule().events().uid(eventUid).blockingGet()
+            d2
+                .eventModule()
+                .events()
+                .uid(eventUid)
+                .blockingGet(),
         )
     }
 
     override val isEnrollmentOpen: Boolean
         get() {
             val currentEvent = this.currentEvent
-            return currentEvent.enrollment() == null || d2.enrollmentModule().enrollmentService()
-                .blockingIsOpen(currentEvent.enrollment()!!)
+            return currentEvent.enrollment() == null ||
+                d2
+                    .enrollmentModule()
+                    .enrollmentService()
+                    .blockingIsOpen(currentEvent.enrollment()!!)
         }
 
     override val isEnrollmentCancelled: Boolean
         get() {
             val enrollment =
-                d2.enrollmentModule().enrollments().uid(this.currentEvent.enrollment())
+                d2
+                    .enrollmentModule()
+                    .enrollments()
+                    .uid(this.currentEvent.enrollment())
                     .blockingGet()
             return if (enrollment == null) {
                 false
@@ -48,75 +58,95 @@ class EventCaptureRepositoryImpl(
             }
         }
 
-    override fun isEventEditable(eventUid: String): Boolean {
-        return d2.eventModule().eventService().blockingIsEditable(eventUid)
-    }
+    override fun isEventEditable(eventUid: String): Boolean = d2.eventModule().eventService().blockingIsEditable(eventUid)
 
-    override fun programStageName(): Flowable<String> {
-        return d2.programModule().programStages().uid(this.currentEvent.programStage()).get()
+    override fun programStageName(): Flowable<String> =
+        d2
+            .programModule()
+            .programStages()
+            .uid(this.currentEvent.programStage())
+            .get()
             .map { programStage -> programStage.displayName() ?: programStage.uid() }
             .toFlowable()
-    }
 
-    override fun orgUnit(): Flowable<OrganisationUnit> {
-        return Flowable.just(
+    override fun orgUnit(): Flowable<OrganisationUnit> =
+        Flowable.just(
             Objects.requireNonNull<OrganisationUnit>(
-                d2.organisationUnitModule()
+                d2
+                    .organisationUnitModule()
                     .organisationUnits()
                     .uid(this.currentEvent.organisationUnit())
-                    .blockingGet()
-            )
+                    .blockingGet(),
+            ),
         )
-    }
 
-    override fun deleteEvent(): Observable<Boolean> {
-        return d2.eventModule().events().uid(eventUid).delete()
+    override fun deleteEvent(): Observable<Boolean> =
+        d2
+            .eventModule()
+            .events()
+            .uid(eventUid)
+            .delete()
             .andThen(Observable.just(true))
-    }
 
-    override fun updateEventStatus(status: EventStatus): Observable<Boolean> {
-        return Observable.fromCallable(Callable {
-            d2.eventModule().events().uid(eventUid)
-                .setStatus(status)
-            true
-        })
-    }
-
-    override fun rescheduleEvent(newDate: Date): Observable<Boolean> {
-        return Observable.fromCallable(Callable {
-            d2.eventModule().events().uid(eventUid)
-                .setDueDate(newDate)
-            d2.eventModule().events().uid(eventUid)
-                .setStatus(EventStatus.SCHEDULE)
-            true
-        })
-    }
-
-    override fun programStage(): Observable<String> {
-        return Observable.just(
-            Objects.requireNonNull<String?>(
-                this.currentEvent.programStage()
-            )
+    override fun updateEventStatus(status: EventStatus): Observable<Boolean> =
+        Observable.fromCallable(
+            Callable {
+                d2
+                    .eventModule()
+                    .events()
+                    .uid(eventUid)
+                    .setStatus(status)
+                true
+            },
         )
-    }
+
+    override fun rescheduleEvent(newDate: Date): Observable<Boolean> =
+        Observable.fromCallable(
+            Callable {
+                d2
+                    .eventModule()
+                    .events()
+                    .uid(eventUid)
+                    .setDueDate(newDate)
+                d2
+                    .eventModule()
+                    .events()
+                    .uid(eventUid)
+                    .setStatus(EventStatus.SCHEDULE)
+                true
+            },
+        )
+
+    override fun programStage(): Observable<String> =
+        Observable.just(
+            Objects.requireNonNull<String?>(
+                this.currentEvent.programStage(),
+            ),
+        )
 
     override val accessDataWrite: Boolean
         get() = d2.eventModule().eventService().blockingIsEditable(eventUid)
 
-    override fun eventStatus(): Flowable<EventStatus> {
-        return Flowable.just(Objects.requireNonNull<EventStatus>(this.currentEvent.status()))
-    }
+    override fun eventStatus(): Flowable<EventStatus> = Flowable.just(Objects.requireNonNull<EventStatus>(this.currentEvent.status()))
 
-    override fun canReOpenEvent(): Single<Boolean> {
-        return Single.fromCallable(Callable {
-            d2.userModule().authorities()
-                .byName().`in`(AUTH_UNCOMPLETE_EVENT, AUTH_ALL).one().blockingExists()
-        }
+    override fun canReOpenEvent(): Single<Boolean> =
+        Single.fromCallable(
+            Callable {
+                d2
+                    .userModule()
+                    .authorities()
+                    .byName()
+                    .`in`(AUTH_UNCOMPLETE_EVENT, AUTH_ALL)
+                    .one()
+                    .blockingExists()
+            },
         )
-    }
 
-    override fun isCompletedEventExpired(eventUid: String): Observable<Boolean> {
-        return d2.eventModule().eventService().getEditableStatus(eventUid)
+    override fun isCompletedEventExpired(eventUid: String): Observable<Boolean> =
+        d2
+            .eventModule()
+            .eventService()
+            .getEditableStatus(eventUid)
             .map { editionStatus ->
                 if (editionStatus is EventEditableStatus.NonEditable) {
                     editionStatus.reason == EventNonEditableReason.EXPIRED
@@ -124,24 +154,31 @@ class EventCaptureRepositoryImpl(
                     false
                 }
             }.toObservable()
-    }
 
     override fun eventIntegrityCheck(): Flowable<Boolean> {
         val currentEvent = this.currentEvent
         return Flowable.just(currentEvent).map { event ->
             (event.status() == EventStatus.COMPLETED || event.status() == EventStatus.ACTIVE || event.status() == EventStatus.SKIPPED) &&
-                    (event.eventDate() == null || !event.eventDate()!!.after(Date()))
+                (event.eventDate() == null || !event.eventDate()!!.after(Date()))
         }
     }
 
     override val noteCount: Single<Int>
-        get() = d2.noteModule().notes().byEventUid().eq(eventUid).count()
+        get() =
+            d2
+                .noteModule()
+                .notes()
+                .byEventUid()
+                .eq(eventUid)
+                .count()
 
     override fun showCompletionPercentage(): Boolean {
         if (d2.settingModule().appearanceSettings().blockingExists()) {
-            val programConfigurationSetting = d2.settingModule()
-                .appearanceSettings()
-                .getProgramConfigurationByUid(this.currentEvent.program())
+            val programConfigurationSetting =
+                d2
+                    .settingModule()
+                    .appearanceSettings()
+                    .getProgramConfigurationByUid(this.currentEvent.program())
 
             if (programConfigurationSetting != null &&
                 programConfigurationSetting.completionSpinner() != null
@@ -155,11 +192,20 @@ class EventCaptureRepositoryImpl(
     override fun hasAnalytics(): Boolean {
         val currentEvent = this.currentEvent
         val hasProgramIndicators =
-            !d2.programModule().programIndicators().byProgramUid().eq(currentEvent.program())
+            !d2
+                .programModule()
+                .programIndicators()
+                .byProgramUid()
+                .eq(currentEvent.program())
                 .blockingIsEmpty()
         val programRules =
-            d2.programModule().programRules().withProgramRuleActions()
-                .byProgramUid().eq(currentEvent.program()).blockingGet()
+            d2
+                .programModule()
+                .programRules()
+                .withProgramRuleActions()
+                .byProgramUid()
+                .eq(currentEvent.program())
+                .blockingGet()
         var hasProgramRules = false
         for (rule in programRules) {
             for (action in Objects.requireNonNull(rule.programRuleActions())) {
@@ -173,27 +219,31 @@ class EventCaptureRepositoryImpl(
         return hasProgramIndicators || hasProgramRules
     }
 
-    override fun hasRelationships(): Boolean {
-        return !d2.relationshipModule().relationshipTypes()
+    override fun hasRelationships(): Boolean =
+        !d2
+            .relationshipModule()
+            .relationshipTypes()
             .byAvailableForEvent(eventUid)
             .blockingIsEmpty()
-    }
 
     override fun validationStrategy(): ValidationStrategy {
         val validationStrategy =
-            d2.programStage(programStage().blockingFirst()!!)!!
+            d2
+                .programStage(programStage().blockingFirst()!!)!!
                 .validationStrategy()
 
         return validationStrategy ?: ValidationStrategy.ON_COMPLETE
     }
 
-    override fun getEnrollmentUid(): String? {
-        return currentEvent.enrollment()
-    }
+    override fun getEnrollmentUid(): String? = currentEvent.enrollment()
 
     override fun getTeiUid(): String? {
-        val enrollment = d2.enrollmentModule().enrollments().uid(getEnrollmentUid()).blockingGet()
+        val enrollment =
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .uid(getEnrollmentUid())
+                .blockingGet()
         return enrollment?.trackedEntityInstance()
     }
 }
-

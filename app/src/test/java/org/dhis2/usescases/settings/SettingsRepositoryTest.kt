@@ -44,11 +44,12 @@ class SettingsRepositoryTest {
         Mockito.mock(UserManager::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val preferencesProvider: PreferenceProvider = mock()
     private val featureConfigRepository: FeatureConfigRepository = mock()
-    private val syncBackgroundJobAction: SyncBackgroundJobAction = mock {
-        on { getNextSettingsSync() } doReturn null
-        on { getNextMetadataSync() } doReturn null
-        on { getNextDataSync() } doReturn null
-    }
+    private val syncBackgroundJobAction: SyncBackgroundJobAction =
+        mock {
+            on { getNextSettingsSync() } doReturn null
+            on { getNextMetadataSync() } doReturn null
+            on { getNextDataSync() } doReturn null
+        }
     private val smsConfig: ConfigCase.SmsConfig =
         mock {
             on { isModuleEnabled } doReturn true

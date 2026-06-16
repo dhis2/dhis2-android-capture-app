@@ -74,7 +74,7 @@ abstract class SessionManagerActivity :
             val isTraining = BuildConfig.FLAVOR == "dhis2Training"
             val screenShareAllowed =
                 serverComponent.userManager().isUserLoggedIn().blockingFirst() &&
-                        !serverComponent.userManager().allowScreenShare()
+                    !serverComponent.userManager().allowScreenShare()
             if (!isTraining && screenShareAllowed) {
                 window.setFlags(
                     WindowManager.LayoutParams.FLAG_SECURE,

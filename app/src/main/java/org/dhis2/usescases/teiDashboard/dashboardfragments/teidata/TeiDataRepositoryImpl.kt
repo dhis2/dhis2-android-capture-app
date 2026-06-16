@@ -544,19 +544,17 @@ class TeiDataRepositoryImpl(
             .byProgramUids(listOf(programUid))
             .blockingCount() > 1
 
-    override fun ownerOrgUnit(teiUid: String): String? {
-
-         return d2
-                .trackedEntityModule()
-                .trackedEntityInstances()
-                .withProgramOwners()
-                .uid(teiUid)
-                .blockingGet()
-                ?.programOwners()
-                ?.firstOrNull {
-                    it.trackedEntityInstance() == teiUid
-                }?.ownerOrgUnit()
-    }
+    override fun ownerOrgUnit(teiUid: String): String? =
+        d2
+            .trackedEntityModule()
+            .trackedEntityInstances()
+            .withProgramOwners()
+            .uid(teiUid)
+            .blockingGet()
+            ?.programOwners()
+            ?.firstOrNull {
+                it.trackedEntityInstance() == teiUid
+            }?.ownerOrgUnit()
 
     override fun enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit: String): Boolean =
         !getOrgUnitCollectionRepositoryByCaptureScope()

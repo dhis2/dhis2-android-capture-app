@@ -95,13 +95,14 @@ fun MainContent(
         mutableStateOf<TableResizeActions?>(null)
     }
 
-    val barcodeLauncher = rememberLauncherForActivityResult(
-        contract = ScanContract(),
-    ) { scanIntentResult ->
-        scanIntentResult.contents?.let { data ->
-            manageStockViewModel.onSearchQueryChanged(data)
-        } ?: Toast.makeText(context, "Scan cancelled!", Toast.LENGTH_SHORT).show()
-    }
+    val barcodeLauncher =
+        rememberLauncherForActivityResult(
+            contract = ScanContract(),
+        ) { scanIntentResult ->
+            scanIntentResult.contents?.let { data ->
+                manageStockViewModel.onSearchQueryChanged(data)
+            } ?: Toast.makeText(context, "Scan cancelled!", Toast.LENGTH_SHORT).show()
+        }
 
     Column(
         modifier =
@@ -116,8 +117,7 @@ fun MainContent(
                         left = 16.dp,
                         top = 16.dp,
                         right = 16.dp,
-                    )
-                    .fillMaxWidth()
+                    ).fillMaxWidth()
                     .size(60.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.Top,
@@ -133,8 +133,7 @@ fun MainContent(
                             elevation = 3.dp,
                             shape = RoundedCornerShape(30.dp),
                             clip = false,
-                        )
-                        .offset(0.dp, 0.dp)
+                        ).offset(0.dp, 0.dp)
                         .background(color = Color.White, shape = RoundedCornerShape(30.dp))
                         .weight(1 - (weightValue + weightValueArrow))
                         .alignBy(FirstBaseline)
@@ -272,15 +271,15 @@ fun MainContent(
                     .fillMaxHeight(),
         ) {
             if ((
+                    manageStockViewModel.dataEntryUiState
+                        .collectAsState()
+                        .value.step
+                        != DataEntryStep.COMPLETED ||
                         manageStockViewModel.dataEntryUiState
                             .collectAsState()
                             .value.step
-                                != DataEntryStep.COMPLETED ||
-                                manageStockViewModel.dataEntryUiState
-                                    .collectAsState()
-                                    .value.step
-                                != DataEntryStep.START
-                        ) &&
+                        != DataEntryStep.START
+                ) &&
                 shouldDisplayTable(settingsUiState)
             ) {
                 manageStockViewModel.setup(viewModel.getData())

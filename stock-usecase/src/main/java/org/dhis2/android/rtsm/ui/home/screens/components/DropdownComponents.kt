@@ -99,14 +99,12 @@ fun DropdownComponentTransactions(
                     .fillMaxWidth()
                     .onGloballyPositioned { coordinates ->
                         textFieldSize = coordinates.size.toSize()
-                    }
-                    .shadow(
+                    }.shadow(
                         elevation = 8.dp,
                         ambientColor = Color.Black.copy(alpha = 0.1f),
                         shape = RoundedCornerShape(30.dp),
                         clip = false,
-                    )
-                    .offset(0.dp, 0.dp)
+                    ).offset(0.dp, 0.dp)
                     .background(color = Color.White, shape = RoundedCornerShape(30.dp)),
             readOnly = true,
             singleLine = true,
@@ -190,8 +188,7 @@ fun DropdownComponentTransactions(
                                                 Color.White
                                             },
                                         shape = RoundedCornerShape(16.dp),
-                                    )
-                                    .padding(paddingValue),
+                                    ).padding(paddingValue),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Start,
                         ) {
@@ -247,14 +244,12 @@ fun DropdownComponentFacilities(
                     .fillMaxWidth()
                     .onGloballyPositioned { coordinates ->
                         textFieldSize = coordinates.size.toSize()
-                    }
-                    .shadow(
+                    }.shadow(
                         elevation = 8.dp,
                         ambientColor = Color.Black.copy(alpha = 0.1f),
                         shape = RoundedCornerShape(30.dp),
                         clip = false,
-                    )
-                    .offset(0.dp, 0.dp)
+                    ).offset(0.dp, 0.dp)
                     .background(color = Color.White, shape = RoundedCornerShape(30.dp)),
             readOnly = true,
             singleLine = true,
@@ -358,15 +353,13 @@ fun DropdownComponentDistributedTo(
                     .fillMaxWidth()
                     .onGloballyPositioned { coordinates ->
                         textFieldSize = coordinates.size.toSize()
-                    }
-                    .zIndex(1f)
+                    }.zIndex(1f)
                     .shadow(
                         elevation = 8.dp,
                         ambientColor = Color.Black.copy(alpha = 0.1f),
                         shape = RoundedCornerShape(30.dp),
                         clip = false,
-                    )
-                    .offset(0.dp, 1.dp)
+                    ).offset(0.dp, 1.dp)
                     .background(color = Color.White, shape = RoundedCornerShape(30.dp)),
             readOnly = true,
             singleLine = true,
@@ -453,8 +446,7 @@ fun DropdownComponentDistributedTo(
                                                 Color.White
                                             },
                                         shape = RoundedCornerShape(16.dp),
-                                    )
-                                    .padding(
+                                    ).padding(
                                         start = 8.dp,
                                         top = paddingValue,
                                         end = 8.dp,
