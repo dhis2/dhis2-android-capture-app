@@ -12,9 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.ComposeView
@@ -132,9 +130,7 @@ class SearchTEMap : FragmentGlobalAbstract() {
                 val listState = rememberLazyListState()
 
                 val trackerMapData by viewModel.mapResults.collectAsState(initial = null)
-                val items by remember {
-                    derivedStateOf { trackerMapData?.mapItems ?: emptyList() }
-                }
+                val items = trackerMapData?.mapItems ?: emptyList()
 
                 val clickedItem by viewModel.mapItemClicked.collectAsState(initial = null)
 
@@ -150,17 +146,21 @@ class SearchTEMap : FragmentGlobalAbstract() {
                     }
                 }
 
-                LaunchedEffect(key1 = items) {
+                LaunchedEffect(key1 = trackerMapData) {
                     trackerMapData?.let { data ->
                         teiMapManager
                             ?.takeIf { it.isMapReady() }
-                            ?.update(
-                                data.teiFeatures,
-                                data.eventFeatures,
-                                data.dataElementFeaturess,
-                                data.teiBoundingBox,
-                            ).also {
-                                viewModel.mapManager = teiMapManager
+                            ?.also { manager ->
+                                manager.update(
+                                    data.teiFeatures,
+                                    data.eventFeatures,
+                                    data.dataElementFeaturess,
+                                    data.teiBoundingBox,
+                                )
+                                if (manager.autoSelectFirstLayerWithData()) {
+                                    viewModel.filterVisibleMapItems(manager.mapLayerManager.mapLayers)
+                                }
+                                viewModel.mapManager = manager
                             }
                     }
                 }

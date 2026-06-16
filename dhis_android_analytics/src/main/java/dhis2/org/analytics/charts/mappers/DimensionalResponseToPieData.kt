@@ -19,7 +19,13 @@ class DimensionalResponseToPieData {
                 .map { entry ->
                     GraphPoint(
                         eventDate = GregorianCalendar(2021, 0, 1).time,
-                        fieldValue = GraphFieldValue.Numeric(entry.value.sumByDouble { it.value?.toDouble() ?: 0.0 }.toFloat()),
+                        fieldValue =
+                            GraphFieldValue.Decimal(
+                                entry.value
+                                    .sumOf {
+                                        it.value?.toDouble() ?: 0.0
+                                    }.toFloat(),
+                            ),
                         legend = dimensionalResponse.metadata[entry.key]?.displayName,
                     )
                 }

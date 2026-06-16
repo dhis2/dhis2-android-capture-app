@@ -1,20 +1,21 @@
 package org.dhis2.mobile.sync.data
 
 import org.dhis2.mobile.sync.model.DataSyncProgressStatus
+import org.dhis2.mobile.sync.model.SMSConfigResult
 import org.dhis2.mobile.sync.model.SyncPeriod
 
 interface SyncRepository {
     suspend fun refreshSyncSettings(): Result<Unit>
 
-    suspend fun currentMetadataSyncPeriod(): SyncPeriod
+    suspend fun currentMetadataSyncPeriod(): SyncPeriod?
 
-    suspend fun currentDataSyncPeriod(): SyncPeriod
+    suspend fun currentDataSyncPeriod(): SyncPeriod?
 
     suspend fun syncMetadata(onProgressUpdate: (Int) -> Unit): Result<Unit>
 
     suspend fun updateProjectAnalytics(): Result<Unit>
 
-    suspend fun setUpSMS(): Result<Unit>
+    suspend fun setUpSMS(): Result<SMSConfigResult>
 
     suspend fun downloadMapMetadata(): Result<Unit>
 
@@ -47,4 +48,8 @@ interface SyncRepository {
     suspend fun getAllTrackerPrograms(): Result<List<String>>
 
     suspend fun getAllDataSets(): Result<List<String>>
+
+    suspend fun saveDataSyncError(stackTrace: String)
+
+    suspend fun toggleSMS(enable: Boolean): Result<Unit>
 }

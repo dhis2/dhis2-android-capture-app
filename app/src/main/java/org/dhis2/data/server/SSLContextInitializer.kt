@@ -17,7 +17,7 @@ object SSLContextInitializer {
         }
         try {
             Security.insertProviderAt(Conscrypt.newProvider(), 1)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Timber.e(SSLContextInitializer::class.java.simpleName, e.toString())
         }
     }

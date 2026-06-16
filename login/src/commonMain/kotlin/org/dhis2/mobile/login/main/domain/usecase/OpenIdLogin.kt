@@ -2,30 +2,14 @@ package org.dhis2.mobile.login.main.domain.usecase
 
 import org.dhis2.mobile.login.main.data.LoginRepository
 import org.dhis2.mobile.login.main.domain.model.LoginResult
+import org.dhis2.mobile.login.main.domain.model.OpenIdLoginConfiguration
 
 class OpenIdLogin(
     repository: LoginRepository,
 ) : BaseLogin(repository) {
-    suspend operator fun invoke(
-        serverUrl: String,
-        isNetworkAvailable: Boolean,
-        clientId: String,
-        redirectUri: String,
-        discoveryUri: String?,
-        authorizationUri: String?,
-        tokenUrl: String?,
-    ): LoginResult {
-        val result =
-            repository.loginWithOpenId(
-                serverUrl = serverUrl,
-                isNetworkAvailable = isNetworkAvailable,
-                clientId = clientId,
-                redirectUri = redirectUri,
-                discoveryUri = discoveryUri,
-                authorizationUri = authorizationUri,
-                tokenUrl = tokenUrl,
-            )
+    suspend operator fun invoke(openIdLoginConfiguration: OpenIdLoginConfiguration): LoginResult {
+        val result = repository.loginWithOpenId(openIdLoginConfiguration)
         val username = if (result.isSuccess) repository.getUsername() else ""
-        return handleResult(result, serverUrl, username)
+        return handleResult(result, openIdLoginConfiguration.serverUrl, username)
     }
 }

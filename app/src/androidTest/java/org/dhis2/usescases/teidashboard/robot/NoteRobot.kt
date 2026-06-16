@@ -45,7 +45,7 @@ class NoteRobot : BaseRobot() {
     }
 
     fun clickOnSaveButton() {
-        waitForView(allOf(withId(R.id.saveButton), withText(R.string.save)))
+        waitForView(allOf(withId(R.id.saveButton), withText(R.string.save)),5000)
             .check(matches(allOf(isDisplayed(), isEnabled())))
             .perform(click())
     }
@@ -70,6 +70,10 @@ class NoteRobot : BaseRobot() {
     }
 
     fun checkNewNoteWasCreated(text: String) {
+        // First wait for the RecyclerView to be visible
+        waitForView(withId(R.id.notes_recycler), waitMillis = NOTES_WAIT_TIMEOUT_MS)
+            .check(matches(isDisplayed()))
+        // Now check for the note content
         waitForView(
             allOf(
                 withId(R.id.notes_recycler),

@@ -38,7 +38,8 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_arrow_back"
-                    tools:ignore="ContentDescription" />
+                    tools:ignore="ContentDescription"
+                    app:tint="?onToolbarColor" />
 
                 <ImageView
                     android:id="@+id/syncButton"
@@ -48,7 +49,7 @@
                     app:layout_constraintEnd_toStartOf="@id/relationshipIcon"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_sync"
-                    app:tint="?colorOnPrimary"
+                    app:tint="?onToolbarColor"
                     tools:ignore="ContentDescription" />
 
                 <androidx.compose.ui.platform.ComposeView
@@ -60,7 +61,7 @@
                     app:layout_constraintEnd_toStartOf="@id/moreOptions"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_map"
-                    app:tint="@color/white"
+                    app:tint="?onToolbarColor"
                     tools:ignore="ContentDescription"
                     tools:visibility="visible" />
 

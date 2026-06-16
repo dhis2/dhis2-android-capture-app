@@ -3,6 +3,7 @@ package org.dhis2.mobile.sync.domain
 import org.dhis2.mobile.commons.domain.UseCase
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.data.SyncRepository
+import org.dhis2.mobile.sync.model.SMSConfigResult
 import org.dhis2.mobile.sync.model.SyncPeriod
 
 class SyncMetadata(
@@ -22,7 +23,14 @@ class SyncMetadata(
             if (syncMetadataResult.isSuccess) {
                 repository.updateProjectAnalytics()
                 input(40)
-                repository.setUpSMS()
+                val smsConfigResult = repository.setUpSMS().getOrDefault(SMSConfigResult.DoNothing)
+                when (smsConfigResult) {
+                    SMSConfigResult.DisableModule -> repository.toggleSMS(false)
+                    SMSConfigResult.EnableModule -> repository.toggleSMS(true)
+                    SMSConfigResult.DoNothing -> {
+                        // no-op
+                    }
+                }
                 input(50)
                 repository.downloadMapMetadata()
                 input(60)
@@ -48,13 +56,16 @@ class SyncMetadata(
         }
 
     private suspend fun handleMetadataPeriodChange(
-        initialMetadataSyncPeriod: SyncPeriod,
-        finalMetadataSyncPeriod: SyncPeriod,
+        initialMetadataSyncPeriod: SyncPeriod?,
+        finalMetadataSyncPeriod: SyncPeriod?,
     ) {
         val metadataSyncPeriodChanged =
             initialMetadataSyncPeriod != finalMetadataSyncPeriod
         val metadataSyncPeriodChangedToManual =
             initialMetadataSyncPeriod !is SyncPeriod.Manual && finalMetadataSyncPeriod is SyncPeriod.Manual
+
+        val notScheduled =
+            syncBackgroundJobAction.getNextMetadataSync() == null && finalMetadataSyncPeriod !is SyncPeriod.Manual
 
         when {
             metadataSyncPeriodChangedToManual -> {
@@ -62,27 +73,34 @@ class SyncMetadata(
                 syncBackgroundJobAction.launchSyncSettings()
             }
 
-            metadataSyncPeriodChanged -> {
-                syncBackgroundJobAction.launchMetadataSync(finalMetadataSyncPeriod.toSeconds())
+            metadataSyncPeriodChanged || notScheduled -> {
+                syncBackgroundJobAction.launchMetadataSync(
+                    finalMetadataSyncPeriod?.toSeconds() ?: SyncPeriod.Every7Days.toSeconds(),
+                )
             }
         }
     }
 
     private suspend fun handleDataPeriodChange(
-        initialDataSyncPeriod: SyncPeriod,
-        finalDataSyncPeriod: SyncPeriod,
+        initialDataSyncPeriod: SyncPeriod?,
+        finalDataSyncPeriod: SyncPeriod?,
     ) {
         val dataSyncPeriodChanged = initialDataSyncPeriod != finalDataSyncPeriod
         val dataSyncPeriodChangedToManual =
             initialDataSyncPeriod !is SyncPeriod.Manual && finalDataSyncPeriod is SyncPeriod.Manual
+
+        val notScheduled =
+            syncBackgroundJobAction.getNextDataSync() == null && finalDataSyncPeriod !is SyncPeriod.Manual
 
         when {
             dataSyncPeriodChangedToManual -> {
                 syncBackgroundJobAction.cancelDataSync()
             }
 
-            dataSyncPeriodChanged -> {
-                syncBackgroundJobAction.launchDataSync(finalDataSyncPeriod.toSeconds())
+            dataSyncPeriodChanged || notScheduled -> {
+                syncBackgroundJobAction.launchDataSync(
+                    finalDataSyncPeriod?.toSeconds() ?: SyncPeriod.Every24Hour.toSeconds(),
+                )
             }
         }
     }

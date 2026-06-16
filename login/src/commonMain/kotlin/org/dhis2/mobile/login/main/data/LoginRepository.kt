@@ -1,6 +1,7 @@
 package org.dhis2.mobile.login.main.data
 
 import coil3.PlatformContext
+import org.dhis2.mobile.login.main.domain.model.OpenIdLoginConfiguration
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 
 typealias UserPassword = String
@@ -52,15 +53,7 @@ interface LoginRepository {
 
     suspend fun importDatabase(path: String): Result<Unit>
 
-    suspend fun loginWithOpenId(
-        serverUrl: String,
-        isNetworkAvailable: Boolean,
-        clientId: String,
-        redirectUri: String,
-        discoveryUri: String?,
-        authorizationUri: String?,
-        tokenUrl: String?,
-    ): Result<Unit>
+    suspend fun loginWithOpenId(openIdLoginConfiguration: OpenIdLoginConfiguration): Result<Unit>
 
     suspend fun getUsername(): String
 

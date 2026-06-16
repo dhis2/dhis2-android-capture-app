@@ -129,6 +129,8 @@ class SyncManagerPresenterTest {
         MetadataSettingsViewModel(
             metadataSyncPeriod = 100,
             lastMetadataSync = "test",
+            nextMetadataSync = null,
+            nextSettingsSync = null,
             hasErrors = false,
             canEdit = false,
             syncInProgress = false,
@@ -138,6 +140,7 @@ class SyncManagerPresenterTest {
         DataSettingsViewModel(
             dataSyncPeriod = 100,
             lastDataSync = "test",
+            nextDataSync = null,
             syncHasErrors = false,
             dataHasErrors = false,
             dataHasWarnings = false,

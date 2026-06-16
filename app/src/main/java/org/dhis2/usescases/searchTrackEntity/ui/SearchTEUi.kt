@@ -39,6 +39,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -159,7 +160,8 @@ fun AddNewButton(
         modifier =
             Modifier
                 .requiredHeight(44.dp)
-                .then(modifier),
+                .then(modifier)
+                .testTag("ADD_NEW_BUTTON"),
         colors =
             ButtonDefaults.buttonColors(
                 containerColor = SurfaceColor.PrimaryContainer,
@@ -661,7 +663,7 @@ fun CreateNewButton(
     ) {
         if (it) {
             ExtendedFAB(
-                modifier = modifier,
+                modifier = modifier.testTag("ADD_NEW_BUTTON"),
                 onClick = onClick,
                 text = stringResource(R.string.search_new_te_type, teTypeName.lowercase()),
                 icon = icon,
@@ -669,7 +671,7 @@ fun CreateNewButton(
             )
         } else {
             FAB(
-                modifier = modifier,
+                modifier = modifier.testTag("ADD_NEW_BUTTON"),
                 onClick = onClick,
                 icon = icon,
                 style = FABStyle.SECONDARY,

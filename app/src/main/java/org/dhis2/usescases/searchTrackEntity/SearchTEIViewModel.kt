@@ -18,13 +18,17 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -77,6 +81,7 @@ import timber.log.Timber
 
 const val TEI_TYPE_SEARCH_MAX_RESULTS = 5
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SearchTEIViewModel(
     val initialProgramUid: String?,
     initialQuery: MutableMap<String, List<String>?>?,
@@ -117,8 +122,8 @@ class SearchTEIViewModel(
     private val _refreshData = MutableLiveData(Unit)
     val refreshData: LiveData<Unit> = _refreshData
 
-    private val _mapResults = Channel<TrackerMapData>()
-    val mapResults: Flow<TrackerMapData> = _mapResults.receiveAsFlow()
+    private val _mapResults = MutableSharedFlow<TrackerMapData>(replay = 1)
+    val mapResults: SharedFlow<TrackerMapData> = _mapResults.asSharedFlow()
 
     private val _mapItemClicked = MutableSharedFlow<String>()
     val mapItemClicked: Flow<String> = _mapItemClicked
@@ -172,7 +177,7 @@ class SearchTEIViewModel(
                     emitAll(
                         when {
                             searching -> loadSearchResults()
-                            displayFrontPageList() -> loadDisplayInListResults()
+                            shouldDisplayFrontPageList() -> loadDisplayInListResults()
                             else -> emptyFlow()
                         },
                     )
@@ -440,7 +445,7 @@ class SearchTEIViewModel(
     }
 
     fun refreshData() {
-        performSearch()
+        if (shouldDisplayFrontPageList()) performSearch()
     }
 
     private fun updateQuery(
@@ -660,7 +665,9 @@ class SearchTEIViewModel(
                         queryDataAsMap(),
                         layersVisibility,
                     )
-                _mapResults.send(data)
+                _mapResults.emit(data)
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 Timber.e(e)
             } finally {
@@ -671,67 +678,83 @@ class SearchTEIViewModel(
     }
 
     fun onSearch() {
-        searchRepository.clearFetchedList()
-        performSearch()
+        if (hasMinNumberOfAttributesToSearch()) {
+            searchRepository.clearFetchedList()
+            performSearch()
+        } else {
+            displayNotEnoughAttributesToSearchMessage()
+        }
     }
 
     private fun performSearch() {
         viewModelScope.launch(dispatchers.io()) {
+            CoroutineTracker.increment()
             try {
-                if (canPerformSearch()) {
-                    searching = queryDataList.isNotEmpty()
-                    searchParametersUiState =
-                        searchParametersUiState.copy(
-                            clearSearchEnabled = queryDataList.isNotEmpty(),
-                            searchedItems = getFriendlyQueryData(),
-                        )
+                searching = queryDataList.isNotEmpty()
+                searchParametersUiState =
+                    searchParametersUiState.copy(
+                        clearSearchEnabled = queryDataList.isNotEmpty(),
+                        searchedItems = getFriendlyQueryData(),
+                    )
 
-                    when (_screenState.value?.screenState) {
-                        SearchScreenState.LIST -> {
-                            setListScreen()
-                            onNewSearch.emit(Unit)
-                        }
-
-                        SearchScreenState.MAP -> {
-                            _refreshData.postValue(Unit)
-                            setMapScreen()
-                            fetchMapResults()
-                        }
-
-                        else -> searching = false
+                when (_screenState.value?.screenState) {
+                    SearchScreenState.LIST -> {
+                        setListScreen()
+                        onNewSearch.emit(Unit)
                     }
-                } else {
-                    val minAttributesToSearch =
-                        searchRepository
-                            .getProgram(initialProgramUid)
-                            ?.minAttributesRequiredToSearch()
-                            ?: 0
-                    val message =
-                        resourceManager.getString(
-                            R.string.search_min_num_attr,
-                            minAttributesToSearch,
-                        )
-                    searchParametersUiState =
-                        searchParametersUiState.copy(minAttributesMessage = message)
-                    searchParametersUiState.updateMinAttributeWarning(true)
-                    setSearchScreen()
-                    _refreshData.postValue(Unit)
-                    onNewSearch.emit(Unit)
+
+                    SearchScreenState.MAP -> {
+                        _refreshData.postValue(Unit)
+                        setMapScreen()
+                        fetchMapResults()
+                    }
+
+                    else -> searching = false
                 }
             } catch (e: Exception) {
                 Timber.d(e)
+            } finally {
+                CoroutineTracker.decrement()
             }
         }
     }
 
-    private fun canPerformSearch(): Boolean = minAttributesToSearchCheck() || displayFrontPageList()
+    private fun displayNotEnoughAttributesToSearchMessage() {
+        viewModelScope.launch(dispatchers.io()) {
+            CoroutineTracker.increment()
+            try {
+                val minAttributesToSearch =
+                    searchRepository
+                        .getProgram(initialProgramUid)
+                        ?.minAttributesRequiredToSearch()
+                        ?: 0
+                val message =
+                    resourceManager.getString(
+                        R.string.search_min_num_attr,
+                        minAttributesToSearch,
+                    )
+                searchParametersUiState =
+                    searchParametersUiState.copy(minAttributesMessage = message)
+                searchParametersUiState.updateMinAttributeWarning(true)
+                setSearchScreen()
+                _refreshData.postValue(Unit)
+                onNewSearch.emit(Unit)
+            } catch (e: Exception) {
+                Timber.d(e)
+            } finally {
+                CoroutineTracker.decrement()
+            }
+        }
+    }
 
-    private fun minAttributesToSearchCheck(): Boolean =
+    private fun shouldDisplayFrontPageList(): Boolean = displayFrontPageListSettingIsConfigured()
+
+    private fun hasMinNumberOfAttributesToSearch(): Boolean =
         searchRepository.getProgram(initialProgramUid)?.let { program ->
             (program.minAttributesRequiredToSearch() ?: 0) <= queryDataList.size
         } ?: true
 
-    private fun displayFrontPageList(): Boolean =
+    private fun displayFrontPageListSettingIsConfigured(): Boolean =
         searchRepository.getProgram(initialProgramUid)?.let { program ->
             program.displayFrontPageList() == true && queryDataList.isEmpty()
         } ?: false
@@ -841,7 +864,7 @@ class SearchTEIViewModel(
                 hasProgramResults,
                 hasGlobalResults,
             )
-        } else if (displayFrontPageList()) {
+        } else if (shouldDisplayFrontPageList()) {
             handleDisplayInListResult(hasProgramResults)
         } else {
             handleInitWithoutData()

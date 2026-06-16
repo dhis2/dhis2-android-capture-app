@@ -13,10 +13,14 @@ import org.dhis2.usescases.settings.SyncManagerFragment
 import org.dhis2.usescases.troubleshooting.TroubleshootingFragment
 
 class MainNavigator(
-    private val fragmentManager: FragmentManager,
+    private var fragmentManager: FragmentManager,
 ) {
     private var currentFragment: Fragment? = null
     private var lastHomeFragment: Fragment? = null
+
+    fun updateFragmentManager(fm: FragmentManager) {
+        fragmentManager = fm
+    }
 
     fun getCurrentIfProgram(): ProgramFragment? = currentFragment?.takeIf { it is ProgramFragment } as? ProgramFragment
 

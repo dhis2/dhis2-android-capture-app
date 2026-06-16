@@ -10,7 +10,6 @@
     <string name="conf_error_value_option_set">La valeur du champ 1%s n\'appartient pas à l\'option définie dans 1%s</string>
     <string name="field_is_mandatory">Ce champ est obligatoire</string>
     <string name="missing_warning_fields_completed_events">Vous avez des messages d\'avertissement.</string>
-    <string name="missing_warning_fields_events">Vous avez des messages d\'avertissement.\nVoulez-vous marquer ce formulaire comme terminé ?</string>
     <string name="required">Requis</string>
     <string name="polygon">Polygone</string>
     <string name="latitude">Latitude</string>
@@ -34,16 +33,14 @@
     <string name="complete">Terminer</string>
     <string name="discard_changes">Annuler les modifications</string>
     <string name="saved">Enregistré!</string>
-    <string name="event_error_on_complete">Vous avez des messages d\'erreur.\nVoulez-vous les consulter ?</string>
-    <string name="missing_error_fields_events">Certains champs contiennent des erreurs et ils ne sont pas enregistrés. \ nVoulez-vous revoir le formulaire ?</string>
-    <string name="review_message">Certains champs nécessitent votre attention. \n Voulez-vous revoir le formulaire ?</string>
     <string name="not_now">Pas maintenant</string>
     <string name="keep_editing">Continuer l’édition</string>
     <string name="event_can_be_completed">Voulez-vous marquer ce formulaire comme complet?</string>
     <string name="discard_go_back">Si vous quittez maintenant, toutes les informations du formulaire seront supprimées.</string>
+    <string name="field_errors_not_saved">Certains champs contiennent des erreurs et ils ne sont pas enregistrés.</string>
+    <string name="fields_mandatory_missing">Certains champs obligatoires manquent et le formulaire ne peut pas être enregistré.</string>
     <string name="field_errors_not_saved_discard">Certains champs contiennent des erreurs et ils ne sont pas enregistrés. \ nSi vous quittez maintenant, les modifications seront ignorées.</string>
     <string name="share">Partager</string>
-    <string name="camera_permission_denied">L\'autorisation de la caméra est refusée. \nVous devez l\'activer pour utiliser cette fonctionnalité.</string>
     <string name="action_close">Fermer</string>
     <string name="copied_text">Copié</string>
     <string name="take_photo">Prendre une photo</string>
@@ -67,5 +64,4 @@
     <string name="category_combo">La combo de catégories</string>
     <string name="no_options">Aucune option disponible</string>
     <string name="cat_combo">Combinaison de catégories</string>
-    <string name="storage_permission_denied">L\'autorisation de stockage n\'est pas accordée.\n Vous devez l\'activer pour utiliser cette fonctionnalité.</string>
     </resources>

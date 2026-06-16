@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.launch
 import org.dhis2.App
+import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.commons.ActivityResultObservable
@@ -70,9 +71,11 @@ abstract class SessionManagerActivity :
                         null,
                     )
                 }
-            if (serverComponent.userManager().isUserLoggedIn().blockingFirst() &&
-                !serverComponent.userManager().allowScreenShare()
-            ) {
+            val isTraining = BuildConfig.FLAVOR == "dhis2Training"
+            val screenShareAllowed =
+                serverComponent.userManager().isUserLoggedIn().blockingFirst() &&
+                    !serverComponent.userManager().allowScreenShare()
+            if (!isTraining && screenShareAllowed) {
                 window.setFlags(
                     WindowManager.LayoutParams.FLAG_SECURE,
                     WindowManager.LayoutParams.FLAG_SECURE,

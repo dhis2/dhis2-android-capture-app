@@ -45,6 +45,7 @@ import androidx.compose.ui.zIndex
 import androidx.fragment.app.FragmentManager
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.models.TransactionItem
+import org.dhis2.android.rtsm.ui.home.LocalThemeColor
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.home.model.EditionDialogResult
@@ -61,7 +62,6 @@ fun DropdownComponentTransactions(
     settingsUiState: SettingsUiState,
     onTransitionSelected: (transition: TransactionItem) -> Unit,
     hasUnsavedData: Boolean,
-    themeColor: Color = colorResource(R.color.colorPrimary),
     launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -115,7 +115,7 @@ fun DropdownComponentTransactions(
                     Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(16.dp),
-                    tint = themeColor,
+                    tint = LocalThemeColor.current,
                 )
             },
             trailingIcon = {
@@ -124,7 +124,7 @@ fun DropdownComponentTransactions(
                         isExpanded = !isExpanded
                     },
                     icon = {
-                        Icon(icon, contentDescription = null, tint = themeColor)
+                        Icon(icon, contentDescription = null, tint = LocalThemeColor.current)
                     },
                 )
             },
@@ -196,7 +196,7 @@ fun DropdownComponentTransactions(
                                 painter = painterResource(item.icon),
                                 contentDescription = null,
                                 Modifier.padding(6.dp),
-                                tint = themeColor,
+                                tint = LocalThemeColor.current,
                             )
                             Text(text = capitalizeText(item.label))
                         }
@@ -212,7 +212,6 @@ fun DropdownComponentFacilities(
     settingsUiState: SettingsUiState,
     onFacilitySelected: (facility: OrganisationUnit) -> Unit,
     hasUnsavedData: Boolean,
-    themeColor: Color = colorResource(R.color.colorPrimary),
     supportFragmentManager: FragmentManager,
     data: List<OrganisationUnit>,
     launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
@@ -261,7 +260,7 @@ fun DropdownComponentFacilities(
                     Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(16.dp),
-                    tint = themeColor,
+                    tint = LocalThemeColor.current,
                 )
             },
             trailingIcon = {
@@ -279,7 +278,7 @@ fun DropdownComponentFacilities(
                         Icon(
                             painterResource(id = R.drawable.ic_arrow_drop_down),
                             contentDescription = null,
-                            tint = themeColor,
+                            tint = LocalThemeColor.current,
                         )
                     },
                 )
@@ -303,7 +302,6 @@ fun DropdownComponentFacilities(
 fun DropdownComponentDistributedTo(
     onDestinationSelected: (destination: Option) -> Unit,
     dataEntryUiState: DataEntryUiState,
-    themeColor: Color = colorResource(R.color.colorPrimary),
     data: List<Option>,
     isDestinationSelected: (value: String) -> Unit = { },
     deliverToLabel: String? = null,
@@ -372,7 +370,7 @@ fun DropdownComponentDistributedTo(
                     Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(16.dp),
-                    tint = themeColor,
+                    tint = LocalThemeColor.current,
                 )
             },
             trailingIcon = {
@@ -381,7 +379,7 @@ fun DropdownComponentDistributedTo(
                         isExpanded = !isExpanded
                     },
                     icon = {
-                        Icon(icon, contentDescription = null, tint = themeColor)
+                        Icon(icon, contentDescription = null, tint = LocalThemeColor.current)
                     },
                 )
             },
