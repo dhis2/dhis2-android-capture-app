@@ -15,6 +15,7 @@ import org.dhis2.mobile.commons.providers.SECURE_PASS
 import org.dhis2.mobile.commons.providers.SECURE_SERVER_URL
 import org.dhis2.mobile.commons.providers.SECURE_USER_NAME
 import org.dhis2.mobile.commons.providers.SHARE_PREFS
+import org.dhis2.mobile.commons.providers.createSecureSharedPreferences
 import org.hisp.dhis.android.core.arch.storage.internal.AndroidSecureStore
 import org.hisp.dhis.android.core.arch.storage.internal.ChunkedSecureStore
 import timber.log.Timber
@@ -24,7 +25,7 @@ open class PreferenceProviderImpl(
     context: Context,
 ) : PreferenceProvider {
     private val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
+        createSecureSharedPreferences(context, SHARE_PREFS)
 
     private val asc = AndroidSecureStore(context)
     private val css = ChunkedSecureStore(asc)

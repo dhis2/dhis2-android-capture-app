@@ -16,7 +16,7 @@ internal class PreferenceProviderImpl(
     context: Context,
 ) : PreferenceProvider {
     private val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
+        createSecureSharedPreferences(context, SHARE_PREFS)
 
     private val asc = AndroidSecureStore(context)
     private val css = ChunkedSecureStore(asc)

@@ -72,6 +72,7 @@ kotlin {
             implementation(libs.test.espresso.idlingresource)
             api(libs.analytics.timber)
             implementation(libs.androidx.browser)
+            implementation(libs.androidx.security.crypto)
             // Sentry
             api(libs.analytics.sentry)
             implementation(libs.androidx.work)
