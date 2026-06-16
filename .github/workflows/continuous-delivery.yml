@@ -44,7 +44,7 @@ jobs:
 
       - name: Decode Keystore
         id: decode_keystore
-        uses: timheuer/base64-to-file@784a1a4a994315802b7d8e2084e116e783d157be
+        uses: timheuer/base64-to-file@dfa5a5dd38803cb4f5c3a081eeb28e8362d43e9c
         with:
           fileName: 'debug.keystore'
           encodedString: ${{ secrets.DEBUG_KEYSTORE_BASE64 }}
@@ -78,7 +78,7 @@ jobs:
 
       # Upload Artifact Build
       - name: Upload Android artifacts
-        uses: actions/upload-artifact@v7.0.0
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: ${{ env.repository_name }} - Android APK - ${{ steps.date.outputs.date }}
           path: ${{ steps.apk-path.outputs.apk_path }}

@@ -5,7 +5,6 @@ import dagger.Provides
 import dhis2.org.analytics.charts.Charts
 import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.dhis2.commons.di.dagger.PerActivity
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.EventResourcesProvider
@@ -14,6 +13,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.mobileProgramRules.EvaluationType
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.usescases.enrollment.DateEditionWarningHandler

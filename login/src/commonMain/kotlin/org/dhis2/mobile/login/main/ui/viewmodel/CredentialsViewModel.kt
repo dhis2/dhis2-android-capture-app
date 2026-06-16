@@ -89,7 +89,7 @@ class CredentialsViewModel(
                     availableUsernames = emptyList(),
                     usernameCanBeEdited = username == null,
                 ),
-            loginState = LoginState.Disabled,
+            loginState = if (oAuthEnable) LoginState.Enabled else LoginState.Disabled,
             errorMessage = null,
             allowRecovery = false,
             canUseBiometrics = false,
@@ -110,17 +110,18 @@ class CredentialsViewModel(
                 loadData()
             }.stateIn(
                 scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
+                started = SharingStarted.Eagerly,
                 initialValue = initialState,
             )
 
     init {
         launchUseCase {
             appLinkNavigation.appLink.collect { urlString ->
-                if (credentialsScreenState.value.loginState is LoginState.Running) {
-                    handleOAuthCallbacks(urlString)
-                }
+                handleOAuthCallbacks(urlString)
             }
+        }
+        if (oAuthEnable && !fromHome) {
+            fetchOAuthEnrollmentUrl()
         }
     }
 
@@ -128,8 +129,8 @@ class CredentialsViewModel(
         launchUseCase {
             val biometricInfo = getBiometricInfo(serverUrl)
 
-            _credentialsScreenState.emit(
-                CredentialsUiState(
+            _credentialsScreenState.update { current ->
+                current.copy(
                     serverInfo =
                         ServerInfo(
                             serverName = serverName,
@@ -143,21 +144,16 @@ class CredentialsViewModel(
                             availableUsernames = getAvailableUsernames(),
                             usernameCanBeEdited = username == null,
                         ),
-                    loginState = if (oAuthEnable) LoginState.Enabled else LoginState.Disabled,
                     errorMessage = null,
                     allowRecovery = allowRecovery,
-                    canUseBiometrics = getBiometricInfo(serverUrl).canUseBiometrics,
+                    canUseBiometrics = biometricInfo.canUseBiometrics,
                     oidcInfo = oidcInfo,
                     afterLoginActions = emptyList(),
                     hasOtherAccounts = getHasOtherAccounts(),
                     isSessionLocked = getIsSessionLockedUseCase(),
                     displayBiometricsDialog = biometricInfo.canUseBiometrics && !fromHome,
                     oAuthEnable = oAuthEnable,
-                ),
-            )
-
-            if (_credentialsScreenState.value.oAuthEnable && !fromHome) {
-                fetchOAuthEnrollmentUrl()
+                )
             }
         }
     }

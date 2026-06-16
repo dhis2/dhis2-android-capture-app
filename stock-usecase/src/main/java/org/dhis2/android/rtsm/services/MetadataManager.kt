@@ -8,7 +8,7 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 
 interface MetadataManager {
-    fun stockManagementProgram(programUid: String): Single<Program?>
+    fun stockManagementProgram(programUid: String): Single<Program>
 
     fun facilities(programUid: String): Single<List<OrganisationUnit>>
 

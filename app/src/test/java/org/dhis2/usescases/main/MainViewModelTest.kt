@@ -62,7 +62,6 @@ import java.io.File
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
-
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
@@ -98,45 +97,48 @@ class MainViewModelTest {
     private val newVersionFlow = MutableSharedFlow<String>()
 
     @Before
-    fun setUp() = runTest {
-        Dispatchers.setMain(testingDispatcher)
+    fun setUp() =
+        runTest {
+            Dispatchers.setMain(testingDispatcher)
 
-        whenever(syncStatusController.observeDownloadProcess()) doReturn syncStatusFlow
-        whenever(scheduleNewVersionAlert.newVersionFlow) doReturn newVersionFlow
-        whenever(filterManager.asFlow(any())) doReturn mockedFilterManagerMock
-        whenever(filterManager.periodRequest) doReturn mock()
-        whenever(filterManager.ouTreeFlowable()) doReturn mock()
-        whenever(launchInitialSync()) doReturn Result.success(InitialSyncAction.Skip)
-        whenever(checkSingleNavigation()) doReturn Result.failure(Exception("no single navigation"))
+            whenever(syncStatusController.observeDownloadProcess()) doReturn syncStatusFlow
+            whenever(scheduleNewVersionAlert.newVersionFlow) doReturn newVersionFlow
+            whenever(filterManager.asFlow(any())) doReturn mockedFilterManagerMock
+            whenever(filterManager.periodRequest) doReturn mock()
+            whenever(filterManager.ouTreeFlowable()) doReturn mock()
+            whenever(launchInitialSync()) doReturn Result.success(InitialSyncAction.Skip)
+            whenever(checkSingleNavigation()) doReturn Result.failure(Exception("no single navigation"))
 
-        viewModel = MainViewModel(
-            preferences = preferences,
-            filterManager = filterManager,
-            matomoAnalyticsController = matomoAnalyticsController,
-            syncStatusController = syncStatusController,
-            mainNavigator = mainNavigator,
-            getUserName = getUserName,
-            configureHomeNavigationBar = configureHomeNavigationBar,
-            getHomeFilters = getHomeFilters,
-            downloadNewVersion = downloadNewVersion,
-            logOutUser = logOutUser,
-            deleteAccount = deleteAccount,
-            getLockAction = getLockAction,
-            updateInitialSyncStatus = updateInitialSyncStatus,
-            checkSingleNavigation = checkSingleNavigation,
-            launchInitialSync = launchInitialSync,
-            scheduleNewVersionAlert = scheduleNewVersionAlert,
-            syncBackgroundJobAction = syncBackgroundJobAction,
-            initialScreen = MainScreenType.Home(HomeScreen.Programs),
-            dispatcher = object : DispatcherProvider {
-                override fun io(): CoroutineDispatcher = testingDispatcher
+            viewModel =
+                MainViewModel(
+                    preferences = preferences,
+                    filterManager = filterManager,
+                    matomoAnalyticsController = matomoAnalyticsController,
+                    syncStatusController = syncStatusController,
+                    mainNavigator = mainNavigator,
+                    getUserName = getUserName,
+                    configureHomeNavigationBar = configureHomeNavigationBar,
+                    getHomeFilters = getHomeFilters,
+                    downloadNewVersion = downloadNewVersion,
+                    logOutUser = logOutUser,
+                    deleteAccount = deleteAccount,
+                    getLockAction = getLockAction,
+                    updateInitialSyncStatus = updateInitialSyncStatus,
+                    checkSingleNavigation = checkSingleNavigation,
+                    launchInitialSync = launchInitialSync,
+                    scheduleNewVersionAlert = scheduleNewVersionAlert,
+                    syncBackgroundJobAction = syncBackgroundJobAction,
+                    initialScreen = MainScreenType.Home(HomeScreen.Programs),
+                    dispatcher =
+                        object : DispatcherProvider {
+                            override fun io(): CoroutineDispatcher = testingDispatcher
 
-                override fun computation(): CoroutineDispatcher = testingDispatcher
+                            override fun computation(): CoroutineDispatcher = testingDispatcher
 
-                override fun ui(): CoroutineDispatcher = testingDispatcher
-            },
-        )
-    }
+                            override fun ui(): CoroutineDispatcher = testingDispatcher
+                        },
+                )
+        }
 
     @Test
     fun `Should save default settings and render user name when the activity is resumed`() =
@@ -166,122 +168,131 @@ class MainViewModelTest {
         }
 
     @Test
-    fun `Should block session`() = runTest {
+    fun `Should block session`() =
+        runTest {
+            whenever(getLockAction()) doReturn Result.success(LockAction.BlockSession)
 
-        whenever(getLockAction()) doReturn Result.success(LockAction.BlockSession)
-
-        viewModel.homeEffects.test {
-            viewModel.onBlockSession()
-            assertTrue(awaitItem() == HomeEffect.BlockSession)
-            verify(matomoAnalyticsController).trackEvent(
-                HOME, BLOCK_SESSION_PIN, CLICK
-            )
-        }
-    }
-
-    @Test
-    fun `Should open drawer when menu is clicked`() = runTest {
-        viewModel.homeEffects.test {
-            viewModel.onAction(HomeAction.MenuClicked)
-            assertTrue(awaitItem() == HomeEffect.ToggleSideMenu)
-        }
-    }
-
-    @Test
-    fun `should return to home section when user taps back in a different section`() = runTest {
-        whenever(mainNavigator.openHome()) doReturn MainScreenType.Home(HomeScreen.Programs)
-        viewModel.onChangeScreen(MainScreenType.Settings)
-        viewModel.onAction(HomeAction.BackPressed)
-        advanceUntilIdle()
-        verify(mainNavigator, times(1)).openHome()
-    }
-
-    @Test
-    fun `should close app when user taps back in a home section`() = runTest {
-        viewModel.homeEffects.test {
-            viewModel.onChangeScreen(MainScreenType.Home(HomeScreen.Programs))
-            viewModel.onAction(HomeAction.BackPressed)
-            assertTrue(awaitItem() is HomeEffect.BlockSession)
-        }
-    }
-
-    @Test
-    fun `Should track event when clicking on SyncManager`() = runTest {
-        viewModel.onChangeScreen(MainScreenType.Settings)
-        advanceUntilIdle()
-        verify(matomoAnalyticsController).trackEvent(HOME, SETTINGS, CLICK)
-    }
-
-    @Test
-    fun `Should go to delete account`() = runTest {
-
-        whenever(deleteAccount(any())) doReturn Result.success(1)
-
-        viewModel.homeEffects.test {
-            val mockedContext = mock<Context>()
-            whenever(mockedContext.cacheDir) doReturn File("random")
-            with(mockedContext) {
-                viewModel.onDeleteAccount()
-            }
-
-            assertTrue(awaitItem() == HomeEffect.ShowDeleteNotification)
-            verify(syncBackgroundJobAction).cancelAll()
-            assertTrue(awaitItem() == HomeEffect.GoToLogin(1, true))
-
-        }
-    }
-
-    @Test
-    fun shouldSetVersionToUpdate() = runTest {
-        whenever(getUserName()) doReturn Result.success("username")
-        whenever(configureHomeNavigationBar()) doReturn Result.success(emptyList())
-        whenever(getHomeFilters()) doReturn Result.success(emptyList())
-        whenever(filterManager.totalFilters) doReturn 0
-
-        viewModel.homeScreenState.test {
-            awaitItem()
-            newVersionFlow.emit("test.test.test")
-            with(awaitItem()) {
-                assertTrue(versionToUpdate is VersionToUpdateState.New)
-                assertTrue((versionToUpdate as VersionToUpdateState.New).version == "test.test.test")
-            }
-        }
-    }
-
-    @Test
-    fun shouldSendGranularSyncEvent() = runTest {
-        viewModel.homeEffects.test {
-            viewModel.onAction(HomeAction.SyncClicked)
-            assertTrue(awaitItem() is HomeEffect.ShowGranularSync)
-        }
-    }
-
-    @Test
-    fun shouldToggleFilters() = runTest {
-        whenever(getUserName()) doReturn Result.success("username")
-        whenever(configureHomeNavigationBar()) doReturn Result.success(
-            listOf(
-                NavigationBarItem(
-                    id = NavigationPage.PROGRAMS,
-                    icon = Icons.Filled.Form,
-                    label = "Program"
-                ),
-                NavigationBarItem(
-                    id = NavigationPage.ANALYTICS,
-                    icon = Icons.Filled.BarChart,
-                    label = "Analytics",
-                )
-            )
-        )
-        whenever(getHomeFilters()) doReturn Result.success(emptyList())
-        whenever(filterManager.totalFilters) doReturn 0
-
-        viewModel.homeScreenState.test {
-            viewModel.onAction(HomeAction.FilterClicked)
             viewModel.homeEffects.test {
-                assertTrue((this).awaitItem() is HomeEffect.ToggleFilters)
+                viewModel.onBlockSession()
+                assertTrue(awaitItem() == HomeEffect.BlockSession)
+                verify(matomoAnalyticsController).trackEvent(
+                    HOME,
+                    BLOCK_SESSION_PIN,
+                    CLICK,
+                )
             }
-            assertTrue((this@test).awaitItem().bottomNavigationBarVisible.not())
         }
-    }
+
+    @Test
+    fun `Should open drawer when menu is clicked`() =
+        runTest {
+            viewModel.homeEffects.test {
+                viewModel.onAction(HomeAction.MenuClicked)
+                assertTrue(awaitItem() == HomeEffect.ToggleSideMenu)
+            }
+        }
+
+    @Test
+    fun `should return to home section when user taps back in a different section`() =
+        runTest {
+            whenever(mainNavigator.openHome()) doReturn MainScreenType.Home(HomeScreen.Programs)
+            viewModel.onChangeScreen(MainScreenType.Settings)
+            viewModel.onAction(HomeAction.BackPressed)
+            advanceUntilIdle()
+            verify(mainNavigator, times(1)).openHome()
+        }
+
+    @Test
+    fun `should close app when user taps back in a home section`() =
+        runTest {
+            viewModel.homeEffects.test {
+                viewModel.onChangeScreen(MainScreenType.Home(HomeScreen.Programs))
+                viewModel.onAction(HomeAction.BackPressed)
+                assertTrue(awaitItem() is HomeEffect.BlockSession)
+            }
+        }
+
+    @Test
+    fun `Should track event when clicking on SyncManager`() =
+        runTest {
+            viewModel.onChangeScreen(MainScreenType.Settings)
+            advanceUntilIdle()
+            verify(matomoAnalyticsController).trackEvent(HOME, SETTINGS, CLICK)
+        }
+
+    @Test
+    fun `Should go to delete account`() =
+        runTest {
+            whenever(deleteAccount(any())) doReturn Result.success(1)
+
+            viewModel.homeEffects.test {
+                val mockedContext = mock<Context>()
+                whenever(mockedContext.cacheDir) doReturn File("random")
+                with(mockedContext) {
+                    viewModel.onDeleteAccount()
+                }
+
+                assertTrue(awaitItem() == HomeEffect.ShowDeleteNotification)
+                verify(syncBackgroundJobAction).cancelAll()
+                assertTrue(awaitItem() == HomeEffect.GoToLogin(1, true))
+            }
+        }
+
+    @Test
+    fun shouldSetVersionToUpdate() =
+        runTest {
+            whenever(getUserName()) doReturn Result.success("username")
+            whenever(configureHomeNavigationBar()) doReturn Result.success(emptyList())
+            whenever(getHomeFilters()) doReturn Result.success(emptyList())
+            whenever(filterManager.totalFilters) doReturn 0
+
+            viewModel.homeScreenState.test {
+                awaitItem()
+                newVersionFlow.emit("test.test.test")
+                with(awaitItem()) {
+                    assertTrue(versionToUpdate is VersionToUpdateState.New)
+                    assertTrue((versionToUpdate as VersionToUpdateState.New).version == "test.test.test")
+                }
+            }
+        }
+
+    @Test
+    fun shouldSendGranularSyncEvent() =
+        runTest {
+            viewModel.homeEffects.test {
+                viewModel.onAction(HomeAction.SyncClicked)
+                assertTrue(awaitItem() is HomeEffect.ShowGranularSync)
+            }
+        }
+
+    @Test
+    fun shouldToggleFilters() =
+        runTest {
+            whenever(getUserName()) doReturn Result.success("username")
+            whenever(configureHomeNavigationBar()) doReturn
+                Result.success(
+                    listOf(
+                        NavigationBarItem(
+                            id = NavigationPage.PROGRAMS,
+                            icon = Icons.Filled.Form,
+                            label = "Program",
+                        ),
+                        NavigationBarItem(
+                            id = NavigationPage.ANALYTICS,
+                            icon = Icons.Filled.BarChart,
+                            label = "Analytics",
+                        ),
+                    ),
+                )
+            whenever(getHomeFilters()) doReturn Result.success(emptyList())
+            whenever(filterManager.totalFilters) doReturn 0
+
+            viewModel.homeScreenState.test {
+                viewModel.onAction(HomeAction.FilterClicked)
+                viewModel.homeEffects.test {
+                    assertTrue((this).awaitItem() is HomeEffect.ToggleFilters)
+                }
+                assertTrue((this@test).awaitItem().bottomNavigationBarVisible.not())
+            }
+        }
 }

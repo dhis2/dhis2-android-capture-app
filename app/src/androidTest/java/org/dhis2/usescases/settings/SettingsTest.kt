@@ -3,7 +3,7 @@ package org.dhis2.usescases.settings
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.dhis2.commons.featureconfig.model.Feature
+import org.dhis2.mobile.commons.featureconfig.model.Feature
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.main.MainActivity

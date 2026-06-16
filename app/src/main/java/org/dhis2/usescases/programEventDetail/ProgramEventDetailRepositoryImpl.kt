@@ -128,7 +128,7 @@ class ProgramEventDetailRepositoryImpl internal constructor(
             .uid(selectedCatOptionCombo)
             .blockingGet()
 
-    override fun program(): Single<Program?> = programRepository.get()
+    override fun program(): Single<Program> = programRepository.get()
 
     override fun getAccessDataWrite(): Boolean {
         var canWrite =
@@ -160,7 +160,7 @@ class ProgramEventDetailRepositoryImpl internal constructor(
             .eq(programUid)
             .get()
 
-    override fun programStage(): Single<ProgramStage?> = stageRepository.one().get()
+    override fun programStage(): Single<ProgramStage> = stageRepository.one().get()
 
     override fun programHasCoordinates(): Boolean {
         val programStageHasCoordinates =

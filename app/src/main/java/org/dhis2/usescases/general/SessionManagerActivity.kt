@@ -138,18 +138,19 @@ abstract class SessionManagerActivity :
 
     private fun showPinBottomSheet() {
         if (pinComposeView != null) return
-        pinComposeView = addPinBottomSheet(
-            mode = PinMode.ASK,
-            onSuccess = {
-                startActivity(MainActivity::class.java, null, true, true, null)
-            },
-            onDismiss = {
-                analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
-                if (this !is LoginActivity) {
-                    startActivity(LoginActivity::class.java, null, true, true, null)
-                }
-            },
-        )
+        pinComposeView =
+            addPinBottomSheet(
+                mode = PinMode.ASK,
+                onSuccess = {
+                    startActivity(MainActivity::class.java, null, true, true, null)
+                },
+                onDismiss = {
+                    analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
+                    if (this !is LoginActivity) {
+                        startActivity(LoginActivity::class.java, null, true, true, null)
+                    }
+                },
+            )
     }
 
     private fun removePinBottomSheet() {

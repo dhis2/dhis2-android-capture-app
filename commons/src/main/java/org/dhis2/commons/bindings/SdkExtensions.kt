@@ -1,6 +1,5 @@
 package org.dhis2.commons.bindings
 
-import io.reactivex.Single
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.State

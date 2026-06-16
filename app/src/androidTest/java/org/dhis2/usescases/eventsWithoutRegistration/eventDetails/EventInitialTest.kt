@@ -91,9 +91,9 @@ class EventInitialTest {
     private val categoryOptionCombo: CategoryOptionCombo = mock {
         on { uid() } doReturn CAT_OPTION_COMBO_UID
     }
-    private val orgUnit: OrganisationUnit = mock {
-        on { uid() } doReturn ORG_UNIT_UID
-    }
+    private val orgUnit: OrganisationUnit = OrganisationUnit.builder()
+        .uid(ORG_UNIT_UID)
+        .build()
     private val geometryModel: FieldUiModel = mock {
         on { value } doReturn COORDINATES
     }
