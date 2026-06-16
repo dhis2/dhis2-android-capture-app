@@ -42,6 +42,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
+                app:tint="?onToolbarColor"
                 tools:ignore="ContentDescription" />
 
             <TextView
@@ -54,7 +55,7 @@
                 android:gravity="center_vertical"
                 android:maxLines="1"
                 android:text="@{ name }"
-                android:textColor="@android:color/white"
+                android:textColor="?onToolbarColor"
                 android:textSize="17sp"
                 app:layout_constraintEnd_toStartOf="@id/syncButton"
                 app:layout_constraintStart_toEndOf="@id/menu"
@@ -67,7 +68,7 @@
                 app:layout_constraintEnd_toStartOf="@id/filter"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_sync"
-                app:tint="?colorOnPrimary"
+                app:tint="?onToolbarColor"
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -79,7 +80,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_filter"
-                tools:ignore="ContentDescription" />
+                tools:ignore="ContentDescription"
+                app:tint="?onToolbarColor" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/filterCounter"
@@ -94,6 +96,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:backgroundTint="?onToolbarColor"
                     android:background="@drawable/ic_oval_shape_white"
                     android:gravity="center"
                     android:includeFontPadding="false"

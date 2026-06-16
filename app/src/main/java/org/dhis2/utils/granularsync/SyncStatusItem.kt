@@ -18,7 +18,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.toColorInt
 import org.dhis2.commons.R
+import org.dhis2.commons.ui.icons.SyncingIcon
+import org.dhis2.utils.granularsync.domain.SyncStatus
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 @Composable
 fun SyncStatusItem(
@@ -57,6 +61,61 @@ fun SyncStatusItem(
             }
         }
     }
+}
+
+@Composable
+fun SyncUiStatusIcon(status: SyncStatus) {
+    if (status == SyncStatus.UPLOADING) {
+        SyncingIcon()
+    } else {
+        val (imageVector, tint) = status.toIconData()
+        Icon(
+            imageVector = imageVector,
+            tint = tint,
+            contentDescription = "sync",
+        )
+    }
+}
+
+@Composable
+private fun SyncStatus.toIconData(): Pair<ImageVector, Color> {
+    val imageVector =
+        when (this) {
+            SyncStatus.NOT_SYNCED,
+            SyncStatus.UPLOADING,
+            -> ImageVector.vectorResource(id = R.drawable.ic_sync_problem_grey)
+
+            SyncStatus.ERROR ->
+                ImageVector.vectorResource(id = R.drawable.ic_sync_problem_red)
+
+            SyncStatus.WARNING ->
+                ImageVector.vectorResource(id = R.drawable.ic_sync_warning)
+
+            SyncStatus.SENT_VIA_SMS,
+            SyncStatus.SYNCED_VIA_SMS,
+            -> ImageVector.vectorResource(id = R.drawable.ic_sync_sms)
+
+            SyncStatus.SYNCED,
+            SyncStatus.RELATIONSHIP,
+            -> ImageVector.vectorResource(id = R.drawable.ic_status_synced)
+        }
+    val tint =
+        when (this) {
+            SyncStatus.NOT_SYNCED,
+            SyncStatus.UPLOADING,
+            -> Color("#333333".toColorInt())
+
+            SyncStatus.ERROR -> Color("#E91E63".toColorInt())
+            SyncStatus.WARNING -> Color("#FF9800".toColorInt())
+            SyncStatus.SENT_VIA_SMS,
+            SyncStatus.SYNCED_VIA_SMS,
+            -> Color("#03A9F4".toColorInt())
+
+            SyncStatus.SYNCED,
+            SyncStatus.RELATIONSHIP,
+            -> TextColor.OnSurfaceLight
+        }
+    return Pair(imageVector, tint)
 }
 
 @Preview(showBackground = true)

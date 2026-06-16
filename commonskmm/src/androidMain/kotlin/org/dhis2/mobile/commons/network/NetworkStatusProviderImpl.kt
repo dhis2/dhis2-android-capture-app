@@ -42,7 +42,12 @@ class NetworkStatusProviderImpl(
                         ) {
                             super.onCapabilitiesChanged(network, networkCapabilities)
                             val networkState = networkCapabilities.asNetworkState()
-                            trySend(networkState)
+                            if (networkState) {
+                                availableNetworks.add(network)
+                            } else {
+                                availableNetworks.remove(network)
+                            }
+                            trySend(availableNetworks.isNotEmpty())
                         }
 
                         override fun onUnavailable() {
@@ -55,13 +60,16 @@ class NetworkStatusProviderImpl(
                             val networkCapabilities = manager.getNetworkCapabilities(network)
 
                             val networkState = networkCapabilities?.asNetworkState() ?: false
-                            trySend(networkState)
+                            if (networkState) {
+                                availableNetworks.add(network)
+                            }
+                            trySend(availableNetworks.isNotEmpty())
                         }
 
                         override fun onLost(network: Network) {
                             super.onLost(network)
                             availableNetworks.remove(network)
-                            trySend(false)
+                            trySend(availableNetworks.isNotEmpty())
                         }
                     }
 
@@ -77,5 +85,7 @@ class NetworkStatusProviderImpl(
         return networkCapabilities?.asNetworkState() ?: false
     }
 
-    private fun NetworkCapabilities.asNetworkState(): Boolean = hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    private fun NetworkCapabilities.asNetworkState(): Boolean =
+        hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+            hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
 }

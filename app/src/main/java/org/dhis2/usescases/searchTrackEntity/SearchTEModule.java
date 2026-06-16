@@ -167,30 +167,24 @@ public class SearchTEModule {
     SearchRepository searchRepository(@NonNull D2 d2,
                                       FilterPresenter filterPresenter,
                                       ResourceManager resources,
-                                      SearchSortingValueSetter searchSortingValueSetter,
                                       Charts charts,
                                       CrashReportController crashReportController,
                                       NetworkStatusProvider networkStatusProvider,
                                       SearchTEIRepository searchTEIRepository,
                                       ThemeManager themeManager,
-                                      MetadataIconProvider metadataIconProvider,
                                       DateUtils dateUtils,
                                       CustomIntentRepository customIntentRepository,
                                       DispatcherProvider dispatcherProvider) {
-        ProfilePictureProvider profilePictureProvider = new ProfilePictureProvider(d2);
         return new SearchRepositoryImpl(teiType,
                 initialProgram,
                 d2,
                 filterPresenter,
                 resources,
-                searchSortingValueSetter,
                 charts,
                 crashReportController,
                 networkStatusProvider,
                 searchTEIRepository,
                 themeManager,
-                metadataIconProvider,
-                profilePictureProvider,
                 dateUtils,
                 customIntentRepository,
                 dispatcherProvider);
@@ -205,7 +199,8 @@ public class SearchTEModule {
             MetadataIconProvider metadataIconProvider,
             ColorUtils colorUtils,
             DateUtils dateUtils,
-            CustomIntentRepository customIntentRepository
+            CustomIntentRepository customIntentRepository,
+            SearchSortingValueSetter sortingValueSetter
     ) {
         ResourceManager resourceManager = new ResourceManager(moduleContext, colorUtils);
         DateLabelProvider dateLabelProvider = new DateLabelProvider(moduleContext, new ResourceManager(moduleContext, colorUtils));
@@ -219,7 +214,8 @@ public class SearchTEModule {
                         d2,
                         profilePictureProvider,
                         dateLabelProvider,
-                        metadataIconProvider
+                        metadataIconProvider,
+                        sortingValueSetter
                 ),
                 new EventInfoProvider(
                         d2,
@@ -437,12 +433,20 @@ public class SearchTEModule {
     @PerActivity
     SearchTrackedEntityRepository provideLoadSearchResultsRepository(
             D2 d2,
-            FilterPresenter filterPresenter
+            FilterPresenter filterPresenter,
+            ProfilePictureProvider profilePictureProvider
     ) {
         return new SearchTrackedEntityRepositoryImpl(
                 d2,
-                filterPresenter
+                filterPresenter,
+                profilePictureProvider
         );
+    }
+
+    @Provides
+    @PerActivity
+    ProfilePictureProvider provideProfilePictureProvider(D2 d2) {
+        return new ProfilePictureProvider(d2);
     }
 
     @Provides

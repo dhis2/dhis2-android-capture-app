@@ -21,7 +21,7 @@ class SearchRelationshipViewHolder(
 
     override fun itemViewClick() {
         itemView.setOnClickListener {
-            onAddRelationship(teiModel.tei.uid(), null, teiModel.isOnline)
+            onAddRelationship(teiModel.tei.uid, null, teiModel.tei.isOnline)
         }
     }
 }

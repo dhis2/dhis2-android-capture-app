@@ -10,7 +10,6 @@
     <!--SDK error codes-->
     <string name="login_error_null_pass">Password is missing. Please enter password.</string>
     <string name="login_error_null_username">Username is missing. Please enter username.</string>
-    <string name="login_error_dhis_version">This server is running a dhis version different than 2.29. Update your server version or use the testing environment to proceed.</string>
     <string name="login_error_dhis_version_v2">This server is running a DHIS2 version different than %s. Update your server version or contact your admin.</string>
     <string name="login_error_unsuccessful_response">Something went wrong. Please check that server URL, username and password are correct and try again.</string>
     <string name="login_error_error_response">Sorry! Something failed on the server side.</string>

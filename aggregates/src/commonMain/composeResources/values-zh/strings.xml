@@ -16,8 +16,6 @@
     <string name="input_date_out_of_range">超出范围</string>
     <string name="format_error">格式不正确</string>
     <string name="input_not_supported">不支持</string>
-    <string name="completion_dialog_title">所有都很好</string>
-    <string name="completion_dialog_description">您还想完成数据集吗？</string>
     <string name="validation_success_title">所有都很好</string>
     <string name="mark_dataset_complete">你要完成数据集？</string>
     <string name="not_now">现在不要</string>

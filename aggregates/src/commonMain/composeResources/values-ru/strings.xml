@@ -16,8 +16,6 @@
     <string name="input_date_out_of_range">Вне спектра</string>
     <string name="format_error">Неверный формат</string>
     <string name="input_not_supported">Не поддерживается</string>
-    <string name="completion_dialog_title">Все выглядит хорошо</string>
-    <string name="completion_dialog_description">Вы также хотите завершить набор данных?</string>
     <string name="validation_success_title">Все выглядит хорошо</string>
     <string name="mark_dataset_complete">Вы также хотите завершить набор данных?</string>
     <string name="not_now">Не сейчас</string>

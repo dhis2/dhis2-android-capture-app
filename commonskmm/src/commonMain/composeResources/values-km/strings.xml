@@ -10,10 +10,6 @@
     <string name="error">កំហុសបច្ចេកទេស</string>
     <string name="choose_date">ជ្រើសរើសថ្ងៃខែឆ្នាំ</string>
     <string name="required">ទាមទារ</string>
-    <string name="date">កាលបរិច្ឆេទ</string>
-    <string name="hint_year">ឆ្នាំ</string>
-    <string name="hint_month">ខែ</string>
-    <string name="hint_day">ថ្ងៃ</string>
     <string name="latitude">រយៈទទឹង</string>
     <string name="longitude">រយៈបណ្តោយ</string>
     <string name="enter_positive_integer_or_zero">បញ្ជូលទិន្នន័យជាលេខ (វិជ្ជមាន រឺ លេខ ០)</string>
@@ -44,7 +40,6 @@
     <string name="no_results_found">មិនមានលទ្ធផលបង្ហាញ</string>
     <string name="action_done">Done</string>
     <string name="input_not_supported">មិនគាំទ្រ​ / មិនអាចធ្វើឡើងបានទេ</string>
-    <string name="login_error_dhis_version">ម៉ាស៊ីនមេនេះកំពុងដំណើរការខុសពី DHIS ២.២៩។ សូមធ្វើបច្ចុប្បន្នភាពលើម៉ាស៊ីនមេរបស់អ្នក​</string>
     <string name="online_search_parsing_error">កំហុសខណៈពេលញែកលទ្ធផល</string>
     <string name="cancel">បោះបង់</string>
     <string name="ok">យល់ព្រម</string>

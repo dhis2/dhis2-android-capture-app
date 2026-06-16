@@ -26,8 +26,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.Even
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialComponent;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialModule;
-import org.dhis2.usescases.main.MainComponent;
-import org.dhis2.usescases.main.MainModule;
 import org.dhis2.usescases.main.program.ProgramComponent;
 import org.dhis2.usescases.main.program.ProgramModule;
 import org.dhis2.usescases.notes.NotesComponent;
@@ -74,10 +72,6 @@ import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule;
 public interface UserComponent {
 
     FilterPresenter filterPresenter();
-
-    @NonNull
-    MainComponent plus(@NonNull MainModule mainModule);
-
 
     @NonNull
     ProgramEventDetailComponent plus(@NonNull ProgramEventDetailModule programEventDetailModule);

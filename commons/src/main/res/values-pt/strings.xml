@@ -9,7 +9,6 @@
     <string name="cancel">Cancelar</string>
     <string name="yes">Sim</string>
     <string name="no">Não</string>
-    <string name="clear_all">seleção clara</string>
     <string name="navigation_list_view">Vista de lista</string>
     <string name="navigation_table_view">Vista de tabela</string>
     <string name="navigation_map_view">Vista de mapa</string>
@@ -21,7 +20,6 @@
     <string name="navigation_notes">Notas</string>
     <string name="navigation_data_entry">Entrada de dados</string>
     <string name="navigation_tei_data">Detalhes</string>
-    <string name="event_overview">Detalhes</string>
     <string name="select_option">Selecionar opção</string>
     <string name="search">Pesquisar</string>
     <string name="events">eventos</string>
@@ -35,14 +33,11 @@
     <string name="filters_disabled">Nenhum filtro aplicado</string>
     <string name="filters_title_period">Período</string>
     <string name="filters_title_org_unit">Unidade Org.</string>
-    <string name="filters_title_sorting">Ordem</string>
-    <string name="filters_title_status">Status</string>
     <string name="filters_title_state">Sincronizar</string>
     <string name="filters_title_assigned">Atribuído a mim</string>
     <string name="filters_title_date">Data</string>
     <string name="filter_follow_up_label">Acompanhado%s</string>
     <string name="select_period">Seleccionar tipo de período</string>
-    <string name="daily_period">Diário</string>
     <string name="weekly">Semanal</string>
     <string name="bi_weekly">Quinzenal</string>
     <string name="weekly_start_wednesday">Semanalmente começando na quarta-feira</string>
@@ -61,13 +56,10 @@
     <string name="financial_year_october">Ano financeiro começando em outubro</string>
     <string name="financial_year_november">Ano financeiro começando em novembro</string>
 
-
-
     <!-- State -->
     <string name="state_synced">Sincronizar</string>
     <string name="state_to_post">Para enviar</string>
     <string name="state_to_update">Atualizar</string>
-    <string name="state_to_delete">Suprimir</string>
     <string name="state_error">Erro</string>
     <string name="state_warning">Advertência</string>
     <string name="state_uploading">A carregar</string>
@@ -160,7 +152,6 @@
     <!--SDK error codes-->
     <string name="login_error_null_pass">A palavra-passe está em falta. Introduza a palavra-passe.</string>
     <string name="login_error_null_username">O nome de utilizador está em falta. Por favor, introduza o nome de utilizador.</string>
-    <string name="login_error_dhis_version">Este servidor está executando uma versão dhis diferente de 2.29. Atualize a versão do servidor ou use o ambiente de teste para continuar.</string>
     <string name="login_error_dhis_version_v2">Este servidor está a executar uma versão do DHIS2 diferente de %s. Actualize a versão do seu servidor ou contacte o seu administrador.</string>
     <string name="login_error_unsuccessful_response">Algo correu mal. Verifique se o URL do servidor, o nome de utilizador e a palavra-passe estão correctos e tente novamente.</string>
     <string name="login_error_error_response">Desculpe! Algo falhou no lado do servidor.</string>
@@ -220,9 +211,7 @@
     <string name="error_invalid_characters">Existem caracteres inválidos na consulta. Por favor, peça ao administrador para verificar a configuração do servidor (relaxedQueryChars,...).</string>
     <string name="error_server_unavailable">O servidor está indisponível do momento. Tente novamente mais tarde.</string>
     <string name="error_no_internet_connection">Está off-line. Ligue-se à Internet e tente novamente.</string>
-    <string name="unsupported_field_description">Este campo não está disponível para captura móvel</string>
     <string name="add_image">Adicionar imagem</string>
-    <string name="add_signature">Adicionar assinatura</string>
     <string name="add_file">Adicionar ficheiro</string>
     <string name="action_ok">Esta bem</string>
     <string name="enable_location_message">A localização do seu dispositivo está desconectada. Por favor ative-o para capturar coordenadas</string>
@@ -230,9 +219,7 @@
     <string name="not_now">Agora não</string>
     <string name="review">Revisão</string>
     <string name="complete">Completo</string>
-    <string name="default_table_header_label">Valor</string>
     <string name="discard_changes">Descartar mudanças</string>
-    <string name="default_empty_dataset_section_label">Dados</string>
     <string name="title_network_connection_unavailable">Ligação a rede indisponível</string>
     <string name="msg_network_connection_maps">É necessária uma ligação à Internet para utilizar mapas.</string>
 
@@ -262,8 +249,6 @@
     <string name="new_event_label">Novo %s</string>
     <string name="delete_event_label">Apagar%s</string>
     <string name="week_period_span_default_label">Semana %d %s a%s</string>
-    <string name="enrollment_reopen">reabrir</string>
-
     <string name="sync_retry">Repetir a sincronização</string>
     <string name="syncing">Sincronizando...</string>
     <string name="remove">Remover</string>

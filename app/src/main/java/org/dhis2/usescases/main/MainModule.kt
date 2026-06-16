@@ -1,163 +1,137 @@
 package org.dhis2.usescases.main
 
-import dagger.Module
-import dagger.Provides
-import dhis2.org.analytics.charts.Charts
-import org.dhis2.commons.di.dagger.PerActivity
+import android.content.Context
+import androidx.fragment.app.FragmentManager
+import androidx.work.WorkManager
+import kotlinx.coroutines.Dispatchers
 import org.dhis2.commons.filters.FilterManager
-import org.dhis2.commons.filters.FiltersAdapter
-import org.dhis2.commons.filters.data.FilterRepository
-import org.dhis2.commons.matomo.MatomoAnalyticsController
-import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.LocaleSelector
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.biometric.CryptographyManager
-import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
-import org.dhis2.mobile.commons.biometrics.CryptographicActions
-import org.dhis2.mobile.commons.coroutine.Dispatcher
-import org.dhis2.mobile.commons.error.DomainErrorMapper
-import org.dhis2.mobile.commons.network.NetworkStatusProvider
-import org.dhis2.mobile.commons.network.NetworkStatusProviderImpl
-import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider
-import org.dhis2.mobile.commons.resources.D2ErrorMessageProviderImpl
-import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
-import org.dhis2.mobile.sync.domain.SyncStatusController
-import org.dhis2.usescases.login.SyncIsPerformedInteractor
+import org.dhis2.data.service.workManager.WorkManagerControllerImpl
+import org.dhis2.usescases.main.data.HomeRepository
+import org.dhis2.usescases.main.data.HomeRepositoryImpl
+import org.dhis2.usescases.main.domain.CheckSingleNavigation
+import org.dhis2.usescases.main.domain.ConfigureHomeNavigationBar
+import org.dhis2.usescases.main.domain.DeleteAccount
+import org.dhis2.usescases.main.domain.DownloadNewVersion
+import org.dhis2.usescases.main.domain.GetHomeFilters
+import org.dhis2.usescases.main.domain.GetLockAction
+import org.dhis2.usescases.main.domain.GetUserName
+import org.dhis2.usescases.main.domain.LaunchInitialSync
 import org.dhis2.usescases.main.domain.LogoutUser
-import org.dhis2.usescases.settings.DeleteUserData
-import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
-import org.hisp.dhis.android.core.D2
+import org.dhis2.usescases.main.domain.ScheduleNewVersionAlert
+import org.dhis2.usescases.main.domain.UpdateInitialSyncStatus
+import org.dhis2.usescases.troubleshooting.TroubleshootingRepository
+import org.dhis2.usescases.troubleshooting.TroubleshootingViewModel
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
+import org.koin.core.parameter.parametersOf
+import org.koin.dsl.module
 
-@Module
-class MainModule(
-    val view: MainView,
-    private val forceToNotSynced: Boolean,
-    private val syncStatusController: SyncStatusController,
-    private val syncBackgroundJobAction: SyncBackgroundJobAction,
-) {
-    @Provides
-    @PerActivity
-    fun homePresenter(
-        homeRepository: HomeRepository,
-        schedulerProvider: SchedulerProvider,
-        preferences: PreferenceProvider,
-        workManagerController: WorkManagerController,
-        filterManager: FilterManager,
-        filterRepository: FilterRepository,
-        matomoAnalyticsController: MatomoAnalyticsController,
-        userManager: UserManager,
-        deleteUserData: DeleteUserData,
-        syncIsPerformedInteractor: SyncIsPerformedInteractor,
-        versionRepository: VersionRepository,
-        dispatcherProvider: DispatcherProvider,
-        logoutUser: LogoutUser,
-    ): MainPresenter =
-        MainPresenter(
-            view,
-            homeRepository,
-            schedulerProvider,
-            preferences,
-            workManagerController,
-            filterManager,
-            filterRepository,
-            matomoAnalyticsController,
-            userManager,
-            deleteUserData,
-            syncIsPerformedInteractor,
-            syncStatusController,
-            syncBackgroundJobAction,
-            versionRepository,
-            dispatcherProvider,
-            forceToNotSynced,
-            logoutUser,
-        )
+val mainModule = module {
 
-    @Provides
-    @PerActivity
-    fun provideLogoutUser(
-        homeRepository: HomeRepository,
-        filterManager: FilterManager,
-    ): LogoutUser =
-        LogoutUser(
-            homeRepository,
-            syncBackgroundJobAction,
-            syncStatusController,
-            filterManager,
-        )
+    val dispatcher = object : DispatcherProvider {
+        override fun io() = Dispatchers.IO
+        override fun computation() = Dispatchers.Unconfined
+        override fun ui() = Dispatchers.Main
+    }
 
-    @Provides
-    @PerActivity
-    fun provideSyncIsPerfomedInteractor(userManager: UserManager): SyncIsPerformedInteractor = SyncIsPerformedInteractor(userManager)
+    factory<WorkManagerController> {
+        WorkManagerControllerImpl(WorkManager.getInstance(androidContext()))
+    }
 
-    @Provides
-    @PerActivity
-    fun provideHomeRepository(
-        d2: D2,
-        charts: Charts?,
-        preferencesProvider: PreferenceProvider,
-        cryptographyManager: CryptographicActions,
-        domainErrorMapper: DomainErrorMapper,
-    ): HomeRepository =
+    factory<HomeRepository> {
         HomeRepositoryImpl(
-            d2,
-            charts,
-            preferencesProvider,
-            cryptographyManager,
-            Dispatcher(),
-            domainErrorMapper,
+            d2 = get(),
+            charts = get(),
+            preferences = get(),
+            workManagerController = get(),
+            syncStatusController = get(),
+            domainErrorMapper = get(),
+            dispatcher = get(),
         )
-
-    @Provides
-    @PerActivity
-    fun provideDomainErrorMapper(
-        d2ErrorMessageProvider: D2ErrorMessageProvider,
-        networkStatusProvider: NetworkStatusProvider,
-    ): DomainErrorMapper =
-        DomainErrorMapper(
-            d2ErrorMessageProvider = d2ErrorMessageProvider,
-            networkStatusProvider = networkStatusProvider,
+    }
+    factory {
+        FilterManager.getInstance()
+    }
+    singleOf(::VersionRepository)
+    factoryOf(::ResourceManager)
+    factory { params ->
+        MainNavigator(
+            fragmentManager = params.get(),
         )
-
-    @Provides
-    @PerActivity
-    fun provideD2ErrorMessageProvider(): D2ErrorMessageProvider = D2ErrorMessageProviderImpl()
-
-    @Provides
-    @PerActivity
-    fun provideNetworkStatusProvider(): NetworkStatusProvider =
-        NetworkStatusProviderImpl(
-            context = view.context,
+    }
+    factory { params ->
+        GetUserName(
+            homeRepository = get { parametersOf(params.get()) }
         )
-
-    @Provides
-    @PerActivity
-    fun provideCryptographicManager(): CryptographicActions = CryptographyManager()
-
-    @Provides
-    @PerActivity
-    fun provideNewFiltersAdapter(): FiltersAdapter = FiltersAdapter()
-
-    @Provides
-    @PerActivity
-    fun providePageConfigurator(homeRepository: HomeRepository): NavigationPageConfigurator =
-        HomePageConfigurator(homeRepository, ResourceManager(view.context, ColorUtils()))
-
-    @Provides
-    @PerActivity
-    fun provideDeleteUserData(
-        workManagerController: WorkManagerController,
-        preferencesProvider: PreferenceProvider,
-        filterManager: FilterManager,
-        dispatcherProvider: DispatcherProvider
-    ): DeleteUserData =
-        DeleteUserData(
-            workManagerController,
-            filterManager,
-            preferencesProvider,
-            dispatcherProvider,
+    }
+    factory { params ->
+        ConfigureHomeNavigationBar(
+            homeRepository = get { parametersOf(params.get()) },
+            resourceManager = get()
         )
+    }
+    factoryOf(::GetHomeFilters)
+    factoryOf(::DownloadNewVersion)
+    factoryOf(::LogoutUser)
+    factoryOf(::DeleteAccount)
+    factoryOf(::GetLockAction)
+    factoryOf(::UpdateInitialSyncStatus)
+    factoryOf(::CheckSingleNavigation)
+    factoryOf(::LaunchInitialSync)
+    factory {
+        ScheduleNewVersionAlert(
+            workManagerController = get(),
+            versionRepository = get()
+        )
+    }
+
+    viewModel { params ->
+        val context = params.get<Context>()
+        val fragmentManager: FragmentManager = params.get()
+        val skipInitialSync = params.get<Boolean>()
+        val initialScreen = params.get<MainScreenType>()
+
+        MainViewModel(
+            preferences = get { parametersOf(context) },
+            filterManager = get(),
+            matomoAnalyticsController = get(),
+            syncStatusController = get(),
+            mainNavigator = get { parametersOf(fragmentManager) },
+            getUserName = get { parametersOf(context) },
+            configureHomeNavigationBar = get { parametersOf(context) },
+            getHomeFilters = get(),
+            downloadNewVersion = get(),
+            logOutUser = get { parametersOf(context) },
+            deleteAccount = get(),
+            getLockAction = get(),
+            updateInitialSyncStatus = get(),
+            checkSingleNavigation = get { parametersOf(skipInitialSync) },
+            launchInitialSync = get(),
+            scheduleNewVersionAlert = get(),
+            syncBackgroundJobAction = get(),
+            initialScreen = initialScreen,
+            dispatcher = dispatcher,
+        )
+    }
+
+    factoryOf(::MetadataIconProvider)
+    factoryOf(::TroubleshootingRepository)
+    factory {
+        LocaleSelector(androidContext(), get())
+    }
+    viewModel { params ->
+        TroubleshootingViewModel(
+            localeSelector = get(),
+            repository = get(),
+            openLanguageSection = params.get()
+        )
+    }
 }

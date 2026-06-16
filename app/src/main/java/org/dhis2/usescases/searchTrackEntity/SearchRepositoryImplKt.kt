@@ -6,6 +6,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.sorting.SortingItem
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.maps.model.MapItemModel
@@ -13,9 +14,11 @@ import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
 import org.dhis2.tracker.input.model.TrackerInputType
 import org.dhis2.tracker.input.ui.action.FieldUid
+import org.dhis2.tracker.search.model.TrackedEntitySearchItemResult
 import org.dhis2.usescases.events.EventInfoProvider
 import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.event.EventStatus
@@ -59,9 +62,9 @@ class SearchRepositoryImplKt(
         }
         val allowCache =
             queryData == savedSearchParameters.queryData &&
-                FilterManager
-                    .getInstance()
-                    .sameFilters(savedFilters)
+                    FilterManager
+                        .getInstance()
+                        .sameFilters(savedFilters)
         savedSearchParameters = savedSearchParameters.copy(queryData = queryData)
         savedFilters = FilterManager.getInstance().copy()
         return allowCache
@@ -128,7 +131,7 @@ class SearchRepositoryImplKt(
             }
 
         val attributeValues =
-            trackedEntityInstanceInfoProvider.getTeiAdditionalInfoList(
+            trackedEntityInstanceInfoProvider.getTeiAdditionalInfoListForMap(
                 searchItem.attributeValues ?: emptyList(),
             )
 
@@ -188,15 +191,15 @@ class SearchRepositoryImplKt(
             TrackerInputType.VERTICAL_CHECKBOXES,
             TrackerInputType.HORIZONTAL_RADIOBUTTONS,
             TrackerInputType.VERTICAL_RADIOBUTTONS,
-            -> ValueType.BOOLEAN
+                -> ValueType.BOOLEAN
 
             TrackerInputType.YES_ONLY_SWITCH,
             TrackerInputType.YES_ONLY_CHECKBOX,
-            -> ValueType.TRUE_ONLY
+                -> ValueType.TRUE_ONLY
 
             TrackerInputType.QR_CODE,
             TrackerInputType.BAR_CODE,
-            -> ValueType.TEXT
+                -> ValueType.TEXT
 
             TrackerInputType.MULTI_SELECTION -> ValueType.MULTI_TEXT
             TrackerInputType.DROPDOWN,
@@ -205,8 +208,41 @@ class SearchRepositoryImplKt(
             TrackerInputType.SEQUENTIAL,
             TrackerInputType.NOT_SUPPORTED,
             TrackerInputType.CUSTOM_INTENT,
-            -> ValueType.TEXT
+                -> ValueType.TEXT
+            TrackerInputType.COORDINATES -> ValueType.COORDINATE
+            TrackerInputType.IMAGE -> ValueType.IMAGE
         }
+
+    override fun mapTrackedEntitySearchItemResultToSearchTeiModel(
+        searchItemResult: TrackedEntitySearchItemResult,
+        sortingItem: SortingItem?,
+        ): SearchTeiModel {
+        val searchTeiModel = SearchTeiModel()
+        searchTeiModel.tei = searchItemResult
+        searchItemResult.enrolledPrograms?.forEach {
+            searchTeiModel.addProgramInfo(
+                it.uid,
+                trackedEntityInstanceInfoProvider.getMetadataIcon(
+                    ObjectStyle.builder().icon(it.style.icon).color(it.style.color).build()
+                )
+            )
+        }
+        searchItemResult.attributeValues.forEach { attr ->
+            if (attr.displayInList && isAcceptedValueType(attr.valueType)) {
+               val transformedValue = if (attr.value != null)
+                   trackedEntityInstanceInfoProvider.getTransformedValue(attr) else trackedEntityInstanceInfoProvider.getUnknownLabel()
+                searchTeiModel.addAttributeValue(attr.displayName, attr.copy(value = transformedValue))
+                if(attr.valueType == TrackerInputType.TEXT || attr.valueType == TrackerInputType.LONG_TEXT){
+                    searchTeiModel.addTextAttribute(attr.displayFormName, attr.copy(value = transformedValue))
+                }
+            }
+        }
+        sortingItem?.let {
+            searchTeiModel.setSortingValue(trackedEntityInstanceInfoProvider.getSortingKeyValue(searchTeiModel, sortingItem))
+        }
+        return searchTeiModel
+
+    }
 
     override fun searchRelationshipsForMap(
         teis: List<MapItemModel>,
@@ -250,7 +286,7 @@ class SearchRepositoryImplKt(
 
                         when {
                             relationshipTarget?.trackedEntityInstance() != null &&
-                                teis.none { it.uid == relationshipTarget.elementUid() } -> {
+                                    teis.none { it.uid == relationshipTarget.elementUid() } -> {
                                 val trackedEntityType =
                                     d2
                                         .trackedEntityModule()
@@ -296,9 +332,11 @@ class SearchRepositoryImplKt(
                 TrackerInputType.DATE -> {
                     ValueType.DATE.validator.validate(value)
                 }
+
                 TrackerInputType.DATE_TIME -> {
                     ValueType.DATETIME.validator.validate(value)
                 }
+
                 TrackerInputType.TIME -> {
                     ValueType.TIME.validator.validate(value)
                 }
@@ -353,4 +391,11 @@ class SearchRepositoryImplKt(
                 actionType = CustomIntentActionTypeModel.SEARCH,
             )
         }
+
+    private fun isAcceptedValueType(valueType: TrackerInputType): Boolean {
+        return when (valueType) {
+            TrackerInputType.NOT_SUPPORTED -> false
+            else -> true
+        }
+    }
 }

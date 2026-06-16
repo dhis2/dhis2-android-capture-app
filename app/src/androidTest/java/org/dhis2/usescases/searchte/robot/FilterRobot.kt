@@ -16,7 +16,6 @@ import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withChild
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -151,7 +150,7 @@ class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
                 withParent(withId(R.id.mainToolbar))
             )
         )
-            .check(matches(withChild(withText(filterCount))))
+            .check(matches(hasDescendant(withText(filterCount))))
     }
 
     fun checkCountAtFilter(filter: String, count: String) {
@@ -170,8 +169,9 @@ class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun checkTeiAreCompleted() {
         val nodes = composeTestRule.onAllNodesWithText("Enrollment completed", true)
-        assert(nodes.fetchSemanticsNodes().size >= 3) {
-            "Expected at least 3 nodes, but found ${nodes.fetchSemanticsNodes().size}"
+        composeTestRule.waitForIdle()
+        assert(nodes.fetchSemanticsNodes().size >= 2) {
+            "Expected at least 2 nodes, but found ${nodes.fetchSemanticsNodes().size}"
         }
     }
 

@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
 
 import dhis2.org.analytics.charts.ui.SectionTitle
 import io.reactivex.Single
+import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.D2
@@ -11,6 +12,7 @@ import org.hisp.dhis.android.core.program.ProgramRuleAction
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.rules.models.RuleAction
 import org.hisp.dhis.rules.models.RuleEffect
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -96,7 +98,7 @@ class EventIndicatorRepositoryTest {
     }
 
     @Test
-    fun `Should fetch analytic data for tracker`() {
+    fun `Should fetch analytic data for tracker`() = runTest {
         whenever(
             d2
                 .programModule()
@@ -218,15 +220,14 @@ class EventIndicatorRepositoryTest {
             ruleEngineHelper.evaluate(),
         ) doReturn mockedEffects()
 
-        val testObserver = repository.fetchData().test()
-        testObserver.assertNoErrors()
-        testObserver.assertValue {
-            it.size == 5 &&
-                it[0] is SectionTitle &&
-                (it[0] as SectionTitle).title == "Feedback" &&
-                it[2] is SectionTitle &&
-                (it[2] as SectionTitle).title == "Indicators"
-        }
+        val result = repository.fetchData()
+        assertTrue(
+            result.size == 5 &&
+                result[0] is SectionTitle &&
+                (result[0] as SectionTitle).title == "Feedback" &&
+                result[2] is SectionTitle &&
+                (result[2] as SectionTitle).title == "Indicators",
+        )
     }
 
     private fun mockedProgramIndicatorList(): List<ProgramIndicator> =

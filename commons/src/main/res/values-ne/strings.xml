@@ -4,10 +4,8 @@
     <string name="cancel">रद्द गर्नुहोस्</string>
     <string name="search">खोज</string>
     <string name="filters_title_period">अबधि</string>
-    <string name="filters_title_status">स्थिती</string>
     <string name="filters_title_assigned">मलाई निर्दिष्ट गरिएको	</string>
     <string name="filters_title_date">मिति</string>
-    <string name="daily_period">दैनिक</string>
     <!-- Status -->
     <string name="filter_event_status_open">खोल्नुहोस्</string>
     <string name="enrollment_status_active">खोल्नुहोस्</string>

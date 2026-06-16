@@ -98,19 +98,19 @@ class SearchTeiLiveAdapter(
                             cardMapper.map(
                                 searchTEIModel = it,
                                 onSyncIconClick = {
-                                    onSyncIconClick.invoke(it.selectedEnrollment.uid())
+                                    onSyncIconClick.invoke(it.selectedEnrollment.uid)
                                 },
                                 onCardClick = {
-                                    if (it.isOnline) {
+                                    if (it.tei.isOnline) {
                                         onDownloadTei.invoke(
-                                            it.tei.uid(),
-                                            it.selectedEnrollment?.uid(),
+                                            it.tei.uid,
+                                            it.selectedEnrollment?.uid,
                                         )
                                     } else {
                                         onTeiClick.invoke(
-                                            it.tei.uid(),
-                                            it.selectedEnrollment?.uid(),
-                                            it.isOnline,
+                                            it.tei.uid,
+                                            it.selectedEnrollment?.uid,
+                                            it.tei.isOnline,
                                         )
                                     }
                                 },

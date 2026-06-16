@@ -43,6 +43,8 @@
         <item name="chipGroupStyle">@style/Widget.MaterialComponents.ChipGroup</item>
         <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Action</item>
         <item name="android:textDirection">locale</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="DhisBottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
@@ -88,6 +90,8 @@
         <item name="period_button">@drawable/period_button_red</item>
         <item name="period_time_button">@drawable/period_time_button_red</item>
         <item name="toast_bg">@drawable/toast_bg_red</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="GreenTheme" parent="AppTheme">
@@ -108,6 +112,8 @@
         <item name="period_button">@drawable/period_button_green</item>
         <item name="period_time_button">@drawable/period_time_button_green</item>
         <item name="toast_bg">@drawable/toast_bg_green</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="OrangeTheme" parent="AppTheme">
@@ -141,6 +147,8 @@
         <item name="period_button">@drawable/period_button_orange</item>
         <item name="period_time_button">@drawable/period_time_button_orange</item>
         <item name="toast_bg">@drawable/toast_bg_orange</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <!--endregion--><!--region PALETTES-->
@@ -154,6 +162,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_e57" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -164,6 +174,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_d32" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -174,6 +186,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_f06" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -184,6 +198,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_c21" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -194,6 +210,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_880" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -204,6 +222,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_f50" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -214,6 +234,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_e1b" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -226,6 +248,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_ba6" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -236,6 +260,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_8e2" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -246,6 +272,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_aa0" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -256,6 +284,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_7e5" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -266,6 +296,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_452" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -276,6 +308,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_7c4" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -286,6 +320,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_620" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -296,6 +332,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_c5c" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -308,6 +346,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_798" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -318,6 +358,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_394" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -328,6 +370,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_304" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -338,6 +382,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_e3f" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -350,6 +396,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_64b" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -360,6 +408,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_197" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -370,6 +420,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_028" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -380,6 +432,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_40c" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -391,6 +445,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_00b" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -401,6 +457,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_80d" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -413,6 +471,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_00a" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -423,6 +483,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_008" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -433,6 +495,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_006" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -443,6 +507,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_e0f" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -455,6 +521,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_80c" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -466,6 +534,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_0069" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -476,6 +546,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_64f" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -488,6 +560,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_c8e" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -500,6 +574,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_66b" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -510,6 +586,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_2e7" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -520,6 +598,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_60a" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -530,6 +610,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_00e" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -540,6 +622,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_aed" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -551,6 +635,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_689" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -561,6 +647,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_336" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -571,6 +659,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_76f" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -583,6 +673,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_64d" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -594,6 +686,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_cdd" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -605,6 +699,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_9e9" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -615,6 +711,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_827" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -625,6 +723,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_fff" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -637,6 +737,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_fbc" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -648,6 +750,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_f57" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -658,6 +762,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_ffff" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -670,6 +776,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_ffc" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -681,6 +789,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_ffcc" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -693,6 +803,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_ffa" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -704,6 +816,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_bca" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -714,6 +828,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_8d6" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -724,6 +840,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_4e3" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -734,6 +852,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_faf" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -746,6 +866,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_bdb" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -757,6 +879,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_757" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -767,6 +891,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_424" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -777,6 +903,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_cfd" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -787,6 +915,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_b0b" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -797,6 +927,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/black_de0</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="colorPrimary_607" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -807,6 +939,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="colorPrimary_374" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
@@ -817,6 +951,8 @@
         <item name="colorAccent">@color/colorAccent</item>  <!--TODO: CHECK COLOR ACCENT-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item><item name="android:windowContentTransitions">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="onToolbarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
     <!--endregion-->
 </resources>

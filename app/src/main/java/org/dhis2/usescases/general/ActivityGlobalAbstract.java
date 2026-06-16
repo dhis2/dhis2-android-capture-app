@@ -74,7 +74,7 @@ public abstract class ActivityGlobalAbstract extends SessionManagerActivity
                     return Unit.INSTANCE;
                 })
                 .onMenuItemClicked(item -> {
-                    analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP);
+                    getAnalyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
                     showTutorial(false);
                     return false;
                 })
@@ -191,6 +191,6 @@ public abstract class ActivityGlobalAbstract extends SessionManagerActivity
 
     @Override
     public AnalyticsHelper analyticsHelper() {
-        return analyticsHelper;
+        return getAnalyticsHelper();
     }
 }

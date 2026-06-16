@@ -1,16 +1,11 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="title_activity_home">Головна</string>
-    <string name="title_activity_review">Перегляд</string>
-    <string name="action_settings">Налаштування</string>
 
     <string name="discard">Ігнорувати</string>
-    <string name="sign_in">Увійти</string>
+    <!-- Sign in -->
     <string name="username">Ім\'я користувача</string>
-    <string name="password">Пароль</string>
-    <string name="forgot_password">Забули пароль?</string>
 
     <!-- FloatingActionButtons -->
-    <string name="proceed">Продовжити</string>
     <string name="review">Перегляд</string>
 
     <string name="search">Пошуковий елемент</string>
@@ -18,19 +13,12 @@
     <string name="delete">Видалити</string>
     <string name="ok">ОК</string>
     <string name="cancel">Скасувати</string>
+
     <string name="from">Від</string>
-    <string name="language">Мова</string>
-    <string name="logout">Вийти</string>
+    <!-- Content descriptions for accessibility -->
 
-
-    <!-- Stock table -->
-    <string name="item">Елемент</string>
-    <string name="prompt_email">Електронна пошта</string>
-    <string name="prompt_password">Пароль</string>
-    <string name="action_sign_in_short">Увійти</string>
-    <string name="content_desc_search">Пошук</string>
     <string name="confirm_transaction_label">Підтвердити</string>
-    <string name="invalid_quantity">Невірне</string>
+
     <!--SDK error codes-->
     <string name="login_error_unsuccessful_response">Сталася помилка. Будь ласка, перевірте правильність URL-адреси серверу, імені користувача та пароля і повторіть спробу.</string>
     <string name="login_error_unknown_host">Невідомий сервер</string>
@@ -62,8 +50,6 @@
     <string name="error_ssl">Виникла проблема із сертифікатами сервера. Будь ласка, зверніться до свого адміністратора.</string>
     <string name="done_task">Головна</string>
     <string name="back">Назад</string>
-    <string name="no_conflicts_message">Для цієї програми немає конфліктів</string>
-    <string name="action_sync">Надіслати</string>
     <string name="not_saved">Не збережено</string>
     <string name="count">Підрахунок</string>
     <string name="formatting_error">Помилка форматування</string>

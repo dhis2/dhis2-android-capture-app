@@ -44,6 +44,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import kotlinx.coroutines.test.runTest
 import java.util.Date
 
 class ChartsRepositoryTest {
@@ -67,7 +68,7 @@ class ChartsRepositoryTest {
         )
 
     @Test
-    fun `Should return empty list if enrollment teiUid is null`() {
+    fun `Should return empty list if enrollment teiUid is null`() = runTest {
         whenever(
             d2
                 .enrollmentModule()
@@ -89,7 +90,7 @@ class ChartsRepositoryTest {
     }
 
     @Test
-    fun `Should get analytics if settings is not null`() {
+    fun `Should get analytics if settings is not null`() = runTest {
         mockEnrollmentCall()
         mockAnalyticsSettingsCall(mockedAnalyticsSettings())
         whenever(
@@ -105,7 +106,7 @@ class ChartsRepositoryTest {
     }
 
     @Test
-    fun `Should get default analytics if settings is null`() {
+    fun `Should get default analytics if settings is null`() = runTest {
         mockEnrollmentCall()
         mockAnalyticsSettingsCall(null)
         mockRepeatableStagesCall()
@@ -136,7 +137,7 @@ class ChartsRepositoryTest {
     }
 
     @Test
-    fun `Should get default analytics if settings is null and return only dataElement graphs`() {
+    fun `Should get default analytics if settings is null and return only dataElement graphs`() = runTest {
         mockEnrollmentCall()
         mockAnalyticsSettingsCall(null)
         mockRepeatableStagesCall()
@@ -154,7 +155,7 @@ class ChartsRepositoryTest {
     }
 
     @Test
-    fun `Should get default analytics if settings is null and return only indicator graphs`() {
+    fun `Should get default analytics if settings is null and return only indicator graphs`() = runTest {
         mockEnrollmentCall()
         mockAnalyticsSettingsCall(null)
         mockRepeatableStagesCall()
@@ -180,7 +181,7 @@ class ChartsRepositoryTest {
     }
 
     @Test
-    fun `Should get default analytics if settings is null and return empty list`() {
+    fun `Should get default analytics if settings is null and return empty list`() = runTest {
         mockEnrollmentCall()
         mockAnalyticsSettingsCall(null)
         mockRepeatableStagesCall()
@@ -760,7 +761,7 @@ class ChartsRepositoryTest {
                 listOf(
                     SerieData(
                         "de_field",
-                        listOf(GraphPoint(Date(), null, GraphFieldValue.Numeric(30f))),
+                        listOf(GraphPoint(Date(), null, GraphFieldValue.Decimal(30f))),
                     ),
                 ),
             periodToDisplayDefault = null,
@@ -775,7 +776,7 @@ class ChartsRepositoryTest {
             listOf(
                 SerieData(
                     "indicator_field",
-                    listOf(GraphPoint(Date(), null, GraphFieldValue.Numeric(30f))),
+                    listOf(GraphPoint(Date(), null, GraphFieldValue.Decimal(30f))),
                 ),
             ),
             null,

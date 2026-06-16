@@ -3,10 +3,6 @@
     <string name="error">កំហុសបច្ចេកទេស</string>
     <string name="choose_date">ជ្រើសរើសថ្ងៃខែឆ្នាំ</string>
     <string name="required">ទាមទារ</string>
-    <string name="date">កាលបរិច្ឆេទ</string>
-    <string name="hint_year">ឆ្នាំ</string>
-    <string name="hint_month">ខែ</string>
-    <string name="hint_day">ថ្ងៃ</string>
     <string name="latitude">រយៈទទឹង</string>
     <string name="longitude">រយៈបណ្តោយ</string>
     <string name="enter_positive_integer_or_zero">បញ្ជូលទិន្នន័យជាលេខ (វិជ្ជមាន រឺ លេខ ០)</string>

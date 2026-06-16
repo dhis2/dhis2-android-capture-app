@@ -9,7 +9,6 @@
     <string name="dialog_layer_base_map_bing_aerial">Гибрид кўриниш</string>
     <string name="dialog_layer_base_map_bing_aerial_label">Қатлам белгилари</string>
     <string name="action_apply">Мурожаат қилиш</string>
-    <string name="dialog_layer_satellite">Суньий йўлдош кўринишини кўрсатиш</string>
     <string name="dialog_layer_event">Ҳодиса/тадбирларни кўрсатиш</string>
     <string name="dialog_layer_tei_coordinates">TEI координаталарини кўрсатиш</string>
     <string name="dialog_layer_heatmap">Иссиқлик харитаси қатламини кўрсатиш</string>

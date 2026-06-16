@@ -4,7 +4,7 @@ import org.dhis2.commons.filters.FilterManager
 import org.dhis2.mobile.commons.domain.UseCase
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.domain.SyncStatusController
-import org.dhis2.usescases.main.HomeRepository
+import org.dhis2.usescases.main.data.HomeRepository
 
 typealias AccountCount = Int
 
@@ -20,7 +20,7 @@ class LogoutUser(
         filterManager.clearAllFilters()
 
         repository
-            .clearSessionLock()
+            .clearPin()
             .onFailure { return Result.failure(it) }
 
         repository

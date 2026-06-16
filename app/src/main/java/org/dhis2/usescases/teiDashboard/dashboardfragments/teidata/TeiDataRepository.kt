@@ -32,6 +32,8 @@ interface TeiDataRepository {
 
     fun displayOrganisationUnit(programUid: String): Boolean
 
+    fun ownerOrgUnit(teiUid: String): String?
+
     fun enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit: String): Boolean
 
     fun programOrgListInCaptureScope(programUid: String): List<OrganisationUnit>

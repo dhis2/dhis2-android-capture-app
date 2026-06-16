@@ -6,19 +6,22 @@ import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.data.FilterPresenter
 import org.dhis2.commons.filters.sorting.SortingItem
-import org.dhis2.commons.network.NetworkUtils
-import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.forms.dataentry.SearchTEIRepository
-import org.dhis2.data.sorting.SearchSortingValueSetter
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository
+import org.dhis2.mobile.commons.extensions.getTodayAsInstant
+import org.dhis2.mobile.commons.extensions.toKtxInstant
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.tracker.data.ProfilePictureProvider
+import org.dhis2.tracker.search.model.GeometryFeatureType
+import org.dhis2.tracker.search.model.SyncState
+import org.dhis2.tracker.search.model.TrackedEntitySearchItemResult
+import org.dhis2.tracker.search.model.TrackedEntityTypeDomain
 import org.dhis2.ui.ThemeManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.filters.internal.BooleanFilterConnector
@@ -46,7 +49,8 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItem
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItemAttribute
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItemHelper
-import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -58,10 +62,10 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.util.Calendar
 import java.util.Date
+import kotlin.time.Instant
 
 class SearchRepositoryTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
-    private val metadataIconProvider: MetadataIconProvider = mock()
     private val dispatchers: DispatcherProvider =
         mock {
             on { io() } doReturn Dispatchers.IO
@@ -93,7 +97,6 @@ class SearchRepositoryTest {
 
     private val filterPresenter: FilterPresenter = mock()
     private val resourceManager: ResourceManager = mock()
-    private val sortingValueSetter: SearchSortingValueSetter = mock()
     private val charts: Charts = mock()
     private val crashReporterController: CrashReportController = mock()
     private val networkUtils: NetworkStatusProvider = mock()
@@ -138,14 +141,11 @@ class SearchRepositoryTest {
                 d2,
                 filterPresenter,
                 resourceManager,
-                sortingValueSetter,
                 charts,
                 crashReporterController,
                 networkUtils,
                 searchTEIRepository,
                 themeManager,
-                metadataIconProvider,
-                profilePictureProvider,
                 dateUtils,
                 customIntentRepository,
                 dispatchers
@@ -154,117 +154,60 @@ class SearchRepositoryTest {
 
     @Test
     fun shouldTransformToSearchTeiModelWithOverdueEvents() {
-        val searchItem = getTrackedEntitySearchItem("header")
-        val program =
-            Program
-                .builder()
-                .uid("programUid")
-                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
-                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
-                .build()
-        val sorting = SortingItem.create(Filters.ENROLLMENT_DATE)
-        val tei = TrackedEntitySearchItemHelper.toTrackedEntityInstance(searchItem)
-
         val overdueDate = dateUtils.getCalendarByDate(Date())
         overdueDate.add(Calendar.DATE, -2)
 
-        val enrollmentsInProgram =
-            listOf(
-                createEnrollment("enrollmentUid", "orgUnit", program.uid()),
-                createEnrollment("enrollmentUid_2", "orgUnit", program.uid()),
-            )
-        val allEnrollments =
-            listOf(
-                createEnrollment("enrollmentUid_3", "orgUnit", "uid"),
-                createEnrollment("enrollmentUid_4", "orgUnit_2", "uid"),
-            )
-        val events =
-            listOf(
-                createEvent("eventUid", EventStatus.OVERDUE, overdueDate.time),
-                createEvent("eventUid", EventStatus.SCHEDULE, overdueDate.time),
-            )
+        val searchItemResult = createTrackedEntitySearchItemResult(
+            uid = "teiUid",
+            overDueDate = overdueDate.time.toKtxInstant(),
+        )
+        val sorting = SortingItem.create(Filters.ENROLLMENT_DATE)
 
-        mockedSdkCalls(searchItem, tei, enrollmentsInProgram, allEnrollments, events)
+        val result = searchRepository.mapTrackedEntitySearchItemResultToSearchTeiModel(
+            searchItemResult,
+            sorting,
+        )
 
-        val result = searchRepositoryJava.transform(searchItem, program, true, sorting)
-
-        assertTrue(result.isHasOverdue)
+        assertNotNull(result.tei.overDueDate)
+        assertTrue(result.tei.overDueDate!! < getTodayAsInstant())
     }
 
     @Test
     fun shouldTransformToSearchTeiModelWithOverdueScheduledEvents() {
-        val searchItem = getTrackedEntitySearchItem("header")
-        val program =
-            Program
-                .builder()
-                .uid("programUid")
-                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
-                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
-                .build()
-        val sorting = SortingItem.create(Filters.ENROLLMENT_DATE)
-        val tei = TrackedEntitySearchItemHelper.toTrackedEntityInstance(searchItem)
-
         val overdueDate = dateUtils.getCalendarByDate(Date())
         overdueDate.add(Calendar.DATE, -2)
 
-        val enrollmentsInProgram =
-            listOf(
-                createEnrollment("enrollmentUid", "orgUnit", program.uid()),
-                createEnrollment("enrollmentUid_2", "orgUnit", program.uid()),
-            )
-        val allEnrollments =
-            listOf(
-                createEnrollment("enrollmentUid_3", "orgUnit", "uid"),
-                createEnrollment("enrollmentUid_4", "orgUnit_2", "uid"),
-            )
-        val events =
-            listOf(
-                createEvent("eventUid", EventStatus.SCHEDULE, overdueDate.time),
-            )
+        val searchItemResult = createTrackedEntitySearchItemResult(
+            uid = "teiUid",
+            overDueDate = overdueDate.time.toKtxInstant(),
+        )
+        val sorting = SortingItem.create(Filters.ENROLLMENT_DATE)
 
-        mockedSdkCalls(searchItem, tei, enrollmentsInProgram, allEnrollments, events)
+        val result = searchRepository.mapTrackedEntitySearchItemResultToSearchTeiModel(
+            searchItemResult,
+            sorting,
+        )
 
-        val result = searchRepositoryJava.transform(searchItem, program, true, sorting)
-
-        assertTrue(result.isHasOverdue)
+        assertNotNull(result.tei.overDueDate)
+        assertTrue(result.tei.overDueDate!! < getTodayAsInstant())
     }
 
     @Test
     fun shouldTransformToSearchTeiModelWithOutOverdueEvents() {
-        val searchItem = getTrackedEntitySearchItem("header")
-        val program =
-            Program
-                .builder()
-                .uid("programUid")
-                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
-                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
-                .build()
+        // Create a search result without overdue date (null means no overdue events)
+        val searchItemResult = createTrackedEntitySearchItemResult(
+            uid = "teiUid",
+            overDueDate = null,
+        )
         val sorting = SortingItem.create(Filters.ENROLLMENT_DATE)
-        val tei = TrackedEntitySearchItemHelper.toTrackedEntityInstance(searchItem)
 
-        val overdueDate = dateUtils.getCalendarByDate(Date())
-        overdueDate.add(Calendar.DATE, 2)
+        val result = searchRepository.mapTrackedEntitySearchItemResultToSearchTeiModel(
+            searchItemResult,
+            sorting,
+        )
 
-        val enrollmentsInProgram =
-            listOf(
-                createEnrollment("enrollmentUid", "orgUnit", program.uid()),
-                createEnrollment("enrollmentUid_2", "orgUnit", program.uid()),
-            )
-        val allEnrollments =
-            listOf(
-                createEnrollment("enrollmentUid_3", "orgUnit", "uid"),
-                createEnrollment("enrollmentUid_4", "orgUnit_2", "uid"),
-            )
-        val events =
-            listOf(
-                createEvent("eventUid", EventStatus.SCHEDULE, overdueDate.time),
-            )
-
-        mockedSdkCalls(searchItem, tei, enrollmentsInProgram, allEnrollments, events)
-
-        val result = searchRepositoryJava.transform(searchItem, program, true, sorting)
-
-        assertFalse(result.isHasOverdue)
+        // When there are no overdue events, overDueDate should be null
+        assertNull(result.tei.overDueDate)
     }
 
     private fun mockedSdkCalls(
@@ -493,6 +436,41 @@ class SearchRepositoryTest {
         return mock {
             on { blockingGet() } doReturn attribute
         }
+    }
+
+    private fun createTrackedEntitySearchItemResult(
+        uid: String,
+        overDueDate: Instant?,
+    ): TrackedEntitySearchItemResult {
+        return TrackedEntitySearchItemResult(
+            uid = uid,
+            created = null,
+            lastUpdated = null,
+            createdAtClient = null,
+            lastUpdatedAtClient = null,
+            ownerOrgUnit = null,
+            enrollmentOrgUnit = null,
+            shouldDisplayOrgUnit = false,
+            geometry = null,
+            syncState = SyncState.SYNCED,
+            aggregatedSyncState = SyncState.SYNCED,
+            deleted = false,
+            isOnline = false,
+            teTypeName = "Person",
+            type = TrackedEntityTypeDomain(
+                trackedEntityTypeAttributeDomains = emptyList(),
+                featureType = GeometryFeatureType.NONE,
+            ),
+            header = "Test Header",
+            overDueDate = overDueDate,
+            selectedEnrollment = null,
+            profilePicture = null,
+            enrolledPrograms = null,
+            enrollments = null,
+            relationships = null,
+            defaultTypeIcon = null,
+            attributeValues = emptyList(),
+        )
     }
 
     private fun createMockData(): List<FieldUiModel> =

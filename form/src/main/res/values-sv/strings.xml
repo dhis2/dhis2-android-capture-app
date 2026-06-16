@@ -3,10 +3,6 @@
     <string name="error">Fel</string>
     <string name="choose_date">Välj datum</string>
     <string name="required">Nödvändig</string>
-    <string name="date">Datum</string>
-    <string name="hint_year">År</string>
-    <string name="hint_month">Månader</string>
-    <string name="hint_day">Dagar</string>
     <string name="latitude">Latitud</string>
     <string name="longitude">Longitud</string>
     <string name="enter_positive_integer_or_zero">Ange ett positivt heltal eller noll.</string>

@@ -13,7 +13,7 @@ class DataElementToGraph(
     private val periodStepProvider: PeriodStepProvider,
     private val chartCoordinatesProvider: ChartCoordinatesProvider,
 ) {
-    fun map(
+    suspend fun map(
         dataElement: DataElement,
         stageUid: String,
         teiUid: String,

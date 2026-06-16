@@ -40,7 +40,7 @@ class ChartsRepositoryImpl(
 ) : ChartsRepository {
     private val lineListHeaderCache: MutableMap<String, List<TrackerLineListItem>> = mutableMapOf()
 
-    override fun getAnalyticsForEnrollment(enrollmentUid: String): List<Graph> {
+    override suspend fun getAnalyticsForEnrollment(enrollmentUid: String): List<Graph> {
         val enrollment = getEnrollment(enrollmentUid)
         if (enrollment?.trackedEntityInstance() == null) return emptyList()
 
@@ -403,51 +403,51 @@ class ChartsRepositoryImpl(
         lineListHeaderCache.putIfAbsent(visualisationUid, trackerLineListResponse.headers)
     }
 
-    private fun getSettingsAnalytics(enrollment: Enrollment): List<Graph> =
-        d2
+    private suspend fun getSettingsAnalytics(enrollment: Enrollment): List<Graph> {
+        val analyticsSettings = d2
             .settingModule()
             .analyticsSetting()
             .teis()
             .byProgram()
             .eq(enrollment.program())
             .blockingGet()
-            .let { analyticsSettings ->
-                analyticsTeiSettingsToGraph.map(
-                    enrollment.trackedEntityInstance()!!,
-                    analyticsSettings,
-                    analyticsFilterProvider::visualizationPeriod,
-                    analyticsFilterProvider::visualizationOrgUnits,
-                    { dataElementUid ->
-                        d2
-                            .dataElementModule()
-                            .dataElements()
-                            .uid(dataElementUid)
-                            .blockingGet()
-                            ?.displayFormName() ?: dataElementUid
-                    },
-                    { indicatorUid ->
-                        d2
-                            .programModule()
-                            .programIndicators()
-                            .uid(indicatorUid)
-                            .blockingGet()
-                            ?.displayName() ?: indicatorUid
-                    },
-                    { nutritionGenderData ->
-                        val genderValue =
-                            d2
-                                .trackedEntityModule()
-                                .trackedEntityAttributeValues()
-                                .value(
-                                    nutritionGenderData.attributeUid,
-                                    enrollment.trackedEntityInstance()!!,
-                                ).blockingGet()
-                        nutritionGenderData.isFemale(genderValue?.value())
-                    },
-                )
-            } ?: emptyList()
+        if (analyticsSettings.isEmpty()) return emptyList()
+        return analyticsTeiSettingsToGraph.map(
+            enrollment.trackedEntityInstance()!!,
+            analyticsSettings,
+            analyticsFilterProvider::visualizationPeriod,
+            analyticsFilterProvider::visualizationOrgUnits,
+            { dataElementUid ->
+                d2
+                    .dataElementModule()
+                    .dataElements()
+                    .uid(dataElementUid)
+                    .blockingGet()
+                    ?.displayFormName() ?: dataElementUid
+            },
+            { indicatorUid ->
+                d2
+                    .programModule()
+                    .programIndicators()
+                    .uid(indicatorUid)
+                    .blockingGet()
+                    ?.displayName() ?: indicatorUid
+            },
+            { nutritionGenderData ->
+                val genderValue =
+                    d2
+                        .trackedEntityModule()
+                        .trackedEntityAttributeValues()
+                        .value(
+                            nutritionGenderData.attributeUid,
+                            enrollment.trackedEntityInstance()!!,
+                        ).blockingGet()
+                nutritionGenderData.isFemale(genderValue?.value())
+            },
+        )
+    }
 
-    private fun getDefaultAnalytics(enrollment: Enrollment): List<Graph> =
+    private suspend fun getDefaultAnalytics(enrollment: Enrollment): List<Graph> =
         getRepeatableProgramStages(enrollment.program())
             .map { programStage ->
 
@@ -458,14 +458,14 @@ class ChartsRepositoryImpl(
                         val selectedRelativePeriod =
                             analyticsFilterProvider.visualizationPeriod(
                                 enrollment.trackedEntityInstance()!! +
-                                    programStage.uid() +
-                                    dataElement.uid(),
+                                        programStage.uid() +
+                                        dataElement.uid(),
                             )
                         val selectedOrgUnits =
                             analyticsFilterProvider.visualizationOrgUnits(
                                 enrollment.trackedEntityInstance()!! +
-                                    programStage.uid() +
-                                    dataElement.uid(),
+                                        programStage.uid() +
+                                        dataElement.uid(),
                             )
                         dataElementToGraph.map(
                             dataElement,
@@ -481,14 +481,14 @@ class ChartsRepositoryImpl(
                             val selectedRelativePeriod =
                                 analyticsFilterProvider.visualizationPeriod(
                                     enrollment.trackedEntityInstance()!! +
-                                        programStage.uid() +
-                                        programIndicator.uid(),
+                                            programStage.uid() +
+                                            programIndicator.uid(),
                                 )
                             val selectedOrgUnits =
                                 analyticsFilterProvider.visualizationOrgUnits(
                                     enrollment.trackedEntityInstance()!! +
-                                        programStage.uid() +
-                                        programIndicator.uid(),
+                                            programStage.uid() +
+                                            programIndicator.uid(),
                                 )
                             programIndicatorToGraph.map(
                                 programIndicator,
@@ -619,7 +619,7 @@ class ChartsRepositoryImpl(
             analyticsFilterProvider.addColumnFilter(
                 trackerVisualizationUid,
                 columnIndex,
-                filterValue!!,
+                filterValue,
             )
         } else {
             analyticsFilterProvider.removeColumnFilter(trackerVisualizationUid, columnIndex)

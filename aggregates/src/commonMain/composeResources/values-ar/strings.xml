@@ -16,8 +16,6 @@
     <string name="input_date_out_of_range">خارج النطاق</string>
     <string name="format_error">تنسيق غير صحيح</string>
     <string name="input_not_supported">غير مدعوم</string>
-    <string name="completion_dialog_title">كل شيء يبدو جيدا</string>
-    <string name="completion_dialog_description">هل تريد أيضاً إكمال مجموعة البيانات؟</string>
     <string name="validation_success_title">كل شيء يبدو جيدا</string>
     <string name="mark_dataset_complete">هل تريد أيضاً تعيين حزمة البيانات كمكتملة؟</string>
     <string name="not_now">ليس الان</string>

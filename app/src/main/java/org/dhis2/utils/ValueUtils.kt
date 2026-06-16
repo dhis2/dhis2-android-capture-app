@@ -3,6 +3,7 @@ package org.dhis2.utils
 import org.dhis2.commons.extensions.toFriendlyDate
 import org.dhis2.commons.extensions.toFriendlyDateTime
 import org.dhis2.commons.extensions.toPercentage
+import org.dhis2.tracker.input.model.TrackerInputType
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
@@ -20,7 +21,7 @@ class ValueUtils private constructor() {
             optionSetUid: String?,
         ): TrackedEntityAttributeValue {
             val transformedValue =
-                transformValue(d2, attributeValue.value(), valueType, optionSetUid)
+                transformValueLegacy(d2, attributeValue.value(), valueType, optionSetUid)
 
             return if (transformedValue != attributeValue.value()) {
                 attributeValue
@@ -35,12 +36,12 @@ class ValueUtils private constructor() {
         fun transformValue(
             d2: D2,
             value: String?,
-            valueType: ValueType?,
+            valueType: TrackerInputType?,
             optionSetUid: String?,
         ): String? {
             var teAttrValue = value
             when (valueType) {
-                ValueType.ORGANISATION_UNIT -> {
+                TrackerInputType.ORGANISATION_UNIT -> {
                     if (!d2
                             .organisationUnitModule()
                             .organisationUnits()
@@ -58,6 +59,45 @@ class ValueUtils private constructor() {
                                 .blockingGet()!!
                                 .displayName()!!
                         teAttrValue = orgUnitName
+                    }
+                }
+                TrackerInputType.DATE, TrackerInputType.AGE -> {
+                    teAttrValue = teAttrValue?.toFriendlyDate()
+                }
+                TrackerInputType.DATE_TIME -> {
+                    teAttrValue = teAttrValue?.toFriendlyDateTime()
+                }
+
+                TrackerInputType.PERCENTAGE -> {
+                    teAttrValue = teAttrValue?.toPercentage()
+                }
+                else -> {
+                    teAttrValue = transformOptionSet(optionSetUid, d2, value)
+                }
+            }
+            return teAttrValue
+        }
+
+        @Deprecated("Use transformValue with TrackerInputType instead of ValueType")
+        fun transformValueLegacy(
+            d2: D2,
+            value: String?,
+            valueType: ValueType?,
+            optionSetUid: String?,
+        ): String? {
+            var teAttrValue = value
+            when (valueType) {
+                ValueType.ORGANISATION_UNIT -> {
+                    val orgUnit =
+                        d2
+                            .organisationUnitModule()
+                            .organisationUnits()
+                            .byUid()
+                            .eq(value)
+                            .one()
+                            .blockingGet()
+                    if (orgUnit != null && orgUnit.displayName() != null) {
+                        teAttrValue = orgUnit.displayName()
                     }
                 }
                 ValueType.DATE, ValueType.AGE -> {

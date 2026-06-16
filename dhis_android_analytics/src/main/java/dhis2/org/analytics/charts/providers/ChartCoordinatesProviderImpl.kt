@@ -21,7 +21,7 @@ class ChartCoordinatesProviderImpl(
     val periodStepProvider: PeriodStepProvider,
     val resourceManager: ResourceManager,
 ) : ChartCoordinatesProvider {
-    override fun dataElementCoordinates(
+    override suspend fun dataElementCoordinates(
         stageUid: String,
         teiUid: String,
         dataElementUid: String,
@@ -65,18 +65,18 @@ class ChartCoordinatesProviderImpl(
                             } else {
                                 periodStepProvider
                                     .getPeriodDiff(
-                                        initialPeriod!!,
+                                        initialPeriod,
                                         lineListResponse.period,
                                     ).toFloat()
                             },
-                        fieldValue = GraphFieldValue.Numeric(value.toFloatOrNull() ?: 0f),
+                        fieldValue = formatToNumericFieldValue(value),
                         legendValue = createLegendValue(legend),
                     )
                 }
             }
     }
 
-    override fun indicatorCoordinates(
+    override suspend fun indicatorCoordinates(
         stageUid: String,
         teiUid: String,
         indicatorUid: String,
@@ -112,7 +112,7 @@ class ChartCoordinatesProviderImpl(
                             .value
                             ?.toFloat() ?: Float.NaN
                     ).isNaN()
-                } catch (e: java.lang.Exception) {
+                } catch (_: java.lang.Exception) {
                     false
                 }
             }.mapNotNull { lineListResponse ->
@@ -122,7 +122,6 @@ class ChartCoordinatesProviderImpl(
                     if (initialPeriod == null) initialPeriod = lineListResponse.period
 
                     val legend = getLegend(lineListResponseValue.legend)
-
                     GraphPoint(
                         eventDate = formattedDate(lineListResponse.date),
                         position =
@@ -131,18 +130,18 @@ class ChartCoordinatesProviderImpl(
                             } else {
                                 periodStepProvider
                                     .getPeriodDiff(
-                                        initialPeriod!!,
+                                        initialPeriod,
                                         lineListResponse.period,
                                     ).toFloat()
                             },
-                        fieldValue = GraphFieldValue.Numeric(value.toFloat()),
+                        fieldValue = formatToNumericFieldValue(value),
                         legendValue = createLegendValue(legend),
                     )
                 }
             }
     }
 
-    override fun nutritionCoordinates(
+    override suspend fun nutritionCoordinates(
         stageUid: String,
         teiUid: String,
         zScoreValueContainerUid: String,
@@ -199,13 +198,13 @@ class ChartCoordinatesProviderImpl(
                     GraphPoint(
                         eventDate = formattedDate(lineListResponse.date),
                         position = xAxisValue.toFloat(),
-                        fieldValue = GraphFieldValue.Numeric(zScoreValue.toFloat()),
+                        fieldValue = formatToNumericFieldValue(zScoreValue),
                     )
                 }
             }
     }
 
-    override fun pieChartCoordinates(
+    override suspend fun pieChartCoordinates(
         stageUid: String,
         teiUid: String,
         dataElementUid: String,
@@ -235,7 +234,7 @@ class ChartCoordinatesProviderImpl(
         return eventList.groupBy { it.values.first().value }.mapNotNull {
             GraphPoint(
                 eventDate = formattedDate(it.value.first().date),
-                fieldValue = GraphFieldValue.Numeric(it.value.size.toFloat()),
+                fieldValue = GraphFieldValue.Integer(it.value.size),
                 legend = it.key,
             )
         }
@@ -283,7 +282,7 @@ class ChartCoordinatesProviderImpl(
                 GraphPoint(
                     eventDate = GregorianCalendar(2021, 0, 1).time,
                     position = position.toFloat(),
-                    fieldValue = GraphFieldValue.Numeric(gridResponseValue.value!!.toFloat()),
+                    fieldValue = formatToNumericFieldValue(gridResponseValue.value),
                     legend = columnLegend,
                     legendValue = createLegendValue(legend?.item),
                 )
@@ -294,11 +293,11 @@ class ChartCoordinatesProviderImpl(
             val formattedDateString = SimpleDateFormat("yyyy-MM-dd").format(date)
             val formattedDate = SimpleDateFormat("yyyy-MM-dd").parse(formattedDateString)
             formattedDate ?: date
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             date
         }
 
-    private fun getLegend(legendUid: String?): Legend? =
+    private suspend fun getLegend(legendUid: String?): Legend? =
         legendUid?.let {
             d2
                 .legendSetModule()
@@ -315,5 +314,12 @@ class ChartCoordinatesProviderImpl(
                 ),
                 it.displayName(),
             )
+        }
+
+    private fun formatToNumericFieldValue(value: String?): GraphFieldValue =
+        if (value?.contains(".") == true || value?.contains(",") == true) {
+            GraphFieldValue.Decimal(value.toFloatOrNull() ?: 0f)
+        } else {
+            GraphFieldValue.Integer(value?.toIntOrNull() ?: 0)
         }
 }

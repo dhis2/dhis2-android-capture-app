@@ -21,7 +21,7 @@
 
         <variable
             name="attribute"
-            type="java.util.List&lt;org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue&gt;" />
+            type="java.util.List&lt;org.dhis2.tracker.search.model.TrackedEntitySearchItemAttributeDomain&gt;" />
 
         <variable
             name="attributeNames"
@@ -222,7 +222,7 @@
                     android:ellipsize="end"
                     android:fontFamily="@font/rubik_regular"
                     android:singleLine="true"
-                    android:text='@{attribute.size()>0 ? attribute.get(0).value() : "" , default="attribute 1"}'
+                    android:text='@{attribute.size()>0 ? attribute.get(0).value : "" , default="attribute 1"}'
                     android:textColor="@color/textSecondary"
                     android:textSize="14sp"
                     android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}'
@@ -241,7 +241,7 @@
                     android:ellipsize="end"
                     android:fontFamily="@font/rubik_regular"
                     android:singleLine="true"
-                    android:text='@{attribute.size() > 1 ? attribute.get(1).value() : "" , default="attribute 2"}'
+                    android:text='@{attribute.size() > 1 ? attribute.get(1).value : "" , default="attribute 2"}'
                     android:textColor="@color/textSecondary"
                     android:textSize="12sp"
                     android:visibility='@{attribute.size() > 1 &amp;&amp; !attributeListOpened ? View.VISIBLE : View.GONE}'

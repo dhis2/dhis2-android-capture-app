@@ -1,6 +1,7 @@
 package org.dhis2.data.forms.dataentry
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOf
 import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
@@ -42,6 +43,7 @@ class ValueStoreTest {
 
     @Before
     fun setUp() {
+        whenever(networkStatusProvider.connectionStatus) doReturn flowOf(false)
         attrValueStore =
             ValueStoreImpl(
                 d2,

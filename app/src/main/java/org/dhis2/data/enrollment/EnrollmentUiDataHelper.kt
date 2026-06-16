@@ -2,7 +2,7 @@ package org.dhis2.data.enrollment
 
 import android.content.Context
 import org.dhis2.R
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import org.dhis2.tracker.search.model.EnrollmentStatus
 
 class EnrollmentUiDataHelper(
     val context: Context,

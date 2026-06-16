@@ -31,6 +31,7 @@ class SearchTrackedEntitiesTest {
     private val repository: SearchTrackedEntityRepository = mock()
     private val customIntentRepository: CustomIntentRepository = mock()
     private val teType = "personType"
+    private val programUid = "programUid"
 
     @Before
     fun setup() {
@@ -61,7 +62,7 @@ class SearchTrackedEntitiesTest {
                 )
             val searchParams =
                 SearchTrackedEntitiesInput(
-                    selectedProgram = "programUid",
+                    selectedProgram = programUid,
                     allowCache = true,
                     excludeValues = hashSetOf(),
                     hasStateFilters = false,
@@ -72,7 +73,7 @@ class SearchTrackedEntitiesTest {
             val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
             val mockFlow: Flow<PagingData<TrackedEntitySearchItemResult>> = flowOf(mockPagingData)
 
-            whenever(repository.isTETypeAttribute(eq(teType), any())) doReturn true
+            whenever(repository.isTETypeAttribute(any(), any())) doReturn true
             whenever(repository.getTEAttribute(any())) doReturn
                 SearchTrackedEntityAttribute(
                     isUnique = false,
@@ -84,14 +85,14 @@ class SearchTrackedEntitiesTest {
                     eq(CustomIntentActionTypeModel.SEARCH),
                 ),
             ) doReturn false
-            whenever(repository.fetchResults(any(), any(), any())) doReturn mockFlow
+            whenever(repository.fetchResults(any(), any(), any(), any())) doReturn mockFlow
 
             // When
             val result = useCase.invoke(searchParams)
 
             // Then
             assertTrue(result.isSuccess)
-            verify(repository).addFiltersToQuery("programUid", teType)
+            verify(repository).addFiltersToQuery(programUid, teType)
             verify(repository).addToQuery(
                 dataId = "attr1",
                 dataValues = listOf("value1"),
@@ -103,9 +104,10 @@ class SearchTrackedEntitiesTest {
                 searchOperator = null,
             )
             verify(repository).fetchResults(
-                isOnline = true,
-                hasStateFilters = false,
-                allowCache = true,
+                isOnline = eq(true),
+                hasStateFilters = eq(false),
+                allowCache = eq(true),
+                selectedProgram = eq(programUid),
             )
         }
 
@@ -115,7 +117,7 @@ class SearchTrackedEntitiesTest {
             // Given
             val searchParams =
                 SearchTrackedEntitiesInput(
-                    selectedProgram = "programUid",
+                    selectedProgram = programUid,
                     allowCache = true,
                     excludeValues = hashSetOf(),
                     hasStateFilters = false,
@@ -126,7 +128,7 @@ class SearchTrackedEntitiesTest {
             val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
             val mockFlow: Flow<PagingData<TrackedEntitySearchItemResult>> = flowOf(mockPagingData)
 
-            whenever(repository.fetchResults(any(), any(), any())) doReturn mockFlow
+            whenever(repository.fetchResults(any(), any(), any(), any())) doReturn mockFlow
 
             // When
             val result = useCase.invoke(searchParams)
@@ -139,6 +141,7 @@ class SearchTrackedEntitiesTest {
                 isOnline = false,
                 hasStateFilters = false,
                 allowCache = true,
+                selectedProgram = programUid,
             )
         }
 
@@ -160,7 +163,7 @@ class SearchTrackedEntitiesTest {
             val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
             val mockFlow: Flow<PagingData<TrackedEntitySearchItemResult>> = flowOf(mockPagingData)
 
-            whenever(repository.fetchResults(any(), any(), any())) doReturn mockFlow
+            whenever(repository.fetchResults(any(), any(), any(), any())) doReturn mockFlow
 
             // When
             val result = useCase.invoke(searchParams)
@@ -177,7 +180,7 @@ class SearchTrackedEntitiesTest {
             val excludedValues = hashSetOf("excludedUid1", "excludedUid2")
             val searchParams =
                 SearchTrackedEntitiesInput(
-                    selectedProgram = "programUid",
+                    selectedProgram = programUid,
                     allowCache = true,
                     excludeValues = excludedValues,
                     hasStateFilters = false,
@@ -188,7 +191,7 @@ class SearchTrackedEntitiesTest {
             val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
             val mockFlow: Flow<PagingData<TrackedEntitySearchItemResult>> = flowOf(mockPagingData)
 
-            whenever(repository.fetchResults(any(), any(), any())) doReturn mockFlow
+            whenever(repository.fetchResults(any(), any(), any(), any())) doReturn mockFlow
 
             // When
             val result = useCase.invoke(searchParams)
@@ -212,7 +215,7 @@ class SearchTrackedEntitiesTest {
                 )
             val searchParams =
                 SearchTrackedEntitiesInput(
-                    selectedProgram = "programUid",
+                    selectedProgram = programUid,
                     allowCache = true,
                     excludeValues = hashSetOf(),
                     hasStateFilters = false,
@@ -235,7 +238,7 @@ class SearchTrackedEntitiesTest {
                     eq(CustomIntentActionTypeModel.SEARCH),
                 ),
             ) doReturn false
-            whenever(repository.fetchResults(any(), any(), any())) doReturn mockFlow
+            whenever(repository.fetchResults(any(), any(), any(), any())) doReturn mockFlow
 
             // When
             val result = useCase.invoke(searchParams)
@@ -263,7 +266,7 @@ class SearchTrackedEntitiesTest {
                 )
             val searchParams =
                 SearchTrackedEntitiesInput(
-                    selectedProgram = "programUid",
+                    selectedProgram = programUid,
                     allowCache = true,
                     excludeValues = hashSetOf(),
                     hasStateFilters = false,
@@ -286,7 +289,7 @@ class SearchTrackedEntitiesTest {
                     eq(CustomIntentActionTypeModel.SEARCH),
                 ),
             ) doReturn false
-            whenever(repository.fetchResults(any(), any(), any())) doReturn mockFlow
+            whenever(repository.fetchResults(any(), any(), any(), any())) doReturn mockFlow
 
             // When
             val result = useCase.invoke(searchParams)
@@ -314,7 +317,7 @@ class SearchTrackedEntitiesTest {
                 )
             val searchParams =
                 SearchTrackedEntitiesInput(
-                    selectedProgram = "programUid",
+                    selectedProgram = programUid,
                     allowCache = true,
                     excludeValues = hashSetOf(),
                     hasStateFilters = false,
@@ -337,7 +340,7 @@ class SearchTrackedEntitiesTest {
                     CustomIntentActionTypeModel.SEARCH,
                 ),
             ) doReturn false
-            whenever(repository.fetchResults(any(), any(), any())) doReturn mockFlow
+            whenever(repository.fetchResults(any(), any(), any(), any())) doReturn mockFlow
 
             // When
             val result = useCase.invoke(searchParams)
@@ -365,7 +368,7 @@ class SearchTrackedEntitiesTest {
                 )
             val searchParams =
                 SearchTrackedEntitiesInput(
-                    selectedProgram = "programUid",
+                    selectedProgram = programUid,
                     allowCache = true,
                     excludeValues = hashSetOf(),
                     hasStateFilters = false,
@@ -388,7 +391,7 @@ class SearchTrackedEntitiesTest {
                     CustomIntentActionTypeModel.SEARCH,
                 ),
             ) doReturn true
-            whenever(repository.fetchResults(any(), any(), any())) doReturn mockFlow
+            whenever(repository.fetchResults(any(), any(), any(), any())) doReturn mockFlow
 
             // When
             val result = useCase.invoke(searchParams)
@@ -445,7 +448,7 @@ class SearchTrackedEntitiesTest {
                     eq(CustomIntentActionTypeModel.SEARCH),
                 ),
             ) doReturn false
-            whenever(repository.fetchResults(any(), any(), any())) doReturn mockFlow
+            whenever(repository.fetchResults(any(), any(), any(), any())) doReturn mockFlow
 
             // When
             val result = useCase.invoke(searchParams)
@@ -466,7 +469,7 @@ class SearchTrackedEntitiesTest {
             // Given
             val searchParams =
                 SearchTrackedEntitiesInput(
-                    selectedProgram = "programUid",
+                    selectedProgram = programUid,
                     allowCache = true,
                     excludeValues = hashSetOf(),
                     hasStateFilters = false,
@@ -476,7 +479,7 @@ class SearchTrackedEntitiesTest {
 
             val domainError = DomainError.UnexpectedError("Test error")
 
-            whenever(repository.fetchResults(any(), any(), any())).thenAnswer { throw domainError }
+            whenever(repository.fetchResults(any(), any(), any(), any())).thenAnswer { throw domainError }
 
             // When
             val result = useCase.invoke(searchParams)
@@ -493,7 +496,7 @@ class SearchTrackedEntitiesTest {
             // Given
             val searchParams =
                 SearchTrackedEntitiesInput(
-                    selectedProgram = "programUid",
+                    selectedProgram = programUid,
                     allowCache = false,
                     excludeValues = hashSetOf(),
                     hasStateFilters = true,
@@ -504,7 +507,7 @@ class SearchTrackedEntitiesTest {
             val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
             val mockFlow: Flow<PagingData<TrackedEntitySearchItemResult>> = flowOf(mockPagingData)
 
-            whenever(repository.fetchResults(any(), any(), any())) doReturn mockFlow
+            whenever(repository.fetchResults(any(), any(), any(), any())) doReturn mockFlow
 
             // When
             val result = useCase.invoke(searchParams)
@@ -515,6 +518,7 @@ class SearchTrackedEntitiesTest {
                 isOnline = true,
                 hasStateFilters = true,
                 allowCache = false,
+                selectedProgram = programUid,
             )
         }
 
@@ -524,7 +528,7 @@ class SearchTrackedEntitiesTest {
             // Given
             val searchParams =
                 SearchTrackedEntitiesInput(
-                    selectedProgram = "programUid",
+                    selectedProgram = programUid,
                     allowCache = true,
                     excludeValues = hashSetOf(),
                     hasStateFilters = false,
@@ -535,7 +539,7 @@ class SearchTrackedEntitiesTest {
             val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
             val mockFlow: Flow<PagingData<TrackedEntitySearchItemResult>> = flowOf(mockPagingData)
 
-            whenever(repository.fetchResults(any(), any(), any())) doReturn mockFlow
+            whenever(repository.fetchResults(any(), any(), any(), any())) doReturn mockFlow
 
             // When
             val result = useCase.invoke(searchParams)
@@ -546,6 +550,7 @@ class SearchTrackedEntitiesTest {
                 isOnline = false,
                 hasStateFilters = false,
                 allowCache = true,
+                selectedProgram = programUid,
             )
         }
 }

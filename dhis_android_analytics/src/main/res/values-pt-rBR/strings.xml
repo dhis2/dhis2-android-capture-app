@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="period">Período</string>
-    <string name="none">Nenhum</string>
     <string name="daily">Diário</string>
     <string name="today">Hoje</string>
     <string name="other">Outro</string>
