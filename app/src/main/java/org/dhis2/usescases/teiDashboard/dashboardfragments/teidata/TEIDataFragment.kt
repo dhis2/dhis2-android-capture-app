@@ -129,6 +129,7 @@ class TEIDataFragment :
                 getString("TEI_UID")
                     ?: throw NullPointerException("A TEI uid is required to launch fragment")
             val enrollmentUid = getString("ENROLLMENT_UID") ?: ""
+            val fragmentFromEventCaptureActivity = getBoolean("FRAGMENT_FROM_EVENT_CAPTURE_ACTIVITY", false)
             app()
                 .dashboardComponent()
                 ?.plus(
@@ -137,6 +138,7 @@ class TEIDataFragment :
                         programUid,
                         teiUid,
                         enrollmentUid,
+                        fragmentFromEventCaptureActivity,
                         requireActivity().activityResultRegistry,
                     ),
                 )?.inject(this@TEIDataFragment)
@@ -246,7 +248,7 @@ class TEIDataFragment :
                 val eventCount by presenter.events.map { it.count() }.observeAsState(0)
 
                 val syncInfoBar =
-                    dashboardModel.takeIf { it is DashboardEnrollmentModel }?.let {
+                    dashboardModel.takeIf { it is DashboardEnrollmentModel && !presenter.fragmentIsFromEventCaptureActivity() }?.let {
                         infoBarMapper.map(
                             infoBarType = InfoBarType.SYNC,
                             item = dashboardModel as DashboardEnrollmentModel,
@@ -758,12 +760,16 @@ class TEIDataFragment :
             programUid: String?,
             teiUid: String?,
             enrollmentUid: String?,
+            fragmentFromEventCaptureActivity: Boolean? = null,
         ): TEIDataFragment {
             val fragment = TEIDataFragment()
             val args = Bundle()
             args.putString("PROGRAM_UID", programUid)
             args.putString("TEI_UID", teiUid)
             args.putString("ENROLLMENT_UID", enrollmentUid)
+            fragmentFromEventCaptureActivity?.let {
+                args.putBoolean("FRAGMENT_FROM_EVENT_CAPTURE_ACTIVITY", fragmentFromEventCaptureActivity)
+            }
             fragment.arguments = args
             return fragment
         }
