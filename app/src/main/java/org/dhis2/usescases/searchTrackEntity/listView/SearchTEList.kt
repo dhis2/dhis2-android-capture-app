@@ -371,13 +371,18 @@ class SearchTEList : FragmentGlobalAbstract() {
         displayResult(null)
     }
 
+    private var lastSearchPagingData: Any? = null
+
     private fun initData() {
         displayLoadingData()
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.searchPagingData.collect { data ->
-                    hideStaleProgramResults()
+                    if (data !== lastSearchPagingData) {
+                        lastSearchPagingData = data
+                        hideStaleProgramResults()
+                    }
                     liveAdapter.addOnPagesUpdatedListener {
                         onInitDataLoaded()
                         CoroutineTracker.decrement()
