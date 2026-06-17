@@ -16,8 +16,11 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.map
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -26,6 +29,8 @@ import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.functions.Consumer
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.commons.Constants
@@ -152,10 +157,6 @@ class TEIDataFragment :
             .inflate(inflater, container, false)
             .also { binding ->
                 this.binding = binding
-                dashboardViewModel.groupByStage.observe(viewLifecycleOwner) { group ->
-                    showLoadingProgress(true)
-                    presenter.onGroupingChanged(group)
-                }
 
                 with(dashboardViewModel) {
                     eventUid().observe(viewLifecycleOwner, ::displayGenerateEvent)
@@ -166,8 +167,16 @@ class TEIDataFragment :
                             showDetailCard()
                         }
                     }
-                    dashboardModel.observe(viewLifecycleOwner) {
-                        presenter.checkIfHasToDisplayGenerateEvent()
+                    lifecycleScope.launch {
+                        repeatOnLifecycle(Lifecycle.State.STARTED) {
+                            dashboardModel.collectLatest {
+                                presenter.checkIfHasToDisplayGenerateEvent()
+                            }
+                            dashboardViewModel.groupByStage.collectLatest { group ->
+                                showLoadingProgress(true)
+                                presenter.onGroupingChanged(group)
+                            }
+                        }
                     }
                 }
 
@@ -235,11 +244,11 @@ class TEIDataFragment :
     private fun showDetailCard() {
         binding.detailCard.setContent {
             if (isUserLoggedIn()) {
-                val dashboardModel by dashboardViewModel.dashboardModel.observeAsState()
+                val dashboardModel by dashboardViewModel.dashboardModel.collectAsState()
                 val followUp by dashboardViewModel.showFollowUpBar.collectAsState()
                 val syncNeeded by dashboardViewModel.syncNeeded.collectAsState()
                 val enrollmentStatus by dashboardViewModel.showStatusBar.collectAsState()
-                val groupingEvents by dashboardViewModel.groupByStage.observeAsState()
+                val groupingEvents by dashboardViewModel.groupByStage.collectAsState()
                 val displayEventCreationButton by presenter.shouldDisplayEventCreationButton.observeAsState(
                     false,
                 )

@@ -89,6 +89,8 @@ class DashboardRepositoryImpl(
             .map { it }
             .toObservable()
 
+    override fun isProgramSelected(): Boolean = programUid?.isNotEmpty() == true
+
     override fun getEnrollmentEventsWithDisplay(
         programUid: String?,
         teiUid: String,

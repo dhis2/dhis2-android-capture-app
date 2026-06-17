@@ -10,8 +10,10 @@ import android.util.TypedValue
 import android.view.View
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.MoveDown
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -22,12 +24,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.commons.Constants
@@ -84,6 +90,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import javax.inject.Inject
+import kotlin.getValue
 
 class TeiDashboardMobileActivity :
     ActivityGlobalAbstract(),
@@ -126,7 +133,7 @@ class TeiDashboardMobileActivity :
     var programUid: String? = null
     var enrollmentUid: String? = null
     lateinit var binding: ActivityDashboardMobileBinding
-    private lateinit var dashboardViewModel: DashboardViewModel
+    private val dashboardViewModel: DashboardViewModel by viewModels { viewModelFactory }
 
     private var relationshipMap: MutableLiveData<Boolean> = MutableLiveData(false)
 
@@ -193,8 +200,6 @@ class TeiDashboardMobileActivity :
             ).inject(this)
         setTheme(themeManager.getProgramTheme())
         super.onCreate(savedInstanceState)
-        dashboardViewModel =
-            ViewModelProvider(this, viewModelFactory)[DashboardViewModel::class.java]
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile)
         showLoadingProgress(true)
         binding.presenter = presenter
@@ -234,13 +239,17 @@ class TeiDashboardMobileActivity :
     }
 
     private fun observeDashboardModel() {
-        dashboardViewModel.dashboardModel.observe(this) {
-            if (sessionManagerServiceImpl.isUserLoggedIn()) {
-                when (it) {
-                    is DashboardEnrollmentModel -> setData(it)
-                    is DashboardTEIModel -> setDataWithOutProgram(it)
-                    else -> // Do nothing
-                        Unit
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                dashboardViewModel.dashboardModel.collectLatest {
+                    if (sessionManagerServiceImpl.isUserLoggedIn()) {
+                        when (it) {
+                            is DashboardEnrollmentModel -> setData(it)
+                            is DashboardTEIModel -> setDataWithOutProgram(it)
+                            else -> // Do nothing
+                                Unit
+                        }
+                    }
                 }
             }
         }
@@ -337,22 +346,24 @@ class TeiDashboardMobileActivity :
                 val uiState by dashboardViewModel.navigationBarUIState.collectAsStateWithLifecycle()
                 var selectedHomeItemIndex by remember(uiState) {
                     mutableIntStateOf(
-                        uiState.items.indexOfFirst {
-                            it.id == uiState.selectedItem
-                        },
+                        uiState?.items?.indexOfFirst {
+                            it.id == uiState?.selectedItem
+                        } ?: 0,
                     )
                 }
 
                 NavigationBar(
-                    items = uiState.items,
+                    items = uiState?.items ?: emptyList(),
                     selectedItemIndex = selectedHomeItemIndex,
                 ) { itemId ->
-                    selectedHomeItemIndex = uiState.items.indexOfFirst { it.id == itemId }
+                    selectedHomeItemIndex = uiState?.items?.indexOfFirst { it.id == itemId } ?: 0
                     dashboardViewModel.onNavigationItemSelected(itemId)
                 }
 
-                uiState.selectedItem?.let {
-                    navigateToFragment(it)
+                LaunchedEffect(uiState.selectedItem) {
+                    uiState.selectedItem?.let {
+                        navigateToFragment(it)
+                    }
                 }
             }
         }

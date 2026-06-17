@@ -45,9 +45,7 @@ class ChartsRepositoryImpl(
         if (enrollment?.trackedEntityInstance() == null) return emptyList()
 
         val settingsAnalytics = getSettingsAnalytics(enrollment)
-        return settingsAnalytics.ifEmpty {
-            getDefaultAnalytics(enrollment)
-        }
+        return settingsAnalytics
     }
 
     override fun getVisualizationGroups(uid: String?): List<AnalyticsDhisVisualizationsGroup> =
