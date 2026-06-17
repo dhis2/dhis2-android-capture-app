@@ -63,7 +63,7 @@ class SyncPresenterImpl(
             syncRepository
                 .downLoadEvent(eventUid, programUid)
                 .map { it as D2Progress }
-                .mergeWith(syncRepository.downloadEventFiles(eventUid))
+                .concatWith(syncRepository.downloadEventFiles(eventUid))
         } ?: Observable.empty()
     }
 
@@ -184,7 +184,7 @@ class SyncPresenterImpl(
                 syncRepository.downloadEventProgram(uid)
             }
         }?.map { it as D2Progress }
-            ?.mergeWith(syncRepository.downloadProgramFiles(uid))
+            ?.concatWith(syncRepository.downloadProgramFiles(uid))
             ?: Observable.empty()
 
     override fun syncGranularTEI(uid: String): Observable<D2Progress> {
@@ -198,7 +198,7 @@ class SyncPresenterImpl(
         return syncRepository
             .downloadTei(teiUid, programUid)
             .map { it as D2Progress }
-            .mergeWith(
+            .concatWith(
                 syncRepository.downloadTeiFiles(teiUid, programUid),
             )
     }
