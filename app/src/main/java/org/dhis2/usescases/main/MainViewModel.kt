@@ -164,13 +164,13 @@ class MainViewModel(
             val navigationBarItems = configureHomeNavigationBar().getOrDefault(emptyList())
             val homeFilters = getHomeFilters().getOrDefault(emptyList())
 
-            _homeScreenState.update {
+            _homeScreenState.update { current ->
                 HomeScreenState(
                     userName = userName,
                     navigationBarItems = navigationBarItems,
                     homeFilters = homeFilters,
                     activeFilters = filterManager.totalFilters,
-                    versionToUpdate = VersionToUpdateState.None,
+                    versionToUpdate = current.versionToUpdate,
                     filterButtonVisible = initialScreen.isPrograms(),
                     bottomNavigationBarVisible = initialScreen.isHome() && navigationBarItems.size > 1,
                     syncButtonVisible = initialScreen.isHome(),
