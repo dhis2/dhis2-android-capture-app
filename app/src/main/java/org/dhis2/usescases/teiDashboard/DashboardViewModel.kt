@@ -148,66 +148,74 @@ class DashboardViewModel(
 
     private suspend fun loadNavigationBarItems() =
         withContext(dispatcher.io()) {
-            val enrollmentItems = mutableListOf<NavigationBarItem<TEIDashboardItems>>()
+            CoroutineTracker.increment()
+            try {
+                val enrollmentItems = mutableListOf<NavigationBarItem<TEIDashboardItems>>()
 
-            if (isPortrait()) {
+                if (isPortrait()) {
+                    enrollmentItems.add(
+                        NavigationBarItem(
+                            id = TEIDashboardItems.DETAILS,
+                            icon = Icons.AutoMirrored.Outlined.Assignment,
+                            selectedIcon = Icons.AutoMirrored.Filled.Assignment,
+                            label = resourcesManager.getString(R.string.navigation_tei_data),
+                        ),
+                    )
+                }
+
+                if (repository.programHasAnalytics()) {
+                    enrollmentItems.add(
+                        NavigationBarItem(
+                            id = TEIDashboardItems.ANALYTICS,
+                            icon = Icons.Outlined.BarChart,
+                            selectedIcon = Icons.Filled.BarChart,
+                            label = resourcesManager.getString(R.string.navigation_analytics),
+                        ),
+                    )
+                }
+
+                if (pageConfigurator.displayRelationships()) {
+                    enrollmentItems.add(
+                        NavigationBarItem(
+                            id = TEIDashboardItems.RELATIONSHIPS,
+                            icon = Icons.Outlined.Hub,
+                            selectedIcon = Icons.Filled.Hub,
+                            label = resourcesManager.getString(R.string.navigation_relations),
+                        ),
+                    )
+                }
+
                 enrollmentItems.add(
                     NavigationBarItem(
-                        id = TEIDashboardItems.DETAILS,
-                        icon = Icons.AutoMirrored.Outlined.Assignment,
-                        selectedIcon = Icons.AutoMirrored.Filled.Assignment,
-                        label = resourcesManager.getString(R.string.navigation_tei_data),
+                        id = TEIDashboardItems.NOTES,
+                        icon = Icons.AutoMirrored.Outlined.StickyNote2,
+                        selectedIcon = Icons.AutoMirrored.Filled.StickyNote2,
+                        label = resourcesManager.getString(R.string.navigation_notes),
                     ),
                 )
-            }
 
-            if (repository.programHasAnalytics()) {
-                enrollmentItems.add(
-                    NavigationBarItem(
-                        id = TEIDashboardItems.ANALYTICS,
-                        icon = Icons.Outlined.BarChart,
-                        selectedIcon = Icons.Filled.BarChart,
-                        label = resourcesManager.getString(R.string.navigation_analytics),
-                    ),
-                )
-            }
+                _navigationBarUIState.update {
+                    it.copy(items = enrollmentItems)
+                }
 
-            if (pageConfigurator.displayRelationships()) {
-                enrollmentItems.add(
-                    NavigationBarItem(
-                        id = TEIDashboardItems.RELATIONSHIPS,
-                        icon = Icons.Outlined.Hub,
-                        selectedIcon = Icons.Filled.Hub,
-                        label = resourcesManager.getString(R.string.navigation_relations),
-                    ),
-                )
-            }
-
-            enrollmentItems.add(
-                NavigationBarItem(
-                    id = TEIDashboardItems.NOTES,
-                    icon = Icons.AutoMirrored.Outlined.StickyNote2,
-                    selectedIcon = Icons.AutoMirrored.Filled.StickyNote2,
-                    label = resourcesManager.getString(R.string.navigation_notes),
-                ),
-            )
-
-            _navigationBarUIState.update {
-                it.copy(items = enrollmentItems)
-            }
-
-            if (enrollmentItems.none { it.id == _navigationBarUIState.value.selectedItem }) {
-                val selectedItem = enrollmentItems.first()
-                onNavigationItemSelected(selectedItem.id)
+                if (enrollmentItems.none { it.id == _navigationBarUIState.value.selectedItem }) {
+                    val selectedItem = enrollmentItems.first()
+                    onNavigationItemSelected(selectedItem.id)
+                }
+            } finally {
+                CoroutineTracker.decrement()
             }
         }
 
     private fun fetchGrouping() {
         viewModelScope.launch(dispatcher.io()) {
+            CoroutineTracker.increment()
             try {
                 _groupByStage.emit(repository.getGrouping())
             } catch (e: Exception) {
                 Timber.e(e)
+            } finally {
+                CoroutineTracker.decrement()
             }
         }
     }

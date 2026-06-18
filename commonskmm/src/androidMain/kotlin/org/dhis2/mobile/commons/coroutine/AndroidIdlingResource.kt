@@ -7,9 +7,7 @@ object AndroidIdlingResource : CoroutineIdlingResource {
     private val countingIdlingResource = CountingIdlingResource(RESOURCE)
 
     override fun increment() {
-        if (countingIdlingResource.isIdleNow) {
-            countingIdlingResource.increment()
-        }
+        countingIdlingResource.increment()
         countingIdlingResource.dumpStateToLogs()
     }
 

@@ -29,7 +29,6 @@ import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.functions.Consumer
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.bindings.app
@@ -171,10 +170,15 @@ class TEIDataFragment :
                     }
                     lifecycleScope.launch {
                         repeatOnLifecycle(Lifecycle.State.STARTED) {
-                            dashboardModel.collectLatest {
+                            dashboardModel.collect {
                                 presenter.checkIfHasToDisplayGenerateEvent()
                             }
-                            dashboardViewModel.groupByStage.collectLatest { group ->
+
+                        }
+                    }
+                    lifecycleScope.launch {
+                        repeatOnLifecycle(Lifecycle.State.STARTED) {
+                            dashboardViewModel.groupByStage.collect { group ->
                                 showLoadingProgress(true)
                                 presenter.onGroupingChanged(group)
                             }

@@ -9,9 +9,7 @@ object TeiDataIdlingResourceSingleton {
     val countingIdlingResource = CountingIdlingResource(RESOURCE)
 
     fun increment() {
-        if (countingIdlingResource.isIdleNow) {
-            countingIdlingResource.increment()
-        }
+        countingIdlingResource.increment()
         countingIdlingResource.dumpStateToLogs()
     }
 

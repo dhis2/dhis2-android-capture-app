@@ -131,6 +131,7 @@ class TEIDataPresenter(
                                     calcResult,
                                 )
                             }.subscribeOn(schedulerProvider.io())
+                            .doOnCancel { decrement() }
                     }.subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
