@@ -111,8 +111,8 @@ class TEIDataPresenter(
                         sectionFlowable,
                         groupingFlowable,
                         ::Pair,
-                    ).doOnNext { increment() }
-                    .switchMap { stageAndGrouping ->
+                    ).switchMap { stageAndGrouping ->
+                        increment()
                         Flowable
                             .zip(
                                 teiDataRepository
