@@ -117,31 +117,25 @@ class DashboardViewModel(
     private fun fetchDashboardModel() {
         viewModelScope.launch(dispatcher.io()) {
             CoroutineTracker.increment()
-            val result =
-                async {
-                    repository.getDashboardModel()
+            try {
+                val model = repository.getDashboardModel()
+                _dashboardModel.emit(model)
+                if (model is DashboardEnrollmentModel) {
+                    _showFollowUpBar.value =
+                        model.currentEnrollment.followUp() ?: false
+                    _syncNeeded.value =
+                        model.currentEnrollment.aggregatedSyncState() != SYNCED
+                    _showStatusBar.value = model.currentEnrollment.status()
+                    _state.value =
+                        model.currentEnrollment.aggregatedSyncState()
+                    _noEnrollmentSelected.postValue(false)
+                } else {
+                    _noEnrollmentSelected.postValue(true)
                 }
-            withContext(dispatcher.ui()) {
-                try {
-                    val model = result.await()
-                    _dashboardModel.emit(model)
-                    if (model is DashboardEnrollmentModel) {
-                        _showFollowUpBar.value =
-                            model.currentEnrollment.followUp() ?: false
-                        _syncNeeded.value =
-                            model.currentEnrollment.aggregatedSyncState() != SYNCED
-                        _showStatusBar.value = model.currentEnrollment.status()
-                        _state.value =
-                            model.currentEnrollment.aggregatedSyncState()
-                        _noEnrollmentSelected.value = false
-                    } else {
-                        _noEnrollmentSelected.value = true
-                    }
-                } catch (e: Exception) {
-                    Timber.e(e)
-                } finally {
-                    CoroutineTracker.decrement()
-                }
+            } catch (e: Exception) {
+                Timber.e(e)
+            } finally {
+                CoroutineTracker.decrement()
             }
         }
     }
