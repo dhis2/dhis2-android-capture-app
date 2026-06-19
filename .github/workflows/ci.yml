@@ -10,8 +10,7 @@ on:
   schedule:
     - cron: '0 0 * * *'
 
-permissions:
-  contents: read
+permissions: { }
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,6 +19,8 @@ concurrency:
 jobs:
   setup:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     if: ${{ !contains(github.event.pull_request.title, '[skip ci]') && !contains(github.event.pull_request.body, '[skip ci]') }}
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
@@ -37,6 +38,8 @@ jobs:
 
   lint-check:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     needs: setup
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
@@ -53,6 +56,8 @@ jobs:
 
   unit-tests:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     needs: lint-check
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
@@ -79,6 +84,8 @@ jobs:
 
   build-test-apks:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     needs: [ unit-tests, lint-check ]
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
@@ -104,6 +111,8 @@ jobs:
 
   run-form-tests:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     needs: build-test-apks
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
@@ -128,6 +137,8 @@ jobs:
 
   run-ui-portrait:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     needs: run-form-tests
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
@@ -154,6 +165,8 @@ jobs:
 
   run-ui-landscape:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     needs: run-form-tests
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
@@ -180,6 +193,8 @@ jobs:
 
   code-quality:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     needs: unit-tests
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
