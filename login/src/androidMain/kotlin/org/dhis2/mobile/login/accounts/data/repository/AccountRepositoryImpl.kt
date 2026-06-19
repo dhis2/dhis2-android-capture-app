@@ -4,8 +4,10 @@ import org.dhis2.mobile.commons.providers.PreferenceProvider
 import org.dhis2.mobile.login.accounts.data.credentials.defaultTestingCredentials
 import org.dhis2.mobile.login.accounts.data.credentials.trainingTestingCredentials
 import org.dhis2.mobile.login.accounts.domain.model.AccountModel
+import org.dhis2.mobile.login.accounts.domain.model.AuthorizationMethod
 import org.dhis2.mobile.login.main.data.PREF_URLS
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.AuthorizationType
 import org.hisp.dhis.android.core.configuration.internal.DatabaseAccount
 
 class AccountRepositoryImpl(
@@ -63,6 +65,15 @@ class AccountRepositoryImpl(
             oidcLoginText = oidcProviders?.loginText,
             oidcUrl = oidcProviders?.url,
             isOauthEnabled = databaseAccount.loginConfig()?.isOauthEnabled == true,
+            authorizationMethod = databaseAccount.authorizationType.toAuthorization(),
         )
     }
 }
+
+private fun AuthorizationType?.toAuthorization(): AuthorizationMethod =
+    when (this) {
+        AuthorizationType.BASIC -> AuthorizationMethod.BASIC
+        AuthorizationType.OPEN_ID_CONNECT -> AuthorizationMethod.OPEN_ID_CONNECT
+        AuthorizationType.OAUTH2 -> AuthorizationMethod.OAUTH2
+        else -> AuthorizationMethod.BASIC
+    }

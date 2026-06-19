@@ -10,7 +10,9 @@ import kotlinx.coroutines.test.setMain
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.accounts.data.repository.AccountRepository
 import org.dhis2.mobile.login.accounts.domain.model.AccountModel
+import org.dhis2.mobile.login.accounts.domain.model.AuthorizationMethod
 import org.dhis2.mobile.login.main.data.LoginRepository
+import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
@@ -126,7 +128,7 @@ class LoginScreenIntegrationTest {
                         serverName = singleAccount.serverName,
                         selectedServerFlag = singleAccount.serverFlag,
                         allowRecovery = singleAccount.allowRecovery,
-                        oAuthEnabled = false,
+                        entryMode = CredentialsEntryMode.EXISTING_BASIC,
                     ),
                 ),
                 any(),
@@ -158,7 +160,7 @@ class LoginScreenIntegrationTest {
                         serverName = oauthAccount.serverName,
                         selectedServerFlag = oauthAccount.serverFlag,
                         allowRecovery = false,
-                        oAuthEnabled = true,
+                        entryMode = CredentialsEntryMode.EXISTING_OAUTH,
                     ),
                 ),
                 any(),
@@ -246,6 +248,7 @@ class LoginScreenIntegrationTest {
             oidcLoginText = null,
             oidcUrl = null,
             isOauthEnabled = false,
+            authorizationMethod = AuthorizationMethod.BASIC,
         )
 
     private fun createOauthAccount(
@@ -263,5 +266,6 @@ class LoginScreenIntegrationTest {
             oidcLoginText = "Login with OAuth",
             oidcUrl = "https://oauth.dhis2.org/auth",
             isOauthEnabled = true,
+            authorizationMethod = AuthorizationMethod.OAUTH2,
         )
 }
