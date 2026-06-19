@@ -3,6 +3,7 @@ package org.dhis2.form.data
 import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.form.R
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.model.EnrollmentMode
 import org.dhis2.form.model.SectionUiModelImpl
@@ -97,6 +98,7 @@ class FormRepositoryIntegrationTest {
         whenever(conf.program()) doReturn program
         whenever(conf.trackedEntityType()) doReturn teType
         whenever(conf.captureOrgUnitsCount()) doReturn 1
+        whenever(conf.valueExists("teAttributeUid", teAttribute.valueType())) doReturn true
 
         whenever(enrollmentFormLabelsProvider.provideSingleSectionLabel()) doReturn "single section label"
         whenever(enrollmentFormLabelsProvider.provideEnrollmentDateDefaultLabel(anyOrNull())) doReturn "Default enrollment label"
