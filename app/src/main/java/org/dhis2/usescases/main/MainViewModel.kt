@@ -198,7 +198,8 @@ class MainViewModel(
                 _homeScreenState.update {
                     it.copy(
                         filterButtonVisible = true,
-                        bottomNavigationBarVisible = true,
+                        bottomNavigationBarVisible =
+                            it.currentScreen.isHome() && it.navigationBarItems.size > 1,
                         syncButtonVisible = true,
                     )
                 }
