@@ -26,6 +26,7 @@ class SyncMetadataTest {
     @Test
     fun `Should not trigger background jobs if sync periods do not change`() =
         runBlocking {
+            whenever(repository.isServerAvailable(any())) doReturn true
             whenever(repository.currentMetadataSyncPeriod()) doReturn SyncPeriod.Manual
             whenever(repository.currentDataSyncPeriod()) doReturn SyncPeriod.Manual
             whenever(repository.syncMetadata(any())) doReturn Result.success(Unit)
@@ -41,6 +42,7 @@ class SyncMetadataTest {
     @Test
     fun `Should cancel metadata sync if period changes to manual`() =
         runBlocking {
+            whenever(repository.isServerAvailable(any())) doReturn true
             whenever(repository.currentMetadataSyncPeriod()).thenReturn(
                 SyncPeriod.Every24Hour,
                 SyncPeriod.Manual,
@@ -59,6 +61,7 @@ class SyncMetadataTest {
     @Test
     fun `Should re-launch metadata sync if period changes`() =
         runBlocking {
+            whenever(repository.isServerAvailable(any())) doReturn true
             whenever(repository.currentMetadataSyncPeriod()).thenReturn(
                 SyncPeriod.Every24Hour,
                 SyncPeriod.Every7Days,
@@ -76,6 +79,7 @@ class SyncMetadataTest {
     @Test
     fun `Should cancel data sync if period changes to manual`() =
         runBlocking {
+            whenever(repository.isServerAvailable(any())) doReturn true
             whenever(repository.currentMetadataSyncPeriod()) doReturn SyncPeriod.Manual
             whenever(repository.currentDataSyncPeriod()).thenReturn(
                 SyncPeriod.Every24Hour,
@@ -93,6 +97,7 @@ class SyncMetadataTest {
     @Test
     fun `Should re-launch data sync if period changes`() =
         runBlocking {
+            whenever(repository.isServerAvailable(any())) doReturn true
             whenever(repository.currentMetadataSyncPeriod()) doReturn SyncPeriod.Manual
             whenever(repository.currentDataSyncPeriod()).thenReturn(
                 SyncPeriod.Every24Hour,
@@ -110,6 +115,7 @@ class SyncMetadataTest {
     @Test
     fun `Should return failure and save state when metadata sync fails`() =
         runBlocking {
+            whenever(repository.isServerAvailable(any())) doReturn true
             val exception = Exception("Sync failed")
             whenever(repository.currentMetadataSyncPeriod()) doReturn SyncPeriod.Manual
             whenever(repository.currentDataSyncPeriod()) doReturn SyncPeriod.Manual
