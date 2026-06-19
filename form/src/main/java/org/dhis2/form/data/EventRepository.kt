@@ -7,6 +7,7 @@ import io.reactivex.Single
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.dhis2.bindings.blockingGetValueCheck
+import org.dhis2.bindings.checkValueTypeValue
 import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.bindings.program
 import org.dhis2.commons.date.DateUtils
@@ -101,7 +102,7 @@ class EventRepository(
         when (eventMode) {
             EventMode.NEW,
             EventMode.SCHEDULE,
-            -> super.firstSectionToOpen()
+                -> super.firstSectionToOpen()
 
             EventMode.CHECK -> firstSectionToOpenForEvent()
         }
@@ -667,7 +668,22 @@ class EventRepository(
             }
         val allowFutureDates = programStageDataElement.allowFutureDate() ?: false
         val formName = de?.displayFormName()
-        val description = de?.displayDescription()
+        val valueExists =
+            dataValue
+                ?.let {
+                    checkValueTypeValue(
+                        d2 = d2,
+                        valueType = valueType,
+                        value = it,
+                    )
+                }?.isNotEmpty() ?: false
+        val description =
+            buildString {
+                if (dataValue != null && !valueExists) {
+                    append(resources.getString(R.string.file_not_downloaded) + "\n")
+                }
+                de?.displayDescription()?.let { append(it) }
+            }
         var optionSetConfig: OptionSetConfiguration? = null
         if (!TextUtils.isEmpty(optionSet)) {
             if (!TextUtils.isEmpty(dataValue) &&

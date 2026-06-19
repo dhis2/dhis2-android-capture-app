@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.form.R
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.model.EnrollmentMode
 import org.dhis2.form.model.EventMode
@@ -220,6 +221,13 @@ class EnrollmentRepository(
                     onSearch = { searchEmitter.value = it },
                 )
         }
+        val description =
+            buildString {
+                if (!conf.valueExists(attribute.uid(), valueType)) {
+                    append(enrollmentFormLabelsProvider.resourceManager.getString(R.string.file_not_downloaded) + "\n")
+                }
+                attribute.displayDescription()?.let { append(it) }
+            }
 
         var (error, warning) = getConflictErrorsAndWarnings(attribute.uid(), dataValue)
 
@@ -261,7 +269,7 @@ class EnrollmentRepository(
                 programTrackedEntityAttribute.allowFutureDate() ?: false,
                 isEditable(generated),
                 renderingType,
-                attribute.displayDescription(),
+                description,
                 programTrackedEntityAttribute.renderType()?.mobile(),
                 attribute.style(),
                 attribute.fieldMask(),

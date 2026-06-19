@@ -331,4 +331,5 @@
     <string name="action_clear_all">Clear all</string>
 
     <string name="enrollment_status">%s status</string>
+    <string name="file_not_downloaded">File not downloaded to the app due to size limit setting</string>
 </resources>

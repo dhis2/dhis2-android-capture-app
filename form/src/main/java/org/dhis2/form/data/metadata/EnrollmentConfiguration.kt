@@ -1,5 +1,6 @@
 package org.dhis2.form.data.metadata
 
+import org.dhis2.bindings.checkValueTypeValue
 import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.bindings.enrollmentImportConflicts
@@ -10,6 +11,7 @@ import org.dhis2.commons.bindings.trackedEntityType
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
 class EnrollmentConfiguration(
@@ -89,6 +91,26 @@ class EnrollmentConfiguration(
                 enrollment()?.trackedEntityInstance()!!,
             ).blockingGet()
             ?.userFriendlyValue(d2, addPercentageSymbol = false)
+
+    fun valueExists(
+        trackedEntityAttributeUid: String,
+        valueType: ValueType?,
+    ): Boolean =
+        d2
+            .trackedEntityModule()
+            .trackedEntityAttributeValues()
+            .value(
+                trackedEntityAttributeUid,
+                enrollment()?.trackedEntityInstance()!!,
+            ).blockingGet()
+            ?.value()
+            ?.let {
+                checkValueTypeValue(
+                    d2 = d2,
+                    valueType = valueType,
+                    value = it,
+                )
+            }?.isNotEmpty() ?: false
 
     fun conflicts() = d2.enrollmentImportConflicts(enrollmentUid)
 
