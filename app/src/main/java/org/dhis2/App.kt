@@ -128,29 +128,33 @@ open class App : Application(), Components, DefaultLifecycleObserver {
 
     fun initCrashController() {
         if (areTrackingPermissionGranted()) {
-            if (BuildConfig.SENTRY_DSN.isEmpty()) {
-                Timber.w("Sentry DSN is empty. Skipping Sentry initialization.")
-                return
-            }
-            SentryAndroid.init(this) { options ->
-                options.setDsn(BuildConfig.SENTRY_DSN)
-                options.isAnrReportInDebug = true
+            initSentry()
+        }
+    }
 
-                // Add a callback that will be used before the event is sent to Sentry.
-                // With this callback, you can modify the event or, when returning null, also discard the event.
-                options.beforeSend =
-                    SentryOptions.BeforeSendCallback { event, _ ->
-                        if (SentryLevel.DEBUG == event.level) null else event
-                    }
-                options.environment = if (BuildConfig.DEBUG) "debug" else "production"
-                options.isDebug = BuildConfig.DEBUG
-                // Enable view hierarchy for crashes
-                options.isAttachViewHierarchy = true
-                // Enable the performance API by setting a sample-rate
-                options.setTracesSampleRate(if (BuildConfig.DEBUG) 1.0 else 0.1)
-                // Enable profiling when starting transactions
-                options.setProfilesSampleRate(if (BuildConfig.DEBUG) 1.0 else 0.1)
-            }
+    private fun initSentry() {
+        if (BuildConfig.SENTRY_DSN.isEmpty()) {
+            Timber.w("Sentry DSN is empty. Skipping Sentry initialization.")
+            return
+        }
+        SentryAndroid.init(this) { options ->
+            options.setDsn(BuildConfig.SENTRY_DSN)
+            options.isAnrReportInDebug = true
+
+            // Add a callback that will be used before the event is sent to Sentry.
+            // With this callback, you can modify the event or, when returning null, also discard the event.
+            options.beforeSend =
+                SentryOptions.BeforeSendCallback { event, _ ->
+                    if (SentryLevel.DEBUG == event.level) null else event
+                }
+            options.environment = if (BuildConfig.DEBUG) "debug" else "production"
+            options.isDebug = BuildConfig.DEBUG
+            // Enable view hierarchy for crashes
+            options.isAttachViewHierarchy = true
+            // Enable the performance API by setting a sample-rate
+            options.setTracesSampleRate(if (BuildConfig.DEBUG) 1.0 else 0.1)
+            // Enable profiling when starting transactions
+            options.setProfilesSampleRate(if (BuildConfig.DEBUG) 1.0 else 0.1)
         }
     }
 
