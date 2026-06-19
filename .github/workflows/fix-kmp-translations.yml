@@ -15,6 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
+          token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
           ref: ${{ github.head_ref }}
           fetch-depth: 0
 
@@ -43,6 +44,8 @@ jobs:
 
       - name: Commit and push fix
         if: steps.check.outputs.has_changes == 'true'
+        with:
+          token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
         run: |
           if ! git diff --cached --quiet; then
             git config user.name "github-actions[bot]"
