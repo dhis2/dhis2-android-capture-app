@@ -130,8 +130,8 @@ class SearchTETest : BaseTest() {
             // Open the search parameters panel
             clickOnOpenSearch()
 
-            // ANDROAPP-5861: Unique attribute (TB identifier) is first after sort ordering
-            checkFirstSearchParamIsBarcodeOrQROrUnique(TB_IDENTIFIER_LABEL)
+            // ANDROAPP-5861: Unique attribute (Unique ID) is first after sort ordering
+            checkFirstSearchParamIsBarcodeOrQROrUnique(UNIQUE_ID_LABEL)
 
             // Check that all 9 search fields are displayed
             checkSearchParamCount(9)
@@ -213,6 +213,7 @@ class SearchTETest : BaseTest() {
 
         // TB Program search flow test constants
         const val TB_IDENTIFIER_LABEL = "TB identifier"
+        const val UNIQUE_ID_LABEL = "Unique ID"
 
         const val TB_SEARCH_ATTR_CITY = "City"
         const val TB_SEARCH_ATTR_STATE = "State"
