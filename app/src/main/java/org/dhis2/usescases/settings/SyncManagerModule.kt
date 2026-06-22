@@ -29,6 +29,7 @@ import org.hisp.dhis.android.core.D2
 @Module
 class SyncManagerModule(
     private val syncBackgroundJobAction: SyncBackgroundJobAction,
+    private val versionRepository: VersionRepository,
 ) {
     @Provides
     @PerFragment
@@ -140,7 +141,6 @@ class SyncManagerModule(
     @Provides
     @PerFragment
     fun provideCheckVersionUpdate(
-        versionRepository: VersionRepository,
         settingsMessages: SettingsMessages,
         resourceManager: ResourceManager,
     ) = CheckVersionUpdate(

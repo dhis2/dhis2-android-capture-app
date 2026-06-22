@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.domain.invoke
+import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.ExportDatabase
@@ -142,7 +144,7 @@ class SyncManagerPresenter(
     }
 
     fun onCheckVersionUpdate() {
-        viewModelScope.launch(dispatcherProvider.io()) {
+        launchUseCase(dispatcherProvider.io()) {
             checkVersionUpdate()
         }
     }
