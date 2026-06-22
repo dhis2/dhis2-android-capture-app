@@ -24,8 +24,11 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.providers.PreferenceProvider
+import org.dhis2.mobile.sync.data.METADATA_SYNC_NOW
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.domain.SyncStatusController
+import org.dhis2.mobile.sync.model.SyncJobStatus
+import org.dhis2.mobile.sync.model.SyncStatus
 import org.dhis2.mobile.sync.model.SyncStatusData
 import org.dhis2.usescases.main.domain.CheckSingleNavigation
 import org.dhis2.usescases.main.domain.ConfigureHomeNavigationBar
@@ -48,6 +51,7 @@ import org.dhis2.utils.MainCoroutineScopeRule
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -96,6 +100,7 @@ class MainViewModelTest {
 
     private val syncStatusFlow = MutableStateFlow(SyncStatusData())
     private val newVersionFlow = MutableSharedFlow<String>()
+    private val metadataJobFlow = MutableStateFlow<List<SyncJobStatus>>(emptyList())
 
     @Before
     fun setUp() = runTest {
@@ -108,6 +113,7 @@ class MainViewModelTest {
         whenever(filterManager.ouTreeFlowable()) doReturn mock()
         whenever(launchInitialSync()) doReturn Result.success(InitialSyncAction.Skip)
         whenever(checkSingleNavigation()) doReturn Result.failure(Exception("no single navigation"))
+        whenever(syncBackgroundJobAction.observeMetadataJob()) doReturn metadataJobFlow
 
         viewModel = MainViewModel(
             preferences = preferences,
