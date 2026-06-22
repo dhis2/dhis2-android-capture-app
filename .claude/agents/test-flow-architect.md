@@ -121,8 +121,21 @@ Steps:
    ./gradlew ktlintCheck
    ./gradlew :<module>:testAndroidHostTest --tests "<TestClass>"
    ```
-   Report green/red. Do not declare done if tests fail.
-5. After all targeted tests pass, draft a Confluence child page summarizing the
+   Report green/red. Do not declare done if tests fail. **A local pass is not
+   a CI pass.** CI runs the BrowserStack device matrix across multiple devices
+   *and orientations* (portrait + landscape); a flow that's green on your
+   emulator can still fail in landscape (off-screen nodes, reflowed layout).
+   Treat local green as necessary-but-not-sufficient and expect the matrix to
+   surface orientation issues — the `android-testing` skill covers writing
+   orientation-robust assertions.
+5. **If the change pushes a test-database file** (e.g.
+   `app/src/androidTest/assets/databases/dhis_test.db`), add `[skip size]` to
+   the PR title. The DB doesn't change APK size, so the size-check CI job
+   should be skipped (the resulting squash commit reads `… [skip size]
+   (#NNNN)`). The DB file *may* legitimately ship in the same PR as the test
+   when the test needs it — there is no rule against committing the DB; the
+   only requirement is the `[skip size]` title marker when it's included.
+6. After all targeted tests pass, draft a Confluence child page summarizing the
    plan as implemented (Zephyr cases covered, flow names, file paths, run
    commands, claimed program UIDs) and ask `Publish to Confluence? y/n`.
    Only call `createConfluencePage` if the user says yes; never publish

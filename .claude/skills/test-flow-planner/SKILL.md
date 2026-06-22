@@ -206,6 +206,15 @@ fun shouldExerciseFooWorkflow() {
   a comment block at the end of the workflow — do not create an empty
   `@Test @Ignore` stub. The flow plan must explain what's deferred and
   why.
+- **Absorb redundant standalone tests — but confirm first.** When a new
+  workflow `@Test` ends up covering what one or more existing standalone
+  `@Test`s already verify, those standalone tests become redundant and
+  should normally be deleted so the suite has a single source of truth.
+  **List every such test in the plan under a "Standalone tests to
+  add / delete" line and get explicit user confirmation before adding a
+  new standalone `@Test` or deleting an existing one.** Never add or
+  remove a standalone test silently as a side effect of building the
+  workflow — the user decides which redundant tests go.
 
 ### When to split into more than one workflow
 
@@ -255,6 +264,10 @@ order:
   1. <step description> — checkpoints: [ANDROAPP-####], [ANDROAPP-####]
   2. <step description> — checkpoints: [ANDROAPP-####]
   3. (deferred) <description> — [ANDROAPP-####] *(blocked by …)*
+- **Standalone tests to add / delete**: <existing `@Test`s this workflow
+  makes redundant and proposes to delete, plus any new standalone `@Test`s
+  proposed — or "none". Requires explicit user confirmation before any are
+  added or removed.>
 - **Robots**: <new or reused, with method list>
 - **MockWebServer fixtures**: <endpoints and example payloads>
 - **Test tag additions needed**: <`SCREEN_COMPONENT_TAG` constants to add and
@@ -301,6 +314,12 @@ order:
   cross-check with the Zephyr case.
 - **Distinguish reuse from new work.** Every flow row says "new" or
   "reused (+ delta)".
+- **Confirm before adding or deleting any standalone `@Test`.** Adding a
+  new standalone test (one outside the flow's workflow) or deleting an
+  existing one — including tests made redundant by the new workflow — is
+  never automatic. Surface the exact list in the plan and wait for
+  explicit user confirmation. If approval comes without that list having
+  been reviewed, ask before touching standalone tests.
 
 ## Handoff to implementation
 
