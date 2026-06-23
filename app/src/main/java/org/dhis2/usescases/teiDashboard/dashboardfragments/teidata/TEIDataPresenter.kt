@@ -139,7 +139,10 @@ class TEIDataPresenter(
                             _events.postValue(events)
                             decrement()
                         },
-                        Timber.Forest::d,
+                        { t ->
+                            Timber.e(t)
+                            decrement()
+                        },
                     ),
             )
 
