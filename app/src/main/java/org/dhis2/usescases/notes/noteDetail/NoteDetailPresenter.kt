@@ -42,7 +42,10 @@ class NoteDetailPresenter(
                         view.noteSaved()
                         NotesIdlingResource.decrement()
                     },
-                    Timber::d,
+                    { error ->
+                        Timber.d(error)
+                        NotesIdlingResource.decrement()
+                    },
                 ),
         )
     }
