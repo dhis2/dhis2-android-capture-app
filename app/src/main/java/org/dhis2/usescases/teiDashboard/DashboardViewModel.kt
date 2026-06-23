@@ -116,7 +116,7 @@ class DashboardViewModel(
 
     private fun fetchDashboardModel() {
         viewModelScope.launch(dispatcher.io()) {
-            CoroutineTracker.increment()
+            CoroutineTracker.unconditionalIncrement()
             try {
                 val model = repository.getDashboardModel()
                 _dashboardModel.emit(model)
@@ -135,14 +135,14 @@ class DashboardViewModel(
             } catch (e: Exception) {
                 Timber.e(e)
             } finally {
-                CoroutineTracker.decrement()
+                CoroutineTracker.unconditionalDecrement()
             }
         }
     }
 
     private suspend fun loadNavigationBarItems() =
         withContext(dispatcher.io()) {
-            CoroutineTracker.increment()
+            CoroutineTracker.unconditionalIncrement()
             try {
                 val enrollmentItems = mutableListOf<NavigationBarItem<TEIDashboardItems>>()
 
@@ -197,19 +197,19 @@ class DashboardViewModel(
                     onNavigationItemSelected(selectedItem.id)
                 }
             } finally {
-                CoroutineTracker.decrement()
+                CoroutineTracker.unconditionalDecrement()
             }
         }
 
     private fun fetchGrouping() {
         viewModelScope.launch(dispatcher.io()) {
-            CoroutineTracker.increment()
+            CoroutineTracker.unconditionalIncrement()
             try {
                 _groupByStage.emit(repository.getGrouping())
             } catch (e: Exception) {
                 Timber.e(e)
             } finally {
-                CoroutineTracker.decrement()
+                CoroutineTracker.unconditionalDecrement()
             }
         }
     }
