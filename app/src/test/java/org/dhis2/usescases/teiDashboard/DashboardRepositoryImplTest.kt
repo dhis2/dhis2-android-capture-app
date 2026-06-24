@@ -79,7 +79,7 @@ class DashboardRepositoryImplTest {
                 .programModule()
                 .programStages()
                 .uid("program_stage")
-                .get(),
+                .rxGet(),
         ) doReturn
             Single.just(getMockStage())
 
