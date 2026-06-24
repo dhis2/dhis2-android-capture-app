@@ -104,10 +104,7 @@ class DashboardViewModel(
             }.stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(5000L),
-                NavigationBarUIState(
-                    items = emptyList(),
-                    TEIDashboardItems.DETAILS,
-                ),
+                NavigationBarUIState(),
             )
 
     private val _relationshipTopBarIconState =
