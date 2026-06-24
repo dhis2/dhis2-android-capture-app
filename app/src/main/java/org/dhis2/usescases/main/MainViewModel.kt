@@ -9,6 +9,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -29,8 +30,11 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.commons.providers.PreferenceProvider
+import org.dhis2.mobile.sync.data.METADATA_SYNC_NOW
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.domain.SyncStatusController
+import org.dhis2.mobile.sync.model.SyncJobStatus
+import org.dhis2.mobile.sync.model.SyncStatus
 import org.dhis2.mobile.sync.model.SyncStatusData
 import org.dhis2.usescases.main.domain.CheckSingleNavigation
 import org.dhis2.usescases.main.domain.ConfigureHomeNavigationBar
@@ -127,6 +131,11 @@ class MainViewModel(
                 _homeEffects.send(HomeEffect.OrgUnitFilterRequest)
             }.launchIn(viewModelScope)
 
+        syncBackgroundJobAction
+            .observeMetadataJob()
+            .onEach(::handleMetadataSync)
+            .launchIn(viewModelScope)
+
         launchUseCase(dispatcher.io()) {
             launchInitialSync().fold(
                 onSuccess = ::handleInitialSyncResult,
@@ -164,13 +173,13 @@ class MainViewModel(
             val navigationBarItems = configureHomeNavigationBar().getOrDefault(emptyList())
             val homeFilters = getHomeFilters().getOrDefault(emptyList())
 
-            _homeScreenState.update {
+            _homeScreenState.update { current ->
                 HomeScreenState(
                     userName = userName,
                     navigationBarItems = navigationBarItems,
                     homeFilters = homeFilters,
                     activeFilters = filterManager.totalFilters,
-                    versionToUpdate = VersionToUpdateState.None,
+                    versionToUpdate = current.versionToUpdate,
                     filterButtonVisible = initialScreen.isPrograms(),
                     bottomNavigationBarVisible = initialScreen.isHome() && navigationBarItems.size > 1,
                     syncButtonVisible = initialScreen.isHome(),
@@ -198,7 +207,8 @@ class MainViewModel(
                 _homeScreenState.update {
                     it.copy(
                         filterButtonVisible = true,
-                        bottomNavigationBarVisible = true,
+                        bottomNavigationBarVisible =
+                            it.currentScreen.isHome() && it.navigationBarItems.size > 1,
                         syncButtonVisible = true,
                     )
                 }
@@ -218,6 +228,43 @@ class MainViewModel(
         launchUseCase(dispatcher.io()) {
             checkSingleNavigation().getOrNull()?.let {
                 _homeEffects.send(HomeEffect.SingleProgramNavigation(it))
+            }
+        }
+    }
+
+    private fun handleMetadataSync(jobs: List<SyncJobStatus>) {
+        jobs.forEach { job ->
+            if (job.tags.contains(METADATA_SYNC_NOW)) {
+                when (job.status) {
+                    SyncStatus.Running, SyncStatus.Enqueue -> {
+                        _homeScreenState.update {
+                            it.copy(
+                                filterButtonVisible = false,
+                                bottomNavigationBarVisible = false,
+                                syncButtonVisible = false,
+                                )
+                        }
+                    }
+                    SyncStatus.Succeed -> {
+                        launchUseCase(dispatcher.io()) {
+                            val navigationBarItems =
+                                configureHomeNavigationBar().getOrDefault(emptyList())
+                            _homeScreenState.update {
+                                it.copy(
+                                    filterButtonVisible = true,
+                                    navigationBarItems = navigationBarItems,
+                                    bottomNavigationBarVisible =
+                                        it.currentScreen.isHome() && navigationBarItems.size > 1,
+                                    syncButtonVisible = true,
+                                )
+                            }
+                        }
+                    }
+                    SyncStatus.Failed -> _homeScreenState.update { it.copy(syncButtonVisible = true) }
+                    else -> {
+                        // Do nothing
+                    }
+                }
             }
         }
     }

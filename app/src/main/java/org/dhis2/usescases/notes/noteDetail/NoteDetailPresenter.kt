@@ -27,6 +27,7 @@ class NoteDetailPresenter(
     }
 
     fun save() {
+        NotesIdlingResource.increment()
         val data = view.getNewNote()
         val noteType = data.first
         val uid = data.second
@@ -34,13 +35,17 @@ class NoteDetailPresenter(
         disposable.add(
             repository
                 .saveNote(noteType, uid, message)
-                .doOnSubscribe { NotesIdlingResource.increment() }
-                .doFinally { NotesIdlingResource.decrement() }
                 .subscribeOn(scheduler.io())
                 .observeOn(scheduler.ui())
                 .subscribe(
-                    { view.noteSaved() },
-                    Timber::d,
+                    {
+                        view.noteSaved()
+                        NotesIdlingResource.decrement()
+                    },
+                    { error ->
+                        Timber.d(error)
+                        NotesIdlingResource.decrement()
+                    },
                 ),
         )
     }

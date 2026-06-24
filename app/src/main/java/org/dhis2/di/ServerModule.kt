@@ -3,7 +3,7 @@ package org.dhis2.di
 import org.dhis2.data.service.VersionRepository
 import org.hisp.dhis.android.core.D2Configuration
 import org.hisp.dhis.android.core.D2Manager
-import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 fun serverModule(d2Configuration: D2Configuration) =
@@ -19,5 +19,5 @@ fun serverModule(d2Configuration: D2Configuration) =
                 D2Manager.getD2()
             }
         }
-        factoryOf(::VersionRepository)
+        singleOf(::VersionRepository)
     }

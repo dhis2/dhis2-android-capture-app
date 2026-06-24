@@ -5,6 +5,7 @@ import org.dhis2.mobile.commons.domain.UseCase
 import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.main.data.HomeRepository
+import timber.log.Timber
 
 class LaunchInitialSync(
     private val skipSync: Boolean,
@@ -17,7 +18,11 @@ class LaunchInitialSync(
             if (skipSync || homeRepository.isImportedDb() || homeRepository.getInitialSyncDone()) {
                 Result.success(InitialSyncAction.Skip)
             } else {
-                versionRepository.checkVersionUpdates()
+                try {
+                    versionRepository.downloadLatestVersionInfo()
+                } catch (e: Exception) {
+                    Timber.w(e, "Version check failed during initial sync")
+                }
                 syncBackgroundJobAction.launchDataSync(0)
                 Result.success(InitialSyncAction.Syncing)
             }

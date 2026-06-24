@@ -60,7 +60,6 @@ val mainModule = module {
     factory {
         FilterManager.getInstance()
     }
-    singleOf(::VersionRepository)
     factoryOf(::ResourceManager)
     factory { params ->
         MainNavigator(

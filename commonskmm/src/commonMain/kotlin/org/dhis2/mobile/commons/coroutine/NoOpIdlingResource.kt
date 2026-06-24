@@ -5,7 +5,15 @@ object NoOpIdlingResource : CoroutineIdlingResource {
         // No-op: Do nothing
     }
 
+    override fun unconditionalIncrement() {
+        // No-op: Do nothing
+    }
+
     override fun decrement() {
+        // No-op: Do nothing
+    }
+
+    override fun unconditionalDecrement() {
         // No-op: Do nothing
     }
 }

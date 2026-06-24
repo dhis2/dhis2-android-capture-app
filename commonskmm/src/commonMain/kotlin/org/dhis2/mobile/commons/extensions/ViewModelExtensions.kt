@@ -19,10 +19,10 @@ fun ViewModel.launchUseCase(
     dispatcher: CoroutineContext = EmptyCoroutineContext,
     block: suspend CoroutineScope.() -> Unit,
 ) = viewModelScope.launch(dispatcher) {
-    CoroutineTracker.increment()
+    CoroutineTracker.unconditionalIncrement()
     try {
         block()
     } finally {
-        CoroutineTracker.decrement()
+        CoroutineTracker.unconditionalDecrement()
     }
 }

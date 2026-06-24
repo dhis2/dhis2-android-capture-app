@@ -21,12 +21,12 @@ class VersionRepository(
     private val _newAppVersion = MutableSharedFlow<String?>(replay = 1)
     val newAppVersion: SharedFlow<String?> get() = _newAppVersion
 
-    suspend fun downloadLatestVersionInfo() {
+    suspend fun downloadLatestVersionInfo(): String? {
         d2.settingModule().latestAppVersion().blockingDownload()
-        checkVersionUpdates()
+        return checkVersionUpdates()
     }
 
-    suspend fun getLatestVersionInfo(): String? =
+    private fun getLatestVersionInfo(): String? =
         d2
             .settingModule()
             .latestAppVersion()
@@ -34,9 +34,10 @@ class VersionRepository(
             ?.version()
             .takeIf { it?.newVersion(BuildConfig.VERSION_NAME) ?: false }
 
-    suspend fun checkVersionUpdates() {
+    private suspend fun checkVersionUpdates(): String? {
         val versionNameOrNull = getLatestVersionInfo()
         _newAppVersion.emit(versionNameOrNull)
+        return versionNameOrNull
     }
 
     fun download(
