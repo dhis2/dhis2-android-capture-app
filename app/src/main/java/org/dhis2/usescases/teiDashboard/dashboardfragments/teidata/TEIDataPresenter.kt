@@ -111,8 +111,8 @@ class TEIDataPresenter(
                         sectionFlowable,
                         groupingFlowable,
                         ::Pair,
-                    ).doOnNext { increment() }
-                    .switchMap { stageAndGrouping ->
+                    ).switchMap { stageAndGrouping ->
+                        increment()
                         Flowable
                             .zip(
                                 teiDataRepository
@@ -131,6 +131,7 @@ class TEIDataPresenter(
                                     calcResult,
                                 )
                             }.subscribeOn(schedulerProvider.io())
+                            .doOnCancel { decrement() }
                     }.subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
@@ -138,7 +139,10 @@ class TEIDataPresenter(
                             _events.postValue(events)
                             decrement()
                         },
-                        Timber.Forest::d,
+                        { t ->
+                            Timber.e(t)
+                            decrement()
+                        },
                     ),
             )
 

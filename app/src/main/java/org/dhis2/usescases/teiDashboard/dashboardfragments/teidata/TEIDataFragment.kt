@@ -3,7 +3,6 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,10 +13,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.map
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -26,6 +29,7 @@ import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.functions.Consumer
+import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.commons.Constants
@@ -154,10 +158,6 @@ class TEIDataFragment :
             .inflate(inflater, container, false)
             .also { binding ->
                 this.binding = binding
-                dashboardViewModel.groupByStage.observe(viewLifecycleOwner) { group ->
-                    showLoadingProgress(true)
-                    presenter.onGroupingChanged(group)
-                }
 
                 with(dashboardViewModel) {
                     eventUid().observe(viewLifecycleOwner, ::displayGenerateEvent)
@@ -168,8 +168,21 @@ class TEIDataFragment :
                             showDetailCard()
                         }
                     }
-                    dashboardModel.observe(viewLifecycleOwner) {
-                        presenter.checkIfHasToDisplayGenerateEvent()
+                    lifecycleScope.launch {
+                        repeatOnLifecycle(Lifecycle.State.STARTED) {
+                            dashboardModel.collect {
+                                presenter.checkIfHasToDisplayGenerateEvent()
+                            }
+
+                        }
+                    }
+                    lifecycleScope.launch {
+                        repeatOnLifecycle(Lifecycle.State.STARTED) {
+                            dashboardViewModel.groupByStage.collect { group ->
+                                showLoadingProgress(true)
+                                presenter.onGroupingChanged(group)
+                            }
+                        }
                     }
                 }
 
@@ -237,11 +250,11 @@ class TEIDataFragment :
     private fun showDetailCard() {
         binding.detailCard.setContent {
             if (isUserLoggedIn()) {
-                val dashboardModel by dashboardViewModel.dashboardModel.observeAsState()
+                val dashboardModel by dashboardViewModel.dashboardModel.collectAsState()
                 val followUp by dashboardViewModel.showFollowUpBar.collectAsState()
                 val syncNeeded by dashboardViewModel.syncNeeded.collectAsState()
                 val enrollmentStatus by dashboardViewModel.showStatusBar.collectAsState()
-                val groupingEvents by dashboardViewModel.groupByStage.observeAsState()
+                val groupingEvents by dashboardViewModel.groupByStage.collectAsState()
                 val displayEventCreationButton by presenter.shouldDisplayEventCreationButton.observeAsState(
                     false,
                 )
@@ -314,7 +327,7 @@ class TEIDataFragment :
                 TeiDetailDashboard(
                     infoBarModels = listOfNotNull(syncInfoBar, followUpInfoBar, enrollmentInfoBar),
                     card = card,
-                    isGrouped = groupingEvents ?: true,
+                    isGrouped = groupingEvents,
                     timelineEventHeaderModel =
                         TimelineEventsHeaderModel(
                             displayEventCreationButton,
@@ -376,7 +389,7 @@ class TEIDataFragment :
             binding.cardFront.teiImage.visibility = View.VISIBLE
             Glide
                 .with(this)
-                .load(dashboardModel?.avatarPath)
+                .load(dashboardModel.avatarPath)
                 .fallback(R.drawable.photo_temp_gray)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .transform(CircleCrop())
@@ -385,7 +398,7 @@ class TEIDataFragment :
         binding.header =
             when {
                 !dashboardModel?.teiHeader.isNullOrEmpty() -> {
-                    dashboardModel?.teiHeader
+                    dashboardModel.teiHeader
                 }
 
                 else -> {
@@ -429,11 +442,11 @@ class TEIDataFragment :
             Intent(action).apply {
                 when (action) {
                     Intent.ACTION_DIAL -> {
-                        data = Uri.parse("tel:$value")
+                        data = "tel:$value".toUri()
                     }
 
                     Intent.ACTION_SENDTO -> {
-                        data = Uri.parse("mailto:$value")
+                        data = "mailto:$value".toUri()
                     }
                 }
             }
@@ -442,7 +455,7 @@ class TEIDataFragment :
 
         try {
             startActivity(chooser)
-        } catch (e: ActivityNotFoundException) {
+        } catch (_: ActivityNotFoundException) {
             Timber.e("No activity found that can handle this action")
         }
     }

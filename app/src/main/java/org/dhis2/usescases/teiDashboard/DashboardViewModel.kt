@@ -15,7 +15,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.R
@@ -65,127 +70,143 @@ class DashboardViewModel(
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _dashboardModel = MutableLiveData<DashboardModel?>()
-    var dashboardModel: LiveData<DashboardModel?> = _dashboardModel
+    private val _dashboardModel = MutableStateFlow<DashboardModel?>(null)
+    var dashboardModel: StateFlow<DashboardModel?> =
+        _dashboardModel
+            .onStart {
+                if (repository.isProgramSelected()) fetchDashboardModel()
+            }.stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000L),
+                null,
+            )
 
-    private val _groupByStage = MutableLiveData<Boolean>()
-    val groupByStage: LiveData<Boolean> = _groupByStage
+    private val _groupByStage = MutableStateFlow(false)
+    val groupByStage: StateFlow<Boolean> =
+        _groupByStage
+            .onStart {
+                fetchGrouping()
+            }.stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000L),
+                false,
+            )
 
     private val _noEnrollmentSelected = MutableLiveData(false)
     val noEnrollmentSelected: LiveData<Boolean> = _noEnrollmentSelected
 
     private val _navigationBarUIState =
         MutableStateFlow<NavigationBarUIState<TEIDashboardItems>>(NavigationBarUIState())
-    val navigationBarUIState = _navigationBarUIState.asStateFlow()
+    val navigationBarUIState =
+        _navigationBarUIState
+            .onStart {
+                loadNavigationBarItems()
+            }.stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000L),
+                NavigationBarUIState(),
+            )
 
     private val _relationshipTopBarIconState =
         MutableStateFlow<RelationshipTopBarIconState>(RelationshipTopBarIconState.List())
     val relationshipTopBarIconState = _relationshipTopBarIconState.asStateFlow()
 
-    init {
-        fetchDashboardModel()
-        fetchGrouping()
-    }
-
     private fun fetchDashboardModel() {
         viewModelScope.launch(dispatcher.io()) {
-            CoroutineTracker.increment()
-            val result =
-                async {
-                    repository.getDashboardModel()
+            CoroutineTracker.unconditionalIncrement()
+            try {
+                val model = repository.getDashboardModel()
+                _dashboardModel.emit(model)
+                if (model is DashboardEnrollmentModel) {
+                    _showFollowUpBar.value =
+                        model.currentEnrollment.followUp() ?: false
+                    _syncNeeded.value =
+                        model.currentEnrollment.aggregatedSyncState() != SYNCED
+                    _showStatusBar.value = model.currentEnrollment.status()
+                    _state.value =
+                        model.currentEnrollment.aggregatedSyncState()
+                    _noEnrollmentSelected.postValue(false)
+                } else {
+                    _noEnrollmentSelected.postValue(true)
                 }
-            withContext(dispatcher.ui()) {
-                try {
-                    val model = result.await()
-                    _dashboardModel.postValue(model)
-                    if (model is DashboardEnrollmentModel) {
-                        _showFollowUpBar.value =
-                            model.currentEnrollment.followUp() ?: false
-                        _syncNeeded.value =
-                            model.currentEnrollment.aggregatedSyncState() != SYNCED
-                        _showStatusBar.value = model.currentEnrollment.status()
-                        _state.value =
-                            model.currentEnrollment.aggregatedSyncState()
-                        _noEnrollmentSelected.value = false
-                        loadNavigationBarItems()
-                    } else {
-                        _noEnrollmentSelected.value = true
-                    }
-                } catch (e: Exception) {
-                    Timber.e(e)
-                } finally {
-                    CoroutineTracker.decrement()
-                }
+            } catch (e: Exception) {
+                Timber.e(e)
+            } finally {
+                CoroutineTracker.unconditionalDecrement()
             }
         }
     }
 
-    private suspend fun loadNavigationBarItems() {
-        val enrollmentItems = mutableListOf<NavigationBarItem<TEIDashboardItems>>()
+    private suspend fun loadNavigationBarItems() =
+        withContext(dispatcher.io()) {
+            CoroutineTracker.unconditionalIncrement()
+            try {
+                val enrollmentItems = mutableListOf<NavigationBarItem<TEIDashboardItems>>()
 
-        if (isPortrait()) {
-            enrollmentItems.add(
-                NavigationBarItem(
-                    id = TEIDashboardItems.DETAILS,
-                    icon = Icons.AutoMirrored.Outlined.Assignment,
-                    selectedIcon = Icons.AutoMirrored.Filled.Assignment,
-                    label = resourcesManager.getString(R.string.navigation_tei_data),
-                ),
-            )
+                if (isPortrait()) {
+                    enrollmentItems.add(
+                        NavigationBarItem(
+                            id = TEIDashboardItems.DETAILS,
+                            icon = Icons.AutoMirrored.Outlined.Assignment,
+                            selectedIcon = Icons.AutoMirrored.Filled.Assignment,
+                            label = resourcesManager.getString(R.string.navigation_tei_data),
+                        ),
+                    )
+                }
+
+                if (repository.programHasAnalytics()) {
+                    enrollmentItems.add(
+                        NavigationBarItem(
+                            id = TEIDashboardItems.ANALYTICS,
+                            icon = Icons.Outlined.BarChart,
+                            selectedIcon = Icons.Filled.BarChart,
+                            label = resourcesManager.getString(R.string.navigation_analytics),
+                        ),
+                    )
+                }
+
+                if (pageConfigurator.displayRelationships()) {
+                    enrollmentItems.add(
+                        NavigationBarItem(
+                            id = TEIDashboardItems.RELATIONSHIPS,
+                            icon = Icons.Outlined.Hub,
+                            selectedIcon = Icons.Filled.Hub,
+                            label = resourcesManager.getString(R.string.navigation_relations),
+                        ),
+                    )
+                }
+
+                enrollmentItems.add(
+                    NavigationBarItem(
+                        id = TEIDashboardItems.NOTES,
+                        icon = Icons.AutoMirrored.Outlined.StickyNote2,
+                        selectedIcon = Icons.AutoMirrored.Filled.StickyNote2,
+                        label = resourcesManager.getString(R.string.navigation_notes),
+                    ),
+                )
+
+                _navigationBarUIState.update {
+                    it.copy(items = enrollmentItems)
+                }
+
+                if (enrollmentItems.none { it.id == _navigationBarUIState.value.selectedItem }) {
+                    val selectedItem = enrollmentItems.first()
+                    onNavigationItemSelected(selectedItem.id)
+                }
+            } finally {
+                CoroutineTracker.unconditionalDecrement()
+            }
         }
-
-        if (withContext(dispatcher.io()) { repository.programHasAnalytics() }) {
-            enrollmentItems.add(
-                NavigationBarItem(
-                    id = TEIDashboardItems.ANALYTICS,
-                    icon = Icons.Outlined.BarChart,
-                    selectedIcon = Icons.Filled.BarChart,
-                    label = resourcesManager.getString(R.string.navigation_analytics),
-                ),
-            )
-        }
-
-        if (pageConfigurator.displayRelationships()) {
-            enrollmentItems.add(
-                NavigationBarItem(
-                    id = TEIDashboardItems.RELATIONSHIPS,
-                    icon = Icons.Outlined.Hub,
-                    selectedIcon = Icons.Filled.Hub,
-                    label = resourcesManager.getString(R.string.navigation_relations),
-                ),
-            )
-        }
-
-        enrollmentItems.add(
-            NavigationBarItem(
-                id = TEIDashboardItems.NOTES,
-                icon = Icons.AutoMirrored.Outlined.StickyNote2,
-                selectedIcon = Icons.AutoMirrored.Filled.StickyNote2,
-                label = resourcesManager.getString(R.string.navigation_notes),
-            ),
-        )
-
-        _navigationBarUIState.value = _navigationBarUIState.value.copy(items = enrollmentItems)
-
-        if (navigationBarUIState.value.items.none { it.id == navigationBarUIState.value.selectedItem }) {
-            onNavigationItemSelected(
-                navigationBarUIState.value.items
-                    .first()
-                    .id,
-            )
-        }
-    }
 
     private fun fetchGrouping() {
         viewModelScope.launch(dispatcher.io()) {
-            val result =
-                async {
-                    repository.getGrouping()
-                }
+            CoroutineTracker.unconditionalIncrement()
             try {
-                _groupByStage.postValue(result.await())
+                _groupByStage.emit(repository.getGrouping())
             } catch (e: Exception) {
                 Timber.e(e)
+            } finally {
+                CoroutineTracker.unconditionalDecrement()
             }
         }
     }
