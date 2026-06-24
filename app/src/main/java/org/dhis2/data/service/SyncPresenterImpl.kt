@@ -62,6 +62,7 @@ class SyncPresenterImpl(
         return programUid?.let {
             syncRepository
                 .downLoadEvent(eventUid, programUid)
+                .cast(D2Progress::class.java)
                 .mergeWith(syncRepository.downloadEventFiles(eventUid))
         } ?: Observable.empty()
     }
