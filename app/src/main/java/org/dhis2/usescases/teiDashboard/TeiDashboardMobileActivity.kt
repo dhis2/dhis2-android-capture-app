@@ -90,7 +90,6 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import javax.inject.Inject
-import kotlin.getValue
 
 class TeiDashboardMobileActivity :
     ActivityGlobalAbstract(),
@@ -346,17 +345,17 @@ class TeiDashboardMobileActivity :
                 val uiState by dashboardViewModel.navigationBarUIState.collectAsStateWithLifecycle()
                 var selectedHomeItemIndex by remember(uiState) {
                     mutableIntStateOf(
-                        uiState?.items?.indexOfFirst {
-                            it.id == uiState?.selectedItem
-                        } ?: 0,
+                        uiState.items.indexOfFirst {
+                            it.id == uiState.selectedItem
+                        },
                     )
                 }
 
                 NavigationBar(
-                    items = uiState?.items ?: emptyList(),
+                    items = uiState.items,
                     selectedItemIndex = selectedHomeItemIndex,
                 ) { itemId ->
-                    selectedHomeItemIndex = uiState?.items?.indexOfFirst { it.id == itemId } ?: 0
+                    selectedHomeItemIndex = uiState.items.indexOfFirst { it.id == itemId }
                     dashboardViewModel.onNavigationItemSelected(itemId)
                 }
 

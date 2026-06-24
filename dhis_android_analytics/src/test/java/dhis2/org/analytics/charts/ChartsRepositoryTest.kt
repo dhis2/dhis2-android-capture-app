@@ -6,8 +6,6 @@ import dhis2.org.analytics.charts.data.GraphFieldValue
 import dhis2.org.analytics.charts.data.GraphPoint
 import dhis2.org.analytics.charts.data.SerieData
 import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
-import dhis2.org.analytics.charts.mappers.DataElementToGraph
-import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
 import dhis2.org.analytics.charts.mappers.VisualizationToGraph
 import dhis2.org.analytics.charts.providers.AnalyticsFilterProvider
 import dhis2.org.analytics.charts.ui.OrgUnitFilterType
@@ -51,8 +49,6 @@ class ChartsRepositoryTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val visualizationToGraph: VisualizationToGraph = mock()
     private val analyticsTeiSettingsToGraph: AnalyticsTeiSettingsToGraph = mock()
-    private val dataElementToGraph: DataElementToGraph = mock()
-    private val programIndicatorToGraph: ProgramIndicatorToGraph = mock()
     private val analyticsResources: AnalyticResources = mock()
     private val analyticsFilterProvider: AnalyticsFilterProvider = mock()
 
@@ -61,8 +57,6 @@ class ChartsRepositoryTest {
             d2,
             visualizationToGraph,
             analyticsTeiSettingsToGraph,
-            dataElementToGraph,
-            programIndicatorToGraph,
             analyticsResources,
             analyticsFilterProvider,
         )
@@ -76,13 +70,13 @@ class ChartsRepositoryTest {
                 .uid(any())
                 .blockingGet(),
         ) doReturn
-            Enrollment
-                .builder()
-                .uid("enrollmentUid")
-                .program("programUid")
-                .trackedEntityInstance(null)
-                .attributeOptionCombo("attributeOptionComboUid")
-                .build()
+                Enrollment
+                    .builder()
+                    .uid("enrollmentUid")
+                    .program("programUid")
+                    .trackedEntityInstance(null)
+                    .attributeOptionCombo("attributeOptionComboUid")
+                    .build()
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")
         assertTrue(
             result.isEmpty(),
@@ -100,8 +94,8 @@ class ChartsRepositoryTest {
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")
         assertTrue(
             result.isNotEmpty() &&
-                result.size == mockedSettingsGraphs().size &&
-                result[0].title == "settings_1",
+                    result.size == mockedSettingsGraphs().size &&
+                    result[0].title == "settings_1",
         )
     }
 
@@ -137,7 +131,12 @@ class ChartsRepositoryTest {
         val mockedVisualizationGroup: AnalyticsDhisVisualizationsGroup = mock()
         val visualizationSetting: AnalyticsDhisVisualizationsSetting =
             mock {
-                on { program() } doReturn mapOf(Pair("programUid", listOf(mockedVisualizationGroup)))
+                on { program() } doReturn mapOf(
+                    Pair(
+                        "programUid",
+                        listOf(mockedVisualizationGroup)
+                    )
+                )
             }
         whenever(
             d2
@@ -156,7 +155,12 @@ class ChartsRepositoryTest {
         val visualizationSetting: AnalyticsDhisVisualizationsSetting =
             mock {
                 on { program() } doReturn mapOf()
-                on { dataSet() } doReturn mapOf(Pair("dataSetUid", listOf(mockedVisualizationGroup)))
+                on { dataSet() } doReturn mapOf(
+                    Pair(
+                        "dataSetUid",
+                        listOf(mockedVisualizationGroup)
+                    )
+                )
             }
         whenever(
             d2
@@ -446,11 +450,11 @@ class ChartsRepositoryTest {
                     } ?: this
                 }.blockingEvaluate(),
         ) doReturn
-            if (analyticsException == null) {
-                Result.Success(mockedAnalyticResponse)
-            } else {
-                Result.Failure(analyticsException)
-            }
+                if (analyticsException == null) {
+                    Result.Success(mockedAnalyticResponse)
+                } else {
+                    Result.Failure(analyticsException)
+                }
     }
 
     private fun mockEnrollmentCall() {
@@ -461,13 +465,13 @@ class ChartsRepositoryTest {
                 .uid(any())
                 .blockingGet(),
         ) doReturn
-            Enrollment
-                .builder()
-                .uid("enrollmentUid")
-                .program("programUid")
-                .trackedEntityInstance("teiUid")
-                .attributeOptionCombo("attributeOptionComboUid")
-                .build()
+                Enrollment
+                    .builder()
+                    .uid("enrollmentUid")
+                    .program("programUid")
+                    .trackedEntityInstance("teiUid")
+                    .attributeOptionCombo("attributeOptionComboUid")
+                    .build()
     }
 
     private fun mockAnalyticsSettingsCall(result: List<AnalyticsTeiSetting>?) {
@@ -535,12 +539,12 @@ class ChartsRepositoryTest {
                 .eq(true)
                 .blockingGet(),
         ) doReturn
-            listOf(
-                ProgramStage
-                    .builder()
-                    .uid("stage_1")
-                    .build(),
-            )
+                listOf(
+                    ProgramStage
+                        .builder()
+                        .uid("stage_1")
+                        .build(),
+                )
     }
 
     private fun mockIndicators(emptyList: Boolean) {
@@ -590,12 +594,12 @@ class ChartsRepositoryTest {
                     .eq("programUid")
                     .blockingGet(),
             ) doReturn
-                listOf(
-                    ProgramIndicator
-                        .builder()
-                        .uid("indicator_1")
-                        .build(),
-                )
+                    listOf(
+                        ProgramIndicator
+                            .builder()
+                            .uid("indicator_1")
+                            .build(),
+                    )
         }
     }
 
@@ -632,13 +636,13 @@ class ChartsRepositoryTest {
                     .eq("stage_1")
                     .blockingGet(),
             ) doReturn
-                listOf(
-                    ProgramStageDataElement
-                        .builder()
-                        .uid("psde_uid_1")
-                        .dataElement(ObjectWithUid.create("de_1"))
-                        .build(),
-                )
+                    listOf(
+                        ProgramStageDataElement
+                            .builder()
+                            .uid("psde_uid_1")
+                            .dataElement(ObjectWithUid.create("de_1"))
+                            .build(),
+                    )
         }
 
         whenever(

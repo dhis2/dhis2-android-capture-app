@@ -3,7 +3,6 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
@@ -327,7 +327,7 @@ class TEIDataFragment :
                 TeiDetailDashboard(
                     infoBarModels = listOfNotNull(syncInfoBar, followUpInfoBar, enrollmentInfoBar),
                     card = card,
-                    isGrouped = groupingEvents ?: true,
+                    isGrouped = groupingEvents,
                     timelineEventHeaderModel =
                         TimelineEventsHeaderModel(
                             displayEventCreationButton,
@@ -389,7 +389,7 @@ class TEIDataFragment :
             binding.cardFront.teiImage.visibility = View.VISIBLE
             Glide
                 .with(this)
-                .load(dashboardModel?.avatarPath)
+                .load(dashboardModel.avatarPath)
                 .fallback(R.drawable.photo_temp_gray)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .transform(CircleCrop())
@@ -398,7 +398,7 @@ class TEIDataFragment :
         binding.header =
             when {
                 !dashboardModel?.teiHeader.isNullOrEmpty() -> {
-                    dashboardModel?.teiHeader
+                    dashboardModel.teiHeader
                 }
 
                 else -> {
@@ -442,11 +442,11 @@ class TEIDataFragment :
             Intent(action).apply {
                 when (action) {
                     Intent.ACTION_DIAL -> {
-                        data = Uri.parse("tel:$value")
+                        data = "tel:$value".toUri()
                     }
 
                     Intent.ACTION_SENDTO -> {
-                        data = Uri.parse("mailto:$value")
+                        data = "mailto:$value".toUri()
                     }
                 }
             }
@@ -455,7 +455,7 @@ class TEIDataFragment :
 
         try {
             startActivity(chooser)
-        } catch (e: ActivityNotFoundException) {
+        } catch (_: ActivityNotFoundException) {
             Timber.e("No activity found that can handle this action")
         }
     }
