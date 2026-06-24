@@ -42,7 +42,7 @@ class CategoryDialogPresenterTest {
                 .categoryModule()
                 .categories()
                 .uid("uid")
-                .get(),
+                .rxGet(),
         ) doReturn
             Single.just(
                 Category
@@ -78,7 +78,7 @@ class CategoryDialogPresenterTest {
                 .categoryModule()
                 .categoryCombos()
                 .uid("uid")
-                .get(),
+                .rxGet(),
         ) doReturn
             Single.just(
                 CategoryCombo

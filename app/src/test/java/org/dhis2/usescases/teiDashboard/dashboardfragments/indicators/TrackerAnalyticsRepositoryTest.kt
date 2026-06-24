@@ -161,7 +161,7 @@ class TrackerAnalyticsRepositoryTest {
                     .byProgramUid()
                     .eq("programUid")
                     .withLegendSets()
-                    .get(),
+                    .rxGet(),
             ) doReturn Single.just(mockedProgramIndicatorList())
 
             whenever(
@@ -188,7 +188,7 @@ class TrackerAnalyticsRepositoryTest {
                     .programRules()
                     .byProgramUid()
                     .eq("programUid")
-                    .getUids(),
+                    .rxGetUids(),
             ) doReturn Single.just(mockedRuleUids())
             whenever(
                 d2
@@ -233,7 +233,7 @@ class TrackerAnalyticsRepositoryTest {
                     .`in`(
                         ProgramRuleActionType.DISPLAYKEYVALUEPAIR,
                         ProgramRuleActionType.DISPLAYTEXT,
-                    ).get(),
+                    ).rxGet(),
             ) doReturn Single.just(mockedActions())
             whenever(
                 ruleEngineHelper.evaluate(),
@@ -299,7 +299,7 @@ class TrackerAnalyticsRepositoryTest {
                     .byProgramUid()
                     .eq("programUid")
                     .withLegendSets()
-                    .get(),
+                    .rxGet(),
             ) doReturn Single.just(mockedProgramIndicatorList())
 
             whenever(
@@ -326,7 +326,7 @@ class TrackerAnalyticsRepositoryTest {
                     .programRules()
                     .byProgramUid()
                     .eq("programUid")
-                    .getUids(),
+                    .rxGetUids(),
             ) doReturn Single.just(mockedRuleUids())
             whenever(
                 d2
@@ -371,7 +371,7 @@ class TrackerAnalyticsRepositoryTest {
                     .`in`(
                         ProgramRuleActionType.DISPLAYKEYVALUEPAIR,
                         ProgramRuleActionType.DISPLAYTEXT,
-                    ).get(),
+                    ).rxGet(),
             ) doReturn Single.just(mockedActions())
             whenever(
                 ruleEngineHelper.evaluate(),
@@ -433,7 +433,7 @@ class TrackerAnalyticsRepositoryTest {
                     .byProgramUid()
                     .eq("programUid")
                     .withLegendSets()
-                    .get(),
+                    .rxGet(),
             ) doReturn Single.just(emptyList())
 
             whenever(
@@ -460,7 +460,7 @@ class TrackerAnalyticsRepositoryTest {
                     .programRules()
                     .byProgramUid()
                     .eq("programUid")
-                    .getUids(),
+                    .rxGetUids(),
             ) doReturn Single.just(mockedRuleUids())
             whenever(
                 d2
@@ -505,7 +505,7 @@ class TrackerAnalyticsRepositoryTest {
                     .`in`(
                         ProgramRuleActionType.DISPLAYKEYVALUEPAIR,
                         ProgramRuleActionType.DISPLAYTEXT,
-                    ).get(),
+                    ).rxGet(),
             ) doReturn Single.just(mockedActions())
 
             whenever(
