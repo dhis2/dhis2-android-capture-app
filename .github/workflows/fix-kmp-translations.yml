@@ -44,15 +44,11 @@ jobs:
 
       - name: Commit and push fix
         if: steps.check.outputs.has_changes == 'true'
+        uses: flex-development/gh-commit@177be4b5bca1b102400ca7220932d9ff7980fddb
         with:
+          message: 'fix(translations): remove KMP-incompatible escaped question marks [skip ci]'
+          ref: ${{ github.head_ref }}
           token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
-        run: |
-          if ! git diff --cached --quiet; then
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git commit -m "fix(translations): remove KMP-incompatible escaped question marks [skip ci]"
-            git push
-          fi
 
       - name: Close PR — no meaningful changes remain
         if: steps.check.outputs.has_changes == 'false'
