@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 
+@Suppress("UNCHECKED_CAST")
 class OUTreeViewModelFactory(
     private val repository: OUTreeRepository,
     private val dispatchers: DispatcherProvider,

@@ -209,7 +209,7 @@ class SyncPresenterImpl(
             .dataSetInstances()
             .byDataSetUid()
             .eq(uid)
-            .get()
+            .rxGet()
             .toObservable()
             .flatMapIterable { dataSets -> dataSets }
             .flatMap { dataSetReport ->
@@ -222,7 +222,7 @@ class SyncPresenterImpl(
                     .eq(dataSetReport.period())
                     .byAttributeOptionComboUid()
                     .eq(dataSetReport.attributeOptionComboUid())
-                    .upload()
+                    .rxUpload()
             }
 
     override fun syncGranularDataValues(
@@ -242,7 +242,7 @@ class SyncPresenterImpl(
             .eq(period)
             .byCategoryOptionComboUid()
             .`in`(*catOptionCombos)
-            .upload()
+            .rxUpload()
 
     override fun syncGranularDataSetComplete(
         dataSetUid: String,
@@ -261,7 +261,7 @@ class SyncPresenterImpl(
             .eq(orgUnit)
             .byPeriod()
             .eq(period)
-            .upload()
+            .rxUpload()
 
     override fun syncGranularDataSetComplete(dataSetUid: String?): Observable<D2Progress> =
         d2
@@ -269,7 +269,7 @@ class SyncPresenterImpl(
             .dataSetCompleteRegistrations()
             .byDataSetUid()
             .eq(dataSetUid)
-            .upload()
+            .rxUpload()
 
     override fun checkSyncEventStatus(uid: String): SyncResult {
         val eventsOk =

@@ -74,7 +74,7 @@ class UniqueAttributeController(
             .eq(true)
             .byProgram()
             .eq(programUid)
-            .byAttribute(attributeUid)
+            .byFilter(attributeUid)
             .eq(attributeValue)
             .byOrgUnitMode()
             .eq(OrganisationUnitMode.DESCENDANTS)
@@ -92,7 +92,7 @@ class UniqueAttributeController(
             .eq(OrganisationUnitMode.ACCESSIBLE)
             .byProgram()
             .eq(programUid)
-            .byAttribute(attributeUid)
+            .byFilter(attributeUid)
             .eq(attributeValue)
             .blockingGet()
     }

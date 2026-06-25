@@ -47,7 +47,7 @@ class NotesRepositoryTest {
                 .notes()
                 .byEnrollmentUid()
                 .eq(enrollmentUid)
-                .get(),
+                .rxGet(),
         ) doReturn Single.just(notes)
 
         val testObserver = repository.getEnrollmentNotes(teiUid).test()
@@ -77,7 +77,7 @@ class NotesRepositoryTest {
                 .notes()
                 .byEventUid()
                 .eq(eventUid)
-                .get(),
+                .rxGet(),
         ) doReturn Single.just(notes)
 
         val testObserver = repository.getEventNotes(eventUid).test()

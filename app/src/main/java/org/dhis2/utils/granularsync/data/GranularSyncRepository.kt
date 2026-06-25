@@ -879,7 +879,7 @@ class GranularSyncRepository(
                         .eq(attributeOptionComboUid)
                         .byDataSetUid()
                         .eq(dataSetUid)
-                        .get()
+                        .rxGet()
                         .blockingGet()
                         .map { it.syncState() },
                 )

@@ -19,7 +19,7 @@ class ServerSettingsRepository(
         d2
             .settingModule()
             .systemSetting()
-            .get()
+            .rxGet()
             .map { systemSettings ->
                 val customColor =
                     systemSettings

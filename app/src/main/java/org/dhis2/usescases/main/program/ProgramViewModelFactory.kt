@@ -9,6 +9,7 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.mobile.sync.domain.SyncStatusController
 
+@Suppress("UNCHECKED_CAST")
 class ProgramViewModelFactory(
     private val view: ProgramView,
     private val programRepository: ProgramRepository,
