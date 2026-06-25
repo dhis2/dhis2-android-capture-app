@@ -6,7 +6,6 @@ import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.data.dhislogic.AUTH_ALL
 import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.Access
@@ -338,15 +337,8 @@ class DataSetDetailRepositoryTest {
             .builder()
             .uid(dataSetUid)
             .displayName("DataSet")
-            .categoryCombo(ObjectWithUid.fromIdentifiable(dummyCategoryCombo()))
+            .categoryCombo(ObjectWithUid.create("categoryCombo"))
             .access(Access.create(true, true, DataAccess.create(true, canWrite)))
-            .build()
-
-    private fun dummyCategoryCombo(isDefault: Boolean = false) =
-        CategoryCombo
-            .builder()
-            .uid("categoryCombo")
-            .isDefault(isDefault)
             .build()
 
     private fun dummyCategoryOptionsCombos(canWrite: Boolean = true): MutableList<CategoryOptionCombo> {

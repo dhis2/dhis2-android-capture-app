@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.SearchOptionSetOption
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.option.Option
 import org.junit.After
 import org.junit.Assert.assertTrue
@@ -97,6 +98,7 @@ class OptionSetDialogViewModelTest {
                         .uid("Option$index")
                         .displayName("name$index")
                         .code("code$index")
+                        .optionSet(ObjectWithUid.create("optionSetUid"))
                         .build(),
                 )
             }
