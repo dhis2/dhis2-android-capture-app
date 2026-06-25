@@ -61,7 +61,7 @@ class ProgramEventMapperTest {
         mockProgram()
         mockCategoryOptionCombo()
 
-        val event = dummyEvent().toBuilder().state(State.SYNCED).build()
+        val event = dummyEvent().toBuilder().aggregatedSyncState(State.SYNCED).build()
         val result = mapper.eventToProgramEvent(event)
 
         assert(!result.isExpired)

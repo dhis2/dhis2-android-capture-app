@@ -4,6 +4,7 @@ import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.form.data.metadata.FileResourceConfiguration
 import org.dhis2.form.data.metadata.OptionSetConfiguration
 import org.dhis2.form.data.metadata.OrgUnitConfiguration
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -179,6 +180,7 @@ class DisplayNameProviderImplTest {
                     .builder()
                     .uid("optionUid")
                     .displayName(optionName)
+                    .optionSet(ObjectWithUid.create("optionSetUid"))
                     .build()
             } else {
                 null
@@ -199,6 +201,7 @@ class DisplayNameProviderImplTest {
                     .builder()
                     .uid("optionUid")
                     .displayName(optionName)
+                    .optionSet(ObjectWithUid.create("optionSetUid"))
                     .build()
             } else {
                 null
