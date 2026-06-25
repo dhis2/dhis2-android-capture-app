@@ -20,7 +20,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
@@ -41,10 +40,7 @@ fun Backdrop(
     modifier: Modifier = Modifier,
     scaffoldState: ScaffoldState,
     syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
-    onFinish: () -> Unit,
 ) {
-    val context = LocalContext.current
-
     val backdropState = rememberBackdropScaffoldState(BackdropValue.Revealed)
     var isFrontLayerDisabled by remember { mutableStateOf<Boolean?>(null) }
     val settingsUiState by viewModel.settingsUiState.collectAsState()
