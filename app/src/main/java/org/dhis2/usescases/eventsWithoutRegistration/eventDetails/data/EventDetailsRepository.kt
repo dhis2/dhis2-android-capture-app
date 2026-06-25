@@ -68,7 +68,7 @@ class EventDetailsRepository(
             d2
                 .eventModule()
                 .eventService()
-                .getEditableStatus(it)
+                .rxGetEditableStatus(it)
                 .blockingGet()
         }
 
@@ -140,7 +140,7 @@ class EventDetailsRepository(
             d2
                 .eventModule()
                 .eventService()
-                .isEditable(eventUid)
+                .rxIsEditable(eventUid)
                 .blockingGet()
         } else {
             return getProgramStage()?.access()?.data()?.write() == true
@@ -379,14 +379,14 @@ class EventDetailsRepository(
             .programModule()
             .programs()
             .uid(programUid)
-            .get()
+            .rxGet()
             .flatMap { program: Program ->
                 d2
                     .categoryModule()
                     .categoryCombos()
                     .withCategories()
-                    .uid(program.categoryCombo()?.uid())
-                    .get()
+                    .uid(program.categoryCombo().uid())
+                    .rxGet()
             }.blockingGet()
 
     fun updateEvent(

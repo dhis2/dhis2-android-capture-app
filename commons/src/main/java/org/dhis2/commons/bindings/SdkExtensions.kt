@@ -79,7 +79,6 @@ fun D2.teisBy(
     repository = programs?.let { repository.byProgramUids(programs) } ?: repository
     repository =
         aggregatedSynStates.let { repository.byAggregatedSyncState().`in`(aggregatedSynStates) }
-            ?: repository
     return repository.blockingGet()
 }
 

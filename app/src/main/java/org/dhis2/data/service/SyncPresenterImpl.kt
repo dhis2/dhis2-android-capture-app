@@ -62,7 +62,7 @@ class SyncPresenterImpl(
         return programUid?.let {
             syncRepository
                 .downLoadEvent(eventUid, programUid)
-                .map { it as D2Progress }
+                .cast(D2Progress::class.java)
                 .mergeWith(syncRepository.downloadEventFiles(eventUid))
         } ?: Observable.empty()
     }

@@ -67,7 +67,6 @@ internal class InputDataUiStateMapper(
                                     InputType.Date -> DateTransformation()
                                     InputType.DateTime -> DateTimeTransformation()
                                     InputType.Time -> TimeTransformation()
-                                    else -> throw IllegalArgumentException("Invalid input type")
                                 },
                             selectableDates = SelectableDates("01011940", "12312300"),
                             yearRange = IntRange(1940, 2300),

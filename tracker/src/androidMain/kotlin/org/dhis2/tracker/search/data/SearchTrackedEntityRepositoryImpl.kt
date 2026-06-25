@@ -246,8 +246,8 @@ class SearchTrackedEntityRepositoryImpl(
                     displayName = program.displayName() ?: "",
                     style =
                         DomainObjectStyle(
-                            icon = program.style()?.icon(),
-                            color = program.style()?.color(),
+                            icon = program.style().icon(),
+                            color = program.style().color(),
                         ),
                 )
             }

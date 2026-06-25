@@ -58,7 +58,7 @@ fun TrackedEntitySearchItem.toTrackedEntitySearchItemResult(
         selectedEnrollment = selectedEnrollment,
         profilePicture = profilePicture,
         enrolledPrograms = enrolledPrograms,
-        defaultTypeIcon = this.type.style()?.icon(),
+        defaultTypeIcon = this.type.style().icon(),
         enrollments = enrollments,
         relationships = relationships,
         attributeValues = this.attributeValues?.map { it.toTrackedEntitySearchItemAttribute() } ?: emptyList(),

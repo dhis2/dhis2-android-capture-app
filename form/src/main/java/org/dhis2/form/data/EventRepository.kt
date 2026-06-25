@@ -273,7 +273,7 @@ class EventRepository(
                         name = entry.value.displayName() ?: entry.value.code() ?: "",
                     )
             } ?: emptyMap()
-        val catComboDisplayName = getCatComboDisplayName(categoryCombo.uid() ?: "")
+        val catComboDisplayName = getCatComboDisplayName(categoryCombo.uid())
 
         return fieldFactory.create(
             id = "$EVENT_CATEGORY_COMBO_UID-${categoryCombo.uid()}",
@@ -369,7 +369,7 @@ class EventRepository(
                     .categoryModule()
                     .categoryCombos()
                     .withCategories()
-                    .uid(program.categoryCombo()?.uid())
+                    .uid(program.categoryCombo().uid())
                     .get()
             }.blockingGet()
 
