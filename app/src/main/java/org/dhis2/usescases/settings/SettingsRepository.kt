@@ -15,7 +15,6 @@ import org.dhis2.commons.prefs.Preference.Companion.TIME_WEEKLY
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.service.SyncResult
 import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.mobile.commons.featureconfig.model.Feature
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.settings.models.DataSettingsViewModel
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
@@ -23,6 +22,7 @@ import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel
 import org.dhis2.usescases.settings.models.SyncParametersViewModel
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.AuthorizationType
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.settings.GeneralSettings
 import org.hisp.dhis.android.core.settings.LimitScope
@@ -355,5 +355,10 @@ class SettingsRepository(
 
     fun getVersionName(): String = BuildConfig.VERSION_NAME
 
-    fun isTwoFAConfigured(): Boolean = featureConfigRepository.isFeatureEnable(Feature.TWO_FACTOR_AUTHENTICATION)
+    fun isTwoFAConfigured(): Boolean =
+        d2
+            .userModule()
+            .accountManager()
+            .getCurrentAccount()
+            ?.authorizationType == AuthorizationType.OAUTH2
 }
