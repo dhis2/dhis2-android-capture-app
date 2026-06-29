@@ -1,0 +1,261 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - develop
+      - 'release/**'
+  schedule:
+    - cron: '0 0 * * *'
+
+permissions: { }
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    if: ${{ !contains(github.event.pull_request.title, '[skip ci]') && !contains(github.event.pull_request.body, '[skip ci]') }}
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        with:
+          fetch-depth: 0
+
+      - name: Check PR Size
+        if: ${{ !contains(github.event.pull_request.title, '[skip size]') && !contains(github.event.pull_request.body, '[skip size]') }}
+        env:
+          GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
+          GIT_BRANCH_DEST: ${{ github.base_ref || '' }}
+        run: |
+          chmod +x ./scripts/check_pr_size.sh
+          ./scripts/check_pr_size.sh
+
+  lint-check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    needs: setup
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Lint Check
+        run: ./gradlew ktlintCheck
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    needs: lint-check
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Unit Tests
+        if: ${{ !contains(github.event.pull_request.title, '[skip unitTest]') && !contains(github.event.pull_request.body, '[skip unitTest]') }}
+        run: ./gradlew testDebugUnitTest testDhis2DebugUnitTest testAndroidHostTest jacocoReport --stacktrace --no-daemon
+
+      - name: Upload JaCoCo Report
+        if: ${{ !contains(github.event.pull_request.title, '[skip unitTest]') && !contains(github.event.pull_request.body, '[skip unitTest]') }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: jacoco-report
+          path: '**/build/coverage-report/**'
+          if-no-files-found: warn
+          retention-days: 7
+
+  build-test-apks:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    needs: [ unit-tests, lint-check ]
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Build Test APKs
+        run: ./gradlew :app:assembleDhis2Debug :app:assembleDhis2DebugAndroidTest :form:assembleAndroidTest --no-daemon
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: test-apks
+          path: |
+            app/build/outputs/apk/**/*.apk
+            form/build/outputs/apk/**/*.apk
+          retention-days: 1
+
+  run-form-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    needs: build-test-apks
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+
+      - name: Download APKs
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: test-apks
+          path: .
+
+      - name: Run Form Tests
+        env:
+          BROWSERSTACK_USR: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_PSW: ${{ secrets.BROWSERSTACK_PASSWORD }}
+          buildTag: ${{ github.head_ref || github.ref_name }} - form
+        run: |
+          form_apk=$(find form/build/outputs -iname "*.apk" | sed -n 1p)
+          export form_apk_path="${GITHUB_WORKSPACE}/${form_apk}"
+          cd scripts
+          chmod +x browserstackJenkinsForm.sh
+          ./browserstackJenkinsForm.sh
+
+  run-ui-portrait:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    needs: run-form-tests
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+
+      - name: Download APKs
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: test-apks
+          path: .
+
+      - name: Run UI Tests in Portrait
+        env:
+          BROWSERSTACK_USR: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_PSW: ${{ secrets.BROWSERSTACK_PASSWORD }}
+          buildTag: ${{ github.head_ref || github.ref_name }}
+        run: |
+          app_apk=$(find app/build/outputs/apk/dhis2/debug -iname "*.apk")
+          test_apk=$(find app/build/outputs/apk/androidTest -iname "*.apk")
+          export app_apk_path="${GITHUB_WORKSPACE}/${app_apk}"
+          export test_apk_path="${GITHUB_WORKSPACE}/${test_apk}"
+          cd scripts
+          chmod +x browserstackJenkins.sh
+          ./browserstackJenkins.sh
+
+  run-ui-landscape:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    needs: run-form-tests
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+
+      - name: Download APKs
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: test-apks
+          path: .
+
+      - name: Run UI Tests in Landscape
+        env:
+          BROWSERSTACK_USR: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_PSW: ${{ secrets.BROWSERSTACK_PASSWORD }}
+          buildTag: ${{ github.head_ref || github.ref_name }}
+        run: |
+          app_apk=$(find app/build/outputs/apk/dhis2/debug -iname "*.apk")
+          test_apk=$(find app/build/outputs/apk/androidTest -iname "*.apk")
+          export app_apk_path="${GITHUB_WORKSPACE}/${app_apk}"
+          export test_apk_path="${GITHUB_WORKSPACE}/${test_apk}"
+          cd scripts
+          chmod +x browserstackJenkinsLandscape.sh
+          ./browserstackJenkinsLandscape.sh
+
+  code-quality:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    needs: unit-tests
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Download JaCoCo Report
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: jacoco-report
+          path: .
+        continue-on-error: true
+
+      - name: SonarQube
+        env:
+          GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
+          GIT_BRANCH_DEST: ${{ github.base_ref || '' }}
+          PULL_REQUEST: ${{ github.event.pull_request.number }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          chmod +x ./scripts/sonarqube.sh
+          ./scripts/sonarqube.sh
+
+  notification:
+    runs-on: ubuntu-latest
+    needs: [ setup, lint-check, unit-tests, build-test-apks, run-form-tests, run-ui-portrait, run-ui-landscape, code-quality ]
+    if: always() && github.event_name != 'pull_request'
+    steps:
+      - name: Notify Slack on Success
+        if: ${{ !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
+        uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2.1.1
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "channel": "#android-capture-app-ci",
+              "attachments": [{
+                "color": "good",
+                "text": "*Build Succeeded*\n*Job:* ${{ github.workflow }}\n*Branch:* ${{ github.ref_name }}\n*Build Number:* ${{ github.run_number }} (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Open>)"
+              }]
+            }
+
+      - name: Notify Slack on Failure
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2.1.1
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "channel": "#android-capture-app-ci",
+              "attachments": [{
+                "color": "danger",
+                "text": "*Build Failed*\n*Job:* ${{ github.workflow }}\n*Branch:* ${{ github.ref_name }}\n*Build Number:* ${{ github.run_number }} (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Open>)"
+              }]
+            }
