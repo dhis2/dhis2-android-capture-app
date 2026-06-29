@@ -336,14 +336,7 @@ class TeiDashboardTest : BaseTest() {
             sdkResource = API_TB_IDENTIFIER_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE,
             responseCode = 200,
         )
-        mockWebServerRobot.addResponse(
-            method = ResponseController.GET,
-            path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
-            sdkResource = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE,
-            responseCode = 200,
-        )
 
-        val chartName = "Daily-TB smear microscopy number of specimen"
         setupCredentials()
         prepareTeiForAnalyticsAndLaunchActivity(rule)
 
@@ -352,11 +345,67 @@ class TeiDashboardTest : BaseTest() {
         }
 
         indicatorsRobot(composeTestRule) {
-            checkGraphIsRendered(chartName)
+            checkGraphIsRendered("Automated TEI chart")
         }
 
         analyticsRobot {
+            // [ANDROAPP-4606] Visualizations - Chart name: the chart title is displayed
+            checkChartName(1, "Automated TEI chart")
+
+            // [ANDROAPP-4358] Visualizations - View as Line / [ANDROAPP-4659] Type: Line:
+            // the chart initially renders as a line chart
             checkGraphType(1, ChartType.LINE_CHART)
+
+            // [ANDROAPP-4357] Visualizations - View as Bar: switch the chart to a bar chart
+            clickChartVisualizationMenu(1)
+            clickViewAsBar()
+            checkGraphType(1, ChartType.BAR_CHART)
+
+            // [ANDROAPP-4360] Visualizations - View as Table: switch the chart to a table
+            clickChartVisualizationMenu(1)
+            clickViewAsTable()
+            checkGraphType(1, ChartType.TABLE)
+
+            // [ANDROAPP-4359] Visualizations - View as Value / [ANDROAPP-4657] Type: Single Value:
+            // switch the chart to a single value
+            clickChartVisualizationMenu(1)
+            clickViewAsValue()
+            checkGraphType(1, ChartType.SINGLE_VALUE)
+
+            // [ANDROAPP-4361] Visualizations - Filter - Period: filter the visualization by period
+            clickChartVisualizationMenu(1)
+            clickPeriodFilter()
+            clickDailyPeriod()
+            clickToday()
+            checkNoVisualisationError(1)
+
+            // [ANDROAPP-4362] Visualizations - Filter - OrgUnit: open the org unit selection filter
+            clickChartVisualizationMenu(1)
+            clickOrgUnitFilter()
+            clickOrgUnitSelection()
+        }
+
+        orgUnitSelectorRobot(composeTestRule) {
+            // [ANDROAPP-4362] Visualizations - Filter - OrgUnit: choose an org unit and apply
+            clickFirstOrgUnitCheckbox()
+            clickDone()
+        }
+
+        analyticsRobot {
+            checkNoVisualisationError(1)
+
+            // [ANDROAPP-4363] Visualizations - Filter - Reset: reset the period filter
+            clickChartVisualizationMenu(1)
+            clickPeriodFilter()
+            clickReset()
+            checkFilterBadgeVisible(1)
+
+            // [ANDROAPP-4363] Visualizations - Filter - Reset: reset the org unit filter
+            clickChartVisualizationMenu(1)
+            clickOrgUnitFilter()
+            clickReset()
+            checkFilterBadgeGone(1)
+            checkNoErrorIcon(1)
         }
     }
 
