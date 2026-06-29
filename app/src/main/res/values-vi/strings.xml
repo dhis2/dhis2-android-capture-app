@@ -110,6 +110,8 @@
     <string name="every_12_hours">12 Giờ</string>
     <string name="Manual">Thủ công</string>
     <string name="a_week">1 Tuần</string>
+    <string name="sync_max_parameters">Các tham số đồng bộ hiện tại:</string>
+    <string name="sync_default_parameters">Trở về cài đặt mặc định</string>
     <string name="wipe_data_meesage">Cơ sở dữ liệu sẽ được xóa.\nBạn sẽ được yêu cầu đăng nhập lại.</string>
     <string name="wipe_data_ok">Chấp nhận</string>
     <string name="wipe_data_no">Hủy</string>
@@ -156,7 +158,16 @@
     <string name="write_new_note">Viết ghi chú mới</string>
     <string name="clear">xóa</string>
     <string name="add_note">Thêm ghi chú</string>
+    <string name="revert">Hoàn tác</string>
+    <string name="activated">Đã hoạt động</string>
+    <string name="missing_mandatory_fields_title">Thiếu trường dữ liệu bắt buộc</string>
+    <string name="missing_mandatory_fields_text">Một số trường bắt buộc bị thiếu. Nếu bạn muốn quay lại, tất cả các thông tin đã lưu sẽ bị xóa.</string>
+    <string name="missing_mandatory_fields_text_not_delete">Một số trường bắt buộc nhập bị thiếu. Nếu bạn muốn quay lại, vui lòng nhập giá trị cho chúng</string>
+    <string name="missing_mandatory_fields_events">Một số trường dữ liệu cần bạn chú ý.\nBạn có muốn xem xét biểu nhập không\?</string>
     <string name="title_delete_go_back">Dữ liệu của bạn chưa được lưu</string>
+    <string name="delete_go_back">Nếu bạn quay lại bây giờ, tất cả thông tin đã nhập sẽ bị xóa.</string>
+    <string name="missing_mandatory_fields_go_back">Xóa và quay lại</string>
+    <string name="missing_mandatory_fields_finish">Một số trường bắt buộc bị thiếu. Bạn có thể lưu biểu nhập và tắt, nhưng sự kiện chưa hoàn tất.</string>
     <string name="tei_coordinates">Tọa độ của </string>
 
     <!--EVENT SUMMARY-->
@@ -198,6 +209,8 @@
     <string name="programs_to_enroll">Chương trình để đăng ký</string>
     <string name="share">Chia sẻ</string>
     <string name="share_qr">Chia sẻ mã QR</string>
+    <string name="max">Lớn nhất</string>
+    <string name="current">Hiện tại</string>
     <string name="tei">ĐỐI TƯỢNG THEO DÕI</string>
     <string name="teis">ĐỐI TƯỢNG THEO DÕI</string>
     <string name="wipe_data">Cài đặt lại Dữ liệu &amp; cấu hình</string>
@@ -254,6 +267,20 @@
     <string name="delete_local_data_message">Dữ liệu đã đồng bộ sẽ không bị mất. Bạn có muốn tiếp tục không?</string>
     <string name="delete_local_data_error">Không thể xóa dữ liệu. Vui lòng thử lại.</string>
     <string name="delete_local_data_done">Đã xóa dữ liệu cục bộ thành công</string>
+    <string name="org_unit_selection_warning">Phải chọn ít nhất một đơn vị</string>
+    <string name="send_user_name_title">Đã gửi dữ liệu</string>
+    <string name="send_user_name_mesage">Giúp DHIS2 cải thiện ứng dụng này bằng việc chia sẻ lịch sử lỗi liên kết với tên đăng nhập của bạn.</string>
+    <string name="improve_app_msg_title">Bạn có muốn giúp chúng tôi cải thiện ứng dụng này không?</string>
+    <string name="improve_app_msg_clickable_word">chính sách bảo mật</string>
+    <string name="check_mandatory_field">Kiểm tra các trường dữ liệu</string>
+    <string name="error_no_network_during_sync">Bạn đã mất kết nối mạng trong khi đang thực hiện đồng bộ cấu hình. Vui lòng thử lại sau.</string>
+    <string name="action_agree">Đồng ý</string>
+    <string name="action_continue">Tiếp tục</string>
+    <string name="login_server_info_title">Đường dẫn đến máy chủ</string>
+    <string name="login_server_info_message">Nhập đường dẫn liên kết đến máy chủ DHIS 2 với đơn vị được cung cấp bởi quản lý của bạn.\n\n Hoặc bạn có thể quét mã QR có chứa đường dẫn liên kết đến máy chủ.</string>
+    <string name="forgot_your_code">Bạn đã quên mã của bạn phải không?</string>
+    <string name="event_form_end_options_title">Bạn muốn làm gì với sự kiện này?</string>
+    <string name="sectionSelectorEnd">KẾT THÚC</string>
     <string name="resource_not_found">Không tìm thấy %s</string>
     <string name="relationship_not_found_message">Hồ sơ bạn đang cố truy cập không có. Bạn có muốn tìm kiếm nó không?</string>
     <string name="sync_by_sms">Được đồng bộ bằng SMS</string>
@@ -331,6 +358,9 @@
     <string name="filter_event_status_visited">Đã đến</string>
     <string name="filter_event_status_completed">Đã hoàn tất</string>
     <string name="filter_event_status_skipped">Đã bỏ qua</string>
+    <string name="event_tei_limits">Sự kiện: %stối đa: %s%shiện có: %sĐối tượng theo dõi: %stối đa: %s%shiện có%s</string>
+    <string name="enrollment_data_hide">Ẩn dữ liệu đăng ký</string>
+    <string name="enrollment_data_show">Hiển thị dữ liệu đăng ký</string>
     <string name="sms_enabled">Mô đun SMS đã bật</string>
     <string name="sms_disabled">Mô đun SMS đã tắt</string>
     <string name="sms_downloading_data">Đang tải xuống dữ liệu cho mô đun SMS. Vui lòng đợi</string>
@@ -396,6 +426,7 @@
     <string name="filters_title_date">Ngày</string>
     <string name="privacy_policy_title">Chính Sách Bảo Mật</string>
     <string name="open_privacy_policy">Bấm vào đây để kiểm tra<a href="">chính sách bảo mật</a></string>
+    <string name="coordinates_error">Giá trị tọa độ không đúng</string>
     <string name="break_glass_error_v2">Bạn không thể đăng ký %stừ đơn vị khác vào chương trình này bởi vì nó được bảo vệ.\n Hãy liên hệ quản lý của bạn.</string>
     <string name="field_is_mandatory">Trường dữ liệu này bắt buộc</string>
     <string name="security_debugger_message">Vì lí do bảo mật, phiên bản ứng dụng này không cho phép sử dụng với adb. Vui lòng sử dụng phiên bản đào tạo.</string>
@@ -452,7 +483,7 @@
     <string name="filter_period_last_n_biweeks">%d 2-Tuần trước</string>
     <string name="section_feedback">Phản hồi</string>
     <string name="section_indicators">Chỉ Số</string>
-    <string name="camera_permission_denied">Quyền mở máy ảnh bị từ chối.\n Bạn cần bật tính năng máy ảnh để sử dụng chức năng này</string>
+    <string name="camera_permission_denied">Quyền mở máy ảnh bị từ chối..\nBạn cần bật tính năng máy ảnh để sử dụng chức năng này.</string>
     <string name="section_charts_indicators">Biểu đồ và Chỉ số</string>
     <string name="take_photo">Chụp ảnh</string>
     <string name="break_glass_dialog_title">Chương trình này đã được bảo vệ</string>
@@ -482,7 +513,7 @@
     <string name="troubleshooting_pass_rule_validation">Không tìm thấy cảnh báo</string>
     <string name="troobleshooting_pass_rule_validation_title">Mọi thứ đều ổn</string>
     <string name="not_saved">Chưa lưu</string>
-    <string name="review_message">Một số trường dữ liệu cần bạn chú ý.\n Bạn có muốn xem xét biểu nhập không?</string>
+    <string name="review_message">Một số trường dữ liệu cần bạn chú ý.\nBạn có muốn xem xét biểu nhập không\?</string>
     <string name="search_loading_more">Đang tải thêm kết quả</string>
     <string name="search_no_results_in_program">Không còn kết quả nào khác cho %s</string>
     <string name="search_outside_action">Tìm kiếm ngoài chương trình này</string>
@@ -496,10 +527,10 @@
     <string name="init_search">Mở trang tìm kiếm để tìm bất cứ %snào</string>
     <string name="search_or_create">Bạn có thể tìm kiếm hoặc tạo một %smới</string>
     <string name="missing_warning_fields_completed_events">Bạn có một số tin nhắn cảnh báo.</string>
-    <string name="missing_warning_fields_events">Bạn có một số tin nhắn cảnh báo. \n Bạn có muốn đánh dấu biểu nhập này là hoàn tất không?</string>
-    <string name="missing_error_fields_events">Một số trường dữ liệu có lỗi và chưa được lưu. \n Bạn có muốn xem xét biểu nhập không?</string>
+    <string name="missing_warning_fields_events">Bạn có một số tin nhắn cảnh báo..\nBạn có muốn đánh dấu biểu nhập này là hoàn tất không\?</string>
+    <string name="missing_error_fields_events">Một số trường dữ liệu có lỗi và chưa được lưu. \nBạn có muốn xem lại biểu nhập không\?</string>
     <string name="event_can_be_completed">Bạn có muốn đánh dấu biểu nhập này là hoàn tất không?</string>
-    <string name="event_error_on_complete">Bạn có một số tin nhắn lỗi.\n Bạn có muốn xem xét không?</string>
+    <string name="event_error_on_complete">Bạn có một số tin nhắn lỗi.\nBạn có muốn xem không\?</string>
     <string name="re_opened">Đã Mở-lại</string>
     <string name="account_disable_title">Tài khoản đã bị vô hiệu hóa</string>
     <string name="account_disable_message">Tài khoản của bạn đã bị vô hiệu hóa bởi quản lý chương trình.</string>
@@ -538,8 +569,6 @@
     <string name="download_now">Tải xuống ngay</string>
     <string name="check_for_updates">Kiểm tra các cập nhật</string>
     <string name="no_updates">Không có cập nhật mới</string>
-    <string name="unknow_sources_denied">Quyền nguồn không xác định bị từ chối.\n Bạn cần cho phép nó để cài đặt.</string>
-    <string name="storage_denied">Quyền lưu trữ bị từ chối. \n Bạn cần cho phép để cài phiên bản.</string>
     <string name="app_version">Phiên bản ứng dụng</string>
     <string name="error_applying_rule_effects">Có lỗi trong cấu hình chương trình, chúng tôi không thể tải sự kiện này. Xin vui lòng liên hệ quản trị hệ thống của bạn.</string>
     <string name="dashboard_menu_delete_person">Xóa người</string>
@@ -560,7 +589,6 @@
     <string name="sync_error">Lỗi đồng bộ</string>
     <string name="mark_follow_up">Đánh dấu để theo-dõi</string>
     <string name="coordinates">Toạ độ</string>
-    <string name="no_data_access">Bạn không có quyền truy cập dữ liệu.\n Liên lạc quản trị của bạn.</string>
     <string name="sync_offline_check_connection">Dường như bạn đang ngoại tuyến. Xin vui lòng kiểm tra kết nối mạng</string>
     <string name="delete_tei_dialog_title">Xóa %s này?</string>
     <string name="delete_tei_dialog_message">%snày và tất cả dữ liệu của nó giữa tất cả chương trình sẽ bị xóa. Hành động này không thể hồi phục.</string>
@@ -577,9 +605,14 @@
     <string name="event">sự kiện</string>
     <string name="timeline">Dòng thời gian</string>
     <string name="database_export_downloaded">Cơ sở dữ liệu đã được tải về</string>
+    <string name="importing_database">Đang nhập cơ sở dữ liệu</string>
     <string name="show_more">Hiện thêm</string>
     <string name="show_less">Ẩn bớt</string>
     <string name="sync">Đồng bộ</string>
+    <string name="show_fields">Hiện trường dữ liệu</string>
+    <string name="hide_fields">Ẩn trường dữ liệu</string>
+    <string name="importing_successful">Nhập thành công</string>
+    <string name="section_misconfigured">Phần này được cấu hình sai.\nLiên hệ với người quản lý của bạn.</string>
     <string name="successful_sync">Đồng bộ thành công</string>
     <string name="syncing_something">Đang đồng bộ %s...</string>
     <string name="file_resources">tài nguyên tập tin</string>

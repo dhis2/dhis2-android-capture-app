@@ -1,16 +1,15 @@
 package org.dhis2.mobile.login.main.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.commons.extensions.withMinimumDuration
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
+import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState.LoginCredentials
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
@@ -26,16 +25,8 @@ class LoginViewModel(
     private val getInitialScreen: GetInitialScreen,
     private val importDatabase: ImportDatabase,
     private val validateServer: ValidateServer,
-    networkStatusProvider: NetworkStatusProvider,
+    private val networkStatusProvider: NetworkStatusProvider,
 ) : ViewModel() {
-    private val isNetworkOnline =
-        networkStatusProvider.connectionStatus
-            .stateIn(
-                viewModelScope,
-                SharingStarted.Eagerly,
-                false,
-            )
-
     private val _serverValidationState = MutableStateFlow(ServerValidationUiState())
     val serverValidationState = _serverValidationState.asStateFlow()
 
@@ -72,8 +63,11 @@ class LoginViewModel(
         }
         serverValidationJob =
             launchUseCase {
+                val isOnline = networkStatusProvider.connectionStatus.firstOrNull() ?: false
                 val result =
-                    withMinimumDuration { validateServer(serverUrl, isNetworkOnline.value) }
+                    withMinimumDuration {
+                        validateServer(serverUrl, isOnline)
+                    }
                 when (result) {
                     is ServerValidationResult.Error -> {
                         _serverValidationState.update {
@@ -94,7 +88,12 @@ class LoginViewModel(
                                     selectedServer = serverUrl,
                                     selectedServerFlag = result.countryFlag,
                                     selectedUsername = null,
-                                    oAuthEnabled = result.oAuthEnabled,
+                                    entryMode =
+                                        if (result.oAuthEnabled) {
+                                            CredentialsEntryMode.NEW_ACCOUNT_OAUTH
+                                        } else {
+                                            CredentialsEntryMode.NEW_ACCOUNT_BASIC
+                                        },
                                 ),
                         )
                         stopValidation()

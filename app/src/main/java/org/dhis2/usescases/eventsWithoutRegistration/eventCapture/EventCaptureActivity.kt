@@ -572,8 +572,20 @@ class EventCaptureActivity :
                 .onDismissListener(
                     object : OnDismissListener {
                         override fun onDismiss(hasChanged: Boolean) {
-                            if (hasChanged && syncType == TEI_SYNC) {
-                                dashboardViewModel?.updateDashboard()
+                            if (hasChanged) {
+                                when (syncType) {
+                                    TEI_SYNC -> {
+                                        dashboardViewModel?.updateDashboard()
+                                    }
+
+                                    EVENT_SYNC -> {
+                                        if (isLandscape()) {
+                                            eventUid?.let { uid -> setUpEventCaptureFormLandscape(uid) }
+                                        } else {
+                                            adapter?.refreshDataEntry()
+                                        }
+                                    }
+                                }
                             }
                         }
                     },

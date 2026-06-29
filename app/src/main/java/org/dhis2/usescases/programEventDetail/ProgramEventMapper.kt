@@ -127,7 +127,7 @@ class ProgramEventMapper(
             } else {
                 ""
             }
-        val state: State = if (event.state() != null) event.state()!! else State.TO_UPDATE
+        val state: State = event.aggregatedSyncState() ?: State.TO_UPDATE
 
         return ProgramEventViewModel(
             uid = event.uid(),

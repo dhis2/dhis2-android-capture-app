@@ -1,5 +1,6 @@
 package org.dhis2.android.rtsm.ui.home.screens
 
+import android.view.View.generateViewId
 import android.widget.FrameLayout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.BackdropScaffold
@@ -14,12 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.view.ViewCompat
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.viewmodel.compose.viewModel
-import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment
 import kotlinx.coroutines.CoroutineScope
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
+import org.dhis2.android.rtsm.ui.home.LocalThemeColor
 import org.dhis2.android.rtsm.ui.home.screens.components.AnalyticsTopBar
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -28,10 +27,8 @@ fun AnalyticsScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(),
     backAction: () -> Unit,
-    themeColor: Color,
     scaffoldState: ScaffoldState,
     syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
-    supportFragmentManager: FragmentManager,
 ) {
     val backdropState = rememberBackdropScaffoldState(BackdropValue.Revealed)
     val settingsUiState by viewModel.settingsUiState.collectAsState()
@@ -40,7 +37,6 @@ fun AnalyticsScreen(
         appBar = {
             AnalyticsTopBar(
                 title = settingsUiState.programName,
-                themeColor = themeColor,
                 backAction = {
                     backAction.invoke()
                 },
@@ -48,25 +44,20 @@ fun AnalyticsScreen(
                 syncAction = syncAction,
             )
         },
-        backLayerBackgroundColor = themeColor,
+        backLayerBackgroundColor = LocalThemeColor.current,
         backLayerContent = {
         },
         frontLayerElevation = 0.dp,
         frontLayerContent = {
-            var frameId = 0
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
                 factory = { context ->
                     FrameLayout(context).apply {
-                        id = ViewCompat.generateViewId()
-                        frameId = id
+                        id = generateViewId()
                     }
                 },
-                update = {
-                    supportFragmentManager
-                        .beginTransaction()
-                        .add(frameId, GroupAnalyticsFragment.forProgram(settingsUiState.programUid))
-                        .commit()
+                update = { view ->
+                    viewModel.openAnalyticsScreen(view.id)
                 },
             )
         },

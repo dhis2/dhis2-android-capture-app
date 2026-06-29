@@ -105,6 +105,8 @@
     <string name="every_12_hours">12 год</string>
     <string name="Manual">Вручну</string>
     <string name="a_week">1 тиждень</string>
+    <string name="sync_max_parameters">Поточні параметри синхронізації:</string>
+    <string name="sync_default_parameters">Установити за замовчуванням</string>
     <string name="wipe_data_meesage">Базу даних буде видалено. Вам буде запропоновано увійти знову.</string>
     <string name="wipe_data_ok">Прийняти</string>
     <string name="wipe_data_no">Скасувати</string>
@@ -149,7 +151,15 @@
     <string name="write_new_note">Написати нову примітку</string>
     <string name="clear">очистити</string>
     <string name="add_note">Додати нотатку</string>
+    <string name="revert">Повернути</string>
+    <string name="activated">Активовано</string>
+    <string name="missing_mandatory_fields_title">Не заповнено обов\'язкові поля</string>
+    <string name="missing_mandatory_fields_text">Деякі обов’язкові поля не заповнено. Якщо Ви хочете повернутися зараз, уся збережена інформація буде видалена.</string>
+    <string name="missing_mandatory_fields_text_not_delete">Деякі обов’язкові поля не заповнено. Якщо Ви хочете повернутися, заповніть їх. </string>
     <string name="title_delete_go_back">Ваші дані не збережено</string>
+    <string name="delete_go_back">Якщо Ви зараз повернетеся назад, уся введена інформація буде видалена.</string>
+    <string name="missing_mandatory_fields_go_back">Видалити та повернутися назад</string>
+    <string name="missing_mandatory_fields_finish">Деякі обов’язкові поля не заповнено. Ви можете завершити введення даних і вийти, але випадок не може бути завершений.</string>
     <string name="tei_coordinates">Координати для</string>
 
     <!--EVENT SUMMARY-->
@@ -191,6 +201,8 @@
     <string name="programs_to_enroll">Програми для реєстрації</string>
     <string name="share">Поділитися</string>
     <string name="share_qr">Поділитись QR</string>
+    <string name="max">Макс</string>
+    <string name="current">Поточний</string>
     <string name="tei">Об’єкт, який відстежується</string>
     <string name="teis">Об’єкти, які відстежуються</string>
     <string name="wipe_data">Скинути дані програми &amp; конфігурацію</string>
@@ -246,6 +258,19 @@
     <string name="delete_local_data_message">Несинхронізовані дані буде втрачено. Ви дійсно хочете продовжити?</string>
     <string name="delete_local_data_error">Не вдалося видалити дані. Будь ласка, повторіть спробу.</string>
     <string name="delete_local_data_done">Видалення локальних даних успішно завершено.</string>
+    <string name="org_unit_selection_warning">Необхідно вибрати принаймні один організаційний підрозділ</string>
+    <string name="send_user_name_title">Надіслати дані</string>
+    <string name="send_user_name_mesage">Допоможіть DHIS2 покращити цей додаток, поділившись журналами помилок, пов’язаними з Вашим ідентифікатором користувача.</string>
+    <string name="improve_app_msg_title">Ви хочете допомогти нам покращити цю програму?</string>
+    <string name="check_mandatory_field">Перевірте поля</string>
+    <string name="error_no_network_during_sync">Під час синхронізації конфігурації з’єднання з Інтернетом було втрачено. Будь-ласка спробуйте пізніше</string>
+    <string name="action_agree">Погодитись</string>
+    <string name="action_continue">Продовжити</string>
+    <string name="login_server_info_title">URL-адреса серверу</string>
+    <string name="login_server_info_message">Введіть URL-адресу серверу DHIS 2 для Вашої організації, надану Вашим системним адміністратором. Альтернативно, Ви можете відсканувати QR-код, що містить URL-адресу Вашого сервера</string>
+    <string name="forgot_your_code">Забули код?</string>
+    <string name="event_form_end_options_title">Що б Ви хотіли зробити для цього випадку?</string>
+    <string name="sectionSelectorEnd">КІН</string>
     <string name="resource_not_found">%s не знайдено</string>
     <string name="relationship_not_found_message">Запис, до якого Ви намагаєтеся отримати доступ, недоступний. Ви б хотіли його пошукати?</string>
     <string name="sync_by_sms">Синхронізовано через SMS</string>
@@ -323,6 +348,9 @@
     <string name="filter_event_status_visited">Відвідано</string>
     <string name="filter_event_status_completed">Завершено</string>
     <string name="filter_event_status_skipped">Пропущено</string>
+    <string name="event_tei_limits">Випадки:%sмакс:%s%sпоточн:%s Об\'єкти:%sмакс:%s%sпоточн%s</string>
+    <string name="enrollment_data_hide">Приховати дані реєстрації</string>
+    <string name="enrollment_data_show">Показати дані реєстрації</string>
     <string name="sms_enabled">SMS-модуль включений</string>
     <string name="sms_disabled">SMS-модуль відключений</string>
     <string name="sms_downloading_data">Завантаження даних для модуля SMS. Будь ласка, зачекайте</string>
@@ -388,6 +416,7 @@
     <string name="filters_title_date">Дата</string>
     <string name="privacy_policy_title">Політика конфіденційності</string>
     <string name="open_privacy_policy">Натисніть тут, щоб ознайомитися з нашою <a href=""> політикою конфіденційності </a></string>
+    <string name="coordinates_error">Значення координат недійсні</string>
     <string name="break_glass_error_v2">Ви не можете зареєструвати %s з інших організаційних підрозділів у цій програмі, оскільки вона закрита для Вас. Зверніться до свого адміністратора.</string>
     <string name="field_is_mandatory">Це поле обов\'язкове для заповнення</string>
     <string name="security_debugger_message">З міркувань безпеки цю версію додатку не можна використовувати з adb. Будь ласка, використовуйте навчальну версію.</string>
@@ -442,6 +471,7 @@
     <string name="filter_period_last_n_biweeks">Минулі %d двотижневі періоди</string>
     <string name="section_feedback">Відгук</string>
     <string name="section_indicators">Показники</string>
+    <string name="value">Значення</string>
     <string name="camera_permission_denied">Відмовлено у використанні камери. Вам потрібно ввімкнути цей дозвіл, щоб використовувати цю функцію.</string>
     <string name="section_charts_indicators">Діаграми та індикатори</string>
     <string name="take_photo">Зробити фото</string>
@@ -472,7 +502,6 @@
     <string name="troubleshooting_pass_rule_validation">Попереджень не знайдено</string>
     <string name="troobleshooting_pass_rule_validation_title">Все виглядає чудово</string>
     <string name="not_saved">Не збережено</string>
-    <string name="review_message">Деякі поля потребують Вашої уваги. Бажаєте переглянути форму?</string>
     <string name="search_loading_more">Завантаження результатів</string>
     <string name="search_no_results_in_program">Результатів для %s не знайдено</string>
     <string name="search_outside_action">Пошук за межами цієї програми</string>
@@ -485,9 +514,8 @@
     <string name="action_ok">OK</string>
     <string name="init_search">Почніть пошук, щоб знайти будь-який %s</string>
     <string name="search_or_create">Ви можете знайти або створити новий %s</string>
-    <string name="missing_warning_fields_events">У вас є кілька попереджень. Ви хочете позначити цю форму як завершену?</string>
-    <string name="missing_error_fields_events">Деякі поля містять помилки і не були збережені. Бажаєте переглянути форму?</string>
     <string name="event_can_be_completed">Ви бажаєте позначити цю форму як завершену?</string>
+    <string name="changes_will_be_discarted">Якщо Ви зараз вийдете, зміни буде скасовано.</string>
     <string name="event_error_on_complete">У вас є кілька повідомлень про помилки. Бажаєте їх переглянути?</string>
     <string name="re_opened">Відкрито знову</string>
     <string name="account_disable_title">Обліковий запис вимкнено</string>

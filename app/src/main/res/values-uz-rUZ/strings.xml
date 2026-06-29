@@ -92,6 +92,8 @@
     <string name="every_12_hours">12 soat</string>
     <string name="Manual">Qoʼllanma</string>
     <string name="a_week">1 hafta</string>
+    <string name="sync_max_parameters">Joriy sinxronlash parametrlari</string>
+    <string name="sync_default_parameters">Standart holatga qaytish</string>
     <string name="wipe_data_meesage">Maʼlumotlar bazasi oʼchiriladi. Sizdan qayta kirish soʼraladi.</string>
     <string name="wipe_data_ok">Qabul qiling</string>
     <string name="wipe_data_no">Бекор қилиш</string>
@@ -134,6 +136,9 @@
     <string name="clear">aniq</string>
     <string name="add_note">Izoh qoldirish</string>
     <string name="title_delete_go_back">Maʼlumotingiz saqlanmadi</string>
+    <string name="delete_go_back">Аgarda hozir orqaga qaytsangiz, barcha kiritilgan maʼlumotlar oʼchiriladi.</string>
+    <string name="missing_mandatory_fields_go_back">Oʼchirib tashlash va orqaga qaytish</string>
+    <string name="missing_mandatory_fields_finish">Baʼzi majburiy maydonlar qoldirib ketilgan. Siz maʼlumotlarni kiritishni yakunlab chiqishingiz mumkin. Аmmo bu holda hodisa/tadbirni yakunlab boʼlmaydi.</string>
     <string name="tei_coordinates">Uchun koordinatalar</string>
 
     <!--EVENT SUMMARY-->
@@ -175,6 +180,8 @@
     <string name="programs_to_enroll">Roʼyxatga olish dasturlari</string>
     <string name="share">Улашиш</string>
     <string name="share_qr">QR ni ulashish</string>
+    <string name="max">Максимум</string>
+    <string name="current">Joriy</string>
     <string name="tei">TEI</string>
     <string name="teis">TEI lar</string>
     <string name="wipe_data">Ilova maʼlumotlarining asl standart holatini tiklash; konfiguratsiya</string>
@@ -303,6 +310,9 @@
     <string name="filter_event_status_visited">Tashrif buyurdi</string>
     <string name="filter_event_status_completed">bajarildi</string>
     <string name="filter_event_status_skipped">Oʼtkazib yuborildi</string>
+    <string name="event_tei_limits">Hodisa/tadbirlar %s maksimal : %s %s ketma-ketlik: %s TEI: %s maksimal : %s %s ketma-ketlik: %s</string>
+    <string name="enrollment_data_hide">Qayd qilish maʼlumotlarini berkitish</string>
+    <string name="enrollment_data_show">Qayd qilish maʼlumotlarini koʼrsatish</string>
     <string name="sms_enabled">SMS modul yoqib qoʼyilgan</string>
     <string name="sms_disabled">SMS modul oʼchirib qoʼyilgan</string>
     <string name="sms_downloading_data">SMS modul uchun maʼlumotlar yuklanmoqda. Iltimos, kuting</string>
@@ -366,6 +376,7 @@
     <string name="download_tei_error">Tanlangan %s  yuklanmadi.</string>
     <string name="filters_title_date">Sana</string>
     <string name="privacy_policy_title">Maxfiylik siyosati</string>
+    <string name="coordinates_error">Koordinata qiymatlari yaroqsiz</string>
     <string name="field_is_mandatory">Maydon toʼldirilishi majburiy</string>
     <string name="security_debugger_message">Xavfsizlik sababli ushbu versiyadan adb formatidan foydalanishga ruxsat berilmagan.Ilitmos, mashq versiyasidan foydalaning.</string>
 

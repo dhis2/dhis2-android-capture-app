@@ -55,16 +55,13 @@ class FilterRepository
     ) {
         private val observableSortingInject = ObservableField<SortingItem>()
         private val observableOpenFilter = ObservableField<Filters>()
-        private var orgUnitsCount: Int = -1
 
-        init {
-            orgUnitsCount =
-                d2
-                    .organisationUnitModule()
-                    .organisationUnits()
-                    .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
-                    .blockingCount()
-        }
+        private fun orgUnitsCount() =
+            d2
+                .organisationUnitModule()
+                .organisationUnits()
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
+                .blockingCount()
 
         fun trackedEntityInstanceQueryByProgram(programUid: String): TrackedEntitySearchCollectionRepository =
             d2
@@ -271,6 +268,7 @@ class FilterRepository
                 }.blockingGet()
 
         fun globalTrackedEntityFilters(): List<FilterItem> {
+            val orgUnitsCount = orgUnitsCount()
             val defaultFilters = createDefaultTrackedEntityFilters()
 
             if (webAppIsNotConfigured()) {
@@ -320,6 +318,8 @@ class FilterRepository
             )
 
         fun dataSetFilters(dataSetUid: String): List<FilterItem> {
+            val orgUnitsCount = orgUnitsCount()
+
             val defaultFilters = createDefaultDatasetFilters(dataSetUid)
 
             if (webAppIsNotConfigured()) {
@@ -402,6 +402,7 @@ class FilterRepository
         }
 
         fun homeFilters(): List<FilterItem> {
+            val orgUnitsCount = orgUnitsCount()
             val defaultFilters = createDefaultHomeFilters()
 
             if (webAppIsNotConfigured()) {
@@ -475,6 +476,7 @@ class FilterRepository
         private fun webAppIsNotConfigured(): Boolean = !d2.settingModule().appearanceSettings().blockingExists()
 
         private fun getTrackerFilters(program: Program): List<FilterItem> {
+            val orgUnitsCount = orgUnitsCount()
             val defaultFilters = createGetDefaultTrackerFilter(program)
 
             if (webAppIsNotConfigured()) {
@@ -645,6 +647,7 @@ class FilterRepository
             program: Program,
             programType: ProgramType,
         ): List<FilterItem> {
+            val orgUnitsCount = orgUnitsCount()
             val defaultFilters = createDefaultGetEventFilters(program, programType)
             if (webAppIsNotConfigured()) {
                 if (orgUnitsCount == 1) {
@@ -759,7 +762,7 @@ class FilterRepository
                 d2
                     .categoryModule()
                     .categoryCombos()
-                    .uid(program.categoryCombo()?.uid())
+                    .uid(program.categoryCombo().uid())
                     .blockingGet()
             if (categoryCombo?.isDefault == false) {
                 defaultEventFilter[ProgramFilter.CAT_COMBO] =
@@ -788,8 +791,10 @@ class FilterRepository
                 when (it) {
                     is EventWorkingList ->
                         null
+
                     is ProgramStageWorkingList ->
                         teiQuery.byProgramStageWorkingList().eq(it.uid)
+
                     is TrackedEntityInstanceWorkingList ->
                         teiQuery.byTrackedEntityInstanceFilter().eq(it.uid)
                 }

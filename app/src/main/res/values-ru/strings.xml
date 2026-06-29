@@ -109,6 +109,8 @@
     <string name="every_12_hours">12 часов</string>
     <string name="Manual">Вручную</string>
     <string name="a_week">1 неделя</string>
+    <string name="sync_max_parameters">Текущие параметры синхронизации:</string>
+    <string name="sync_default_parameters">Возвратить в исходное положение по умолчанию</string>
     <string name="wipe_data_meesage">База данных будет удалена.Вам будет предложено войти в систему снова.</string>
     <string name="wipe_data_ok">Принять</string>
     <string name="wipe_data_no">Отмена</string>
@@ -150,7 +152,15 @@
     <string name="write_new_note">Написать новую заметку</string>
     <string name="clear">очистить</string>
     <string name="add_note">Добавить заметку</string>
+    <string name="activated">Активированно</string>
+    <string name="missing_mandatory_fields_title">Не заполнены обязательные поля </string>
+    <string name="missing_mandatory_fields_text">Некоторые обязательные поля не заполнены. Если вы захотите вернуться назад, вся сохраненная информация будет удалена.</string>
+    <string name="missing_mandatory_fields_text_not_delete">Некоторые обязательные поля не заполнены. Если вы хотите вернуться, пожалуйста, заполните их.</string>
+    <string name="missing_mandatory_fields_events">Некоторые поля требуют Вашего внимания.\nХотите просмотреть форму\?</string>
     <string name="title_delete_go_back">Ваши данные не сохранены</string>
+    <string name="delete_go_back">Если Вы вернетесь назад сейчас, вся введенная информация будет удалена.</string>
+    <string name="missing_mandatory_fields_go_back">Удалить и вернуться назад</string>
+    <string name="missing_mandatory_fields_finish">Некоторые обязательные поля не заполнены. Вы можете завершить ввод данных и выйти, но событие не может быть завершено.</string>
     <string name="tei_coordinates">Координаты для</string>
 
     <!--EVENT SUMMARY-->
@@ -192,6 +202,8 @@
     <string name="programs_to_enroll">Программы для регистрации</string>
     <string name="share">Поделиться</string>
     <string name="share_qr">Поделиться QR</string>
+    <string name="max">Макс</string>
+    <string name="current">Текущий</string>
     <string name="tei">TEI</string>
     <string name="wipe_data">Сброс данных приложения &amp; конфигурации</string>
     <string name="warning_error_on_complete_title">Проверьте это!</string>
@@ -245,6 +257,20 @@
     <string name="delete_local_data_message">Не синхронизированные данные будут потеряны. Вы действительно хотите продолжить?</string>
     <string name="delete_local_data_error">Данные не удалось удалить. Пожалуйста, повторите попытку.</string>
     <string name="delete_local_data_done">Удаление локальных данных успешно завершено.</string>
+    <string name="org_unit_selection_warning">Необходимо выбрать хотя бы одну Организационную единицу.</string>
+    <string name="send_user_name_title">Отправить данные</string>
+    <string name="send_user_name_mesage">Помогите DHIS2 улучшить это приложение, поделившись журналами ошибок, связанных с Вашим идентификатором пользователя.</string>
+    <string name="improve_app_msg_title">Хотите помочь нам улучшить это приложение?</string>
+    <string name="improve_app_msg_clickable_word">политика конфиденциальности</string>
+    <string name="check_mandatory_field">Проверить поля</string>
+    <string name="error_no_network_during_sync">Во время синхронизации конфигурации было потеряно подключение к Интернету. Пожалуйста, повторите попытку позже</string>
+    <string name="action_agree">Согласен</string>
+    <string name="action_continue">Продолжить</string>
+    <string name="login_server_info_title">Адрес веб-страницы сервера</string>
+    <string name="login_server_info_message">Введите URL-адрес сервера DHIS 2 для Вашей организации, предоставленный Вашим системным администратором. Другой вариант - отсканировать QR-код, содержащий URL-адрес Вашего сервера.</string>
+    <string name="forgot_your_code">Забыли свой код?</string>
+    <string name="event_form_end_options_title">Что бы Вы хотели сделать для этого события?</string>
+    <string name="sectionSelectorEnd">КОНЕЦ</string>
     <string name="resource_not_found">%s не найдено</string>
     <string name="relationship_not_found_message">Запись, к которой Вы пытаетесь получить доступ, недоступна. Не хотите ли Вы поискать ее?</string>
     <string name="sync_by_sms">Синхронизировано по SMS</string>
@@ -376,6 +402,7 @@
     <string name="filters_title_date">Дата</string>
     <string name="privacy_policy_title">Политика конфиденциальности</string>
     <string name="open_privacy_policy">Нажмите здесь, чтобы ознакомиться с нашей политикой конфиденциальности <a href=""></a> . </string>
+    <string name="coordinates_error">Значения координат не действительны</string>
     <string name="break_glass_error_v2">Вы не можете зарегистрировать %s из других организационных подразделений в этой программе, потому что она защищена. Свяжитесь с Вашим администратором.</string>
     <string name="field_is_mandatory">Это поле обязательно для заполнения</string>
     <string name="security_debugger_message">По соображениям безопасности эта версия приложения не может быть использована с adb. Пожалуйста, используйте учебную версию.</string>
@@ -431,7 +458,7 @@
     <string name="filter_period_last_n_financial_years">Прошлых %d финансовых лет</string>
     <string name="section_feedback">Обратная связь</string>
     <string name="section_indicators">Индикаторы</string>
-    <string name="camera_permission_denied">Разрешение камеры отклонено. Для использования этой функции необходимо включить ее.</string>
+    <string name="camera_permission_denied">Разрешение камеры запрещено.\nЧтобы использовать эту функцию, ее необходимо разрешить.</string>
     <string name="section_charts_indicators">Диаграммы и индикаторы</string>
     <string name="take_photo">Сделать фото</string>
     <string name="break_glass_dialog_title">Данная программа защищена</string>
@@ -460,7 +487,7 @@
     <string name="troubleshooting_pass_rule_validation">Предупреждения не найдены</string>
     <string name="troobleshooting_pass_rule_validation_title">Все выглядит великолепно</string>
     <string name="not_saved">Не сохранено</string>
-    <string name="review_message">Некоторые поля требуют Вашего внимания. Не хотите ли Вы просмотреть форму?</string>
+    <string name="review_message">Некоторые поля требуют Вашего внимания.\nХотите просмотреть форму\?</string>
     <string name="search_loading_more">Загрузка других результатов</string>
     <string name="search_no_results_in_program">Больше никаких результатов для %s</string>
     <string name="search_outside_action">Поиск за пределами этой программы</string>
@@ -474,10 +501,10 @@
     <string name="init_search">Начните поиск, чтобы найти любой %s</string>
     <string name="search_or_create">Вы можете найти или создать новый %s</string>
     <string name="missing_warning_fields_completed_events">У Вас есть несколько предупреждающих сообщений.</string>
-    <string name="missing_warning_fields_events">У Вас есть несколько предупреждений. Хотите ли Вы отметить эту форму как завершенную?</string>
-    <string name="missing_error_fields_events">В некоторых полях есть ошибки, и они не сохраняются.  Хотите ли Вы просмотреть форму?</string>
+    <string name="missing_warning_fields_events">У Вас есть несколько предупреждающих сообщений.\nХотите ли Вы отметить эту форму как завершенную\?</string>
+    <string name="missing_error_fields_events">В некоторых полях есть ошибки, и они не сохраняются. \nВы хотите просмотреть форму\?</string>
     <string name="event_can_be_completed">Хотите ли Вы отметить эту форму как завершенную?</string>
-    <string name="event_error_on_complete">У Вас есть несколько сообщений об ошибках. Хотите ли Вы их просмотреть?</string>
+    <string name="event_error_on_complete">У Вас есть несколько сообщений об ошибках.\nХотите просмотреть их\?</string>
     <string name="re_opened">Открыть заново</string>
     <string name="account_disable_title">Аккаунт дезактивирован</string>
     <string name="account_disable_message">Ваша учетная запись была отключена администратором.</string>
@@ -512,7 +539,6 @@
     <string name="download_now">Скачать сейчас</string>
     <string name="check_for_updates">Проверить наличие обновлений</string>
     <string name="no_updates">Новые обновления отсутствуют</string>
-    <string name="unknow_sources_denied">Разрешение на неизвестные источники отклонено. Для установки версии Вам необходимо включить его.</string>
     <string name="app_version">Версия приложения</string>
     <string name="error_applying_rule_effects">Что-то пошло не так в конфигурации программы, мы не можем загрузить это событие. Пожалуйста, свяжитесь с Вашим системным администратором.</string>
     <string name="dashboard_menu_delete_person">Удалить участника</string>
@@ -533,7 +559,6 @@
     <string name="sync_error">Ошибка синхронизации</string>
     <string name="mark_follow_up">Отметить для последующего наблюдения</string>
     <string name="coordinates">Координаты</string>
-    <string name="no_data_access">У Вас нет доступа к данным. Свяжитесь с администратором.</string>
     <string name="sync_offline_check_connection">Похоже, что Вы не в сети. Пожалуйста, проверьте подключение</string>
     <string name="delete_tei_dialog_title">Удалить этот %s?</string>
     <string name="delete_tei_dialog_message">Этот %s и все его данные во всех программах будут удалены. Это действие нельзя отменить.</string>
@@ -550,9 +575,14 @@
     <string name="event">событие</string>
     <string name="timeline">Временная шкала</string>
     <string name="database_export_downloaded">База данных загружена</string>
+    <string name="importing_database">Импорт базы данных</string>
     <string name="show_more">Показать больше</string>
     <string name="show_less">Показать меньше информации</string>
     <string name="sync">Синхронизация</string>
+    <string name="show_fields">Показать поля</string>
+    <string name="hide_fields">Скрыть поля</string>
+    <string name="importing_successful">Импорт прошел успешно</string>
+    <string name="section_misconfigured">Неверная конфигурация раздела. Обратитесь администратору</string>
     <string name="successful_sync">Успешная синхронизация</string>
     <string name="syncing_something">Синхронизация %s...</string>
     <string name="show_description">Показать описание</string>

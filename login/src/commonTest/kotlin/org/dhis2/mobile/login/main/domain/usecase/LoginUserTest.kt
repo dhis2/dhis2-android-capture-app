@@ -5,6 +5,7 @@ import org.dhis2.mobile.login.main.data.LoginRepository
 import org.dhis2.mobile.login.main.domain.model.LoginResult
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.reset
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -334,5 +335,30 @@ class LoginUserTest {
             // THEN - Initial sync flag is false
             assertIs<LoginResult.Success>(result)
             assertEquals(false, result.initialSyncDone)
+        }
+
+    @Test
+    fun `GIVEN username with surrounding whitespace WHEN user logs in THEN trimmed username is passed to repository`() =
+        runTest {
+            // GIVEN - Usernames with various whitespace patterns and their expected trimmed values
+            val usernameVariants = listOf("  testUser" to "testUser", "testUser  " to "testUser", "  testUser  " to "testUser", "   " to "")
+
+            for ((input, trimmed) in usernameVariants) {
+                reset(repository)
+                whenever(repository.loginUser(serverUrl, trimmed, password, isNetworkAvailable)) doReturn
+                    Result.success(Unit)
+                whenever(repository.numberOfAccounts()) doReturn 0
+                whenever(repository.displayTrackingMessage()) doReturn false
+                whenever(repository.initialSyncDone(serverUrl, trimmed)) doReturn true
+
+                // WHEN - User logs in with whitespace in username
+                val result = loginUser(serverUrl, input, password, isNetworkAvailable)
+
+                // THEN - Repository receives the trimmed username
+                assertIs<LoginResult.Success>(result)
+                verify(repository).loginUser(serverUrl, trimmed, password, isNetworkAvailable)
+                verify(repository).updateAvailableUsers(trimmed)
+                verify(repository).initialSyncDone(serverUrl, trimmed)
+            }
         }
 }

@@ -7,6 +7,7 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.bindings.enrollment
+import org.dhis2.commons.bindings.event
 import org.dhis2.commons.bindings.program
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.prefs.Preference.Companion.EVENT_MAX
@@ -57,10 +58,13 @@ class SyncPresenterImpl(
 
     override fun syncGranularEvent(eventUid: String): Observable<D2Progress> {
         Completable.fromObservable(syncRepository.uploadEvent(eventUid)).blockingAwait()
-        return syncRepository
-            .downLoadEvent(eventUid)
-            .map { it as D2Progress }
-            .mergeWith(syncRepository.downloadEventFiles(eventUid))
+        val programUid = d2.event(eventUid)?.program()
+        return programUid?.let {
+            syncRepository
+                .downLoadEvent(eventUid, programUid)
+                .cast(D2Progress::class.java)
+                .mergeWith(syncRepository.downloadEventFiles(eventUid))
+        } ?: Observable.empty()
     }
 
     override fun blockSyncGranularProgram(programUid: String): ListenableWorker.Result {
@@ -205,7 +209,7 @@ class SyncPresenterImpl(
             .dataSetInstances()
             .byDataSetUid()
             .eq(uid)
-            .get()
+            .rxGet()
             .toObservable()
             .flatMapIterable { dataSets -> dataSets }
             .flatMap { dataSetReport ->
@@ -218,7 +222,7 @@ class SyncPresenterImpl(
                     .eq(dataSetReport.period())
                     .byAttributeOptionComboUid()
                     .eq(dataSetReport.attributeOptionComboUid())
-                    .upload()
+                    .rxUpload()
             }
 
     override fun syncGranularDataValues(
@@ -238,7 +242,7 @@ class SyncPresenterImpl(
             .eq(period)
             .byCategoryOptionComboUid()
             .`in`(*catOptionCombos)
-            .upload()
+            .rxUpload()
 
     override fun syncGranularDataSetComplete(
         dataSetUid: String,
@@ -257,7 +261,7 @@ class SyncPresenterImpl(
             .eq(orgUnit)
             .byPeriod()
             .eq(period)
-            .upload()
+            .rxUpload()
 
     override fun syncGranularDataSetComplete(dataSetUid: String?): Observable<D2Progress> =
         d2
@@ -265,7 +269,7 @@ class SyncPresenterImpl(
             .dataSetCompleteRegistrations()
             .byDataSetUid()
             .eq(dataSetUid)
-            .upload()
+            .rxUpload()
 
     override fun checkSyncEventStatus(uid: String): SyncResult {
         val eventsOk =

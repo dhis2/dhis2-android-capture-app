@@ -11,6 +11,10 @@ import org.dhis2.commons.R
 import org.dhis2.commons.network.NetworkUtils
 import org.hisp.dhis.android.core.D2Manager
 
+@Deprecated(
+    "For custom labels use new CustomLabelProvider, " +
+        "for other uses create new classes with correct architecture as needed",
+)
 class ResourceManager(
     val context: Context,
     private val colorUtils: ColorUtils,

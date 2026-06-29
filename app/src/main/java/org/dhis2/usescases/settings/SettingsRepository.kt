@@ -1,5 +1,6 @@
 package org.dhis2.usescases.settings
 
+import android.text.format.DateFormat
 import io.reactivex.Single
 import org.dhis2.BuildConfig
 import org.dhis2.bindings.toSeconds
@@ -15,6 +16,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.service.SyncResult
 import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.mobile.commons.featureconfig.model.Feature
+import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.settings.models.DataSettingsViewModel
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
 import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel
@@ -29,10 +31,13 @@ import org.hisp.dhis.android.core.settings.SynchronizationSettings
 import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase
 import timber.log.Timber
 
+private const val DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm"
+
 class SettingsRepository(
     val d2: D2,
     val prefs: PreferenceProvider,
     val featureConfigRepository: FeatureConfigRepository,
+    private val syncBackgroundJobAction: SyncBackgroundJobAction,
 ) {
     private val syncSettings: SynchronizationSettings?
         get() =
@@ -63,6 +68,10 @@ class SettingsRepository(
             DataSettingsViewModel(
                 dataSyncPeriod = dataPeriod(),
                 lastDataSync = prefs.getString(Constants.LAST_DATA_SYNC, "-")!!,
+                nextDataSync =
+                    syncBackgroundJobAction.getNextDataSync()?.let {
+                        DateFormat.format(DATE_TIME_FORMAT, it).toString()
+                    },
                 syncHasErrors = !prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true),
                 dataHasErrors = dataHasErrors(),
                 dataHasWarnings = dataHasWarning(),
@@ -80,6 +89,14 @@ class SettingsRepository(
             MetadataSettingsViewModel(
                 metadataSyncPeriod = metadataPeriod(),
                 lastMetadataSync = prefs.getString(Constants.LAST_META_SYNC, "-")!!,
+                nextMetadataSync =
+                    syncBackgroundJobAction.getNextMetadataSync()?.let {
+                        DateFormat.format(DATE_TIME_FORMAT, it).toString()
+                    },
+                nextSettingsSync =
+                    syncBackgroundJobAction.getNextSettingsSync()?.let {
+                        DateFormat.format(DATE_TIME_FORMAT, it).toString()
+                    },
                 hasErrors = !prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true),
                 canEdit = syncSettings?.metadataSync() == null,
                 syncInProgress = false,

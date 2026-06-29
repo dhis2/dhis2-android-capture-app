@@ -3,9 +3,9 @@ package org.dhis2.usescases.datasets.datasetDetail
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Single
 import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.data.dhislogic.AUTH_ALL
 import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.Access
@@ -103,14 +103,14 @@ class DataSetDetailRepositoryTest {
                 .userModule()
                 .authorities()
                 .byName()
-                .eq(AUTH_DATAVALUE_ADD),
+                .`in`(AUTH_DATAVALUE_ADD, AUTH_ALL),
         ) doReturn mock()
         whenever(
             d2
                 .userModule()
                 .authorities()
                 .byName()
-                .eq(AUTH_DATAVALUE_ADD)
+                .`in`(AUTH_DATAVALUE_ADD, AUTH_ALL)
                 .blockingIsEmpty(),
         ) doReturn false
 
@@ -165,14 +165,14 @@ class DataSetDetailRepositoryTest {
                 .userModule()
                 .authorities()
                 .byName()
-                .eq(AUTH_DATAVALUE_ADD),
+                .`in`(AUTH_DATAVALUE_ADD, AUTH_ALL),
         ) doReturn mock()
         whenever(
             d2
                 .userModule()
                 .authorities()
                 .byName()
-                .eq(AUTH_DATAVALUE_ADD)
+                .`in`(AUTH_DATAVALUE_ADD, AUTH_ALL)
                 .blockingIsEmpty(),
         ) doReturn true
 
@@ -235,14 +235,14 @@ class DataSetDetailRepositoryTest {
                 .userModule()
                 .authorities()
                 .byName()
-                .eq(AUTH_DATAVALUE_ADD),
+                .`in`(AUTH_DATAVALUE_ADD, AUTH_ALL),
         ) doReturn mock()
         whenever(
             d2
                 .userModule()
                 .authorities()
                 .byName()
-                .eq(AUTH_DATAVALUE_ADD)
+                .`in`(AUTH_DATAVALUE_ADD, AUTH_ALL)
                 .blockingIsEmpty(),
         ) doReturn false
 
@@ -311,14 +311,14 @@ class DataSetDetailRepositoryTest {
                 .userModule()
                 .authorities()
                 .byName()
-                .eq(AUTH_DATAVALUE_ADD),
+                .`in`(AUTH_DATAVALUE_ADD, AUTH_ALL),
         ) doReturn mock()
         whenever(
             d2
                 .userModule()
                 .authorities()
                 .byName()
-                .eq(AUTH_DATAVALUE_ADD)
+                .`in`(AUTH_DATAVALUE_ADD, AUTH_ALL)
                 .blockingIsEmpty(),
         ) doReturn false
 
@@ -337,16 +337,8 @@ class DataSetDetailRepositoryTest {
             .builder()
             .uid(dataSetUid)
             .displayName("DataSet")
-            .categoryCombo(ObjectWithUid.fromIdentifiable(dummyCategoryCombo()))
+            .categoryCombo(ObjectWithUid.create("categoryCombo"))
             .access(Access.create(true, true, DataAccess.create(true, canWrite)))
-            .build()
-
-    private fun dummyCategoryCombo(isDefault: Boolean = false) =
-        CategoryCombo
-            .builder()
-            .uid("categoryCombo")
-            .categoryOptionCombos(dummyCategoryOptionsCombos())
-            .isDefault(isDefault)
             .build()
 
     private fun dummyCategoryOptionsCombos(canWrite: Boolean = true): MutableList<CategoryOptionCombo> {

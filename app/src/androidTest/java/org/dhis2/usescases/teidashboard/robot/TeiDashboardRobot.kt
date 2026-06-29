@@ -59,6 +59,9 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             )
         ).performClick()
         waitForView(withId(R.id.addNoteButton))
+        // Wait for notes RecyclerView to be ready after navigation
+        waitForView(withId(R.id.notes_recycler), waitMillis = 10000)
+        composeTestRule.waitForIdle()
     }
 
     fun goToRelationships() {
@@ -203,7 +206,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
                 hasText(
                     enrollmentUIModel.enrollmentDate,
                 ) and hasAnySibling(
-                    hasText("Enrollment date *"),
+                    hasText("Date of enrollment *"),
                 ),
                 useUnmergedTree = true,
             ).assertIsDisplayed()

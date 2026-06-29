@@ -769,7 +769,7 @@ class ChartsRepositoryTest {
                 listOf(
                     SerieData(
                         "de_field",
-                        listOf(GraphPoint(Date(), null, GraphFieldValue.Numeric(30f))),
+                        listOf(GraphPoint(Date(), null, GraphFieldValue.Decimal(30f))),
                     ),
                 ),
             periodToDisplayDefault = null,
@@ -784,7 +784,7 @@ class ChartsRepositoryTest {
             listOf(
                 SerieData(
                     "indicator_field",
-                    listOf(GraphPoint(Date(), null, GraphFieldValue.Numeric(30f))),
+                    listOf(GraphPoint(Date(), null, GraphFieldValue.Decimal(30f))),
                 ),
             ),
             null,

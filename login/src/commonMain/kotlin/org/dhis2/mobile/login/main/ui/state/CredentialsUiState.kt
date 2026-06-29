@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 data class CredentialsUiState(
     val serverInfo: ServerInfo,
-    val credentialsInfo: CredentialsInfo,
+    val credentialsInfo: CredentialsInfo?,
     val loginState: LoginState,
     val allowRecovery: Boolean,
     val canUseBiometrics: Boolean,
@@ -14,9 +14,8 @@ data class CredentialsUiState(
     val displayBiometricsDialog: Boolean,
     val hasOtherAccounts: Boolean,
     val isSessionLocked: Boolean,
-    val oAuthEnable: Boolean,
 ) {
-    fun username() = serverInfo.username ?: credentialsInfo.username
+    fun username() = serverInfo.username ?: credentialsInfo?.username ?: ""
 }
 
 data class ServerInfo(
@@ -38,6 +37,7 @@ sealed class OidcInfo(
     val buttonText: String?,
     val oidcClientId: String,
     val oidcRedirectUri: String,
+    val userPrompt: String?,
 ) {
     @Serializable
     data class Discovery(
@@ -46,7 +46,14 @@ sealed class OidcInfo(
         val clientId: String,
         val redirectUri: String,
         val discoveryUri: String,
-    ) : OidcInfo(server, loginButtonText, clientId, redirectUri)
+        val prompt: String?,
+    ) : OidcInfo(
+            serverUrl = server,
+            buttonText = loginButtonText,
+            oidcClientId = clientId,
+            oidcRedirectUri = redirectUri,
+            userPrompt = prompt,
+        )
 
     @Serializable
     data class Token(
@@ -56,7 +63,14 @@ sealed class OidcInfo(
         val redirectUri: String,
         val authorizationUrl: String,
         val tokenUrl: String,
-    ) : OidcInfo(server, loginLabel, clientId, redirectUri)
+        val prompt: String?,
+    ) : OidcInfo(
+            serverUrl = server,
+            buttonText = loginLabel,
+            oidcClientId = clientId,
+            oidcRedirectUri = redirectUri,
+            userPrompt = prompt,
+        )
 
     fun discoveryUri() =
         when (this) {

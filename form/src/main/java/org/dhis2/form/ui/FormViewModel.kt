@@ -128,6 +128,7 @@ class FormViewModel(
         )
 
     private val handler = Handler(Looper.getMainLooper())
+    private var textChangeDebounceRunnable: Runnable? = null
 
     var filePath: String? = null
 
@@ -161,6 +162,11 @@ class FormViewModel(
         }
 
         loadData()
+    }
+
+    override fun onCleared() {
+        textChangeDebounceRunnable?.let { handler.removeCallbacks(it) }
+        super.onCleared()
     }
 
     private fun displayResult(result: Pair<RowAction, StoreResult>) {
@@ -311,6 +317,19 @@ class FormViewModel(
 
     private fun handleOnTextChangeAction(action: RowAction): StoreResult {
         repository.updateValueOnList(action.id, action.value, action.valueType)
+        textChangeDebounceRunnable?.let { handler.removeCallbacks(it) }
+        textChangeDebounceRunnable =
+            Runnable {
+                viewModelScope.launch {
+                    pendingIntents.emit(
+                        FormIntent.OnSave(
+                            uid = action.id,
+                            value = action.value,
+                            valueType = action.valueType,
+                        ),
+                    )
+                }
+            }.also { handler.postDelayed(it, 1_000L) }
         return StoreResult(
             action.id,
             ValueStoreResult.TEXT_CHANGING,

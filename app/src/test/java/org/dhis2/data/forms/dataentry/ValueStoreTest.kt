@@ -310,6 +310,7 @@ class ValueStoreTest {
                 .name("optionName")
                 .uid("optionUid")
                 .code("optionCode")
+                .optionSet(ObjectWithUid.create("optionSetUid"))
                 .build()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues().value(
@@ -377,6 +378,7 @@ class ValueStoreTest {
                 .name("optionName")
                 .uid("optionUid")
                 .code("optionCode")
+                .optionSet(ObjectWithUid.create("optionSetUid"))
                 .build()
         whenever(
             d2.trackedEntityModule().trackedEntityDataValues().value(

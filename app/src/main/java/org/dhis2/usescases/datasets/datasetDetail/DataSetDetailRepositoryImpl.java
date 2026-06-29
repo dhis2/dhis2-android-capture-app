@@ -1,5 +1,6 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
+import static org.dhis2.data.dhislogic.AuthoritiesKt.AUTH_ALL;
 import static org.dhis2.data.dhislogic.AuthoritiesKt.AUTH_DATAVALUE_ADD;
 
 import org.dhis2.commons.resources.DhisPeriodUtils;
@@ -147,7 +148,11 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
     }
 
     private boolean hasDataValueAuthority() {
-        return !d2.userModule().authorities().byName().eq(AUTH_DATAVALUE_ADD).blockingIsEmpty();
+        return !d2.userModule()
+                .authorities()
+                .byName()
+                .in(AUTH_DATAVALUE_ADD, AUTH_ALL)
+                .blockingIsEmpty();
     }
 
     @Override

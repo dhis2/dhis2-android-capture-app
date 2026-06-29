@@ -62,7 +62,7 @@ class EventCaptureModule(
 
     @Provides
     @PerActivity
-    fun provideRepository(d2: D2?): EventCaptureRepository = EventCaptureRepositoryImpl(eventUid, d2)
+    fun provideRepository(d2: D2): EventCaptureRepository = EventCaptureRepositoryImpl(d2, eventUid)
 
     @Provides
     @PerActivity

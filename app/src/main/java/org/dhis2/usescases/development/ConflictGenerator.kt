@@ -221,7 +221,7 @@ class ConflictGenerator(
             runBlocking {
                 d2.databaseAdapter().upsertObject(conflict, TrackerImportConflict::class)
             }
-            enrollmentUid?.let {
+            enrollmentUid.let {
                 runBlocking {
                     d2
                         .databaseAdapter()

@@ -112,6 +112,8 @@ class SearchTEList : FragmentGlobalAbstract() {
         arguments?.getBoolean(ARG_FROM_RELATIONSHIP) ?: false
     }
 
+    private var pagesUpdatedListener: (() -> Unit)? = null
+
     companion object {
         fun get(fromRelationships: Boolean): SearchTEList =
             SearchTEList().apply {
@@ -150,6 +152,12 @@ class SearchTEList : FragmentGlobalAbstract() {
             }.also {
                 observeNewData()
             }.root
+
+    override fun onDestroyView() {
+        pagesUpdatedListener?.let { liveAdapter.removeOnPagesUpdatedListener(it) }
+        pagesUpdatedListener = null
+        super.onDestroyView()
+    }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -370,13 +378,16 @@ class SearchTEList : FragmentGlobalAbstract() {
     private fun initData() {
         displayLoadingData()
 
+        val listener: () -> Unit = {
+            onInitDataLoaded()
+            CoroutineTracker.decrement()
+        }
+        pagesUpdatedListener = listener
+        liveAdapter.addOnPagesUpdatedListener(listener)
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.searchPagingData.collect { data ->
-                    liveAdapter.addOnPagesUpdatedListener {
-                        onInitDataLoaded()
-                        CoroutineTracker.decrement()
-                    }
+                viewModel.searchPagingData.collectLatest { data ->
                     liveAdapter.submitData(lifecycle, data)
                 }
             }

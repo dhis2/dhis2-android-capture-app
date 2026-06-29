@@ -12,8 +12,10 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.main.domain.model.BiometricsInfo
+import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
 import org.dhis2.mobile.login.main.domain.model.LoginResult
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
+import org.dhis2.mobile.login.main.domain.model.OpenIdLoginConfiguration
 import org.dhis2.mobile.login.main.domain.usecase.BiometricLogin
 import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
@@ -29,6 +31,7 @@ import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
 import org.dhis2.mobile.login.main.ui.state.LoginState
+import org.dhis2.mobile.login.main.ui.state.OidcInfo
 import org.dhis2.mobile.login.pin.domain.usecase.ForgotPinUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.GetIsSessionLockedUseCase
 import org.mockito.kotlin.any
@@ -36,7 +39,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.AfterTest
@@ -109,7 +111,7 @@ class CredentialsViewModelTest {
                 val loadedState = awaitItem()
                 assertFalse(loadedState.hasOtherAccounts)
                 assertTrue(loadedState.canUseBiometrics)
-                assertEquals(loadedState.credentialsInfo.availableUsernames, usernames)
+                assertEquals(loadedState.credentialsInfo?.availableUsernames, usernames)
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -138,7 +140,7 @@ class CredentialsViewModelTest {
 
                 // THEN
                 val updatedState = awaitItem()
-                assertEquals("test_user", updatedState.credentialsInfo.username)
+                assertEquals("test_user", updatedState.credentialsInfo?.username)
                 assertEquals(LoginState.Disabled, updatedState.loginState)
 
                 cancelAndIgnoreRemainingEvents()
@@ -170,7 +172,7 @@ class CredentialsViewModelTest {
 
                 // THEN
                 val updatedState = awaitItem()
-                assertEquals("test_password", updatedState.credentialsInfo.password)
+                assertEquals("test_password", updatedState.credentialsInfo?.password)
                 assertEquals(LoginState.Enabled, updatedState.loginState)
             }
         }
@@ -310,7 +312,7 @@ class CredentialsViewModelTest {
                     viewModel.onBiometricsClicked()
                     testDispatcher.scheduler.advanceUntilIdle()
                     val updatedPasswordState = awaitItem()
-                    assertEquals(testPassword, updatedPasswordState.credentialsInfo.password)
+                    assertEquals(testPassword, updatedPasswordState.credentialsInfo?.password)
                     verify(loginUser).invoke(
                         serverUrl = "https://test.server.org",
                         username = "Joe",
@@ -563,20 +565,10 @@ class CredentialsViewModelTest {
                 loginUserWithOAuth.invoke(any(), any()),
             ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
 
-            // Use oAuthEnable=true and fromHome=true to avoid auto-launch but enable OAuth flow
-            initViewModel(serverUrl = serverUrl, username = "testuser", oAuthEnable = true, fromHome = true)
+            initViewModel(serverUrl = serverUrl, username = "testuser", entryMode = CredentialsEntryMode.EXISTING_OAUTH, fromHome = true)
 
             viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
-                awaitItem()
-                awaitItem()
-
-                // Trigger OAuth flow by clicking login
-                viewModel.onLoginClicked()
-                testDispatcher.scheduler.advanceUntilIdle()
-
-                // Login state should be running after clicking login
-                val runningState = awaitItem()
-                assertEquals(LoginState.Running, runningState.loginState)
+                skipItems(2)
 
                 // WHEN - Send app link with authorization code (simulates OAuth callback)
                 mockAppLinkFlow.emit(appLinkUrl)
@@ -586,7 +578,7 @@ class CredentialsViewModelTest {
                 testDispatcher.scheduler.advanceTimeBy(4.seconds)
 
                 // Login should succeed and show after login actions
-                val finalState = awaitItem()
+                val finalState = expectMostRecentItem()
                 assertEquals(LoginState.Enabled, finalState.loginState)
                 assertTrue(finalState.afterLoginActions.isNotEmpty())
 
@@ -621,20 +613,10 @@ class CredentialsViewModelTest {
                 processDeviceEnrollment.invoke(any()),
             ) doReturn Result.success(consentUrl)
 
-            // Use oAuthEnable=true and fromHome=true to avoid auto-launch but enable OAuth flow
-            initViewModel(serverUrl = serverUrl, username = "testuser", oAuthEnable = true, fromHome = true)
+            initViewModel(serverUrl = serverUrl, username = "testuser", entryMode = CredentialsEntryMode.EXISTING_OAUTH, fromHome = true)
 
             viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
-                awaitItem()
-                awaitItem()
-
-                // Trigger OAuth flow by clicking login
-                viewModel.onLoginClicked()
-                testDispatcher.scheduler.advanceUntilIdle()
-
-                // Login state should be running after clicking login
-                val runningState = awaitItem()
-                assertEquals(LoginState.Running, runningState.loginState)
+                skipItems(2)
 
                 // WHEN - Send app link with IAT token (simulates enrollment callback)
                 mockAppLinkFlow.emit(appLinkUrl)
@@ -643,8 +625,8 @@ class CredentialsViewModelTest {
                 // Verify device enrollment was called with the correct IAT
                 verify(processDeviceEnrollment).invoke(any())
 
-                // Verify navigation happened twice: once for enrollment URL, once for consent URL
-                verify(navigator, times(2)).navigate(any<LoginScreenState>(), any())
+                // Verify navigation happened once: to the consent URL
+                verify(navigator).navigate(any<LoginScreenState>(), any())
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -666,20 +648,10 @@ class CredentialsViewModelTest {
             whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
             whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
 
-            // Use oAuthEnable=true and fromHome=true to avoid auto-launch but enable OAuth flow
-            initViewModel(serverUrl = serverUrl, username = "testuser", oAuthEnable = true, fromHome = true)
+            initViewModel(serverUrl = serverUrl, username = "testuser", entryMode = CredentialsEntryMode.EXISTING_OAUTH, fromHome = true)
 
             viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
-                awaitItem()
-                awaitItem()
-
-                // Trigger OAuth flow by clicking login
-                viewModel.onLoginClicked()
-                testDispatcher.scheduler.advanceUntilIdle()
-
-                // Login state should be running after clicking login
-                val runningState = awaitItem()
-                assertEquals(LoginState.Running, runningState.loginState)
+                skipItems(2)
 
                 // WHEN - Send app link with error (simulates OAuth error callback)
                 mockAppLinkFlow.emit(appLinkUrl)
@@ -694,13 +666,174 @@ class CredentialsViewModelTest {
             }
         }
 
+    @Test
+    fun `GIVEN oidcInfo is Discovery with prompt WHEN onOpenIdLogin is called THEN discoveryUri and prompt are forwarded`() =
+        runTest {
+            val serverUrl = "https://test.server.org"
+            val prompt = "select_account"
+            val discoveryUri = "https://test.server.org/.well-known/openid-configuration"
+            val clientId = "client-123"
+            val redirectUri = "dhis2://oauth"
+            val oidcInfo =
+                OidcInfo.Discovery(
+                    server = serverUrl,
+                    loginButtonText = null,
+                    clientId = clientId,
+                    redirectUri = redirectUri,
+                    discoveryUri = discoveryUri,
+                    prompt = prompt,
+                )
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(openIdLogin.invoke(any())) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
+
+            initViewModel(serverUrl = serverUrl, oidcInfo = oidcInfo)
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                awaitItem()
+                awaitItem()
+
+                viewModel.onOpenIdLogin()
+
+                val runningState = awaitItem()
+                assertEquals(LoginState.Running, runningState.loginState)
+
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                verify(openIdLogin).invoke(
+                    OpenIdLoginConfiguration(
+                        serverUrl = serverUrl,
+                        isNetworkAvailable = true,
+                        clientId = clientId,
+                        redirectUri = redirectUri,
+                        discoveryUri = discoveryUri,
+                        authorizationUri = null,
+                        tokenUrl = null,
+                        prompt = prompt,
+                    ),
+                )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN oidcInfo is Token with prompt WHEN onOpenIdLogin is called THEN tokenUrl, authorizationUri and prompt are forwarded`() =
+        runTest {
+            val serverUrl = "https://test.server.org"
+            val prompt = "login"
+            val authorizationUrl = "https://test.server.org/oauth/authorize"
+            val tokenUrl = "https://test.server.org/oauth/token"
+            val clientId = "client-456"
+            val redirectUri = "dhis2://oauth"
+            val oidcInfo =
+                OidcInfo.Token(
+                    server = serverUrl,
+                    loginLabel = null,
+                    clientId = clientId,
+                    redirectUri = redirectUri,
+                    authorizationUrl = authorizationUrl,
+                    tokenUrl = tokenUrl,
+                    prompt = prompt,
+                )
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(openIdLogin.invoke(any())) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
+
+            initViewModel(serverUrl = serverUrl, oidcInfo = oidcInfo)
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                awaitItem()
+                awaitItem()
+
+                viewModel.onOpenIdLogin()
+
+                val runningState = awaitItem()
+                assertEquals(LoginState.Running, runningState.loginState)
+
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                verify(openIdLogin).invoke(
+                    OpenIdLoginConfiguration(
+                        serverUrl = serverUrl,
+                        isNetworkAvailable = true,
+                        clientId = clientId,
+                        redirectUri = redirectUri,
+                        discoveryUri = null,
+                        authorizationUri = authorizationUrl,
+                        tokenUrl = tokenUrl,
+                        prompt = prompt,
+                    ),
+                )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN oidcInfo with null prompt WHEN onOpenIdLogin is called THEN null prompt is forwarded`() =
+        runTest {
+            val serverUrl = "https://test.server.org"
+            val oidcInfo =
+                OidcInfo.Discovery(
+                    server = serverUrl,
+                    loginButtonText = null,
+                    clientId = "client-789",
+                    redirectUri = "dhis2://oauth",
+                    discoveryUri = "https://test.server.org/.well-known/openid-configuration",
+                    prompt = null,
+                )
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(openIdLogin.invoke(any())) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
+
+            initViewModel(serverUrl = serverUrl, oidcInfo = oidcInfo)
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                awaitItem()
+                awaitItem()
+
+                viewModel.onOpenIdLogin()
+
+                val runningState = awaitItem()
+                assertEquals(LoginState.Running, runningState.loginState)
+
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                verify(openIdLogin).invoke(
+                    OpenIdLoginConfiguration(
+                        serverUrl = serverUrl,
+                        isNetworkAvailable = true,
+                        clientId = "client-789",
+                        redirectUri = "dhis2://oauth",
+                        discoveryUri = "https://test.server.org/.well-known/openid-configuration",
+                        authorizationUri = null,
+                        tokenUrl = null,
+                        prompt = null,
+                    ),
+                )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
     private fun initViewModel(
         serverName: String? = "Test Server",
         serverUrl: String = "https://test.server.org",
         username: String? = null,
         allowRecovery: Boolean = true,
-        oAuthEnable: Boolean = false,
+        entryMode: CredentialsEntryMode = CredentialsEntryMode.NEW_ACCOUNT_BASIC,
         fromHome: Boolean = false,
+        oidcInfo: OidcInfo? = null,
     ) {
         viewModel =
             CredentialsViewModel(
@@ -725,9 +858,9 @@ class CredentialsViewModelTest {
                 allowRecovery,
                 getIsSessionLockedUseCase,
                 forgotPinUseCase,
-                oidcInfo = null,
+                oidcInfo = oidcInfo,
                 fromHome = fromHome,
-                oAuthEnable = oAuthEnable,
+                entryMode = entryMode,
             )
     }
 }

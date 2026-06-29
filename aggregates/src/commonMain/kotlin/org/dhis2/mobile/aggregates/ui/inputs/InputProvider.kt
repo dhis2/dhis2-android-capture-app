@@ -307,7 +307,6 @@ internal fun InputProvider(
                                         InputType.Date -> DateTimeActionType.DATE
                                         InputType.DateTime -> DateTimeActionType.DATE_TIME
                                         InputType.Time -> DateTimeActionType.TIME
-                                        else -> throw IllegalArgumentException("Invalid input type")
                                     },
                                 allowsManualInput = inputData.dateExtras().allowManualInput,
                                 visualTransformation = inputData.dateExtras().visualTransformation,

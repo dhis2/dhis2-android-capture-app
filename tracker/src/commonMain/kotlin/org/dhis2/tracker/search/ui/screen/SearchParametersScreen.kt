@@ -149,7 +149,8 @@ fun SearchParametersScreen(
             LazyColumn(
                 modifier =
                     Modifier
-                        .weight(1F),
+                        .weight(1F)
+                        .testTag(SEARCH_PARAMETERS_LIST_TAG),
             ) {
                 if (uiState.items.isEmpty()) {
                     item {
@@ -303,3 +304,5 @@ fun getButtonColour(enabled: Boolean): Color =
     } else {
         TextColor.OnDisabledSurface
     }
+
+const val SEARCH_PARAMETERS_LIST_TAG = "SEARCH_PARAMETERS_LIST_TAG"

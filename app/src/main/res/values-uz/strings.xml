@@ -96,6 +96,8 @@
     <string name="every_12_hours">12 соат</string>
     <string name="Manual">Қўлланма</string>
     <string name="a_week">1 ҳафта</string>
+    <string name="sync_max_parameters">Жорий синхронлаш параметрлари</string>
+    <string name="sync_default_parameters">Стандарт ҳолатга қайтиш</string>
     <string name="wipe_data_meesage">Маълумотлар базаси ўчирилади. Сиздан қайта кириш сўралади.</string>
     <string name="wipe_data_ok">Қабул қилинг</string>
     <string name="wipe_data_no">Бекор қилиш</string>
@@ -138,6 +140,9 @@
     <string name="clear">аниқ</string>
     <string name="add_note">Изоҳ қолдириш</string>
     <string name="title_delete_go_back">Маълумотингиз сақланмади</string>
+    <string name="delete_go_back">Агарда ҳозир орқага қайтсангиз, барча киритилган маълумотлар ўчирилади.</string>
+    <string name="missing_mandatory_fields_go_back">Ўчириб ташлаш ва орқага қайтиш</string>
+    <string name="missing_mandatory_fields_finish">Баъзи мажбурий майдонлар қолдириб кетилган. Сиз маълумотларни киритишни якунлаб чиқишингиз мумкин. Аммо бу ҳолда ҳодиса/тадбирни якунлаб бўлмайди.</string>
     <string name="tei_coordinates">Учун координаталар</string>
 
     <!--EVENT SUMMARY-->
@@ -179,6 +184,8 @@
     <string name="programs_to_enroll">Рўйхатга олиш дастурлари</string>
     <string name="share">Улашиш</string>
     <string name="share_qr">QR ни улашиш</string>
+    <string name="max">Максимум</string>
+    <string name="current">Жорий</string>
     <string name="tei">TEI</string>
     <string name="teis">TEI лар</string>
     <string name="wipe_data">Илова маълумотларининг асл стандарт ҳолатини тиклаш; конфигурация</string>
@@ -310,6 +317,9 @@
     <string name="filter_event_status_visited">Ташриф буюрди</string>
     <string name="filter_event_status_completed">бажарилди</string>
     <string name="filter_event_status_skipped">Ўтказиб юборилди</string>
+    <string name="event_tei_limits">Ҳодиса/тадбирлар %s максимал : %s %s кетма-кетлик: %s TEI: %s максимал : %s %s кетма-кетлик: %s</string>
+    <string name="enrollment_data_hide">Қайд қилиш маълумотларини беркитиш</string>
+    <string name="enrollment_data_show">Қайд қилиш маълумотларини кўрсатиш</string>
     <string name="sms_enabled">СМС модуль ёқиб қўйилган</string>
     <string name="sms_disabled">СМС модуль ўчириб қўйилган</string>
     <string name="sms_downloading_data">СМС модуль учун маълумотлар юкланмоқда. Илтимос, кутинг</string>
@@ -375,6 +385,7 @@
     <string name="filters_title_date">Сана</string>
     <string name="privacy_policy_title">Махфийлик сиёсати</string>
     <string name="open_privacy_policy">Махфийлик сиёсатини текшириш учун шу ерни босинг</string>
+    <string name="coordinates_error">Координата қийматлари яроқсиз</string>
     <string name="field_is_mandatory">Майдон тўлдирилиши мажбурий</string>
     <string name="security_debugger_message">Хавфсизлик сабабли ушбу версиядан adb форматидан фойдаланишга рухсат берилмаган.Илитмос, машқ версиясидан фойдаланинг.</string>
 
@@ -418,6 +429,7 @@
     <string name="filter_period_last_financial_year">Охирги молиявий йил</string>
     <string name="section_feedback">Фикр-мулоҳаза</string>
     <string name="section_indicators">Кўрсатгичлар</string>
+    <string name="value">Қиймат</string>
     <string name="camera_permission_denied">Камерада фойдаланишга рухсат берилмаган. Ушбу функциядан фойдаланиш учун уни ёқишингиз керак.</string>
     <string name="section_charts_indicators">Диаграммалар ва индикаторлар</string>
     <string name="take_photo">Суратга олиш</string>

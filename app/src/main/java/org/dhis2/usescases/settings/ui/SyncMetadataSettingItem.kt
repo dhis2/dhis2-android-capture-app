@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
+import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.bindings.EVERY_12_HOUR
 import org.dhis2.bindings.EVERY_24_HOUR
@@ -62,6 +63,8 @@ internal fun SyncMetadataSettingItem(
                 provideDefaultInfoItems(
                     metadataSettings.metadataSyncPeriod,
                     metadataSettings.lastMetadataSync,
+                    metadataSettings.nextMetadataSync,
+                    metadataSettings.nextSettingsSync,
                     context,
                 )
             }
@@ -96,7 +99,11 @@ internal fun SyncMetadataSettingItem(
                         remember {
                             mutableStateOf(
                                 DropdownItem(
-                                    label = syncPeriodLabel(metadataSettings.metadataSyncPeriod, context),
+                                    label =
+                                        syncPeriodLabel(
+                                            metadataSettings.metadataSyncPeriod,
+                                            context,
+                                        ),
                                 ),
                             )
                         }
@@ -151,18 +158,42 @@ internal fun SyncMetadataSettingItem(
 private fun provideDefaultInfoItems(
     metadataSyncPeriod: Int,
     lastMetadataSync: String,
+    nextMetadataSync: String?,
+    nextSettingsSync: String?,
     context: Context,
-) = listOf(
-    AdditionalInfoItem(
-        key = stringResource(R.string.settings_sync_period_v2),
-        value = syncPeriodLabel(metadataSyncPeriod, context),
-    ),
-    AdditionalInfoItem(
-        key = stringResource(R.string.last_data_sync),
-        value = lastMetadataSync,
-        color = TextColor.OnSurface,
-    ),
-)
+) = buildList {
+    add(
+        AdditionalInfoItem(
+            key = stringResource(R.string.settings_sync_period_v2),
+            value = syncPeriodLabel(metadataSyncPeriod, context),
+        ),
+    )
+    add(
+        AdditionalInfoItem(
+            key = stringResource(R.string.last_data_sync),
+            value = lastMetadataSync,
+            color = TextColor.OnSurface,
+        ),
+    )
+    nextMetadataSync?.takeIf { BuildConfig.DEBUG }?.let {
+        add(
+            AdditionalInfoItem(
+                key = "Next sync on",
+                value = it,
+                color = TextColor.OnSurface,
+            ),
+        )
+    }
+    nextSettingsSync?.takeIf { BuildConfig.DEBUG }?.let {
+        add(
+            AdditionalInfoItem(
+                key = "Next settings sync on",
+                value = it,
+                color = TextColor.OnSurface,
+            ),
+        )
+    }
+}
 
 @Composable
 private fun provideHasErrorItems(

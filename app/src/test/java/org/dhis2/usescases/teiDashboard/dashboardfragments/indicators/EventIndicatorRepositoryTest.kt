@@ -148,7 +148,7 @@ class EventIndicatorRepositoryTest {
                     .byProgramUid()
                     .eq("programUid")
                     .withLegendSets()
-                    .get(),
+                    .rxGet(),
             ) doReturn Single.just(mockedProgramIndicatorList())
 
             whenever(
@@ -175,7 +175,7 @@ class EventIndicatorRepositoryTest {
                     .programRules()
                     .byProgramUid()
                     .eq("programUid")
-                    .getUids(),
+                    .rxGetUids(),
             ) doReturn Single.just(mockedRuleUids())
             whenever(
                 d2
@@ -220,7 +220,7 @@ class EventIndicatorRepositoryTest {
                     .`in`(
                         ProgramRuleActionType.DISPLAYKEYVALUEPAIR,
                         ProgramRuleActionType.DISPLAYTEXT,
-                    ).get(),
+                    ).rxGet(),
             ) doReturn Single.just(mockedActions())
             whenever(
                 ruleEngineHelper.evaluate(),

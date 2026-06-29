@@ -374,7 +374,7 @@ class TEIDataFragment :
             binding.cardFront.teiImage.visibility = View.VISIBLE
             Glide
                 .with(this)
-                .load(dashboardModel?.avatarPath)
+                .load(dashboardModel.avatarPath)
                 .fallback(R.drawable.photo_temp_gray)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .transform(CircleCrop())
@@ -383,7 +383,7 @@ class TEIDataFragment :
         binding.header =
             when {
                 !dashboardModel?.teiHeader.isNullOrEmpty() -> {
-                    dashboardModel?.teiHeader
+                    dashboardModel.teiHeader
                 }
 
                 else -> {
@@ -662,7 +662,7 @@ class TEIDataFragment :
             model
                 .getCurrentOrgUnit()
                 .uid()
-                ?.takeIf(presenter::enrollmentOrgUnitInCaptureScope)
+                .takeIf(presenter::enrollmentOrgUnitInCaptureScope)
                 ?.let {
                     bundle.putString(Constants.ORG_UNIT, it)
                 }
@@ -682,6 +682,7 @@ class TEIDataFragment :
         eventMode: EventMode,
         programUid: String,
     ) {
+        if (!isAdded) return
         val intent =
             EventCaptureActivity.intent(
                 context = requireContext(),
@@ -696,6 +697,7 @@ class TEIDataFragment :
         programUid: String,
         programStageUid: String,
     ) {
+        if (!isAdded) return
         OUTreeFragment
             .Builder()
             .singleSelection()

@@ -35,7 +35,8 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_arrow_back" />
+                    app:srcCompat="@drawable/ic_arrow_back"
+                    app:tint="?onToolbarColor" />
 
                 <androidx.compose.ui.platform.ComposeView
                   android:id="@+id/moreOptions"
@@ -51,11 +52,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     app:circleColor="@color/circleColor"
-                    app:completionColor="@color/completionColor"
+                    app:completionColor="?onToolbarColor"
                     app:layout_constraintBottom_toBottomOf="@+id/moreOptions"
                     app:layout_constraintEnd_toStartOf="@id/relationshipIcon"
                     app:layout_constraintTop_toTopOf="@+id/moreOptions"
-                    app:percentageColor="@color/percentageColor"
+                    app:percentageColor="?onToolbarColor"
                     app:percentageSize="13sp"
                     app:secondaryColor="@color/secondaryColor"
                     app:strokeSize="3dp"
@@ -81,7 +82,7 @@
                     android:layout_marginStart="12dp"
                     android:gravity="center_vertical"
                     android:maxLines="1"
-                    android:textColor="?colorAccent"
+                    android:textColor="?onToolbarColor"
                     android:textSize="22sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/syncButton"
@@ -97,7 +98,7 @@
                     app:layout_constraintEnd_toStartOf="@id/completion"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_sync"
-                    app:tint="?colorOnPrimary"
+                    app:tint="?onToolbarColor"
                     tools:ignore="ContentDescription"
                     tools:visibility="visible" />
 

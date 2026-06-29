@@ -1,6 +1,7 @@
 package org.dhis2.data.services
 
 import io.reactivex.Observable
+import org.dhis2.commons.bindings.event
 import org.dhis2.commons.bindings.program
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.service.SyncPresenterImpl
@@ -316,8 +317,14 @@ class SyncPresenterTest {
         eventUid: String = "uid",
         programUid: String = "programUid",
     ) {
+        whenever(d2.event(eventUid)) doReturn
+            Event
+                .builder()
+                .uid(eventUid)
+                .program(programUid)
+                .build()
         whenever(
-            syncRepository.downLoadEvent(eventUid),
+            syncRepository.downLoadEvent(eventUid, programUid),
         ) doReturn
             Observable.fromArray(
                 TrackerD2Progress.builder().build(),

@@ -58,21 +58,21 @@ class TeiDataRepositoryImpl(
             .enrollmentModule()
             .enrollments()
             .uid(enrollmentUid)
-            .get()
+            .rxGet()
 
     override fun getEnrollmentProgram(): Single<Program> =
         d2
             .programModule()
             .programs()
             .uid(programUid)
-            .get()
+            .rxGet()
 
     override fun getTrackedEntityInstance(): Single<TrackedEntityInstance> =
         d2
             .trackedEntityModule()
             .trackedEntityInstances()
             .uid(teiUid)
-            .get()
+            .rxGet()
 
     override fun eventsWithoutCatCombo(): Single<List<EventModel>> {
         return getEnrollmentProgram()
@@ -83,8 +83,8 @@ class TeiDataRepositoryImpl(
                     .uid(
                         program
                             .categoryCombo()
-                            ?.uid(),
-                    ).get()
+                            .uid(),
+                    ).rxGet()
                     .map {
                         Pair(program, it)
                     }
@@ -108,7 +108,7 @@ class TeiDataRepositoryImpl(
                             .eq(enrollmentUid)
                             .byAttributeOptionComboUid()
                             .eq(defaultCatOptCombo?.uid())
-                            .get()
+                            .rxGet()
                     val eventsWithNoCatCombo =
                         d2
                             .eventModule()
@@ -117,7 +117,7 @@ class TeiDataRepositoryImpl(
                             .eq(enrollmentUid)
                             .byAttributeOptionComboUid()
                             .isNull
-                            .get()
+                            .rxGet()
                     val eventSource =
                         Single.zip(
                             eventsWithDefaultCatCombo,
@@ -204,7 +204,7 @@ class TeiDataRepositoryImpl(
             .byProgramUid()
             .eq(programUid)
             .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-            .get()
+            .rxGet()
             .map { programStages ->
                 programStages.forEach { programStage ->
                     eventRepo =
@@ -221,7 +221,7 @@ class TeiDataRepositoryImpl(
 
                     val canAddEventToEnrollment =
                         enrollmentUid?.let {
-                            programStage.access()?.data()?.write() == true &&
+                            programStage.access().data().write() &&
                                 d2.eventModule().eventService().blockingCanAddEventToEnrollment(
                                     it,
                                     programStage.uid(),
@@ -340,7 +340,7 @@ class TeiDataRepositoryImpl(
             .orderByTimeline(RepositoryScope.OrderByDirection.DESC)
             .byDeleted()
             .isFalse
-            .get()
+            .rxGet()
             .map { eventList ->
                 eventList
                     .take(
@@ -465,7 +465,7 @@ class TeiDataRepositoryImpl(
                 d2
                     .organisationUnitModule()
                     .organisationUnitService()
-                    .isInCaptureScope(it)
+                    .rxIsInCaptureScope(it)
                     .blockingGet()
             } ?: true
         } else {
@@ -543,6 +543,18 @@ class TeiDataRepositoryImpl(
             .organisationUnits()
             .byProgramUids(listOf(programUid))
             .blockingCount() > 1
+
+    override fun ownerOrgUnit(teiUid: String): String? =
+        d2
+            .trackedEntityModule()
+            .trackedEntityInstances()
+            .withProgramOwners()
+            .uid(teiUid)
+            .blockingGet()
+            ?.programOwners()
+            ?.firstOrNull {
+                it.trackedEntityInstance() == teiUid
+            }?.ownerOrgUnit()
 
     override fun enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit: String): Boolean =
         !getOrgUnitCollectionRepositoryByCaptureScope()

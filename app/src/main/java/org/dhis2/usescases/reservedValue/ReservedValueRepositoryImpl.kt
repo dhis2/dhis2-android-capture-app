@@ -16,7 +16,7 @@ class ReservedValueRepositoryImpl(
         d2
             .trackedEntityModule()
             .reservedValueManager()
-            .getReservedValueSummaries()
+            .rxGetReservedValueSummaries()
             .map { mapper.map(it) }
 
     override fun refillReservedValues(uidToRefill: String): Observable<D2Progress> {
@@ -29,6 +29,6 @@ class ReservedValueRepositoryImpl(
         return d2
             .trackedEntityModule()
             .reservedValueManager()
-            .downloadReservedValues(uidToRefill, maxReservedValues)
+            .rxDownloadReservedValues(uidToRefill, maxReservedValues)
     }
 }

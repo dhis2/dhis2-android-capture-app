@@ -39,7 +39,7 @@ abstract class BaseIndicatorRepository(
             .byProgramUid()
             .eq(programUid)
             .withLegendSets()
-            .get()
+            .rxGet()
             .toFlowable()
             .filter { filter }
             .map { indicators ->
@@ -74,7 +74,7 @@ abstract class BaseIndicatorRepository(
             .programRules()
             .byProgramUid()
             .eq(programUid)
-            .getUids()
+            .rxGetUids()
             .flatMap {
                 d2
                     .programModule()
@@ -85,10 +85,10 @@ abstract class BaseIndicatorRepository(
                     .`in`(
                         ProgramRuleActionType.DISPLAYKEYVALUEPAIR,
                         ProgramRuleActionType.DISPLAYTEXT,
-                    ).get()
+                    ).rxGet()
             }.flatMapPublisher { ruleAction ->
                 return@flatMapPublisher if (ruleAction.isEmpty()) {
-                    Flowable.just<List<AnalyticsModel>>(listOf())
+                    Flowable.just(listOf())
                 } else {
                     Flowable
                         .fromCallable {

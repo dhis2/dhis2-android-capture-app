@@ -20,8 +20,9 @@ fun FloatingActionButton.rotate(rotate: Boolean): Boolean {
 fun View.showDialItem(onAnimationEnd: () -> Unit = {}) {
     visibility = View.VISIBLE
     post {
-        pivotX = (this as ViewGroup).getChildAt(0).x + 20.dp
-        pivotY = (this as ViewGroup).getChildAt(0).y + 20.dp
+        val group = this as ViewGroup
+        pivotX = group.getChildAt(0).x + 20.dp
+        pivotY = group.getChildAt(0).y + 20.dp
         alpha = 0f
         scaleX = 0.5f
         scaleY = 0.5f
@@ -46,8 +47,9 @@ fun View.hideDialItem(onAnimationEnd: () -> Unit = {}) {
     alpha = 1f
     scaleX = 1f
     scaleY = 1f
-    pivotX = (this as ViewGroup).getChildAt(0).x + 20.dp
-    pivotY = (this as ViewGroup).getChildAt(0).y + 20.dp
+    val group = this as ViewGroup
+    pivotX = group.getChildAt(0).x + 20.dp
+    pivotY = group.getChildAt(0).y + 20.dp
     animate()
         .scaleX(0.5f)
         .scaleY(0.5f)

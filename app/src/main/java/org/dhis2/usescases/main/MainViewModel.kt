@@ -424,6 +424,10 @@ class MainViewModel(
         }
     }
 
+    fun refreshCurrentScreen() {
+        openScreen(_homeScreenState.value.currentScreen)
+    }
+
     fun onGranularSyncFinished(hasChanged: Boolean) {
         launchUseCase(dispatcher.io()) {
             if (hasChanged) {

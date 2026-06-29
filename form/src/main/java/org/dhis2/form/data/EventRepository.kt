@@ -176,7 +176,7 @@ class EventRepository(
             .eq(programStage?.uid())
             .withDataElements()
             .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-            .get()
+            .rxGet()
             .flatMap { programStageSection ->
                 if (programStageSection.isEmpty()) {
                     getFieldsForSingleSection()
@@ -273,7 +273,7 @@ class EventRepository(
                         name = entry.value.displayName() ?: entry.value.code() ?: "",
                     )
             } ?: emptyMap()
-        val catComboDisplayName = getCatComboDisplayName(categoryCombo.uid() ?: "")
+        val catComboDisplayName = getCatComboDisplayName(categoryCombo.uid())
 
         return fieldFactory.create(
             id = "$EVENT_CATEGORY_COMBO_UID-${categoryCombo.uid()}",
@@ -328,7 +328,7 @@ class EventRepository(
             map
         }
 
-    private fun getCategories(categories: MutableList<Category>?): List<EventCategory> =
+    private fun getCategories(categories: List<Category>?): List<EventCategory> =
         categories?.map { category ->
             EventCategory(
                 uid = category.uid(),
@@ -363,14 +363,14 @@ class EventRepository(
             .programModule()
             .programs()
             .uid(programUid)
-            .get()
+            .rxGet()
             .flatMap { program: Program ->
                 d2
                     .categoryModule()
                     .categoryCombos()
                     .withCategories()
-                    .uid(program.categoryCombo()?.uid())
-                    .get()
+                    .uid(program.categoryCombo().uid())
+                    .rxGet()
             }.blockingGet()
 
     private fun createCategoryComboSection(): FieldUiModel =
@@ -449,7 +449,7 @@ class EventRepository(
         d2
             .eventModule()
             .eventService()
-            .isEditable(eventUid)
+            .rxIsEditable(eventUid)
             .blockingGet()
 
     private fun createEventOrgUnitField(): FieldUiModel =

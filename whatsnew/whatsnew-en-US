@@ -1,7 +1,5 @@
 This is a patch version that fixes:
-- ANDROAPP-7269 Crash on search
-- ANDROAPP-7293 Bottom sheet landscape behavior
-- ANDROAPP-7345 Changes to enrollment date not respected by program rules
-- ANDROAPP-7368 Crash when trying to update fields in Tracker
-....
+
+- ANDROAPP-7634 SMS module is accidentally enabled when ASWA is installed
+
 You can find all the details on Jira and Github.

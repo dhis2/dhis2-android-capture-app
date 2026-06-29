@@ -891,7 +891,7 @@ internal class QrReaderPresenterImpl(
                 .trackedEntityInstanceDownloader()
                 .byUid()
                 .`in`(uidToDownload)
-                .download()
+                .rxDownload()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
