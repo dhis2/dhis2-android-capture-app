@@ -887,8 +887,9 @@ class FormViewModel(
                 val resultAction = provideShowResultDialog(result)
                 if (resultAction?.fieldsWithIssues?.isEmpty() == true) {
                     FormActions.OnFinish
+                } else {
+                    resultAction
                 }
-                resultAction
             }
 
             EventStatus.SKIPPED -> {
