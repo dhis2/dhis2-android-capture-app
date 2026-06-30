@@ -31,7 +31,7 @@ var totalTestsSkipped: Long = 0
 var totalModules: MutableList<String> = mutableListOf()
 var failedTests: MutableList<String> = mutableListOf()
 
-sonarqube {
+sonar {
     properties {
         val branch = System.getenv("GIT_BRANCH")
         val targetBranch = System.getenv("GIT_BRANCH_DEST")
@@ -43,7 +43,7 @@ sonarqube {
         property("sonar.host.url", "https://sonarcloud.io")
         property("sonar.projectName", "android capture app")
 
-        // Workaround for SCANGRADLE-410: sonar-scanner-gradle 7.3.0.8198 leaves
+        // Workaround for SCANGRADLE-410: sonar-scanner-gradle 7.3.1.8318 leaves
         // sonar.java.binaries empty under AGP 9, breaking analysis of remaining
         // .java sources. Remove once the upstream fix is released.
         property("sonar.exclusions", "**/*.java")
