@@ -1,0 +1,31 @@
+name: Run form tests on BrowserStack
+description: >-
+  Locates the built form androidTest APK and runs the BrowserStack form suite.
+  Assumes the form APK already exists under form/build/outputs.
+
+inputs:
+  browserstack-username:
+    description: BrowserStack username.
+    required: true
+  browserstack-password:
+    description: BrowserStack access key.
+    required: true
+  build-tag:
+    description: BrowserStack build tag.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Run form tests
+      shell: bash
+      env:
+        BROWSERSTACK_USR: ${{ inputs.browserstack-username }}
+        BROWSERSTACK_PSW: ${{ inputs.browserstack-password }}
+        buildTag: ${{ inputs.build-tag }}
+      run: |
+        form_apk=$(find form/build/outputs -iname "*.apk" | sed -n 1p)
+        export form_apk_path="${GITHUB_WORKSPACE}/${form_apk}"
+        cd scripts
+        chmod +x browserstackJenkinsForm.sh
+        ./browserstackJenkinsForm.sh
