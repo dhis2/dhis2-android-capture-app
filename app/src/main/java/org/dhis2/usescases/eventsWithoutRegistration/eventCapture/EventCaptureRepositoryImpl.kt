@@ -208,7 +208,7 @@ class EventCaptureRepositoryImpl(
                 .blockingGet()
         var hasProgramRules = false
         for (rule in programRules) {
-            for (action in Objects.requireNonNull(rule.programRuleActions())) {
+            for (action in Objects.requireNonNull(rule.programRuleActions()!!)) {
                 if (action.programRuleActionType() == ProgramRuleActionType.DISPLAYKEYVALUEPAIR ||
                     action.programRuleActionType() == ProgramRuleActionType.DISPLAYTEXT
                 ) {
