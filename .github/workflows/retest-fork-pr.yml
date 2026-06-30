@@ -17,12 +17,6 @@ on:
   issue_comment:
     types: [created]
 
-permissions:
-  checks: write          # create/update check runs on the PR head SHA
-  contents: read
-  issues: write          # add reactions on the PR conversation (issue) comment
-  pull-requests: read    # read PR head SHA/ref
-
 concurrency:
   group: retest-${{ github.event.issue.number }}
   cancel-in-progress: true
@@ -32,6 +26,9 @@ jobs:
     # Only react to "/retest" comments on pull requests.
     if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/retest') }}
     runs-on: ubuntu-latest
+    permissions:
+      issues: write          # add a reaction on the PR conversation (issue) comment
+      pull-requests: read    # read PR head SHA/ref
     outputs:
       authorized: ${{ steps.check.outputs.authorized }}
       head_sha: ${{ steps.check.outputs.head_sha }}
@@ -91,6 +88,10 @@ jobs:
     needs: authorize
     if: ${{ needs.authorize.outputs.authorized == 'true' }}
     runs-on: ubuntu-latest
+    permissions:
+      checks: write          # create/update check runs on the PR head SHA
+      contents: read         # checkout the PR head
+      issues: write          # add the result reaction on the comment
     env:
       # Required-check names — MUST match the ruleset's required status checks exactly.
       CHECK_CODE_QUALITY: code-quality
