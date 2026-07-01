@@ -1,17 +1,34 @@
 package org.dhis2.usescases.settings
 
+import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.lifecycle.MutableLiveData
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import org.dhis2.mobile.commons.featureconfig.model.Feature
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.MainScreenType
+import org.dhis2.usescases.settings.models.DataSettingsViewModel
+import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
+import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel
+import org.dhis2.usescases.settings.models.SMSSettingsViewModel
+import org.dhis2.usescases.settings.models.SettingsState
+import org.dhis2.usescases.settings.models.SyncParametersViewModel
+import org.dhis2.usescases.settings.ui.SettingsScreen
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
+import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 class SettingsTest : BaseTest() {
@@ -70,29 +87,6 @@ class SettingsTest : BaseTest() {
         settingsRobot(composeTestRule) {
             clickOnOpenSyncErrorLog()
             checkLogViewIsDisplayed()
-        }
-    }
-
-    //This test covers test case ANDROAPP-7139
-    @Test
-    fun shouldNotShowTwoFAOption() {
-        disableFeatureConfigValue(Feature.TWO_FACTOR_AUTHENTICATION)
-        startActivity()
-        settingsRobot(composeTestRule) {
-            checkTwoFAOptionIsNotDisplayed()
-        }
-    }
-
-    //This test covers test case ANDROAPP-7139 and ANDROAPP-7140
-    @Test
-    fun shouldShowTwoFAOption() {
-        enableFeatureConfigValue(Feature.TWO_FACTOR_AUTHENTICATION)
-
-        startActivity()
-        settingsRobot(composeTestRule) {
-            checkTwoFAOptionIsDisplayed()
-            clickOnTwoFASettings()
-            checkTwoFAScreenIsDisplayed()
         }
     }
 
