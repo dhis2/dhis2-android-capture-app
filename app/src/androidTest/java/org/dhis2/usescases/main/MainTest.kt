@@ -50,7 +50,6 @@ class MainTest : BaseTest() {
         homeRobot(composeTestRule) {
             checkViewIsNotEmpty(composeTestRule)
             // [ANDROAPP-4356] Visualizations - Location: the charts/analytics tab is present
-            // in the bottom navigation bar and can be opened
             clickChartsTab()
             // [ANDROAPP-4605] Visualizations - Group name: the "Line listing" group tab is labelled
             checkChartGroupTabDisplayed("Line listing")
@@ -72,15 +71,13 @@ class MainTest : BaseTest() {
             clickReset()
             checkFilterBadgeGone(0)
 
-            // [ANDROAPP-4661] Visualizations - Type: Radar: open the Radar group; the radar
-            // chart loads with its title and data points (no error)
+            // [ANDROAPP-4661] Visualizations - Type: Radar
             clickChartGroup("Radar")
             checkChartName(0, "Android: ANC visits (radar)")
             checkChartTypeRendered(0, ChartType.RADAR)
             checkNoErrorIcon(0)
 
-            // [ANDROAPP-4662] Visualizations - Type: Pie: open the Pie chart group; the pie
-            // chart loads with its title and data points (no error)
+            // [ANDROAPP-4662] Visualizations - Type: Pie
             clickChartGroup("Pie chart")
             checkChartName(0, "Android: Malaria case count pie")
             checkChartTypeRendered(0, ChartType.PIE_CHART)
