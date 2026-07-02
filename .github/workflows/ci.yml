@@ -2,6 +2,7 @@ name: CI
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, edited]
   push:
     branches:
       - main
@@ -124,16 +125,11 @@ jobs:
           path: .
 
       - name: Run Form Tests
-        env:
-          BROWSERSTACK_USR: ${{ secrets.BROWSERSTACK_USERNAME }}
-          BROWSERSTACK_PSW: ${{ secrets.BROWSERSTACK_PASSWORD }}
-          buildTag: ${{ github.head_ref || github.ref_name }} - form
-        run: |
-          form_apk=$(find form/build/outputs -iname "*.apk" | sed -n 1p)
-          export form_apk_path="${GITHUB_WORKSPACE}/${form_apk}"
-          cd scripts
-          chmod +x browserstackJenkinsForm.sh
-          ./browserstackJenkinsForm.sh
+        uses: ./.github/actions/run-form-tests
+        with:
+          browserstack-username: ${{ secrets.BROWSERSTACK_USERNAME }}
+          browserstack-password: ${{ secrets.BROWSERSTACK_PASSWORD }}
+          build-tag: ${{ github.head_ref || github.ref_name }} - form
 
   run-ui-portrait:
     runs-on: ubuntu-latest
