@@ -20,13 +20,17 @@ pipeline {
         stage('Check for [skip ci]') {
             when {
                 expression {
-                    return isSkipCI()
+                    return isSkipCI() || isTargetDevelop()
                 }
             }
             steps {
                 script {
                     currentBuild.result = 'UNSTABLE' // Mark build as a warning instead of an error
-                    echo "⚠️ Warning: Skipping CI because '[skip ci]' was found in the PR title or description."
+                    if (isTargetDevelop()) {
+                        echo "⚠️ Warning: Skipping CI because the target branch is 'develop'. CI for develop runs on GitHub Actions."
+                    } else {
+                        echo "⚠️ Warning: Skipping CI because '[skip ci]' was found in the PR title or description."
+                    }
                 }
             }
         }
@@ -200,6 +204,10 @@ def isSkipCI() {
     def prTitle = env.CHANGE_TITLE ?: ""
     def prDescription = env.CHANGE_DESCRIPTION ?: ""
     return (prTitle.contains("[skip ci]") || prDescription.contains("[skip ci]"))
+}
+
+def isTargetDevelop() {
+    return (env.CHANGE_TARGET ?: "") == 'develop'
 }
 
 def isSkipSizeCheck() {
