@@ -423,10 +423,3 @@ sentry {
     // Telemetry
     telemetry.set(false)
 }
-
-// SonarQube 7.3 resolves asset directories eagerly; ensure the Sentry assets task runs first.
-afterEvaluate {
-    tasks.findByName("sonarResolver")?.dependsOn(
-        tasks.matching { it.name.startsWith("collectExternal") },
-    )
-}
