@@ -190,3 +190,22 @@ For patterns, examples, and common mistakes load the **android-testing** skill.
 3. **KMP first**: put business logic in `commonMain`; keep `androidMain` to SDK/platform specifics
 4. **No RxJava in new code**: migrate to Coroutines/Flow; wrap existing RxJava at boundaries
 5. **ktlint must pass** before committing — run `./gradlew ktlintFormat` then `ktlintCheck`
+
+---
+
+## Sentry Skills
+
+Two custom skills for Sentry error triage and remediation:
+
+- **`/sentry-triage`** — Resolves the latest production release and queries the configured
+  Sentry project for top unresolved issues, scores each by Impact (1-5) and Effort (1-5),
+  and outputs a prioritized impact/effort quadrant report. Requires the
+  `sentry@claude-plugins-official` plugin installed locally in `~/.claude/settings.json`.
+
+- **`/sentry-fix <issue-id>`** — Fetches the full Sentry event and stack trace, reads the
+  relevant Kotlin source files, implements a fix following these AGENTS.md guidelines,
+  writes unit tests (load `android-testing` skill), and runs `ktlintFormat`, `ktlintCheck`,
+  and the relevant test task. Usable standalone or from a `/sentry-triage` report.
+
+Stack traces are deobfuscated (ProGuard mappings are uploaded on every release build).
+Sentry org and project are resolved dynamically from the plugin at runtime.
