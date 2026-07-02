@@ -13,7 +13,7 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.0
         with:
           token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
           ref: ${{ github.head_ref }}
