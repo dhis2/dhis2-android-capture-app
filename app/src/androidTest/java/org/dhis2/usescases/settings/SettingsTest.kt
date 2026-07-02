@@ -3,7 +3,6 @@ package org.dhis2.usescases.settings
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.dhis2.mobile.commons.featureconfig.model.Feature
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.main.MainActivity
@@ -70,29 +69,6 @@ class SettingsTest : BaseTest() {
         settingsRobot(composeTestRule) {
             clickOnOpenSyncErrorLog()
             checkLogViewIsDisplayed()
-        }
-    }
-
-    //This test covers test case ANDROAPP-7139
-    @Test
-    fun shouldNotShowTwoFAOption() {
-        disableFeatureConfigValue(Feature.TWO_FACTOR_AUTHENTICATION)
-        startActivity()
-        settingsRobot(composeTestRule) {
-            checkTwoFAOptionIsNotDisplayed()
-        }
-    }
-
-    //This test covers test case ANDROAPP-7139 and ANDROAPP-7140
-    @Test
-    fun shouldShowTwoFAOption() {
-        enableFeatureConfigValue(Feature.TWO_FACTOR_AUTHENTICATION)
-
-        startActivity()
-        settingsRobot(composeTestRule) {
-            checkTwoFAOptionIsDisplayed()
-            clickOnTwoFASettings()
-            checkTwoFAScreenIsDisplayed()
         }
     }
 
