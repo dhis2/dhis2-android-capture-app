@@ -5,11 +5,11 @@ import android.net.Uri
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -82,6 +82,8 @@ class MainViewModel(
 ) : ViewModel() {
     private val _homeScreenState = MutableStateFlow(defaultHomeScreenState)
 
+    private var metadataSyncObserverJob: Job? = null
+
     private val _homeEffects = Channel<HomeEffect>(Channel.BUFFERED)
     val homeEffects = _homeEffects.receiveAsFlow()
 
@@ -131,10 +133,7 @@ class MainViewModel(
                 _homeEffects.send(HomeEffect.OrgUnitFilterRequest)
             }.launchIn(viewModelScope)
 
-        syncBackgroundJobAction
-            .observeMetadataJob()
-            .onEach(::handleMetadataSync)
-            .launchIn(viewModelScope)
+        observeMetadataSyncJob()
 
         launchUseCase(dispatcher.io()) {
             launchInitialSync().fold(
@@ -232,6 +231,14 @@ class MainViewModel(
         }
     }
 
+    private fun observeMetadataSyncJob() {
+        metadataSyncObserverJob =
+            syncBackgroundJobAction
+                .observeMetadataJob()
+                .onEach(::handleMetadataSync)
+                .launchIn(viewModelScope)
+    }
+
     private fun handleMetadataSync(jobs: List<SyncJobStatus>) {
         jobs.forEach { job ->
             if (job.tags.contains(METADATA_SYNC_NOW)) {
@@ -274,6 +281,7 @@ class MainViewModel(
     }
 
     fun logOut() {
+        metadataSyncObserverJob?.cancel()
         launchUseCase(dispatcher.io()) {
             matomoAnalyticsController.trackEvent(HOME, CLOSE_SESSION, CLICK)
             logOutUser().fold(
@@ -282,6 +290,7 @@ class MainViewModel(
                 },
                 onFailure = {
                     Timber.e(it)
+                    observeMetadataSyncJob()
                 },
             )
         }
@@ -289,6 +298,7 @@ class MainViewModel(
 
     context(context: Context)
     fun onDeleteAccount() {
+        metadataSyncObserverJob?.cancel()
         launchUseCase(dispatcher.io()) {
             _homeEffects.send(HomeEffect.ShowDeleteNotification)
             deleteAccount(context.cacheDir).fold(
@@ -298,6 +308,7 @@ class MainViewModel(
                 },
                 onFailure = {
                     Timber.e(it)
+                    observeMetadataSyncJob()
                 },
             )
         }
