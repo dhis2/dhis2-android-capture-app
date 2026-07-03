@@ -53,7 +53,7 @@ class TeiAttributesProviderTest {
                 .eq(anyString())
                 .one()
                 .blockingGet(),
-        ) doReturnConsecutively trackedEntityAttributeValues()
+        ) doReturnConsecutively trackedEntityAttributeValues
 
         val result = attributesProvider.getValuesFromTrackedEntityTypeAttributes(teType, teiUid)
 
@@ -91,7 +91,7 @@ class TeiAttributesProviderTest {
                 .eq(anyString())
                 .one()
                 .blockingGet(),
-        ) doReturnConsecutively trackedEntityAttributeValues()
+        ) doReturnConsecutively trackedEntityAttributeValues
 
         val result = attributesProvider.getValuesFromProgramTrackedEntityAttributes(teType, teiUid)
 
@@ -140,7 +140,7 @@ class TeiAttributesProviderTest {
                 .eq(anyString())
                 .one()
                 .blockingGet(),
-        ) doReturnConsecutively trackedEntityAttributeValues()
+        ) doReturnConsecutively trackedEntityAttributeValues
 
         val testObserver =
             attributesProvider
@@ -195,7 +195,7 @@ class TeiAttributesProviderTest {
                 .eq(anyString())
                 .one()
                 .blockingGet(),
-        ) doReturnConsecutively trackedEntityAttributeValues()
+        ) doReturnConsecutively trackedEntityAttributeValues
 
         val attributes =
             attributesProvider
@@ -375,24 +375,17 @@ class TeiAttributesProviderTest {
                 .build(),
         )
 
-    private fun trackedEntityAttributeValues(): List<TrackedEntityAttributeValue> =
+    private val trackedEntityAttributeValues: List<TrackedEntityAttributeValue> =
         arrayListOf(
-            TrackedEntityAttributeValue
-                .builder()
-                .value("attrValue1")
-                .trackedEntityAttribute("attr1")
-                .build(),
-            TrackedEntityAttributeValue
-                .builder()
-                .value("attrValue2")
-                .trackedEntityAttribute("attr2")
-                .build(),
-            TrackedEntityAttributeValue
-                .builder()
-                .value("attrValue3")
-                .trackedEntityAttribute("attr3")
-                .build(),
+            mockAttributeValue("attrValue1"),
+            mockAttributeValue("attrValue2"),
+            mockAttributeValue("attrValue3"),
         )
+
+    private fun mockAttributeValue(value: String): TrackedEntityAttributeValue =
+        mock {
+            on { value() } doReturn value
+        }
 
     private fun programAttributeValues(): List<ProgramTrackedEntityAttribute> =
         arrayListOf(

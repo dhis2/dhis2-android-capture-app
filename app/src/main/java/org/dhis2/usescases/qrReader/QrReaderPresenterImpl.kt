@@ -64,7 +64,10 @@ internal class QrReaderPresenterImpl(
                 for (i in 0..<jsonArray.length()) {
                     val attrValue = jsonArray.getJSONObject(i)
                     val trackedEntityDataValueModelBuilder =
-                        getTrackedEntityDataValueModelBuilderForWORegistration(attrValue)
+                        getTrackedEntityDataValueModelBuilderForWORegistration(
+                            attrValue,
+                            eventUid!!,
+                        )
 
                     if (attrValue.has("dataElement") && attrValue.getString("dataElement") != null) {
                         // LOOK FOR dataElement ON LOCAL DATABASE.
@@ -132,7 +135,10 @@ internal class QrReaderPresenterImpl(
         return attributes
     }
 
-    private fun getTrackedEntityDataValueModelBuilderForWORegistration(attrValue: JSONObject): TrackedEntityDataValue.Builder {
+    private fun getTrackedEntityDataValueModelBuilderForWORegistration(
+        attrValue: JSONObject,
+        eventUid: String,
+    ): TrackedEntityDataValue.Builder {
         val trackedEntityDataValueModelBuilder = TrackedEntityDataValue.builder()
 
         val simpleDateFormat =
@@ -528,15 +534,13 @@ internal class QrReaderPresenterImpl(
 
             val attrValueModel = attrValueModelBuilder.build()
 
-            if (attrValueModel != null) {
-                val result =
-                    runBlocking {
-                        d2
-                            .databaseAdapter()
-                            .upsertObject(attrValueModel, TrackedEntityDataValue::class)
-                    }
-                Timber.d("upsert event ${result?.name}")
-            }
+            val result =
+                runBlocking {
+                    d2
+                        .databaseAdapter()
+                        .upsertObject(attrValueModel, TrackedEntityDataValue::class)
+                }
+            Timber.d("upsert event ${result?.name}")
         } catch (e: JSONException) {
             Timber.e(e)
         } catch (e: ParseException) {
@@ -553,10 +557,8 @@ internal class QrReaderPresenterImpl(
                         .deleted(false)
                         .build()
 
-                if (teiModel != null) {
-                    runBlocking {
-                        d2.databaseAdapter().upsertObject(teiModel, TrackedEntityInstance::class)
-                    }
+                runBlocking {
+                    d2.databaseAdapter().upsertObject(teiModel, TrackedEntityInstance::class)
                 }
             } else {
                 view!!.showIdError()
@@ -638,9 +640,7 @@ internal class QrReaderPresenterImpl(
                     .deleted(false)
                     .build()
 
-            if (eventModel != null) {
-                runBlocking { d2.databaseAdapter().upsertObject(eventModel, Event::class) }
-            }
+            runBlocking { d2.databaseAdapter().upsertObject(eventModel, Event::class) }
         } catch (e: JSONException) {
             Timber.e(e)
         } catch (e: ParseException) {
@@ -774,10 +774,8 @@ internal class QrReaderPresenterImpl(
                     .deleted(false)
                     .build()
 
-            if (enrollment != null) {
-                runBlocking {
-                    d2.databaseAdapter().upsertObject(enrollment, Enrollment::class)
-                }
+            runBlocking {
+                d2.databaseAdapter().upsertObject(enrollment, Enrollment::class)
             }
         } catch (e: JSONException) {
             Timber.e(e)
@@ -814,12 +812,10 @@ internal class QrReaderPresenterImpl(
 
             val attrValueModel = attrValueModelBuilder.build()
 
-            if (attrValueModel != null) {
-                runBlocking {
-                    d2
-                        .databaseAdapter()
-                        .upsertObject(attrValueModel, TrackedEntityAttributeValue::class)
-                }
+            runBlocking {
+                d2
+                    .databaseAdapter()
+                    .upsertObject(attrValueModel, TrackedEntityAttributeValue::class)
             }
         } catch (e: JSONException) {
             Timber.e(e)
@@ -963,15 +959,13 @@ internal class QrReaderPresenterImpl(
                 val attrValueModelBuilder = mapAttributeValueBuilderFromJson(attrV)
                 val attrValueModel = attrValueModelBuilder.build()
 
-                if (attrValueModel != null) {
-                    val result =
-                        runBlocking {
-                            d2
-                                .databaseAdapter()
-                                .upsertObject(attrValueModel, TrackedEntityDataValue::class)
-                        }
-                    Timber.d("insert event ${result?.name}")
-                }
+                val result =
+                    runBlocking {
+                        d2
+                            .databaseAdapter()
+                            .upsertObject(attrValueModel, TrackedEntityDataValue::class)
+                    }
+                Timber.d("insert event ${result?.name}")
             } catch (e: JSONException) {
                 Timber.e(e)
             } catch (e: ParseException) {
