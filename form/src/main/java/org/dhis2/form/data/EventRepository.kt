@@ -461,7 +461,7 @@ class EventRepository(
             optionSet = null,
             value = getStoredOrgUnit(),
             programStageSection = EVENT_DETAILS_SECTION_UID,
-            editable = eventMode == EventMode.NEW,
+            editable = eventMode == EventMode.NEW || eventMode == EventMode.SCHEDULE,
             description = null,
             orgUnitSelectorScope = programUid?.let { OrgUnitSelectorScope.ProgramCaptureScope(it) },
         )

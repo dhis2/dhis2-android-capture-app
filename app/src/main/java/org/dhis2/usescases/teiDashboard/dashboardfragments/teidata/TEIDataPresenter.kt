@@ -311,14 +311,6 @@ class TEIDataPresenter(
         }
     }
 
-    fun onScheduleEventWithoutAccess(enrollmentOrgUnitName: String?) {
-        enrollmentOrgUnitName?.let {
-            view.displayNoAccessToEventSnackbar(
-                enrollmentOrgUnit = it,
-            )
-        }
-    }
-
     fun onEventSelected(
         uid: String,
         eventStatus: EventStatus,

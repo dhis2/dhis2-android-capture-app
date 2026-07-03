@@ -18,7 +18,6 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventCollectionRepository
-import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
@@ -270,7 +269,6 @@ class TeiDataRepositoryImpl(
                                     isSelected = true,
                                     canAddNewEvent = true,
                                     orgUnitName = orgUnitName(event.organisationUnit()),
-                                    orgUnitIsInCaptureScope = hasAccessToEvent(event.organisationUnit(), event.status()),
                                     catComboName = getCatOptionComboName(event.attributeOptionCombo()),
                                     dataElementValues =
                                         getEventValues(
@@ -362,7 +360,6 @@ class TeiDataRepositoryImpl(
                                 isSelected = true,
                                 canAddNewEvent = true,
                                 orgUnitName = orgUnitName(event.organisationUnit()),
-                                orgUnitIsInCaptureScope = hasAccessToEvent(event.organisationUnit(), event.status()),
                                 catComboName = getCatOptionComboName(event.attributeOptionCombo()),
                                 dataElementValues = getEventValues(event.uid(), programStage.uid()),
                                 groupedByStage = false,
@@ -453,24 +450,6 @@ class TeiDataRepositoryImpl(
             .uid(orgUnitUid)
             .blockingGet()
             ?.displayName() ?: ""
-
-    private fun hasAccessToEvent(
-        eventOrgUnitUid: String?,
-        eventStatus: EventStatus?,
-    ): Boolean =
-        if (eventStatus == EventStatus.SCHEDULE ||
-            eventStatus == EventStatus.OVERDUE
-        ) {
-            eventOrgUnitUid?.let {
-                d2
-                    .organisationUnitModule()
-                    .organisationUnitService()
-                    .rxIsInCaptureScope(it)
-                    .blockingGet()
-            } ?: true
-        } else {
-            true
-        }
 
     private fun getEventValues(
         eventUid: String,
