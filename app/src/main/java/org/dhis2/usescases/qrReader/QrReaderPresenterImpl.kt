@@ -64,7 +64,10 @@ internal class QrReaderPresenterImpl(
                 for (i in 0..<jsonArray.length()) {
                     val attrValue = jsonArray.getJSONObject(i)
                     val trackedEntityDataValueModelBuilder =
-                        getTrackedEntityDataValueModelBuilderForWORegistration(attrValue)
+                        getTrackedEntityDataValueModelBuilderForWORegistration(
+                            attrValue,
+                            eventUid!!,
+                        )
 
                     if (attrValue.has("dataElement") && attrValue.getString("dataElement") != null) {
                         // LOOK FOR dataElement ON LOCAL DATABASE.
@@ -132,7 +135,10 @@ internal class QrReaderPresenterImpl(
         return attributes
     }
 
-    private fun getTrackedEntityDataValueModelBuilderForWORegistration(attrValue: JSONObject): TrackedEntityDataValue.Builder {
+    private fun getTrackedEntityDataValueModelBuilderForWORegistration(
+        attrValue: JSONObject,
+        eventUid: String,
+    ): TrackedEntityDataValue.Builder {
         val trackedEntityDataValueModelBuilder = TrackedEntityDataValue.builder()
 
         val simpleDateFormat =
