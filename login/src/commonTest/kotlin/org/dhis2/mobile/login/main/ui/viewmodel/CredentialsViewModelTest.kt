@@ -21,6 +21,7 @@ import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
 import org.dhis2.mobile.login.main.domain.usecase.GetDeviceEnrollmentUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
+import org.dhis2.mobile.login.main.domain.usecase.GetOAuthLogoutUrl
 import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUserWithOAuth
@@ -63,6 +64,7 @@ class CredentialsViewModelTest {
     private val openIdLogin: OpenIdLogin = mock()
     private val loginUserWithOAuth: LoginUserWithOAuth = mock()
     private val getDeviceEnrollmentUrl: GetDeviceEnrollmentUrl = mock()
+    private val getOAuthLogoutUrl: GetOAuthLogoutUrl = mock()
     private val processDeviceEnrollment: ProcessDeviceEnrollment = mock()
     private val updateTrackingPermission: UpdateTrackingPermission = mock()
     private val updateBiometricPermission: UpdateBiometricPermission = mock()
@@ -554,6 +556,8 @@ class CredentialsViewModelTest {
             val appLinkUrl = "https://vgarciabnz.github.io?code=$authCode&state=test"
             val mockAppLinkFlow = MutableSharedFlow<String>()
             val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
+            val logoutUrl = "$serverUrl/dhis-web-commons-security/logout.action?redirect_uri=dhis2oauth://oauth"
+            val logoutCallbackUrl = "https://vgarciabnz.github.io?state=test"
 
             whenever(getAvailableUsernames()) doReturn emptyList()
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
@@ -561,6 +565,7 @@ class CredentialsViewModelTest {
             whenever(getIsSessionLockedUseCase()) doReturn false
             whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
             whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
+            whenever(getOAuthLogoutUrl(any())) doReturn Result.success(logoutUrl)
             whenever(
                 loginUserWithOAuth.invoke(any(), any()),
             ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
@@ -576,17 +581,30 @@ class CredentialsViewModelTest {
 
                 // Advance time for login to complete
                 testDispatcher.scheduler.advanceTimeBy(4.seconds)
-
-                // Login should succeed and show after login actions
-                val finalState = expectMostRecentItem()
-                assertEquals(LoginState.Enabled, finalState.loginState)
-                assertTrue(finalState.afterLoginActions.isNotEmpty())
+                testDispatcher.scheduler.advanceUntilIdle()
 
                 // Verify OAuth login was called with the correct code
                 verify(loginUserWithOAuth).invoke(
                     serverUrl = serverUrl,
                     code = authCode,
                 )
+
+                // THEN - the server session is cleared before entering the app:
+                // navigate to the logout URL and defer the after-login actions
+                verify(navigator).navigate(
+                    eq(LoginScreenState.OauthAuthentication(selectedServer = logoutUrl)),
+                    any(),
+                )
+                assertTrue(expectMostRecentItem().afterLoginActions.isEmpty())
+
+                // WHEN - the logout redirect returns (no code/iat/error)
+                mockAppLinkFlow.emit(logoutCallbackUrl)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - login completes and after-login actions are shown
+                val finalState = expectMostRecentItem()
+                assertEquals(LoginState.Enabled, finalState.loginState)
+                assertTrue(finalState.afterLoginActions.isNotEmpty())
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -847,6 +865,7 @@ class CredentialsViewModelTest {
                 openIdLogin,
                 loginUserWithOAuth,
                 getDeviceEnrollmentUrl,
+                getOAuthLogoutUrl,
                 processDeviceEnrollment,
                 updateTrackingPermission,
                 updateBiometricPermission,
