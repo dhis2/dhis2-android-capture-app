@@ -24,8 +24,11 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.providers.PreferenceProvider
+import org.dhis2.mobile.sync.data.METADATA_SYNC_NOW
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.domain.SyncStatusController
+import org.dhis2.mobile.sync.model.SyncJobStatus
+import org.dhis2.mobile.sync.model.SyncStatus
 import org.dhis2.mobile.sync.model.SyncStatusData
 import org.dhis2.usescases.main.domain.CheckSingleNavigation
 import org.dhis2.usescases.main.domain.ConfigureHomeNavigationBar
@@ -55,6 +58,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -96,6 +100,16 @@ class MainViewModelTest {
 
     private val syncStatusFlow = MutableStateFlow(SyncStatusData())
     private val newVersionFlow = MutableSharedFlow<String>()
+    private val metadataJobFlow = MutableStateFlow<List<SyncJobStatus>>(emptyList())
+
+    private val succeededMetadataJob =
+        listOf(
+            SyncJobStatus(
+                tags = listOf(METADATA_SYNC_NOW),
+                status = SyncStatus.Succeed,
+                message = null,
+            ),
+        )
 
     @Before
     fun setUp() = runTest {
@@ -108,6 +122,7 @@ class MainViewModelTest {
         whenever(filterManager.ouTreeFlowable()) doReturn mock()
         whenever(launchInitialSync()) doReturn Result.success(InitialSyncAction.Skip)
         whenever(checkSingleNavigation()) doReturn Result.failure(Exception("no single navigation"))
+        whenever(syncBackgroundJobAction.observeMetadataJob()) doReturn metadataJobFlow
 
         viewModel = MainViewModel(
             preferences = preferences,
@@ -162,6 +177,58 @@ class MainViewModelTest {
                 advanceUntilIdle()
                 verify(matomoAnalyticsController).trackEvent(HOME, CLOSE_SESSION, CLICK)
                 assertTrue(awaitItem() == HomeEffect.GoToLogin(1, false))
+            }
+        }
+
+    @Test
+    fun `Should reconfigure navigation bar when metadata sync succeeds`() =
+        runTest {
+            whenever(configureHomeNavigationBar()) doReturn Result.success(emptyList())
+            metadataJobFlow.emit(succeededMetadataJob)
+            advanceUntilIdle()
+            verify(configureHomeNavigationBar).invoke(Unit)
+        }
+
+    @Test
+    fun `Should not reconfigure navigation bar when metadata sync emits after logout`() =
+        runTest {
+            whenever(logOutUser()) doReturn Result.success(1)
+            viewModel.homeEffects.test {
+                viewModel.logOut()
+                metadataJobFlow.emit(succeededMetadataJob)
+                advanceUntilIdle()
+                assertTrue(awaitItem() == HomeEffect.GoToLogin(1, false))
+                verify(configureHomeNavigationBar, never()).invoke(Unit)
+            }
+        }
+
+    @Test
+    fun `Should keep observing metadata sync when logout fails`() =
+        runTest {
+            whenever(logOutUser()) doReturn Result.failure(Exception("logout failed"))
+            whenever(configureHomeNavigationBar()) doReturn Result.success(emptyList())
+            viewModel.logOut()
+            advanceUntilIdle()
+            metadataJobFlow.emit(succeededMetadataJob)
+            advanceUntilIdle()
+            verify(configureHomeNavigationBar).invoke(Unit)
+        }
+
+    @Test
+    fun `Should not reconfigure navigation bar when metadata sync emits after account deletion`() =
+        runTest {
+            whenever(deleteAccount(any())) doReturn Result.success(1)
+            viewModel.homeEffects.test {
+                val mockedContext = mock<Context>()
+                whenever(mockedContext.cacheDir) doReturn File("random")
+                with(mockedContext) {
+                    viewModel.onDeleteAccount()
+                }
+                metadataJobFlow.emit(succeededMetadataJob)
+                advanceUntilIdle()
+                assertTrue(awaitItem() == HomeEffect.ShowDeleteNotification)
+                assertTrue(awaitItem() == HomeEffect.GoToLogin(1, true))
+                verify(configureHomeNavigationBar, never()).invoke(Unit)
             }
         }
 

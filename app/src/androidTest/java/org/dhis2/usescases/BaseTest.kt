@@ -3,6 +3,7 @@ package org.dhis2.usescases
 import android.content.Context
 import android.os.Build
 import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.idling.CountingIdlingResource
 import androidx.test.espresso.intent.Intents
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
@@ -132,6 +133,11 @@ open class BaseTest {
     }
 
     private fun unregisterCountingIdlingResource() {
+        idlingResources.filterIsInstance<CountingIdlingResource>().forEach { resource ->
+            while (!resource.isIdleNow) {
+                resource.decrement()
+            }
+        }
         IdlingResourceProvider.idlingResource = NoOpIdlingResource
         IdlingRegistry.getInstance()
             .unregister(*idlingResources.toTypedArray())

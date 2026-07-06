@@ -65,6 +65,7 @@ class TEIDataPresenter(
     private var programUid: String?,
     private val teiUid: String,
     private val enrollmentUid: String,
+    private val fragmentIsFromEventCaptureActivity: Boolean,
     private val schedulerProvider: SchedulerProvider,
     private val analyticsHelper: AnalyticsHelper,
     private val valueStore: FormValueStore,
@@ -110,8 +111,8 @@ class TEIDataPresenter(
                         sectionFlowable,
                         groupingFlowable,
                         ::Pair,
-                    ).doOnNext { increment() }
-                    .switchMap { stageAndGrouping ->
+                    ).switchMap { stageAndGrouping ->
+                        increment()
                         Flowable
                             .zip(
                                 teiDataRepository
@@ -130,6 +131,7 @@ class TEIDataPresenter(
                                     calcResult,
                                 )
                             }.subscribeOn(schedulerProvider.io())
+                            .doOnCancel { decrement() }
                     }.subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
@@ -137,7 +139,10 @@ class TEIDataPresenter(
                             _events.postValue(events)
                             decrement()
                         },
-                        Timber.Forest::d,
+                        { t ->
+                            Timber.e(t)
+                            decrement()
+                        },
                     ),
             )
 
@@ -236,6 +241,8 @@ class TEIDataPresenter(
             preferences.removeValue(PREF_COMPLETED_EVENT)
         }
     }
+
+    fun fragmentIsFromEventCaptureActivity(): Boolean = fragmentIsFromEventCaptureActivity
 
     fun completeEnrollment() {
         val hasWriteAccessInProgram =

@@ -15,6 +15,7 @@ import org.dhis2.bindings.toDate
 import org.dhis2.commons.Constants
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.ExportDatabase

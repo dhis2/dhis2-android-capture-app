@@ -11,6 +11,7 @@ import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.FailureHandler
+import androidx.test.espresso.IdlingResourceTimeoutException
 import androidx.test.espresso.NoMatchingViewException
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
@@ -130,9 +131,11 @@ open class BaseRobot {
 
             } catch (e: Exception) {
 
-                if (tries == maxTries) {
-                    throw e
-                }
+                if (tries == maxTries) throw e
+                // Retrying on idling timeouts blocks ~26s per attempt and leaves
+                // IdlingResourceRegistry's internal callback registered, corrupting state
+                // for subsequent tests. Fail fast so Espresso cleans up normally.
+                if (e is IdlingResourceTimeoutException || e.cause is IdlingResourceTimeoutException) throw e
                 sleep(waitMillisPerTry)
             }
 

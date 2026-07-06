@@ -142,7 +142,7 @@ class EventCaptureActivity :
                     ViewModelProvider(this, viewModelFactory)[DashboardViewModel::class.java]
                 supportFragmentManager
                     .beginTransaction()
-                    .replace(R.id.tei_column, newInstance(programUid, teiUid, enrollmentUid))
+                    .replace(R.id.tei_column, newInstance(programUid, teiUid, enrollmentUid, true))
                     .commit()
                 dashboardViewModel?.updateSelectedEventUid(eventUid)
             }
@@ -655,6 +655,8 @@ class EventCaptureActivity :
                 putExtra(Constants.EVENT_UID, eventUid)
                 putExtra(Constants.PROGRAM_UID, programUid)
                 putExtra(Constants.EVENT_MODE, eventMode)
+                putExtra("FRAGMENT_FROM_EVENT_CAPTURE_ACTIVITY", true)
+
             }
     }
 }

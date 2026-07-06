@@ -9,6 +9,10 @@ object CoroutineTracker {
         IdlingResourceProvider.idlingResource.increment()
     }
 
+    fun unconditionalIncrement() {
+        IdlingResourceProvider.idlingResource.unconditionalIncrement()
+    }
+
     fun decrement() {
         var current: Int
         var next: Int
@@ -17,5 +21,9 @@ object CoroutineTracker {
             next = (current - 1).coerceAtLeast(0)
         } while (!activeTasks.compareAndSet(current, next))
         IdlingResourceProvider.idlingResource.decrement()
+    }
+
+    fun unconditionalDecrement() {
+        IdlingResourceProvider.idlingResource.unconditionalDecrement()
     }
 }

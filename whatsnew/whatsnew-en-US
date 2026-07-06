@@ -1,5 +1,9 @@
 This is a patch version that fixes:
+- ANDROAPP-6516 Values in events and program stages not being updated when syncing with server from them
+- ANDROAPP-7287 Flicker when no TEIs in tei list
+- ANDROAPP-7364 Server URL not well formed error
+- ANDROAPP-7398 Wrong SnackBar color
+- ANDROAPP-7431 Username does not trim trailing white spaces
 
-- ANDROAPP-7634 SMS module is accidentally enabled when ASWA is installed
-
+....
 You can find all the details on Jira and Github.

@@ -6,12 +6,22 @@ import org.dhis2.mobile.sync.data.SyncRepository
 import org.dhis2.mobile.sync.model.DataSyncProgress
 import org.dhis2.mobile.sync.model.DataSyncTask
 
+private const val SYNC_DATA_NAME = "SYNC_DATA"
+
 class SyncData(
     private val repository: SyncRepository,
     private val syncStatusController: SyncStatusController,
 ) : UseCase<(progress: DataSyncProgress) -> Unit, Unit> {
     override suspend fun invoke(input: (progress: DataSyncProgress) -> Unit): Result<Unit> =
         try {
+            when (repository.isServerAvailable(SYNC_DATA_NAME)) {
+                true -> repository.removeUnnavailableFlag(SYNC_DATA_NAME)
+                false -> {
+                    repository.setUnnavailableFlag(SYNC_DATA_NAME)
+                    return Result.failure(DomainError.NetworkError("Server not available"))
+                }
+            }
+
             syncStatusController.initDownloadProcess(
                 repository.getAllProgramsInitialStatus().getOrNull() ?: emptyMap(),
             )

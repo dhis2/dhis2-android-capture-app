@@ -6,6 +6,8 @@ import coil3.PlatformContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -115,13 +117,12 @@ class CredentialsViewModel(
             )
 
     init {
-        launchUseCase {
-            appLinkNavigation.appLink.collect { urlString ->
+        appLinkNavigation.appLink
+            .onEach { urlString ->
                 if (credentialsScreenState.value.loginState is LoginState.Running) {
                     handleOAuthCallbacks(urlString)
                 }
-            }
-        }
+            }.launchIn(viewModelScope)
     }
 
     private fun loadData() {

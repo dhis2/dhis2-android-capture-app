@@ -24,6 +24,7 @@ import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.hisp.dhis.android.core.mockwebserver.ResponseController
 import org.junit.Assume
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -200,6 +201,7 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiOpenedForReferralProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot(composeTestRule) {
+            waitUntilActivityVisible<TeiDashboardMobileActivity>()
             clickOnMenuMoreOptions()
             clickOnTimelineEvents()
             clickOnFab()
@@ -233,6 +235,7 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot(composeTestRule) {
+            waitUntilActivityVisible<TeiDashboardMobileActivity>()
             clickOnMenuMoreOptions()
             clickOnTimelineEvents()
             clickOnFab()
@@ -259,6 +262,7 @@ class TeiDashboardTest : BaseTest() {
 
         val babyPostNatal = "Baby Postnatal"
         teiDashboardRobot(composeTestRule) {
+            waitUntilActivityVisible<TeiDashboardMobileActivity>()
             clickOnMenuMoreOptions()
             clickOnTimelineEvents()
             clickOnEventWithTitle(babyPostNatal)
@@ -335,6 +339,7 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiToEnrollToOtherProgramAndLaunchActivity(rule)
 
         teiDashboardRobot(composeTestRule) {
+            waitUntilActivityVisible<TeiDashboardMobileActivity>()
             clickOnMenuMoreOptions()
             clickOnTimelineEvents()
             clickOnMenuMoreOptions()
@@ -365,6 +370,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
 
+    @Ignore("Default analytics have been removed. We need to add some analytics to the database")
     @Test
     fun shouldShowAnalytics() {
         mockWebServerRobot.addResponse(

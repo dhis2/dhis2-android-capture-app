@@ -8,8 +8,6 @@ import dhis2.org.analytics.charts.data.AnalyticResources
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.GraphFilters
 import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
-import dhis2.org.analytics.charts.mappers.DataElementToGraph
-import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
 import dhis2.org.analytics.charts.mappers.VisualizationToGraph
 import dhis2.org.analytics.charts.providers.AnalyticsFilterProvider
 import dhis2.org.analytics.charts.ui.OrgUnitFilterType
@@ -20,11 +18,8 @@ import org.hisp.dhis.android.core.analytics.trackerlinelist.TrackerLineListRespo
 import org.hisp.dhis.android.core.arch.repositories.paging.PageConfig
 import org.hisp.dhis.android.core.common.RelativeOrganisationUnit
 import org.hisp.dhis.android.core.common.RelativePeriod
-import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import org.hisp.dhis.android.core.period.PeriodType
-import org.hisp.dhis.android.core.program.ProgramIndicator
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationType
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsSetting
@@ -33,8 +28,6 @@ class ChartsRepositoryImpl(
     private val d2: D2,
     private val visualizationToGraph: VisualizationToGraph,
     private val analyticsTeiSettingsToGraph: AnalyticsTeiSettingsToGraph,
-    private val dataElementToGraph: DataElementToGraph,
-    private val programIndicatorToGraph: ProgramIndicatorToGraph,
     private val analyticsResources: AnalyticResources,
     private val analyticsFilterProvider: AnalyticsFilterProvider,
 ) : ChartsRepository {
@@ -45,9 +38,7 @@ class ChartsRepositoryImpl(
         if (enrollment?.trackedEntityInstance() == null) return emptyList()
 
         val settingsAnalytics = getSettingsAnalytics(enrollment)
-        return settingsAnalytics.ifEmpty {
-            getDefaultAnalytics(enrollment)
-        }
+        return settingsAnalytics
     }
 
     override fun getVisualizationGroups(uid: String?): List<AnalyticsDhisVisualizationsGroup> =
@@ -447,112 +438,11 @@ class ChartsRepositoryImpl(
         )
     }
 
-    private suspend fun getDefaultAnalytics(enrollment: Enrollment): List<Graph> =
-        getRepeatableProgramStages(enrollment.program())
-            .map { programStage ->
-
-                val period = programStage.periodType() ?: PeriodType.Daily
-
-                getNumericDataElements(programStage.uid())
-                    .map { dataElement ->
-                        val selectedRelativePeriod =
-                            analyticsFilterProvider.visualizationPeriod(
-                                enrollment.trackedEntityInstance()!! +
-                                        programStage.uid() +
-                                        dataElement.uid(),
-                            )
-                        val selectedOrgUnits =
-                            analyticsFilterProvider.visualizationOrgUnits(
-                                enrollment.trackedEntityInstance()!! +
-                                        programStage.uid() +
-                                        dataElement.uid(),
-                            )
-                        dataElementToGraph.map(
-                            dataElement,
-                            programStage.uid(),
-                            enrollment.trackedEntityInstance()!!,
-                            period,
-                            selectedRelativePeriod,
-                            selectedOrgUnits,
-                            true,
-                        )
-                    }.union(
-                        getStageIndicators(enrollment.program()).map { programIndicator ->
-                            val selectedRelativePeriod =
-                                analyticsFilterProvider.visualizationPeriod(
-                                    enrollment.trackedEntityInstance()!! +
-                                            programStage.uid() +
-                                            programIndicator.uid(),
-                                )
-                            val selectedOrgUnits =
-                                analyticsFilterProvider.visualizationOrgUnits(
-                                    enrollment.trackedEntityInstance()!! +
-                                            programStage.uid() +
-                                            programIndicator.uid(),
-                                )
-                            programIndicatorToGraph.map(
-                                programIndicator,
-                                programStage.uid(),
-                                enrollment.trackedEntityInstance()!!,
-                                period,
-                                selectedRelativePeriod,
-                                selectedOrgUnits,
-                                true,
-                            )
-                        },
-                    )
-            }.flatten()
-            .filter { it.canBeShown() }
-
-    private fun getRepeatableProgramStages(program: String?) =
-        d2
-            .programModule()
-            .programStages()
-            .byProgramUid()
-            .eq(program)
-            .byRepeatable()
-            .eq(true)
-            .blockingGet()
-
     private fun getEnrollment(enrollmentUid: String) =
         d2
             .enrollmentModule()
             .enrollments()
             .uid(enrollmentUid)
-            .blockingGet()
-
-    private fun getNumericDataElements(stageUid: String): List<DataElement> =
-        d2
-            .programModule()
-            .programStageDataElements()
-            .byProgramStage()
-            .eq(stageUid)
-            .blockingGet()
-            .filter {
-                d2
-                    .dataElementModule()
-                    .dataElements()
-                    .uid(it.dataElement()?.uid())
-                    .blockingGet()
-                    ?.valueType()
-                    ?.isNumeric ?: false
-            }.mapNotNull {
-                d2
-                    .dataElementModule()
-                    .dataElements()
-                    .uid(
-                        it.dataElement()?.uid(),
-                    ).blockingGet()
-            }
-
-    private fun getStageIndicators(programUid: String?): List<ProgramIndicator> =
-        d2
-            .programModule()
-            .programIndicators()
-            .byDisplayInForm()
-            .isTrue
-            .byProgramUid()
-            .eq(programUid)
             .blockingGet()
 
     override fun setVisualizationPeriods(
