@@ -8,13 +8,13 @@
 
 [ANDROAPP-7238](https://dhis2.atlassian.net/browse/ANDROAPP-7238) Analytics configured with data type int in web show 1 decimal in app
 
-[ANDROAPP-7287](https://dhis2.atlassian.net/browse/ANDROAPP-7287) Flicker when no TEIs in tei list
+[ANDROAPP-7287](https://dhis2.atlassian.net/browse/ANDROAPP-7287) Flicker when no teis in tei list
 
 [ANDROAPP-7352](https://dhis2.atlassian.net/browse/ANDROAPP-7352) Delete TEI/Delete Enrollment is not showing in the menu with the ALL authority
 
 [ANDROAPP-7364](https://dhis2.atlassian.net/browse/ANDROAPP-7364) Server URL not well formed error
 
-[ANDROAPP-7398](https://dhis2.atlassian.net/browse/ANDROAPP-7398) Wrong SnackBar color
+[ANDROAPP-7398](https://dhis2.atlassian.net/browse/ANDROAPP-7398) Wrong Snackbar color
 
 [ANDROAPP-7406](https://dhis2.atlassian.net/browse/ANDROAPP-7406) Cards are not always displayed in map view
 
@@ -64,7 +64,7 @@
 
 [ANDROAPP-7574](https://dhis2.atlassian.net/browse/ANDROAPP-7574) Crash whilst sync \(could not replicate\)
 
-[ANDROAPP-7582](https://dhis2.atlassian.net/browse/ANDROAPP-7582) Unable to close bottomSheet in very long org unit list
+[ANDROAPP-7582](https://dhis2.atlassian.net/browse/ANDROAPP-7582) Unable to close bottomsheet in very long org unit list
 
 [ANDROAPP-7588](https://dhis2.atlassian.net/browse/ANDROAPP-7588) Sync message not consistent when offline
 
@@ -98,34 +98,4 @@
 
 [ANDROAPP-7674](https://dhis2.atlassian.net/browse/ANDROAPP-7674) Crash opening map in tablet from teidashboard
 
-### Feature
-
-[ANDROAPP-7664](https://dhis2.atlassian.net/browse/ANDROAPP-7664) Improve TEI dashboard loading time \(many events\)
-
-### Task
-
-[ANDROAPP-6262](https://dhis2.atlassian.net/browse/ANDROAPP-6262) \[PoC\] HTML views
-
-[ANDROAPP-7340](https://dhis2.atlassian.net/browse/ANDROAPP-7340) Implement viewmodel that handles home useCases
-
-[ANDROAPP-7420](https://dhis2.atlassian.net/browse/ANDROAPP-7420) Enable training app in rooted devices
-
-[ANDROAPP-7495](https://dhis2.atlassian.net/browse/ANDROAPP-7495) Refactor Search transform method to use new SearchTrackedEntities domain model
-
-[ANDROAPP-7509](https://dhis2.atlassian.net/browse/ANDROAPP-7509) Replace MainPresenter by MainViewModel
-
-[ANDROAPP-7540](https://dhis2.atlassian.net/browse/ANDROAPP-7540) Review deprecated warnings in build gradle after updating compose multiplatform
-
-[ANDROAPP-7547](https://dhis2.atlassian.net/browse/ANDROAPP-7547) Dependency verification on release builds
-
-[ANDROAPP-7580](https://dhis2.atlassian.net/browse/ANDROAPP-7580) OpenId: expose property to configure prompt selection
-
-[ANDROAPP-7593](https://dhis2.atlassian.net/browse/ANDROAPP-7593) \[docs\] update openid documentation
-
-[ANDROAPP-7597](https://dhis2.atlassian.net/browse/ANDROAPP-7597) Dependency verification failing for release builds
-
-[ANDROAPP-7608](https://dhis2.atlassian.net/browse/ANDROAPP-7608) APK distribution feature is not working
-
-[ANDROAPP-7610](https://dhis2.atlassian.net/browse/ANDROAPP-7610) Reduce complexity of LMIS ui composables
-
-[ANDROAPP-7615](https://dhis2.atlassian.net/browse/ANDROAPP-7615) Remove existing hardcoded Fabric credentials
+[ANDROAPP-7694](https://dhis2.atlassian.net/browse/ANDROAPP-7694) App crash on logout and \(occasionally\) delete account
