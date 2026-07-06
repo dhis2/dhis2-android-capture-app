@@ -102,6 +102,8 @@ class CredentialsViewModel(
 
     private var pendingOAuthLoginResult: LoginResult.Success? = null
 
+    private var appLinkJob: Job? = null
+
     private val _credentialsScreenState = MutableStateFlow(initialState)
     val credentialsScreenState =
         _credentialsScreenState
@@ -112,14 +114,6 @@ class CredentialsViewModel(
                 started = SharingStarted.Eagerly,
                 initialValue = initialState,
             )
-
-    init {
-        viewModelScope.launch {
-            appLinkNavigation.appLink.collect { urlString ->
-                handleOAuthCallbacks(urlString)
-            }
-        }
-    }
 
     private fun loadData() {
         when (entryMode) {
@@ -223,6 +217,7 @@ class CredentialsViewModel(
             getDeviceEnrollmentUrl(serverUrl).fold(
                 onSuccess = { enrollmentURL ->
                     // First OAuth call (enrollment) - clear any previous OAuth sessions
+                    startListeningForOAuthCallbacks()
                     navigator.navigate(
                         LoginScreenState.OauthAuthentication(
                             selectedServer = enrollmentURL,
@@ -246,10 +241,29 @@ class CredentialsViewModel(
         }
     }
 
+    // AppLinkNavigation is a single-delivery channel shared by every CredentialsViewModel alive
+    // on the back stack, so only the instance that launched the OAuth browser round-trip may
+    // collect it. Collection starts when the flow begins and stops when it terminates.
+    private fun startListeningForOAuthCallbacks() {
+        if (appLinkJob?.isActive == true) return
+        appLinkJob =
+            viewModelScope.launch {
+                appLinkNavigation.appLink.collect { urlString ->
+                    handleOAuthCallbacks(urlString)
+                }
+            }
+    }
+
+    private fun stopListeningForOAuthCallbacks() {
+        appLinkJob?.cancel()
+        appLinkJob = null
+    }
+
     private fun handleOAuthCallbacks(urlString: String) {
         // First check if there is any error
         val error = urlString.substringAfter("error=", "").substringBefore('&')
         if (error.isNotEmpty()) {
+            stopListeningForOAuthCallbacks()
             _credentialsScreenState.update {
                 it.copy(
                     errorMessage = error,
@@ -279,6 +293,7 @@ class CredentialsViewModel(
             return
         }
 
+        stopListeningForOAuthCallbacks()
         _credentialsScreenState.update {
             it.copy(
                 loginState = LoginState.Enabled,
@@ -322,6 +337,7 @@ class CredentialsViewModel(
                     }
 
                     is LoginResult.Error -> {
+                        stopListeningForOAuthCallbacks()
                         handleLoginResult(result)
                         _credentialsScreenState.update {
                             it.copy(loginState = LoginState.Enabled)
@@ -334,6 +350,7 @@ class CredentialsViewModel(
     private fun completeOAuthLogin() {
         val pending = pendingOAuthLoginResult ?: return
         pendingOAuthLoginResult = null
+        stopListeningForOAuthCallbacks()
         launchUseCase {
             handleLoginResult(pending)
             _credentialsScreenState.update {
@@ -363,6 +380,7 @@ class CredentialsViewModel(
                     )
                 },
                 onFailure = { error ->
+                    stopListeningForOAuthCallbacks()
                     _credentialsScreenState.update {
                         it.copy(
                             errorMessage = error.message,
