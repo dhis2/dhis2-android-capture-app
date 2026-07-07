@@ -210,7 +210,7 @@ class MainViewModelIntegrationTest {
     }
 
     @Test
-    fun `should show two nav items and bottom bar when analytics are configured`() = runTest {
+    fun `should show programs, analytics and jica nav items and bottom bar when analytics are configured`() = runTest {
         val user = mockUser("User", null)
         whenever(homeRepository.user()) doReturn user
         whenever(homeRepository.hasHomeAnalytics()) doReturn true
@@ -223,26 +223,27 @@ class MainViewModelIntegrationTest {
         viewModel.homeScreenState.test {
             awaitItem()
             val state = awaitItem()
-            assertEquals(2, state.navigationBarItems.size)
+            assertEquals(3, state.navigationBarItems.size)
             assertTrue(state.bottomNavigationBarVisible)
         }
     }
 
     @Test
-    fun `should show one nav item and hide bottom bar when analytics are not configured`() = runTest {
+    fun `should show programs and jica nav items and bottom bar when analytics are not configured`() = runTest {
         val user = mockUser("User", null)
         whenever(homeRepository.user()) doReturn user
         whenever(homeRepository.hasHomeAnalytics()) doReturn false
         whenever(filterRepository.homeFilters()) doReturn emptyList()
         whenever(filterManager.totalFilters) doReturn 0
+        whenever(resourceManager.getString(any())) doReturn ""
 
         buildViewModel()
 
         viewModel.homeScreenState.test {
             awaitItem()
             val state = awaitItem()
-            assertEquals(1, state.navigationBarItems.size)
-            assertFalse(state.bottomNavigationBarVisible)
+            assertEquals(2, state.navigationBarItems.size)
+            assertTrue(state.bottomNavigationBarVisible)
         }
     }
 

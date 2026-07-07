@@ -24,6 +24,7 @@ class ConfigureHomeNavigationBarTest {
     fun setUp() {
         whenever(resourceManager.getString(R.string.navigation_programs)) doReturn "Programs"
         whenever(resourceManager.getString(R.string.navigation_charts)) doReturn "Analytics"
+        whenever(resourceManager.getString(R.string.navigation_jica_mch)) doReturn "Jica MCH"
         configureHomeNavigationBar =
             ConfigureHomeNavigationBar(
                 homeRepository = homeRepository,
@@ -32,22 +33,22 @@ class ConfigureHomeNavigationBarTest {
     }
 
     @Test
-    fun `should return programs and analytics items if configured`() =
+    fun `should return programs, analytics and jica items if configured`() =
         runTest {
             whenever(homeRepository.hasHomeAnalytics()) doReturn true
             with(configureHomeNavigationBar()) {
                 assertTrue(isSuccess)
-                assertTrue(getOrNull()?.size == 2)
+                assertTrue(getOrNull()?.size == 3)
             }
         }
 
     @Test
-    fun `should return just programs if analytics is not configured`() =
+    fun `should return programs and jica if analytics is not configured`() =
         runTest {
             whenever(homeRepository.hasHomeAnalytics()) doReturn false
             with(configureHomeNavigationBar()) {
                 assertTrue(isSuccess)
-                assertTrue(getOrNull()?.size == 1)
+                assertTrue(getOrNull()?.size == 2)
             }
         }
 
