@@ -2,6 +2,7 @@ package org.dhis2.usescases.main.domain
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.ChildCare
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobile.commons.domain.UseCase
@@ -35,6 +36,13 @@ class ConfigureHomeNavigationBar(
                             )
                         )
                     }
+                    add(
+                        NavigationBarItem(
+                            id = NavigationPage.JICA_MCH,
+                            icon = Icons.Filled.ChildCare,
+                            label = resourceManager.getString(R.string.navigation_jica_mch),
+                        ),
+                    )
                 }
             Result.success(list)
         } catch (_: DomainError) {

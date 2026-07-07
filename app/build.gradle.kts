@@ -329,6 +329,7 @@ dependencies {
     implementation(project(":commonskmm"))
     implementation(project(":login"))
     implementation(project(":sync"))
+    implementation(project(":jica_mch"))
 
     implementation(libs.security.conscrypt)
     implementation(libs.security.rootbeer)

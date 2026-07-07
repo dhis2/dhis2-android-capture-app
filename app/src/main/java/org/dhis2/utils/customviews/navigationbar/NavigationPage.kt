@@ -16,4 +16,5 @@ enum class NavigationPage(
     TABLE_VIEW(R.id.navigation_table_view),
     TASKS(R.id.navigation_tasks),
     PROGRAMS(R.id.navigation_programs),
+    JICA_MCH(R.id.navigation_jica_mch),
 }

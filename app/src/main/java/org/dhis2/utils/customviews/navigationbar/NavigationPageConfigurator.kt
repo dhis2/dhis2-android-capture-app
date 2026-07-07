@@ -18,6 +18,7 @@ interface NavigationPageConfigurator {
             NavigationPage.TABLE_VIEW -> displayTableView()
             NavigationPage.TASKS -> displayTasks()
             NavigationPage.PROGRAMS -> displayPrograms()
+            NavigationPage.JICA_MCH -> displayJicaMch()
             null -> false
         }
 
@@ -40,6 +41,8 @@ interface NavigationPageConfigurator {
     fun displayTasks(): Boolean = false
 
     fun displayPrograms(): Boolean = false
+
+    fun displayJicaMch(): Boolean = false
 
     fun navigationItems(): List<NavigationBarItem<NavigationPage>> = emptyList()
 }

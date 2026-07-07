@@ -456,6 +456,8 @@ class MainViewModel(
                         matomoAnalyticsController.trackEvent(HOME, OPEN_ANALYTICS, CLICK)
                         mainNavigator.openVisualizations()
                     }
+
+                    HomeScreen.JicaMch -> mainNavigator.openJicaMch()
                 }
             }
 

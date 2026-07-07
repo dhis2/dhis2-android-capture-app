@@ -15,10 +15,12 @@ sealed class MainScreenType : Parcelable {
     fun isHome() = this is Home
     fun isPrograms() = this is Home && this.homeScreen == HomeScreen.Programs
     fun isVisualizations() = this is Home && this.homeScreen == HomeScreen.Visualizations
+    fun isJicaMch() = this is Home && this.homeScreen == HomeScreen.JicaMch
 }
 
 @Parcelize
 sealed interface HomeScreen : Parcelable {
     data object Programs : HomeScreen
     data object Visualizations : HomeScreen
+    data object JicaMch : HomeScreen
 }

@@ -11,6 +11,7 @@ import org.dhis2.usescases.main.program.ProgramFragment
 import org.dhis2.usescases.qrReader.QrReaderFragment
 import org.dhis2.usescases.settings.SyncManagerFragment
 import org.dhis2.usescases.troubleshooting.TroubleshootingFragment
+import org.jica.mch.ui.JicaMchFragment
 
 class MainNavigator(
     private var fragmentManager: FragmentManager,
@@ -30,6 +31,10 @@ class MainNavigator(
         return when {
             lastHomeFragment is GroupAnalyticsFragment -> {
                 MainScreenType.Home(HomeScreen.Visualizations)
+            }
+
+            lastHomeFragment is JicaMchFragment -> {
+                MainScreenType.Home(HomeScreen.JicaMch)
             }
 
             else -> {
@@ -58,6 +63,12 @@ class MainNavigator(
         val visualizationsFragment = GroupAnalyticsFragment.forHome()
         lastHomeFragment = visualizationsFragment
         beginTransaction(visualizationsFragment)
+    }
+
+    fun openJicaMch() {
+        val jicaMchFragment = JicaMchFragment()
+        lastHomeFragment = jicaMchFragment
+        beginTransaction(jicaMchFragment)
     }
 
     fun openSettings() {

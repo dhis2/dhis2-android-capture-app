@@ -18,4 +18,10 @@
         android:enabled="true"
         android:icon="@drawable/ic_navigation_analytics"
         android:title="@string/navigation_analytics"/>
+
+    <item
+        android:id="@+id/navigation_jica_mch"
+        android:enabled="true"
+        android:icon="@drawable/ic_navigation_forms"
+        android:title="@string/navigation_jica_mch"/>
 </menu>

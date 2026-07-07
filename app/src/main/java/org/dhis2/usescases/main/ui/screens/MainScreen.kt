@@ -92,6 +92,7 @@ fun MainScreen(
                     when (navigationPage) {
                         NavigationPage.ANALYTICS -> onAction(HomeAction.ScreenChanged(MainScreenType.Home(HomeScreen.Visualizations)))
                         NavigationPage.PROGRAMS -> onAction(HomeAction.ScreenChanged(MainScreenType.Home(HomeScreen.Programs)))
+                        NavigationPage.JICA_MCH -> onAction(HomeAction.ScreenChanged(MainScreenType.Home(HomeScreen.JicaMch)))
                         else -> { /*no op*/ }
                     }
                 }
@@ -217,6 +218,7 @@ fun HomeBottomBar(
             when {
                 homeScreenState.currentScreen.isPrograms() -> 0
                 homeScreenState.currentScreen.isVisualizations() -> 1
+                homeScreenState.currentScreen.isJicaMch() -> 2
                 else -> null
             }
         }
