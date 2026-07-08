@@ -12,7 +12,7 @@ kotlin {
         freeCompilerArgs.add("-Xcontext-parameters")
     }
 
-    androidLibrary {
+    android {
         namespace = "org.dhis2.mobile.login"
         compileSdk = libs.versions.sdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
