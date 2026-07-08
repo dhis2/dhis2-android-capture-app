@@ -35,7 +35,6 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.ForegroundInfo
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.commons.Constants.ATTRIBUTE_OPTION_COMBO
 import org.dhis2.commons.Constants.CATEGORY_OPTION_COMBO
@@ -50,6 +49,7 @@ import javax.inject.Inject
 private const val GRANULAR_CHANNEL = "sync_granular_notification"
 private const val SYNC_GRANULAR_ID = 8071988
 
+@Deprecated("Use org.dhis2.mobile.sync.data.SyncGranularWorker")
 class SyncGranularWorker(
     context: Context,
     workerParams: WorkerParameters,
@@ -59,11 +59,6 @@ class SyncGranularWorker(
     internal lateinit var presenter: SyncPresenter
 
     override fun doWork(): Result {
-        (applicationContext as App)
-            .userComponent()
-            ?.plus(SyncGranularRxModule(syncStatusController))
-            ?.inject(this)
-
         val uid = inputData.getString(UID) ?: return Result.failure()
         val conflictType = inputData.getString(CONFLICT_TYPE)?.let { ConflictType.valueOf(it) }
 
