@@ -81,9 +81,7 @@ class TrackedEntityInstanceInfoProvider(
         }
     }
 
-    fun getMetadataIcon(style: ObjectStyle) : MetadataIconData {
-        return metadataIconProvider.invoke(style)
-    }
+    fun getMetadataIcon(style: ObjectStyle): MetadataIconData = metadataIconProvider.invoke(style)
 
     fun getTeiTitle(
         header: String?,
@@ -127,8 +125,8 @@ class TrackedEntityInstanceInfoProvider(
                 )
             }
 
-    fun getTransformedValue(attr: TrackedEntitySearchItemAttributeDomain) : String? {
-        return if (attr.value != null) {
+    fun getTransformedValue(attr: TrackedEntitySearchItemAttributeDomain): String? =
+        if (attr.value != null) {
             ValueUtils.transformValue(
                 d2,
                 attr.value,
@@ -138,7 +136,6 @@ class TrackedEntityInstanceInfoProvider(
         } else {
             null
         }
-    }
 
     fun getRelatedInfo(
         searchItem: TrackedEntitySearchItem,
@@ -227,13 +224,10 @@ class TrackedEntityInstanceInfoProvider(
         )
     }
 
-    fun getUnknownLabel(): String {
-        return sortingValueSetter.unknownLabel
-    }
+    fun getUnknownLabel(): String = sortingValueSetter.unknownLabel
 
-    fun getSortingKeyValue(searchTei: SearchTeiModel, sortingItem: SortingItem): Pair<String, String>? {
-        return sortingValueSetter.setSortingItem(searchTei, sortingItem)
-    }
-
-
+    fun getSortingKeyValue(
+        searchTei: SearchTeiModel,
+        sortingItem: SortingItem,
+    ): Pair<String, String>? = sortingValueSetter.setSortingItem(searchTei, sortingItem)
 }

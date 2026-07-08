@@ -145,7 +145,10 @@ data class EventWorkingListScope(
     override fun workingListUid(): String? = workingListUid
 }
 
-fun TrackedEntityInstanceQueryRepositoryScope.mapToWorkingListScope(resources: FilterResources, workingListUid: String?): TeiWorkingListScope =
+fun TrackedEntityInstanceQueryRepositoryScope.mapToWorkingListScope(
+    resources: FilterResources,
+    workingListUid: String?,
+): TeiWorkingListScope =
     TeiWorkingListScope(
         workingListUid,
         enrollmentStatus()?.let { resources.enrollmentStatusToText(it) },
@@ -165,7 +168,10 @@ fun TrackedEntityInstanceQueryRepositoryScope.mapToWorkingListScope(resources: F
         dataValue().associateBy({ it.key() }, { it.value() }),
     )
 
-fun EventQueryRepositoryScope.mapToEventWorkingListScope(resources: FilterResources, workingListUid: String?): EventWorkingListScope =
+fun EventQueryRepositoryScope.mapToEventWorkingListScope(
+    resources: FilterResources,
+    workingListUid: String?,
+): EventWorkingListScope =
     EventWorkingListScope(
         workingListUid,
         programStage(),

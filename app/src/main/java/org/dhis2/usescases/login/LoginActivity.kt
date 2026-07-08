@@ -130,7 +130,7 @@ class LoginActivity : ActivityGlobalAbstract() {
         val appLinkAction = intent?.action
         val appLinkData: Uri? = intent?.data
         if (Intent.ACTION_VIEW == appLinkAction && appLinkData != null) {
-            appLinkNavigation.appLink.tryEmit(appLinkData.toString())
+            appLinkNavigation.emit(appLinkData.toString())
             intent?.action = null
         }
     }

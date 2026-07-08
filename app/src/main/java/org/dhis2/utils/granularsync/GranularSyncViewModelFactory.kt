@@ -10,6 +10,7 @@ import org.dhis2.utils.granularsync.data.GranularSyncRepository
 import org.dhis2.utils.granularsync.ui.SyncUiStateMapper
 import org.hisp.dhis.android.core.D2
 
+@Suppress("UNCHECKED_CAST")
 class GranularSyncViewModelFactory(
     private val d2: D2,
     private val view: GranularSyncContracts.View,

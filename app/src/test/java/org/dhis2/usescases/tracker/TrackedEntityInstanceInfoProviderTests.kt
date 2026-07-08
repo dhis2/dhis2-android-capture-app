@@ -43,7 +43,6 @@ class TrackedEntityInstanceInfoProviderTests {
                 dateLabelProvider,
                 metadataIconProvider,
                 searchSortingValueSetter,
-
             )
     }
 

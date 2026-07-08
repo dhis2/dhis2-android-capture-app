@@ -8,6 +8,8 @@ import org.dhis2.mobile.commons.data.TableDimensionRepositoryImpl
 import org.dhis2.mobile.commons.data.ValueParser
 import org.dhis2.mobile.commons.data.ValueParserImpl
 import org.dhis2.mobile.commons.error.DomainErrorMapper
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepositoryImpl
 import org.dhis2.mobile.commons.files.FileController
 import org.dhis2.mobile.commons.files.FileControllerImpl
 import org.dhis2.mobile.commons.files.FileHandler
@@ -16,6 +18,8 @@ import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.commons.network.NetworkStatusProviderImpl
 import org.dhis2.mobile.commons.notifications.NotificationManager
 import org.dhis2.mobile.commons.notifications.NotificationManagerImpl
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
+import org.dhis2.mobile.commons.providers.CustomLabelProviderImpl
 import org.dhis2.mobile.commons.providers.PreferenceProvider
 import org.dhis2.mobile.commons.providers.PreferenceProviderImpl
 import org.dhis2.mobile.commons.reporting.CrashReportController
@@ -72,5 +76,13 @@ actual val commonsModule: Module
                     d2ErrorMessageProvider = get(),
                     networkStatusProvider = get(),
                 )
+            }
+
+            single<FeatureConfigRepository> {
+                FeatureConfigRepositoryImpl(get())
+            }
+
+            single<CustomLabelProvider> {
+                CustomLabelProviderImpl(get())
             }
         }

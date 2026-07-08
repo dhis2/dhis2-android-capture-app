@@ -49,7 +49,7 @@ class EventInitialRepositoryImpl internal constructor(
             .eventModule()
             .events()
             .uid(eventId)
-            .get()
+            .rxGet()
             .toObservable()
 
     fun orgUnits(
@@ -63,7 +63,7 @@ class EventInitialRepositoryImpl internal constructor(
             .byParentUid()
             .eq(parentUid)
             .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-            .get()
+            .rxGet()
             .toObservable()
 
     override fun createEvent(
@@ -183,7 +183,7 @@ class EventInitialRepositoryImpl internal constructor(
             .byProgramUid()
             .eq(programUid)
             .one()
-            .get()
+            .rxGet()
             .toObservable()
 
     override fun programStageWithId(programStageUid: String?): Observable<ProgramStage?> =
@@ -191,7 +191,7 @@ class EventInitialRepositoryImpl internal constructor(
             .programModule()
             .programStages()
             .uid(programStageUid)
-            .get()
+            .rxGet()
             .toObservable()
 
     override fun programStageForEvent(eventId: String?): Flowable<ProgramStage?> =
@@ -199,7 +199,7 @@ class EventInitialRepositoryImpl internal constructor(
             .eventModule()
             .events()
             .uid(eventId)
-            .get()
+            .rxGet()
             .toFlowable()
             .map { event ->
                 d2
@@ -216,14 +216,14 @@ class EventInitialRepositoryImpl internal constructor(
             d2
                 .eventModule()
                 .eventService()
-                .isEditable(eventUid)
+                .rxIsEditable(eventUid)
                 .toObservable()
         } else {
             d2
                 .programModule()
                 .programStages()
                 .uid(stageUid)
-                .get()
+                .rxGet()
                 .toObservable()
                 .map { programStage ->
                     programStage.access().data().write()
@@ -268,7 +268,7 @@ class EventInitialRepositoryImpl internal constructor(
             .programs()
             .withTrackedEntityType()
             .uid(programUid)
-            .get()
+            .rxGet()
             .toObservable()
 
     override fun showCompletionPercentage(): Boolean {
@@ -300,7 +300,7 @@ class EventInitialRepositoryImpl internal constructor(
             .eventModule()
             .events()
             .uid(eventUid)
-            .get()
+            .rxGet()
             .map { eventSingle ->
                 return@map if (eventSingle.deleted() != true) {
                     val stage =
@@ -361,7 +361,7 @@ class EventInitialRepositoryImpl internal constructor(
             .events()
             .withTrackedEntityDataValues()
             .uid(eventUid)
-            .get()
+            .rxGet()
             .map { event ->
                 val sections =
                     d2
@@ -563,16 +563,16 @@ class EventInitialRepositoryImpl internal constructor(
     private fun searchValueDataElement(
         dataElement: String?,
         dataValues: List<TrackedEntityDataValue>,
-    ): String? =
+    ): String =
         dataValues
             .firstOrNull { dataValue ->
                 dataValue.dataElement() == dataElement
             }?.value() ?: ""
 
-    override fun getEditableStatus(): Flowable<EventEditableStatus?>? =
+    override fun getEditableStatus(): Flowable<EventEditableStatus> =
         d2
             .eventModule()
             .eventService()
-            .getEditableStatus(eventUid!!)
+            .rxGetEditableStatus(eventUid!!)
             .toFlowable()
 }

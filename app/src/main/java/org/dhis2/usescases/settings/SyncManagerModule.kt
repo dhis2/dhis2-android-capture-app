@@ -4,12 +4,12 @@ import dagger.Module
 import dagger.Provides
 import org.dhis2.R
 import org.dhis2.commons.di.dagger.PerFragment
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.VersionRepository
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.mobile.commons.files.FileHandlerImpl
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.settings.domain.CheckVersionUpdate

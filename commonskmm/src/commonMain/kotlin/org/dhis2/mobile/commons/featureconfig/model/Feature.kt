@@ -1,4 +1,4 @@
-package org.dhis2.commons.featureconfig.model
+package org.dhis2.mobile.commons.featureconfig.model
 
 enum class Feature(
     val description: String,

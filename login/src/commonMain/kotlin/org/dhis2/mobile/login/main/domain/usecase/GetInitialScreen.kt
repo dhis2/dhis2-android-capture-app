@@ -2,6 +2,7 @@ package org.dhis2.mobile.login.main.domain.usecase
 
 import org.dhis2.mobile.login.accounts.data.repository.AccountRepository
 import org.dhis2.mobile.login.accounts.domain.model.AccountModel
+import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.pin.data.SessionRepository
 
@@ -33,7 +34,7 @@ class GetInitialScreen(
             serverName = account.serverName,
             selectedServerFlag = account.serverFlag,
             allowRecovery = account.allowRecovery,
-            oAuthEnabled = account.isOauthEnabled,
+            entryMode = CredentialsEntryMode.existing(account.authorizationMethod),
         )
 
     private suspend fun handleLockedSession(): LoginScreenState {
@@ -44,7 +45,7 @@ class GetInitialScreen(
             serverName = activeAccount.serverName,
             selectedServerFlag = activeAccount.serverFlag,
             allowRecovery = activeAccount.allowRecovery,
-            oAuthEnabled = activeAccount.isOauthEnabled,
+            entryMode = CredentialsEntryMode.existing(activeAccount.authorizationMethod),
         )
     }
 }

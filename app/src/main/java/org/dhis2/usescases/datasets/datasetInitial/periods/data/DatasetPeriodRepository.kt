@@ -72,8 +72,7 @@ class DatasetPeriodRepository(
                     d2
                         .periodModule()
                         .periodHelper()
-                        .getPeriodForPeriodId(it.period().uid())
-                        .blockingGet()
+                        .blockingGetPeriodForPeriodId(it.period().uid())
 
                 DateRangeInputPeriod(
                     dataSetUid,

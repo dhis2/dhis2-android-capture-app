@@ -318,14 +318,6 @@ class TEIDataPresenter(
         }
     }
 
-    fun onScheduleEventWithoutAccess(enrollmentOrgUnitName: String?) {
-        enrollmentOrgUnitName?.let {
-            view.displayNoAccessToEventSnackbar(
-                enrollmentOrgUnit = it,
-            )
-        }
-    }
-
     fun onEventSelected(
         uid: String,
         eventStatus: EventStatus,
@@ -369,7 +361,7 @@ class TEIDataPresenter(
         program: Program,
         enrollmentUid: String?,
     ) {
-        program.uid()?.let { uid ->
+        program.uid().let { uid ->
             programUid = uid
             enrollmentUid?.let { view.restoreAdapter(uid, teiUid, it) }
         }

@@ -42,19 +42,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
-import androidx.fragment.app.FragmentManager
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.models.TransactionItem
 import org.dhis2.android.rtsm.ui.home.LocalThemeColor
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.home.model.EditionDialogResult
+import org.dhis2.android.rtsm.ui.home.model.ScreenAction
 import org.dhis2.android.rtsm.ui.home.model.SettingsUiState
 import org.dhis2.android.rtsm.utils.Utils.Companion.capitalizeText
-import org.dhis2.commons.orgunitselector.OUTreeFragment
-import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.option.Option
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 
 @Composable
@@ -62,7 +59,7 @@ fun DropdownComponentTransactions(
     settingsUiState: SettingsUiState,
     onTransitionSelected: (transition: TransactionItem) -> Unit,
     hasUnsavedData: Boolean,
-    launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
+    onDiscardTransaction: (ScreenAction.OnDiscardTransaction) -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -99,14 +96,12 @@ fun DropdownComponentTransactions(
                     .fillMaxWidth()
                     .onGloballyPositioned { coordinates ->
                         textFieldSize = coordinates.size.toSize()
-                    }
-                    .shadow(
+                    }.shadow(
                         elevation = 8.dp,
                         ambientColor = Color.Black.copy(alpha = 0.1f),
                         shape = RoundedCornerShape(30.dp),
                         clip = false,
-                    )
-                    .offset(0.dp, 0.dp)
+                    ).offset(0.dp, 0.dp)
                     .background(color = Color.White, shape = RoundedCornerShape(30.dp)),
             readOnly = true,
             singleLine = true,
@@ -157,20 +152,23 @@ fun DropdownComponentTransactions(
                     DropdownMenuItem(
                         onClick = {
                             if (selectedIndex != index && hasUnsavedData) {
-                                launchDialog.invoke(R.string.transaction_discarted) { result ->
-                                    when (result) {
-                                        EditionDialogResult.DISCARD -> {
-                                            // Perform the transaction change and clear data
-                                            onTransitionSelected.invoke(item)
-                                            selectedIndex = index
-                                            isExpanded = false
+                                onDiscardTransaction(
+                                    ScreenAction.OnDiscardTransaction { result ->
+                                        when (result) {
+                                            EditionDialogResult.DISCARD -> {
+                                                // Perform the transaction change and clear data
+                                                onTransitionSelected.invoke(item)
+                                                selectedIndex = index
+                                                isExpanded = false
+                                            }
+
+                                            EditionDialogResult.KEEP -> {
+                                                // Leave it as it was
+                                                isExpanded = false
+                                            }
                                         }
-                                        EditionDialogResult.KEEP -> {
-                                            // Leave it as it was
-                                            isExpanded = false
-                                        }
-                                    }
-                                }
+                                    },
+                                )
                             } else {
                                 onTransitionSelected.invoke(item)
                                 selectedIndex = index
@@ -190,8 +188,7 @@ fun DropdownComponentTransactions(
                                                 Color.White
                                             },
                                         shape = RoundedCornerShape(16.dp),
-                                    )
-                                    .padding(paddingValue),
+                                    ).padding(paddingValue),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Start,
                         ) {
@@ -213,29 +210,15 @@ fun DropdownComponentTransactions(
 @Composable
 fun DropdownComponentFacilities(
     settingsUiState: SettingsUiState,
-    onFacilitySelected: (facility: OrganisationUnit) -> Unit,
-    hasUnsavedData: Boolean,
-    supportFragmentManager: FragmentManager,
-    data: List<OrganisationUnit>,
-    launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
+    openOrgUnitTreeSelector: () -> Unit,
 ) {
     var selectedText by remember { mutableStateOf("") }
 
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
-    if (data.size == 1) {
-        onFacilitySelected.invoke(data.get(0))
-    }
-
     val interactionSource = remember { MutableInteractionSource() }
     if (interactionSource.collectIsPressedAsState().value) {
-        openOrgUnitTreeSelector(
-            supportFragmentManager,
-            settingsUiState,
-            hasUnsavedData,
-            onFacilitySelected,
-            launchDialog,
-        )
+        openOrgUnitTreeSelector()
     }
 
     Column(Modifier.padding(horizontal = 16.dp)) {
@@ -247,14 +230,12 @@ fun DropdownComponentFacilities(
                     .fillMaxWidth()
                     .onGloballyPositioned { coordinates ->
                         textFieldSize = coordinates.size.toSize()
-                    }
-                    .shadow(
+                    }.shadow(
                         elevation = 8.dp,
                         ambientColor = Color.Black.copy(alpha = 0.1f),
                         shape = RoundedCornerShape(30.dp),
                         clip = false,
-                    )
-                    .offset(0.dp, 0.dp)
+                    ).offset(0.dp, 0.dp)
                     .background(color = Color.White, shape = RoundedCornerShape(30.dp)),
             readOnly = true,
             singleLine = true,
@@ -271,13 +252,7 @@ fun DropdownComponentFacilities(
             trailingIcon = {
                 IconButton(
                     onClick = {
-                        openOrgUnitTreeSelector(
-                            supportFragmentManager,
-                            settingsUiState,
-                            hasUnsavedData,
-                            onFacilitySelected,
-                            launchDialog,
-                        )
+                        openOrgUnitTreeSelector()
                     },
                     icon = {
                         Icon(
@@ -310,7 +285,7 @@ fun DropdownComponentDistributedTo(
     data: List<Option>,
     isDestinationSelected: (value: String) -> Unit = { },
     deliverToLabel: String? = null,
-    launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
+    onDiscardTransaction: (ScreenAction.OnDiscardTransaction) -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -346,6 +321,7 @@ fun DropdownComponentDistributedTo(
             selectedText = ""
             selectedIndex = -1
         }
+
         else -> {}
     }
 
@@ -358,15 +334,13 @@ fun DropdownComponentDistributedTo(
                     .fillMaxWidth()
                     .onGloballyPositioned { coordinates ->
                         textFieldSize = coordinates.size.toSize()
-                    }
-                    .zIndex(1f)
+                    }.zIndex(1f)
                     .shadow(
                         elevation = 8.dp,
                         ambientColor = Color.Black.copy(alpha = 0.1f),
                         shape = RoundedCornerShape(30.dp),
                         clip = false,
-                    )
-                    .offset(0.dp, 1.dp)
+                    ).offset(0.dp, 1.dp)
                     .background(color = Color.White, shape = RoundedCornerShape(30.dp)),
             readOnly = true,
             singleLine = true,
@@ -417,22 +391,25 @@ fun DropdownComponentDistributedTo(
                     DropdownMenuItem(
                         onClick = {
                             if (selectedIndex != index && dataEntryUiState.hasUnsavedData) {
-                                launchDialog.invoke(R.string.transaction_discarted) { result ->
-                                    when (result) {
-                                        EditionDialogResult.DISCARD -> {
-                                            // Perform the transaction change and clear data
-                                            selectedText =
-                                                capitalizeText(item.displayName().toString())
-                                            isExpanded = false
-                                            selectedIndex = index
-                                            onDestinationSelected.invoke(item)
+                                onDiscardTransaction(
+                                    ScreenAction.OnDiscardTransaction { result ->
+                                        when (result) {
+                                            EditionDialogResult.DISCARD -> {
+                                                // Perform the transaction change and clear data
+                                                selectedText =
+                                                    capitalizeText(item.displayName().toString())
+                                                isExpanded = false
+                                                selectedIndex = index
+                                                onDestinationSelected.invoke(item)
+                                            }
+
+                                            EditionDialogResult.KEEP -> {
+                                                // Leave it as it was
+                                                isExpanded = false
+                                            }
                                         }
-                                        EditionDialogResult.KEEP -> {
-                                            // Leave it as it was
-                                            isExpanded = false
-                                        }
-                                    }
-                                }
+                                    },
+                                )
                             } else {
                                 selectedText = capitalizeText(item.displayName().toString())
                                 isExpanded = false
@@ -453,8 +430,7 @@ fun DropdownComponentDistributedTo(
                                                 Color.White
                                             },
                                         shape = RoundedCornerShape(16.dp),
-                                    )
-                                    .padding(
+                                    ).padding(
                                         start = 8.dp,
                                         top = paddingValue,
                                         end = 8.dp,
@@ -470,40 +446,4 @@ fun DropdownComponentDistributedTo(
             }
         }
     }
-}
-
-fun openOrgUnitTreeSelector(
-    supportFragmentManager: FragmentManager,
-    settingsUiState: SettingsUiState,
-    hasUnsavedData: Boolean,
-    onFacilitySelected: (facility: OrganisationUnit) -> Unit,
-    launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
-) {
-    OUTreeFragment
-        .Builder()
-        .singleSelection()
-        .orgUnitScope(OrgUnitSelectorScope.ProgramCaptureScope(settingsUiState.programUid))
-        .withPreselectedOrgUnits(
-            settingsUiState.facility?.let { listOf(it.uid()) } ?: emptyList(),
-        ).onSelection { selectedOrgUnits ->
-            val selectedOrgUnit = selectedOrgUnits.firstOrNull()
-            if (selectedOrgUnit != null) {
-                if (settingsUiState.facility != selectedOrgUnit && hasUnsavedData) {
-                    launchDialog.invoke(R.string.transaction_discarted) { result ->
-                        when (result) {
-                            EditionDialogResult.DISCARD -> {
-                                // Perform the transaction change and clear data
-                                onFacilitySelected.invoke(selectedOrgUnit)
-                            }
-                            EditionDialogResult.KEEP -> {
-                                // Leave it as it was
-                            }
-                        }
-                    }
-                } else {
-                    onFacilitySelected.invoke(selectedOrgUnit)
-                }
-            }
-        }.build()
-        .show(supportFragmentManager, "")
 }

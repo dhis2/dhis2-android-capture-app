@@ -9,7 +9,6 @@ import org.maplibre.geojson.Point
 import org.maplibre.geojson.Polygon
 
 class CoordinateUtilsTest {
-
     private val gson = Gson()
     private val ringType = object : TypeToken<List<List<List<Double>>>>() {}.type
 
@@ -24,10 +23,11 @@ class CoordinateUtilsTest {
 
         val result = CoordinateUtils.geometryCoordinates(point)
 
-        val coordinates: List<Double> = gson.fromJson(
-            result,
-            object : TypeToken<List<Double>>() {}.type,
-        )
+        val coordinates: List<Double> =
+            gson.fromJson(
+                result,
+                object : TypeToken<List<Double>>() {}.type,
+            )
         assertEquals(10.12345, coordinates[0], 0.0)
         assertEquals(20.98765, coordinates[1], 0.0)
     }
@@ -46,7 +46,7 @@ class CoordinateUtilsTest {
         assertEquals(
             "Ring should start and end with the same coordinates",
             ring.first(),
-            ring.last()
+            ring.last(),
         )
     }
 
@@ -64,7 +64,7 @@ class CoordinateUtilsTest {
         assertEquals(
             "Ring should start and end with the same coordinates",
             ring.first(),
-            ring.last()
+            ring.last(),
         )
         assertEquals("Closing coordinate must not be duplicated", 4, ring.size)
     }

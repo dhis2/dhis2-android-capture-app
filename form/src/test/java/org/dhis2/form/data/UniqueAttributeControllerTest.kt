@@ -269,7 +269,7 @@ class UniqueAttributeControllerTest {
                 .eq(OrganisationUnitMode.ACCESSIBLE)
                 .byProgram()
                 .eq("programUid")
-                .byAttribute("attributeUid"),
+                .byFilter("attributeUid"),
         ) doReturn mock()
         whenever(
             d2
@@ -282,7 +282,7 @@ class UniqueAttributeControllerTest {
                 .eq(OrganisationUnitMode.ACCESSIBLE)
                 .byProgram()
                 .eq("programUid")
-                .byAttribute("attributeUid")
+                .byFilter("attributeUid")
                 .eq("attributeValue"),
         ) doReturn mock()
         whenever(
@@ -296,7 +296,7 @@ class UniqueAttributeControllerTest {
                 .eq(OrganisationUnitMode.ACCESSIBLE)
                 .byProgram()
                 .eq("programUid")
-                .byAttribute("attributeUid")
+                .byFilter("attributeUid")
                 .eq("attributeValue")
                 .blockingGet(),
         ) doReturn teiList
@@ -359,7 +359,7 @@ class UniqueAttributeControllerTest {
                 .eq(true)
                 .byProgram()
                 .eq("programUid")
-                .byAttribute("attributeUid"),
+                .byFilter("attributeUid"),
         ) doReturn mock()
         whenever(
             d2
@@ -370,7 +370,7 @@ class UniqueAttributeControllerTest {
                 .eq(true)
                 .byProgram()
                 .eq("programUid")
-                .byAttribute("attributeUid")
+                .byFilter("attributeUid")
                 .eq("attributeValue"),
         ) doReturn mock()
         whenever(
@@ -382,7 +382,7 @@ class UniqueAttributeControllerTest {
                 .eq(true)
                 .byProgram()
                 .eq("programUid")
-                .byAttribute("attributeUid")
+                .byFilter("attributeUid")
                 .eq("attributeValue")
                 .byOrgUnitMode(),
         ) doReturn mock()
@@ -395,7 +395,7 @@ class UniqueAttributeControllerTest {
                 .eq(true)
                 .byProgram()
                 .eq("programUid")
-                .byAttribute("attributeUid")
+                .byFilter("attributeUid")
                 .eq("attributeValue")
                 .byOrgUnitMode()
                 .eq(OrganisationUnitMode.DESCENDANTS),
@@ -409,7 +409,7 @@ class UniqueAttributeControllerTest {
                 .eq(true)
                 .byProgram()
                 .eq("programUid")
-                .byAttribute("attributeUid")
+                .byFilter("attributeUid")
                 .eq("attributeValue")
                 .byOrgUnitMode()
                 .eq(OrganisationUnitMode.DESCENDANTS)
@@ -424,7 +424,7 @@ class UniqueAttributeControllerTest {
                 .eq(true)
                 .byProgram()
                 .eq("programUid")
-                .byAttribute("attributeUid")
+                .byFilter("attributeUid")
                 .eq("attributeValue")
                 .byOrgUnitMode()
                 .eq(OrganisationUnitMode.DESCENDANTS)
@@ -441,7 +441,7 @@ class UniqueAttributeControllerTest {
                     .eq(true)
                     .byProgram()
                     .eq("programUid")
-                    .byAttribute("attributeUid")
+                    .byFilter("attributeUid")
                     .eq("attributeValue")
                     .byOrgUnitMode()
                     .eq(OrganisationUnitMode.DESCENDANTS)
@@ -468,7 +468,7 @@ class UniqueAttributeControllerTest {
                     .eq(true)
                     .byProgram()
                     .eq("programUid")
-                    .byAttribute("attributeUid")
+                    .byFilter("attributeUid")
                     .eq("attributeValue")
                     .byOrgUnitMode()
                     .eq(OrganisationUnitMode.DESCENDANTS)

@@ -84,7 +84,7 @@ class CategoryComboDialog(
                 categoryEditText.setText(item?.displayName())
                 if (selectedCatOption.size == categoryCombo.categories()!!.size) {
                     listenerNew.onCatOptionComboSelected(
-                        presenter!!.getCatOptionCombo(ArrayList(selectedCatOption.values)),
+                        presenter.getCatOptionCombo(ArrayList(selectedCatOption.values)),
                     )
                     dismiss()
                 }

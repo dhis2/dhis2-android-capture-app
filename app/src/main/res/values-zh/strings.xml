@@ -584,8 +584,6 @@
     <string name="overdue">逾期%s</string>
     <string name="registered_in">已登记</string>
     <string name="view_only">只读</string>
-    <string name="at_enroll_org_unit">在%s.</string>
-    <string name="no_access_to_it">你无法访问它。</string>
     <string name="scheduled">已安排：%s</string>
     <string name="scheduled_for">预定%s</string>
     <string name="skipped">跳过</string>
@@ -634,6 +632,8 @@
     <string name="complete_enrollment_label">完整%s</string>
     <string name="deactivate_enrollment_label">停用%s</string>
     <string name="reopen_enrollment_label">重新打开%s</string>
+    <string name="main_menu_developer_scree">开发人员选项</string>
+
     <plurals name="error_count_label">
         <item quantity="other">%s 错误</item>
     </plurals>

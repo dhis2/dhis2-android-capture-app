@@ -53,7 +53,7 @@ class SyncRepositoryImpl(
             .events()
             .byUid()
             .eq(eventUid)
-            .upload()
+            .rxUpload()
 
     override fun downLoadEvent(
         eventUid: String,
@@ -64,7 +64,7 @@ class SyncRepositoryImpl(
         .byProgramUid(programUid)
         .byUid()
         .eq(eventUid)
-        .download()
+        .rxDownload()
 
     override fun downloadEventFiles(eventUid: String) =
         d2
@@ -72,21 +72,21 @@ class SyncRepositoryImpl(
             .fileResourceDownloader()
             .byEventUid()
             .eq(eventUid)
-            .download()
+            .rxDownload()
 
     override fun uploadTrackerProgram(programUid: String) =
         d2
             .trackedEntityModule()
             .trackedEntityInstances()
             .byProgramUids(listOf(programUid))
-            .upload()
+            .rxUpload()
 
     override fun downloadTrackerProgram(programUid: String) =
         d2
             .trackedEntityModule()
             .trackedEntityInstanceDownloader()
             .byProgramUid(programUid)
-            .download()
+            .rxDownload()
 
     override fun uploadEventProgram(programUid: String) =
         d2
@@ -94,14 +94,14 @@ class SyncRepositoryImpl(
             .events()
             .byProgramUid()
             .eq(programUid)
-            .upload()
+            .rxUpload()
 
     override fun downloadEventProgram(programUid: String) =
         d2
             .eventModule()
             .eventDownloader()
             .byProgramUid(programUid)
-            .download()
+            .rxDownload()
 
     override fun downloadProgramFiles(programUid: String) =
         d2
@@ -109,7 +109,7 @@ class SyncRepositoryImpl(
             .fileResourceDownloader()
             .byProgramUid()
             .eq(programUid)
-            .download()
+            .rxDownload()
 
     override fun uploadTei(
         teiUid: String,
@@ -120,7 +120,7 @@ class SyncRepositoryImpl(
         .byUid()
         .eq(teiUid)
         .byProgramUids(programUid?.let { listOf(it) } ?: emptyList())
-        .upload()
+        .rxUpload()
 
     override fun downloadTei(
         teiUid: String,
@@ -131,7 +131,7 @@ class SyncRepositoryImpl(
         .byUid()
         .eq(teiUid)
         .byProgramUid(programUid ?: "")
-        .download()
+        .rxDownload()
 
     override fun downloadTeiFiles(
         teiUid: String,
@@ -143,5 +143,5 @@ class SyncRepositoryImpl(
         .eq(teiUid)
         .byProgramUid()
         .eq(programUid ?: "")
-        .download()
+        .rxDownload()
 }

@@ -1,4 +1,3 @@
-import com.android.build.api.variant.impl.VariantOutputImpl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -280,16 +279,13 @@ androidComponents {
         }
 
         variant.outputs.forEach { output ->
-            if (output is VariantOutputImpl) {
-                val suffix = when {
-                    buildType == "release" && flavorName == "dhis2Training" -> "-training"
-                    buildType == "release" && flavorName == "dhis2PlayServices" -> "-googlePlay"
-                    buildType == "debug" -> "-${getBranchName()}"
-                    else -> ""
-                }
-
-                output.outputFileName = "dhis2-v${libs.versions.vName.get()}$suffix.apk"
+            val suffix = when {
+                buildType == "release" && flavorName == "dhis2Training" -> "-training"
+                buildType == "release" && flavorName == "dhis2PlayServices" -> "-googlePlay"
+                buildType == "debug" -> "-${getBranchName()}"
+                else -> ""
             }
+            output.outputFileName.set("dhis2-v${libs.versions.vName.get()}$suffix.apk")
         }
 
     }

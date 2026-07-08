@@ -44,11 +44,11 @@ class SearchTEIRepositoryImpl(
                         .eq(OrganisationUnitMode.ACCESSIBLE)
                         .byProgram()
                         .eq(programUid)
-                        .byAttribute(attribute.uid())
+                        .byFilter(attribute.uid())
                         .eq(value)
                         .blockingGet()
 
-                if (teiList.isNullOrEmpty()) {
+                if (teiList.isEmpty()) {
                     return true
                 }
 
@@ -56,7 +56,7 @@ class SearchTEIRepositoryImpl(
             } catch (e: Exception) {
                 return trackSentryError(e, programUid, attribute, value)
             }
-        } else if (isUnique && orgUnitScope) {
+        } else if (isUnique) {
             val orgUnit = enrollmentUtils.getOrgUnit(teiUid)
 
             val teiList =
@@ -68,7 +68,7 @@ class SearchTEIRepositoryImpl(
                     .eq(true)
                     .byProgram()
                     .eq(programUid)
-                    .byAttribute(attribute.uid())
+                    .byFilter(attribute.uid())
                     .eq(value)
                     .byOrgUnitMode()
                     .eq(OrganisationUnitMode.DESCENDANTS)
@@ -76,7 +76,7 @@ class SearchTEIRepositoryImpl(
                     .`in`(orgUnit)
                     .blockingGet()
 
-            if (teiList.isNullOrEmpty()) {
+            if (teiList.isEmpty()) {
                 return true
             }
 

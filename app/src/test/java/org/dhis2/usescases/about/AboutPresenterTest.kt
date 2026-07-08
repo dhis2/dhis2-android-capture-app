@@ -49,7 +49,7 @@ class AboutPresenterTest {
                 .builder()
                 .contextPath("https://url.es")
                 .build()
-        whenever(d2.systemInfoModule().systemInfo().get()) doReturn Single.just(userName)
+        whenever(d2.systemInfoModule().systemInfo().rxGet()) doReturn Single.just(userName)
 
         aboutPresenter.init()
         verify(aboutView).renderUserCredentials(user)

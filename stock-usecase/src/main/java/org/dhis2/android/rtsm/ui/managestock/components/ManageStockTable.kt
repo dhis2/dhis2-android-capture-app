@@ -210,5 +210,4 @@ fun ManageStockTable(
             modifier = Modifier.padding(16.dp),
         )
     }
-
 }

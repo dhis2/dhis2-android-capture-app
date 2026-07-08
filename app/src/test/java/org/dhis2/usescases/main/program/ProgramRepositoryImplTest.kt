@@ -121,7 +121,7 @@ class ProgramRepositoryImplTest {
             filterPresenter.filteredDataSetInstances(),
         ) doReturn mock()
         whenever(
-            filterPresenter.filteredDataSetInstances().get(),
+            filterPresenter.filteredDataSetInstances().rxGet(),
         ) doReturn Single.just(mockedDataSetInstanceSummaries())
         whenever(
             filterPresenter.isAssignedToMeApplied(),

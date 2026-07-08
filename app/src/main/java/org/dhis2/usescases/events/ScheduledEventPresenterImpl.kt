@@ -45,19 +45,19 @@ class ScheduledEventPresenterImpl(
                 .eventModule()
                 .events()
                 .uid(eventUid)
-                .get()
+                .rxGet()
                 .flatMap {
                     Single.zip(
                         d2
                             .programModule()
                             .programStages()
                             .uid(it.programStage())
-                            .get(),
+                            .rxGet(),
                         d2
                             .programModule()
                             .programs()
                             .uid(it.program())
-                            .get(),
+                            .rxGet(),
                     ) { stage, program ->
                         Triple(stage, program, it)
                     }
@@ -87,7 +87,7 @@ class ScheduledEventPresenterImpl(
             .eventModule()
             .events()
             .uid(eventUid)
-            .get()
+            .rxGet()
             .map {
                 d2
                     .enrollmentModule()
@@ -102,14 +102,14 @@ class ScheduledEventPresenterImpl(
             .eventModule()
             .events()
             .uid(eventUid)
-            .get()
+            .rxGet()
             .map { it.enrollment() }
             .flatMap {
                 d2
                     .enrollmentModule()
                     .enrollments()
                     .uid(it)
-                    .get()
+                    .rxGet()
             }.blockingGet()
 
     override fun setEventDate(date: Date) {

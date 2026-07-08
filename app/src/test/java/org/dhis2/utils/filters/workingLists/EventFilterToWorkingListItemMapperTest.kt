@@ -41,7 +41,7 @@ class EventFilterToWorkingListItemMapperTest {
                                     .type(DatePeriodType.RELATIVE)
                                     .period(RelativePeriod.LAST_3_DAYS)
                                     .build(),
-                            ).eventStatus(EventStatus.ACTIVE)
+                            ).status(EventStatus.ACTIVE)
                             .organisationUnit("orgUnitUid")
                             .build(),
                     ).build(),

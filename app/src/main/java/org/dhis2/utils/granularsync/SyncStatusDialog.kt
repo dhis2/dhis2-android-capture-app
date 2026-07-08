@@ -48,7 +48,6 @@ private const val SYNC_CONTEXT = "SYNC_CONTEXT"
 class SyncStatusDialog :
     BottomSheetDialogFragment(),
     GranularSyncContracts.View {
-
     var dismissListenerDialog: OnDismissListener? = null
 
     var syncStatusDialogNavigator: SyncStatusDialogNavigator? = null
@@ -321,7 +320,7 @@ class SyncStatusDialog :
             SmsSendingService.State.WAITING_RESULT,
             SmsSendingService.State.RESULT_CONFIRMED,
             SmsSendingService.State.SENT,
-                ->
+            ->
                 syncing = true
 
             SmsSendingService.State.ITEM_NOT_READY,
@@ -329,7 +328,7 @@ class SyncStatusDialog :
             SmsSendingService.State.WAITING_RESULT_TIMEOUT,
             SmsSendingService.State.ERROR,
             SmsSendingService.State.COMPLETED,
-                ->
+            ->
                 viewModel.restartSmsSender()
         }
     }

@@ -35,6 +35,7 @@ import javax.inject.Singleton
 )
 interface ChartsComponent {
     fun charts(): Charts
+
     fun getEnrollmentAnalyticsUseCase(): GetEnrollmentAnalyticsUseCase
 }
 

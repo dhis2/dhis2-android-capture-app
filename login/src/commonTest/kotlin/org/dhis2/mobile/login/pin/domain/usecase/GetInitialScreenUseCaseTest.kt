@@ -3,6 +3,8 @@ package org.dhis2.mobile.login.pin.domain.usecase
 import kotlinx.coroutines.test.runTest
 import org.dhis2.mobile.login.accounts.data.repository.AccountRepository
 import org.dhis2.mobile.login.accounts.domain.model.AccountModel
+import org.dhis2.mobile.login.accounts.domain.model.AuthorizationMethod
+import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.pin.data.SessionRepository
@@ -65,7 +67,10 @@ class GetInitialScreenUseCaseTest {
 
             // Then
             assertTrue(result is LoginScreenState.LoginCredentials)
-            assertEquals(true, result.oAuthEnabled) // OAuth enabled, enrollment URL will be fetched by CredentialsViewModel
+            assertEquals(
+                CredentialsEntryMode.EXISTING_OAUTH,
+                result.entryMode,
+            )
         }
 
     @Test
@@ -109,7 +114,10 @@ class GetInitialScreenUseCaseTest {
             assertIs<LoginScreenState.LoginCredentials>(result)
             assertEquals("https://active.com", result.selectedServer)
             assertEquals("active_user", result.selectedUsername)
-            assertEquals(true, result.oAuthEnabled) // OAuth enabled, enrollment URL will be fetched by CredentialsViewModel
+            assertEquals(
+                CredentialsEntryMode.EXISTING_OAUTH,
+                result.entryMode,
+            )
         }
 
     @Test
@@ -208,5 +216,6 @@ class GetInitialScreenUseCaseTest {
             oidcLoginText = null,
             oidcUrl = null,
             isOauthEnabled = isOauthEnabled,
+            authorizationMethod = if (isOauthEnabled) AuthorizationMethod.OAUTH2 else AuthorizationMethod.BASIC,
         )
 }

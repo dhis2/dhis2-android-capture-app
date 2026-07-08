@@ -56,7 +56,7 @@ internal class ProgramRepositoryImpl(
     private fun aggregatesModels(): Flowable<List<ProgramUiModel>> =
         filterPresenter
             .filteredDataSetInstances()
-            .get()
+            .rxGet()
             .toFlowable()
             .map { dataSetSummaries ->
                 dataSetSummaries.mapNotNull {

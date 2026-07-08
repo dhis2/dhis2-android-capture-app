@@ -148,7 +148,7 @@ class SearchRepositoryTest {
                 themeManager,
                 dateUtils,
                 customIntentRepository,
-                dispatchers
+                dispatchers,
             )
     }
 
@@ -157,16 +157,18 @@ class SearchRepositoryTest {
         val overdueDate = dateUtils.getCalendarByDate(Date())
         overdueDate.add(Calendar.DATE, -2)
 
-        val searchItemResult = createTrackedEntitySearchItemResult(
-            uid = "teiUid",
-            overDueDate = overdueDate.time.toKtxInstant(),
-        )
+        val searchItemResult =
+            createTrackedEntitySearchItemResult(
+                uid = "teiUid",
+                overDueDate = overdueDate.time.toKtxInstant(),
+            )
         val sorting = SortingItem.create(Filters.ENROLLMENT_DATE)
 
-        val result = searchRepository.mapTrackedEntitySearchItemResultToSearchTeiModel(
-            searchItemResult,
-            sorting,
-        )
+        val result =
+            searchRepository.mapTrackedEntitySearchItemResultToSearchTeiModel(
+                searchItemResult,
+                sorting,
+            )
 
         assertNotNull(result.tei.overDueDate)
         assertTrue(result.tei.overDueDate!! < getTodayAsInstant())
@@ -177,16 +179,18 @@ class SearchRepositoryTest {
         val overdueDate = dateUtils.getCalendarByDate(Date())
         overdueDate.add(Calendar.DATE, -2)
 
-        val searchItemResult = createTrackedEntitySearchItemResult(
-            uid = "teiUid",
-            overDueDate = overdueDate.time.toKtxInstant(),
-        )
+        val searchItemResult =
+            createTrackedEntitySearchItemResult(
+                uid = "teiUid",
+                overDueDate = overdueDate.time.toKtxInstant(),
+            )
         val sorting = SortingItem.create(Filters.ENROLLMENT_DATE)
 
-        val result = searchRepository.mapTrackedEntitySearchItemResultToSearchTeiModel(
-            searchItemResult,
-            sorting,
-        )
+        val result =
+            searchRepository.mapTrackedEntitySearchItemResultToSearchTeiModel(
+                searchItemResult,
+                sorting,
+            )
 
         assertNotNull(result.tei.overDueDate)
         assertTrue(result.tei.overDueDate!! < getTodayAsInstant())
@@ -195,16 +199,18 @@ class SearchRepositoryTest {
     @Test
     fun shouldTransformToSearchTeiModelWithOutOverdueEvents() {
         // Create a search result without overdue date (null means no overdue events)
-        val searchItemResult = createTrackedEntitySearchItemResult(
-            uid = "teiUid",
-            overDueDate = null,
-        )
+        val searchItemResult =
+            createTrackedEntitySearchItemResult(
+                uid = "teiUid",
+                overDueDate = null,
+            )
         val sorting = SortingItem.create(Filters.ENROLLMENT_DATE)
 
-        val result = searchRepository.mapTrackedEntitySearchItemResultToSearchTeiModel(
-            searchItemResult,
-            sorting,
-        )
+        val result =
+            searchRepository.mapTrackedEntitySearchItemResultToSearchTeiModel(
+                searchItemResult,
+                sorting,
+            )
 
         // When there are no overdue events, overDueDate should be null
         assertNull(result.tei.overDueDate)
@@ -290,7 +296,7 @@ class SearchRepositoryTest {
         ) doReturn enrollmentsForInfoToReturn
 
         val programUid =
-            if (enrollmentsForInfoToReturn.isNotEmpty()) enrollmentsForInfoToReturn[0].program() else "programUid"
+            if (enrollmentsForInfoToReturn.isNotEmpty()) enrollmentsForInfoToReturn[0].program()!! else "programUid"
         whenever(d2.programModule().programs()) doReturn programCollectionRepository
         whenever(
             programCollectionRepository.uid(any()),
@@ -441,8 +447,8 @@ class SearchRepositoryTest {
     private fun createTrackedEntitySearchItemResult(
         uid: String,
         overDueDate: Instant?,
-    ): TrackedEntitySearchItemResult {
-        return TrackedEntitySearchItemResult(
+    ): TrackedEntitySearchItemResult =
+        TrackedEntitySearchItemResult(
             uid = uid,
             created = null,
             lastUpdated = null,
@@ -457,10 +463,11 @@ class SearchRepositoryTest {
             deleted = false,
             isOnline = false,
             teTypeName = "Person",
-            type = TrackedEntityTypeDomain(
-                trackedEntityTypeAttributeDomains = emptyList(),
-                featureType = GeometryFeatureType.NONE,
-            ),
+            type =
+                TrackedEntityTypeDomain(
+                    trackedEntityTypeAttributeDomains = emptyList(),
+                    featureType = GeometryFeatureType.NONE,
+                ),
             header = "Test Header",
             overDueDate = overDueDate,
             selectedEnrollment = null,
@@ -471,7 +478,6 @@ class SearchRepositoryTest {
             defaultTypeIcon = null,
             attributeValues = emptyList(),
         )
-    }
 
     private fun createMockData(): List<FieldUiModel> =
         listOf(

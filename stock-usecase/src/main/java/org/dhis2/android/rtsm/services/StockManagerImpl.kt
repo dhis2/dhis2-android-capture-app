@@ -133,9 +133,13 @@ class StockManagerImpl(
         tei: TrackedEntityInstance,
         stockOnHandUid: String,
     ): String? {
-
         val activeEnrollments =
-            d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(tei.uid()).byStatus()
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .byTrackedEntityInstance()
+                .eq(tei.uid())
+                .byStatus()
                 .eq(EnrollmentStatus.ACTIVE)
                 .blockingGetUids()
 
@@ -143,19 +147,24 @@ class StockManagerImpl(
             d2
                 .eventModule()
                 .events()
-                .byEnrollmentUid().`in`(activeEnrollments)
+                .byEnrollmentUid()
+                .`in`(activeEnrollments)
                 .byDeleted()
                 .isFalse
                 .blockingGet()
                 .sortForRuleEngine()
 
         events.forEach { event ->
-            val dataValue = d2.trackedEntityModule().trackedEntityDataValues()
-                .value(event.uid(), stockOnHandUid).blockingGet()
+            val dataValue =
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityDataValues()
+                    .value(event.uid(), stockOnHandUid)
+                    .blockingGet()
             dataValue?.let {
                 return it.value()
             }
-         }
+        }
         return null
     }
 
@@ -167,9 +176,9 @@ class StockManagerImpl(
     ): String {
         Timber.tag("EVENT_CREATION").i(
             "Enrollment: ${enrollment.uid()}\n" +
-                    "Program: ${programUid}\n" +
-                    "Stage: ${programStage.uid()}\n" +
-                    "OU: ${facility.uid}\n",
+                "Program: ${programUid}\n" +
+                "Stage: ${programStage.uid()}\n" +
+                "OU: ${facility.uid}\n",
         )
         return d2.eventModule().events().blockingAdd(
             EventCreateProjection
@@ -207,7 +216,7 @@ class StockManagerImpl(
                     enrollment,
                     transaction,
                     stockUseCase,
-                    hasErrorOnComplete
+                    hasErrorOnComplete,
                 )
             }
         }
@@ -312,9 +321,9 @@ class StockManagerImpl(
                     "de:${
                         getTransactionDataElement(
                             transaction.transactionType,
-                            stockUseCase
+                            stockUseCase,
                         )
-                    }"
+                    }",
                 )
                 Timber.i("data to save:${item.qty}")
                 d2
@@ -334,12 +343,12 @@ class StockManagerImpl(
             }
 
             try {
-                transaction.distributedTo?.let {
+                transaction.distributedTo.let {
                     val destination =
                         d2
                             .optionModule()
                             .options()
-                            .uid(it.uid)
+                            .uid(it?.uid)
                             .blockingGet()
 
                     d2
@@ -365,7 +374,7 @@ class StockManagerImpl(
                     stockUseCase.programUid,
                     transaction,
                     eventUid,
-                    stockUseCase
+                    stockUseCase,
                 )
             } catch (e: Exception) {
                 if (e is D2Error) {

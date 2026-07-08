@@ -24,7 +24,7 @@ class ConfigureHomeNavigationBar(
                             id = NavigationPage.PROGRAMS,
                             icon = Icons.Filled.Form,
                             label = resourceManager.getString(R.string.navigation_programs),
-                        )
+                        ),
                     )
                     if (homeRepository.hasHomeAnalytics()) {
                         add(
@@ -32,7 +32,7 @@ class ConfigureHomeNavigationBar(
                                 id = NavigationPage.ANALYTICS,
                                 icon = Icons.Filled.BarChart,
                                 label = resourceManager.getString(R.string.navigation_charts),
-                            )
+                            ),
                         )
                     }
                 }
@@ -44,8 +44,8 @@ class ConfigureHomeNavigationBar(
                         id = NavigationPage.PROGRAMS,
                         icon = Icons.Filled.Form,
                         label = resourceManager.getString(R.string.navigation_programs),
-                    )
-                )
+                    ),
+                ),
             )
         }
 }

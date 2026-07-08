@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.program.ProgramIndicator
 import org.junit.After
 import org.junit.Before
@@ -23,10 +24,11 @@ import org.mockito.kotlin.whenever
 @OptIn(ExperimentalCoroutinesApi::class)
 class IndicatorsPresenterTest {
     private val testDispatcher = StandardTestDispatcher()
-    private val dispatcherProvider: DispatcherProvider = mock {
-        on { io() } doReturn testDispatcher
-        on { ui() } doReturn testDispatcher
-    }
+    private val dispatcherProvider: DispatcherProvider =
+        mock {
+            on { io() } doReturn testDispatcher
+            on { ui() } doReturn testDispatcher
+        }
     private val view: IndicatorsView = mock()
     private val indicatorRepository: IndicatorRepository = mock()
     private lateinit var presenter: IndicatorsPresenter
@@ -75,6 +77,8 @@ class IndicatorsPresenterTest {
                     .builder()
                     .uid("indicator_uid")
                     .displayInForm(true)
+                    .attributeCombo(ObjectWithUid.create("defaultCC"))
+                    .categoryCombo(ObjectWithUid.create("defaultCC"))
                     .build(),
                 "indicator_value",
                 "#ffffff",

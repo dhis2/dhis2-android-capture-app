@@ -325,7 +325,8 @@ class MainViewModel(
             _homeEffects.send(HomeEffect.ToggleFilters)
             _homeScreenState.update {
                 it.copy(
-                    bottomNavigationBarVisible = !it.bottomNavigationBarVisible && it.currentScreen.isHome() && it.navigationBarItems.size > 1,
+                    bottomNavigationBarVisible =
+                        !it.bottomNavigationBarVisible && it.currentScreen.isHome() && it.navigationBarItems.size > 1,
                 )
             }
         }
@@ -422,7 +423,10 @@ class MainViewModel(
     fun updateNavigationBarVisibility(bottomNavigationBarIsVisible: Boolean) {
         launchUseCase(dispatcher.io()) {
             _homeScreenState.update {
-                it.copy(bottomNavigationBarVisible = bottomNavigationBarIsVisible && it.currentScreen.isHome() && it.navigationBarItems.size > 1)
+                it.copy(
+                    bottomNavigationBarVisible =
+                        bottomNavigationBarIsVisible && it.currentScreen.isHome() && it.navigationBarItems.size > 1,
+                )
             }
         }
     }
@@ -460,7 +464,7 @@ class MainViewModel(
             }
 
             MainScreenType.Loading -> {
-                /*no-op*/
+                // no-op
             }
 
             MainScreenType.QRScanner -> {
@@ -475,7 +479,6 @@ class MainViewModel(
 
             MainScreenType.TroubleShooting ->
                 mainNavigator.openTroubleShooting()
-
         }
     }
 

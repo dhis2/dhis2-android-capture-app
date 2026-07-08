@@ -49,7 +49,7 @@ class EventCaptureFormPresenterTest {
         val editableStatus = EventEditableStatus.Editable()
         whenever(d2.eventModule()) doReturn mock()
         whenever(d2.eventModule().eventService()) doReturn mock()
-        whenever(d2.eventModule().eventService().getEditableStatus(eventUid)) doReturn
+        whenever(d2.eventModule().eventService().rxGetEditableStatus(eventUid)) doReturn
             Single.just(
                 editableStatus,
             )
@@ -65,7 +65,7 @@ class EventCaptureFormPresenterTest {
             EventEditableStatus.NonEditable(EventNonEditableReason.BLOCKED_BY_COMPLETION)
         whenever(d2.eventModule()) doReturn mock()
         whenever(d2.eventModule().eventService()) doReturn mock()
-        whenever(d2.eventModule().eventService().getEditableStatus(eventUid)) doReturn
+        whenever(d2.eventModule().eventService().rxGetEditableStatus(eventUid)) doReturn
             Single.just(
                 editableStatus,
             )
