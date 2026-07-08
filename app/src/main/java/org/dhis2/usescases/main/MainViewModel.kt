@@ -249,7 +249,7 @@ class MainViewModel(
                                 filterButtonVisible = false,
                                 bottomNavigationBarVisible = false,
                                 syncButtonVisible = false,
-                                )
+                            )
                         }
                     }
                     SyncStatus.Succeed -> {

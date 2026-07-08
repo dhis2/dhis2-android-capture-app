@@ -53,58 +53,61 @@ class DashboardViewModelTest {
     }
 
     @Test
-    fun shouldFetchEnrollmentModel() = runTest {
-        mockEnrollmentModel()
-        mockGrouping(true)
+    fun shouldFetchEnrollmentModel() =
+        runTest {
+            mockEnrollmentModel()
+            mockGrouping(true)
 
-        val dashboardViewModel = getViewModel()
+            val dashboardViewModel = getViewModel()
 
-        dashboardViewModel.dashboardModel.test {
-            awaitItem()
-            with(awaitItem()) {
-                assertTrue(this == mockedEnrollmentModel)
-                assertTrue(dashboardViewModel.showFollowUpBar.value)
-                assertTrue(!dashboardViewModel.syncNeeded.value)
-                assertTrue(dashboardViewModel.showStatusBar.value == EnrollmentStatus.ACTIVE)
-                assertTrue(dashboardViewModel.state.value == State.SYNCED)
+            dashboardViewModel.dashboardModel.test {
+                awaitItem()
+                with(awaitItem()) {
+                    assertTrue(this == mockedEnrollmentModel)
+                    assertTrue(dashboardViewModel.showFollowUpBar.value)
+                    assertTrue(!dashboardViewModel.syncNeeded.value)
+                    assertTrue(dashboardViewModel.showStatusBar.value == EnrollmentStatus.ACTIVE)
+                    assertTrue(dashboardViewModel.state.value == State.SYNCED)
+                }
             }
         }
-    }
 
     @Test
-    fun shouldFetchTeiModel() = runTest {
-        mockTeiModel()
-        mockGrouping(false)
+    fun shouldFetchTeiModel() =
+        runTest {
+            mockTeiModel()
+            mockGrouping(false)
 
-        val dashboardViewModel = getViewModel()
+            val dashboardViewModel = getViewModel()
 
-        dashboardViewModel.dashboardModel.test {
-            awaitItem()
-            with(awaitItem()) {
-                assertTrue(this == mockedTeiModel)
-                assertTrue(!dashboardViewModel.showFollowUpBar.value)
-                assertTrue(!dashboardViewModel.syncNeeded.value)
-                assertTrue(dashboardViewModel.showStatusBar.value == null)
-                assertTrue(dashboardViewModel.state.value == null)
+            dashboardViewModel.dashboardModel.test {
+                awaitItem()
+                with(awaitItem()) {
+                    assertTrue(this == mockedTeiModel)
+                    assertTrue(!dashboardViewModel.showFollowUpBar.value)
+                    assertTrue(!dashboardViewModel.syncNeeded.value)
+                    assertTrue(dashboardViewModel.showStatusBar.value == null)
+                    assertTrue(dashboardViewModel.state.value == null)
+                }
             }
         }
-    }
 
     @Test
-    fun shouldSetGrouping() = runTest {
-        mockEnrollmentModel()
-        mockGrouping(false)
+    fun shouldSetGrouping() =
+        runTest {
+            mockEnrollmentModel()
+            mockGrouping(false)
 
-        val dashboardViewModel = getViewModel()
+            val dashboardViewModel = getViewModel()
 
-        dashboardViewModel.groupByStage.test {
-            assertTrue(!awaitItem())
-            dashboardViewModel.setGrouping(true)
-            verify(repository).setGrouping(true)
-            assertTrue(awaitItem())
-            cancelAndIgnoreRemainingEvents()
+            dashboardViewModel.groupByStage.test {
+                assertTrue(!awaitItem())
+                dashboardViewModel.setGrouping(true)
+                verify(repository).setGrouping(true)
+                assertTrue(awaitItem())
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
     fun shouldUpdateEventUid() {
@@ -119,70 +122,73 @@ class DashboardViewModelTest {
     }
 
     @Test
-    fun shouldSetFollowUpOnEnrollment() = runTest {
-        mockEnrollmentModel()
-        mockGrouping(false)
+    fun shouldSetFollowUpOnEnrollment() =
+        runTest {
+            mockEnrollmentModel()
+            mockGrouping(false)
 
-        val viewModel = getViewModel()
-        viewModel.dashboardModel.test {
-            awaitItem()
-            awaitItem()
-            with(viewModel) {
-                onFollowUp()
-                verify(repository).setFollowUp("enrollmentUid")
-                assertTrue(state.value == State.TO_UPDATE)
-                verify(analyticsHelper).setEvent(ACTIVE_FOLLOW_UP, "false", FOLLOW_UP)
+            val viewModel = getViewModel()
+            viewModel.dashboardModel.test {
+                awaitItem()
+                awaitItem()
+                with(viewModel) {
+                    onFollowUp()
+                    verify(repository).setFollowUp("enrollmentUid")
+                    assertTrue(state.value == State.TO_UPDATE)
+                    verify(analyticsHelper).setEvent(ACTIVE_FOLLOW_UP, "false", FOLLOW_UP)
+                }
             }
         }
-    }
 
     @Test
-    fun shouldUpdateEnrollmentStatus() = runTest {
-        mockEnrollmentModel()
-        mockGrouping(false)
-        val viewModel = getViewModel()
-        viewModel.dashboardModel.test {
-            awaitItem()
-            awaitItem()
-            with(viewModel) {
-                whenever(repository.updateEnrollmentStatus(any(), any())) doReturn
+    fun shouldUpdateEnrollmentStatus() =
+        runTest {
+            mockEnrollmentModel()
+            mockGrouping(false)
+            val viewModel = getViewModel()
+            viewModel.dashboardModel.test {
+                awaitItem()
+                awaitItem()
+                with(viewModel) {
+                    whenever(repository.updateEnrollmentStatus(any(), any())) doReturn
                         Observable.just(
                             StatusChangeResultCode.CHANGED,
                         )
-                whenever(mockedEnrollmentModel.currentEnrollment) doReturn mockedCompletedEnrollment
-                updateEnrollmentStatus(EnrollmentStatus.COMPLETED)
-                testingDispatcher.scheduler.advanceUntilIdle()
-                verify(repository).updateEnrollmentStatus(
-                    "enrollmentUid",
-                    EnrollmentStatus.COMPLETED
-                )
-                assertTrue(showStatusBar.value == EnrollmentStatus.COMPLETED)
-                assertTrue(syncNeeded.value)
-                assertTrue(state.value == State.TO_UPDATE)
+                    whenever(mockedEnrollmentModel.currentEnrollment) doReturn mockedCompletedEnrollment
+                    updateEnrollmentStatus(EnrollmentStatus.COMPLETED)
+                    testingDispatcher.scheduler.advanceUntilIdle()
+                    verify(repository).updateEnrollmentStatus(
+                        "enrollmentUid",
+                        EnrollmentStatus.COMPLETED,
+                    )
+                    assertTrue(showStatusBar.value == EnrollmentStatus.COMPLETED)
+                    assertTrue(syncNeeded.value)
+                    assertTrue(state.value == State.TO_UPDATE)
+                }
             }
         }
-    }
 
     @Test
-    fun shouldShowMessageIfErrorWhileUpdatingEnrollmentStatus() = runTest {
-        mockEnrollmentModel()
-        mockGrouping(false)
-        val viewModel = getViewModel()
+    fun shouldShowMessageIfErrorWhileUpdatingEnrollmentStatus() =
+        runTest {
+            mockEnrollmentModel()
+            mockGrouping(false)
+            val viewModel = getViewModel()
 
-        viewModel.dashboardModel.test {
-            awaitItem()
-            awaitItem()
-            with(viewModel) {
-                whenever(repository.updateEnrollmentStatus(any(), any())) doReturn
+            viewModel.dashboardModel.test {
+                awaitItem()
+                awaitItem()
+                with(viewModel) {
+                    whenever(repository.updateEnrollmentStatus(any(), any())) doReturn
                         Observable.just(
                             StatusChangeResultCode.FAILED,
                         )
-                updateEnrollmentStatus(EnrollmentStatus.COMPLETED)
-                testingDispatcher.scheduler.advanceUntilIdle()
-                assertTrue(showStatusErrorMessages.value == StatusChangeResultCode.FAILED)
+                    updateEnrollmentStatus(EnrollmentStatus.COMPLETED)
+                    testingDispatcher.scheduler.advanceUntilIdle()
+                    assertTrue(showStatusErrorMessages.value == StatusChangeResultCode.FAILED)
+                }
             }
         }
-    }
 
     private fun getViewModel() =
         DashboardViewModel(

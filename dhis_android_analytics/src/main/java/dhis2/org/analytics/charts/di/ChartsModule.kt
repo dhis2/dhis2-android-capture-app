@@ -76,7 +76,7 @@ val chartsModule =
             )
         }
 
-    factoryOf(::AnalyticResources)
+        factoryOf(::AnalyticResources)
 
         factoryOf(::AnalyticsFilterProvider)
 
@@ -86,7 +86,7 @@ val chartsModule =
                 visualizationToGraph = get(),
                 analyticsTeiSettingsToGraph = get(),
                 analyticsResources = get(),
-            analyticsFilterProvider = get(),
+                analyticsFilterProvider = get(),
             )
         }
         factory<Charts> {

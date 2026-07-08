@@ -124,13 +124,13 @@ class MainViewModelIntegrationTest {
 
             whenever(syncStatusController.observeDownloadProcess()) doReturn syncStatusFlow
             whenever(syncBackgroundJobAction.observeMetadataJob()) doReturn metadataJobFlow
-        whenever(scheduleNewVersionAlert.newVersionFlow) doReturn newVersionFlow
-        whenever(filterManager.asFlow(any())) doReturn filterManagerFlow
-        whenever(filterManager.periodRequest) doReturn mock()
-        whenever(filterManager.ouTreeFlowable()) doReturn mock()
-        // ConfigureHomeNavigationBar builds NavigationBarItem(label = getString(...)); a null
-        // label causes a NPE that silently crashes loadData. Stub it globally here.
-        whenever(resourceManager.getString(any())) doReturn ""
+            whenever(scheduleNewVersionAlert.newVersionFlow) doReturn newVersionFlow
+            whenever(filterManager.asFlow(any())) doReturn filterManagerFlow
+            whenever(filterManager.periodRequest) doReturn mock()
+            whenever(filterManager.ouTreeFlowable()) doReturn mock()
+            // ConfigureHomeNavigationBar builds NavigationBarItem(label = getString(...)); a null
+            // label causes a NPE that silently crashes loadData. Stub it globally here.
+            whenever(resourceManager.getString(any())) doReturn ""
 
             // Default: multiple programs → CheckSingleNavigation fails silently, no effect emitted
             whenever(homeRepository.homeItemCount()) doReturn 2

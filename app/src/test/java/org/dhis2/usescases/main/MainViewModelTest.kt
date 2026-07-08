@@ -122,7 +122,7 @@ class MainViewModelTest {
             whenever(filterManager.ouTreeFlowable()) doReturn mock()
             whenever(launchInitialSync()) doReturn Result.success(InitialSyncAction.Skip)
             whenever(checkSingleNavigation()) doReturn Result.failure(Exception("no single navigation"))
-        whenever(syncBackgroundJobAction.observeMetadataJob()) doReturn metadataJobFlow
+            whenever(syncBackgroundJobAction.observeMetadataJob()) doReturn metadataJobFlow
 
             viewModel =
                 MainViewModel(

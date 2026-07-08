@@ -173,7 +173,6 @@ class TEIDataFragment :
                             dashboardModel.collect {
                                 presenter.checkIfHasToDisplayGenerateEvent()
                             }
-
                         }
                     }
                     lifecycleScope.launch {

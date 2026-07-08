@@ -58,8 +58,7 @@ class ChartsModule {
         )
 
     @Provides
-    internal fun provideAnalyticFilters(d2: D2): AnalyticsFilterProvider =
-        AnalyticsFilterProvider(d2)
+    internal fun provideAnalyticFilters(d2: D2): AnalyticsFilterProvider = AnalyticsFilterProvider(d2)
 
     @Provides
     internal fun provideVisualizationToGraph(
@@ -82,8 +81,7 @@ class ChartsModule {
         )
 
     @Provides
-    internal fun nutritionDataProvider(): NutritionDataProvider =
-        RuleEngineNutritionDataProviderImpl()
+    internal fun nutritionDataProvider(): NutritionDataProvider = RuleEngineNutritionDataProviderImpl()
 
     @Provides
     internal fun provideAnalyticSettingsMapper(
@@ -106,8 +104,7 @@ class ChartsModule {
         d2: D2,
         periodStepProvider: PeriodStepProvider,
         resourceManager: ResourceManager,
-    ): ChartCoordinatesProvider =
-        ChartCoordinatesProviderImpl(d2, periodStepProvider, resourceManager)
+    ): ChartCoordinatesProvider = ChartCoordinatesProviderImpl(d2, periodStepProvider, resourceManager)
 
     @Provides
     internal fun provideResourceManager(
@@ -119,21 +116,17 @@ class ChartsModule {
     internal fun analyticResources(context: Context): AnalyticResources = AnalyticResources(context)
 
     @Provides
-    internal fun provideAnalyticDataElementMapper(): AnalyticDataElementToDataElementData =
-        AnalyticDataElementToDataElementData()
+    internal fun provideAnalyticDataElementMapper(): AnalyticDataElementToDataElementData = AnalyticDataElementToDataElementData()
 
     @Provides
-    internal fun provideAnalyticIndicatorMapper(): AnalyticIndicatorToIndicatorData =
-        AnalyticIndicatorToIndicatorData()
+    internal fun provideAnalyticIndicatorMapper(): AnalyticIndicatorToIndicatorData = AnalyticIndicatorToIndicatorData()
 
     @Provides
-    internal fun bindStorageFeatureImpl(analyticsCharts: DhisAnalyticCharts): Charts =
-        analyticsCharts
+    internal fun bindStorageFeatureImpl(analyticsCharts: DhisAnalyticCharts): Charts = analyticsCharts
 
     @Provides
     internal fun provideGetEnrollmentAnalyticsUseCase(
         chartsRepository: ChartsRepository,
         dispatcherProvider: DispatcherProvider,
-    ): GetEnrollmentAnalyticsUseCase =
-        GetEnrollmentAnalyticsUseCase(chartsRepository, dispatcherProvider)
+    ): GetEnrollmentAnalyticsUseCase = GetEnrollmentAnalyticsUseCase(chartsRepository, dispatcherProvider)
 }
