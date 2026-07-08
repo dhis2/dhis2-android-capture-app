@@ -16,6 +16,7 @@
     <string name="navigation_analytics">Analytics</string>
     <string name="navigation_tasks">Tasks</string>
     <string name="navigation_programs">Programs</string>
+    <string name="navigation_jica_mch">Jica MCH</string>
     <string name="navigation_relationships">Relationships</string>
     <string name="navigation_relations">Relations</string>
     <string name="navigation_notes">Notes</string>
