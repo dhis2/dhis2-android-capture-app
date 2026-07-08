@@ -36,7 +36,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.await
 import org.dhis2.data.service.CheckVersionWorker
-import org.dhis2.data.service.SyncGranularWorker
+import org.dhis2.mobile.sync.data.GranularSyncWorker
 import java.util.concurrent.TimeUnit
 
 class WorkManagerControllerImpl(
@@ -103,7 +103,7 @@ class WorkManagerControllerImpl(
     private fun createOneTimeBuilder(workerItem: WorkerItem): OneTimeWorkRequest.Builder {
         val syncBuilder =
             when (workerItem.workerType) {
-                WorkerType.GRANULAR -> OneTimeWorkRequest.Builder(SyncGranularWorker::class.java)
+                WorkerType.GRANULAR -> OneTimeWorkRequest.Builder(GranularSyncWorker::class.java)
                 WorkerType.NEW_VERSION -> OneTimeWorkRequest.Builder(CheckVersionWorker::class.java)
             }
 
@@ -126,7 +126,7 @@ class WorkManagerControllerImpl(
             when (workerItem.workerType) {
                 WorkerType.GRANULAR -> {
                     PeriodicWorkRequest.Builder(
-                        SyncGranularWorker::class.java,
+                        GranularSyncWorker::class.java,
                         seconds,
                         TimeUnit.SECONDS,
                     )

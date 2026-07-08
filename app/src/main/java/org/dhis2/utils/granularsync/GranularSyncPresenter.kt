@@ -30,7 +30,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkInfo
 import io.reactivex.disposables.CompositeDisposable
@@ -39,14 +38,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dhis2.commons.Constants
-import org.dhis2.commons.Constants.ATTRIBUTE_OPTION_COMBO
-import org.dhis2.commons.Constants.CATEGORY_OPTION_COMBO
-import org.dhis2.commons.Constants.CONFLICT_TYPE
-import org.dhis2.commons.Constants.ORG_UNIT
-import org.dhis2.commons.Constants.PERIOD_ID
-import org.dhis2.commons.Constants.UID
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.ConflictType.ALL
 import org.dhis2.commons.sync.ConflictType.DATA_SET
 import org.dhis2.commons.sync.ConflictType.DATA_VALUES
@@ -58,7 +50,9 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
+import org.dhis2.mobile.sync.data.GranularSyncWorker
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
+import org.dhis2.mobile.sync.model.GranularSyncType
 import org.dhis2.usescases.sms.SmsSendingService
 import org.dhis2.utils.granularsync.data.GranularSyncRepository
 import org.dhis2.utils.granularsync.domain.MissingSyncTargetException
@@ -140,48 +134,47 @@ class GranularSyncPresenter(
 
     fun initGranularSync(): LiveData<List<WorkInfo>> {
         viewModelScope.launch(dispatcher.io()) {
-            var conflictTypeData: ConflictType? = null
-            var dataToDataValues: Data? = null
+            val workerData =
+                when (syncContext.conflictType()) {
+                    PROGRAM,
+                    TEI,
+                    EVENT,
+                    DATA_SET,
+                    ->
+                        GranularSyncWorker.buildInputData(
+                            uid = syncContext.recordUid(),
+                            granularSyncType =
+                                when (syncContext.conflictType()) {
+                                    PROGRAM -> GranularSyncType.Program
+                                    TEI -> GranularSyncType.Tei
+                                    EVENT -> GranularSyncType.Event
+                                    DATA_SET -> GranularSyncType.DataSet
+                                    else -> error("Unsupported conflict type")
+                                },
+                        )
 
-            when (syncContext.conflictType()) {
-                PROGRAM -> conflictTypeData = PROGRAM
-                TEI -> conflictTypeData = TEI
-                EVENT -> conflictTypeData = EVENT
-                DATA_SET -> conflictTypeData = DATA_SET
-                DATA_VALUES ->
-                    with(syncContext as SyncContext.DataSetInstance) {
-                        dataToDataValues =
-                            Data
-                                .Builder()
-                                .putString(UID, recordUid())
-                                .putString(CONFLICT_TYPE, DATA_VALUES.name)
-                                .putString(ORG_UNIT, orgUnitUid)
-                                .putString(PERIOD_ID, periodId)
-                                .putString(ATTRIBUTE_OPTION_COMBO, attributeOptionComboUid)
-                                .putStringArray(
-                                    CATEGORY_OPTION_COMBO,
-                                    getDataSetCatOptCombos().toTypedArray(),
-                                ).build()
+                    DATA_VALUES ->
+                        with(syncContext as SyncContext.DataSetInstance) {
+                            GranularSyncWorker.buildInputData(
+                                uid = recordUid(),
+                                granularSyncType = GranularSyncType.DataValue,
+                                orgUnitUid = orgUnitUid,
+                                periodId = periodId,
+                                attrOptionComboUid = attributeOptionComboUid,
+                                catOptionCombo = getDataSetCatOptCombos(),
+                            )
+                        }
+
+                    ALL -> { // Do nothing
+                        null
                     }
-
-                ALL -> { // Do nothing
                 }
-            }
             if (syncContext.conflictType() != ALL) {
-                if (dataToDataValues == null) {
-                    dataToDataValues =
-                        Data
-                            .Builder()
-                            .putString(UID, syncContext.recordUid())
-                            .putString(CONFLICT_TYPE, conflictTypeData!!.name)
-                            .build()
-                }
-
                 val workerItem =
                     WorkerItem(
                         workerName,
                         WorkerType.GRANULAR,
-                        data = dataToDataValues,
+                        data = workerData,
                         policy = ExistingWorkPolicy.KEEP,
                     )
 
