@@ -7,20 +7,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import org.dhis2.R
+import org.dhis2.mobile.login.authentication.domain.model.TwoFAStatus
 import org.dhis2.usescases.settings.SettingItem
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 
 @Composable
-fun TwoFASettingItem(onClick: () -> Unit) {
+fun TwoFASettingItem(
+    status: TwoFAStatus,
+    onClick: () -> Unit,
+) {
     SettingItem(
         modifier = Modifier.testTag(SettingItem.TWO_FACTOR_AUTH.name),
         title = stringResource(id = R.string.settingTwoFA),
         additionalInfoList =
             listOf(
-                // TODO: Replace "Unknown" with actual status when available
                 AdditionalInfoItem(
                     key = stringResource(R.string.settingsTwoFAStatus),
-                    value = "Unknown",
+                    value =
+                        when (status) {
+                            is TwoFAStatus.Enabled -> stringResource(R.string.settingsTwoFAEnabled)
+                            is TwoFAStatus.Disabled -> stringResource(R.string.settingsTwoFADisabled)
+                            is TwoFAStatus.NoConnection -> stringResource(R.string.settingsTwoFAStatusError)
+                        },
                 ),
                 AdditionalInfoItem(
                     value = stringResource(R.string.settingTwoFADescr),

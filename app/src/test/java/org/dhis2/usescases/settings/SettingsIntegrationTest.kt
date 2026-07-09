@@ -12,6 +12,8 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.login.authentication.domain.model.TwoFAStatus
+import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
 import org.dhis2.usescases.settings.GatewayValidator.GatewayValidationResult
 import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
@@ -51,6 +53,7 @@ class SettingsIntegrationTest {
     private val dataSettingsViewModel: DataSettingsViewModel = mock()
     private val syncParametersViewModel: SyncParametersViewModel = mock()
     private val reservedValueSettingsViewModel: ReservedValueSettingsViewModel = mock()
+    private val twoFAStatus: GetTwoFAStatus = mock()
     private val smsSettingsViewModel: SMSSettingsViewModel =
         mock {
             on { gatewayNumber } doReturn ""
@@ -126,6 +129,7 @@ class SettingsIntegrationTest {
                     },
                 networkUtils = networkUtils,
                 settingsMessages = settingsMessages,
+                twoFaStatus = twoFAStatus,
             )
     }
 
@@ -134,6 +138,7 @@ class SettingsIntegrationTest {
         runTest {
             // Given TFA configured
             whenever(settingsRepository.isTwoFAConfigured()) doReturn true
+            whenever(twoFAStatus.invoke()) doReturn TwoFAStatus.Enabled()
 
             // When set settings config
             buildPresenter()
@@ -142,6 +147,7 @@ class SettingsIntegrationTest {
             syncManagerPresenter.settingsState.test {
                 assert(awaitItem() == null)
                 assert(awaitItem()?.isTwoFAConfigured == true)
+                assert(awaitItem()?.twoFAStatus is TwoFAStatus.Enabled)
             }
         }
 
@@ -150,6 +156,7 @@ class SettingsIntegrationTest {
         runTest {
             // Given TFA not configured
             whenever(settingsRepository.isTwoFAConfigured()) doReturn false
+            whenever(twoFAStatus.invoke()) doReturn TwoFAStatus.Disabled("")
 
             // When set settings config
             buildPresenter()
@@ -158,6 +165,7 @@ class SettingsIntegrationTest {
             syncManagerPresenter.settingsState.test {
                 assert(awaitItem() == null)
                 assert(awaitItem()?.isTwoFAConfigured == false)
+                assert(awaitItem()?.twoFAStatus is TwoFAStatus.Disabled)
             }
         }
 }

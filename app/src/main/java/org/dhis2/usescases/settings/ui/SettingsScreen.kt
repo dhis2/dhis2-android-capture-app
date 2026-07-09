@@ -261,6 +261,7 @@ private fun SettingItemList(
         if (settingsUIModel.isTwoFAConfigured) {
             item {
                 TwoFASettingItem(
+                    status = settingsUIModel.twoFAStatus,
                     onClick = { onSettingsUiAction(SettingsUiAction.OnOpenTwoFASettings) },
                 )
             }

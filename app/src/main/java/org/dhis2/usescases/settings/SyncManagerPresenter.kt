@@ -16,6 +16,7 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.extensions.launchUseCase
+import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
 import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.ExportDatabase
@@ -46,6 +47,7 @@ class SyncManagerPresenter(
     private val dispatcherProvider: DispatcherProvider,
     private val networkUtils: NetworkUtils,
     private val settingsMessages: SettingsMessages,
+    private val twoFaStatus: GetTwoFAStatus,
 ) : ViewModel() {
     val exporting = exportDatabase.exporting
 
@@ -125,7 +127,9 @@ class SyncManagerPresenter(
             ),
         ).fold(
             onSuccess = { settingsState ->
-                _settingsState.update { settingsState }
+                _settingsState
+                    .update { settingsState }
+                    .also { getTwoFAStatus() }
             },
             onFailure = {
                 // do nothing
@@ -384,5 +388,16 @@ class SyncManagerPresenter(
     fun closeChannel() {
         settingsMessages.close()
         _errorLogChannel.close()
+    }
+
+    private fun getTwoFAStatus() {
+        launchUseCase {
+            val state = twoFaStatus()
+            _settingsState.update {
+                it?.copy(
+                    twoFAStatus = state,
+                )
+            }
+        }
     }
 }
