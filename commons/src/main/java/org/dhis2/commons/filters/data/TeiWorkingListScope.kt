@@ -163,9 +163,9 @@ fun TrackedEntityInstanceQueryRepositoryScope.mapToWorkingListScope(
             .mapNotNull { it.eventDate() }
             .mapNotNull { resources.dateFilterPeriodToText(it) },
         eventFilters().mapNotNull { it.assignedUserMode() }.distinct(),
-        filter().associateBy({ it.key() }, { it.value() }),
+        filter().mapNotNull { item -> item.value()?.let { item.key() to it } }.toMap(),
         programStage(),
-        dataValue().associateBy({ it.key() }, { it.value() }),
+        dataValue().mapNotNull { item -> item.value()?.let { item.key() to it } }.toMap(),
     )
 
 fun EventQueryRepositoryScope.mapToEventWorkingListScope(
