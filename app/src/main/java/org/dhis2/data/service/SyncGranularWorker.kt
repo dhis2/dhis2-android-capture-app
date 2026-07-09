@@ -49,7 +49,7 @@ import javax.inject.Inject
 private const val GRANULAR_CHANNEL = "sync_granular_notification"
 private const val SYNC_GRANULAR_ID = 8071988
 
-@Deprecated("Use org.dhis2.mobile.sync.data.SyncGranularWorker")
+@Deprecated("Use org.dhis2.mobile.sync.data.GranularSyncWorker")
 class SyncGranularWorker(
     context: Context,
     workerParams: WorkerParameters,
