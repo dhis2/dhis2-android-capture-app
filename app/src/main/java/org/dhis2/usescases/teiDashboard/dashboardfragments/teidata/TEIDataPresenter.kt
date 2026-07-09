@@ -131,17 +131,15 @@ class TEIDataPresenter(
                                     calcResult,
                                 )
                             }.subscribeOn(schedulerProvider.io())
-                            .doOnCancel { decrement() }
+                            .doFinally { decrement() }
                     }.subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
                         { events ->
                             _events.postValue(events)
-                            decrement()
                         },
                         { t ->
                             Timber.e(t)
-                            decrement()
                         },
                     ),
             )
