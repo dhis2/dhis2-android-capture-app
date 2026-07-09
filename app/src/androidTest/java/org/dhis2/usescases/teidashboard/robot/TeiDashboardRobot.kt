@@ -264,6 +264,8 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
                 composeTestRule.onNodeWithText(timelineLabel).performClick()
             } catch (e: NoMatchingViewException) {
                 checkIfGroupedEventsIsVisible()
+            } finally {
+                composeTestRule.waitForIdle()
             }
         }
     }

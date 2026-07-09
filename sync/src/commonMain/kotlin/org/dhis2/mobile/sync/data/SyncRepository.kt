@@ -51,5 +51,15 @@ interface SyncRepository {
 
     suspend fun saveDataSyncError(stackTrace: String)
 
+    suspend fun isServerAvailable(syncJobName: String): Boolean
+
+    suspend fun setUnnavailableFlag(syncJobName: String)
+
+    suspend fun removeUnnavailableFlag(syncJobName: String)
+
+    suspend fun isPeriodicJobFlagged(syncJobName: String): Boolean
+
+    suspend fun isLoggedIn(): Boolean
+
     suspend fun toggleSMS(enable: Boolean): Result<Unit>
 }

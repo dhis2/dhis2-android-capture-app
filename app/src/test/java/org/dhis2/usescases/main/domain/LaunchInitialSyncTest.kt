@@ -12,6 +12,7 @@ import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
@@ -57,6 +58,7 @@ class LaunchInitialSyncTest {
 
             assertTrue(result.isSuccess)
             assertEquals(InitialSyncAction.Skip, result.getOrNull())
+            verify(versionRepository, never()).downloadLatestVersionInfo()
         }
 
     @Test
@@ -76,10 +78,11 @@ class LaunchInitialSyncTest {
 
             assertTrue(result.isSuccess)
             assertEquals(InitialSyncAction.Skip, result.getOrNull())
+            verify(versionRepository, never()).downloadLatestVersionInfo()
         }
 
     @Test
-    fun `should return Syncing and launch initial sync`() =
+    fun `should return Syncing, check version and launch initial sync`() =
         runTest {
             whenever(homeRepository.isImportedDb()) doReturn false
             whenever(homeRepository.getInitialSyncDone()) doReturn false
@@ -95,17 +98,17 @@ class LaunchInitialSyncTest {
 
             assertTrue(result.isSuccess)
             assertEquals(InitialSyncAction.Syncing, result.getOrNull())
-            verify(versionRepository).checkVersionUpdates()
+            verify(versionRepository).downloadLatestVersionInfo()
+            verify(syncBackgroundJobAction).launchDataSync(0)
         }
 
     @Test
-    fun `should return failure if check version update fails`() =
+    fun `should still launch sync even if version check fails`() =
         runTest {
-            val exception = DomainError.DatabaseError("Error")
             whenever(homeRepository.isImportedDb()) doReturn false
             whenever(homeRepository.getInitialSyncDone()) doReturn false
-            given(versionRepository.checkVersionUpdates()).willAnswer {
-                throw exception
+            given(versionRepository.downloadLatestVersionInfo()).willAnswer {
+                throw RuntimeException("Network error")
             }
             launchInitialSync =
                 LaunchInitialSync(
@@ -117,8 +120,9 @@ class LaunchInitialSyncTest {
 
             val result = launchInitialSync()
 
-            assertTrue(result.isFailure)
-            assertEquals(exception, result.exceptionOrNull())
+            assertTrue(result.isSuccess)
+            assertEquals(InitialSyncAction.Syncing, result.getOrNull())
+            verify(syncBackgroundJobAction).launchDataSync(0)
         }
 
     @Test

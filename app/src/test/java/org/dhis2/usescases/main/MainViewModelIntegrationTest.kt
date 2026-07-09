@@ -20,6 +20,7 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobile.commons.providers.PreferenceProvider
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.domain.SyncStatusController
+import org.dhis2.mobile.sync.model.SyncJobStatus
 import org.dhis2.mobile.sync.model.SyncStatusData
 import org.dhis2.usescases.main.data.HomeRepository
 import org.dhis2.usescases.main.domain.CheckSingleNavigation
@@ -82,6 +83,7 @@ class MainViewModelIntegrationTest {
     private val scheduleNewVersionAlert: ScheduleNewVersionAlert = mock()
 
     private val syncStatusFlow = MutableStateFlow(SyncStatusData())
+    private val metadataJobFlow = MutableStateFlow<List<SyncJobStatus>>(emptyList())
     private val newVersionFlow = MutableSharedFlow<String>()
     private val filterManagerFlow = MutableStateFlow(0)
 
@@ -121,6 +123,7 @@ class MainViewModelIntegrationTest {
                 )
 
             whenever(syncStatusController.observeDownloadProcess()) doReturn syncStatusFlow
+            whenever(syncBackgroundJobAction.observeMetadataJob()) doReturn metadataJobFlow
             whenever(scheduleNewVersionAlert.newVersionFlow) doReturn newVersionFlow
             whenever(filterManager.asFlow(any())) doReturn filterManagerFlow
             whenever(filterManager.periodRequest) doReturn mock()

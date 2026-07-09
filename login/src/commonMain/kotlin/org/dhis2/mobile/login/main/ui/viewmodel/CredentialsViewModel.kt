@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.commons.extensions.withMinimumDuration
@@ -109,7 +110,7 @@ class CredentialsViewModel(
             )
 
     init {
-        launchUseCase {
+        viewModelScope.launch {
             appLinkNavigation.appLink.collect { urlString ->
                 handleOAuthCallbacks(urlString)
             }

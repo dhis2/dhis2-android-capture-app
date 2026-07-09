@@ -4,6 +4,7 @@ import kotlinx.coroutines.test.runTest
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.service.VersionRepository
+import org.dhis2.mobile.commons.domain.invoke
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
@@ -31,19 +32,18 @@ class CheckVersionUpdateTest {
     @Test
     fun `should check version update`() =
         runTest {
-            whenever(versionRepository.getLatestVersionInfo()) doReturn "new.version.name"
+            whenever(versionRepository.downloadLatestVersionInfo()) doReturn "new.version.name"
             checkVersionUpdate()
-            verify(versionRepository, times(1)).checkVersionUpdates()
+            verify(versionRepository, times(1)).downloadLatestVersionInfo()
         }
 
     @Test
     fun `should send no new version message`() =
         runTest {
             val noUpdateMsg = "No updates"
-            whenever(versionRepository.getLatestVersionInfo()) doReturn null
+            whenever(versionRepository.downloadLatestVersionInfo()) doReturn null
             whenever(resourceManager.getString(R.string.no_updates)) doReturn noUpdateMsg
             checkVersionUpdate()
             verify(settingsMessages, times(1)).sendMessage(noUpdateMsg)
-            verify(versionRepository, times(0)).checkVersionUpdates()
         }
 }

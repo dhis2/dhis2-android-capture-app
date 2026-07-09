@@ -6,8 +6,6 @@ import dhis2.org.analytics.charts.data.GraphFieldValue
 import dhis2.org.analytics.charts.data.GraphPoint
 import dhis2.org.analytics.charts.data.SerieData
 import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
-import dhis2.org.analytics.charts.mappers.DataElementToGraph
-import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
 import dhis2.org.analytics.charts.mappers.VisualizationToGraph
 import dhis2.org.analytics.charts.providers.AnalyticsFilterProvider
 import dhis2.org.analytics.charts.ui.OrgUnitFilterType
@@ -51,8 +49,6 @@ class ChartsRepositoryTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val visualizationToGraph: VisualizationToGraph = mock()
     private val analyticsTeiSettingsToGraph: AnalyticsTeiSettingsToGraph = mock()
-    private val dataElementToGraph: DataElementToGraph = mock()
-    private val programIndicatorToGraph: ProgramIndicatorToGraph = mock()
     private val analyticsResources: AnalyticResources = mock()
     private val analyticsFilterProvider: AnalyticsFilterProvider = mock()
 
@@ -61,8 +57,6 @@ class ChartsRepositoryTest {
             d2,
             visualizationToGraph,
             analyticsTeiSettingsToGraph,
-            dataElementToGraph,
-            programIndicatorToGraph,
             analyticsResources,
             analyticsFilterProvider,
         )
@@ -108,84 +102,6 @@ class ChartsRepositoryTest {
         }
 
     @Test
-    fun `Should get default analytics if settings is null`() =
-        runTest {
-            mockEnrollmentCall()
-            mockAnalyticsSettingsCall(null)
-            mockRepeatableStagesCall()
-            mockNumericDataElements(false)
-
-            whenever(
-                dataElementToGraph.map(any(), any(), any(), any(), anyOrNull(), anyOrNull(), any()),
-            ) doReturn mockedDataElementGraph()
-            mockIndicators(false)
-            whenever(
-                programIndicatorToGraph.map(
-                    any(),
-                    any(),
-                    any(),
-                    any(),
-                    anyOrNull(),
-                    anyOrNull(),
-                    any(),
-                ),
-            ) doReturn mockedIndicatorGraph()
-            val result = repository.getAnalyticsForEnrollment("enrollmentUid")
-            assertTrue(
-                result.isNotEmpty() &&
-                    result.size == 2 &&
-                    result[0].title == "de_graph_1" &&
-                    result[1].title == "indicator_graph_1",
-            )
-        }
-
-    @Test
-    fun `Should get default analytics if settings is null and return only dataElement graphs`() =
-        runTest {
-            mockEnrollmentCall()
-            mockAnalyticsSettingsCall(null)
-            mockRepeatableStagesCall()
-            mockNumericDataElements(false)
-            whenever(
-                dataElementToGraph.map(any(), any(), any(), any(), anyOrNull(), anyOrNull(), any()),
-            ) doReturn mockedDataElementGraph()
-            mockIndicators(true)
-            val result = repository.getAnalyticsForEnrollment("enrollmentUid")
-            assertTrue(
-                result.isNotEmpty() &&
-                    result.size == 1 &&
-                    result[0].title == "de_graph_1",
-            )
-        }
-
-    @Test
-    fun `Should get default analytics if settings is null and return only indicator graphs`() =
-        runTest {
-            mockEnrollmentCall()
-            mockAnalyticsSettingsCall(null)
-            mockRepeatableStagesCall()
-            mockNumericDataElements(true)
-            mockIndicators(false)
-            whenever(
-                programIndicatorToGraph.map(
-                    any(),
-                    any(),
-                    any(),
-                    any(),
-                    anyOrNull(),
-                    anyOrNull(),
-                    any(),
-                ),
-            ) doReturn mockedIndicatorGraph()
-            val result = repository.getAnalyticsForEnrollment("enrollmentUid")
-            assertTrue(
-                result.isNotEmpty() &&
-                    result.size == 1 &&
-                    result[0].title == "indicator_graph_1",
-            )
-        }
-
-    @Test
     fun `Should get default analytics if settings is null and return empty list`() =
         runTest {
             mockEnrollmentCall()
@@ -218,7 +134,13 @@ class ChartsRepositoryTest {
         val mockedVisualizationGroup: AnalyticsDhisVisualizationsGroup = mock()
         val visualizationSetting: AnalyticsDhisVisualizationsSetting =
             mock {
-                on { program() } doReturn mapOf(Pair("programUid", listOf(mockedVisualizationGroup)))
+                on { program() } doReturn
+                    mapOf(
+                        Pair(
+                            "programUid",
+                            listOf(mockedVisualizationGroup),
+                        ),
+                    )
             }
         whenever(
             d2
@@ -237,7 +159,13 @@ class ChartsRepositoryTest {
         val visualizationSetting: AnalyticsDhisVisualizationsSetting =
             mock {
                 on { program() } doReturn mapOf()
-                on { dataSet() } doReturn mapOf(Pair("dataSetUid", listOf(mockedVisualizationGroup)))
+                on { dataSet() } doReturn
+                    mapOf(
+                        Pair(
+                            "dataSetUid",
+                            listOf(mockedVisualizationGroup),
+                        ),
+                    )
             }
         whenever(
             d2

@@ -243,6 +243,8 @@ fun TrackedEntityDataValueObjectRepository.blockingGetValueCheck(
             )
         ) {
             blockingGet()
+        } else if (it.valueType()?.isFile == true) {
+            null
         } else {
             blockingDeleteIfExist()
             null

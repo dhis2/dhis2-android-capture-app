@@ -13,10 +13,20 @@ object AndroidIdlingResource : CoroutineIdlingResource {
         countingIdlingResource.dumpStateToLogs()
     }
 
+    override fun unconditionalIncrement() {
+        countingIdlingResource.increment()
+        countingIdlingResource.dumpStateToLogs()
+    }
+
     override fun decrement() {
         if (!countingIdlingResource.isIdleNow) {
             countingIdlingResource.decrement()
         }
+        countingIdlingResource.dumpStateToLogs()
+    }
+
+    override fun unconditionalDecrement() {
+        countingIdlingResource.decrement()
         countingIdlingResource.dumpStateToLogs()
     }
 

@@ -16,6 +16,7 @@ import org.dhis2.bindings.app
 import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.commons.data.FormFileProvider.init
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.data.service.VersionRepository
 import org.dhis2.mobile.login.authentication.TwoFASettingsActivity
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.general.FragmentGlobalAbstract
@@ -35,6 +36,7 @@ class SyncManagerFragment : FragmentGlobalAbstract() {
 
     private val presenter: SyncManagerPresenter by viewModels { settingsViewModelFactory }
     private val syncBackgroundJobAction: SyncBackgroundJobAction by inject()
+    private val versionRepository: VersionRepository by inject()
 
     @JvmField
     @Inject
@@ -44,7 +46,7 @@ class SyncManagerFragment : FragmentGlobalAbstract() {
         super.onAttach(context)
         app()
             .userComponent()
-            ?.plus(SyncManagerModule(syncBackgroundJobAction))
+            ?.plus(SyncManagerModule(syncBackgroundJobAction, versionRepository))
             ?.inject(this)
     }
 

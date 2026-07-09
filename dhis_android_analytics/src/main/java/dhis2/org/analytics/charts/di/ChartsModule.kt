@@ -9,8 +9,6 @@ import dhis2.org.analytics.charts.mappers.AnalyticDataElementToDataElementData
 import dhis2.org.analytics.charts.mappers.AnalyticIndicatorToIndicatorData
 import dhis2.org.analytics.charts.mappers.AnalyticTeiSettingsToSettingsAnalyticsModel
 import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
-import dhis2.org.analytics.charts.mappers.DataElementToGraph
-import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
 import dhis2.org.analytics.charts.mappers.VisualizationToGraph
 import dhis2.org.analytics.charts.providers.AnalyticsFilterProvider
 import dhis2.org.analytics.charts.providers.ChartCoordinatesProvider
@@ -78,20 +76,6 @@ val chartsModule =
             )
         }
 
-        factory {
-            DataElementToGraph(
-                periodStepProvider = get(),
-                chartCoordinatesProvider = get(),
-            )
-        }
-
-        factory {
-            ProgramIndicatorToGraph(
-                periodStepProvider = get(),
-                chartCoordinatesProvider = get(),
-            )
-        }
-
         factoryOf(::AnalyticResources)
 
         factoryOf(::AnalyticsFilterProvider)
@@ -101,8 +85,6 @@ val chartsModule =
                 d2 = get(),
                 visualizationToGraph = get(),
                 analyticsTeiSettingsToGraph = get(),
-                dataElementToGraph = get(),
-                programIndicatorToGraph = get(),
                 analyticsResources = get(),
                 analyticsFilterProvider = get(),
             )

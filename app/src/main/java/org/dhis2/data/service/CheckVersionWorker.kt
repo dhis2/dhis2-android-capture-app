@@ -10,7 +10,7 @@ class CheckVersionWorker(
     private val versionRepository: VersionRepository,
 ) : CoroutineWorker(context, workerParams) {
     override suspend fun doWork(): Result {
-        versionRepository.checkVersionUpdates()
+        versionRepository.downloadLatestVersionInfo()
         return Result.success()
     }
 }

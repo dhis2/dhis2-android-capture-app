@@ -14,8 +14,6 @@ import dhis2.org.analytics.charts.mappers.AnalyticDataElementToDataElementData
 import dhis2.org.analytics.charts.mappers.AnalyticIndicatorToIndicatorData
 import dhis2.org.analytics.charts.mappers.AnalyticTeiSettingsToSettingsAnalyticsModel
 import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
-import dhis2.org.analytics.charts.mappers.DataElementToGraph
-import dhis2.org.analytics.charts.mappers.ProgramIndicatorToGraph
 import dhis2.org.analytics.charts.mappers.VisualizationToGraph
 import dhis2.org.analytics.charts.providers.AnalyticsFilterProvider
 import dhis2.org.analytics.charts.providers.ChartCoordinatesProvider
@@ -48,8 +46,6 @@ class ChartsModule {
         d2: D2,
         visualizationToGraph: VisualizationToGraph,
         analyticsTeiSettingsToGraph: AnalyticsTeiSettingsToGraph,
-        dataElementToGraph: DataElementToGraph,
-        indicatorToGraph: ProgramIndicatorToGraph,
         analyticsResources: AnalyticResources,
         analyticsFilterProvider: AnalyticsFilterProvider,
     ): ChartsRepository =
@@ -57,8 +53,6 @@ class ChartsModule {
             d2,
             visualizationToGraph,
             analyticsTeiSettingsToGraph,
-            dataElementToGraph,
-            indicatorToGraph,
             analyticsResources,
             analyticsFilterProvider,
         )
@@ -98,18 +92,6 @@ class ChartsModule {
             analyticDataElementMapper,
             analyticIndicatorMapper,
         )
-
-    @Provides
-    internal fun provideDataElementToGraph(
-        periodStepProvider: PeriodStepProvider,
-        chartCoordinatesProvider: ChartCoordinatesProvider,
-    ): DataElementToGraph = DataElementToGraph(periodStepProvider, chartCoordinatesProvider)
-
-    @Provides
-    internal fun provideIndicatorToGraph(
-        periodStepProvider: PeriodStepProvider,
-        chartCoordinatesProvider: ChartCoordinatesProvider,
-    ): ProgramIndicatorToGraph = ProgramIndicatorToGraph(periodStepProvider, chartCoordinatesProvider)
 
     @Provides
     internal fun periodStepProvider(

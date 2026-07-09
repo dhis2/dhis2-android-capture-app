@@ -112,7 +112,7 @@ private fun MutableList<MenuItemData<EnrollmentMenuItem>>.addTimelineOrGroupBySt
     dashboardViewModel: DashboardViewModel,
     resourceManager: ResourceManager,
 ) {
-    if (dashboardViewModel.groupByStage.value != false) {
+    if (dashboardViewModel.groupByStage.value) {
         add(
             MenuItemData(
                 id = EnrollmentMenuItem.VIEW_TIMELINE,
