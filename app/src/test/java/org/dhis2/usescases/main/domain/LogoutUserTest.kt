@@ -7,6 +7,8 @@ import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.dhis2.usescases.main.data.HomeRepository
+import org.dhis2.usescases.main.domain.model.LogoutAction
+import org.hisp.dhis.android.core.common.AuthorizationType
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
@@ -49,7 +51,9 @@ class LogoutUserTest {
             verify(repository).logOut()
             verify(repository).accountsCount()
 
-            assertTrue(result.isSuccess && result.getOrNull() == 1)
+            assertTrue(result.isSuccess)
+            assertTrue(result.getOrNull() is LogoutAction.SuccessLogout)
+            assertTrue((result.getOrNull() as LogoutAction.SuccessLogout).accountCount == 1)
         }
 
     @Test
@@ -87,5 +91,16 @@ class LogoutUserTest {
             verify(repository).clearPin()
             verify(repository).logOut()
             verify(repository, never()).accountsCount()
+        }
+
+    @Test
+    fun `GIVEN the user logs out WHEN is oauth account AND no pin is set THEN pin should be requested`() =
+        runTest {
+            whenever(repository.accountType()) doReturn AuthorizationType.OAUTH2
+            whenever(repository.isPinStored()) doReturn false
+            val result = logoutUser()
+
+            assertTrue(result.isSuccess)
+            assertTrue(result.getOrNull() is LogoutAction.CreatePin)
         }
 }

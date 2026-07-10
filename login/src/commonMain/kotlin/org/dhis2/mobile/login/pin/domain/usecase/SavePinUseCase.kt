@@ -18,6 +18,9 @@ class SavePinUseCase(
         try {
             sessionRepository.savePin(pin)
             sessionRepository.setSessionLocked(true)
+            if (sessionRepository.isOauth()) {
+                sessionRepository.setOauthPin(pin)
+            }
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

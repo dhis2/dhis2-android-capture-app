@@ -5,6 +5,7 @@ import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.error.DomainErrorMapper
 import org.dhis2.mobile.commons.providers.PreferenceProvider
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.AuthorizationType
 import org.hisp.dhis.android.core.maintenance.D2Error
 
 /**
@@ -88,6 +89,32 @@ class SessionRepositoryImpl(
         withContext(dispatcher.io) {
             try {
                 d2.userModule().blockingLogOut()
+            } catch (d2Error: D2Error) {
+                throw domainErrorMapper.mapToDomainError(d2Error)
+            }
+        }
+
+    override suspend fun setOauthPin(pin: String) {
+        withContext(dispatcher.io) {
+            try {
+                d2
+                    .userModule()
+                    .oauth2Handler()
+                    .suspendSetPin(pin)
+            } catch (d2Error: D2Error) {
+                throw domainErrorMapper.mapToDomainError(d2Error)
+            }
+        }
+    }
+
+    override suspend fun isOauth(): Boolean =
+        withContext(dispatcher.io) {
+            try {
+                d2
+                    .userModule()
+                    .accountManager()
+                    .getCurrentAccount()
+                    ?.authorizationType() == AuthorizationType.OAUTH2
             } catch (d2Error: D2Error) {
                 throw domainErrorMapper.mapToDomainError(d2Error)
             }

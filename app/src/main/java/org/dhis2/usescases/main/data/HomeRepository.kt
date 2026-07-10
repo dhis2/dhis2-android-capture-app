@@ -1,6 +1,7 @@
 package org.dhis2.usescases.main.data
 
 import org.dhis2.usescases.main.HomeItemData
+import org.hisp.dhis.android.core.common.AuthorizationType
 import org.hisp.dhis.android.core.user.User
 import java.io.File
 
@@ -38,4 +39,6 @@ interface HomeRepository {
     suspend fun stopBackgroundSync()
 
     suspend fun restoreSyncStatus()
+
+    suspend fun accountType(): AuthorizationType?
 }
