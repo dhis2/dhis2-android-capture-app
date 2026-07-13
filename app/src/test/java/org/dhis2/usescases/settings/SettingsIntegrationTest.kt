@@ -134,7 +134,7 @@ class SettingsIntegrationTest {
     }
 
     @Test
-    fun `should display TFA when it is configured`() =
+    fun `should display TFA and status enabled when it is configured`() =
         runTest {
             // Given TFA configured
             whenever(settingsRepository.isTwoFAConfigured()) doReturn true
@@ -152,11 +152,28 @@ class SettingsIntegrationTest {
         }
 
     @Test
+    fun `should display TFA and status disabled when it is configured`() =
+        runTest {
+            // Given TFA configured
+            whenever(settingsRepository.isTwoFAConfigured()) doReturn true
+            whenever(twoFAStatus.invoke()) doReturn TwoFAStatus.Disabled("SECRET")
+
+            // When set settings config
+            buildPresenter()
+
+            // Then TFA should be displayed
+            syncManagerPresenter.settingsState.test {
+                assert(awaitItem() == null)
+                assert(awaitItem()?.isTwoFAConfigured == true)
+                assert(awaitItem()?.twoFAStatus is TwoFAStatus.Disabled)
+            }
+        }
+
+    @Test
     fun `should not display TFA when it is not configured`() =
         runTest {
             // Given TFA not configured
             whenever(settingsRepository.isTwoFAConfigured()) doReturn false
-            whenever(twoFAStatus.invoke()) doReturn TwoFAStatus.Disabled("")
 
             // When set settings config
             buildPresenter()
@@ -165,7 +182,6 @@ class SettingsIntegrationTest {
             syncManagerPresenter.settingsState.test {
                 assert(awaitItem() == null)
                 assert(awaitItem()?.isTwoFAConfigured == false)
-                assert(awaitItem()?.twoFAStatus is TwoFAStatus.Disabled)
             }
         }
 }
