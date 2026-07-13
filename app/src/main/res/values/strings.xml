@@ -155,7 +155,6 @@
     <string name="settingsTwoFAStatus">Status</string>
     <string name="settingsTwoFAEnabled">Enabled.</string>
     <string name="settingsTwoFADisabled">Disabled.</string>
-    <string name="settingsTwoFAStatusError">Connection error</string>
     <string name="settingTwoFADescr">Enable or disable the authentication in two steps.</string>
     <!--endregion-->
 

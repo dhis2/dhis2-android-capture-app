@@ -129,7 +129,11 @@ class SyncManagerPresenter(
             onSuccess = { settingsState ->
                 _settingsState
                     .update { settingsState }
-                    .also { getTwoFAStatus() }
+                    .also {
+                        if (_settingsState.value?.isTwoFAConfigured == true) {
+                            getTwoFAStatus()
+                        }
+                    }
             },
             onFailure = {
                 // do nothing

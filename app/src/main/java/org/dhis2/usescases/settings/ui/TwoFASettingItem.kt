@@ -16,24 +16,32 @@ fun TwoFASettingItem(
     status: TwoFAStatus,
     onClick: () -> Unit,
 ) {
+    val additionalInfoList =
+        buildList {
+            if (status !is TwoFAStatus.NoConnection) {
+                add(
+                    AdditionalInfoItem(
+                        key = stringResource(R.string.settingsTwoFAStatus),
+                        value =
+                            when (status) {
+                                is TwoFAStatus.Enabled ->
+                                    stringResource(R.string.settingsTwoFAEnabled)
+                                is TwoFAStatus.Disabled ->
+                                    stringResource(R.string.settingsTwoFADisabled)
+                            },
+                    ),
+                )
+                add(
+                    AdditionalInfoItem(
+                        value = stringResource(R.string.settingTwoFADescr),
+                    ),
+                )
+            }
+        }
     SettingItem(
         modifier = Modifier.testTag(SettingItem.TWO_FACTOR_AUTH.name),
         title = stringResource(id = R.string.settingTwoFA),
-        additionalInfoList =
-            listOf(
-                AdditionalInfoItem(
-                    key = stringResource(R.string.settingsTwoFAStatus),
-                    value =
-                        when (status) {
-                            is TwoFAStatus.Enabled -> stringResource(R.string.settingsTwoFAEnabled)
-                            is TwoFAStatus.Disabled -> stringResource(R.string.settingsTwoFADisabled)
-                            is TwoFAStatus.NoConnection -> stringResource(R.string.settingsTwoFAStatusError)
-                        },
-                ),
-                AdditionalInfoItem(
-                    value = stringResource(R.string.settingTwoFADescr),
-                ),
-            ),
+        additionalInfoList = additionalInfoList,
         icon = Icons.Outlined.LockPerson,
         extraActions = {},
         showExtraActions = false,

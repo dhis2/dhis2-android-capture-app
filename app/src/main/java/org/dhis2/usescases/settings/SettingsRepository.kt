@@ -355,7 +355,7 @@ class SettingsRepository(
 
     fun getVersionName(): String = BuildConfig.VERSION_NAME
 
-    fun isTwoFAConfigured(): Boolean =
+    suspend fun isTwoFAConfigured(): Boolean =
         d2
             .userModule()
             .accountManager()
