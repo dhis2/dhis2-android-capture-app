@@ -195,7 +195,7 @@ class MainViewModelTest {
     @Test
     fun `Should not reconfigure navigation bar when metadata sync emits after logout`() =
         runTest {
-            whenever(logOutUser()) doReturn Result.success(1)
+            whenever(logOutUser()) doReturn Result.success(LogoutAction.SuccessLogout(1))
             viewModel.homeEffects.test {
                 viewModel.logOut()
                 metadataJobFlow.emit(succeededMetadataJob)
