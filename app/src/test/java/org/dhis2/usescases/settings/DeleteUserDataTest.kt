@@ -38,7 +38,7 @@ class DeleteUserDataTest {
         runTest {
             deleteUserData.wipeCacheAndPreferences(null)
 
-            verify(workManagerController).cancelAllWork()
+            verify(workManagerController).cancelAllWorkAndWait()
             verify(workManagerController).pruneWork()
             verify(preferencesProvider).clear()
         }

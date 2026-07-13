@@ -10,6 +10,10 @@ import androidx.work.WorkQuery
 import androidx.work.await
 import androidx.work.workDataOf
 import kotlinx.coroutines.flow.map
+import org.dhis2.mobile.sync.model.CategoryOptionComboUid
+import org.dhis2.mobile.sync.model.GranularSyncType
+import org.dhis2.mobile.sync.model.OrgUnitUid
+import org.dhis2.mobile.sync.model.PeriodId
 import org.dhis2.mobile.sync.model.SyncJobStatus
 import org.dhis2.mobile.sync.model.SyncStatus
 import java.util.concurrent.TimeUnit
@@ -169,6 +173,73 @@ class AndroidSyncBackgroundJobAction(
             ?.takeIf { it.state == WorkInfo.State.ENQUEUED }
             ?.nextScheduleTimeMillis
 
+    override fun launchGranularSync(
+        uid: String,
+        granularSyncType: GranularSyncType,
+    ) {
+        val workData =
+            when (granularSyncType) {
+                GranularSyncType.DataSet,
+                GranularSyncType.Event,
+                GranularSyncType.Program,
+                GranularSyncType.Tei,
+                ->
+                    GranularSyncWorker.buildInputData(
+                        uid = uid,
+                        granularSyncType = granularSyncType,
+                    )
+
+                GranularSyncType.DataValue ->
+                    error("Use launchDataValueGranularSync")
+            }
+
+        val request =
+            OneTimeWorkRequest
+                .Builder(GranularSyncWorker::class.java)
+                .addTag(granularSyncType.name)
+                .setInputData(workData)
+                .build()
+
+        workManager
+            .beginUniqueWork(
+                granularSyncType.name,
+                ExistingWorkPolicy.KEEP,
+                request,
+            ).enqueue()
+    }
+
+    override fun launchDataValueGranularSync(
+        uid: String,
+        orgUnitUid: OrgUnitUid,
+        periodId: PeriodId,
+        attOptionComboUid: CategoryOptionComboUid,
+        catOptionCombo: List<String>,
+    ) {
+        val workData =
+            GranularSyncWorker.buildInputData(
+                uid = uid,
+                granularSyncType = GranularSyncType.DataValue,
+                orgUnitUid = orgUnitUid,
+                periodId = periodId,
+                attrOptionComboUid = attOptionComboUid,
+                catOptionCombo = catOptionCombo,
+            )
+
+        val request =
+            OneTimeWorkRequest
+                .Builder(GranularSyncWorker::class.java)
+                .addTag(GranularSyncType.DataValue.name)
+                .setInputData(workData)
+                .build()
+
+        workManager
+            .beginUniqueWork(
+                GranularSyncType.DataValue.name,
+                ExistingWorkPolicy.KEEP,
+                request,
+            ).enqueue()
+    }
+
     override fun observeDataJob() =
         workManager
             .getWorkInfosFlow(
@@ -177,6 +248,27 @@ class AndroidSyncBackgroundJobAction(
                     DATA_SYNC_NOW,
                 ),
             ).map { workInfos ->
+                workInfos.map { workInfo ->
+                    SyncJobStatus(
+                        tags = workInfo.tags.toList(),
+                        status =
+                            when (workInfo.state) {
+                                WorkInfo.State.ENQUEUED -> SyncStatus.Enqueue
+                                WorkInfo.State.RUNNING -> SyncStatus.Running
+                                WorkInfo.State.SUCCEEDED -> SyncStatus.Succeed
+                                WorkInfo.State.FAILED -> SyncStatus.Failed
+                                WorkInfo.State.BLOCKED -> SyncStatus.Blocked
+                                WorkInfo.State.CANCELLED -> SyncStatus.Cancelled
+                            },
+                        message = null,
+                    )
+                }
+            }
+
+    override fun observeGranularJob(workerName: String) =
+        workManager
+            .getWorkInfosForUniqueWorkFlow(workerName)
+            .map { workInfos ->
                 workInfos.map { workInfo ->
                     SyncJobStatus(
                         tags = workInfo.tags.toList(),

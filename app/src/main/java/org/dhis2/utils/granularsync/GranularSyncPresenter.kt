@@ -30,9 +30,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.ExistingWorkPolicy
-import androidx.work.WorkInfo
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -47,12 +46,10 @@ import org.dhis2.commons.sync.ConflictType.PROGRAM
 import org.dhis2.commons.sync.ConflictType.TEI
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.service.workManager.WorkManagerController
-import org.dhis2.data.service.workManager.WorkerItem
-import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.mobile.sync.data.GranularSyncWorker
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.model.GranularSyncType
+import org.dhis2.mobile.sync.model.SyncJobStatus
 import org.dhis2.usescases.sms.SmsSendingService
 import org.dhis2.utils.granularsync.data.GranularSyncRepository
 import org.dhis2.utils.granularsync.domain.MissingSyncTargetException
@@ -72,7 +69,6 @@ class GranularSyncPresenter(
     val schedulerProvider: SchedulerProvider,
     private val dispatcher: DispatcherProvider,
     private val syncContext: SyncContext,
-    private val workManagerController: WorkManagerController,
     private val smsSyncProvider: SMSSyncProvider,
     private val mapper: SyncUiStateMapper,
 ) : ViewModel(),
@@ -132,61 +128,59 @@ class GranularSyncPresenter(
             -> true
         }
 
-    fun initGranularSync(): LiveData<List<WorkInfo>> {
+    fun initGranularSync(): Flow<List<SyncJobStatus>> {
         viewModelScope.launch(dispatcher.io()) {
-            val workerData =
-                when (syncContext.conflictType()) {
-                    PROGRAM,
-                    TEI,
-                    EVENT,
-                    DATA_SET,
-                    ->
-                        GranularSyncWorker.buildInputData(
-                            uid = syncContext.recordUid(),
-                            granularSyncType =
-                                when (syncContext.conflictType()) {
-                                    PROGRAM -> GranularSyncType.Program
-                                    TEI -> GranularSyncType.Tei
-                                    EVENT -> GranularSyncType.Event
-                                    DATA_SET -> GranularSyncType.DataSet
-                                    else -> error("Unsupported conflict type")
-                                },
-                        )
-
-                    DATA_VALUES ->
-                        with(syncContext as SyncContext.DataSetInstance) {
-                            GranularSyncWorker.buildInputData(
-                                uid = recordUid(),
-                                granularSyncType = GranularSyncType.DataValue,
-                                orgUnitUid = orgUnitUid,
-                                periodId = periodId,
-                                attrOptionComboUid = attributeOptionComboUid,
-                                catOptionCombo = getDataSetCatOptCombos(),
-                            )
-                        }
-
-                    ALL -> { // Do nothing
-                        null
-                    }
-                }
-            if (syncContext.conflictType() != ALL) {
-                val workerItem =
-                    WorkerItem(
-                        workerName,
-                        WorkerType.GRANULAR,
-                        data = workerData,
-                        policy = ExistingWorkPolicy.KEEP,
+            when (syncContext.conflictType()) {
+                PROGRAM,
+                TEI,
+                EVENT,
+                DATA_SET,
+                -> {
+                    syncBackgroundJobAction.launchGranularSync(
+                        uid = syncContext.recordUid(),
+                        granularSyncType =
+                            when (syncContext.conflictType()) {
+                                PROGRAM -> GranularSyncType.Program
+                                TEI -> GranularSyncType.Tei
+                                EVENT -> GranularSyncType.Event
+                                DATA_SET -> GranularSyncType.DataSet
+                                else -> error("Unsupported conflict type")
+                            },
                     )
 
-                workManagerController.beginUniqueWork(workerItem)
-            } else {
-                syncBackgroundJobAction.launchDataSync(0)
+                    GranularSyncWorker.buildInputData(
+                        uid = syncContext.recordUid(),
+                        granularSyncType =
+                            when (syncContext.conflictType()) {
+                                PROGRAM -> GranularSyncType.Program
+                                TEI -> GranularSyncType.Tei
+                                EVENT -> GranularSyncType.Event
+                                DATA_SET -> GranularSyncType.DataSet
+                                else -> error("Unsupported conflict type")
+                            },
+                    )
+                }
+
+                DATA_VALUES ->
+                    with(syncContext as SyncContext.DataSetInstance) {
+                        syncBackgroundJobAction.launchDataValueGranularSync(
+                            uid = recordUid(),
+                            orgUnitUid = orgUnitUid,
+                            periodId = periodId,
+                            attOptionComboUid = attributeOptionComboUid,
+                            catOptionCombo = getDataSetCatOptCombos(),
+                        )
+                    }
+
+                ALL -> { // Do nothing
+                    syncBackgroundJobAction.launchDataSync(0)
+                }
             }
         }
         return observeWorkInfo()
     }
 
-    fun observeWorkInfo() = workManagerController.getWorkInfosForUniqueWorkLiveData(workerName)
+    fun observeWorkInfo() = syncBackgroundJobAction.observeGranularJob(workerName)
 
     private fun workerName(): String =
         when (syncContext.conflictType()) {
@@ -439,21 +433,19 @@ class GranularSyncPresenter(
         disposable.clear()
     }
 
-    fun manageWorkInfo(workInfo: WorkInfo) {
-        when (workInfo.state) {
-            WorkInfo.State.ENQUEUED,
-            WorkInfo.State.BLOCKED,
-            WorkInfo.State.RUNNING,
-            -> {
+    fun manageWorkInfo(jobStatus: SyncJobStatus) {
+        when (jobStatus.status) {
+            org.dhis2.mobile.sync.model.SyncStatus.Enqueue,
+            org.dhis2.mobile.sync.model.SyncStatus.Blocked,
+            org.dhis2.mobile.sync.model.SyncStatus.Running,
+            ->
                 loadSyncInfo(State.UPLOADING)
-            }
 
-            WorkInfo.State.SUCCEEDED,
-            WorkInfo.State.FAILED,
-            WorkInfo.State.CANCELLED,
-            -> {
+            org.dhis2.mobile.sync.model.SyncStatus.Cancelled,
+            org.dhis2.mobile.sync.model.SyncStatus.Failed,
+            org.dhis2.mobile.sync.model.SyncStatus.Succeed,
+            ->
                 loadSyncInfo()
-            }
         }
     }
 
