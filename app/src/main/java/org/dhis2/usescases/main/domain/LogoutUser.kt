@@ -17,8 +17,8 @@ class LogoutUser(
     private val filterManager: FilterManager,
 ) : UseCase<Unit, LogoutAction> {
     override suspend operator fun invoke(input: Unit): Result<LogoutAction> {
-        if (repository.accountType() == AuthorizationType.OAUTH2 && !repository.isPinStored()) {
-            return Result.success(LogoutAction.CreatePin)
+        return if (repository.accountType() == AuthorizationType.OAUTH2 && !repository.isPinStored()) {
+            Result.success(LogoutAction.CreatePin)
         } else {
             syncBackgroundJobAction.cancelAll()
             syncStatusController.restore()
@@ -32,7 +32,7 @@ class LogoutUser(
                 .logOut()
                 .onFailure { return Result.failure(it) }
 
-            return Result.success(LogoutAction.SuccessLogout(repository.accountsCount()))
+            Result.success(LogoutAction.SuccessLogout(repository.accountsCount()))
         }
     }
 }
