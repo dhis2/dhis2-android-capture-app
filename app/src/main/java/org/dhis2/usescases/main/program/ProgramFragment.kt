@@ -166,7 +166,7 @@ class ProgramFragment :
                         .make(
                             contextView,
                             R.string.sync_offline_check_connection,
-                            Snackbar.LENGTH_LONG,
+                            Snackbar.LENGTH_SHORT,
                         ).show()
                 }
             }.show(FRAGMENT_TAG)
