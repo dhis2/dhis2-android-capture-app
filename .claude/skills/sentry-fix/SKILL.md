@@ -9,8 +9,9 @@ description: >
   PR there — linking a Jira ticket for app-owned fixes when Jira access is
   available. Then watches the PR for the rest of the session, answering
   questions and pushing follow-up fixes for review comments until it is merged
-  or closed. Invoke as /sentry-fix <issue-id> [--repo <slug>] or follow a
-  /sentry-triage report.
+  or closed, and schedules a check to auto-resolve the Sentry issue once that
+  Jira ticket reaches Done. Invoke as /sentry-fix <issue-id> [--repo <slug>]
+  or follow a /sentry-triage report.
 ---
 
 # Sentry Fix Skill
@@ -486,3 +487,46 @@ the comment back in.
    left mid-review in an earlier session, just re-arm the Monitor from step 1
    using that PR's number; say so if the user seems to expect it persisted
    automatically.
+
+---
+
+## Step 11 — Auto-resolve the Sentry issue once the Jira ticket is Done
+
+Only applies when Step 9a's Jira sub-step produced a `JIRA_KEY` (skip this
+step entirely if there is none — nothing to close the loop with).
+
+Jira polling can't be a `Monitor` bash script like Step 10's — there is no CLI
+for the Atlassian MCP the way `gh` is a CLI for GitHub, so a detached shell
+process cannot call `getJiraIssue`. Only the agent itself can, which means
+this has to run as scheduled **prompts** (`CronCreate`), not a background
+script.
+
+1. **Check once immediately** when Step 10 reports the PR as `MERGED` (tickets
+   are sometimes auto-transitioned by a smart commit on merge, so this can
+   resolve instantly): call `getJiraIssue` on `JIRA_KEY` with
+   `fields: ["status"]`. If `status.statusCategory.key == "done"`, skip
+   straight to step 3.
+2. **Otherwise, schedule a recurring check** — `CronCreate` with a
+   self-contained prompt (it must carry everything needed, since it runs as a
+   fresh turn with no memory of this conversation):
+   > Check Jira issue `<JIRA_KEY>`'s status via the Atlassian MCP
+   > (`getJiraIssue`, `fields: ["status"]`). If `status.statusCategory.key` is
+   > `"done"`, mark Sentry issue `<SENTRY-SHORT-ID>` resolved via the Sentry
+   > MCP (`update_issue`, `status: "resolved"`, `reason: "Closed via Jira
+   > <JIRA_KEY>"`, `organizationSlug: "<ORG_SLUG>"`), then delete this cron
+   > job with `CronDelete`. Otherwise do nothing — the next scheduled run will
+   > check again.
+
+   A cadence of every few hours (e.g. `"17 */6 * * *"`) is plenty — Jira
+   tickets move on the order of days, not minutes. Tell the user the cadence
+   chosen and both caveats up front: recurring cron jobs auto-expire after 7
+   days, and none of this survives the session ending. If either limit is hit
+   before the ticket is closed, the Sentry issue is left as-is with no
+   automatic follow-up — say so plainly rather than implying it will
+   eventually resolve on its own.
+3. **Resolve**: call the Sentry MCP's `update_issue` with
+   `status: "resolved"` and `reason: "Closed via Jira <JIRA_KEY>"` on the
+   original Sentry issue. Report the resolution back — inline if step 1
+   caught it immediately, or (when this fires later from the cron job, in
+   what may be a different session) that report is simply the cron prompt's
+   own final message.
