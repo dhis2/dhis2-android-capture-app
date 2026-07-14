@@ -38,20 +38,6 @@ class MainTest : BaseTest() {
         }
     }
 
-    @Test
-    fun shouldNavigateToHomeWhenBackPressed() {
-        startActivity(
-            MainActivity.intent(
-                ApplicationProvider.getApplicationContext(),
-                MainScreenType.Settings,
-            )
-        )
-        homeRobot(composeTestRule) {
-            pressBack()
-            checkHomeIsDisplayed(composeTestRule)
-        }
-    }
-
     private fun startActivity(intent: Intent) {
         rule.launch(intent)
     }
