@@ -161,13 +161,14 @@ class ProgramFragment :
                     }
                 },
             ).onNoConnectionListener {
-                val contextView = activity?.findViewById<View>(R.id.navigationBar)
-                Snackbar
-                    .make(
-                        contextView!!,
-                        R.string.sync_offline_check_connection,
-                        Snackbar.LENGTH_SHORT,
-                    ).show()
+                activity?.findViewById<View>(R.id.navigationBar)?.let { contextView ->
+                    Snackbar
+                        .make(
+                            contextView,
+                            R.string.sync_offline_check_connection,
+                            Snackbar.LENGTH_SHORT,
+                        ).show()
+                }
             }.show(FRAGMENT_TAG)
     }
 
