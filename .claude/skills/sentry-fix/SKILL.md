@@ -6,7 +6,10 @@ description: >
   design system), reads the relevant sources at the shipped version, diagnoses
   the root cause, implements a fix in the owning repo following that repo's
   conventions, writes unit tests, runs its lint/test tasks, and opens a draft
-  PR there. Invoke as /sentry-fix <issue-id> [--repo <slug>] or follow a
+  PR there — linking a Jira ticket for app-owned fixes when Jira access is
+  available. Then watches the PR for the rest of the session, answering
+  questions and pushing follow-up fixes for review comments until it is merged
+  or closed. Invoke as /sentry-fix <issue-id> [--repo <slug>] or follow a
   /sentry-triage report.
 ---
 
@@ -421,3 +424,65 @@ Work happens inside the worktree created in Step 2; the branch
 6. **Delivery note**: end with the "Ships via" line from Step 8 — the fix
    reaches users only after a library release plus an app version bump; for
    severe crashes propose an app-side defensive guard as a companion PR.
+
+---
+
+## Step 10 — Monitor the PR until merged or closed
+
+Once a PR exists (from either 9a or 9b), don't stop at "opened" — stay attached
+so review feedback gets answered without the user having to ask again or paste
+the comment back in.
+
+1. Start a persistent `Monitor` polling the PR every ~30s for anything new
+   since the last poll, emitting one line per new item, and exiting once the
+   PR's state is no longer `OPEN`:
+   ```bash
+   last=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+   while true; do
+     state=$(gh pr view <PR-NUMBER> --repo <owner>/<repo> --json state -q .state)
+     now=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+     gh api "repos/<owner>/<repo>/issues/<PR-NUMBER>/comments?since=$last" \
+       --jq '.[] | "issue-comment \(.id) \(.user.login): \(.body)"'
+     gh api "repos/<owner>/<repo>/pulls/<PR-NUMBER>/comments?since=$last" \
+       --jq '.[] | "review-comment \(.id) \(.path):\(.line // .original_line) \(.user.login): \(.body)"'
+     gh api "repos/<owner>/<repo>/pulls/<PR-NUMBER>/reviews" \
+       --jq --arg since "$last" '.[] | select(.submitted_at > $since and .body != "") | "review \(.id) \(.user.login) \(.state): \(.body)"'
+     last=$now
+     if [ "$state" != "OPEN" ]; then echo "pr-state $state"; break; fi
+     sleep 30
+   done
+   ```
+   Use `persistent: true` (no timeout) and a description naming the PR, e.g.
+   `"PR #<N> comments/reviews"`.
+
+2. **On each new-comment/review notification**:
+   - Re-sync first — other work may have moved the worktree since the PR was
+     opened: `git checkout <branch> && git pull --ff-only` (app repo) or
+     `git -C <worktree> pull --ff-only` (library repo).
+   - Read the full comment and classify it:
+     - **Pure status/bot noise** (a CI check going green, a coverage report, a
+       passing quality-gate summary with nothing flagged) → no action.
+     - **A question** → answer directly by replying on the same thread — no
+       code change needed.
+     - **A requested change or a spotted bug** → re-run Steps 3–7 (diagnose,
+       implement, test, lint) for the new scope, commit, and push to the same
+       branch.
+   - For anything you acted on or answered, reply on that specific thread
+     (`gh api repos/<owner>/<repo>/pulls/<PR-NUMBER>/comments/<comment-id>/replies`
+     for inline review comments, `gh pr comment` for issue-level ones) with a
+     one-line summary of what changed — or why not, if you decided against it
+     — ending with the line
+     `_🤖 Addressed by [Claude Code](https://claude.com/claude-code)_`. Then
+     resolve the thread if it's an inline review thread (GraphQL
+     `resolveReviewThread` on the thread ID from `reviewThreads` in the PR's
+     GraphQL query). Skip replies for anything you didn't act on.
+
+3. **Stop condition**: the moment the poll reports `pr-state MERGED` or
+   `pr-state CLOSED`, stop watching and tell the user the final state.
+
+4. **Session-scoped caveat**: this watch runs only for the lifetime of the
+   current session — it is not a durable cron job, and it does not survive a
+   session ending or being cleared. If asked to resume watching a PR that was
+   left mid-review in an earlier session, just re-arm the Monitor from step 1
+   using that PR's number; say so if the user seems to expect it persisted
+   automatically.
