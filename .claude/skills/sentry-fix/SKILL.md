@@ -321,6 +321,41 @@ triggered, and the PR must target that same branch. Never use `main`, `develop`,
 or `origin/main` as the base unless you are explicitly told to. (This rule is
 app-repo-only — library base branches are fixed in Step 9b.)
 
+**0. Jira (optional, before creating the branch)**
+
+- Check whether Atlassian/Jira MCP tools are connected: search for them (e.g.
+  `ToolSearch` with a query like `"jira accessible resources create issue search"`).
+  Tool names are prefixed with a connection-specific server ID, so match by
+  keyword, not by a hardcoded name.
+- **Not connected** → ask the user once: "I can create/link a Jira issue for
+  this fix if you connect the Atlassian MCP — want me to, or should I skip
+  Jira for this fix?" Declined, or still unavailable after asking → skip Jira
+  entirely and continue to step 1 below with no ticket reference (the PR
+  title/body stay exactly as documented further down, no `[ANDROAPP-XXXX]`
+  prefix, no `Related task:` line).
+- **Connected** → resolve `cloudId` via the accessible-resources tool, then:
+  1. Search the `ANDROAPP` project for an issue that already covers this
+     crash — narrow JQL by the Sentry short-ID, the crash-site class name, or
+     a distinctive phrase from the culprit (`project = ANDROAPP AND text ~
+     "<term>"`, `fields: ["summary","status"]`). Prefer several narrow queries
+     over one broad one — an unscoped `text ~` search across the whole
+     project can return an oversized result.
+  2. **Found an existing open issue** covering the same crash → reuse its key
+     as `JIRA_KEY`; do not create a duplicate.
+  3. **Nothing found** → create a new `Bug` in `ANDROAPP`: summary matching
+     the Sentry issue title, description with the Sentry issue link, a
+     trimmed stack trace, the one-sentence root cause from Step 3, and (once
+     known) the PR link. Before creating, fetch this issue type's required
+     fields (`getJiraIssueTypeMetaWithFields`) — at the time of writing `Bug`
+     requires `components` (use `AndroidApp` unless a more specific component
+     obviously fits), `environment` (free text — release + platform is
+     enough), and `versions` (`Affects versions` — the crashing release, e.g.
+     the `release` tag from Step 1). Store the new key as `JIRA_KEY`.
+  4. If the search in 1 (or a `/sentry-triage` report) surfaced a clearly
+     related prior ticket — same anti-pattern, adjacent call site or repo —
+     link `JIRA_KEY` to it (`createIssueLink`, type `Relates`) and mention the
+     link when reporting back.
+
 ```bash
 # 1. Record the current branch BEFORE creating the fix branch
 BASE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -336,12 +371,20 @@ git commit -m "fix: <short description of fix>"
 # 4. Push
 git push -u origin fix/sentry-<issue-id-lowercase>
 
-# 5. Open PR as draft targeting BASE_BRANCH (not main/develop)
+# 5. Open PR as draft targeting BASE_BRANCH (not main/develop). Title gets the
+#    [JIRA_KEY] prefix only if step 0 produced one:
 gh pr create \
   --draft \
   --base "$BASE_BRANCH" \
-  --title "fix: <short description>" \
+  --title "fix: [<JIRA_KEY>] <short description>" \
   --body "..."
+# (title is "fix: <short description>", no brackets, when there is no JIRA_KEY)
+```
+
+When `JIRA_KEY` exists, add one line to the `## Sentry issue` section of the PR
+body (format below):
+```
+Related task: [<JIRA_KEY>](https://<atlassian-site>/browse/<JIRA_KEY>)
 ```
 
 ### Step 9b — Owner = SDK or design system

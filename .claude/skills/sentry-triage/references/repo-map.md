@@ -63,8 +63,14 @@ the evidence disagrees — and says so explicitly when that happens.
 
 - PR base: the branch the skill was triggered from — never `main`/`develop`
   unless explicitly told.
-- PRs: **draft**, title `fix: <desc>`, `## Sentry issue` section, and the
-  harness-provided `Co-Authored-By` trailer (never hardcode a model name).
+- PRs: **draft**, title `fix: <desc>` (or `fix: [ANDROAPP-XXXX] <desc>` when
+  `/sentry-fix` linked a Jira ticket — see its Step 9a), `## Sentry issue`
+  section, and the harness-provided `Co-Authored-By` trailer (never hardcode a
+  model name).
+- Jira: optional, app-repo fixes don't require a ticket. When the Atlassian
+  MCP is connected, `/sentry-fix` searches `ANDROAPP` for an existing issue
+  covering the crash and creates one if none exists (repo-map doesn't need
+  updating when this changes — see the skill for current field requirements).
 - Conventions: `AGENTS.md` (launchUseCase, DomainErrorMapper, KMP placement,
   ktlint, testing rules).
 - Lint/tests: `./gradlew ktlintFormat ktlintCheck` + per-module test task
