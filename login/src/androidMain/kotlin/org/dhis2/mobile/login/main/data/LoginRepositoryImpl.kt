@@ -177,7 +177,8 @@ class LoginRepositoryImpl(
     override suspend fun buildLogoutUrl(serverUrl: String): String =
         withContext(dispatcher.io) {
             try {
-                d2.userModule().oauth2Handler().blockingBuildLogoutUrl(serverUrl)
+                val config = OAuth2Config(serverUrl = serverUrl)
+                d2.userModule().oauth2Handler().blockingBuildLogoutUrl(config)
             } catch (d2Error: D2Error) {
                 throw domainErrorMapper.mapToDomainError(d2Error)
             }
