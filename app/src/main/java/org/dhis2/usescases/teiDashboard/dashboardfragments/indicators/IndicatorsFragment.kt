@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import dhis2.org.analytics.charts.extensions.isNotCurrent
-import dhis2.org.analytics.charts.idling.AnalyticsCountingIdlingResource
 import dhis2.org.analytics.charts.ui.AnalyticsAdapter
 import dhis2.org.analytics.charts.ui.AnalyticsModel
 import dhis2.org.analytics.charts.ui.ChartModel
@@ -112,17 +111,13 @@ class IndicatorsFragment :
     }
 
     override fun swapAnalytics(analytics: List<AnalyticsModel>) {
-        try {
-            adapter.submitList(analytics)
-            binding.spinner.visibility = View.GONE
+        adapter.submitList(analytics)
+        binding.spinner.visibility = View.GONE
 
-            if (analytics.isNotEmpty()) {
-                binding.emptyIndicators.visibility = View.GONE
-            } else {
-                binding.emptyIndicators.visibility = View.VISIBLE
-            }
-        } finally {
-            AnalyticsCountingIdlingResource.decrement()
+        if (analytics.isNotEmpty()) {
+            binding.emptyIndicators.visibility = View.GONE
+        } else {
+            binding.emptyIndicators.visibility = View.VISIBLE
         }
     }
 
@@ -166,7 +161,6 @@ class IndicatorsFragment :
     }
 
     override fun onDestroyView() {
-        AnalyticsCountingIdlingResource.decrement()
         presenter.onDettach()
         super.onDestroyView()
     }

@@ -6,7 +6,7 @@ import dhis2.org.analytics.charts.ui.ChartModel
 import dhis2.org.analytics.charts.ui.OrgUnitFilterType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -22,11 +22,14 @@ class IndicatorsPresenter(
     private val scope = CoroutineScope(SupervisorJob() + dispatcherProvider.io())
 
     fun init() {
-        AnalyticsCountingIdlingResource.increment()
         fetchData()
     }
 
     private fun fetchData() {
+        // Increment before launching so the idling resource reflects the in-flight fetch
+        // synchronously. The matching decrement lives in the coroutine's finally block, so it
+        // runs on success, failure and cancellation alike, keeping the counter balanced.
+        AnalyticsCountingIdlingResource.increment()
         scope.launch {
             try {
                 val data = indicatorRepository.fetchData()
@@ -35,11 +38,16 @@ class IndicatorsPresenter(
                 }
             } catch (e: Exception) {
                 Timber.d(e)
+            } finally {
+                AnalyticsCountingIdlingResource.decrement()
             }
         }
     }
 
-    fun onDettach() = scope.cancel()
+    // Cancel in-flight work without cancelling the scope itself, so it can be reused when the
+    // fragment is resumed again (e.g. returning from another activity) without leaking the
+    // idling resource.
+    fun onDettach() = scope.coroutineContext.cancelChildren()
 
     fun displayMessage(message: String) = view.displayMessage(message)
 
