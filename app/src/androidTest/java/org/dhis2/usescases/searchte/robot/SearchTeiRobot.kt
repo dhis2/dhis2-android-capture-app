@@ -108,8 +108,9 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MAP_CAROUSEL"), TIMEOUT)
         composeTestRule.onNodeWithTag("MAP_CAROUSEL", true)
             .assertIsDisplayed()
-        // Wait for at least one MAP_ITEM to be rendered
-        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MAP_ITEM"), TIMEOUT)
+        // Wait for at least one MAP_ITEM to be rendered. The carousel is filled by an async fetch
+        // that can take longer than the default 5s on the test device, so allow 10s here.
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MAP_ITEM"), 10_000L)
         // Wait extra time for data to populate in the cards
         composeTestRule.waitForIdle()
         // Finally assert that the text is displayed
