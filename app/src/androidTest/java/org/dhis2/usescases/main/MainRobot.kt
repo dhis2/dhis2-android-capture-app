@@ -18,6 +18,7 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
+import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.RootMatchers.isPlatformPopup
 import androidx.test.espresso.matcher.ViewMatchers.Visibility
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
@@ -178,5 +179,11 @@ class MainRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
                 ),
             ),
         )
+    }
+
+    fun scrollToChart(itemPosition: Int) {
+        onView(withId(R.id.analytics_recycler))
+            .perform(scrollToPosition<RecyclerView.ViewHolder>(itemPosition))
+        composeTestRule.waitForIdle()
     }
 }
