@@ -1,9 +1,11 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment
 
 import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ReOpenEventUseCase
 import org.hisp.dhis.android.core.D2
@@ -27,8 +29,12 @@ class EventCaptureFormPresenterTest {
         mock {
             on { getString(R.string.blocked_by_completion) } doReturn nonEditableMessage
         }
+    private val customLabelProvider: CustomLabelProvider = mock()
     private val reOpenUseCase: ReOpenEventUseCase = mock()
-    private val dispatcherProvider: DispatcherProvider = mock()
+    private val dispatcherProvider: DispatcherProvider =
+        mock {
+            on { ui() } doReturn Dispatchers.Unconfined
+        }
 
     @Before
     fun setUp() {
@@ -39,6 +45,7 @@ class EventCaptureFormPresenterTest {
                 d2,
                 eventUid,
                 resourceManager = resourceManager,
+                customLabelProvider = customLabelProvider,
                 reOpenEventUseCase = reOpenUseCase,
                 dispatcherProvider = dispatcherProvider,
             )

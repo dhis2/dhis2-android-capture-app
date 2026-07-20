@@ -8,6 +8,8 @@ import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope;
+import org.dhis2.mobile.commons.providers.CustomLabelProvider;
+import org.dhis2.mobile.commons.providers.CustomLabelProviderKt;
 import org.dhis2.mobile.sync.domain.SyncStatusController;
 import org.dhis2.usescases.main.program.ProgramDownloadState;
 import org.dhis2.usescases.main.program.ProgramUiModel;
@@ -38,13 +40,16 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
     private Date selectedEnrollmentDate;
     private PublishProcessor<Unit> refreshData = PublishProcessor.create();
     private SyncStatusController syncStatusController;
+    private final CustomLabelProvider customLabelProvider;
 
     TeiProgramListInteractor(
             TeiProgramListRepository teiProgramListRepository,
-            SyncStatusController syncStatusController
+            SyncStatusController syncStatusController,
+            CustomLabelProvider customLabelProvider
     ) {
         this.teiProgramListRepository = teiProgramListRepository;
         this.syncStatusController = syncStatusController;
+        this.customLabelProvider = customLabelProvider;
     }
 
     @Override
@@ -128,7 +133,14 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         } else if (!orgUnits.isEmpty()) {
             enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid, selectedEnrollmentDate);
         } else {
-            view.displayMessage(view.getContext().getString(R.string.no_org_units));
+            String orgUnitLabel = CustomLabelProviderKt.getCustomOrgUnitLabelBlocking(customLabelProvider, programUid);
+            view.displayMessage(
+                    customLabelProvider.formatStringWithCustomLabel(
+                            view.getContext().getString(R.string.no_org_units_with_label),
+                            orgUnitLabel,
+                            null
+                    )
+            );
         }
     }
 
