@@ -12,8 +12,12 @@ import kotlinx.coroutines.launch
 import org.dhis2.commons.schedulers.SingleEventEnforcer
 import org.dhis2.commons.schedulers.get
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.domain.FetchOrgUnits
+import org.dhis2.mobile.commons.domain.FetchOrgUnitsInput
+import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.mobile.ui.designsystem.component.OrgTreeItem
+import timber.log.Timber
 
 class OUTreeViewModel(
     private val repository: OUTreeRepository,
@@ -21,6 +25,7 @@ class OUTreeViewModel(
     private val singleSelection: Boolean,
     private val model: OUTreeModel,
     private val dispatchers: DispatcherProvider,
+    private val fetchOrgUnits: FetchOrgUnits,
 ) : ViewModel() {
     private val _treeNodes = MutableStateFlow(emptyList<OrgTreeItem>())
     val treeNodes: StateFlow<List<OrgTreeItem>> =
@@ -43,32 +48,21 @@ class OUTreeViewModel(
     }
 
     private fun fetchInitialOrgUnits(name: String? = null) {
-        viewModelScope.launch(dispatchers.io()) {
-            OrgUnitIdlingResource.increment()
-            val orgUnits = repository.orgUnits(name)
-            val treeNodes = ArrayList<OrgTreeItem>()
-
-            orgUnits.forEach { org ->
-                val canBeSelected = repository.canBeSelected(org.uid())
-                treeNodes.add(
-                    OrgTreeItem(
-                        uid = org.uid(),
-                        label = org.displayName()!!,
-                        isOpen = true,
-                        hasChildren = repository.orgUnitHasChildren(org.uid()),
-                        selected = selectedOrgUnits.contains(org.uid()),
-                        level = org.level()!!,
-                        selectedChildrenCount =
-                            repository.countSelectedChildren(
-                                org.uid(),
-                                selectedOrgUnits,
-                            ),
-                        canBeSelected = canBeSelected,
+        launchUseCase(dispatchers.io()) {
+            val result =
+                fetchOrgUnits(
+                    FetchOrgUnitsInput(
+                        query = name,
+                        selectedOrgUnits = selectedOrgUnits,
                     ),
                 )
-            }
-            OrgUnitIdlingResource.decrement()
-            _treeNodes.update { treeNodes }
+
+            result.fold(
+                onSuccess = { newList ->
+                    _treeNodes.update { newList }
+                },
+                onFailure = Timber::e,
+            )
         }
     }
 
@@ -81,43 +75,39 @@ class OUTreeViewModel(
     }
 
     fun onOpenChildren(parentOrgUnitUid: String) {
-        viewModelScope.launch(dispatchers.io()) {
-            _treeNodes.update { openChildren(parentOrgUnitUid = parentOrgUnitUid) }
+        launchUseCase(dispatchers.io()) {
+            val parentIndex = _treeNodes.value.indexOfFirst { it.uid == parentOrgUnitUid }
+            val orgUnits = repository.childrenOrgUnits(parentOrgUnitUid)
+            val treeNodes =
+                orgUnits.map { org ->
+                    val hasChildren = repository.orgUnitHasChildren(org.uid)
+                    OrgTreeItem(
+                        uid = org.uid,
+                        label = org.label,
+                        isOpen = hasChildren,
+                        hasChildren = hasChildren,
+                        selected = selectedOrgUnits.contains(org.uid),
+                        level = org.level,
+                        selectedChildrenCount =
+                            repository.countSelectedChildren(
+                                org.uid,
+                                selectedOrgUnits,
+                            ),
+                        canBeSelected = repository.canBeSelected(org.uid),
+                    )
+                }
+            val rebuiltList =
+                rebuildOrgUnitList(
+                    currentList = _treeNodes.value,
+                    location = parentIndex,
+                    nodes = treeNodes,
+                )
+
+            _treeNodes.update { rebuiltList }
         }
     }
 
     fun model() = model
-
-    private fun openChildren(
-        currentList: List<OrgTreeItem> = _treeNodes.value,
-        parentOrgUnitUid: String,
-    ): List<OrgTreeItem> {
-        val parentIndex = currentList.indexOfFirst { it.uid == parentOrgUnitUid }
-        val orgUnits = repository.childrenOrgUnits(parentOrgUnitUid)
-        val treeNodes =
-            orgUnits.map { org ->
-                val hasChildren = repository.orgUnitHasChildren(org.uid())
-                OrgTreeItem(
-                    uid = org.uid(),
-                    label = org.displayName()!!,
-                    isOpen = hasChildren,
-                    hasChildren = hasChildren,
-                    selected = selectedOrgUnits.contains(org.uid()),
-                    level = org.level()!!,
-                    selectedChildrenCount =
-                        repository.countSelectedChildren(
-                            org.uid(),
-                            selectedOrgUnits,
-                        ),
-                    canBeSelected = repository.canBeSelected(org.uid()),
-                )
-            }
-        return rebuildOrgUnitList(
-            currentList = currentList,
-            location = parentIndex,
-            nodes = treeNodes,
-        )
-    }
 
     fun onOrgUnitCheckChanged(
         orgUnitUid: String,
@@ -194,11 +184,15 @@ class OUTreeViewModel(
         return nodesCopy
     }
 
-    private fun getOrgUnits(): List<OrganisationUnit> = selectedOrgUnits.mapNotNull { uid -> repository.orgUnit(uid) }
-
     fun confirmSelection() {
-        singleEventEnforcer.processEvent {
-            _finalSelectedOrgUnits.update { getOrgUnits() }
+        launchUseCase(dispatchers.io()) {
+            val list =
+                selectedOrgUnits.mapNotNull { uid ->
+                    repository.legacyOrgUnit(uid)
+                }
+            singleEventEnforcer.processEvent {
+                _finalSelectedOrgUnits.update { list }
+            }
         }
     }
 }
