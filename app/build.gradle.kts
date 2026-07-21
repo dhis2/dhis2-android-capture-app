@@ -334,6 +334,7 @@ dependencies {
     implementation(project(":commonskmm"))
     implementation(project(":login"))
     implementation(project(":sync"))
+    implementation(project(":composeApp"))
 
     implementation(libs.security.conscrypt)
     implementation(libs.security.rootbeer)
