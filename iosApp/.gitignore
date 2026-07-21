@@ -1,0 +1,3 @@
+# Xcode — user-specific state, not for version control
+xcuserdata/
+*.xcuserstate
