@@ -304,10 +304,9 @@ class MainActivity : ActivityGlobalAbstract() {
                     }
                 },
             ).onNoConnectionListener {
-                val contextView = findViewById<View>(R.id.navigationBar)
                 Snackbar
                     .make(
-                        contextView,
+                        binding.root,
                         R.string.sync_offline_check_connection,
                         Snackbar.LENGTH_SHORT,
                     ).show()
