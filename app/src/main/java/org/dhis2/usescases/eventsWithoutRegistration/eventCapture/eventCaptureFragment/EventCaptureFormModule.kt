@@ -5,7 +5,6 @@ import dagger.Provides
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobile.commons.providers.CustomLabelProvider
-import org.dhis2.mobile.commons.providers.CustomLabelProviderImpl
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ReOpenEventUseCase
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.injection.EventDispatchers
@@ -47,8 +46,4 @@ class EventCaptureFormModule(
     @Provides
     @PerFragment
     fun provideEventDispatchers() = EventDispatchers()
-
-    @Provides
-    @PerFragment
-    fun provideCustomLabelProvider(d2: D2): CustomLabelProvider = CustomLabelProviderImpl(d2)
 }

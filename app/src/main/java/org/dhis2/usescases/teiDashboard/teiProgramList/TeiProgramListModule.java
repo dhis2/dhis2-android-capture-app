@@ -6,7 +6,6 @@ import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.mobile.commons.providers.CustomLabelProvider;
-import org.dhis2.mobile.commons.providers.CustomLabelProviderImpl;
 import org.dhis2.mobile.sync.domain.SyncStatusController;
 import org.dhis2.usescases.main.program.ProgramViewModelMapper;
 import org.dhis2.utils.analytics.AnalyticsHelper;
@@ -51,12 +50,6 @@ public class TeiProgramListModule {
     TeiProgramListContract.Interactor provideInteractor(@NonNull TeiProgramListRepository teiProgramListRepository,
                                                          CustomLabelProvider customLabelProvider) {
         return new TeiProgramListInteractor(teiProgramListRepository, syncStatusController, customLabelProvider);
-    }
-
-    @Provides
-    @PerActivity
-    CustomLabelProvider provideCustomLabelProvider(D2 d2) {
-        return new CustomLabelProviderImpl(d2);
     }
 
     @Provides
