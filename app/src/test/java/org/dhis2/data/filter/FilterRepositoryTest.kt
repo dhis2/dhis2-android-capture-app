@@ -16,6 +16,7 @@ import org.dhis2.commons.filters.sorting.SortingItem
 import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper
 import org.dhis2.commons.filters.workingLists.ProgramStageToWorkingListItemMapper
 import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.common.ObjectWithUid
@@ -56,6 +57,7 @@ class FilterRepositoryTest {
     private val teiFilterToWorkingListItemMapper: TeiFilterToWorkingListItemMapper =
         TeiFilterToWorkingListItemMapper("defaultLabel")
     private val programStageToWorkingListItemMapper: ProgramStageToWorkingListItemMapper = mock()
+    private val customLabelProvider: CustomLabelProvider = mock()
     private lateinit var filterRepository: FilterRepository
 
     @Before
@@ -69,6 +71,7 @@ class FilterRepositoryTest {
                 eventFilterToWorkingListItemMapper,
                 teiFilterToWorkingListItemMapper,
                 programStageToWorkingListItemMapper,
+                customLabelProvider,
             )
     }
 
