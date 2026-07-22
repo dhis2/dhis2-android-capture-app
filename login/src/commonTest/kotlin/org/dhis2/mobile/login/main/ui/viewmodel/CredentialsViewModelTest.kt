@@ -21,6 +21,7 @@ import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
 import org.dhis2.mobile.login.main.domain.usecase.GetDeviceEnrollmentUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
+import org.dhis2.mobile.login.main.domain.usecase.GetOAuthLogoutUrl
 import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUserWithOAuth
@@ -63,6 +64,7 @@ class CredentialsViewModelTest {
     private val openIdLogin: OpenIdLogin = mock()
     private val loginUserWithOAuth: LoginUserWithOAuth = mock()
     private val getDeviceEnrollmentUrl: GetDeviceEnrollmentUrl = mock()
+    private val getOAuthLogoutUrl: GetOAuthLogoutUrl = mock()
     private val processDeviceEnrollment: ProcessDeviceEnrollment = mock()
     private val updateTrackingPermission: UpdateTrackingPermission = mock()
     private val updateBiometricPermission: UpdateBiometricPermission = mock()
@@ -554,6 +556,8 @@ class CredentialsViewModelTest {
             val appLinkUrl = "https://vgarciabnz.github.io?code=$authCode&state=test"
             val mockAppLinkFlow = MutableSharedFlow<String>()
             val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
+            val logoutUrl = "$serverUrl/dhis-web-commons-security/logout.action?redirect_uri=dhis2oauth://oauth"
+            val logoutCallbackUrl = "https://vgarciabnz.github.io?state=test"
 
             whenever(getAvailableUsernames()) doReturn emptyList()
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
@@ -561,14 +565,20 @@ class CredentialsViewModelTest {
             whenever(getIsSessionLockedUseCase()) doReturn false
             whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
             whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
+            whenever(getOAuthLogoutUrl(any())) doReturn Result.success(logoutUrl)
             whenever(
                 loginUserWithOAuth.invoke(any(), any()),
             ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
 
-            initViewModel(serverUrl = serverUrl, username = "testuser", entryMode = CredentialsEntryMode.EXISTING_OAUTH, fromHome = true)
+            initViewModel(serverUrl = serverUrl, username = "testuser", entryMode = CredentialsEntryMode.NEW_ACCOUNT_OAUTH)
 
             viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
-                skipItems(2)
+                // The enrollment flow starts and the view model listens for OAuth callbacks
+                testDispatcher.scheduler.advanceUntilIdle()
+                verify(navigator).navigate(
+                    eq(LoginScreenState.OauthAuthentication(selectedServer = enrollmentUrl)),
+                    any(),
+                )
 
                 // WHEN - Send app link with authorization code (simulates OAuth callback)
                 mockAppLinkFlow.emit(appLinkUrl)
@@ -576,17 +586,30 @@ class CredentialsViewModelTest {
 
                 // Advance time for login to complete
                 testDispatcher.scheduler.advanceTimeBy(4.seconds)
-
-                // Login should succeed and show after login actions
-                val finalState = expectMostRecentItem()
-                assertEquals(LoginState.Enabled, finalState.loginState)
-                assertTrue(finalState.afterLoginActions.isNotEmpty())
+                testDispatcher.scheduler.advanceUntilIdle()
 
                 // Verify OAuth login was called with the correct code
                 verify(loginUserWithOAuth).invoke(
                     serverUrl = serverUrl,
                     code = authCode,
                 )
+
+                // THEN - the server session is cleared before entering the app:
+                // navigate to the logout URL and defer the after-login actions
+                verify(navigator).navigate(
+                    eq(LoginScreenState.OauthAuthentication(selectedServer = logoutUrl)),
+                    any(),
+                )
+                assertTrue(expectMostRecentItem().afterLoginActions.isEmpty())
+
+                // WHEN - the logout redirect returns (no code/iat/error)
+                mockAppLinkFlow.emit(logoutCallbackUrl)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - login completes and after-login actions are shown
+                val finalState = expectMostRecentItem()
+                assertEquals(LoginState.Enabled, finalState.loginState)
+                assertTrue(finalState.afterLoginActions.isNotEmpty())
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -613,10 +636,15 @@ class CredentialsViewModelTest {
                 processDeviceEnrollment.invoke(any()),
             ) doReturn Result.success(consentUrl)
 
-            initViewModel(serverUrl = serverUrl, username = "testuser", entryMode = CredentialsEntryMode.EXISTING_OAUTH, fromHome = true)
+            initViewModel(serverUrl = serverUrl, username = "testuser", entryMode = CredentialsEntryMode.NEW_ACCOUNT_OAUTH)
 
             viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
-                skipItems(2)
+                // The enrollment flow starts and the view model listens for OAuth callbacks
+                testDispatcher.scheduler.advanceUntilIdle()
+                verify(navigator).navigate(
+                    eq(LoginScreenState.OauthAuthentication(selectedServer = enrollmentUrl)),
+                    any(),
+                )
 
                 // WHEN - Send app link with IAT token (simulates enrollment callback)
                 mockAppLinkFlow.emit(appLinkUrl)
@@ -625,8 +653,11 @@ class CredentialsViewModelTest {
                 // Verify device enrollment was called with the correct IAT
                 verify(processDeviceEnrollment).invoke(any())
 
-                // Verify navigation happened once: to the consent URL
-                verify(navigator).navigate(any<LoginScreenState>(), any())
+                // Verify navigation to the consent URL
+                verify(navigator).navigate(
+                    eq(LoginScreenState.OauthAuthentication(selectedServer = consentUrl)),
+                    any(),
+                )
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -648,22 +679,95 @@ class CredentialsViewModelTest {
             whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
             whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
 
-            initViewModel(serverUrl = serverUrl, username = "testuser", entryMode = CredentialsEntryMode.EXISTING_OAUTH, fromHome = true)
+            initViewModel(serverUrl = serverUrl, username = "testuser", entryMode = CredentialsEntryMode.NEW_ACCOUNT_OAUTH)
 
             viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
-                skipItems(2)
+                // The enrollment flow starts and the view model listens for OAuth callbacks
+                testDispatcher.scheduler.advanceUntilIdle()
 
                 // WHEN - Send app link with error (simulates OAuth error callback)
                 mockAppLinkFlow.emit(appLinkUrl)
                 testDispatcher.scheduler.advanceUntilIdle()
 
                 // THEN - Error message should be shown
-                val errorState = awaitItem()
+                val errorState = expectMostRecentItem()
                 assertEquals("access_denied", errorState.errorMessage)
                 assertEquals(LoginState.Enabled, errorState.loginState)
 
+                // AND - the OAuth flow is over, so later app links are ignored
+                mockAppLinkFlow.emit("https://vgarciabnz.github.io?code=late_code&state=test")
+                testDispatcher.scheduler.advanceUntilIdle()
+                verify(loginUserWithOAuth, never()).invoke(any(), any())
+
                 cancelAndIgnoreRemainingEvents()
             }
+        }
+
+    @Test
+    fun `GIVEN two view models sharing app links WHEN second OAuth account logs in THEN only the flow owner handles callbacks`() =
+        runTest {
+            // GIVEN - an existing account screen (stale) and a new OAuth account screen (owner)
+            val staleServerUrl = "https://first.server.org"
+            val oauthServerUrl = "https://second.server.org"
+            val authCode = "auth_code_456"
+            val enrollmentUrl = "$oauthServerUrl/oauth2/enrollment"
+            val logoutUrl = "$oauthServerUrl/dhis-web-commons-security/logout.action?redirect_uri=dhis2oauth://oauth"
+            val sharedAppLinkNavigation = AppLinkNavigation()
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn true
+            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
+            whenever(getOAuthLogoutUrl(any())) doReturn Result.success(logoutUrl)
+            whenever(
+                loginUserWithOAuth.invoke(any(), any()),
+            ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
+
+            val staleViewModel =
+                initViewModel(
+                    serverUrl = staleServerUrl,
+                    username = "firstUser",
+                    entryMode = CredentialsEntryMode.EXISTING_OAUTH,
+                    fromHome = true,
+                    appLinkNavigation = sharedAppLinkNavigation,
+                )
+            val oauthViewModel =
+                initViewModel(
+                    serverUrl = oauthServerUrl,
+                    entryMode = CredentialsEntryMode.NEW_ACCOUNT_OAUTH,
+                    appLinkNavigation = sharedAppLinkNavigation,
+                )
+
+            oauthViewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                // Both view models load; only the new OAuth one starts its enrollment flow
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // WHEN - the authorization code and logout callbacks arrive
+                sharedAppLinkNavigation.emit("https://vgarciabnz.github.io?code=$authCode&state=test")
+                testDispatcher.scheduler.advanceTimeBy(4.seconds)
+                testDispatcher.scheduler.advanceUntilIdle()
+                sharedAppLinkNavigation.emit("https://vgarciabnz.github.io?state=test")
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - the OAuth flow owner completes the login
+                verify(loginUserWithOAuth).invoke(
+                    serverUrl = oauthServerUrl,
+                    code = authCode,
+                )
+                val finalState = expectMostRecentItem()
+                assertEquals(LoginState.Enabled, finalState.loginState)
+                assertTrue(finalState.afterLoginActions.isNotEmpty())
+
+                cancelAndIgnoreRemainingEvents()
+            }
+
+            // AND - the stale view model never consumed the callbacks
+            verify(loginUserWithOAuth, never()).invoke(eq(staleServerUrl), any())
+            assertTrue(
+                staleViewModel.credentialsScreenState.value.afterLoginActions
+                    .isEmpty(),
+            )
         }
 
     @Test
@@ -834,7 +938,8 @@ class CredentialsViewModelTest {
         entryMode: CredentialsEntryMode = CredentialsEntryMode.NEW_ACCOUNT_BASIC,
         fromHome: Boolean = false,
         oidcInfo: OidcInfo? = null,
-    ) {
+        appLinkNavigation: AppLinkNavigation = this.appLinkNavigation,
+    ): CredentialsViewModel {
         viewModel =
             CredentialsViewModel(
                 navigator,
@@ -847,6 +952,7 @@ class CredentialsViewModelTest {
                 openIdLogin,
                 loginUserWithOAuth,
                 getDeviceEnrollmentUrl,
+                getOAuthLogoutUrl,
                 processDeviceEnrollment,
                 updateTrackingPermission,
                 updateBiometricPermission,
@@ -862,5 +968,6 @@ class CredentialsViewModelTest {
                 fromHome = fromHome,
                 entryMode = entryMode,
             )
+        return viewModel
     }
 }

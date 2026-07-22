@@ -828,7 +828,7 @@ class DataSetTest : BaseTest() {
                 typeOrgUnitField(orgUnit)
                 checkFilterCounter("1")
             }
-            assertEquals(5, getListItemCount())
+            assertEquals(6, getListItemCount())
         }
 
         filterRobot(composeTestRule) {

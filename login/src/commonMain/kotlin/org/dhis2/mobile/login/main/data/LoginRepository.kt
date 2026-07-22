@@ -70,4 +70,6 @@ interface LoginRepository {
         serverUrl: String,
         code: String,
     ): Result<String?>
+
+    suspend fun buildLogoutUrl(serverUrl: String): String
 }

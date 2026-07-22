@@ -174,6 +174,16 @@ class LoginRepositoryImpl(
         }
     }
 
+    override suspend fun buildLogoutUrl(serverUrl: String): String =
+        withContext(dispatcher.io) {
+            try {
+                val config = OAuth2Config(serverUrl = serverUrl)
+                d2.userModule().oauth2Handler().blockingBuildLogoutUrl(config)
+            } catch (d2Error: D2Error) {
+                throw domainErrorMapper.mapToDomainError(d2Error)
+            }
+        }
+
     override suspend fun getAvailableLoginUsernames(): List<String> =
         withContext(dispatcher.io) {
             preferences.getSet(PREF_USERS, HashSet())?.toList() ?: emptyList()

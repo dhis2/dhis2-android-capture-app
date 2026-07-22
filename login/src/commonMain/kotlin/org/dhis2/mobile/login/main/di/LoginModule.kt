@@ -9,6 +9,7 @@ import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
 import org.dhis2.mobile.login.main.domain.usecase.GetDeviceEnrollmentUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
+import org.dhis2.mobile.login.main.domain.usecase.GetOAuthLogoutUrl
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
 import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
@@ -81,6 +82,10 @@ internal val mainLoginModule =
         }
 
         factory { params ->
+            GetOAuthLogoutUrl(get { parametersOf(params.get()) })
+        }
+
+        factory { params ->
             ProcessDeviceEnrollment(get { parametersOf(params.get()) })
         }
 
@@ -118,6 +123,7 @@ internal val mainLoginModule =
                 biometricLogin = get { parametersOf(context) },
                 loginUserWithOAuth = get { parametersOf(context) },
                 getDeviceEnrollmentUrl = get { parametersOf(context) },
+                getOAuthLogoutUrl = get { parametersOf(context) },
                 processDeviceEnrollment = get { parametersOf(context) },
                 updateTrackingPermission = get { parametersOf(context) },
                 updateBiometricPermission = get { parametersOf(context) },

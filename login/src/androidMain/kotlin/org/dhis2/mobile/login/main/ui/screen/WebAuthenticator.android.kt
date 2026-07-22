@@ -27,7 +27,6 @@ actual fun WebAuthenticator(
         val authTabIntent =
             AuthTabIntent
                 .Builder()
-                .setEphemeralBrowsingEnabled(true)
                 .build()
         // Custom Tab is not kept in the activity history stack and it's removed from memory.
         // It won't appear in the "Recent Apps" list

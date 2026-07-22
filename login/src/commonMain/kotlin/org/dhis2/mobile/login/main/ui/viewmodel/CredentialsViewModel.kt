@@ -24,6 +24,7 @@ import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
 import org.dhis2.mobile.login.main.domain.usecase.GetDeviceEnrollmentUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
+import org.dhis2.mobile.login.main.domain.usecase.GetOAuthLogoutUrl
 import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUserWithOAuth
@@ -53,6 +54,7 @@ class CredentialsViewModel(
     private val openIdLogin: OpenIdLogin,
     private val loginUserWithOAuth: LoginUserWithOAuth,
     private val getDeviceEnrollmentUrl: GetDeviceEnrollmentUrl,
+    private val getOAuthLogoutUrl: GetOAuthLogoutUrl,
     private val processDeviceEnrollment: ProcessDeviceEnrollment,
     private val updateTrackingPermission: UpdateTrackingPermission,
     private val updateBiometricPermission: UpdateBiometricPermission,
@@ -98,6 +100,10 @@ class CredentialsViewModel(
 
     private var loginJob: Job? = null
 
+    private var pendingOAuthLoginResult: LoginResult.Success? = null
+
+    private var appLinkJob: Job? = null
+
     private val _credentialsScreenState = MutableStateFlow(initialState)
     val credentialsScreenState =
         _credentialsScreenState
@@ -108,14 +114,6 @@ class CredentialsViewModel(
                 started = SharingStarted.Eagerly,
                 initialValue = initialState,
             )
-
-    init {
-        viewModelScope.launch {
-            appLinkNavigation.appLink.collect { urlString ->
-                handleOAuthCallbacks(urlString)
-            }
-        }
-    }
 
     private fun loadData() {
         when (entryMode) {
@@ -219,6 +217,7 @@ class CredentialsViewModel(
             getDeviceEnrollmentUrl(serverUrl).fold(
                 onSuccess = { enrollmentURL ->
                     // First OAuth call (enrollment) - clear any previous OAuth sessions
+                    startListeningForOAuthCallbacks()
                     navigator.navigate(
                         LoginScreenState.OauthAuthentication(
                             selectedServer = enrollmentURL,
@@ -242,10 +241,29 @@ class CredentialsViewModel(
         }
     }
 
+    // AppLinkNavigation is a single-delivery channel shared by every CredentialsViewModel alive
+    // on the back stack, so only the instance that launched the OAuth browser round-trip may
+    // collect it. Collection starts when the flow begins and stops when it terminates.
+    private fun startListeningForOAuthCallbacks() {
+        if (appLinkJob?.isActive == true) return
+        appLinkJob =
+            viewModelScope.launch {
+                appLinkNavigation.appLink.collect { urlString ->
+                    handleOAuthCallbacks(urlString)
+                }
+            }
+    }
+
+    private fun stopListeningForOAuthCallbacks() {
+        appLinkJob?.cancel()
+        appLinkJob = null
+    }
+
     private fun handleOAuthCallbacks(urlString: String) {
         // First check if there is any error
         val error = urlString.substringAfter("error=", "").substringBefore('&')
         if (error.isNotEmpty()) {
+            stopListeningForOAuthCallbacks()
             _credentialsScreenState.update {
                 it.copy(
                     errorMessage = error,
@@ -269,6 +287,13 @@ class CredentialsViewModel(
             return
         }
 
+        // Logout callback after a successful OAuth login: resume the deferred actions
+        if (pendingOAuthLoginResult != null) {
+            completeOAuthLogin()
+            return
+        }
+
+        stopListeningForOAuthCallbacks()
         _credentialsScreenState.update {
             it.copy(
                 loginState = LoginState.Enabled,
@@ -277,11 +302,60 @@ class CredentialsViewModel(
     }
 
     private fun loginWithOAuthCode(code: String) {
-        startLoginJob {
-            loginUserWithOAuth(
-                serverUrl = serverUrl,
-                code = code,
+        _credentialsScreenState.update {
+            it.copy(
+                loginState = LoginState.Running,
+                errorMessage = null,
             )
+        }
+        loginJob =
+            launchUseCase {
+                val result =
+                    withMinimumDuration {
+                        loginUserWithOAuth(
+                            serverUrl = serverUrl,
+                            code = code,
+                        )
+                    }
+                when (result) {
+                    is LoginResult.Success -> {
+                        // Defer entering the app until the server session cookie is cleared
+                        pendingOAuthLoginResult = result
+                        getOAuthLogoutUrl(serverUrl).fold(
+                            onSuccess = { logoutUrl ->
+                                navigator.navigate(
+                                    LoginScreenState.OauthAuthentication(
+                                        selectedServer = logoutUrl,
+                                    ),
+                                )
+                            },
+                            onFailure = {
+                                // Best-effort: proceed into the app if the logout URL can't be built
+                                completeOAuthLogin()
+                            },
+                        )
+                    }
+
+                    is LoginResult.Error -> {
+                        stopListeningForOAuthCallbacks()
+                        handleLoginResult(result)
+                        _credentialsScreenState.update {
+                            it.copy(loginState = LoginState.Enabled)
+                        }
+                    }
+                }
+            }
+    }
+
+    private fun completeOAuthLogin() {
+        val pending = pendingOAuthLoginResult ?: return
+        pendingOAuthLoginResult = null
+        stopListeningForOAuthCallbacks()
+        launchUseCase {
+            handleLoginResult(pending)
+            _credentialsScreenState.update {
+                it.copy(loginState = LoginState.Enabled)
+            }
         }
     }
 
@@ -306,6 +380,7 @@ class CredentialsViewModel(
                     )
                 },
                 onFailure = { error ->
+                    stopListeningForOAuthCallbacks()
                     _credentialsScreenState.update {
                         it.copy(
                             errorMessage = error.message,
