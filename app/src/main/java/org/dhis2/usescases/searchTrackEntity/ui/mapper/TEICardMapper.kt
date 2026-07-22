@@ -321,7 +321,7 @@ class TEICardMapper(
         onSyncIconClick: () -> Unit,
     ) {
         val buttonText =
-            when (searchTEIModel.tei.syncState) {
+            when (searchTEIModel.tei.aggregatedSyncState) {
                 SyncState.TO_POST,
                 SyncState.TO_UPDATE,
                     -> {
