@@ -17,6 +17,7 @@ import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper
 import org.dhis2.commons.filters.workingLists.ProgramStageToWorkingListItemMapper
 import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper
 import org.dhis2.mobile.commons.providers.CustomLabelProvider
+import org.dhis2.mobile.commons.providers.getCustomOrgUnitLabelBlocking
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.common.ObjectWithUid
@@ -689,6 +690,10 @@ class FilterRepositoryTest {
                 .withTrackedEntityInstanceEventFilters()
                 .blockingGet(),
         ) doReturn emptyList()
+        whenever(
+            customLabelProvider
+                .getCustomOrgUnitLabelBlocking(program.uid()),
+        ) doReturn "Org. Unit"
         whenever(
             d2.settingModule().appearanceSettings().getProgramFiltersByUid(program.uid()),
         ) doReturn emptyMap()

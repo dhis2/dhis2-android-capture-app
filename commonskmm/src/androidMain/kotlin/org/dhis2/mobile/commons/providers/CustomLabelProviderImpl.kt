@@ -27,17 +27,22 @@ class CustomLabelProviderImpl(
     override suspend fun getCustomOrgUnitLabel(
         programUid: String?,
         quantity: Int?,
+        capitalizeFirstLetter: Boolean,
     ): String =
-        try {
-            d2
-                .programModule()
-                .programs()
-                .uid(programUid)
-                .blockingGet()
-                ?.displayOrgUnitLabel()
-        } catch (e: Exception) {
-            null
-        } ?: quantity?.let { getPluralString(Res.plurals.org_unit, it) } ?: getPluralString(Res.plurals.org_unit, 1)
+        (
+            try {
+                d2
+                    .programModule()
+                    .programs()
+                    .uid(programUid)
+                    .blockingGet()
+                    ?.displayOrgUnitLabel()
+            } catch (e: Exception) {
+                null
+            } ?: quantity?.let { getPluralString(Res.plurals.org_unit, it) } ?: getPluralString(Res.plurals.org_unit, 1)
+        ).let { label ->
+            if (capitalizeFirstLetter) label.replaceFirstChar { it.uppercase() } else label
+        }
 
     override fun formatStringWithCustomLabel(
         stringResource: String,

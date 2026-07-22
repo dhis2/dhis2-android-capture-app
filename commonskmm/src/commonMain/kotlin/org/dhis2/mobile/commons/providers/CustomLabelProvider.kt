@@ -11,6 +11,7 @@ interface CustomLabelProvider {
     suspend fun getCustomOrgUnitLabel(
         programUid: String?,
         quantity: Int? = null,
+        capitalizeFirstLetter: Boolean = true,
     ): String
 
     fun formatStringWithCustomLabel(
@@ -20,7 +21,10 @@ interface CustomLabelProvider {
     ): String
 }
 
-fun CustomLabelProvider.getCustomOrgUnitLabelBlocking(programUid: String?): String =
+fun CustomLabelProvider.getCustomOrgUnitLabelBlocking(
+    programUid: String?,
+    capitalizeFirstLetter: Boolean = true,
+): String =
     runBlocking {
-        getCustomOrgUnitLabel(programUid)
+        getCustomOrgUnitLabel(programUid, null, capitalizeFirstLetter)
     }

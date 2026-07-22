@@ -133,7 +133,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         } else if (!orgUnits.isEmpty()) {
             enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid, selectedEnrollmentDate);
         } else {
-            String orgUnitLabel = CustomLabelProviderKt.getCustomOrgUnitLabelBlocking(customLabelProvider, programUid);
+            String orgUnitLabel = CustomLabelProviderKt.getCustomOrgUnitLabelBlocking(customLabelProvider, programUid, true);
             view.displayMessage(
                     customLabelProvider.formatStringWithCustomLabel(
                             view.getContext().getString(R.string.no_org_units_with_label),
