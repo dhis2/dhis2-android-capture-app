@@ -1,0 +1,6 @@
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="action_accept">قبول</string>
+    <string name="cancel">إلغاء</string>
+    <string name="wipe_data_ok">قبول</string>
+    <string name="wipe_data_no">إلغاء</string>
+    </resources>

@@ -41,10 +41,7 @@
     <string name="keep_editing">Pokračovat v úpravách</string>
     <string name="event_can_be_completed">Chcete tento formulář označit jako vyplněný?</string>
     <string name="discard_go_back">Pokud nyní odejdete, všechny informace ve formuláři budou zahozeny.</string>
-    <string name="field_errors_not_saved">Některá pole obsahují chyby a neuloží se.</string>
-    <string name="fields_mandatory_missing">Některá povinná pole chybí a formulář nelze uložit.</string>
-    <string name="fields_mandatory_missing_discard">Chybí některá povinná pole a formulář nelze uložit. \nPokud nyní formulář ukončíte, změny budou zrušeny.</string>
-    <string name="field_errors_not_saved_discard">Některá pole obsahují chyby a neuloží se. \nPokud nyní skončíte, změny budou zahozeny.</string>
+    <string name="field_errors_not_saved_discard">Některá pole obsahují chyby a neukládají se. \nPokud je nyní ukončíte, změny budou zrušeny.</string>
     <string name="share">Sdílet</string>
     <string name="camera_permission_denied">Povolení k použití kamery je zamítnuto.\nChcete-li tuto funkci používat, musíte ji povolit.</string>
     <string name="action_close">Zavřít</string>

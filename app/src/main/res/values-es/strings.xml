@@ -110,9 +110,6 @@
     <string name="every_12_hours">12h</string>
     <string name="Manual">Manual</string>
     <string name="a_week">Semanal</string>
-    <string name="sync_max_parameters">Ajustes actuales de sincronización:</string>
-    <string name="sync_default_parameters">Volver a los valores por defecto</string>
-    <string name="wipe_data_meesage">Se borrará la base de datos. \nTendrá que volver a iniciar sesión.</string>
     <string name="wipe_data_ok">Aceptar</string>
     <string name="wipe_data_no">Cancelar</string>
     <string name="SYNC_DATA">Sincronizar datos Ahora</string>
@@ -160,16 +157,7 @@
     <string name="write_new_note">Escribir nota nueva</string>
     <string name="clear">Limpiar</string>
     <string name="add_note">Añadir nota</string>
-    <string name="revert">Deshacer</string>
-    <string name="activated">Activado</string>
-    <string name="missing_mandatory_fields_title">Los campos obligatorios no pueden estar vacios</string>
-    <string name="missing_mandatory_fields_text">Algunos campos obligatorios están vacíos. Si desea ir atrás ahora, toda la información guardada se borrará.</string>
-    <string name="missing_mandatory_fields_text_not_delete">Faltan campos obligatorios. Rellénelos para ir atrás. </string>
-    <string name="missing_mandatory_fields_events">Algunos campos necesitan tu atención.\n¿Deseas revisar el formulario\?</string>
     <string name="title_delete_go_back">Los datos no se han guardado</string>
-    <string name="delete_go_back">Si vuelve ahora la información registrada se perderá </string>
-    <string name="missing_mandatory_fields_go_back">Borrar y salir.</string>
-    <string name="missing_mandatory_fields_finish">Algunos campos obligatorios están vacíos. Puede terminar la entrada de datos y salir, pero el evento no podrá ser completado.</string>
     <string name="tei_coordinates">Coordenadas para</string>
 
     <!--EVENT SUMMARY-->
@@ -211,8 +199,6 @@
     <string name="programs_to_enroll">Programas disponibles para admisión</string>
     <string name="share">Compartir</string>
     <string name="share_qr">Compartir QR</string>
-    <string name="max">Máx</string>
-    <string name="current">En uso</string>
     <string name="tei">TEI</string>
     <string name="teis">TEIs</string>
     <string name="wipe_data">Reiniciar app</string>
@@ -269,20 +255,6 @@
     <string name="delete_local_data_message">Los datos no sincronizados se perderán. Continuar?</string>
     <string name="delete_local_data_error">Los datos no se pudieron borrar. Inténtelo de nuevo.</string>
     <string name="delete_local_data_done">Los datos locales se borraron correctamente.</string>
-    <string name="org_unit_selection_warning">Debe seleccionar al menos una unidad organizativa.</string>
-    <string name="send_user_name_title">Enviar datos</string>
-    <string name="send_user_name_mesage">Ayude a DHIS2 a mejorar esta app compartiendo errores asociados a su usuario.</string>
-    <string name="improve_app_msg_title">¿Desea ayudarnos a mejorar esta aplicación?</string>
-    <string name="improve_app_msg_clickable_word">política de privacidad</string>
-    <string name="check_mandatory_field">Comprobar campos</string>
-    <string name="error_no_network_during_sync">Se perdió la conexión a internet durante la sincronización. Inténtelo mas tarde.</string>
-    <string name="action_agree">Confirmar</string>
-    <string name="action_continue">Seguir</string>
-    <string name="login_server_info_title">URL de servidor</string>
-    <string name="login_server_info_message">Introduzca la URL del servidor DHIS 2 de su organización proporcionada por su administrador. También puede escanear un código QR con la URL de su servidor. </string>
-    <string name="forgot_your_code">¿Olvido su código?</string>
-    <string name="event_form_end_options_title">¿Que quiere hacer con este evento?</string>
-    <string name="sectionSelectorEnd">FIN</string>
     <string name="resource_not_found">%s no encontrado</string>
     <string name="relationship_not_found_message">Este registro no esta disponible. ¿Quiere buscarlo?</string>
     <string name="sync_by_sms">Sincronizado por SMS</string>
@@ -360,7 +332,6 @@
     <string name="filter_event_status_visited">Visitado</string>
     <string name="filter_event_status_completed">Completado</string>
     <string name="filter_event_status_skipped">Omitido</string>
-    <string name="event_tei_limits">Eventos:%smax:%s%sactual:%sEntidades:%smax:%s%sactual:%s</string>
     <string name="limit_setting">Configuración limitada %s</string>
     <string name="sms_enabled">Módulo de SMS activado</string>
     <string name="sms_disabled">Módulo de SMS desactivado</string>
@@ -427,8 +398,6 @@
     <string name="filters_title_date">Fecha</string>
     <string name="privacy_policy_title">Política de privacidad</string>
     <string name="open_privacy_policy">Pulse aquí para comprobar nuestra <a href="">política de privacidad</a></string>
-    <string name="coordinates_error">El valor de las coordenadas no es válido</string>
-    <string name="break_glass_error_v2">No puede registrar un/una %s desde otras unidades organizativas en este programa por que está protegido.\nContacte con su administrador.</string>
     <string name="field_is_mandatory">El campo es obligatorio</string>
     <string name="security_debugger_message">Por razones de seguridad, esta versión de la app no permite el uso de adb. Por favor use la versión de formación.</string>
 
@@ -606,14 +575,9 @@
     <string name="event">evento</string>
     <string name="timeline">Línea de tiempo</string>
     <string name="database_export_downloaded">Base de datos descargada</string>
-    <string name="importing_database">Importando base de datos</string>
     <string name="show_more">Mostrar más</string>
     <string name="show_less">Mostrar menos</string>
     <string name="sync">Sincronizar</string>
-    <string name="show_fields">Mostrar campos</string>
-    <string name="hide_fields">Ocultar campos</string>
-    <string name="importing_successful">Importado con éxito</string>
-    <string name="section_misconfigured">Esta sección está mal configurada.\nContacta a tu administrador.</string>
     <string name="successful_sync">Sincronizado con éxito</string>
     <string name="syncing_something">Sincronizando %s...</string>
     <string name="file_resources">archivos</string>
@@ -630,7 +594,6 @@
     <string name="complete_enrollment_label">Completar %s</string>
     <string name="deactivate_enrollment_label">Desactivar %s</string>
     <string name="reopen_enrollment_label">Reabrir %s</string>
-
     <plurals name="error_count_label">
         <item quantity="one">%s error</item>
         <item quantity="many">%s errores</item>
@@ -648,4 +611,7 @@
         <item quantity="many">Hay %s programas con configuraciones específicas</item>
         <item quantity="other">Hay %s programas con configuraciones específicas</item>
     </plurals>
+    <string name="break_glass_error_v2">No puede registrar un/una %s desde otras unidades organizativas en este programa por que está protegido.\nContacte con su administrador.</string>
+    <string name="wipe_data_meesage">Se borrará la base de datos. \nTendrá que volver a iniciar sesión.</string>
+
 </resources>

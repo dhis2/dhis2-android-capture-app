@@ -71,7 +71,9 @@
     <string name="speech_timeout_error"> Não foi detectada qualquer entrada de voz</string>
     <string name="unknown_speech_error"> Ocorreu um erro desconhecido.</string>
     <string name="non_numeric_speech_input_error"> Não é permitida a introdução de dados não numéricos: \"%s\"</string>
-    <string name="negative_number_speech_input_error">\n       A introdução de números negativos não é permitida:\"%s\"\n    </string>
+    <string name="negative_number_speech_input_error">
+       A introdução de números negativos não é permitida:\"%s\"
+    </string>
 
     <string name="unable_to_sync_data_no_network_available">
        Não é possível sincronizar dados porque não existe uma ligação de rede disponível

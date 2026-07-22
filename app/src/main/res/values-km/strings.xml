@@ -80,9 +80,6 @@
     <string name="a_day">១ថ្ងៃ (លំនាំដើម)</string>
     <string name="Manual">ហត្ថកម្ម</string>
     <string name="a_week">១សប្តាហ៍</string>
-    <string name="sync_max_parameters">ប៉ារ៉ាម៉ែត្រដែលកំពុងធ្វើការបញ្ជូន</string>
-    <string name="sync_default_parameters">ធ្វើអោយទោលំនាំដើម</string>
-    <string name="wipe_data_meesage">ប្រព័ន្ធទិន្នន័យនឹងត្រូវលុបចោល\nអ្នកត្រូវចូលមកប្រើម្ដងទៀតដោយបញ្ចុលឈ្មោះ និង លេខសំងាត់​</string>
     <string name="wipe_data_ok">ទទួលយក</string>
     <string name="wipe_data_no">បោះបង់</string>
     <string name="SYNC_DATA">បញ្ជូនទិន្នន័យឥឡូវនេះ</string>
@@ -138,8 +135,6 @@
     <string name="programs_to_enroll">កម្មវិធីចុះឈ្មោះ</string>
     <string name="share">ចែករំលែក</string>
     <string name="share_qr">ចែករំលែកលេខកូដ QR</string>
-    <string name="max">អតិបរមា</string>
-    <string name="current">បច្ចុប្បន្ន</string>
     <string name="tei">TEI</string>
     <string name="wipe_data">កំណត់កម្មវិធីឡើងវិញ</string>
     <string name="warning_error_on_complete_title">ពិនិត្យទីនេះ​</string>
@@ -175,6 +170,7 @@
     <string name="tuto_event_initial_1">ចុចដើម្បីពិនិត្យពីស្ថានភាពនៃការបញ្ចប់របស់ព្រឹត្តិការណ៍</string>
     <string name="relationships">ទំនាក់ទំនង</string>
     <string name="dashboard_overview">ទិដ្ឋភាពទូទៅ</string>
+    <string name="state_warning">ព្រមាន</string>
     <string name="action_close">បិទ</string>
     <string name="filters_title_period">កំឡុងពេល</string>
     <string name="filters_title_state">បញ្ចូន</string>
@@ -220,4 +216,6 @@
     <string name="sync">បញ្ចូន</string>
     <string name="show_description">បង្ហាញការពិពណ៌នា</string>
     <string name="hide_description">លាក់ការពិពណ៌នា</string>
+    <string name="wipe_data_meesage">ប្រព័ន្ធទិន្នន័យនឹងត្រូវលុបចោល\nអ្នកត្រូវចូលមកប្រើម្ដងទៀតដោយបញ្ចុលឈ្មោះ និង លេខសំងាត់​</string>
+
     </resources>

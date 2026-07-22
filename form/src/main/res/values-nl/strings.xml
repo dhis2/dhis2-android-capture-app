@@ -36,9 +36,6 @@
     <string name="keep_editing">Blijf bewerken</string>
     <string name="event_can_be_completed">Wilt u dit formulier als voltooid markeren?</string>
     <string name="discard_go_back">Als u nu afsluit, wordt alle informatie in het formulier weggegooid.</string>
-    <string name="field_errors_not_saved">Sommige velden bevatten fouten en worden niet opgeslagen.</string>
-    <string name="fields_mandatory_missing">Sommige verplichte velden ontbreken en het formulier kan niet worden opgeslagen.</string>
-    <string name="field_errors_not_saved_discard">Sommige velden bevatten fouten en worden niet opgeslagen. \Als u nu afsluit, worden de wijzigingen verwijderd.</string>
     <string name="share">Deel</string>
     <string name="action_close">Sluit</string>
     <string name="copied_text">Gekopieerd</string>
@@ -56,4 +53,6 @@
     <string name="event_details_section_title">%s gegevens</string>
     <string name="org_unit">Organisatieëenheid</string>
     <string name="cat_combo">Katten combinatie</string>
+    <string name="field_errors_not_saved_discard">Sommige velden bevatten fouten en worden niet opgeslagen. \Als u nu afsluit, worden de wijzigingen verwijderd.</string>
+
     </resources>

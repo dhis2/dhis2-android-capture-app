@@ -40,10 +40,7 @@
     <string name="keep_editing">Продолжить редактировать</string>
     <string name="event_can_be_completed">Хотите ли Вы отметить эту форму как завершенную?</string>
     <string name="discard_go_back">Если Вы выйдете сейчас, вся информация в форме будет удалена.</string>
-    <string name="field_errors_not_saved">Некоторые поля содержат ошибки, и они не сохранены.</string>
-    <string name="fields_mandatory_missing">Некоторые обязательные поля не заполнены, и форму невозможно сохранить.</string>
-    <string name="fields_mandatory_missing_discard">Некоторые обязательные поля отсутствуют, и форма не может быть сохранена. \nЕсли вы выйдете сейчас, изменения будут отменены.</string>
-    <string name="field_errors_not_saved_discard">Некоторые поля содержат ошибки, и они не сохраняются.  Если Вы выйдете сейчас, изменения будут отменены.</string>
+    <string name="field_errors_not_saved_discard">Некоторые поля содержат ошибки, и они не сохраняются. \nЕсли Вы выйдете сейчас, изменения будут отменены.</string>
     <string name="share">Поделиться</string>
     <string name="camera_permission_denied">Разрешение камеры запрещено.\nЧтобы использовать эту функцию, ее необходимо разрешить.</string>
     <string name="action_close">Закрыть</string>
