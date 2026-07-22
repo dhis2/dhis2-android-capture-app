@@ -175,4 +175,11 @@
     <string name="cancel">取消</string>
     <string name="ok">OK</string>
 
+    <!--*******************
+   Default custom labels
+**********************-->
+    <plurals name="enrollment">
+        <item quantity="other">注册人数</item>
+    </plurals>
+
 </resources>
