@@ -175,6 +175,23 @@ opening a PR.
   tag automatically. Any PR the skill opens (or that you open by hand for this
   work) must follow the same rule.
 
+## Compilation & tests (delegated to CI)
+
+The skill does **static** validation only (`postpull`: well-formed XML, keys ⊆
+source, and the `\?` fix). It does **not** build or run tests, by design:
+
+- **CI is the compile gate.** `continuous-delivery.yml` runs
+  `./gradlew assembleDhis2Debug` on every PR to `main`/`develop`/`release/*`,
+  which compiles the KMP Compose resources — so any escaping/resource problem
+  that slipped past the static checks fails the PR build automatically.
+- **Worktrees can't build as-is:** `local.properties` is gitignored, so the
+  throwaway worktrees have no `sdk.dir`; a full KMP build per branch would also
+  add several minutes for little gain over CI.
+
+If you want a local pre-PR compile check, fetch the sync branch into the primary
+checkout (which has your SDK config) and run `./gradlew assembleDhis2Debug`.
+Translation-only changes don't touch logic, so the unit-test suite isn't run.
+
 ## Running for a single branch
 
 Skip the orchestration fan-out: create one worktree and run the per-branch
