@@ -120,8 +120,17 @@ git add -A
 git status --short | head
 git commit -m "chore(translations): sync <BRANCH> translations from Transifex"
 git push -u origin <SYNC_BRANCH>
+
+# Repo rule: a PR may not exceed 400 changed lines (insertions + deletions)
+# unless its title ends with "[skip size]". Translation syncs almost always
+# exceed this, so compute the total and append the tag when needed.
+CHANGES=$(git diff --numstat "origin/<BRANCH>" HEAD | awk '{a+=$1; d+=$2} END {print a+d+0}')
+TITLE="chore(translations): sync <BRANCH> translations from Transifex"
+[ "$CHANGES" -gt 400 ] && TITLE="$TITLE [skip size]"
+echo "changed lines: $CHANGES  ->  title: $TITLE"
+
 gh pr create --base <BRANCH> --head <SYNC_BRANCH> \
-  --title "chore(translations): sync <BRANCH> translations from Transifex" \
+  --title "$TITLE" \
   --body "Automated Transifex sync for \`<BRANCH>\`.
 
 - Pushed \`<BRANCH>\` sources to the \`<BRANCH>--*\` resources (verified: no keys missing on the server).
@@ -160,6 +169,11 @@ opening a PR.
   pull would silently drop them. `postpull` restores any such dropped in-source
   translation from HEAD and lists them — if that list is non-empty, tell the user
   they may want a translation backfill push so the gap doesn't recur.
+- **PR size limit**: this repo rejects PRs over **400 changed lines (insertions +
+  deletions)** unless the title ends with **`[skip size]`**. A translation sync is
+  almost always far larger than that, so step 6 computes the total and appends the
+  tag automatically. Any PR the skill opens (or that you open by hand for this
+  work) must follow the same rule.
 
 ## Running for a single branch
 
