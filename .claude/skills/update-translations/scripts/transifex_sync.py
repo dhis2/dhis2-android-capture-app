@@ -73,22 +73,24 @@ def load_token():
         return tok.strip()
     lp = "local.properties"
     if os.path.exists(lp):
-        for line in open(lp, encoding="utf-8"):
-            s = line.strip()
-            if s.startswith("TX_TOKEN") and "=" in s:
-                return s.split("=", 1)[1].strip()
+        with open(lp, encoding="utf-8") as fh:
+            for line in fh:
+                s = line.strip()
+                if "=" in s and s.split("=", 1)[0].strip() == "TX_TOKEN":
+                    return s.split("=", 1)[1].strip()
     rc = os.path.expanduser("~/.transifexrc")
     if os.path.exists(rc):
         section, in_www, fallback = None, None, None
-        for line in open(rc, encoding="utf-8"):
-            s = line.strip()
-            if s.startswith("[") and s.endswith("]"):
-                section = s[1:-1]
-            elif s.startswith("token"):
-                val = s.split("=", 1)[1].strip()
-                fallback = fallback or val
-                if section == "https://www.transifex.com":
-                    in_www = val
+        with open(rc, encoding="utf-8") as fh:
+            for line in fh:
+                s = line.strip()
+                if s.startswith("[") and s.endswith("]"):
+                    section = s[1:-1]
+                elif s.startswith("token"):
+                    val = s.split("=", 1)[1].strip()
+                    fallback = fallback or val
+                    if section == "https://www.transifex.com":
+                        in_www = val
         if in_www or fallback:
             return in_www or fallback
     sys.exit("No token: set TX_TOKEN, or add TX_TOKEN=... to local.properties.")
@@ -100,7 +102,9 @@ def parse_tx_config(path=".tx/config"):
         sys.exit(f"{path} not found — run from the repo/worktree root.")
     project_id, source_lang, lang_map, resources = None, "en", {}, []
     cur = None
-    for line in open(path, encoding="utf-8"):
+    with open(path, encoding="utf-8") as fh:
+        lines = fh.readlines()
+    for line in lines:
         s = line.strip()
         m = re.match(r"^\[o:([^:]+):p:([^:]+):r:(.+)\]$", s)
         if m:
@@ -189,7 +193,8 @@ def count_strings_text(text):
 
 def source_keys(source_file):
     """(server_keys, all_keys): server_keys excludes translatable="false"."""
-    text = open(source_file, encoding="utf-8").read()
+    with open(source_file, encoding="utf-8") as fh:
+        text = fh.read()
     all_keys = keys_in_text(text)
     non_translatable = set()
     for tag in _STRING_TAG_RE.findall(text):
@@ -221,7 +226,8 @@ def _res_id(project_id, branch, slug):
 
 
 def push_one_source(res_id, source_file, tok):
-    content = base64.b64encode(open(source_file, "rb").read()).decode()
+    with open(source_file, "rb") as fh:
+        content = base64.b64encode(fh.read()).decode()
     body = {"data": {
         "type": "resource_strings_async_uploads",
         "attributes": {"content": content, "content_encoding": "base64"},
@@ -496,7 +502,10 @@ def cmd_postpull():
             continue
         skeys = src_all[slug]
         for f in resource_translation_files(res):
-            cur = open(f, encoding="utf-8").read() if os.path.exists(f) else ""
+            cur = ""
+            if os.path.exists(f):
+                with open(f, encoding="utf-8") as fh:
+                    cur = fh.read()
             cur_n = count_strings_text(cur)
             tracked = is_tracked(f)
 
@@ -523,17 +532,21 @@ def cmd_postpull():
 
             dropped_live = sorted((keys_in_text(head) & skeys) - keys_in_text(cur))
             if dropped_live:
-                blocks = []
+                blocks, block_keys = [], []
                 for k in dropped_live:
                     b = _extract_block(head, k)
                     if b:
                         blocks.append(b.rstrip("\n"))
-                        live_dropped[slug].append(k)
+                        block_keys.append(k)
+                # Only record as "restored" once the blocks are actually written
+                # back — a file with no </resources> can't be patched.
                 if blocks:
                     m = re.search(r"\n?[ \t]*</resources>\s*$", cur)
                     if m:
                         cur = cur[: m.start()] + "\n" + "\n".join(blocks) + "\n" + cur[m.start():]
-                        open(f, "w", encoding="utf-8").write(cur)
+                        with open(f, "w", encoding="utf-8") as fh:
+                            fh.write(cur)
+                        live_dropped[slug].extend(block_keys)
                         report["restored"] += len(blocks)
                         report["restored_files"] += 1
 
@@ -545,11 +558,13 @@ def cmd_postpull():
                 if not fn.endswith(".xml"):
                     continue
                 p = os.path.join(root, fn)
-                txt = open(p, encoding="utf-8").read()
+                with open(p, encoding="utf-8") as fh:
+                    txt = fh.read()
                 if "\\?" in txt:
                     report["unescaped"] += txt.count("\\?")
                     report["unescaped_files"] += 1
-                    open(p, "w", encoding="utf-8").write(txt.replace("\\?", "?"))
+                    with open(p, "w", encoding="utf-8") as fh:
+                        fh.write(txt.replace("\\?", "?"))
 
     # 5. validate
     pats = _translation_patterns(resources)
@@ -568,7 +583,8 @@ def cmd_postpull():
             problems += 1
             continue
         if slug in src_all:
-            extra = keys_in_text(open(f, encoding="utf-8").read()) - src_all[slug]
+            with open(f, encoding="utf-8") as fh:
+                extra = keys_in_text(fh.read()) - src_all[slug]
             if extra:
                 print(f"KEYS NOT IN SOURCE: {f}: {sorted(extra)[:10]}")
                 problems += 1
