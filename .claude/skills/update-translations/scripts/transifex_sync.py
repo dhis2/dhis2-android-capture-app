@@ -60,6 +60,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 API = "https://rest.api.transifex.com"
 JSON_CT = "application/vnd.api+json"
+HTTP_TIMEOUT = 60  # seconds; guards every urlopen so a stalled connection can't hang
 
 # ---------------------------------------------------------------------------
 # token + config parsing
@@ -156,12 +157,13 @@ def _req(url, tok, method="GET", body=None, accept="*/*"):
 
 
 def api_get(url, tok):
-    with urllib.request.urlopen(_req(url, tok, accept=JSON_CT)) as r:
+    with urllib.request.urlopen(_req(url, tok, accept=JSON_CT), timeout=HTTP_TIMEOUT) as r:
         return json.load(r)
 
 
 def api_post(path, body, tok):
-    with urllib.request.urlopen(_req(API + path, tok, "POST", body, JSON_CT)) as r:
+    req = _req(API + path, tok, "POST", body, JSON_CT)
+    with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT) as r:
         return json.load(r)
 
 
@@ -375,7 +377,7 @@ def download_translation(res_id, tx_code, tok):
     job = api_post("/resource_translations_async_downloads", body, tok)
     job_url = f"{API}/resource_translations_async_downloads/{job['data']['id']}"
     for attempt in range(120):
-        with urllib.request.urlopen(_req(job_url, tok, accept="*/*")) as r:
+        with urllib.request.urlopen(_req(job_url, tok, accept="*/*"), timeout=HTTP_TIMEOUT) as r:
             ctype = r.headers.get("Content-Type", "")
             data = r.read()
         if "json" in ctype:  # still processing / status object
@@ -464,7 +466,9 @@ def _translation_patterns(resources):
     for res in resources:
         ff = res.get("file_filter")
         if ff and "<lang>" in ff:
-            pats.append((re.compile(re.escape(ff).replace(r"\<lang\>", r"[^/]+") + "$"),
+            # re.escape (Py 3.7+) leaves <lang> untouched, so replace the plain
+            # token — NOT the pre-3.7 "\<lang\>" form, which never matches here.
+            pats.append((re.compile(re.escape(ff).replace("<lang>", r"[^/]+") + "$"),
                          res["slug"]))
     return pats
 
