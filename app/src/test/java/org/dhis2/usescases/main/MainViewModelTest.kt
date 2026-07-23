@@ -43,6 +43,7 @@ import org.dhis2.usescases.main.domain.LogoutUser
 import org.dhis2.usescases.main.domain.ScheduleNewVersionAlert
 import org.dhis2.usescases.main.domain.UpdateInitialSyncStatus
 import org.dhis2.usescases.main.domain.model.LockAction
+import org.dhis2.usescases.main.domain.model.LogoutAction
 import org.dhis2.usescases.main.ui.Form
 import org.dhis2.usescases.main.ui.model.HomeAction
 import org.dhis2.usescases.main.ui.model.HomeEffect
@@ -173,7 +174,7 @@ class MainViewModelTest {
     @Test
     fun `Should log out`() =
         runTest {
-            whenever(logOutUser()) doReturn Result.success(1)
+            whenever(logOutUser()) doReturn Result.success(LogoutAction.SuccessLogout(1))
             viewModel.homeEffects.test {
                 viewModel.logOut()
                 advanceUntilIdle()
@@ -194,7 +195,7 @@ class MainViewModelTest {
     @Test
     fun `Should not reconfigure navigation bar when metadata sync emits after logout`() =
         runTest {
-            whenever(logOutUser()) doReturn Result.success(1)
+            whenever(logOutUser()) doReturn Result.success(LogoutAction.SuccessLogout(1))
             viewModel.homeEffects.test {
                 viewModel.logOut()
                 metadataJobFlow.emit(succeededMetadataJob)

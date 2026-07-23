@@ -202,4 +202,13 @@ class HomeRepositoryImpl(
     override suspend fun restoreSyncStatus() {
         syncStatusController.restore()
     }
+
+    override suspend fun accountType() =
+        execute {
+            d2
+                .userModule()
+                .accountManager()
+                .getCurrentAccount()
+                ?.authorizationType()
+        }
 }
