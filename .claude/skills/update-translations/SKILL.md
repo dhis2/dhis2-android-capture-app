@@ -23,7 +23,7 @@ REST API directly (no `tx` CLI, no `~/.transifexrc`):
 
 ```
 .claude/skills/update-translations/scripts/transifex_sync.py \
-    <push-sources|verify-push|lang-list|pull|postpull>  --branch <develop|main>
+    <push-sources|verify-push|lang-list|pull|postpull|push-translations>  --branch <develop|main>
 ```
 
 It parses `.tx/config` for the resource list, source files, `file_filter`
@@ -167,8 +167,9 @@ opening a PR.
 - **develop vs main divergence**: translators work against `develop--`, so
   `main--` can be missing in-source translations the repo already has; a default
   pull would silently drop them. `postpull` restores any such dropped in-source
-  translation from HEAD and lists them — if that list is non-empty, tell the user
-  they may want a translation backfill push so the gap doesn't recur.
+  translation from HEAD and lists them — if that list is non-empty, run the
+  `push-translations` backfill (see below) so the gap stops recurring instead of
+  being re-restored on every sync.
 - **PR size limit**: this repo rejects PRs over **400 changed lines (insertions +
   deletions)** unless the title ends with **`[skip size]`**. A translation sync is
   almost always far larger than that, so step 6 computes the total and appends the
@@ -191,6 +192,33 @@ source, and the `\?` fix). It does **not** build or run tests, by design:
 If you want a local pre-PR compile check, fetch the sync branch into the primary
 checkout (which has your SDK config) and run `./gradlew assembleDhis2Debug`.
 Translation-only changes don't touch logic, so the unit-test suite isn't run.
+
+## Backfilling the server (`push-translations`) — closes the divergence
+
+When `postpull` reports "the server was missing these in-source translations",
+the server and repo have drifted: the repo carries translations the `<branch>--`
+resources don't have, so every sync re-drops and re-restores the same keys. The
+`push-translations` subcommand fixes this at the source by pushing those repo
+translations **up** to the server:
+
+```bash
+# dry-run first — lists every (resource, language) gap, uploads nothing
+python3 <SCRIPT> push-translations --branch main
+
+# then actually upload
+python3 <SCRIPT> push-translations --branch main --apply
+```
+
+It is **gap-only and non-destructive**: for each repo translation file it
+downloads the server's current translations and uploads *only* the keys that are
+(a) in the source, (b) translated in the repo, and (c) absent on the server —
+so it can never overwrite a translator's existing work. On a per-language
+download error it skips that pair rather than risk clobbering it.
+
+Run it from a checkout that has the branch's translations (e.g. a `main`
+worktree) with `TX_TOKEN` exported. It is safe to re-run: once a gap is filled
+the next dry-run reports zero. Typically only `main` needs it, since translators
+already work against `develop--`.
 
 ## Running for a single branch
 

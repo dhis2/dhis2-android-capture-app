@@ -41,6 +41,15 @@ Subcommands (all operate on the current working directory):
       files, restore any dropped in-source translation from HEAD, and validate
       (well-formed XML + keys subset of source). Exits non-zero on validation
       failure.
+
+  push-translations --branch <develop|main> [--apply] [--workers N]
+      Backfill: for every repo translation file, find keys that are in the
+      source and translated in the repo but MISSING on the server, and upload
+      only those gap keys (never overwriting an existing server translation).
+      This closes the develop-vs-main divergence so future pulls stop dropping
+      and re-restoring the same in-source translations. Dry-run by default;
+      pass --apply to actually upload. On a per-language download error it skips
+      that pair rather than risk an overwrite.
 """
 
 import argparse
@@ -607,6 +616,165 @@ def cmd_postpull():
 
 
 # ---------------------------------------------------------------------------
+# push-translations (backfill: fill server gaps from the repo, never overwrite)
+# ---------------------------------------------------------------------------
+
+
+def _folder_from_path(file_filter, path):
+    """Recover the values-<qualifier> folder token from a translation path."""
+    pat = re.compile(re.escape(file_filter).replace("<lang>", r"([^/]+)") + "$")
+    m = pat.search(path)
+    return m.group(1) if m else None
+
+
+def folder_to_tx(folder, inv_lang_map):
+    """Android values-<folder> suffix -> Transifex language code (inverse of
+    android_folder). Uses the config lang_map first, then the xx-rYY -> xx_YY
+    convention, else the folder verbatim."""
+    if folder in inv_lang_map:
+        return inv_lang_map[folder]
+    m = re.match(r"^([A-Za-z]{2,3})-r([A-Za-z0-9]+)$", folder)
+    if m:
+        return f"{m.group(1)}_{m.group(2)}"
+    return folder
+
+
+def _minimal_translation_xml(repo_text, keys):
+    """Build a standalone Android <resources> file containing only `keys`,
+    lifted verbatim from the repo translation file. Returns None if none of the
+    keys yield a block."""
+    blocks = []
+    for k in keys:
+        b = _extract_block(repo_text, k)
+        if b:
+            blocks.append(b.rstrip("\n"))
+    if not blocks:
+        return None
+    return "<resources>\n" + "\n".join(blocks) + "\n</resources>\n"
+
+
+def upload_translations(res_id, tx_code, content, tok):
+    """Upload a translation file for one (resource, language) via the async API,
+    waiting for the job. Returns (details, errors)."""
+    b64 = base64.b64encode(content.encode("utf-8")).decode()
+    body = {"data": {
+        "type": "resource_translations_async_uploads",
+        "attributes": {"content": b64, "content_encoding": "base64",
+                       "file_type": "default"},
+        "relationships": {
+            "resource": {"data": {"type": "resources", "id": res_id}},
+            "language": {"data": {"type": "languages", "id": f"l:{tx_code}"}},
+        },
+    }}
+    job = api_post("/resource_translations_async_uploads", body, tok)
+    job_url = f"{API}/resource_translations_async_uploads/{job['data']['id']}"
+    for attempt in range(120):
+        d = api_get(job_url, tok)
+        attrs = d["data"]["attributes"]
+        st = attrs.get("status")
+        if st == "succeeded":
+            return attrs.get("details", {}), attrs.get("errors", [])
+        if st == "failed":
+            return None, attrs.get("errors", [{"detail": "upload failed"}])
+        _sleep_backoff(attempt)
+    return None, [{"detail": "timed out waiting for upload job"}]
+
+
+def cmd_push_translations(branch, apply, workers):
+    tok = load_token()
+    project_id, source_lang, lang_map, resources = parse_tx_config()
+    inv_lang_map = {v: k for k, v in lang_map.items()}
+    resources = [r for r in resources
+                 if r.get("file_filter") and r.get("source_file")
+                 and os.path.exists(r["source_file"])]
+    skeys = {r["slug"]: source_keys(r["source_file"])[0] for r in resources}
+    pairs = [(r, p) for r in resources for p in resource_translation_files(r)]
+    print(f"scanning {len(pairs)} repo translation files for gaps on {branch}-- "
+          f"(workers={workers})\n")
+
+    plan, skipped = [], []
+
+    def detect(res, path):
+        folder = _folder_from_path(res["file_filter"], path)
+        if not folder:
+            return None
+        tx_code = folder_to_tx(folder, inv_lang_map)
+        if tx_code == source_lang:
+            return None
+        with open(path, encoding="utf-8") as fh:
+            repo_text = fh.read()
+        repo_source_keys = keys_in_text(repo_text) & skeys[res["slug"]]
+        if not repo_source_keys:
+            return None
+        res_id = _res_id(project_id, branch, res["slug"])
+        try:
+            server_text = download_translation(res_id, tx_code, tok).decode("utf-8")
+        except (urllib.error.HTTPError, RuntimeError, TimeoutError) as e:
+            # Do NOT assume the server is empty — that would risk overwriting
+            # real translations. Skip and report instead.
+            return ("skip", res["slug"], tx_code, path, str(e))
+        missing = sorted(repo_source_keys - keys_in_text(server_text))
+        if not missing:
+            return None
+        return ("gap", res["slug"], tx_code, path, missing, repo_text)
+
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        futs = [pool.submit(detect, r, p) for r, p in pairs]
+        res_by_slug = {r["slug"]: r for r in resources}
+        for fut in as_completed(futs):
+            got = fut.result()
+            if not got:
+                continue
+            if got[0] == "skip":
+                skipped.append(got[1:])
+            else:
+                _, slug, tx_code, path, missing, repo_text = got
+                plan.append((res_by_slug[slug], tx_code, path, missing, repo_text))
+
+    total = sum(len(m) for _, _, _, m, _ in plan)
+    print(f"{'resource':28}{'lang':10}{'gap-keys':>9}")
+    for res, tx_code, _, missing, _ in sorted(plan, key=lambda x: (x[0]['slug'], x[1])):
+        print(f"{res['slug']:28}{tx_code:10}{len(missing):>9}")
+    print(f"\n{total} translation(s) missing on the server across "
+          f"{len(plan)} (resource, language) pair(s).")
+    if skipped:
+        print(f"{len(skipped)} pair(s) skipped (download error — not touched):")
+        for slug, tx_code, _, err in skipped[:20]:
+            print(f"    {slug} [{tx_code}]: {err}")
+
+    if not apply:
+        print("\nDRY RUN — nothing uploaded. Re-run with --apply to backfill.")
+        return
+    if not plan:
+        print("\nNothing to upload.")
+        return
+
+    print("\nuploading gap translations ...")
+    uploaded = failed = 0
+    for res, tx_code, path, missing, repo_text in plan:
+        content = _minimal_translation_xml(repo_text, missing)
+        if not content:
+            continue
+        res_id = _res_id(project_id, branch, res["slug"])
+        try:
+            details, errors = upload_translations(res_id, tx_code, content, tok)
+        except urllib.error.HTTPError as e:
+            print(f"  FAIL {res['slug']} [{tx_code}]: HTTP {e.code}")
+            failed += 1
+            continue
+        if details is None or errors:
+            print(f"  FAIL {res['slug']} [{tx_code}]: {errors}")
+            failed += 1
+            continue
+        created = details.get("translations_created", 0)
+        print(f"  {res['slug']:28}{tx_code:10} created={created}")
+        uploaded += 1
+    print(f"\ndone: {uploaded} pair(s) backfilled, {failed} failed.")
+    if failed:
+        sys.exit(1)
+
+
+# ---------------------------------------------------------------------------
 # main
 # ---------------------------------------------------------------------------
 
@@ -623,6 +791,11 @@ def main():
     pp.add_argument("--langs", default="")
     pp.add_argument("--workers", type=int, default=8)
     sub.add_parser("postpull")
+    ptr = sub.add_parser("push-translations")
+    ptr.add_argument("--branch", required=True)
+    ptr.add_argument("--apply", action="store_true",
+                     help="actually upload; without it, dry-run only")
+    ptr.add_argument("--workers", type=int, default=8)
     args = ap.parse_args()
 
     if args.cmd == "push-sources":
@@ -635,6 +808,8 @@ def main():
         cmd_pull(args.branch, args.langs, args.workers)
     elif args.cmd == "postpull":
         cmd_postpull()
+    elif args.cmd == "push-translations":
+        cmd_push_translations(args.branch, args.apply, args.workers)
 
 
 if __name__ == "__main__":
