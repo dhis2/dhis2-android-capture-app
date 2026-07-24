@@ -203,5 +203,9 @@
         <item quantity="one">enrollment</item>
         <item quantity="other">enrollments</item>
     </plurals>
+    <plurals name="org_unit">
+        <item quantity="one">organisation unit</item>
+        <item quantity="other">organisation units</item>
+    </plurals>
 
 </resources>
