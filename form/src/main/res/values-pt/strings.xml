@@ -37,9 +37,6 @@
     <string name="keep_editing">Continue editando</string>
     <string name="event_can_be_completed">Deseja marcar este formulário como completo?</string>
     <string name="discard_go_back">Se sair agora, todas as informações do formulário serão descartadas.</string>
-    <string name="field_errors_not_saved">Alguns campos apresentam erros e não são guardados.</string>
-    <string name="fields_mandatory_missing">Alguns campos obrigatórios estão em falta e o formulário não pode ser guardado.</string>
-    <string name="field_errors_not_saved_discard">Alguns campos têm erros e não são guardados. \Se sair agora, as suas alterações serão descartadas.</string>
     <string name="share">Partilha</string>
     <string name="action_close">Fechar</string>
     <string name="copied_text">Copiado</string>
@@ -64,4 +61,6 @@
     <string name="category_combo">Combinação de categoria</string>
     <string name="no_options">Nenhuma opção disponível</string>
     <string name="cat_combo">Combinação de categoria</string>
+    <string name="field_errors_not_saved_discard">Alguns campos têm erros e não são guardados. \Se sair agora, as suas alterações serão descartadas.</string>
+
     </resources>

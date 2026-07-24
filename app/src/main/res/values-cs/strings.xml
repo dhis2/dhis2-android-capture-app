@@ -114,9 +114,6 @@
     <string name="every_12_hours">12h</string>
     <string name="Manual">Ručně</string>
     <string name="a_week">1 týden</string>
-    <string name="sync_max_parameters">Aktuální parametry synchronizace:</string>
-    <string name="sync_default_parameters">Obnovit do základního nastavení</string>
-    <string name="wipe_data_meesage">Databáze bude smazána.\nBudete požádán o opětovné přihlášení.</string>
     <string name="wipe_data_ok">Přijmout</string>
     <string name="wipe_data_no">Zrušit</string>
     <string name="SYNC_DATA">SYNCHRONIZOVAT Data teď</string>
@@ -165,16 +162,7 @@
     <string name="write_new_note">Napište novou poznámku</string>
     <string name="clear">vymazat</string>
     <string name="add_note">Přidat poznámku</string>
-    <string name="revert">Vrátit zpět</string>
-    <string name="activated">Aktivováno</string>
-    <string name="missing_mandatory_fields_title">Chybí povinná pole</string>
-    <string name="missing_mandatory_fields_text">Některá povinná pole chybí. Pokud se chcete vrátit zpět, budou všechny uložené informace odstraněny.</string>
-    <string name="missing_mandatory_fields_text_not_delete">Některá povinná pole chybí. Pokud se chcete vrátit, vyplňte je prosím.</string>
-    <string name="missing_mandatory_fields_events">Některé oblasti vyžadují vaši pozornost.\nChcete formulář zkontrolovat\?</string>
     <string name="title_delete_go_back">Vaše data nejsou uložena</string>
-    <string name="delete_go_back">Pokud se nyní vrátíte zpět, všechny zadané informace budou smazány.</string>
-    <string name="missing_mandatory_fields_go_back">Smazat a vrátit se zpět</string>
-    <string name="missing_mandatory_fields_finish">Některá povinná pole chybí. Zadávání a ukončení dat můžete dokončit, ale událost nelze dokončit.</string>
     <string name="tei_coordinates">Souřadnice pro</string>
 
     <!--EVENT SUMMARY-->
@@ -216,8 +204,6 @@
     <string name="programs_to_enroll">Programy k zápisu</string>
     <string name="share">Sdílet</string>
     <string name="share_qr">Sdílet QR</string>
-    <string name="max">Max</string>
-    <string name="current">stávající</string>
     <string name="tei">TEI</string>
     <string name="teis">TEIs</string>
     <string name="wipe_data">Resetovat data aplikace a konfiguraci</string>
@@ -274,20 +260,6 @@
     <string name="delete_local_data_message">Nesynchronizovaná data budou ztracena. Opravdu chcete pokračovat?</string>
     <string name="delete_local_data_error">Data nelze smazat. Zkuste to prosím znovu.</string>
     <string name="delete_local_data_done">Odstranění místních dat bylo úspěšně dokončeno.</string>
-    <string name="org_unit_selection_warning">Musí být vybrána alespoň jedna organizační jednotka</string>
-    <string name="send_user_name_title">Odeslat data</string>
-    <string name="send_user_name_mesage">Pomozte DHIS2 vylepšit tuto aplikaci sdílením protokolů chyb spojených s vaším ID uživatele.</string>
-    <string name="improve_app_msg_title">Chcete nám pomoci vylepšit tuto aplikaci?</string>
-    <string name="improve_app_msg_clickable_word">Zásady ochrany osobních údajů</string>
-    <string name="check_mandatory_field">Zkontrolujte pole</string>
-    <string name="error_no_network_during_sync">Při synchronizaci konfigurace jste ztratili připojení k internetu. Prosím zkuste to znovu později</string>
-    <string name="action_agree">Souhlasit</string>
-    <string name="action_continue">Pokračovat</string>
-    <string name="login_server_info_title">URL serveru</string>
-    <string name="login_server_info_message">Zadejte url serveru DHIS 2 pro vaši organizaci, kterou vám poskytl správce systému.\n\nPřípadně můžete naskenovat QR kód obsahující URL adresu vašeho serveru.</string>
-    <string name="forgot_your_code">Zapomněli jste kód?</string>
-    <string name="event_form_end_options_title">Co byste chtěli udělat pro tuto akci?</string>
-    <string name="sectionSelectorEnd">KONEC</string>
     <string name="resource_not_found">%s nenalezeno</string>
     <string name="relationship_not_found_message">Záznam, ke kterému se pokoušíte získat přístup, není k dispozici. Chcete jej vyhledat?</string>
     <string name="sync_by_sms">Synchronizováno pomocí SMS</string>
@@ -365,7 +337,6 @@
     <string name="filter_event_status_visited">Navštíveno</string>
     <string name="filter_event_status_completed">Dokončeno</string>
     <string name="filter_event_status_skipped">Přeskočeno</string>
-    <string name="event_tei_limits">Události:%smax:%s%saktuální:%s TEI:%smax:%s%saktuální:%s</string>
     <string name="limit_setting">Omezené nastavení %s</string>
     <string name="sms_enabled">SMS modul povolen</string>
     <string name="sms_disabled">SMS modul deaktivován</string>
@@ -432,8 +403,6 @@
     <string name="filters_title_date">Datum</string>
     <string name="privacy_policy_title">Zásady ochrany osobních údajů</string>
     <string name="open_privacy_policy">Kliknutím sem zobrazíte naše <a href="">zásady ochrany osobních údajů</a></string>
-    <string name="coordinates_error">Hodnoty souřadnic nejsou platné</string>
-    <string name="break_glass_error_v2">Do tohoto programu nemůžete zapsat %s z jiných organizačních jednotek, protože je chráněný.\nKontaktujte svého správce.</string>
     <string name="field_is_mandatory">Toto pole je povinné</string>
     <string name="security_debugger_message">Z bezpečnostních důvodů není možné tuto verzi aplikace používat s adb. Použijte tréninkovou verzi.</string>
 
@@ -652,4 +621,7 @@
         <item quantity="many">Je tu %s programů se specifickým nastavením</item>
         <item quantity="other">Jsou tu %s programy se specifickým nastavením</item>
     </plurals>
+    <string name="break_glass_error_v2">Do tohoto programu nemůžete zapsat %s z jiných organizačních jednotek, protože je chráněný.\nKontaktujte svého správce.</string>
+    <string name="wipe_data_meesage">Databáze bude smazána.\nBudete požádán o opětovné přihlášení.</string>
+
 </resources>

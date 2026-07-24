@@ -9,12 +9,6 @@
     <string name="conf_error_value_to_assign_option_set">La regla de programa %s está intentando asignar el valor %s que no pertenece al conjunto de opciones %s</string>
     <string name="conf_error_value_option_set">El valor del campo %s no pertenece al conjunto de opciones en %s</string>
     <string name="field_is_mandatory">El campo es obligatorio</string>
-    <string name="date">Fecha</string>
-    <string name="hint_year">Años</string>
-    <string name="hint_month">Meses</string>
-    <string name="hint_day">Días</string>
-    <string name="wrong_date_format">%s no es una fecha válida</string>
-    <string name="missing_warning_fields_events">Tienes algunos mensajes de alerta.\n¿Desea marcar el formulario como Completo?</string>
     <string name="polygon">Polígono</string>
     <string name="latitude">Latitud</string>
     <string name="longitude">Longitud</string>
@@ -41,9 +35,6 @@
     <string name="keep_editing">Seguir editando</string>
     <string name="event_can_be_completed">¿Desea marcar este formulario como completo?</string>
     <string name="discard_go_back">Si sale toda la información del formulario será descartada.</string>
-    <string name="field_errors_not_saved">Algunos campos tienen errores y no serán guardados.</string>
-    <string name="fields_mandatory_missing">Algunos campos obligatorios faltan llenarse, el formulario no puede ser guardado</string>
-    <string name="field_errors_not_saved_discard">Algunos campos tienen errores y no serán guardados. \nSi sale, los cambios serán descartados.</string>
     <string name="share">Compartir</string>
     <string name="action_close">Cerrar</string>
     <string name="copied_text">Copiado</string>
@@ -57,4 +48,7 @@
     <string name="incident_date">Fecha del incidente</string>
     <string name="org_unit">Unidad Organizativa</string>
     <string name="cat_combo">Cat Combo</string>
+    <string name="field_errors_not_saved_discard">Algunos campos tienen errores y no serán guardados. \nSi sale, los cambios serán descartados.</string>
+    <string name="missing_warning_fields_events">Tienes algunos mensajes de alerta.\n¿Desea marcar el formulario como Completo?</string>
+
     </resources>
