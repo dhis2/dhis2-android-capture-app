@@ -24,6 +24,8 @@ import org.dhis2.commons.filters.workingLists.ProgramStageWorkingList
 import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper
 import org.dhis2.commons.filters.workingLists.TrackedEntityInstanceWorkingList
 import org.dhis2.commons.filters.workingLists.WorkingListItem
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
+import org.dhis2.mobile.commons.providers.getCustomOrgUnitLabelBlocking
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
@@ -52,6 +54,7 @@ class FilterRepository
         private val eventFilterToWorkingListItemMapper: EventFilterToWorkingListItemMapper,
         private val teiFilterToWorkingListItemMapper: TeiFilterToWorkingListItemMapper,
         private val programStageToWorkingListItemMapper: ProgramStageToWorkingListItemMapper,
+        private val customLabelProvider: CustomLabelProvider,
     ) {
         private val observableSortingInject = ObservableField<SortingItem>()
         private val observableOpenFilter = ObservableField<Filters>()
@@ -559,7 +562,7 @@ class FilterRepository
                     ProgramType.TRACKER,
                     observableSortingInject,
                     observableOpenFilter,
-                    resources.filterOrgUnitLabel(),
+                    customLabelProvider.getCustomOrgUnitLabelBlocking(program.uid()),
                 )
             defaultTrackerFilters[ProgramFilter.SYNC_STATUS] =
                 SyncStateFilter(

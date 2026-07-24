@@ -33,6 +33,8 @@ import org.dhis2.metadata.usecases.ProgramConfiguration
 import org.dhis2.metadata.usecases.TrackedEntityTypeConfiguration
 import org.dhis2.mobile.commons.files.FileController
 import org.dhis2.mobile.commons.files.FileControllerImpl
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
+import org.dhis2.mobile.commons.providers.CustomLabelProviderImpl
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.ui.ThemeManager
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -215,4 +217,8 @@ class ServerModule {
         d2: D2,
         resourceManager: ResourceManager,
     ): EventResourcesProvider = EventResourcesProvider(d2, resourceManager)
+
+    @Provides
+    @PerServer
+    fun provideCustomLabelProvider(d2: D2): CustomLabelProvider = CustomLabelProviderImpl(d2)
 }

@@ -76,6 +76,7 @@
     <string name="update">Update</string>
     <string name="org_unit">Org unit</string>
     <string name="no_org_units">There aren\'t any open Organization Units for the selected date. Please select another date or another Organisation Unit.</string>
+    <string name="no_org_units_with_label">There aren\'t any open %1$s for the selected date. Please select another date or another %1$s.</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
 
@@ -490,9 +491,9 @@
     <string name="blocked_by_completion">This data is not editable because is marked as completed</string>
     <string name="edition_expired">This data is not editable because its edition time is expired</string>
     <string name="edition_no_write_access">You do not have permission to edit this data</string>
-    <string name="event_date_not_in_orgunit_range">This data is not editable because the organization unit is closed</string>
+    <string name="event_date_not_in_orgunit_range">This data is not editable because the %s is closed</string>
     <string name="edition_no_catcombo_access">You do not have permission to edit this data</string>
-    <string name="edition_orgunit_user_scope">You cannot edit data from this organisation unit</string>
+    <string name="edition_orgunit_user_scope">You cannot edit data from this %s</string>
     <string name="error_tei_online_search_title">The online search returned the following message:</string>
     <string name="delete_account">Delete Account</string>
     <string name="main_menu_troubleshooting">Configuration troubleshooting</string>
