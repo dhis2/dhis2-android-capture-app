@@ -24,6 +24,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Lifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import org.dhis2.BuildConfig
@@ -325,6 +326,7 @@ class MainActivity : ActivityGlobalAbstract() {
     }
 
     private fun showPeriodRequest(periodRequest: FilterManager.PeriodRequest) {
+        if (!lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) return
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
             FilterPeriodsDialog
                 .newPeriodsFilter(filterType = Filters.PERIOD, isFromToFilter = true)
@@ -337,6 +339,7 @@ class MainActivity : ActivityGlobalAbstract() {
     }
 
     private fun openOrgUnitTreeSelector() {
+        if (!lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) return
         OUTreeFragment
             .Builder()
             .withPreselectedOrgUnits(
