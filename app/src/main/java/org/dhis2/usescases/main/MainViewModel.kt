@@ -50,7 +50,6 @@ import org.dhis2.usescases.main.domain.ScheduleNewVersionAlert
 import org.dhis2.usescases.main.domain.UpdateInitialSyncStatus
 import org.dhis2.usescases.main.domain.model.DownloadMethod
 import org.dhis2.usescases.main.domain.model.LockAction
-import org.dhis2.usescases.main.domain.model.LogoutAction
 import org.dhis2.usescases.main.ui.model.HomeAction
 import org.dhis2.usescases.main.ui.model.HomeEffect
 import org.dhis2.usescases.main.ui.model.HomeScreenState
@@ -87,8 +86,6 @@ class MainViewModel(
 
     private val _homeEffects = Channel<HomeEffect>(Channel.BUFFERED)
     val homeEffects = _homeEffects.receiveAsFlow()
-
-    var logoutAfterPinSet = false
 
     val homeScreenState =
         _homeScreenState
@@ -288,22 +285,8 @@ class MainViewModel(
         launchUseCase(dispatcher.io()) {
             matomoAnalyticsController.trackEvent(HOME, CLOSE_SESSION, CLICK)
             logOutUser().fold(
-                onSuccess = { logoutAction ->
-                    when (logoutAction) {
-                        LogoutAction.CreatePin -> {
-                            _homeEffects.send(HomeEffect.ShowPinDialog)
-                            logoutAfterPinSet = true
-                        }
-
-                        is LogoutAction.SuccessLogout -> {
-                            _homeEffects.send(
-                                HomeEffect.GoToLogin(
-                                    logoutAction.accountCount,
-                                    false,
-                                ),
-                            )
-                        }
-                    }
+                onSuccess = { accountCount ->
+                    _homeEffects.send(HomeEffect.GoToLogin(accountCount, false))
                 },
                 onFailure = {
                     Timber.e(it)
@@ -513,11 +496,7 @@ class MainViewModel(
 
     private fun onPinSet() {
         launchUseCase(dispatcher.io()) {
-            if (logoutAfterPinSet) {
-                logOut()
-            } else {
-                _homeEffects.send(HomeEffect.BlockSession)
-            }
+            _homeEffects.send(HomeEffect.BlockSession)
         }
     }
 

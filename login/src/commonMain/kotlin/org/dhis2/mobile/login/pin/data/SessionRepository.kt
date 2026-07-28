@@ -38,8 +38,4 @@ interface SessionRepository {
      * Logs out the current user and clears session data.
      */
     suspend fun logout()
-
-    suspend fun setOauthPin(pin: String)
-
-    suspend fun isOauth(): Boolean
 }
