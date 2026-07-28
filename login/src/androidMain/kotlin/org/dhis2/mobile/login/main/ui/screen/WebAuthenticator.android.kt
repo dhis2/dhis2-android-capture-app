@@ -1,7 +1,6 @@
 package org.dhis2.mobile.login.main.ui.screen
 
 import android.app.Activity
-import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.browser.auth.AuthTabIntent
@@ -28,9 +27,6 @@ actual fun WebAuthenticator(
             AuthTabIntent
                 .Builder()
                 .build()
-        // Custom Tab is not kept in the activity history stack and it's removed from memory.
-        // It won't appear in the "Recent Apps" list
-        authTabIntent.intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
 
         val intent =
             authTabIntent.intent.apply {
