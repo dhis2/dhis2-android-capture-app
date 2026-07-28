@@ -17,7 +17,7 @@ class DeleteUserData(
         withContext(dispatcherProvider.ui()) {
             filterManager.clearAllFilters()
         }
-        workManagerController.cancelAllWork()
+        workManagerController.cancelAllWorkAndWait()
         workManagerController.pruneWork()
         if (file != null) {
             deleteCache(file)

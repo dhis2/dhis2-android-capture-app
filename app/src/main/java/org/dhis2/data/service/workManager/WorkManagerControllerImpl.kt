@@ -28,11 +28,7 @@
 
 package org.dhis2.data.service.workManager
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.work.OneTimeWorkRequest
-import androidx.work.PeriodicWorkRequest
-import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.await
 import org.dhis2.data.service.CheckVersionWorker
@@ -42,16 +38,6 @@ import java.util.concurrent.TimeUnit
 class WorkManagerControllerImpl(
     private val workManager: WorkManager,
 ) : WorkManagerController {
-    override fun syncDataForWorker(workerItem: WorkerItem) {
-        val syncBuilder = createOneTimeBuilder(workerItem).build()
-
-        workerItem.policy?.let {
-            workManager.enqueueUniqueWork(workerItem.workerName, it, syncBuilder)
-        } ?: run {
-            workManager.enqueue(syncBuilder)
-        }
-    }
-
     override fun beginUniqueWork(workerItem: WorkerItem) {
         val request = createOneTimeBuilder(workerItem).build()
         workerItem.policy?.let {
@@ -59,41 +45,11 @@ class WorkManagerControllerImpl(
         }
     }
 
-    override fun enqueuePeriodicWork(workerItem: WorkerItem) {
-        val request = createPeriodicBuilder(workerItem).build()
-        workerItem.periodicPolicy?.let {
-            workManager.enqueueUniquePeriodicWork(workerItem.workerName, it, request)
-        }
-    }
-
     override fun getWorkInfosForUniqueWorkLiveData(workerName: String) = workManager.getWorkInfosForUniqueWorkLiveData(workerName)
-
-    override fun getWorkInfosByTagLiveData(tag: String) = workManager.getWorkInfosByTagLiveData(tag)
-
-    override fun getWorkInfosForTags(vararg tags: String): LiveData<List<WorkInfo>> =
-        MediatorLiveData<List<WorkInfo>>().apply {
-            tags.forEach { tag ->
-                addSource(getWorkInfosByTagLiveData(tag)) {
-                    this.value = it
-                }
-            }
-        }
-
-    override fun cancelAllWork() {
-        workManager.cancelAllWork()
-    }
 
     override suspend fun cancelAllWorkAndWait() {
         val operation = workManager.cancelAllWork()
         operation.await()
-    }
-
-    override fun cancelAllWorkByTag(tag: String) {
-        workManager.cancelAllWorkByTag(tag)
-    }
-
-    override fun cancelUniqueWork(workName: String) {
-        workManager.cancelUniqueWork(workName)
     }
 
     override fun pruneWork() {
@@ -112,36 +68,6 @@ class WorkManagerControllerImpl(
             workerItem.delayInSeconds?.let {
                 setInitialDelay(it, TimeUnit.SECONDS)
             }
-            workerItem.data?.let {
-                setInputData(it)
-            }
-        }
-        return syncBuilder
-    }
-
-    private fun createPeriodicBuilder(workerItem: WorkerItem): PeriodicWorkRequest.Builder {
-        val seconds = workerItem.delayInSeconds ?: 0
-
-        val syncBuilder =
-            when (workerItem.workerType) {
-                WorkerType.GRANULAR -> {
-                    PeriodicWorkRequest.Builder(
-                        GranularSyncWorker::class.java,
-                        seconds,
-                        TimeUnit.SECONDS,
-                    )
-                }
-
-                WorkerType.NEW_VERSION ->
-                    PeriodicWorkRequest.Builder(
-                        CheckVersionWorker::class.java,
-                        seconds,
-                        TimeUnit.SECONDS,
-                    )
-            }
-
-        syncBuilder.apply {
-            addTag(workerItem.workerName)
             workerItem.data?.let {
                 setInputData(it)
             }
