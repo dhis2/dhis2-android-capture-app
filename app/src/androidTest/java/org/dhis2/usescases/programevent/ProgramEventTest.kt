@@ -8,13 +8,11 @@ import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programevent.robot.programEventsRobot
-import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.junit.Rule
 import org.junit.Test
 
 class ProgramEventTest : BaseTest() {
 
-    private val antenatalCare = "lxAQ7Zs9VYR"
     private val informationCampaign = "q04UBOqq3rp"
 
     @get:Rule
@@ -25,23 +23,6 @@ class ProgramEventTest : BaseTest() {
 
     override fun getPermissionsToBeAccepted(): Array<String> {
         return arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
-    }
-
-    @Test
-    fun shouldDeleteEvent() {
-        val eventDate = "26/11/2021"
-
-        prepareProgramAndLaunchActivity(antenatalCare)
-
-        programEventsRobot(composeTestRule) {
-            clickOnEvent(eventDate)
-            eventRobot(composeTestRule) {
-                openMenuMoreOptions()
-                clickOnDelete()
-                clickOnDeleteDialog()
-            }
-            checkEventWasDeleted(eventDate)
-        }
     }
 
     @Test

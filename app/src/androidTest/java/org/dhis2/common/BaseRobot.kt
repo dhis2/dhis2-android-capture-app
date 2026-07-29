@@ -6,6 +6,9 @@ import android.content.Context
 import android.content.Context.ACTIVITY_SERVICE
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.compose.ui.semantics.SemanticsNode
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithText
@@ -75,6 +78,12 @@ open class BaseRobot {
         sleep(millis)
     }
 
+    fun SemanticsNode.texts(): List<String> =
+        config.getOrNull(SemanticsProperties.Text)?.map { it.text } ?: emptyList()
+
+    fun SemanticsNode.subtreeTexts(): List<String> =
+        texts() + children.flatMap { it.subtreeTexts() }
+
     fun getString(stringId: Int): String = getInstrumentation().targetContext.getString(stringId)
 
     inline fun <reified T : Activity> waitUntilActivityVisible() {
@@ -90,14 +99,6 @@ open class BaseRobot {
         }
     }
 
-    /**
-     * Perform action of implicitly waiting for a certain view.
-     * This differs from EspressoExtensions.searchFor in that,
-     * upon failure to locate an element, it will fetch a new root view
-     * in which to traverse searching for our @param match
-     *
-     * @param viewMatcher ViewMatcher used to find our view
-     */
     fun waitForView(
         viewMatcher: Matcher<View>,
         waitMillis: Int = TIMEOUT.toInt(),
@@ -142,10 +143,6 @@ open class BaseRobot {
         throw Exception("Error finding a view matching $viewMatcher")
     }
 
-    /**
-     * Perform action of waiting for a certain view within a single root view
-     * @param matcher Generic Matcher used to find our view
-     */
     fun searchFor(matcher: Matcher<View>): ViewAction {
 
         return object : ViewAction {
