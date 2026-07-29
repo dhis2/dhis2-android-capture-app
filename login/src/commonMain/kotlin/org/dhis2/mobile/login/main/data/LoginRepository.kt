@@ -16,7 +16,6 @@ interface LoginRepository {
         serverUrl: String,
         username: String,
         password: String,
-        isNetworkAvailable: Boolean,
     ): Result<Unit>
 
     suspend fun getAvailableLoginUsernames(): List<String>
@@ -72,4 +71,6 @@ interface LoginRepository {
     ): Result<String?>
 
     suspend fun buildLogoutUrl(serverUrl: String): String
+
+    suspend fun setOfflinePin(pin: String): Result<Unit>
 }
