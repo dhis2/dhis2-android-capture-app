@@ -29,6 +29,7 @@
     <string name="state_synced">បញ្ចូន</string>
     <string name="state_to_update">ដើម្បីធ្វើបច្ចុប្បន្នភាព</string>
     <string name="state_error">កំហុសបច្ចេកទេស</string>
+    <string name="state_warning">ព្រមាន</string>
     <!-- Status -->
     <string name="filter_event_status_open">បើក</string>
     <string name="filter_event_status_completed">បានបញ្ចប់</string>

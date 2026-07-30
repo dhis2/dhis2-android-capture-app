@@ -52,7 +52,7 @@
     <string name="review_message">Algunos campos necesitan tu atención.\n¿Deseas revisar el formulario\?</string>
     <string name="not_now">Ahora no</string>
     <string name="keep_editing">Seguir editando</string>
-    <string name="event_can_be_completed">¿Desea marcar este formulario como completo?</string>
+    <string name="event_can_be_completed">¿Desea marcar este formulario como completo\?</string>
     <string name="discard_go_back">Si sale toda la información del formulario será descartada.</string>
     <string name="field_errors_not_saved_discard">Algunos campos presentan errores y no se han guardado.\nSi sales ahora, los cambios se descartarán.</string>
     <string name="share">Compartir</string>
@@ -186,4 +186,12 @@
     <string name="cancel">Cancelar</string>
     <string name="ok">Aceptar</string>
 
-</resources>
+    <!--*******************
+   Default custom labels
+**********************-->
+    <plurals name="enrollment">
+        <item quantity="one">Registro</item>
+        <item quantity="many">Registros</item>
+        <item quantity="other">Registros</item>
+    </plurals>
+    </resources>
