@@ -97,6 +97,7 @@
     <string name="every_12_hours">12h</string>
     <string name="Manual">Manuel</string>
     <string name="a_week">1 Semaine</string>
+    <string name="wipe_data_meesage">La base de données sera supprimée.\nVous devez donc entrer de nouveau</string>
     <string name="wipe_data_ok">Accepter</string>
     <string name="wipe_data_no">Annuler</string>
     <string name="SYNC_DATA">Synchroniser les données mainténant</string>
@@ -433,6 +434,7 @@
     <string name="filter_period_last_n_biweeks">%dDernier bimensuel</string>
     <string name="section_feedback">Réaction</string>
     <string name="section_indicators">Indicateurs</string>
+    <string name="camera_permission_denied">L\'autorisation de la caméra est refusée. \nVous devez l\'activer pour utiliser cette fonctionnalité.</string>
     <string name="section_charts_indicators">Graphiques et indicateurs</string>
     <string name="take_photo">Prendre une photo</string>
     <string name="break_glass_dialog_title">Ce programme est protégé</string>
@@ -458,6 +460,7 @@
     <string name="search_or_create">Vous pouvez rechercher ou créer un nouveau 1%s</string>
     <string name="missing_warning_fields_completed_events">Vous avez des messages d\'avertissement.</string>
     <string name="event_can_be_completed">Voulez-vous marquer ce formulaire comme complet?</string>
+    <string name="event_error_on_complete">Vous avez des messages d\'erreur.\nVoulez-vous les consulter ?</string>
     <string name="re_opened">Réouvert</string>
     <string name="account_disable_title">Compte désactivé</string>
     <string name="account_disable_message">Votre compte a été désactivé par votre administrateur.</string>
@@ -520,8 +523,4 @@
         <item quantity="many">Il y a %s programmes avec des paramètres spécifiques</item>
         <item quantity="other">Il y a %s programmes avec des paramètres spécifiques</item>
     </plurals>
-    <string name="camera_permission_denied">L\'autorisation de la caméra est refusée. \nVous devez l\'activer pour utiliser cette fonctionnalité.</string>
-    <string name="event_error_on_complete">Vous avez des messages d\'erreur.\nVoulez-vous les consulter ?</string>
-    <string name="wipe_data_meesage">La base de données sera supprimée.\nVous devez donc entrer de nouveau</string>
-
 </resources>

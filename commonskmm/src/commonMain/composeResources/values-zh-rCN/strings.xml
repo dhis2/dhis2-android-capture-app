@@ -46,11 +46,13 @@
     <string name="complete">完成</string>
     <string name="discard_changes">忽略修改</string>
     <string name="saved">已经保存！</string>
+    <string name="event_error_on_complete">您有一些错误消息。\n您要查看它们吗？</string>
     <string name="not_now">现在不要</string>
     <string name="keep_editing">继续编辑</string>
     <string name="event_can_be_completed">您想将此表单标记为已完成吗？</string>
     <string name="discard_go_back">如果您现在退出，表单中的所有信息都将被丢弃。</string>
     <string name="share">分享</string>
+    <string name="camera_permission_denied">相机权限被拒绝。\n 您需要启用它才能使用此功能。</string>
     <string name="action_close">关闭</string>
     <string name="copied_text">副本</string>
     <string name="take_photo">拍照</string>

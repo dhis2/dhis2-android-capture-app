@@ -110,6 +110,7 @@
     <string name="every_12_hours">12h</string>
     <string name="Manual">Manual</string>
     <string name="a_week">Semanal</string>
+    <string name="wipe_data_meesage">Se borrará la base de datos. \nTendrá que volver a iniciar sesión.</string>
     <string name="wipe_data_ok">Aceptar</string>
     <string name="wipe_data_no">Cancelar</string>
     <string name="SYNC_DATA">Sincronizar datos Ahora</string>
@@ -398,6 +399,7 @@
     <string name="filters_title_date">Fecha</string>
     <string name="privacy_policy_title">Política de privacidad</string>
     <string name="open_privacy_policy">Pulse aquí para comprobar nuestra <a href="">política de privacidad</a></string>
+    <string name="break_glass_error_v2">No puede registrar un/una %s desde otras unidades organizativas en este programa por que está protegido.\nContacte con su administrador.</string>
     <string name="field_is_mandatory">El campo es obligatorio</string>
     <string name="security_debugger_message">Por razones de seguridad, esta versión de la app no permite el uso de adb. Por favor use la versión de formación.</string>
 
@@ -611,7 +613,4 @@
         <item quantity="many">Hay %s programas con configuraciones específicas</item>
         <item quantity="other">Hay %s programas con configuraciones específicas</item>
     </plurals>
-    <string name="break_glass_error_v2">No puede registrar un/una %s desde otras unidades organizativas en este programa por que está protegido.\nContacte con su administrador.</string>
-    <string name="wipe_data_meesage">Se borrará la base de datos. \nTendrá que volver a iniciar sesión.</string>
-
 </resources>

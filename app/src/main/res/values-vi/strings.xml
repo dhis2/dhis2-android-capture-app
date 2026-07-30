@@ -110,6 +110,7 @@
     <string name="every_12_hours">12 Giờ</string>
     <string name="Manual">Thủ công</string>
     <string name="a_week">1 Tuần</string>
+    <string name="wipe_data_meesage">Cơ sở dữ liệu sẽ được xóa.\nBạn sẽ được yêu cầu đăng nhập lại.</string>
     <string name="wipe_data_ok">Chấp nhận</string>
     <string name="wipe_data_no">Hủy</string>
     <string name="SYNC_DATA">Đồng Bộ Dữ Liệu Ngay</string>
@@ -395,6 +396,7 @@
     <string name="filters_title_date">Ngày</string>
     <string name="privacy_policy_title">Chính Sách Bảo Mật</string>
     <string name="open_privacy_policy">Bấm vào đây để kiểm tra<a href="">chính sách bảo mật</a></string>
+    <string name="break_glass_error_v2">Bạn không thể đăng ký %stừ đơn vị khác vào chương trình này bởi vì nó được bảo vệ.\n Hãy liên hệ quản lý của bạn.</string>
     <string name="field_is_mandatory">Trường dữ liệu này bắt buộc</string>
     <string name="security_debugger_message">Vì lí do bảo mật, phiên bản ứng dụng này không cho phép sử dụng với adb. Vui lòng sử dụng phiên bản đào tạo.</string>
 
@@ -599,7 +601,4 @@
     <plurals name="settings_specific_programs">
         <item quantity="other">Có %s chương trình với các cài đặt riêng</item>
     </plurals>
-    <string name="break_glass_error_v2">Bạn không thể đăng ký %stừ đơn vị khác vào chương trình này bởi vì nó được bảo vệ.\n Hãy liên hệ quản lý của bạn.</string>
-    <string name="wipe_data_meesage">Cơ sở dữ liệu sẽ được xóa.\nBạn sẽ được yêu cầu đăng nhập lại.</string>
-
 </resources>

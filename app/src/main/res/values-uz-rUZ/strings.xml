@@ -92,6 +92,7 @@
     <string name="every_12_hours">12 soat</string>
     <string name="Manual">Qoʼllanma</string>
     <string name="a_week">1 hafta</string>
+    <string name="wipe_data_meesage">Maʼlumotlar bazasi oʼchiriladi. Sizdan qayta kirish soʼraladi.</string>
     <string name="wipe_data_ok">Qabul qiling</string>
     <string name="wipe_data_no">Бекор қилиш</string>
     <string name="SYNC_DATA">Maʼlumotlarni sinxronlash, hozir</string>
@@ -418,6 +419,4 @@
     <string name="sync">Sinxronlash</string>
     <string name="show_description">Tavsifni koʼrsatish</string>
     <string name="hide_description">Tavsifni berkitish</string>
-    <string name="wipe_data_meesage">Maʼlumotlar bazasi oʼchiriladi. Sizdan qayta kirish soʼraladi.</string>
-
     </resources>

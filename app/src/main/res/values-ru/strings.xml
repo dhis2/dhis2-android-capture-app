@@ -109,6 +109,7 @@
     <string name="every_12_hours">12 часов</string>
     <string name="Manual">Вручную</string>
     <string name="a_week">1 неделя</string>
+    <string name="wipe_data_meesage">База данных будет удалена.Вам будет предложено войти в систему снова.</string>
     <string name="wipe_data_ok">Принять</string>
     <string name="wipe_data_no">Отмена</string>
     <string name="SYNC_DATA">СИНХРОНИЗИРОВАТЬ данные сейчас</string>
@@ -375,6 +376,7 @@
     <string name="filters_title_date">Дата</string>
     <string name="privacy_policy_title">Политика конфиденциальности</string>
     <string name="open_privacy_policy">Нажмите здесь, чтобы ознакомиться с нашей политикой конфиденциальности <a href=""></a> . </string>
+    <string name="break_glass_error_v2">Вы не можете зарегистрировать %s из других организационных подразделений в этой программе, потому что она защищена. Свяжитесь с Вашим администратором.</string>
     <string name="field_is_mandatory">Это поле обязательно для заполнения</string>
     <string name="security_debugger_message">По соображениям безопасности эта версия приложения не может быть использована с adb. Пожалуйста, используйте учебную версию.</string>
 
@@ -584,7 +586,4 @@
         <item quantity="many">Существуют программы %s с определенными настройками.</item>
         <item quantity="other">Существуют программы %s с определенными настройками.</item>
     </plurals>
-    <string name="break_glass_error_v2">Вы не можете зарегистрировать %s из других организационных подразделений в этой программе, потому что она защищена. Свяжитесь с Вашим администратором.</string>
-    <string name="wipe_data_meesage">База данных будет удалена.Вам будет предложено войти в систему снова.</string>
-
 </resources>
