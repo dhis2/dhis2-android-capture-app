@@ -110,16 +110,17 @@ class DashboardViewModelTest {
         }
 
     @Test
-    fun shouldUpdateEventUid() {
-        mockEnrollmentModel()
-        mockGrouping(false)
+    fun shouldUpdateEventUid() =
+        runTest {
+            mockEnrollmentModel()
+            mockGrouping(false)
 
-        with(getViewModel()) {
-            assertTrue(eventUid().value == null)
-            updateEventUid("eventUid")
-            assertTrue(eventUid().value == "eventUid")
+            with(getViewModel()) {
+                assertTrue(eventUid().value == null)
+                updateEventUid("eventUid")
+                assertTrue(eventUid().value == "eventUid")
+            }
         }
-    }
 
     @Test
     fun shouldSetFollowUpOnEnrollment() =
@@ -208,12 +209,12 @@ class DashboardViewModelTest {
             testingDispatcher.scheduler.advanceUntilIdle()
         }
 
-    private fun mockEnrollmentModel() {
+    private suspend fun mockEnrollmentModel() {
         whenever(repository.getDashboardModel()) doReturn mockedEnrollmentModel
         whenever(mockedEnrollmentModel.currentEnrollment) doReturn mockedEnrollment
     }
 
-    private fun mockTeiModel() {
+    private suspend fun mockTeiModel() {
         whenever(repository.getDashboardModel()) doReturn mockedTeiModel
     }
 
