@@ -415,11 +415,9 @@
     <string name="sync_dialog_title_synced">Sinxronizatsiyalangan</string>
     <string name="sync_dialog_title_syncing">Sinxronlashmoqda</string>
     <string name="sync_dialog_action_send">Yuborish</string>
-    <string name="marked_follow_up">Kuzatuv uchun belgilangan</string>
     <string name="skipped">Oʼtkazib yuborildi</string>
     <string name="programs">Dasturlar</string>
     <string name="sync_error">Sinxronlashda xatolik</string>
-    <string name="mark_follow_up">Kuzatuv uchun belgilang</string>
     <string name="coordinates">Координаталар</string>
     <string name="schedule">Reja</string>
     <string name="scheduled_enter_event">Reja boʼyicha</string>

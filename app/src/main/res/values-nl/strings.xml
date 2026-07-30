@@ -473,7 +473,6 @@
     <string name="action_do_not_show_again">Niet meer laten zien</string>
     <string name="feature_configuration">Functieconfiguratie</string>
     <string name="show_radar_graph">Weergeven als radar</string>
-    <string name="filter_follow_up_label">Gevolgd %s</string>
     <string name="update_field_error">Dit veld kan niet worden bijgewerkt. Probeer het opnieuw</string>
     <string name="blocked_by_completion">Deze gegevens kunnen niet worden bewerkt omdat ze als voltooid zijn gemarkeerd</string>
     <string name="edition_expired">Deze gegevens kunnen niet worden bewerkt omdat de bewerkingstijd is verstreken</string>
@@ -543,13 +542,11 @@
     <string name="no_updates">Er zijn geen nieuwe updates</string>
     <string name="app_version">App versie</string>
     <string name="error_applying_rule_effects">Er is iets misgegaan met de programmaconfiguratie, we kunnen dit evenement niet laden. Neem contact op met uw systeembeheerder.</string>
-    <string name="marked_follow_up">Gemarkeerd voor vervolg</string>
     <string name="view_only">Alleen bekijken</string>
     <string name="skipped">Overgeslaten</string>
     <string name="programs">Programma\'s</string>
     <string name="sync_warning">Sync waarschuwing</string>
     <string name="sync_error">Synchronisatiefout</string>
-    <string name="mark_follow_up">Markeer voor vervolg</string>
     <string name="schedule">Schema</string>
     <string name="refer">Refereren</string>
     <string name="scheduled_enter_event">Gepland</string>

@@ -500,7 +500,6 @@
     <string name="action_do_not_show_again">Znovu nezobrazovat</string>
     <string name="feature_configuration">Konfigurace funkcí</string>
     <string name="show_radar_graph">Zobrazit jako radar</string>
-    <string name="filter_follow_up_label">Navázalo na %s</string>
     <string name="update_field_error">Toto pole nelze aktualizovat. Prosím zkuste to znovu</string>
     <string name="blocked_by_completion">Tato data nelze upravovat, protože jsou označena jako dokončená</string>
     <string name="edition_expired">Tato data nelze upravovat, protože vypršel čas jejich vydání</string>
@@ -582,7 +581,6 @@
     <string name="permission_notification_granted">Oprávnění k oznámení uděleno.</string>
     <string name="not_synced">Není synchronizováno</string>
     <string name="sync_retry">Opakování synchronizace</string>
-    <string name="marked_follow_up">Označeno pro další sledování</string>
     <string name="overdue">Zpoždění %s</string>
     <string name="registered_in">Registrováno v</string>
     <string name="view_only">Pouze zobrazení</string>
@@ -593,7 +591,6 @@
     <string name="sync_successful">Synchronizace úspěšná</string>
     <string name="sync_warning">Upozornění na synchronizaci</string>
     <string name="sync_error">Chyba synchronizace</string>
-    <string name="mark_follow_up">Označit pro další sledování</string>
     <string name="coordinates">Souřadnice</string>
     <string name="sync_offline_check_connection">Vypadá to, že jste offline. Zkontrolujte prosím své připojení</string>
     <string name="delete_tei_dialog_title">Smazat tuto stránku %s?</string>

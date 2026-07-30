@@ -14,11 +14,44 @@ interface CustomLabelProvider {
         capitalizeFirstLetter: Boolean = true,
     ): String
 
+    suspend fun getCustomFollowUpLabel(
+        programUid: String?,
+        capitalizeFirstLetter: Boolean = true,
+    ): String
+
+    suspend fun getCustomMarkedForFollowUpLabel(programUid: String?): String
+
+    suspend fun getCustomMarkForFollowUpLabel(programUid: String?): String
+
     fun formatStringWithCustomLabel(
         stringResource: String,
         customLabel: String,
         quantity: Int? = null,
     ): String
+
+    @Deprecated("Use suspend function", replaceWith = ReplaceWith("getCustomFollowUpLabel"))
+    fun blockingCustomFollowUpLabel(programUid: String): String =
+        runBlocking {
+            getCustomFollowUpLabel(programUid)
+        }
+
+    @Deprecated(
+        "Use suspend function",
+        replaceWith = ReplaceWith("getCustomMarkedForFollowUpLabel"),
+    )
+    fun blockingCustomMarkedForFollowUpLabel(programUid: String?) =
+        runBlocking {
+            getCustomMarkedForFollowUpLabel(programUid)
+        }
+
+    @Deprecated(
+        "Use suspend function",
+        replaceWith = ReplaceWith("getCustomMarkedForFollowUpLabel"),
+    )
+    fun blockingCustomMarkForFollowUpLabel(programUid: String?) =
+        runBlocking {
+            getCustomMarkForFollowUpLabel(programUid)
+        }
 }
 
 fun CustomLabelProvider.getCustomOrgUnitLabelBlocking(

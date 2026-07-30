@@ -23,6 +23,7 @@ import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.ui.model.ListCardUiModel
 import org.dhis2.mobile.commons.extensions.toJavaDate
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.tracker.search.model.DomainEnrollment
 import org.dhis2.tracker.search.model.DomainProgram
 import org.dhis2.tracker.search.model.EnrollmentStatus
@@ -44,6 +45,7 @@ import java.util.Date
 class TEICardMapper(
     val context: Context,
     val resourceManager: ResourceManager,
+    val customLabelProvider: CustomLabelProvider,
 ) {
     fun map(
         searchTEIModel: SearchTeiModel,
@@ -198,16 +200,20 @@ class TEICardMapper(
     ) {
         enrollments?.let {
             if (enrollments.hasFollowUp()) {
+                val followUpLabel =
+                    customLabelProvider.blockingCustomMarkedForFollowUpLabel(
+                        enrollments.first { it.followUp }.program!!,
+                    )
                 list.add(
                     AdditionalInfoItem(
                         icon = {
                             Icon(
                                 imageVector = Icons.Outlined.Flag,
-                                contentDescription = resourceManager.getString(R.string.marked_follow_up),
+                                contentDescription = followUpLabel,
                                 tint = AdditionalInfoItemColor.WARNING.color,
                             )
                         },
-                        value = resourceManager.getString(R.string.marked_follow_up),
+                        value = followUpLabel,
                         isConstantItem = true,
                         color = AdditionalInfoItemColor.WARNING.color,
                     ),

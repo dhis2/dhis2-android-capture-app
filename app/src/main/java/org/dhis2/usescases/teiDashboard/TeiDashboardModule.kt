@@ -13,7 +13,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
-import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.mobileProgramRules.EvaluationType
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.usescases.enrollment.DateEditionWarningHandler
@@ -78,7 +78,7 @@ class TeiDashboardModule(
         teiAttributesProvider: TeiAttributesProvider,
         metadataIconProvider: MetadataIconProvider,
         programConfigurationRepository: ProgramConfigurationRepository,
-        featureConfigRepository: FeatureConfigRepository,
+        customLabelProvider: CustomLabelProvider,
     ): DashboardRepository =
         DashboardRepositoryImpl(
             d2,
@@ -90,7 +90,7 @@ class TeiDashboardModule(
             preferenceProvider,
             metadataIconProvider,
             programConfigurationRepository,
-            featureConfigRepository,
+            customLabelProvider,
         )
 
     @Provides

@@ -16,6 +16,7 @@ import androidx.compose.material.icons.outlined.Timeline
 import androidx.compose.material.icons.outlined.Workspaces
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.usescases.teiDashboard.DashboardEnrollmentModel
 import org.dhis2.usescases.teiDashboard.DashboardViewModel
 import org.dhis2.usescases.teiDashboard.EnrollmentMenuItem
@@ -32,11 +33,18 @@ fun getEnrollmentMenuList(
     resourceManager: ResourceManager,
     presenter: TeiDashboardContracts.Presenter,
     dashboardViewModel: DashboardViewModel,
+    customLabelProvider: CustomLabelProvider,
 ): List<MenuItemData<EnrollmentMenuItem>> =
     if (enrollmentUid == null) {
         buildMenuForNoEnrollment(resourceManager, presenter)
     } else {
-        buildMenuForEnrollment(enrollmentUid, resourceManager, presenter, dashboardViewModel)
+        buildMenuForEnrollment(
+            enrollmentUid,
+            resourceManager,
+            presenter,
+            dashboardViewModel,
+            customLabelProvider,
+        )
     }
 
 private fun buildMenuForNoEnrollment(
@@ -54,11 +62,12 @@ private fun buildMenuForEnrollment(
     resourceManager: ResourceManager,
     presenter: TeiDashboardContracts.Presenter,
     dashboardViewModel: DashboardViewModel,
+    customLabelProvider: CustomLabelProvider,
 ): List<MenuItemData<EnrollmentMenuItem>> =
     buildList {
         addSyncMenuItem(resourceManager)
         addIfTeiCanBeTransferred(dashboardViewModel, resourceManager)
-        addFollowUpMenuItem(dashboardViewModel, resourceManager)
+        addFollowUpMenuItem(dashboardViewModel, presenter.programUid, customLabelProvider)
         addTimelineOrGroupByStageMenuItem(dashboardViewModel, resourceManager)
         addHelpMenuItem(resourceManager)
         addMoreEnrollmentsMenuItem(resourceManager)
@@ -95,13 +104,14 @@ private fun MutableList<MenuItemData<EnrollmentMenuItem>>.addIfTeiCanBeTransferr
 
 private fun MutableList<MenuItemData<EnrollmentMenuItem>>.addFollowUpMenuItem(
     dashboardViewModel: DashboardViewModel,
-    resourceManager: ResourceManager,
+    programUid: String,
+    customLabelProvider: CustomLabelProvider,
 ) {
     if (!dashboardViewModel.showFollowUpBar.value) {
         add(
             MenuItemData(
                 id = EnrollmentMenuItem.FOLLOW_UP,
-                label = resourceManager.getString(R.string.mark_follow_up),
+                label = customLabelProvider.blockingCustomMarkForFollowUpLabel(programUid),
                 leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Flag),
             ),
         )
@@ -250,7 +260,11 @@ private fun MutableList<MenuItemData<EnrollmentMenuItem>>.addDeleteTeiMenuItem(
         add(
             MenuItemData(
                 id = EnrollmentMenuItem.DELETE,
-                label = resourceManager.getString(R.string.dashboard_menu_delete_tei_v2, presenter.teType),
+                label =
+                    resourceManager.getString(
+                        R.string.dashboard_menu_delete_tei_v2,
+                        presenter.teType,
+                    ),
                 style = MenuItemStyle.ALERT,
                 leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.DeleteForever),
             ),

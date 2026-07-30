@@ -483,7 +483,6 @@
     <string name="action_do_not_show_again">Не показувати знову</string>
     <string name="feature_configuration">Конфігурація функції</string>
     <string name="show_radar_graph">Показати як діаграму Радар</string>
-    <string name="filter_follow_up_label">Для подальших дій %s</string>
     <string name="update_field_error">Це поле не вдалося оновити. Будь ласка спробуйте ще раз</string>
     <string name="blocked_by_completion">Ці дані не можна редагувати, оскільки вони позначені як завершені</string>
     <string name="edition_expired">Ці дані не можна редагувати, оскільки час їх редагування минув</string>
@@ -547,7 +546,6 @@
     <string name="programs">Програми</string>
     <string name="sync_successful">Синхронізація успішна</string>
     <string name="sync_error">Помилка синхронізації</string>
-    <string name="mark_follow_up">Позначити для подальших дій</string>
     <string name="schedule_next">Запланувати наступний</string>
     <string name="schedule">Запланувати</string>
     <string name="enter">Введіть</string>

@@ -39,7 +39,6 @@
     <string name="filters_title_event_label_date">%s ngày</string>
     <string name="filters_title_event_label_status">%s trạng thái</string>
     <string name="filters_title_enrollment_status">@string/enrollment_status</string>
-    <string name="filter_follow_up_label">Theo dõi %s</string>
     <string name="select_period">Chọn loại thời điểm</string>
     <string name="weekly">Hàng Tuần</string>
     <string name="bi_weekly">Định kỳ 2 tuần</string>

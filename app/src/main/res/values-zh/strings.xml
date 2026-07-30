@@ -496,7 +496,6 @@
     <string name="action_do_not_show_again">不再显示</string>
     <string name="feature_configuration">特征配置</string>
     <string name="show_radar_graph">显示为雷达图</string>
-    <string name="filter_follow_up_label">跟进%s</string>
     <string name="update_field_error">无法更新此字段。请再试一次</string>
     <string name="blocked_by_completion">此数据不可编辑，因为已标记为已完成</string>
     <string name="edition_expired">此数据不可编辑，因为其编辑时间已过期</string>
@@ -580,7 +579,6 @@
     <string name="permission_notification_granted">已授予通知许可。</string>
     <string name="not_synced">未同步</string>
     <string name="sync_retry">重试同步</string>
-    <string name="marked_follow_up">标记为后续</string>
     <string name="overdue">逾期%s</string>
     <string name="registered_in">已登记</string>
     <string name="view_only">只读</string>
@@ -591,7 +589,6 @@
     <string name="sync_successful">同步成功</string>
     <string name="sync_warning">同步警告</string>
     <string name="sync_error">同步错误</string>
-    <string name="mark_follow_up">后续标记</string>
     <string name="coordinates">坐标</string>
     <string name="no_data_access">您无权访问数据。\n请与您的管理员联系。</string>
     <string name="sync_offline_check_connection">您似乎已离线。请检查您的连接</string>

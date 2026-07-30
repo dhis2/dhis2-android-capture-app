@@ -494,7 +494,6 @@
     <string name="action_do_not_show_again">Não voltar a mostrar</string>
     <string name="feature_configuration">Configuração de funções</string>
     <string name="show_radar_graph">Mostrar como radar</string>
-    <string name="filter_follow_up_label">Seguimento%s</string>
     <string name="update_field_error">Não foi possível atualizar este campo. Por favor, tente novamente</string>
     <string name="blocked_by_completion">Estes dados não são editáveis porque estão marcados como concluídos</string>
     <string name="edition_expired">Estes dados não são editáveis porque o seu tempo de edição expirou</string>
@@ -574,7 +573,6 @@
     <string name="permission_notification_granted">Autorização de notificação concedida.</string>
     <string name="not_synced">Não sincronizado</string>
     <string name="sync_retry">Repetir a sincronização</string>
-    <string name="marked_follow_up">Marcado para acompanhamento</string>
     <string name="overdue">Atrasado %s</string>
     <string name="registered_in">Registado em</string>
     <string name="view_only">Ver apenas</string>
@@ -585,7 +583,6 @@
     <string name="sync_successful"> Sincronização bem sucedida</string>
     <string name="sync_warning">Aviso de sincronização</string>
     <string name="sync_error">Erro de Sincronização</string>
-    <string name="mark_follow_up">Marcar para acompanhamento</string>
     <string name="coordinates">Coordenadas</string>
     <string name="sync_offline_check_connection">Parece que está offline. Por favor, verifique a sua ligação</string>
     <string name="delete_tei_dialog_title">Eliminar este %s?</string>

@@ -39,7 +39,6 @@
     <string name="filters_title_event_label_date">%s datum</string>
     <string name="filters_title_event_label_status">%s stav</string>
     <string name="filters_title_enrollment_status">@string/enrollment_status</string>
-    <string name="filter_follow_up_label">Navázalo na %s</string>
     <string name="select_period">Vybrat typ období</string>
     <string name="weekly">Týdně</string>
     <string name="bi_weekly">po 14ti dnech</string>

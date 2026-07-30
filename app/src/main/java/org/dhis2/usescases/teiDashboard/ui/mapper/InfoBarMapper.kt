@@ -70,7 +70,7 @@ class InfoBarMapper(
                 }
             }
 
-            InfoBarType.FOLLOW_UP -> resourceManager.getString(R.string.marked_follow_up)
+            InfoBarType.FOLLOW_UP -> item.markedForFollowUpLabel
             InfoBarType.ENROLLMENT_STATUS -> {
                 if (enrollmentStatus == EnrollmentStatus.COMPLETED) {
                     resourceManager.formatWithEnrollmentLabel(
