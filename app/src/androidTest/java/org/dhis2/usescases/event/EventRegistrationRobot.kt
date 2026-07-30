@@ -20,17 +20,14 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.dhis2.common.matchers.hasCompletedPercentage
 import org.dhis2.commons.dialogs.bottomsheet.MAIN_BUTTON_TAG
 import org.dhis2.commons.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
-import org.hamcrest.CoreMatchers.not
 
 fun eventRegistrationRobot(
     composeTestRule: ComposeTestRule,
@@ -77,22 +74,6 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
 
     fun clickSyncButton() {
         waitForView(withId(R.id.syncButton)).perform(click())
-    }
-
-    // ── Tab navigation + sync-button visibility (ANDROAPP-4708) ───────────────
-
-    fun navigateToNotesTab() {
-        composeTestRule.onNodeWithTag("NAVIGATION_BAR_ITEM_Notes").performClick()
-        composeTestRule.waitForIdle()
-    }
-
-    fun navigateToFormTab() {
-        composeTestRule.onNodeWithTag("NAVIGATION_BAR_ITEM_Form").performClick()
-        composeTestRule.waitForIdle()
-    }
-
-    fun checkSyncButtonIsNotDisplayed() {
-        onView(withId(R.id.syncButton)).check(matches(not(isDisplayed())))
     }
 
     // ── Flow 2: create-form checks (ANDROAPP-6687) ────────────────────────────

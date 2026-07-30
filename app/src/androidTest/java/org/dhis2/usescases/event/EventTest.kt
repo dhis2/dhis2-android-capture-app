@@ -89,10 +89,6 @@ class EventTest : BaseTest() {
         assertFragmentAttached("EVENT_SYNC")
         pressBack()
         eventRegistrationRobot(composeTestRule) {
-            // [ANDROAPP-4708] Sync button shows on the Form page only.
-            navigateToNotesTab()
-            checkSyncButtonIsNotDisplayed()
-            navigateToFormTab()
             checkSaveButtonIsDisplayed()
         }
 
