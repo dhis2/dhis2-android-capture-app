@@ -115,8 +115,8 @@ internal val mainLoginModule =
             val allowRecovery = parameters[3] as Boolean
             val oidcInfo = parameters[4] as OidcInfo?
             val context = parameters[5] as PlatformContext
-            val fromHome = parameters[6] as Boolean
-            val entryMode = parameters[7] as CredentialsEntryMode
+            val entryMode = parameters[6] as CredentialsEntryMode
+            val autoPromptLogin = parameters[7] as Boolean
             CredentialsViewModel(
                 navigator = get(),
                 getAvailableUsernames = get { parametersOf(context) },
@@ -141,8 +141,8 @@ internal val mainLoginModule =
                 getIsSessionLockedUseCase = get(),
                 oidcInfo = oidcInfo,
                 forgotPinUseCase = get(),
-                fromHome = fromHome,
                 entryMode = entryMode,
+                autoPromptLogin = autoPromptLogin,
                 setOAuthPin = get { parametersOf(context) },
             )
         }

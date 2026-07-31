@@ -125,8 +125,8 @@ fun CredentialsScreen(
     selectedServerFlag: String?,
     allowRecovery: Boolean,
     oidcInfo: OidcInfo?,
-    fromHome: Boolean,
     entryMode: CredentialsEntryMode,
+    autoPromptLogin: Boolean,
 ) {
     val context = LocalPlatformContext.current
 
@@ -139,8 +139,8 @@ fun CredentialsScreen(
                 allowRecovery,
                 oidcInfo,
                 context,
-                fromHome,
                 entryMode,
+                autoPromptLogin,
             )
         }
 

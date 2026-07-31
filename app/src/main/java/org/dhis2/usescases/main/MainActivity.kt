@@ -359,7 +359,6 @@ class MainActivity : ActivityGlobalAbstract() {
             LoginActivity.bundle(
                 accountsCount = accountsCount,
                 isDeletion = isDeletion,
-                fromMainActivity = true,
             ),
             finishCurrent = true,
             finishAll = true,

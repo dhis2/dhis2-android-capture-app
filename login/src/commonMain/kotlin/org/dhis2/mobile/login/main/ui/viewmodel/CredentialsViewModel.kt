@@ -68,8 +68,8 @@ class CredentialsViewModel(
     private val getIsSessionLockedUseCase: GetIsSessionLockedUseCase,
     private val forgotPinUseCase: ForgotPinUseCase,
     private val oidcInfo: OidcInfo?,
-    private val fromHome: Boolean,
     private val entryMode: CredentialsEntryMode,
+    private val autoPromptLogin: Boolean,
     private val setOAuthPin: SetOAuthPin,
 ) : ViewModel() {
     private val isNetworkOnline =
@@ -146,7 +146,7 @@ class CredentialsViewModel(
                     oidcInfo = oidcInfo,
                     afterLoginActions = emptyList(),
                     hasOtherAccounts = getHasOtherAccounts(),
-                    displayBiometricsDialog = biometricInfo.canUseBiometrics && !fromHome,
+                    displayBiometricsDialog = biometricInfo.canUseBiometrics && autoPromptLogin,
                 )
             }
         }
@@ -164,8 +164,10 @@ class CredentialsViewModel(
                     oidcInfo = oidcInfo,
                     afterLoginActions = emptyList(),
                     hasOtherAccounts = getHasOtherAccounts(),
-                    isSessionLocked = getIsSessionLockedUseCase(requireOfflineCredentials = true),
-                    displayBiometricsDialog = biometricInfo.canUseBiometrics && !fromHome,
+                    isSessionLocked =
+                        getIsSessionLockedUseCase(requireOfflineCredentials = true) &&
+                            autoPromptLogin,
+                    displayBiometricsDialog = biometricInfo.canUseBiometrics && autoPromptLogin,
                 )
             }
         }
@@ -191,7 +193,7 @@ class CredentialsViewModel(
                     afterLoginActions = emptyList(),
                     hasOtherAccounts = getHasOtherAccounts(),
                     isSessionLocked = getIsSessionLockedUseCase(requireOfflineCredentials = false),
-                    displayBiometricsDialog = biometricInfo.canUseBiometrics && !fromHome,
+                    displayBiometricsDialog = biometricInfo.canUseBiometrics && autoPromptLogin,
                 )
             }
         }
@@ -425,7 +427,9 @@ class CredentialsViewModel(
     fun onLoginClicked() {
         when (entryMode) {
             CredentialsEntryMode.NEW_ACCOUNT_OAUTH -> fetchOAuthEnrollmentUrl()
-            CredentialsEntryMode.EXISTING_OAUTH -> handleExistingOAuthAccount()
+            CredentialsEntryMode.EXISTING_OAUTH ->
+                _credentialsScreenState.update { it.copy(isSessionLocked = true) }
+
             else ->
                 startLoginJob {
                     loginUser(

@@ -129,6 +129,7 @@ class LoginScreenIntegrationTest {
                         selectedServerFlag = singleAccount.serverFlag,
                         allowRecovery = singleAccount.allowRecovery,
                         entryMode = CredentialsEntryMode.EXISTING_BASIC,
+                        autoPromptLogin = false,
                     ),
                 ),
                 any(),
@@ -161,6 +162,8 @@ class LoginScreenIntegrationTest {
                         selectedServerFlag = oauthAccount.serverFlag,
                         allowRecovery = false,
                         entryMode = CredentialsEntryMode.EXISTING_OAUTH,
+                        // Initial landing: the offline-credential dialog is not auto-presented.
+                        autoPromptLogin = false,
                     ),
                 ),
                 any(),

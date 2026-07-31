@@ -742,7 +742,6 @@ class CredentialsViewModelTest {
                     serverUrl = staleServerUrl,
                     username = "firstUser",
                     entryMode = CredentialsEntryMode.EXISTING_OAUTH,
-                    fromHome = true,
                     appLinkNavigation = sharedAppLinkNavigation,
                 )
             val oauthViewModel =
@@ -1023,13 +1022,42 @@ class CredentialsViewModelTest {
             }
         }
 
+    @Test
+    fun `GIVEN EXISTING_OAUTH initial landing WHEN loaded THEN offline dialog is not auto-shown until Login is tapped`() =
+        runTest {
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(true)) doReturn true
+
+            initViewModel(
+                entryMode = CredentialsEntryMode.EXISTING_OAUTH,
+                autoPromptLogin = false,
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                awaitItem()
+                // Passive initial landing: the offline-credential dialog is NOT auto-presented
+                val loadedState = awaitItem()
+                assertFalse(loadedState.isSessionLocked)
+
+                // WHEN - the user taps Login
+                viewModel.onLoginClicked()
+
+                // THEN - the offline-credential dialog is presented
+                assertTrue(awaitItem().isSessionLocked)
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
     private fun initViewModel(
         serverName: String? = "Test Server",
         serverUrl: String = "https://test.server.org",
         username: String? = null,
         allowRecovery: Boolean = true,
         entryMode: CredentialsEntryMode = CredentialsEntryMode.NEW_ACCOUNT_BASIC,
-        fromHome: Boolean = false,
+        autoPromptLogin: Boolean = true,
         oidcInfo: OidcInfo? = null,
         appLinkNavigation: AppLinkNavigation = this.appLinkNavigation,
     ): CredentialsViewModel {
@@ -1058,8 +1086,8 @@ class CredentialsViewModelTest {
                 getIsSessionLockedUseCase,
                 forgotPinUseCase,
                 oidcInfo = oidcInfo,
-                fromHome = fromHome,
                 entryMode = entryMode,
+                autoPromptLogin = autoPromptLogin,
                 setOAuthPin = setOAuthPin,
             )
         return viewModel
