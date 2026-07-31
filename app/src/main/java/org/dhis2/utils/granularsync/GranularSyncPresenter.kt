@@ -46,8 +46,12 @@ import org.dhis2.commons.sync.ConflictType.PROGRAM
 import org.dhis2.commons.sync.ConflictType.TEI
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.mobile.sync.data.GranularSyncWorker
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
+import org.dhis2.mobile.sync.model.GRANULAR_SYNC_DATASET_NAME
+import org.dhis2.mobile.sync.model.GRANULAR_SYNC_DATAVALUE_NAME
+import org.dhis2.mobile.sync.model.GRANULAR_SYNC_EVENT_NAME
+import org.dhis2.mobile.sync.model.GRANULAR_SYNC_PROGRAM_NAME
+import org.dhis2.mobile.sync.model.GRANULAR_SYNC_TEI_NAME
 import org.dhis2.mobile.sync.model.GranularSyncType
 import org.dhis2.mobile.sync.model.SyncJobStatus
 import org.dhis2.usescases.sms.SmsSendingService
@@ -73,7 +77,6 @@ class GranularSyncPresenter(
     private val mapper: SyncUiStateMapper,
 ) : ViewModel(),
     KoinComponent {
-    private val workerName: String
     private var disposable: CompositeDisposable = CompositeDisposable()
     private lateinit var states: MutableLiveData<List<SmsSendingService.SendingStatus>>
     private lateinit var statesList: ArrayList<SmsSendingService.SendingStatus>
@@ -82,10 +85,6 @@ class GranularSyncPresenter(
     val currentState: StateFlow<SyncUiState?> = _currentState
 
     private val syncBackgroundJobAction: SyncBackgroundJobAction by inject()
-
-    init {
-        workerName = workerName()
-    }
 
     private val _serverAvailability = MutableLiveData<Boolean?>()
     val serverAvailability: LiveData<Boolean?> = _serverAvailability
@@ -147,18 +146,6 @@ class GranularSyncPresenter(
                                 else -> error("Unsupported conflict type")
                             },
                     )
-
-                    GranularSyncWorker.buildInputData(
-                        uid = syncContext.recordUid(),
-                        granularSyncType =
-                            when (syncContext.conflictType()) {
-                                PROGRAM -> GranularSyncType.Program
-                                TEI -> GranularSyncType.Tei
-                                EVENT -> GranularSyncType.Event
-                                DATA_SET -> GranularSyncType.DataSet
-                                else -> error("Unsupported conflict type")
-                            },
-                    )
                 }
 
                 DATA_VALUES ->
@@ -180,18 +167,17 @@ class GranularSyncPresenter(
         return observeWorkInfo()
     }
 
-    fun observeWorkInfo() = syncBackgroundJobAction.observeGranularJob(workerName)
-
-    private fun workerName(): String =
-        when (syncContext.conflictType()) {
-            ALL -> Constants.INITIAL_SYNC
-            DATA_VALUES ->
-                with(syncContext as SyncContext.DataSetInstance) {
-                    orgUnitUid + "_" + periodId + "_" + attributeOptionComboUid
-                }
-
-            else -> syncContext.recordUid()
-        }
+    fun observeWorkInfo() =
+        syncBackgroundJobAction.observeGranularJob(
+            when (syncContext.conflictType()) {
+                ALL -> Constants.INITIAL_SYNC
+                PROGRAM -> GRANULAR_SYNC_PROGRAM_NAME
+                TEI -> GRANULAR_SYNC_TEI_NAME
+                EVENT -> GRANULAR_SYNC_EVENT_NAME
+                DATA_SET -> GRANULAR_SYNC_DATASET_NAME
+                DATA_VALUES -> GRANULAR_SYNC_DATAVALUE_NAME
+            },
+        )
 
     // NO PLAY SERVICES
     fun initSMSSync(): LiveData<List<SmsSendingService.SendingStatus>> {

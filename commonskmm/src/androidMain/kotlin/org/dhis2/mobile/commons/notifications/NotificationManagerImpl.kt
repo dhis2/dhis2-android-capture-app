@@ -187,7 +187,7 @@ class NotificationManagerImpl(
     }
 
     override fun cancelGranularSyncNotification() {
-        notificationManager.cancel(SYNC_METADATA_NOTIFICATION_ID)
+        notificationManager.cancel(SYNC_GRANULAR_NOTIFICATION_ID)
     }
 
     private fun createForegroundInfo(

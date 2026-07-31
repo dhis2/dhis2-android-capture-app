@@ -10,8 +10,8 @@ internal class SyncEvent(
 ) : UseCase<EventUid, Unit> {
     override suspend fun invoke(input: EventUid): Result<Unit> =
         try {
-            syncEventRepository.downloadEvent(input)
             syncEventRepository.uploadEvent(input)
+            syncEventRepository.downloadEvent(input)
             syncEventRepository.downloadFileResources(input)
             Result.success(Unit)
         } catch (e: Exception) {
