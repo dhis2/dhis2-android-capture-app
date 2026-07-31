@@ -10,11 +10,16 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onLast
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTextReplacement
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -68,14 +73,8 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
             .assertIsDisplayed()
     }
 
-    @OptIn(ExperimentalTestApi::class)
     fun checkFieldLabelIsFormName(formName: String, displayName: String) {
-        composeTestRule.waitUntilAtLeastOneExists(
-            hasText(formName, substring = true),
-            TIMEOUT,
-        )
-        composeTestRule.onNodeWithText(formName, substring = true)
-            .assertIsDisplayed()
+        checkFormFieldLabelIsDisplayed(formName)
         // The verbose displayName must NOT be rendered as a field label.
         composeTestRule.onAllNodesWithText(displayName).assertCountEquals(0)
     }
@@ -195,7 +194,57 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
         composeTestRule.onNodeWithTag("FORM_VIEW", useUnmergedTree = true).performScrollToNode(target)
     }
 
+    @OptIn(ExperimentalTestApi::class)
+    fun fillNumberFieldWithLabel(label: String, value: String) {
+        scrollFormTo(hasText(label, substring = true))
+        val numberField = hasTestTag("INPUT_NUMBER_FIELD")
+        composeTestRule.waitUntilAtLeastOneExists(numberField, TIMEOUT)
+        composeTestRule.onNode(numberField, useUnmergedTree = true)
+            .performTextInput(value)
+        Espresso.closeSoftKeyboard()
+        // Clear focus via FORM_VIEW's own clickable, else the IME inset races the
+        // next field's scroll.
+        composeTestRule.onNodeWithTag("FORM_VIEW").performClick()
+        composeTestRule.waitForIdle()
+    }
+
+    /**
+     * Sets a DATE field via its real DatePicker dialog rather than typing digits
+     * into the masked text field.
+     *
+     * The title and the action button are neither semantics siblings nor in an
+     * ancestor/descendant relationship, so when several `INPUT_DATE_TIME` fields
+     * exist (the event's own date plus a DATE-type DE) the target is scoped by
+     * POSITION: scroll to the label first, then take `onLast()` — the field just
+     * scrolled to is lowest in composition order.
+     */
+    @OptIn(ExperimentalTestApi::class)
+    fun chooseDateForField(label: String, date: String) {
+        scrollFormTo(hasText(label, substring = true))
+        val actionButton = hasTestTag("INPUT_DATE_TIME_ACTION_BUTTON")
+        composeTestRule.waitUntilAtLeastOneExists(actionButton, TIMEOUT)
+        composeTestRule.onAllNodesWithTag("INPUT_DATE_TIME_ACTION_BUTTON", useUnmergedTree = true)
+            .onLast()
+            .performScrollTo()
+            .performClick()
+
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("DATE_PICKER"), TIMEOUT)
+        composeTestRule.onNodeWithTag("DATE_PICKER").assertIsDisplayed()
+        // Toggle the picker into keyboard-entry mode ("Switch to text input mode").
+        composeTestRule.onNodeWithContentDescription(
+            label = "text",
+            substring = true,
+            useUnmergedTree = true,
+        ).performClick()
+        composeTestRule.onNodeWithContentDescription("Date", substring = true).performTextReplacement(date)
+        // Reads "OK", not "Accept" — DateProvider passes no acceptText, so
+        // DHIS2DatePicker falls back to its own `ok` compose resource.
+        composeTestRule.onNodeWithText(DATE_PICKER_CONFIRM_TEXT, ignoreCase = true).performClick()
+        composeTestRule.waitForIdle()
+    }
+
     companion object {
+        private const val DATE_PICKER_CONFIRM_TEXT = "OK"
         private const val FIRST_DROPDOWN_ITEM_TAG = "INPUT_DROPDOWN_MENU_ITEM_0"
     }
 }

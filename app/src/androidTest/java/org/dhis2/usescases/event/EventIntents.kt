@@ -21,6 +21,45 @@ const val FLOW_A_STAGE_UID = "dBwrot7S420"                 // Antenatal care vis
 const val FLOW_A_ORG_UNIT_UID = "DiszpKrYNg8"              // Ngelehun CHC
 const val FLOW_A_DEFAULT_COC_UID = "HllvX50cXC0"           // default categoryOptionCombo
 
+// Event cards render BOOLEAN values as raw "false"/"true", not Yes/No
+// (ValueExtensions.kt else-branch). Asserting the exact "false" is an
+// intentional canary: this MUST fail when ANDROAPP-7723 is fixed, at which
+// point the expected value becomes "No".
+const val FLOW_A_SMOKING_NO_CARD_VALUE = "false"
+
+const val FLOW_A_HEMOGLOBIN_LABEL = "WHOMCH Hemoglobin value"
+const val FLOW_A_HEMOGLOBIN_VALUE = "11"
+
+const val FLOW_A_ADMISSION_DATE_LABEL = "Date of admission"
+
+// The DatePicker dialog types in MMddyyyy (US locale); the card renders dd/MM/yyyy.
+const val FLOW_A_ADMISSION_DATE_INPUT = "01012020"
+const val FLOW_A_ADMISSION_DATE_CARD_VALUE = "01/01/2020"
+
+const val FLOW_A_EXPECTED_REPORT_VALUE_COUNT = 3
+
+// Key fragments, not full labels: the card truncates keys to its width, so
+// matching a full key breaks on narrower devices.
+val FLOW_A_EXPECTED_CARD_REPORT_ENTRIES =
+    listOf(
+        "Smoking" to FLOW_A_SMOKING_NO_CARD_VALUE,
+        "Hemoglobin" to FLOW_A_HEMOGLOBIN_VALUE,
+        "admission" to FLOW_A_ADMISSION_DATE_CARD_VALUE,
+    )
+
+// All report DEs, for asserting a data-less card shows none of them.
+val FLOW_A_ALL_REPORT_DE_MARKERS =
+    listOf("Smoking", "Hemoglobin", "admission")
+
+/**
+ * Live event count for the Flow 1 program; includes the event the test creates.
+ * Derived at runtime because the synced baseline varies between runs.
+ */
+fun flowAProgramEventCount(): Int =
+    D2Manager.getD2().eventModule().events()
+        .byProgramUid().eq(FLOW_A_PROGRAM_UID)
+        .blockingCount()
+
 // ── Flow 2: create-form mandatory block (ANDROAPP-7728) ──────────────────────
 const val FLOW_D_PROGRAM_UID = "bMcwwoVnbSR"
 const val FLOW_D_ORG_UNIT_NAME = "Ngelehun CHC"
@@ -58,6 +97,7 @@ fun createFreshFlowAEvent(): FreshFlowAEvent {
                 .build(),
         )
     d2.eventModule().events().uid(uid).setEventDate(now)
+    // Left data-less on purpose: its card must show no report values (ANDROAPP-904).
     val displayDate = SimpleDateFormat("dd/MM/yyyy", Locale.US).format(now)
     return FreshFlowAEvent(uid, displayDate)
 }
