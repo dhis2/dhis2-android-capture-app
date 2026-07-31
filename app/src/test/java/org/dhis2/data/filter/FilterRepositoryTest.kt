@@ -2,7 +2,6 @@ package org.dhis2.data.filter
 
 import androidx.databinding.ObservableField
 import io.reactivex.Single
-import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.filters.AssignedFilter
 import org.dhis2.commons.filters.EnrollmentStatusFilter
 import org.dhis2.commons.filters.EventStatusFilter
@@ -64,22 +63,21 @@ class FilterRepositoryTest {
     private lateinit var filterRepository: FilterRepository
 
     @Before
-    fun setUp() =
-        runTest {
-            mockFilterLabels()
-            filterRepository =
-                FilterRepository(
-                    d2,
-                    filterResources,
-                    getFiltersApplyingWebAppConfig,
-                    eventFilterToWorkingListItemMapper,
-                    teiFilterToWorkingListItemMapper,
-                    programStageToWorkingListItemMapper,
-                    customLabelProvider,
-                )
-        }
+    fun setUp() {
+        mockFilterLabels()
+        filterRepository =
+            FilterRepository(
+                d2,
+                filterResources,
+                getFiltersApplyingWebAppConfig,
+                eventFilterToWorkingListItemMapper,
+                teiFilterToWorkingListItemMapper,
+                programStageToWorkingListItemMapper,
+                customLabelProvider,
+            )
+    }
 
-    private suspend fun mockFilterLabels() {
+    private fun mockFilterLabels() {
         whenever(filterResources.filterOrgUnitLabel()) doReturn ORG_UNIT
         whenever(filterResources.filterSyncLabel()) doReturn SYNC_STATUS
         whenever(filterResources.filterEnrollmentStatusLabel(any())) doReturn
@@ -90,7 +88,7 @@ class FilterRepositoryTest {
             ENROLLMENT_DATE
         whenever(filterResources.filterAssignedToMeLabel()) doReturn ASSIGN_TO_ME
         whenever(filterResources.filterEventDateLabel("random")) doReturn EVENT_DATE
-        whenever(customLabelProvider.getCustomFollowUpLabel(anyOrNull())) doReturn FOLLOW_UP
+        whenever(customLabelProvider.blockingCustomFollowUpLabel(anyOrNull())) doReturn FOLLOW_UP
     }
 
     @Test
