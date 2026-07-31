@@ -11,10 +11,12 @@ import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
+import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.robot.eventRobot
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -147,6 +149,62 @@ class EventTest : BaseTest() {
         }
         eventRegistrationRobot(composeTestRule) {
             checkSaveButtonIsDisplayed()
+        }
+    }
+
+    // Flow 2 — create an event via "+" under ON_UPDATE_AND_INSERT.
+    @Test
+    fun shouldBlockSaveOnEmptyMandatory() {
+        prepareFlowDProgramEventListAndLaunchActivity(eventListRule)
+
+        programEventsRobot(composeTestRule) {
+            clickOnAddEvent()
+        }
+        orgUnitSelectorRobot(composeTestRule) {
+            selectTreeOrgUnit(FLOW_D_ORG_UNIT_NAME)
+        }
+        composeTestRule.waitForIdle()
+
+        eventRegistrationRobot(composeTestRule) {
+            // [ANDROAPP-899] Custom event-date label from the stage.
+            checkEventDateLabelIsDisplayed(FLOW_D_VISIT_DATE_LABEL)
+            // [ANDROAPP-844] Non-default attribute category-combo field.
+            checkCategoryFieldIsDisplayed(FLOW_D_CATEGORY_NAME)
+        }
+
+        // ON_UPDATE_AND_INSERT: empty mandatory blocks the save outright.
+        eventRobot(composeTestRule) {
+            clickOnFormFabButton()
+        }
+        eventRegistrationRobot(composeTestRule) {
+            checkImmediateMandatoryBlock()
+        }
+
+        // Fill every rendered field, then the same save must succeed.
+        eventRegistrationRobot(composeTestRule) {
+            dismissMandatoryBlockSheet()
+            selectFirstDropdownOption(FLOW_D_CATEGORY_NAME)
+            selectFirstDropdownOption(FLOW_D_GENDER_LABEL)
+            selectFirstDropdownOption(FLOW_D_RDT_LABEL)
+            selectFirstDropdownOption(FLOW_D_TREATMENT_LABEL)
+        }
+
+        eventRobot(composeTestRule) {
+            clickOnFormFabButton()
+        }
+        eventRegistrationRobot(composeTestRule) {
+            waitForSaveBottomSheet()
+        }
+        // Complete (not "Not now") — creates the event as COMPLETED.
+        eventRobot(composeTestRule) {
+            clickOnCompleteButton()
+        }
+        composeTestRule.waitForIdle()
+
+        // [ANDROAPP-910] New card, dated today, marked "Event completed" in green.
+        programEventsRobot(composeTestRule) {
+            waitForEventDisplayed(todayDisplayDate())
+            checkEventCardStatusColor(todayDisplayDate(), "Event completed", SurfaceColor.CustomGreen)
         }
     }
 }

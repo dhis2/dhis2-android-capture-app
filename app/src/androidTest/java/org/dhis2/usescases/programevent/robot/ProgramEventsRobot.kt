@@ -1,9 +1,10 @@
 package org.dhis2.usescases.programevent.robot
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasAnyDescendant
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -34,25 +35,58 @@ class ProgramEventsRobot(val composeTestRule: ComposeContentTestRule) : BaseRobo
         composeTestRule.onNodeWithTag("ADD_EVENT_BUTTON").performClick()
     }
 
-    fun clickOnMap() {
-        composeTestRule.onNodeWithTag("NAVIGATION_BAR_ITEM_Map").performClick()
+    @OptIn(ExperimentalTestApi::class)
+    fun waitForEventDisplayed(eventDate: String) {
+        composeTestRule.waitUntilAtLeastOneExists(hasText(eventDate, substring = true), TIMEOUT)
     }
 
+    /**
+     * Asserts the status row [statusText] on the card dated [eventDate] is rendered
+     * in [expectedColor] (ANDROAPP-910).
+     */
+    fun checkEventCardStatusColor(eventDate: String, statusText: String, expectedColor: Color) {
+        val actualColor = statusRowColor(eventDate, statusText)
+        if (actualColor != expectedColor) {
+            throw AssertionError(
+                "'$statusText' on the event card for '$eventDate' is colored $actualColor, " +
+                    "expected $expectedColor",
+            )
+        }
+    }
+
+    /**
+     * The colour of the span covering [statusText] on the card.
+     *
+     * The colour lives in a `SpanStyle` embedded in the row's own `AnnotatedString`
+     * (`getKeyValueAnnotatedString` wraps the value in `withStyle`), not in any
+     * semantics colour property. Pick the span whose RANGE covers the value's
+     * position: even a keyless status row gets a leading grey KEY span first
+     * (`key` defaults to `""`), so "first span with a colour" grabs the wrong one.
+     */
     @OptIn(ExperimentalTestApi::class)
-    fun checkEventWasCreatedAndClosed() {
-        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("EVENT_ITEM"))
-        composeTestRule.onNode(
-            hasTestTag("EVENT_ITEM")
-                    and
-                    hasAnyDescendant(
-                        hasText("Event completed", true)
-                    )
-                    and
-                    hasAnyDescendant(
-                        hasText("View only", true)
-                    ),
-            useUnmergedTree = true
-        ).assertIsDisplayed()
+    private fun statusRowColor(eventDate: String, statusText: String): Color? {
+        val card = hasText(eventDate, substring = true)
+        composeTestRule.waitUntilAtLeastOneExists(card, TIMEOUT)
+        val annotatedTexts =
+            composeTestRule.onNode(card).fetchSemanticsNode()
+                .config.getOrNull(SemanticsProperties.Text) ?: emptyList()
+        val statusRow =
+            annotatedTexts.firstOrNull { it.text.contains(statusText, ignoreCase = true) }
+                ?: throw AssertionError(
+                    "Event card for '$eventDate' does not show '$statusText'. Actual card texts: " +
+                        annotatedTexts.map { it.text },
+                )
+        val valueStart = statusRow.text.indexOf(statusText, ignoreCase = true)
+        return statusRow.spanStyles
+            .firstOrNull { span ->
+                span.item.color != Color.Unspecified &&
+                    valueStart >= span.start &&
+                    valueStart < span.end
+            }?.item?.color
+    }
+
+    fun clickOnMap() {
+        composeTestRule.onNodeWithTag("NAVIGATION_BAR_ITEM_Map").performClick()
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -71,29 +105,5 @@ class ProgramEventsRobot(val composeTestRule: ComposeContentTestRule) : BaseRobo
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag("MAP", true).assertIsDisplayed()
         composeTestRule.onNodeWithTag("MAP_CAROUSEL",true).assertIsDisplayed()
-    }
-
-    /**
-     * Asserts the event card whose displayed date is [eventDate] shows
-     * the "Event completed" status. Date-scoped so it works even when
-     * the program list contains other completed events.
-     */
-    @OptIn(ExperimentalTestApi::class)
-    fun checkEventCardIsComplete(eventDate: String) {
-        // Wait until the card with our date AND the "Event completed" badge
-        // is rendered together — handles the brief lag between the Complete
-        // call returning and the list refreshing its bound model.
-        // EVENT_ITEM is set in the unmerged tree by the design-system ListCard.
-        val cardMatcher =
-            hasTestTag("EVENT_ITEM") and
-                hasAnyDescendant(hasText(eventDate)) and
-                hasAnyDescendant(hasText("Event completed", substring = true))
-        composeTestRule.waitUntil(timeoutMillis = TIMEOUT) {
-            composeTestRule.onAllNodes(cardMatcher, useUnmergedTree = true)
-                .fetchSemanticsNodes()
-                .isNotEmpty()
-        }
-        composeTestRule.onNode(cardMatcher, useUnmergedTree = true)
-            .assertIsDisplayed()
     }
 }
