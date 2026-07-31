@@ -146,6 +146,8 @@ class MainActivity : ActivityGlobalAbstract() {
                     onEffect = { effect ->
                         when (effect) {
                             HomeEffect.BlockSession -> finish()
+                            HomeEffect.PinCreated -> { // handled in composable
+                            }
                             is HomeEffect.GoToLogin ->
                                 goToLogin(
                                     accountsCount = effect.accountsCount,

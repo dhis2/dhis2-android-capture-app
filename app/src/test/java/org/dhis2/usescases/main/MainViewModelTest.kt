@@ -362,4 +362,13 @@ class MainViewModelTest {
                 assertTrue((this@test).awaitItem().bottomNavigationBarVisible.not())
             }
         }
+
+    @Test
+    fun shouldSendPinCreatedEffect() =
+        runTest {
+            viewModel.homeEffects.test {
+                viewModel.onAction(HomeAction.PinSet)
+                assertTrue(awaitItem() is HomeEffect.PinCreated)
+            }
+        }
 }

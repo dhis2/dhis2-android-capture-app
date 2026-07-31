@@ -252,6 +252,7 @@ class MainViewModel(
                             )
                         }
                     }
+
                     SyncStatus.Succeed -> {
                         launchUseCase(dispatcher.io()) {
                             val navigationBarItems =
@@ -267,6 +268,7 @@ class MainViewModel(
                             }
                         }
                     }
+
                     SyncStatus.Failed -> _homeScreenState.update { it.copy(syncButtonVisible = true) }
                     else -> {
                         // Do nothing
@@ -496,7 +498,7 @@ class MainViewModel(
 
     private fun onPinSet() {
         launchUseCase(dispatcher.io()) {
-            _homeEffects.send(HomeEffect.BlockSession)
+            _homeEffects.send(HomeEffect.PinCreated)
         }
     }
 
