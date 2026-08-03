@@ -110,6 +110,7 @@
     <string name="every_12_hours">12h</string>
     <string name="Manual">Manual</string>
     <string name="a_week">1 Semana</string>
+    <string name="wipe_data_meesage">O banco de dados será excluído. \nVocê será solicitado a fazer login novamente.</string>
     <string name="wipe_data_ok">Aceitar</string>
     <string name="wipe_data_no">Cancelar</string>
     <string name="SYNC_DATA">SINCRONIZAR Dados agora</string>
@@ -395,6 +396,7 @@
     <string name="filters_title_date">Data</string>
     <string name="privacy_policy_title">Política de Privacidade</string>
     <string name="open_privacy_policy">Clique aqui para conferir nosso <a href=""> política de privacidade </a></string>
+    <string name="break_glass_error_v2">Não é possível inscrever um  %s de outras unidades organizacionais neste programa porque está protegido.\nContacte o seu administrador.</string>
     <string name="field_is_mandatory">Este campo é obrigatório</string>
     <string name="security_debugger_message">Por razões de segurança, esta versão do aplicativo não pode ser usada com o adb. Por favor, use a versão de treinamento.</string>
 
@@ -450,6 +452,7 @@
     <string name="filter_period_last_n_biweeks">Últimas %d quinzenas</string>
     <string name="section_feedback">Retroinformacão</string>
     <string name="section_indicators">Indicadores</string>
+    <string name="camera_permission_denied">A permissão da câmara é negada.\nPrecisa de a ativar para utilizar esta funcionalidade.</string>
     <string name="section_charts_indicators">Gráficos e indicadores</string>
     <string name="take_photo"> Tirar fotografia</string>
     <string name="break_glass_dialog_title">Este programa está protegido</string>
@@ -493,6 +496,7 @@
     <string name="search_or_create">É possível pesquisar ou criar um novo %s</string>
     <string name="missing_warning_fields_completed_events">Tem algumas mensagens de aviso.</string>
     <string name="event_can_be_completed">Deseja marcar este formulário como completo?</string>
+    <string name="event_error_on_complete">Tem algumas mensagens de erro. Quer revê-las?</string>
     <string name="re_opened">Reaberto</string>
     <string name="account_disable_title">Conta desactivada</string>
     <string name="account_disable_message">A sua conta foi desactivada por um administrador.</string>
@@ -600,9 +604,4 @@
         <item quantity="many">Há%s programas com configurações específicas</item>
         <item quantity="other">Há%s programas com configurações específicas</item>
     </plurals>
-    <string name="break_glass_error_v2">Não é possível inscrever um  %s de outras unidades organizacionais neste programa porque está protegido.\nContacte o seu administrador.</string>
-    <string name="camera_permission_denied">A permissão da câmara é negada.\nPrecisa de a ativar para utilizar esta funcionalidade.</string>
-    <string name="event_error_on_complete">Tem algumas mensagens de erro. Quer revê-las?</string>
-    <string name="wipe_data_meesage">O banco de dados será excluído. \nVocê será solicitado a fazer login novamente.</string>
-
 </resources>

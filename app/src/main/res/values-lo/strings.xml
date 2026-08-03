@@ -104,6 +104,7 @@
     <string name="every_12_hours">12h</string>
     <string name="Manual">ຄູ່ມື</string>
     <string name="a_week">1 ອາທິດ</string>
+    <string name="wipe_data_meesage">ຖານຂໍ້ມູນຈະຖືກລືບ.\nທ່ານຈະໄດ້ເຂົ້າລະບົບໃໝ່</string>
     <string name="wipe_data_ok">ຍອມຮັບ</string>
     <string name="wipe_data_no">ຍົກເລີກ</string>
     <string name="SYNC_DATA">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນນະຕອນນີ້</string>
@@ -431,6 +432,7 @@
     <string name="filter_period_last_n_biweeks">%dສອງອາທິດຜ່ານມາ</string>
     <string name="section_feedback">ຜົນຕອບຮັບ</string>
     <string name="section_indicators">ຕົວຊີ້ວັດ</string>
+    <string name="camera_permission_denied">ການ​ອະ​ນຸ​ຍາດ​ໃຊ້ກ້ອງ​ຖ່າຍ​ຮູບ​ຖືກ​ປະ​ຕິ​ເສດ. ທ່ານ​​ຕ້ອງ​ເປີດ​ໃຊ້​ງານເພື່ອ​ໃຊ້​ຄຸນ​ສົມ​ບັດ​ນີ້​.</string>
     <string name="section_charts_indicators">ແຜນວາດ ແລະ ຕົວຊີ້ວັດ</string>
     <string name="take_photo">ຖ່າຍຮູບ</string>
     <string name="break_glass_dialog_title">ໂປຣແກຣມນີ້ໄດ້ຮັບການຄຸ້ມຄອງ</string>
@@ -471,6 +473,7 @@
     <string name="init_search">ເລີ່ມການຄົ້ນຫາເພື່ອຊອກຫາອັນໃດນຶ່ງ%s</string>
     <string name="search_or_create">ທ່ານສາມາດຄົ້ນຫາຫຼືສ້າງໃຫມ່%s</string>
     <string name="event_can_be_completed">ທ່ານຕ້ອງການໝາຍແບບຟອມນີ້ວ່າສຳເລັດແລ້ວຫຼືບໍ?</string>
+    <string name="event_error_on_complete">ທ່ານມີຂໍ້ຜິດພາດໃນບາງຂໍ້ຄວາມ.\nທ່ານຕ້ອງການກວດເບິ່ງຄືນບໍ?</string>
     <string name="re_opened">ເປີດຄືນໃໝ່</string>
     <string name="account_disable_title">ບັນຊີຖືກປິດ</string>
     <string name="account_disable_message">ບັນຊີຂອງທ່ານຖືກປິດການນຳໃຊ້ໂດຍຜູ້ຮັກສາລະບົບ.</string>
@@ -529,8 +532,4 @@
     <plurals name="settings_specific_programs">
         <item quantity="other">ມີ%s ສາຍງານທີ່ມີການຕັ້ງຄ່າສະເພາະ</item>
     </plurals>
-    <string name="camera_permission_denied">ການ​ອະ​ນຸ​ຍາດ​ໃຊ້ກ້ອງ​ຖ່າຍ​ຮູບ​ຖືກ​ປະ​ຕິ​ເສດ. ທ່ານ​​ຕ້ອງ​ເປີດ​ໃຊ້​ງານເພື່ອ​ໃຊ້​ຄຸນ​ສົມ​ບັດ​ນີ້​.</string>
-    <string name="event_error_on_complete">ທ່ານມີຂໍ້ຜິດພາດໃນບາງຂໍ້ຄວາມ.\nທ່ານຕ້ອງການກວດເບິ່ງຄືນບໍ?</string>
-    <string name="wipe_data_meesage">ຖານຂໍ້ມູນຈະຖືກລືບ.\nທ່ານຈະໄດ້ເຂົ້າລະບົບໃໝ່</string>
-
 </resources>

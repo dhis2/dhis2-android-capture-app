@@ -96,6 +96,7 @@
     <string name="every_12_hours">12 соат</string>
     <string name="Manual">Қўлланма</string>
     <string name="a_week">1 ҳафта</string>
+    <string name="wipe_data_meesage">Маълумотлар базаси ўчирилади. Сиздан қайта кириш сўралади.</string>
     <string name="wipe_data_ok">Қабул қилинг</string>
     <string name="wipe_data_no">Бекор қилиш</string>
     <string name="SYNC_DATA">Маълумотларни синхронлаш, ҳозир</string>
@@ -417,6 +418,7 @@
     <string name="filter_period_last_financial_year">Охирги молиявий йил</string>
     <string name="section_feedback">Фикр-мулоҳаза</string>
     <string name="section_indicators">Кўрсатгичлар</string>
+    <string name="camera_permission_denied">Камерада фойдаланишга рухсат берилмаган. Ушбу функциядан фойдаланиш учун уни ёқишингиз керак.</string>
     <string name="section_charts_indicators">Диаграммалар ва индикаторлар</string>
     <string name="take_photo">Суратга олиш</string>
     <string name="break_glass_dialog_title">Ушбу дастур ҳимояланган</string>
@@ -461,7 +463,4 @@
     <plurals name="settings_specific_programs">
         <item quantity="other">Махсус созламаларга эга бўлган дастурлар %s</item>
     </plurals>
-    <string name="camera_permission_denied">Камерада фойдаланишга рухсат берилмаган. Ушбу функциядан фойдаланиш учун уни ёқишингиз керак.</string>
-    <string name="wipe_data_meesage">Маълумотлар базаси ўчирилади. Сиздан қайта кириш сўралади.</string>
-
 </resources>

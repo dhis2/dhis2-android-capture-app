@@ -110,6 +110,7 @@
     <string name="every_12_hours">12小时</string>
     <string name="Manual">手工</string>
     <string name="a_week">一周</string>
+    <string name="wipe_data_meesage">数据库将被删除，\n 你将被要求再次登录。</string>
     <string name="wipe_data_ok">接受</string>
     <string name="wipe_data_no">取消</string>
     <string name="SYNC_DATA">现在同步数据</string>
@@ -394,6 +395,7 @@
     <string name="filters_title_date">日期</string>
     <string name="privacy_policy_title">私有策略</string>
     <string name="open_privacy_policy">点击这里检查<a href="">隐私策略</a></string>
+    <string name="break_glass_error_v2">您无法在此项目中加入来自其他组织单位的 %s，因为它受到保护。\n请与您的管理员联系。</string>
     <string name="field_is_mandatory">此字段是必填字段</string>
     <string name="security_debugger_message">出于安全原因，此版本的应用程序不允许与adb一起使用。请使用培训版本。</string>
 
@@ -449,6 +451,7 @@
     <string name="filter_period_last_n_biweeks">最近%d双周</string>
     <string name="section_feedback">反馈</string>
     <string name="section_indicators">指标</string>
+    <string name="camera_permission_denied">相机权限被拒绝。\n 您需要启用它才能使用此功能。</string>
     <string name="section_charts_indicators">图表和指标</string>
     <string name="take_photo">拍照</string>
     <string name="break_glass_dialog_title">该项目受保护</string>
@@ -492,6 +495,7 @@
     <string name="search_or_create">您可以搜索或创建一个新的 %s</string>
     <string name="missing_warning_fields_completed_events">您收到了一些警告信息。</string>
     <string name="event_can_be_completed">您想将此表单标记为已完成吗？</string>
+    <string name="event_error_on_complete">您有一些错误消息。\n您要查看它们吗？</string>
     <string name="re_opened">重新开放</string>
     <string name="account_disable_title">帐户已禁用</string>
     <string name="account_disable_message">您的帐户已被管理员禁用。</string>
@@ -596,9 +600,4 @@
     <plurals name="settings_specific_programs">
         <item quantity="other">这里有%s个项目有特定的设置</item>
     </plurals>
-    <string name="break_glass_error_v2">您无法在此项目中加入来自其他组织单位的 %s，因为它受到保护。\n请与您的管理员联系。</string>
-    <string name="camera_permission_denied">相机权限被拒绝。\n 您需要启用它才能使用此功能。</string>
-    <string name="event_error_on_complete">您有一些错误消息。\n您要查看它们吗？</string>
-    <string name="wipe_data_meesage">数据库将被删除，\n 你将被要求再次登录。</string>
-
 </resources>

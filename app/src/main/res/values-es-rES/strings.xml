@@ -93,6 +93,7 @@
     <string name="every_12_hours">12h</string>
     <string name="Manual">Manual</string>
     <string name="a_week">Semanal</string>
+    <string name="wipe_data_meesage">Se borrará la base de datos. \nTendrá que volver a iniciar sesión.</string>
     <string name="wipe_data_ok">Aceptar</string>
     <string name="wipe_data_no">Cancelar</string>
     <string name="SYNC_DATA">Sincronizar datos Ahora</string>
@@ -372,6 +373,7 @@
     <string name="filters_title_date">Fecha</string>
     <string name="privacy_policy_title">Política de privacidad</string>
     <string name="open_privacy_policy">Pulse aquí para comprobar nuestra <a href="">política de privacidad</a></string>
+    <string name="break_glass_error_v2">No puede registrar un/una %s desde otras unidades organizativas en este programa por que está protegido.\nContacte con su administrador.</string>
     <string name="field_is_mandatory">El campo es obligatorio</string>
     <string name="security_debugger_message">Por razones de seguridad, esta versión de la app no permite el uso de adb. Por favor use la versión de formación.</string>
 
@@ -423,6 +425,7 @@
     <string name="filter_period_last_n_biweeks">Últimas %d quincenas</string>
     <string name="section_feedback">Retroalimentación</string>
     <string name="section_indicators">Indicadores</string>
+    <string name="camera_permission_denied">El permiso de la cámara está denegado.\nDebe habilitarlo para usar esta función.</string>
     <string name="section_charts_indicators">Gráficos e indicadores</string>
     <string name="take_photo">Tomar foto</string>
     <string name="break_glass_dialog_title">Este programa está protegido</string>
@@ -463,7 +466,9 @@
     <string name="action_ok">De acuerdo</string>
     <string name="init_search">Empieza una búsqueda para encontrar %s</string>
     <string name="search_or_create">Puedes buscar o crear un nuevo %s</string>
+    <string name="missing_warning_fields_events">Tienes algunos mensajes de alerta.\n¿Desea marcar el formulario como Completo\?</string>
     <string name="event_can_be_completed">¿Desea marcar este formulario como completo?</string>
+    <string name="event_error_on_complete">Tiene algunos mensajes de error. \n¿Desea revisarlos?</string>
     <string name="re_opened">Reabrir</string>
     <string name="account_disable_title">Cuenta deshabilitada</string>
     <string name="account_disable_message">Tu cuenta ha sido deshabilitada por un administrador</string>
@@ -491,9 +496,4 @@
         <item quantity="many">Hay %s programas con configuraciones específicas</item>
         <item quantity="other">Hay %s programas con configuraciones específicas</item>
     </plurals>
-    <string name="break_glass_error_v2">No puede registrar un/una %s desde otras unidades organizativas en este programa por que está protegido.\nContacte con su administrador.</string>
-    <string name="camera_permission_denied">El permiso de la cámara está denegado.\nDebe habilitarlo para usar esta función.</string>
-    <string name="event_error_on_complete">Tiene algunos mensajes de error. \n¿Desea revisarlos?</string>
-    <string name="wipe_data_meesage">Se borrará la base de datos. \nTendrá que volver a iniciar sesión.</string>
-
 </resources>

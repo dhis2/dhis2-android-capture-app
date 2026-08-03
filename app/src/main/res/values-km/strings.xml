@@ -80,6 +80,7 @@
     <string name="a_day">១ថ្ងៃ (លំនាំដើម)</string>
     <string name="Manual">ហត្ថកម្ម</string>
     <string name="a_week">១សប្តាហ៍</string>
+    <string name="wipe_data_meesage">ប្រព័ន្ធទិន្នន័យនឹងត្រូវលុបចោល\nអ្នកត្រូវចូលមកប្រើម្ដងទៀតដោយបញ្ចុលឈ្មោះ និង លេខសំងាត់​</string>
     <string name="wipe_data_ok">ទទួលយក</string>
     <string name="wipe_data_no">បោះបង់</string>
     <string name="SYNC_DATA">បញ្ជូនទិន្នន័យឥឡូវនេះ</string>
@@ -216,6 +217,4 @@
     <string name="sync">បញ្ចូន</string>
     <string name="show_description">បង្ហាញការពិពណ៌នា</string>
     <string name="hide_description">លាក់ការពិពណ៌នា</string>
-    <string name="wipe_data_meesage">ប្រព័ន្ធទិន្នន័យនឹងត្រូវលុបចោល\nអ្នកត្រូវចូលមកប្រើម្ដងទៀតដោយបញ្ចុលឈ្មោះ និង លេខសំងាត់​</string>
-
     </resources>

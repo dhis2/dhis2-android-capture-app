@@ -96,6 +96,7 @@
     <string name="every_12_hours">12t</string>
     <string name="Manual">Manuelt</string>
     <string name="a_week">1 uke</string>
+    <string name="wipe_data_meesage">Databasen vil bli slettet. Du vil bli spurt om å logge inn igjen.</string>
     <string name="wipe_data_ok">Aksepter</string>
     <string name="wipe_data_no">Avbryt</string>
     <string name="SYNC_DATA">SYNK data nå</string>
@@ -434,6 +435,4 @@
         <item quantity="one">Det er  %s program med spesifikke innstillinger</item>
         <item quantity="other">Det er  %s programmer med spesifikke innstillinger</item>
     </plurals>
-    <string name="wipe_data_meesage">Databasen vil bli slettet. Du vil bli spurt om å logge inn igjen.</string>
-
 </resources>

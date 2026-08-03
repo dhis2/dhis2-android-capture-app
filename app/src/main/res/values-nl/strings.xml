@@ -95,6 +95,7 @@
     <string name="every_12_hours">12 uur</string>
     <string name="Manual">Handmatig</string>
     <string name="a_week">1 week</string>
+    <string name="wipe_data_meesage">Database wordt verwijderd.\nU wordt gevraagd opnieuw in te loggen.</string>
     <string name="wipe_data_ok">Aanvaarden</string>
     <string name="wipe_data_no">Annuleren</string>
     <string name="SYNC_DATA">SYNCHRONISATIE gegevens nu</string>
@@ -377,6 +378,7 @@
     <string name="filters_title_date">Datum</string>
     <string name="privacy_policy_title">Privacybeleid</string>
     <string name="open_privacy_policy">Klik hier om ons privacybeleid <a href=""> te bekijken </a></string>
+    <string name="break_glass_error_v2">U kunt een %s van andere organisatie-eenheden niet inschrijven in dit programma omdat deze beveiligd is.\nNeem contact op met uw beheerder.</string>
     <string name="field_is_mandatory">Dit veld is verplicht</string>
     <string name="security_debugger_message">Om veiligheidsredenen mag deze versie van de app niet worden gebruikt met adb. Gebruik de trainingsversie.</string>
 
@@ -429,6 +431,7 @@
     <string name="filter_period_last_n_biweeks">Laatste %d twee weken</string>
     <string name="section_feedback">Feedback</string>
     <string name="section_indicators">Indicatoren</string>
+    <string name="camera_permission_denied">Cameratoestemming is geweigerd.\Je moet deze inschakelen om deze functie te gebruiken.</string>
     <string name="section_charts_indicators">Grafieken en indicatoren</string>
     <string name="take_photo">Neem foto</string>
     <string name="break_glass_dialog_title">Dit programma is beveiligd</string>
@@ -470,6 +473,7 @@
     <string name="init_search">Start een zoekopdracht om een %s</string>
     <string name="search_or_create">U kunt zoeken of een nieuwe creëren %s</string>
     <string name="event_can_be_completed">Wilt u dit formulier als voltooid markeren?</string>
+    <string name="event_error_on_complete">U heeft een aantal foutmeldingen.\nWilt u deze bekijken?</string>
     <string name="re_opened">heropend</string>
     <string name="account_disable_title">Account ongebruikelijk gemaakt</string>
     <string name="account_disable_message">Uw account is uitgeschakeld door een beheerder.</string>
@@ -540,9 +544,4 @@
         <item quantity="one">Er is een %s-programma met specifieke instellingen</item>
         <item quantity="other">Er zijn %s-programma\'s met specifieke instellingen</item>
     </plurals>
-    <string name="break_glass_error_v2">U kunt een %s van andere organisatie-eenheden niet inschrijven in dit programma omdat deze beveiligd is.\nNeem contact op met uw beheerder.</string>
-    <string name="camera_permission_denied">Cameratoestemming is geweigerd.\Je moet deze inschakelen om deze functie te gebruiken.</string>
-    <string name="event_error_on_complete">U heeft een aantal foutmeldingen.\nWilt u deze bekijken?</string>
-    <string name="wipe_data_meesage">Database wordt verwijderd.\nU wordt gevraagd opnieuw in te loggen.</string>
-
 </resources>

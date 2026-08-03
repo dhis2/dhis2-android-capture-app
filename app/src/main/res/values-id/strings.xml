@@ -94,6 +94,7 @@
     <string name="every_12_hours">12 Jam</string>
     <string name="Manual">Manual</string>
     <string name="a_week">1 Minggu</string>
+    <string name="wipe_data_meesage">Database akan dihapus. Anda akan diminta masuk lagi</string>
     <string name="wipe_data_ok">Terima</string>
     <string name="wipe_data_no">batal</string>
     <string name="SYNC_DATA">Sinkronkan Data Sekarang</string>
@@ -451,6 +452,4 @@
     <plurals name="settings_specific_programs">
         <item quantity="other">Terdapat %s program dengan pengaturan khusus</item>
     </plurals>
-    <string name="wipe_data_meesage">Database akan dihapus. Anda akan diminta masuk lagi</string>
-
 </resources>
