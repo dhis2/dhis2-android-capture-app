@@ -2,11 +2,11 @@ name: Fix KMP Translations
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened]
 
 jobs:
   fix-kmp-translations:
-    if: startsWith(github.head_ref, 'develop-transifex-', 'main-transifex-')
+    if: startsWith(github.head_ref, 'develop-transifex-') || startsWith(github.head_ref, 'main-transifex-')
     runs-on: ubuntu-latest
     permissions:
       contents: write
