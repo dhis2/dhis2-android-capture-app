@@ -207,5 +207,9 @@
         <item quantity="one">organisation unit</item>
         <item quantity="other">organisation units</item>
     </plurals>
-
+    <string name="follow_up">follow-up</string>
+    <!--marked_for_follow_up will be formatted using custom terminology or the default label-->
+    <string name="marked_for_follow_up">Marked for %s</string>
+    <!--marke_for_follow_up will be formatted using custom terminology or the default label-->
+    <string name="mark_for_follow_up">Mark for %s</string>
 </resources>

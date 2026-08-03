@@ -460,7 +460,6 @@
     <string name="action_do_not_show_again">ບໍ່ຕ້ອງສະແດງອີກ</string>
     <string name="feature_configuration">ການຕັ້ງຄ່າຄຸນສົມບັດ</string>
     <string name="show_radar_graph">ສະແດງເປັນ Radar</string>
-    <string name="filter_follow_up_label">ຕິດຕາມ%s</string>
     <string name="update_field_error">ບໍ່ສາມາດອັບເດດຫ້ອງປ້ອນຂໍ້ມູນນີ້ໄດ້. ກະລຸນາລອງໃໝ່ອີກຄັ້ງ</string>
     <string name="blocked_by_completion">ຂໍ້ມູນນີ້ບໍ່ສາມາດແກ້ໄຂໄດ້ເນື່ອງຈາກຖືກໝາຍວ່າສຳເລັດແລ້ວ</string>
     <string name="edition_expired">ຂໍ້ມູນນີ້ບໍ່ສາມາດແກ້ໄຂໄດ້ເນື່ອງຈາກເວລາຂອງມັນໝົດອາຍຸແລ້ວ</string>
@@ -521,14 +520,12 @@
     <string name="check_for_updates">ກວດສອບເພື່ອປັບປຸງ</string>
     <string name="dashboard_menu_delete_person">ລົບບຸກຄົນ</string>
     <string name="not_synced">ບໍ່ໄດ້ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
-    <string name="marked_follow_up">ໝາຍໄວ້ເພື່ອຕິດຕາມ</string>
     <string name="overdue">ກາຍເວລາທີ່ກຳນົດ %s</string>
     <string name="view_only">ເບິ່ງໄດ້ເທົ່ານັ້ນ</string>
     <string name="skipped">ຂ້າມໄປ</string>
     <string name="programs">ສາຍງານ</string>
     <string name="sync_successful">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນສຳເລັດແລ້ວ</string>
     <string name="sync_error">ຄໍາຜິດທີ່ເກີດຈາກການທໍາງານຮ່ວມກັນຂອງລະບົບ</string>
-    <string name="mark_follow_up">ໝາຍໄວ້ເພື່ອຕິດຕາມ</string>
     <string name="coordinates">Coordinates</string>
     <string name="schedule">ກຳນົດເວລາ</string>
     <string name="refer">ອ້າງອີງ</string>

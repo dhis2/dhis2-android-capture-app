@@ -468,7 +468,6 @@
     <string name="week_period_span_default_label">Неделя %d %s до %s</string>
     <string name="action_do_not_show_again">Больше не показывать</string>
     <string name="show_radar_graph">Показать как радар</string>
-    <string name="filter_follow_up_label">Отмеченные для последующего наблюдения %s</string>
     <string name="update_field_error">Это поле не удалось обновить. Пожалуйста, попробуйте еще раз</string>
     <string name="blocked_by_completion">Эти данные нельзя редактировать, поскольку они помечены как завершенные</string>
     <string name="edition_expired">Эти данные нельзя редактировать, так как время их редактирования истекло</string>
@@ -546,7 +545,6 @@
     <string name="permission_notification_granted">Разрешение на уведомление получено.</string>
     <string name="not_synced">Не синхронизировано</string>
     <string name="sync_retry">Повторить синхронизацию</string>
-    <string name="marked_follow_up">Отмечено для последующего наблюдения</string>
     <string name="overdue">Просроченные %s</string>
     <string name="registered_in">Зарегистрирован в</string>
     <string name="view_only">Только просмотр</string>
@@ -557,7 +555,6 @@
     <string name="sync_successful">Синхронизация успешна</string>
     <string name="sync_warning">Предупреждение по синхронизации</string>
     <string name="sync_error">Ошибка синхронизации</string>
-    <string name="mark_follow_up">Отметить для последующего наблюдения</string>
     <string name="coordinates">Координаты</string>
     <string name="sync_offline_check_connection">Похоже, что Вы не в сети. Пожалуйста, проверьте подключение</string>
     <string name="delete_tei_dialog_title">Удалить этот %s?</string>

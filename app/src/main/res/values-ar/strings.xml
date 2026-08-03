@@ -481,7 +481,6 @@
     <string name="openid_session_expired_message">لقد انتهت جلستك الحالية. لأسباب أمنية ، ستحتاج إلى تقديم بيانات الاعتماد الخاصة بك مرة أخرى</string>
     <string name="week_period_span_default_label">الأسابيع %d %s إلى %s</string>
     <string name="action_do_not_show_again">لا تظهر مرة أخرى</string>
-    <string name="filter_follow_up_label">تمت المتابعة %s</string>
     <string name="update_field_error">لا يمكن تحديث هذا الحقل. حاول مرة اخرى</string>
     <string name="blocked_by_completion">هذه البيانات غير قابلة للتحرير لأنه تم تعليمها على أنها مكتملة</string>
     <string name="edition_expired">هذه البيانات غير قابلة للتعديل لأن وقت إصدارها قد انتهى</string>
@@ -542,7 +541,6 @@
     <string name="app_version">إصدار التطبيق</string>
     <string name="not_synced">غير متزامن</string>
     <string name="sync_retry">إعادة محاولة المزامنة</string>
-    <string name="marked_follow_up">مُعلَّم للمتابعة</string>
     <string name="registered_in">مسجل في</string>
     <string name="view_only">العرض فقط</string>
     <string name="skipped">تم تخطيه</string>
@@ -550,7 +548,6 @@
     <string name="sync_successful">تمت المزامنة بنجاح</string>
     <string name="sync_warning">تحذير المزامنة</string>
     <string name="sync_error">يحوي خطأ في المزامنة</string>
-    <string name="mark_follow_up">وضع علامة للمتابعة</string>
     <string name="coordinates">الإحداثيات</string>
     <string name="sync_offline_check_connection">يبدو أنك غير متصل بالإنترنت. يرجى التحقق من اتصالك</string>
     <string name="schedule_next">الجدول الزمني التالي</string>

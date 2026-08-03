@@ -526,7 +526,11 @@ class FilterRepository
                     ProgramType.TRACKER,
                     observableSortingInject,
                     observableOpenFilter,
-                    resources.filterFollowUpLabel(teTypeName),
+                    customLabelProvider
+                        .blockingCustomFollowUpLabel(program.uid)
+                        .let { followUpLabel ->
+                            "$followUpLabel $teTypeName"
+                        },
                 )
 
             if (filtersToShow.any { it.type == Filters.ASSIGNED_TO_ME }) {

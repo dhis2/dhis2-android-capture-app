@@ -494,7 +494,6 @@
     <string name="action_do_not_show_again">Không hiển thị lại</string>
     <string name="feature_configuration">Cấu hình chức năng</string>
     <string name="show_radar_graph">Xem Radar</string>
-    <string name="filter_follow_up_label">Đã theo dõi %s</string>
     <string name="update_field_error">Không thể cập nhật trường dữ liệu này. Xin vui lòng thử lại.</string>
     <string name="blocked_by_completion">Không thể chỉnh sửa dữ liệu này bởi vị chúng được đánh dấu đã hoàn tất</string>
     <string name="edition_expired">Không thể chỉnh sửa dữ liệu này bởi vì thời gian chỉnh sửa đã hết hạn</string>
@@ -576,7 +575,6 @@
     <string name="permission_notification_granted">Quyền thông báo đã được cấp.</string>
     <string name="not_synced">Chưa được đồng bộ</string>
     <string name="sync_retry">Đồng bộ lại</string>
-    <string name="marked_follow_up">Đã đánh dấu để theo dõi</string>
     <string name="overdue">Hết hạn %s</string>
     <string name="registered_in">Được đăng ký trong</string>
     <string name="view_only">Chỉ xem</string>
@@ -587,7 +585,6 @@
     <string name="sync_successful">Đồng bộ thành công</string>
     <string name="sync_warning">Cảnh báo đồng bộ</string>
     <string name="sync_error">Lỗi đồng bộ</string>
-    <string name="mark_follow_up">Đánh dấu để theo-dõi</string>
     <string name="coordinates">Toạ độ</string>
     <string name="sync_offline_check_connection">Dường như bạn đang ngoại tuyến. Xin vui lòng kiểm tra kết nối mạng</string>
     <string name="delete_tei_dialog_title">Xóa %s này?</string>

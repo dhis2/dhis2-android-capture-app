@@ -14,8 +14,8 @@ import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.data.dhislogic.AUTH_ALL
 import org.dhis2.data.dhislogic.AUTH_ENROLLMENT_CASCADE_DELETE
 import org.dhis2.data.dhislogic.AUTH_TEI_CASCADE_DELETE
-import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.mobile.commons.model.MetadataIconData
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.utils.ValueUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
@@ -52,7 +52,7 @@ class DashboardRepositoryImpl(
     private val preferenceProvider: PreferenceProvider,
     private val metadataIconProvider: MetadataIconProvider,
     private val programConfigurationRepository: ProgramConfigurationRepository,
-    private val featureConfigRepository: FeatureConfigRepository,
+    private val customLabelProvider: CustomLabelProvider,
 ) : DashboardRepository {
     override fun getTeiHeader(): String? =
         d2
@@ -540,7 +540,7 @@ class DashboardRepositoryImpl(
                     .blockingGet()
             }
 
-    override fun getDashboardModel(): DashboardModel =
+    override suspend fun getDashboardModel(): DashboardModel =
         if (programUid.isNullOrEmpty()) {
             DashboardTEIModel(
                 getTEIEnrollments(teiUid).blockingFirst(),
@@ -565,8 +565,11 @@ class DashboardRepositoryImpl(
                 getTeiProfilePath(),
                 getOwnerOrgUnit(teiUid),
                 getQuickActions(programUid),
+                markedForFollowUpLabel(programUid),
             )
         }
+
+    private suspend fun markedForFollowUpLabel(programUid: String): String = customLabelProvider.getCustomMarkedForFollowUpLabel(programUid)
 
     private fun getQuickActions(programUid: String): List<String> =
         programConfigurationRepository

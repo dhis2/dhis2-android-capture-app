@@ -36,7 +36,6 @@
     <string name="filters_title_assigned">Призначено мені</string>
     <string name="filters_title_date">Дата</string>
     <string name="filters_title_event_label_date">Дата %s </string>
-    <string name="filter_follow_up_label">Для подальших дій %s</string>
     <string name="select_period">Обрати тип періоду</string>
     <string name="weekly">Щотижня</string>
     <string name="bi_weekly">Щодва тижні</string>

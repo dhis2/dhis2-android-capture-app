@@ -31,7 +31,6 @@ class InfoBarMapperTest {
         whenever(resourceManager.getString(R.string.not_synced)) doReturn "Not synced"
         whenever(resourceManager.getString(R.string.sync_warning)) doReturn "Sync warning"
         whenever(resourceManager.getString(R.string.sync_error)) doReturn "Sync Error"
-        whenever(resourceManager.getString(R.string.marked_follow_up)) doReturn "Marked for follow up"
         setPrograms().forEach {
             whenever(
                 resourceManager.formatWithEnrollmentLabel(
@@ -125,6 +124,7 @@ class InfoBarMapperTest {
                 null,
                 null,
                 emptyList(),
+                "Marked for follow up",
             )
 
         return model

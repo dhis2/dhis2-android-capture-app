@@ -31,6 +31,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -87,7 +88,7 @@ class FilterRepositoryTest {
             ENROLLMENT_DATE
         whenever(filterResources.filterAssignedToMeLabel()) doReturn ASSIGN_TO_ME
         whenever(filterResources.filterEventDateLabel("random")) doReturn EVENT_DATE
-        whenever(filterResources.filterFollowUpLabel("Name")) doReturn FOLLOW_UP
+        whenever(customLabelProvider.blockingCustomFollowUpLabel(anyOrNull())) doReturn FOLLOW_UP
     }
 
     @Test

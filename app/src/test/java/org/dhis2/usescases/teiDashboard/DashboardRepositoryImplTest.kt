@@ -6,7 +6,7 @@ import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Unit
 import org.hisp.dhis.android.core.common.ValueType
@@ -38,7 +38,7 @@ class DashboardRepositoryImplTest {
     private val preferences: PreferenceProvider = mock()
     private val metadataIconProvider: MetadataIconProvider = mock()
     private val programConfigurationRepository: ProgramConfigurationRepository = mock()
-    private val featureConfigRepository: FeatureConfigRepository = mock()
+    private val customLabelProvider: CustomLabelProvider = mock()
 
     @Before
     fun setUp() {
@@ -53,7 +53,7 @@ class DashboardRepositoryImplTest {
                 preferences,
                 metadataIconProvider,
                 programConfigurationRepository,
-                featureConfigRepository,
+                customLabelProvider,
             )
     }
 

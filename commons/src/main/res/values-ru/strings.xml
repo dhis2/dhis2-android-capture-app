@@ -38,7 +38,6 @@
     <string name="filters_title_event_label_date">%s дата</string>
     <string name="filters_title_event_label_status">%s статус</string>
     <string name="filters_title_enrollment_status">Cтатус регистрации</string>
-    <string name="filter_follow_up_label">Отмеченные для последующего наблюдения %s</string>
     <string name="select_period">Выбрать тип периода</string>
     <string name="weekly">Еженедельно</string>
     <string name="bi_weekly">Каждые две недели</string>

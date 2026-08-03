@@ -514,14 +514,12 @@
     <string name="app_version">Version de l\'application</string>
     <string name="not_synced">Non synchronisé</string>
     <string name="sync_retry">Réessayer la synchronisation</string>
-    <string name="marked_follow_up">Marqué pour suivi</string>
     <string name="view_only">Visualiser uniquement</string>
     <string name="skipped">Ignoré</string>
     <string name="programs">Programmes</string>
     <string name="sync_successful">Synchronisation réussie</string>
     <string name="sync_warning">Alerte de synchronisation</string>
     <string name="sync_error">Erreur de synchronisation</string>
-    <string name="mark_follow_up">Marquer pour suivi</string>
     <string name="coordinates">Coordonnées</string>
     <string name="sync_offline_check_connection">Il semble que vous n\'êtes pas connecté. Vérifier votre connexion.</string>
     <string name="delete_tei_dialog_message">Ce %s et toutes ses données dans tous les programmes seront supprimés. Cette action ne peut pas être annulée.</string>

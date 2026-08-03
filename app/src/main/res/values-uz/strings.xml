@@ -446,12 +446,10 @@
     <string name="sync_dialog_action_send">Юбориш</string>
     <string name="sync_dialog_action_refresh">Янгилаш</string>
     <string name="sync_dialog_action_not_now">Hozir emas</string>
-    <string name="marked_follow_up">Кузатув учун белгиланган</string>
     <string name="view_only">Фақат кўриш учун</string>
     <string name="skipped">Ўтказиб юборилди</string>
     <string name="programs">Дастурлар</string>
     <string name="sync_error">Синхронлашда хатолик</string>
-    <string name="mark_follow_up">Кузатув учун белгиланг</string>
     <string name="coordinates">Координаталар</string>
     <string name="schedule">Режа</string>
     <string name="scheduled_enter_event">Режа бўйича</string>

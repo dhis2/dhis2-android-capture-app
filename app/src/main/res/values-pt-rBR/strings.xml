@@ -121,7 +121,6 @@
     <string name="sync_dialog_action_refresh">Actualizar</string>
     <string name="skipped">Ignorado</string>
     <string name="programs">Programas</string>
-    <string name="mark_follow_up">Marcar para acompanhamento</string>
     <string name="coordinates">Coordenadas</string>
     <string name="schedule">Programar</string>
     <string name="scheduled_enter_event">Agendado</string>

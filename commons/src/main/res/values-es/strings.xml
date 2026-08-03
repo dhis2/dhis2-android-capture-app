@@ -39,7 +39,6 @@
     <string name="filters_title_event_label_date">%s fecha</string>
     <string name="filters_title_event_label_status">%s estado</string>
     <string name="filters_title_enrollment_status">@string/enrollment_status</string>
-    <string name="filter_follow_up_label">Seguido %s</string>
     <string name="select_period">Seleccionar tipo de periodo</string>
     <string name="weekly">Semanal</string>
     <string name="bi_weekly">Quincenal</string>
