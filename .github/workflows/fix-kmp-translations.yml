@@ -6,7 +6,7 @@ on:
 
 jobs:
   fix-kmp-translations:
-    if: startsWith(github.head_ref, 'develop-transifex-')
+    if: startsWith(github.head_ref, 'develop-transifex-', 'main-transifex-')
     runs-on: ubuntu-latest
     permissions:
       contents: write
