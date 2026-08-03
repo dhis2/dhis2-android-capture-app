@@ -45,7 +45,7 @@
     <string name="complete">Compleet</string>
     <string name="discard_changes">Veranderingen ongedaan maken</string>
     <string name="saved">Opgeslagen!</string>
-    <string name="event_error_on_complete">U heeft een aantal foutmeldingen.\nWilt u deze bekijken\?</string>
+    <string name="event_error_on_complete">U heeft een aantal foutmeldingen.\nWilt u deze bekijken?</string>
     <string name="not_now">Niet nu</string>
     <string name="keep_editing">Blijf bewerken</string>
     <string name="event_can_be_completed">Wilt u dit formulier als voltooid markeren?</string>

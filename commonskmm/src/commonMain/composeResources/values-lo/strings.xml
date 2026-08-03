@@ -45,7 +45,7 @@
     <string name="complete">ສຳເລັດແລ້ວ</string>
     <string name="discard_changes">ລຶບການປ່ຽນແປງ</string>
     <string name="saved">ບັນທຶກແລ້ວ!</string>
-    <string name="event_error_on_complete">ທ່ານມີຂໍ້ຜິດພາດໃນບາງຂໍ້ຄວາມ.\nທ່ານຕ້ອງການກວດເບິ່ງຄືນບໍ\?</string>
+    <string name="event_error_on_complete">ທ່ານມີຂໍ້ຜິດພາດໃນບາງຂໍ້ຄວາມ.\nທ່ານຕ້ອງການກວດເບິ່ງຄືນບໍ?</string>
     <string name="not_now">ບໍ່​ແມ່ນ​ຕອນ​ນີ້</string>
     <string name="keep_editing">ສຶບຕໍ່ແກ້ໄຂ</string>
     <string name="event_can_be_completed">ທ່ານຕ້ອງການໝາຍແບບຟອມນີ້ວ່າສຳເລັດແລ້ວຫຼືບໍ?</string>

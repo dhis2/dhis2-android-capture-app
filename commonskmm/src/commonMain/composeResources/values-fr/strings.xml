@@ -46,7 +46,7 @@
     <string name="complete">Terminer</string>
     <string name="discard_changes">Annuler les modifications</string>
     <string name="saved">Enregistré!</string>
-    <string name="event_error_on_complete">Vous avez des messages d\'erreur.\nVoulez-vous les consulter \?</string>
+    <string name="event_error_on_complete">Vous avez des messages d\'erreur.\nVoulez-vous les consulter ?</string>
     <string name="not_now">Pas maintenant</string>
     <string name="keep_editing">Continuer l’édition</string>
     <string name="event_can_be_completed">Voulez-vous marquer ce formulaire comme complet?</string>
