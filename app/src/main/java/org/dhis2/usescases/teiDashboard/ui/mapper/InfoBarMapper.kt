@@ -19,6 +19,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
+@Deprecated("Use InfoBarProvider instead")
 class InfoBarMapper(
     val resourceManager: ResourceManager,
 ) {
