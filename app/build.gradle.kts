@@ -231,6 +231,15 @@ android {
         }
     }
 
+    // Configured after productFlavors, which is what creates the per-flavor source sets.
+    // dhis2Training is the same non-Play build as dhis2, so it shares its Kotlin sources instead
+    // of keeping identical copies that silently drift apart.
+    sourceSets {
+        getByName("dhis2Training") {
+            kotlin.srcDir("src/dhis2/java")
+        }
+    }
+
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
