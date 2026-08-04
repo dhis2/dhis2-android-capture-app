@@ -69,7 +69,8 @@ fun MainScreen(
     var showPinDialog by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    val snackbarMessage = stringResource(R.string.pin_created)
+    val pinCreatedMessage = stringResource(R.string.pin_created)
+    val pinAlreadyCreatedMessage = stringResource(R.string.pin_already_created)
     BackHandler { onAction(HomeAction.BackPressed) }
 
     ObserveAsEvents(effects) { effect ->
@@ -80,7 +81,15 @@ fun MainScreen(
             HomeEffect.PinCreated ->
                 scope.launch {
                     snackbarHostState.showSnackbar(
-                        message = snackbarMessage,
+                        message = pinCreatedMessage,
+                        duration = SnackbarDuration.Long,
+                    )
+                }
+
+            HomeEffect.PinAlreadyCreated ->
+                scope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = pinAlreadyCreatedMessage,
                         duration = SnackbarDuration.Long,
                     )
                 }

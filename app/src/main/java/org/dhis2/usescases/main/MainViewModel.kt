@@ -358,8 +358,8 @@ class MainViewModel(
             getLockAction().fold(
                 onSuccess = { result ->
                     when (result) {
-                        LockAction.BlockSession ->
-                            _homeEffects.send(HomeEffect.BlockSession)
+                        LockAction.PinAlreadyCreated ->
+                            _homeEffects.send(HomeEffect.PinAlreadyCreated)
 
                         LockAction.CreatePin ->
                             _homeEffects.send(HomeEffect.ShowPinDialog)

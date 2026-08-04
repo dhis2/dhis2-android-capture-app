@@ -237,7 +237,7 @@ class MainViewModelTest {
     @Test
     fun `Should block session`() =
         runTest {
-            whenever(getLockAction()) doReturn Result.success(LockAction.BlockSession)
+            whenever(getLockAction()) doReturn Result.success(LockAction.PinAlreadyCreated)
 
             viewModel.homeEffects.test {
                 viewModel.onBlockSession()
