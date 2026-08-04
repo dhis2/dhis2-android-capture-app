@@ -212,8 +212,8 @@ abstract class SessionManagerActivity :
             ) &&
             this !is LoginActivity
         ) {
-            workManagerController.cancelAllWork()
             lifecycleScope.launch {
+                workManagerController.cancelAllWorkAndWait()
                 syncStatusController.restore()
             }
         }
