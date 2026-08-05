@@ -231,6 +231,12 @@ android {
         }
     }
 
+    sourceSets {
+        getByName("dhis2Training") {
+            kotlin.srcDir("src/dhis2/java")
+        }
+    }
+
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17

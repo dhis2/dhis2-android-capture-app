@@ -98,7 +98,13 @@ jobs:
           cache: 'gradle'
 
       - name: Build Test APKs
-        run: ./gradlew :app:assembleDhis2Debug :app:assembleDhis2DebugAndroidTest :form:assembleAndroidTest --no-daemon
+        run: |
+          ./gradlew :app:assembleDhis2Debug \
+            :app:assembleDhis2DebugAndroidTest \
+            :form:assembleAndroidTest \
+            :app:compileDhis2PlayServicesDebugKotlin \
+            :app:compileDhis2TrainingDebugKotlin \
+            --no-daemon
 
       - name: Upload APKs
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
