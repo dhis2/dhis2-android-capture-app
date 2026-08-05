@@ -216,7 +216,8 @@ class ServerModule {
     fun provideEventResourceProvider(
         d2: D2,
         resourceManager: ResourceManager,
-    ): EventResourcesProvider = EventResourcesProvider(d2, resourceManager)
+        customLabelProvider: CustomLabelProvider,
+    ): EventResourcesProvider = EventResourcesProvider(d2, resourceManager, customLabelProvider)
 
     @Provides
     @PerServer

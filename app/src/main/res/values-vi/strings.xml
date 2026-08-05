@@ -236,7 +236,6 @@
     <string name="tuto_event_initial_new_1">Nhập tất cả dữ liệu để tạo sự kiện</string>
     <string name="tuto_event_initial_1">Bấm để kiểm tra trạng thái hoàn tất sự kiện</string>
     <string name="relationships">mối quan hệ</string>
-    <string name="empty_tei_add">Không có sự kiện đã đăng ký, bấm vào \"+\" để thêm một sự kiện mới.</string>
     <string name="qr_data_values">Giá trị dữ liệu</string>
     <string name="info">Thông tin</string>
     <string name="qr_no_id_error">Không thể đọc được mã nhận dạng này</string>

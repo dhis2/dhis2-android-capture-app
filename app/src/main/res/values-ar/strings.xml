@@ -229,7 +229,6 @@
     <string name="tuto_event_initial_new_1">أدخل جميع البيانات لإنشاء الحدث</string>
     <string name="tuto_event_initial_1">انقر للتحقق من حالة إكتمال الحدث</string>
     <string name="relationships">العلاقات</string>
-    <string name="empty_tei_add">لا توجد أحداث مسجلة، انقر على \"+\" لإضافة حدث جديد.</string>
     <string name="qr_data_values">قيم البيانات</string>
     <string name="info">معلومات</string>
     <string name="qr_no_id_error">تعذر قراءة رقم التعريف هذا</string>

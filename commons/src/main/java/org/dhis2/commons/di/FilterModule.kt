@@ -38,6 +38,7 @@ val mainFilterModule =
             EventResourcesProvider(
                 d2 = get(),
                 resourceManager = get(),
+                customLabelProvider = get(),
             )
         }
 

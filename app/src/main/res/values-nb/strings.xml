@@ -216,7 +216,6 @@
     <string name="tuto_event_initial_new_1">Fyll inn all data for å opprette hendelsen</string>
     <string name="tuto_event_initial_1">Klikk for å sjekke status for fullføring av hendelsen.</string>
     <string name="relationships">relasjoner</string>
-    <string name="empty_tei_add">Det er ingen hendelser registrert, klikk \"+\" for å legge til en ny.</string>
     <string name="qr_data_values">Dataverdier</string>
     <string name="info">Info</string>
     <string name="qr_no_id_error">Kunne ikke lese denne ID-en</string>

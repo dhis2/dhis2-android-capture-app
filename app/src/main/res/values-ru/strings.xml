@@ -227,7 +227,6 @@
     <string name="tuto_event_initial_new_1">Введите все данные для создания событие</string>
     <string name="tuto_event_initial_1">Нажмите, чтобы проверить состояние завершения события.</string>
     <string name="relationships">связи</string>
-    <string name="empty_tei_add">Нет зарегистрированных событий, нажмите \"+\", чтобы добавить новое.</string>
     <string name="qr_data_values">Значение данных</string>
     <string name="info">Информация</string>
     <string name="qr_no_id_error">Невозможно прочитать этот Id</string>

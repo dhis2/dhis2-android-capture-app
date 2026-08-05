@@ -233,12 +233,6 @@
     <string name="refresh_this_record">Оновити цей запис</string>
     <string name="view_timeline">Переглянути хронологію</string>
     <!-- Event -->
-    <plurals name="event_label">
-        <item quantity="one">подія</item>
-        <item quantity="few">події</item>
-        <item quantity="many">події</item>
-        <item quantity="other">події</item>
-    </plurals>
     <string name="new_event_label">Новий 1%s</string>
     <string name="event_label_date">Дата %s </string>
     <string name="delete_event_label">Видалити %s</string>

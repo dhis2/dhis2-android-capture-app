@@ -213,7 +213,6 @@
     <string name="tuto_event_initial_new_1">Complete todos los campos para crear el evento</string>
     <string name="tuto_event_initial_1">Aqui puedes ver el % de campos completos en el evento. </string>
     <string name="relationships">relaciones</string>
-    <string name="empty_tei_add">No hay eventos registrados, haga click en \"+\" para añadir uno.</string>
     <string name="qr_data_values">Valores de datos</string>
     <string name="info">Información</string>
     <string name="qr_no_id_error">No se ha podido leer este Id</string>

@@ -3,12 +3,13 @@ package org.dhis2.commons.resources
 import androidx.annotation.StringRes
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
-import org.dhis2.commons.R
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.hisp.dhis.android.core.D2
 
 class EventResourcesProvider(
     val d2: D2,
     val resourceManager: ResourceManager,
+    val customLabelProvider: CustomLabelProvider,
 ) {
     private fun programStageEventLabel(
         programStageUid: String? = null,
@@ -41,16 +42,10 @@ class EventResourcesProvider(
     fun programEventLabel(
         programUid: String? = null,
         quantity: Int = 1,
-    ) = try {
-        d2
-            .programModule()
-            .programs()
-            .uid(programUid)
-            .blockingGet()
-            ?.displayEventLabel()
-    } catch (e: Exception) {
-        null
-    } ?: resourceManager.getPlural(R.plurals.event_label, quantity)
+    ) = customLabelProvider.blockingCustomEventLabel(
+        programUid,
+        quantity,
+    )
 
     fun formatWithProgramEventLabel(
         @StringRes stringResource: Int,

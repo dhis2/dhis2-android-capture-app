@@ -288,11 +288,6 @@
     <string name="group_by_stage">Ver por etapa</string>
 
     <!-- Event -->
-    <plurals name="event_label">
-        <item quantity="one">evento</item>
-        <item quantity="many">eventos</item>
-        <item quantity="other">eventos</item>
-    </plurals>
     <string name="event_label_completed">%s se ha completado</string>
     <string name="event_label_created">%s se ha creado</string>
     <string name="new_event_label">Nuevo %s</string>

@@ -216,7 +216,6 @@
     <string name="tuto_event_initial_new_1">Ҳодиса/тадбир яратиш учун барча маълумотларни киритинг</string>
     <string name="tuto_event_initial_1">Ҳодиса/тадбирнинг тугаш ҳолатини текшириш учун, босинг.</string>
     <string name="relationships">ўзаро алоқалар</string>
-    <string name="empty_tei_add">Ҳеч қандай ҳодиса/тадбир рўйхатдан ўтказилмаган, янгисини қўшиш учун \"+\" тугмасини босинг.</string>
     <string name="qr_data_values">Маълумотларнинг қийматлари</string>
     <string name="info">Ахборот</string>
     <string name="qr_no_id_error">ID ўқиб бўлмади</string>
