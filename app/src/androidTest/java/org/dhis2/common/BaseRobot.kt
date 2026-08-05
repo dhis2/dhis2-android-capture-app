@@ -6,6 +6,9 @@ import android.content.Context
 import android.content.Context.ACTIVITY_SERVICE
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.compose.ui.semantics.SemanticsNode
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithText
@@ -74,6 +77,18 @@ open class BaseRobot {
     fun waitToDebounce(millis: Long) {
         sleep(millis)
     }
+
+    /** This node's own text entries (does not descend into children). */
+    fun SemanticsNode.texts(): List<String> =
+        config.getOrNull(SemanticsProperties.Text)?.map { it.text } ?: emptyList()
+
+    /**
+     * This node's text plus every descendant's. Needed because an unmerged node
+     * carries only its OWN text, while a field's title sits several levels below
+     * the tagged node.
+     */
+    fun SemanticsNode.subtreeTexts(): List<String> =
+        texts() + children.flatMap { it.subtreeTexts() }
 
     fun getString(stringId: Int): String = getInstrumentation().targetContext.getString(stringId)
 
