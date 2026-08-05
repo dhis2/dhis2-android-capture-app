@@ -30,6 +30,7 @@ import org.dhis2.mobile.login.main.domain.usecase.LoginUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUserWithOAuth
 import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
 import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
+import org.dhis2.mobile.login.main.domain.usecase.SetOAuthPin
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
@@ -67,8 +68,9 @@ class CredentialsViewModel(
     private val getIsSessionLockedUseCase: GetIsSessionLockedUseCase,
     private val forgotPinUseCase: ForgotPinUseCase,
     private val oidcInfo: OidcInfo?,
-    private val fromHome: Boolean,
     private val entryMode: CredentialsEntryMode,
+    private val autoPromptLogin: Boolean,
+    private val setOAuthPin: SetOAuthPin,
 ) : ViewModel() {
     private val isNetworkOnline =
         networkStatusProvider.connectionStatus
@@ -144,7 +146,7 @@ class CredentialsViewModel(
                     oidcInfo = oidcInfo,
                     afterLoginActions = emptyList(),
                     hasOtherAccounts = getHasOtherAccounts(),
-                    displayBiometricsDialog = biometricInfo.canUseBiometrics && !fromHome,
+                    displayBiometricsDialog = biometricInfo.canUseBiometrics && autoPromptLogin,
                 )
             }
         }
@@ -162,21 +164,11 @@ class CredentialsViewModel(
                     oidcInfo = oidcInfo,
                     afterLoginActions = emptyList(),
                     hasOtherAccounts = getHasOtherAccounts(),
-                    isSessionLocked = getIsSessionLockedUseCase(),
-                    displayBiometricsDialog = biometricInfo.canUseBiometrics && !fromHome,
+                    isSessionLocked =
+                        getIsSessionLockedUseCase(requireOfflineCredentials = true) &&
+                            autoPromptLogin,
+                    displayBiometricsDialog = biometricInfo.canUseBiometrics && autoPromptLogin,
                 )
-            }
-
-            if (!fromHome) {
-                // TODO Here we need to ask for the pin to the user
-                startLoginJob {
-                    loginUser(
-                        serverUrl = serverUrl,
-                        username = username ?: "",
-                        password = "",
-                        isNetworkAvailable = isNetworkOnline.value,
-                    )
-                }
             }
         }
     }
@@ -200,8 +192,8 @@ class CredentialsViewModel(
                     oidcInfo = oidcInfo,
                     afterLoginActions = emptyList(),
                     hasOtherAccounts = getHasOtherAccounts(),
-                    isSessionLocked = getIsSessionLockedUseCase(),
-                    displayBiometricsDialog = biometricInfo.canUseBiometrics && !fromHome,
+                    isSessionLocked = getIsSessionLockedUseCase(requireOfflineCredentials = false),
+                    displayBiometricsDialog = biometricInfo.canUseBiometrics && autoPromptLogin,
                 )
             }
         }
@@ -435,13 +427,15 @@ class CredentialsViewModel(
     fun onLoginClicked() {
         when (entryMode) {
             CredentialsEntryMode.NEW_ACCOUNT_OAUTH -> fetchOAuthEnrollmentUrl()
+            CredentialsEntryMode.EXISTING_OAUTH ->
+                _credentialsScreenState.update { it.copy(isSessionLocked = true) }
+
             else ->
                 startLoginJob {
                     loginUser(
                         serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
-                        username = _credentialsScreenState.value.username(),
+                        username = _credentialsScreenState.value.username().trim(),
                         password = _credentialsScreenState.value.credentialsInfo?.password ?: "",
-                        isNetworkAvailable = isNetworkOnline.value,
                     )
                 }
         }
@@ -495,6 +489,9 @@ class CredentialsViewModel(
                     it.copy(
                         afterLoginActions =
                             buildList {
+                                if (entryMode == CredentialsEntryMode.NEW_ACCOUNT_OAUTH) {
+                                    add(AfterLoginAction.CreateOfflineCredential)
+                                }
                                 if (result.displayTrackingMessage) {
                                     add(AfterLoginAction.DisplayTrackingMessage)
                                 }
@@ -635,6 +632,19 @@ class CredentialsViewModel(
         }
     }
 
+    fun onOfflineCredentialEntered(credential: String) {
+        launchUseCase {
+            _credentialsScreenState.update { it.copy(isSessionLocked = false) }
+            startLoginJob {
+                loginUser(
+                    serverUrl = serverUrl,
+                    username = username ?: "",
+                    password = credential,
+                )
+            }
+        }
+    }
+
     fun onPinDismissed() {
         // User dismissed the PIN dialog (forgot PIN)
         // Logout the user from the app and ask for the password
@@ -645,6 +655,33 @@ class CredentialsViewModel(
                     isSessionLocked = false,
                 )
             }
+        }
+    }
+
+    fun onOfflineCredentialCreated(credential: String) {
+        launchUseCase {
+            setOAuthPin(credential).fold(
+                onSuccess = {
+                    _credentialsScreenState.update {
+                        it.copy(
+                            afterLoginActions =
+                                it.afterLoginActions.toMutableList().apply {
+                                    remove(AfterLoginAction.CreateOfflineCredential)
+                                },
+                        )
+                    }
+                },
+                onFailure = { error ->
+                    logOutUser.invoke()
+                    _credentialsScreenState.update {
+                        it.copy(
+                            afterLoginActions = emptyList(),
+                            loginState = LoginState.Enabled,
+                            errorMessage = error.message,
+                        )
+                    }
+                },
+            )
         }
     }
 }

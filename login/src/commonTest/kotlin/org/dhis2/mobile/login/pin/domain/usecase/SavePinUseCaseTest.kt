@@ -25,7 +25,6 @@ class SavePinUseCaseTest {
             val pin = "1234"
             whenever(repository.savePin(pin)).then { }
             whenever(repository.setSessionLocked(true)).then { }
-            whenever(repository.isOauth()).then { false }
 
             // When
             val result = useCase(pin)
@@ -34,26 +33,6 @@ class SavePinUseCaseTest {
             assertTrue(result.isSuccess)
             verify(repository).savePin(pin)
             verify(repository).setSessionLocked(true)
-        }
-
-    @Test
-    fun `should save PIN for oauth when session account is with oauth configured`() =
-        runTest {
-            // Given
-            val pin = "1234"
-            whenever(repository.savePin(pin)).then { }
-            whenever(repository.setSessionLocked(true)).then { }
-            whenever(repository.isOauth()).then { true }
-            whenever(repository.setOauthPin(pin)).then { }
-
-            // When
-            val result = useCase(pin)
-
-            // Then
-            assertTrue(result.isSuccess)
-            verify(repository).savePin(pin)
-            verify(repository).setSessionLocked(true)
-            verify(repository).setOauthPin(pin)
         }
 
     @Test

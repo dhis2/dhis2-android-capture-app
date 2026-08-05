@@ -16,6 +16,7 @@ import org.dhis2.mobile.login.main.domain.usecase.LoginUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUserWithOAuth
 import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
 import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
+import org.dhis2.mobile.login.main.domain.usecase.SetOAuthPin
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
@@ -93,6 +94,10 @@ internal val mainLoginModule =
             LoginUserWithOAuth(get { parametersOf(params.get()) })
         }
 
+        factory { params ->
+            SetOAuthPin(get { parametersOf(params.get()) })
+        }
+
         viewModel { parameters ->
             val context = parameters.get<PlatformContext>()
             LoginViewModel(
@@ -110,8 +115,8 @@ internal val mainLoginModule =
             val allowRecovery = parameters[3] as Boolean
             val oidcInfo = parameters[4] as OidcInfo?
             val context = parameters[5] as PlatformContext
-            val fromHome = parameters[6] as Boolean
-            val entryMode = parameters[7] as CredentialsEntryMode
+            val entryMode = parameters[6] as CredentialsEntryMode
+            val autoPromptLogin = parameters[7] as Boolean
             CredentialsViewModel(
                 navigator = get(),
                 getAvailableUsernames = get { parametersOf(context) },
@@ -136,8 +141,9 @@ internal val mainLoginModule =
                 getIsSessionLockedUseCase = get(),
                 oidcInfo = oidcInfo,
                 forgotPinUseCase = get(),
-                fromHome = fromHome,
                 entryMode = entryMode,
+                autoPromptLogin = autoPromptLogin,
+                setOAuthPin = get { parametersOf(context) },
             )
         }
     }

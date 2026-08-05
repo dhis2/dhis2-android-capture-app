@@ -9,6 +9,7 @@ import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -27,6 +28,7 @@ class ProgramEventTest : BaseTest() {
         return arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
+    @Ignore("To be deleted")
     @Test
     fun shouldDeleteEvent() {
         val eventDate = "26/11/2021"

@@ -62,6 +62,13 @@
     <string name="pin_error_save_failed">Failed to save PIN</string>
     <string name="pin_error_reset_failed">Failed to reset PIN</string>
     <string name="pin_error_remaining_attempts">%1$s attempts remaining</string>
+    <string name="offline_credential_create_title">Create an offline PIN</string>
+    <string name="offline_credential_create_description">Set a PIN to log in to this account offline.</string>
+    <string name="offline_credential_create_button">Create PIN</string>
+    <string name="offline_credential_enter_title">Enter your offline PIN</string>
+    <string name="offline_credential_enter_description">Enter your 4-digit PIN to log in offline.</string>
+    <string name="offline_credential_enter_button">Log in</string>
+    <string name="offline_credential_forgot_button">Forgot your PIN?</string>
     <string name="import_database">Import Database</string>
     <string name="importing_successful">Import successful</string>
     <string name="openid_process_cancelled">The login was cancelled</string>
