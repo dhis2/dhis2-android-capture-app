@@ -10,6 +10,7 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isEnabled
 import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -33,6 +34,21 @@ class OrgUnitSelectorRobot(private val composeTestRule: ComposeTestRule) : BaseR
         SemanticsMatcher("tag starts with ORG_TREE_ITEM_CHECKBOX_") {
             runCatching { it.config[TestTag] }.getOrNull()?.startsWith("ORG_TREE_ITEM_CHECKBOX_") == true
         }
+
+    private val orgUnitTreeItemMatcher =
+        SemanticsMatcher("tag starts with ORG_TREE_ITEM_") {
+            runCatching { it.config[TestTag] }.getOrNull()?.startsWith("ORG_TREE_ITEM_") == true
+        }
+
+    /**
+     * Asserts the org-unit tree picker is showing (ANDROAPP-4154). Matches on the
+     * `ORG_TREE_ITEM_` tag prefix rather than a named org unit, so the check holds
+     * for any program's capture scope without assuming which units are in view.
+     */
+    fun checkOrgUnitTreeIsDisplayed() {
+        composeTestRule.waitUntilAtLeastOneExists(orgUnitTreeItemMatcher, TIMEOUT)
+        composeTestRule.onAllNodes(orgUnitTreeItemMatcher).onFirst().assertIsDisplayed()
+    }
 
     fun selectTreeOrgUnit(orgUnitName: String) {
         // The tree is fetched asynchronously and OrgBottomSheet keeps it behind a spinner for

@@ -1,12 +1,8 @@
 package org.dhis2.usescases.event
 
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
-import androidx.test.runner.lifecycle.Stage
 import androidx.test.uiautomator.UiDevice
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
@@ -14,9 +10,8 @@ import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
+import org.dhis2.utils.granularsync.syncDialogRobot
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -53,26 +48,25 @@ class EventTest : BaseTest() {
         programEventsRobot(composeTestRule) {
             clickSyncButton()
         }
-        composeTestRule.waitForIdle()
-        assertFragmentAttached("EVENT_SYNC")
+        syncDialogRobot(composeTestRule) {
+            checkNotSyncedDialogIsDisplayed()
+        }
         pressBack()
 
         // [ANDROAPP-4154] Add (+) opens the new-event flow (org-unit picker).
         programEventsRobot(composeTestRule) {
             clickOnAddEvent()
         }
-        composeTestRule.waitForIdle()
-        assertFragmentAttached("ORG_UNIT_DIALOG")
+        orgUnitSelectorRobot(composeTestRule) {
+            checkOrgUnitTreeIsDisplayed()
+        }
         pressBack()
 
         programEventsRobot(composeTestRule) {
             clickOnEvent(event.displayDate)
         }
         eventRegistrationRobot(composeTestRule) {
-            // clickOnEvent() above starts a new EventCaptureActivity; wait for it
-            // to be visible before polling for its Compose content, otherwise the
-            // check can race the Activity transition.
-            waitUntilActivityVisible<EventCaptureActivity>()
+            waitForFormToOpen()
             // [ANDROAPP-4647] Save FAB visible when event is editable.
             checkSaveButtonIsDisplayed()
             // [ANDROAPP-1012] Completion-% indicator shown in the corner.
@@ -90,9 +84,10 @@ class EventTest : BaseTest() {
         eventRegistrationRobot(composeTestRule) {
             clickSyncButton()
         }
-        composeTestRule.waitForIdle()
-        // [ANDROAPP-4837] SyncStatusDialog (tag "EVENT_SYNC") attached.
-        assertFragmentAttached("EVENT_SYNC")
+        // [ANDROAPP-4837] The form's sync button opens the same granular-sync sheet.
+        syncDialogRobot(composeTestRule) {
+            checkNotSyncedDialogIsDisplayed()
+        }
         pressBack()
         eventRegistrationRobot(composeTestRule) {
             checkSaveButtonIsDisplayed()
@@ -146,10 +141,7 @@ class EventTest : BaseTest() {
             clickOnEvent(event.displayDate)
         }
         eventRegistrationRobot(composeTestRule) {
-            // clickOnEvent() above relaunches EventCaptureActivity; wait for it
-            // to be visible so the old Activity's Compose root has been replaced
-            // before we look for one, otherwise "No compose hierarchies found" can fire.
-            waitUntilActivityVisible<EventCaptureActivity>()
+            waitForFormToOpen()
             checkFormIsReadOnly()
         }
 
@@ -188,10 +180,7 @@ class EventTest : BaseTest() {
         composeTestRule.waitForIdle()
 
         eventRegistrationRobot(composeTestRule) {
-            // selectTreeOrgUnit() above triggers ProgramEventDetailActivity.navigateToEvent(),
-            // which starts a new EventCaptureActivity; wait for it to be visible before
-            // polling for its Compose content, otherwise the check can race the transition.
-            waitUntilActivityVisible<EventCaptureActivity>()
+            waitForFormToOpen()
             // [ANDROAPP-899] Custom event-date label from the stage.
             checkEventDateLabelIsDisplayed(FLOW_D_VISIT_DATE_LABEL)
             // [ANDROAPP-844] Non-default attribute category-combo field.
@@ -232,21 +221,6 @@ class EventTest : BaseTest() {
             waitForEventDisplayed(todayDisplayDate())
             checkEventCardStatusColor(todayDisplayDate(), "Event completed", SurfaceColor.CustomGreen)
         }
-    }
-
-    private fun assertFragmentAttached(tag: String) {
-        val fragment =
-            arrayOfNulls<Any>(1).also {
-                InstrumentationRegistry.getInstrumentation().runOnMainSync {
-                    val activity =
-                        ActivityLifecycleMonitorRegistry.getInstance()
-                            .getActivitiesInStage(Stage.RESUMED)
-                            .firstOrNull() as? FragmentActivity
-                    it[0] = activity?.supportFragmentManager?.findFragmentByTag(tag)
-                }
-            }[0] as? Fragment
-        assertNotNull("Expected fragment '$tag' to be attached", fragment)
-        assertTrue("Fragment '$tag' must be added", fragment!!.isAdded)
     }
 
     private fun pressBack() {

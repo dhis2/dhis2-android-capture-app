@@ -28,6 +28,7 @@ import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.commons.dialogs.bottomsheet.MAIN_BUTTON_TAG
 import org.dhis2.commons.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 
 fun eventRegistrationRobot(
     composeTestRule: ComposeTestRule,
@@ -39,6 +40,21 @@ fun eventRegistrationRobot(
 }
 
 class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
+
+    /**
+     * Waits until `EventCaptureActivity` is actually visible before this robot polls
+     * for any Compose content.
+     *
+     * Every route into this form starts a NEW Activity — `clickOnEvent()` from the
+     * program event list (both first entry and re-entry after completing), and
+     * `selectTreeOrgUnit()` which triggers `ProgramEventDetailActivity.navigateToEvent()`.
+     * Querying before the transition settles can race it: the old Activity's Compose
+     * root may not have been replaced yet, which surfaces as
+     * "No compose hierarchies found" rather than as a missing node.
+     */
+    fun waitForFormToOpen() {
+        waitUntilActivityVisible<EventCaptureActivity>()
+    }
 
     // ── Flow 1: form-lifecycle helpers (ANDROAPP-7620) ────────────────────────
 
