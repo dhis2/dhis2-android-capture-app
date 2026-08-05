@@ -89,6 +89,8 @@ fun Backdrop(
                 isFrontLayerDisabled,
                 viewModel,
                 manageStockViewModel,
+                scaffoldState,
+                syncAction,
             )
         },
         scaffoldState = backdropState,
