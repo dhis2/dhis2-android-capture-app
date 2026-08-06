@@ -3,16 +3,16 @@ package org.dhis2.usescases.programEventDetail.eventList
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.paging.PagingData
 import androidx.paging.testing.asSnapshot
+import app.cash.turbine.test
 import io.reactivex.Single
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.ui.model.ListCardUiModel
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.providers.CustomLabelContext
 import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailRepository
 import org.dhis2.usescases.programEventDetail.ProgramEventMapper
@@ -20,6 +20,7 @@ import org.dhis2.usescases.programEventDetail.eventList.ui.mapper.EventCardMappe
 import org.dhis2.utils.MainCoroutineScopeRule
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -61,12 +62,21 @@ class EventListViewModelTest {
             .build()
 
     private val program: Program = mock { on { uid } doReturn "programuid" }
+    private val programStage: ProgramStage = mock { on { uid } doReturn "programStageuid" }
 
     private val mappedCard: ListCardUiModel = mock()
 
     private val customLabelProvider: CustomLabelProvider =
         mock {
-            onBlocking { getCustomEventLabel("programuid", 2) } doReturn "Events"
+            onBlocking {
+                getCustomEventLabel(
+                    CustomLabelContext.ProgramStage(
+                        "programStageuid",
+                        "programuid",
+                    ),
+                    2,
+                )
+            } doReturn "Events"
         }
 
     @Test
@@ -75,6 +85,7 @@ class EventListViewModelTest {
             whenever(filterManager.asFlow(any())) doReturn flowOf(0)
             whenever(repository.filteredProgramEvents()) doReturn
                 flowOf(PagingData.from(listOf(event)))
+            whenever(repository.programStage()) doReturn Single.just(programStage)
             whenever(repository.program()) doReturn Single.just(program)
             whenever(repository.displayOrganisationUnit("programuid")) doReturn false
             whenever(repository.isEventEditable("uid")) doReturn true
@@ -91,9 +102,11 @@ class EventListViewModelTest {
                     customLabelProvider,
                 )
 
-            val state = viewModel.eventListState.filterNotNull().first()
-
-            assertEquals("Events", state.customEventLabel)
-            assertEquals(listOf(mappedCard), state.eventList.asSnapshot())
+            viewModel.eventListState.test {
+                viewModel.refreshData()
+                val result = awaitItem()
+                assertEquals("Events", result?.customEventLabel)
+                assertEquals(listOf(mappedCard), result?.eventList?.asSnapshot())
+            }
         }
 }

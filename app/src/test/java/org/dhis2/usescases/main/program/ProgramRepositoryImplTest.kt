@@ -17,6 +17,7 @@ import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.mobile.sync.model.SyncStatusData
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.repositories.filters.internal.StringFilterConnector
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.ObjectStyle
@@ -26,6 +27,8 @@ import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.DataSetInstanceSummary
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.android.core.program.ProgramStage
+import org.hisp.dhis.android.core.program.ProgramStageCollectionRepository
 import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.junit.After
@@ -58,6 +61,18 @@ class ProgramRepositoryImplTest {
         mock {
             on { invoke(style = any<ObjectStyle>(), anyOrNull<Color>()) } doReturn MetadataIconData.defaultIcon()
         }
+    private val customLabelProvider: CustomLabelProvider =
+        mock {
+            on { blockingCustomEventLabel(any(), any()) } doReturn "Events"
+        }
+
+    private val customProgramStage: ProgramStage =
+        mock {
+            on { uid } doReturn "programStageUid"
+        }
+    private val programStageUidConnector: StringFilterConnector<ProgramStageCollectionRepository> =
+        mock()
+    private val programStageCollectionRepository: ProgramStageCollectionRepository = mock()
 
     @Before
     fun setUp() {
@@ -110,6 +125,18 @@ class ProgramRepositoryImplTest {
                         ),
                     ),
                 ).build()
+        whenever(
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid(),
+        ) doReturn programStageUidConnector
+        whenever(
+            programStageUidConnector.eq(any()),
+        ) doReturn programStageCollectionRepository
+        whenever(
+            programStageCollectionRepository.blockingGet(),
+        ) doReturn listOf(customProgramStage)
     }
 
     @After
@@ -151,7 +178,7 @@ class ProgramRepositoryImplTest {
             .assertValue {
                 it.size == mockedPrograms().size &&
                     it[0].count == 10 &&
-                    it[0].typeName == "event" &&
+                    it[0].typeName == "Events" &&
                     it[1].count == 2 &&
                     it[1].typeName == "tei"
             }
