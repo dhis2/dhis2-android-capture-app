@@ -140,7 +140,7 @@ class LoginRepositoryImpl(
             d2.userModule().oauth2Handler().blockingHandleEnrollmentResponse(
                 serverUrl = serverURL,
                 iat = iat,
-                state = state
+                state = state,
             )
 
             if (!d2.userModule().oauth2Handler().isDeviceRegistered()) {

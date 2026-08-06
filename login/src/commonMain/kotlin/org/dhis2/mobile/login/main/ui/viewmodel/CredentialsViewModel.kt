@@ -294,7 +294,10 @@ class CredentialsViewModel(
         }
     }
 
-    private fun loginWithOAuthCode(code: String, state: String) {
+    private fun loginWithOAuthCode(
+        code: String,
+        state: String,
+    ) {
         _credentialsScreenState.update {
             it.copy(
                 loginState = LoginState.Running,
@@ -353,7 +356,10 @@ class CredentialsViewModel(
         }
     }
 
-    private fun registerDevice(enrollmentIat: String, state: String) {
+    private fun registerDevice(
+        enrollmentIat: String,
+        state: String,
+    ) {
         launchUseCase {
             _credentialsScreenState.update {
                 it.copy(loginState = LoginState.Running)

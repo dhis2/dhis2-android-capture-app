@@ -188,6 +188,7 @@
     <string name="invalid_file">Invalid file</string>
     <string name="not_in_totp_2fa_enrollment_mode">Not in TOTP 2FA enrollment mode</string>
     <string name="oauth2_error">There was an error when authenticating with OAuth2</string>
+    <string name="error_device_not_registered">Device not registered</string>
     <!--*******************
        END OF D2 Error Messages
     **********************-->
