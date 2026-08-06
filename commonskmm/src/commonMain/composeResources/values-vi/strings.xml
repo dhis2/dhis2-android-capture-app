@@ -189,4 +189,11 @@
     <string name="cancel">Hủy</string>
     <string name="ok">OK</string>
 
-</resources>
+    <string name="not_synced">Chưa được đồng bộ</string>
+    <string name="sync">Đồng bộ</string>
+    <string name="sync_warning">Cảnh báo đồng bộ</string>
+    <string name="sync_retry">Đồng bộ lại</string>
+    <string name="sync_error">Lỗi đồng bộ</string>
+    <string name="marked_follow_up">Đã đánh dấu để theo dõi</string>
+    <string name="remove_follow_up">Bỏ ra</string>
+    </resources>

@@ -201,4 +201,11 @@
     <plurals name="enrollment">
         <item quantity="other">注册人数</item>
     </plurals>
+    <string name="not_synced">未同步</string>
+    <string name="sync">同步</string>
+    <string name="sync_warning">同步警告</string>
+    <string name="sync_retry">重试同步</string>
+    <string name="sync_error">同步错误</string>
+    <string name="marked_follow_up">标记为后续</string>
+    <string name="remove_follow_up">移除</string>
     </resources>
