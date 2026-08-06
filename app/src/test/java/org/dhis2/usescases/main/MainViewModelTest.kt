@@ -241,7 +241,7 @@ class MainViewModelTest {
 
             viewModel.homeEffects.test {
                 viewModel.onBlockSession()
-                assertTrue(awaitItem() == HomeEffect.BlockSession)
+                assertTrue(awaitItem() == HomeEffect.PinAlreadyCreated)
                 verify(matomoAnalyticsController).trackEvent(
                     HOME,
                     BLOCK_SESSION_PIN,
