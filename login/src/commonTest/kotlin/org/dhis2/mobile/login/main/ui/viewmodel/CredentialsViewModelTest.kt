@@ -554,12 +554,12 @@ class CredentialsViewModelTest {
             // GIVEN
             val serverUrl = "https://test.server.org"
             val authCode = "auth_code_123"
-            val appLinkUrl = "https://vgarciabnz.github.io?code=$authCode&state=test"
+            val appLinkUrl = "https://test.redirect.org?code=$authCode&state=test"
             val mockAppLinkFlow = MutableSharedFlow<String>()
             val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
             val logoutUrl = "$serverUrl/dhis-web-commons-security/logout.action?redirect_uri=dhis2oauth://oauth"
             val state = "test"
-            val logoutCallbackUrl = "https://vgarciabnz.github.io?state=$state"
+            val logoutCallbackUrl = "https://test.redirect.org?state=$state"
 
             whenever(getAvailableUsernames()) doReturn emptyList()
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
@@ -641,7 +641,7 @@ class CredentialsViewModelTest {
             val serverUrl = "https://test.server.org"
             val authCode = "auth_code_123"
             val state = "test"
-            val appLinkUrl = "https://vgarciabnz.github.io?code=$authCode&state=$state"
+            val appLinkUrl = "https://test.redirect.org?code=$authCode&state=$state"
             val mockAppLinkFlow = MutableSharedFlow<String>()
             val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
             val deviceNotRegisteredMessage = "Device not registered"
@@ -683,7 +683,7 @@ class CredentialsViewModelTest {
                 verify(getOAuthLogoutUrl, never()).invoke(any())
 
                 // AND - the OAuth flow is over, so later app links are ignored
-                mockAppLinkFlow.emit("https://vgarciabnz.github.io?code=late_code&state=$state")
+                mockAppLinkFlow.emit("https://test.redirect.org?code=late_code&state=$state")
                 testDispatcher.scheduler.advanceUntilIdle()
                 verify(loginUserWithOAuth, never()).invoke(any(), eq("late_code"), any())
 
@@ -699,7 +699,7 @@ class CredentialsViewModelTest {
             val iat = "enrollment_iat_token"
             val consentUrl = "https://test.server.org/oauth2/consent"
             val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
-            val appLinkUrl = "https://vgarciabnz.github.io?iat=$iat&state=test"
+            val appLinkUrl = "https://test.redirect.org?iat=$iat&state=test"
             val mockAppLinkFlow = MutableSharedFlow<String>()
 
             whenever(getAvailableUsernames()) doReturn emptyList()
@@ -747,7 +747,7 @@ class CredentialsViewModelTest {
             val serverUrl = "https://test.server.org"
             val iat = "enrollment_iat_token"
             val state = "test"
-            val appLinkUrl = "https://vgarciabnz.github.io?iat=$iat&state=$state"
+            val appLinkUrl = "https://test.redirect.org?iat=$iat&state=$state"
             val mockAppLinkFlow = MutableSharedFlow<String>()
             val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
             val oauth2ErrorMessage = "There was an error when authenticating with OAuth2"
@@ -793,7 +793,7 @@ class CredentialsViewModelTest {
                 verify(navigator, times(1)).navigate(any(), any())
 
                 // AND - the OAuth flow is over, so later app links are ignored
-                mockAppLinkFlow.emit("https://vgarciabnz.github.io?code=late_code&state=$state")
+                mockAppLinkFlow.emit("https://test.redirect.org?code=late_code&state=$state")
                 testDispatcher.scheduler.advanceUntilIdle()
                 verify(loginUserWithOAuth, never()).invoke(any(), any(), any())
 
@@ -807,7 +807,7 @@ class CredentialsViewModelTest {
             // GIVEN
             val serverUrl = "https://test.server.org"
             val state = "test"
-            val appLinkUrl = "https://vgarciabnz.github.io?error=access_denied&state=$state"
+            val appLinkUrl = "https://test.redirect.org?error=access_denied&state=$state"
             val mockAppLinkFlow = MutableSharedFlow<String>()
             val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
 
@@ -834,7 +834,7 @@ class CredentialsViewModelTest {
                 assertEquals(LoginState.Enabled, errorState.loginState)
 
                 // AND - the OAuth flow is over, so later app links are ignored
-                mockAppLinkFlow.emit("https://vgarciabnz.github.io?code=late_code&state=$state")
+                mockAppLinkFlow.emit("https://test.redirect.org?code=late_code&state=$state")
                 testDispatcher.scheduler.advanceUntilIdle()
                 verify(loginUserWithOAuth, never()).invoke(any(), any(), any())
 
@@ -883,10 +883,10 @@ class CredentialsViewModelTest {
                 testDispatcher.scheduler.advanceUntilIdle()
 
                 // WHEN - the authorization code and logout callbacks arrive
-                sharedAppLinkNavigation.emit("https://vgarciabnz.github.io?code=$authCode&state=$state")
+                sharedAppLinkNavigation.emit("https://test.redirect.org?code=$authCode&state=$state")
                 testDispatcher.scheduler.advanceTimeBy(4.seconds)
                 testDispatcher.scheduler.advanceUntilIdle()
-                sharedAppLinkNavigation.emit("https://vgarciabnz.github.io?state=$state")
+                sharedAppLinkNavigation.emit("https://test.redirect.org?state=$state")
                 testDispatcher.scheduler.advanceUntilIdle()
 
                 // THEN - the OAuth flow owner completes the login and reaches the mandatory
