@@ -6,6 +6,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterPresenter
 import org.dhis2.commons.resources.MetadataIconProvider
@@ -13,6 +14,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.mobile.commons.model.MetadataIconData
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.mobile.sync.model.SyncStatusData
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Access
@@ -51,6 +53,7 @@ class ProgramRepositoryImplTest {
     private val dhisProgramUtils: DhisProgramUtils = mock()
     private val scheduler = TrampolineSchedulerProvider()
     private val resourceManager: ResourceManager = mock()
+    private val customLabelProvider: CustomLabelProvider = mock()
     private val metadataIconProvider: MetadataIconProvider =
         mock {
             on { invoke(style = any<ObjectStyle>(), anyOrNull<Color>()) } doReturn MetadataIconData.defaultIcon()
@@ -68,6 +71,7 @@ class ProgramRepositoryImplTest {
                 resourceManager,
                 metadataIconProvider,
                 scheduler,
+                customLabelProvider,
             )
         whenever(
             resourceManager.defaultDataSetLabel(),
@@ -75,9 +79,9 @@ class ProgramRepositoryImplTest {
         whenever(
             resourceManager.defaultEventLabel(),
         ) doReturn "event"
-        whenever(
-            resourceManager.defaultTeiLabel(),
-        ) doReturn "tei"
+        runBlocking {
+            whenever(customLabelProvider.getTeTypeCustomLabel(any(), any())) doReturn "tei"
+        }
         whenever(
             d2
                 .dataSetModule()

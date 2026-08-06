@@ -8,6 +8,11 @@ interface CustomLabelProvider {
         quantity: Int? = null,
     ): String
 
+    suspend fun getTeTypeCustomLabel(
+        teTypeUid: String,
+        isPlural: Boolean,
+    ): String
+
     suspend fun getCustomOrgUnitLabel(
         programUid: String?,
         quantity: Int? = null,

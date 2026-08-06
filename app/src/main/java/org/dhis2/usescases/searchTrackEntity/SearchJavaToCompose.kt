@@ -18,7 +18,7 @@ fun ComposeView?.setLandscapeOpenSearchButton(
     this?.setContent {
         DHIS2Theme {
             val screenState by searchTEIViewModel.screenState.observeAsState()
-            val teTypeName by searchTEIViewModel.teTypeName.observeAsState()
+            val teTypeName by searchTEIViewModel.teTypeLabel.observeAsState()
 
             val visible =
                 screenState?.let {
@@ -27,7 +27,7 @@ fun ComposeView?.setLandscapeOpenSearchButton(
             val isLandscape =
                 LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
             AnimatedVisibility(visible = isLandscape && visible && !teTypeName.isNullOrBlank()) {
-                WrappedSearchButton(onClick = onClick, teTypeName = teTypeName!!)
+                WrappedSearchButton(onClick = onClick, teTypeName = teTypeName ?: "")
             }
         }
     }

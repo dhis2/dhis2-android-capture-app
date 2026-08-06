@@ -207,6 +207,10 @@
         <item quantity="one">organisation unit</item>
         <item quantity="other">organisation units</item>
     </plurals>
+    <plurals name="tei">
+        <item quantity="one">tei</item>
+        <item quantity="other">teis</item>
+    </plurals>
     <!--*******************
     Info bar labels
     **********************-->

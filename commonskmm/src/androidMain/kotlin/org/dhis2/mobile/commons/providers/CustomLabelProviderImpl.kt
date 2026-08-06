@@ -8,6 +8,7 @@ import org.dhis2.mobile.commons.resources.follow_up
 import org.dhis2.mobile.commons.resources.mark_for_follow_up
 import org.dhis2.mobile.commons.resources.marked_for_follow_up
 import org.dhis2.mobile.commons.resources.org_unit
+import org.dhis2.mobile.commons.resources.tei
 import org.hisp.dhis.android.core.D2
 import org.jetbrains.compose.resources.PluralStringResource
 import org.jetbrains.compose.resources.StringResource
@@ -71,6 +72,32 @@ class CustomLabelProviderImpl(
                 .uid(programUid)
                 .blockingGet()
                 ?.displayEnrollmentLabel()
+        }
+
+    override suspend fun getTeTypeCustomLabel(
+        teTypeUid: String,
+        isPlural: Boolean,
+    ): String =
+        execute(
+            defaultResource = Res.plurals.tei,
+            quantity = if (isPlural) 2 else 1,
+            capitalizeFirstLetter = true,
+        ) {
+            if (isPlural) {
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityTypes()
+                    .uid(teTypeUid)
+                    .blockingGet()
+                    ?.displayTrackedEntityTypesLabel
+            } else {
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityTypes()
+                    .uid(teTypeUid)
+                    .blockingGet()
+                    ?.displayName
+            }
         }
 
     override suspend fun getCustomOrgUnitLabel(

@@ -616,7 +616,7 @@ class SearchTEActivity :
                 R.layout.spinner_program_layout,
                 R.id.spinner_text,
                 programs,
-                presenter.trackedEntityName.displayName(),
+                viewModel.teTypePluralLabel.value,
             )
         if (initialProgram != null && initialProgram!!.isNotEmpty()) {
             setInitialProgram(programs)
