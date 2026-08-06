@@ -267,15 +267,16 @@ class CredentialsViewModel(
 
         // Check if there is a device enrollment callback
         val iat = urlString.substringAfter("iat=", "").substringBefore('&')
+        val state = urlString.substringAfter("state=", "").substringBefore('&')
         if (iat.isNotEmpty()) {
-            registerDevice(iat)
+            registerDevice(iat, state)
             return
         }
 
         // Check if there is a login callback with the authorization code
         val code = urlString.substringAfter("code=", "").substringBefore('&')
         if (code.isNotEmpty()) {
-            loginWithOAuthCode(code)
+            loginWithOAuthCode(code, state)
             return
         }
 
@@ -293,7 +294,7 @@ class CredentialsViewModel(
         }
     }
 
-    private fun loginWithOAuthCode(code: String) {
+    private fun loginWithOAuthCode(code: String, state: String) {
         _credentialsScreenState.update {
             it.copy(
                 loginState = LoginState.Running,
@@ -307,6 +308,7 @@ class CredentialsViewModel(
                         loginUserWithOAuth(
                             serverUrl = serverUrl,
                             code = code,
+                            state = state,
                         )
                     }
                 when (result) {
@@ -351,7 +353,7 @@ class CredentialsViewModel(
         }
     }
 
-    private fun registerDevice(enrollmentIat: String) {
+    private fun registerDevice(enrollmentIat: String, state: String) {
         launchUseCase {
             _credentialsScreenState.update {
                 it.copy(loginState = LoginState.Running)
@@ -361,6 +363,7 @@ class CredentialsViewModel(
                 DeviceEnrollmentInfo(
                     iat = enrollmentIat,
                     serverURL = serverUrl,
+                    state = state,
                 ),
             ).fold(
                 onSuccess = { consentUrl ->
