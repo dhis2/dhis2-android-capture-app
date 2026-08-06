@@ -555,7 +555,8 @@ class CredentialsViewModelTest {
             val mockAppLinkFlow = MutableSharedFlow<String>()
             val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
             val logoutUrl = "$serverUrl/dhis-web-commons-security/logout.action?redirect_uri=dhis2oauth://oauth"
-            val logoutCallbackUrl = "https://vgarciabnz.github.io?state=test"
+            val state = "test"
+            val logoutCallbackUrl = "https://vgarciabnz.github.io?state=$state"
 
             whenever(getAvailableUsernames()) doReturn emptyList()
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
@@ -565,7 +566,7 @@ class CredentialsViewModelTest {
             whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
             whenever(getOAuthLogoutUrl(any())) doReturn Result.success(logoutUrl)
             whenever(
-                loginUserWithOAuth.invoke(any(), any()),
+                loginUserWithOAuth.invoke(any(), any(), any()),
             ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
 
             initViewModel(serverUrl = serverUrl, username = "testuser", entryMode = CredentialsEntryMode.NEW_ACCOUNT_OAUTH)
@@ -590,6 +591,7 @@ class CredentialsViewModelTest {
                 verify(loginUserWithOAuth).invoke(
                     serverUrl = serverUrl,
                     code = authCode,
+                    state = state
                 )
 
                 // THEN - the server session is cleared before entering the app:
@@ -681,7 +683,8 @@ class CredentialsViewModelTest {
         runTest {
             // GIVEN
             val serverUrl = "https://test.server.org"
-            val appLinkUrl = "https://vgarciabnz.github.io?error=access_denied&state=test"
+            val state = "test"
+            val appLinkUrl = "https://vgarciabnz.github.io?error=access_denied&state=$state"
             val mockAppLinkFlow = MutableSharedFlow<String>()
             val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
 
@@ -708,9 +711,9 @@ class CredentialsViewModelTest {
                 assertEquals(LoginState.Enabled, errorState.loginState)
 
                 // AND - the OAuth flow is over, so later app links are ignored
-                mockAppLinkFlow.emit("https://vgarciabnz.github.io?code=late_code&state=test")
+                mockAppLinkFlow.emit("https://vgarciabnz.github.io?code=late_code&state=$state")
                 testDispatcher.scheduler.advanceUntilIdle()
-                verify(loginUserWithOAuth, never()).invoke(any(), any())
+                verify(loginUserWithOAuth, never()).invoke(any(), any(), any())
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -723,6 +726,7 @@ class CredentialsViewModelTest {
             val staleServerUrl = "https://first.server.org"
             val oauthServerUrl = "https://second.server.org"
             val authCode = "auth_code_456"
+            val state = "test"
             val enrollmentUrl = "$oauthServerUrl/oauth2/enrollment"
             val logoutUrl = "$oauthServerUrl/dhis-web-commons-security/logout.action?redirect_uri=dhis2oauth://oauth"
             val sharedAppLinkNavigation = AppLinkNavigation()
@@ -734,7 +738,7 @@ class CredentialsViewModelTest {
             whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
             whenever(getOAuthLogoutUrl(any())) doReturn Result.success(logoutUrl)
             whenever(
-                loginUserWithOAuth.invoke(any(), any()),
+                loginUserWithOAuth.invoke(any(), any(), any()),
             ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
 
             val staleViewModel =
@@ -756,10 +760,10 @@ class CredentialsViewModelTest {
                 testDispatcher.scheduler.advanceUntilIdle()
 
                 // WHEN - the authorization code and logout callbacks arrive
-                sharedAppLinkNavigation.emit("https://vgarciabnz.github.io?code=$authCode&state=test")
+                sharedAppLinkNavigation.emit("https://vgarciabnz.github.io?code=$authCode&state=$state")
                 testDispatcher.scheduler.advanceTimeBy(4.seconds)
                 testDispatcher.scheduler.advanceUntilIdle()
-                sharedAppLinkNavigation.emit("https://vgarciabnz.github.io?state=test")
+                sharedAppLinkNavigation.emit("https://vgarciabnz.github.io?state=$state")
                 testDispatcher.scheduler.advanceUntilIdle()
 
                 // THEN - the OAuth flow owner completes the login and reaches the mandatory
@@ -767,6 +771,7 @@ class CredentialsViewModelTest {
                 verify(loginUserWithOAuth).invoke(
                     serverUrl = oauthServerUrl,
                     code = authCode,
+                    state = state,
                 )
                 val finalState = expectMostRecentItem()
                 assertEquals(LoginState.Enabled, finalState.loginState)
@@ -778,7 +783,7 @@ class CredentialsViewModelTest {
             }
 
             // AND - the stale view model never consumed the callbacks
-            verify(loginUserWithOAuth, never()).invoke(eq(staleServerUrl), any())
+            verify(loginUserWithOAuth, never()).invoke(eq(staleServerUrl), any(), any())
             assertTrue(
                 staleViewModel.credentialsScreenState.value.afterLoginActions
                     .isEmpty(),
