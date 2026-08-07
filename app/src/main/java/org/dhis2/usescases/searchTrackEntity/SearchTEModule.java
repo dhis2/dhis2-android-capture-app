@@ -201,7 +201,8 @@ public class SearchTEModule {
             ColorUtils colorUtils,
             DateUtils dateUtils,
             CustomIntentRepository customIntentRepository,
-            SearchSortingValueSetter sortingValueSetter
+            SearchSortingValueSetter sortingValueSetter,
+            CustomLabelProvider customLabelProvider
     ) {
         ResourceManager resourceManager = new ResourceManager(moduleContext, colorUtils);
         DateLabelProvider dateLabelProvider = new DateLabelProvider(moduleContext, new ResourceManager(moduleContext, colorUtils));
@@ -226,7 +227,8 @@ public class SearchTEModule {
                         profilePictureProvider,
                         dateUtils
                 ),
-                customIntentRepository
+                customIntentRepository,
+                customLabelProvider
         );
     }
 
