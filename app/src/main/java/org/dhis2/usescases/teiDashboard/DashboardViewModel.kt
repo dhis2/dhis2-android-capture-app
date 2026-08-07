@@ -131,7 +131,7 @@ class DashboardViewModel(
     val relationshipTopBarIconState = _relationshipTopBarIconState.asStateFlow()
 
     private val _moreOptionsMenu: MutableStateFlow<List<MenuItemData<EnrollmentMenuItem>>> =
-        MutableStateFlow<List<MenuItemData<EnrollmentMenuItem>>>(emptyList())
+        MutableStateFlow(emptyList())
     val moreOptionsMenu =
         _moreOptionsMenu
             .onStart {
@@ -165,25 +165,8 @@ class DashboardViewModel(
     private suspend fun buildEnrollmentMenuForEnrollment(): List<MenuItemData<EnrollmentMenuItem>> =
         buildList {
             addSyncMenuItem()
-
-            if (checkIfTeiCanBeTransferred()) {
-                add(
-                    MenuItemData(
-                        id = EnrollmentMenuItem.TRANSFER,
-                        label = resourcesManager.getString(R.string.transfer),
-                        leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.MoveDown),
-                    ),
-                )
-            }
-            if (!showFollowUpBar.value) {
-                add(
-                    MenuItemData(
-                        id = EnrollmentMenuItem.FOLLOW_UP,
-                        label = customLabelProvider.getCustomMarkForFollowUpLabel(repository.getProgramUid()),
-                        leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Flag),
-                    ),
-                )
-            }
+            addTransferMenuItem()
+            addFollowUpMenuItem()
             if (groupByStage.value) {
                 add(
                     MenuItemData(
@@ -295,6 +278,10 @@ class DashboardViewModel(
             }
             addDeleteTeiMenuItem()
         }
+
+    private fun addTransferMenuItem() {
+        TODO("Not yet implemented")
+    }
 
     private fun buildEnrollmentMenuForNoEnrollment(): List<MenuItemData<EnrollmentMenuItem>> =
         buildList {
@@ -559,6 +546,30 @@ class DashboardViewModel(
                         ),
                     style = MenuItemStyle.ALERT,
                     leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.DeleteForever),
+                ),
+            )
+        }
+    }
+
+    private suspend fun MutableList<MenuItemData<EnrollmentMenuItem>>.addFollowUpMenuItem() {
+        if (!showFollowUpBar.value) {
+            add(
+                MenuItemData(
+                    id = EnrollmentMenuItem.FOLLOW_UP,
+                    label = customLabelProvider.getCustomMarkForFollowUpLabel(repository.getProgramUid()),
+                    leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Flag),
+                ),
+            )
+        }
+    }
+
+    private fun MutableList<MenuItemData<EnrollmentMenuItem>>.addTransferMenuItem() {
+        if (checkIfTeiCanBeTransferred()) {
+            add(
+                MenuItemData(
+                    id = EnrollmentMenuItem.TRANSFER,
+                    label = resourcesManager.getString(R.string.transfer),
+                    leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.MoveDown),
                 ),
             )
         }
