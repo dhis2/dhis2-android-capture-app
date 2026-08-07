@@ -1,7 +1,5 @@
 package org.dhis2.usescases.teiDashboard;
 
-import androidx.lifecycle.LiveData;
-
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.Program;
