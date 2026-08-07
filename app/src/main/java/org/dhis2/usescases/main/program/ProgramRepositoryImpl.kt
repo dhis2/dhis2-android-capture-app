@@ -169,8 +169,9 @@ internal class ProgramRepositoryImpl(
                     )
                 } else {
                     program?.trackedEntityType?.let {
-                        customLabelProvider.getTeTypeCustomLabel(it.uid(), count > 1)
-
+                        runBlocking {
+                            customLabelProvider.getTeTypeCustomLabel(it.uid(), count > 1)
+                        }
                     }
                 }
 
