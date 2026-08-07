@@ -199,7 +199,11 @@ open class BaseRobot {
         val am = getInstrumentation().targetContext.getSystemService(
             ACTIVITY_SERVICE
         ) as ActivityManager
-        val visibleActivityName = am.appTasks[0].taskInfo.baseActivity!!.className
+        // taskInfo.baseActivity is the root of the back stack, not the foreground
+        // activity — an activity reached by navigation (no singleTask launch mode)
+        // never becomes the base, so it would never match here. topActivity is the
+        // one actually visible.
+        val visibleActivityName = am.appTasks[0].taskInfo.topActivity!!.className
         return visibleActivityName == T::class.java.name
     }
 
