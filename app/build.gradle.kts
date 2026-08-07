@@ -112,13 +112,13 @@ android {
         }
     }
 
-    compileSdk = libs.versions.sdk.get().toInt()
+    compileSdk = libs.versions.compileSdk.get().toInt()
     namespace = "org.dhis2"
     testNamespace = "org.dhis2.test"
 
     defaultConfig {
         applicationId = "com.dhis2"
-        targetSdk = libs.versions.sdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
         versionCode = libs.versions.vCode.get().toInt()
         versionName = libs.versions.vName.get()
