@@ -55,6 +55,10 @@ class EventTest : BaseTest() {
 
         // ── Step 1 — form renders in editable state ─────────────────────────
         eventRegistrationRobot(composeTestRule) {
+            // clickOnEvent() above starts a new EventCaptureActivity; wait for it
+            // to be visible before polling for its Compose content, otherwise the
+            // check can race the Activity transition.
+            waitUntilActivityVisible<EventCaptureActivity>()
             // [ANDROAPP-4647] Save FAB visible when event is editable.
             checkSaveButtonIsDisplayed()
 
@@ -137,6 +141,10 @@ class EventTest : BaseTest() {
         // ── Step 9 — completed event renders read-only ─────────────────────
         // [ANDROAPP-910] NonEditableReasonBlock with REOPEN_BUTTON is shown and event is read-only
         eventRegistrationRobot(composeTestRule) {
+            // clickOnEvent() above relaunches EventCaptureActivity; wait for it
+            // to be visible so the old Activity's Compose root has been replaced
+            // before we look for one, otherwise "No compose hierarchies found" can fire.
+            waitUntilActivityVisible<EventCaptureActivity>()
             checkFormIsReadOnly()
         }
 
@@ -166,6 +174,10 @@ class EventTest : BaseTest() {
         composeTestRule.waitForIdle()
 
         eventRegistrationRobot(composeTestRule) {
+            // selectTreeOrgUnit() above starts a new EventInitialActivity; wait for
+            // it to be visible before polling for its Compose content, otherwise the
+            // check can race the Activity transition.
+            waitUntilActivityVisible<EventInitialActivity>()
             // [ANDROAPP-899] Custom event-date label from the stage.
             checkEventDateLabelIsDisplayed(FLOW_D_VISIT_DATE_LABEL)
             // [ANDROAPP-844] Non-default attribute category-combo field.
