@@ -2,7 +2,8 @@
 kotlinxDatetime = "0.7.1-0.6.x-compat" #Needs to be compatible with the Rule engine, update when it's updated
 lifecycleRuntimeCompose = "2.9.6"
 navigationCompose = "2.9.2"
-sdk = "36"
+targetSdk = "36"
+compileSdk = "37"
 minSdk = "23"
 vCode = "156"
 vName = "3.5.0"
