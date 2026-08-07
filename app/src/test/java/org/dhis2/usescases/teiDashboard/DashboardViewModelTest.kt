@@ -12,6 +12,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.utils.analytics.ACTIVE_FOLLOW_UP
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.FOLLOW_UP
@@ -39,6 +40,7 @@ class DashboardViewModelTest {
     private val testingDispatcher = StandardTestDispatcher()
     private val pageConfigurator: NavigationPageConfigurator = mock()
     private val resoourcesManager: ResourceManager = mock()
+    private val customLabelProvider: CustomLabelProvider = mock()
 
     @After
     fun tearDown() {
@@ -205,6 +207,7 @@ class DashboardViewModelTest {
             },
             pageConfigurator,
             resoourcesManager,
+            customLabelProvider,
         ).also {
             testingDispatcher.scheduler.advanceUntilIdle()
         }

@@ -65,10 +65,6 @@ public class TeiDashboardContracts {
 
         void trackDashboardNotes();
 
-        Boolean checkIfTEICanBeDeleted();
-
-        Boolean checkIfEnrollmentCanBeDeleted(String enrollmentUid);
-
         void onTransferClick();
 
         boolean hasWriteAccess();

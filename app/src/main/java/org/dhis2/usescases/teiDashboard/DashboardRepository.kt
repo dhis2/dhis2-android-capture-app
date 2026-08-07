@@ -21,6 +21,10 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 interface DashboardRepository {
     fun getTeiHeader(): String?
 
+    fun getProgramUid(): String?
+
+    fun getEnrollmentUid(): String?
+
     fun getTeiProfilePath(): String?
 
     fun getProgramStages(programStages: String): Observable<List<ProgramStage>>
@@ -77,7 +81,7 @@ interface DashboardRepository {
 
     fun deleteTei(): Single<Boolean>
 
-    fun checkIfDeleteEnrollmentIsPossible(enrollmentUid: String): Boolean
+    fun checkIfDeleteEnrollmentIsPossible(enrollmentUid: String?): Boolean
 
     fun deleteEnrollment(enrollmentUid: String): Single<Boolean>
 

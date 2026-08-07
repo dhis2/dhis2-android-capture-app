@@ -281,6 +281,8 @@
     <string name="new_enrollment">New %s</string>
     <string name="enrolling_ou">Enrolled in:</string>
     <string name="more_enrollments">More enrollments</string>
+    <string name="more_enrollments_format">More %s</string>
+
     <string name="remove_from">Remove from</string>
     <string name="refresh_this_record">Refresh this record</string>
     <string name="view_timeline">View timeline</string>

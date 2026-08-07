@@ -65,14 +65,23 @@ class CustomLabelProviderImpl(
         execute(
             defaultResource = Res.plurals.enrollment,
             quantity = quantity,
-            capitalizeFirstLetter = false,
+            capitalizeFirstLetter = true,
         ) {
-            d2
-                .programModule()
-                .programs()
-                .uid(programUid)
-                .blockingGet()
-                ?.displayEnrollmentLabel()
+            if (quantity != null && quantity > 1) {
+                d2
+                    .programModule()
+                    .programs()
+                    .uid(programUid)
+                    .blockingGet()
+                    ?.displayEnrollmentsLabel()
+            } else {
+                d2
+                    .programModule()
+                    .programs()
+                    .uid(programUid)
+                    .blockingGet()
+                    ?.displayEnrollmentLabel()
+            }
         }
 
     override suspend fun getTeTypeCustomLabel(

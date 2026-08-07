@@ -120,6 +120,7 @@ class TeiDashboardModule(
         dispatcher: DispatcherProvider,
         pageConfigurator: NavigationPageConfigurator,
         resourcesManager: ResourceManager,
+        customLabelProvider: CustomLabelProvider,
     ): DashboardViewModelFactory =
         DashboardViewModelFactory(
             repository,
@@ -127,6 +128,7 @@ class TeiDashboardModule(
             dispatcher,
             pageConfigurator,
             resourcesManager,
+            customLabelProvider,
         )
 
     @Provides

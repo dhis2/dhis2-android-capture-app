@@ -73,6 +73,17 @@ interface CustomLabelProvider {
     ) = runBlocking {
         getCustomEventLabel(customLabelContext, quantity)
     }
+
+    @Deprecated(
+        "Use suspend function",
+        replaceWith = ReplaceWith("getCustomMarkedForFollowUpLabel"),
+    )
+    fun blockingCustomEnrollmentLabel(
+        programUid: String?,
+        quantity: Int? = null,
+    ) = runBlocking {
+        getCustomEnrollmentLabel(programUid, quantity)
+    }
 }
 
 fun CustomLabelProvider.getCustomOrgUnitLabelBlocking(
