@@ -151,7 +151,7 @@ class CustomLabelProviderImpl(
     ) = execute(
         defaultResource = Res.plurals.event,
         quantity = quantity,
-        capitalizeFirstLetter = false,
+        capitalizeFirstLetter = true,
     ) {
         d2
             .programModule()
