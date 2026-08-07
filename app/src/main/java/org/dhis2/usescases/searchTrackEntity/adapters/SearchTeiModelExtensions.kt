@@ -12,9 +12,11 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.toColorInt
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import coil3.load
+import coil3.request.crossfade
+import coil3.request.error
+import coil3.request.transformations
+import coil3.transform.CircleCropTransformation
 import org.dhis2.commons.R
 import org.dhis2.commons.bindings.getRemainingEnrollmentsForTei
 import org.dhis2.commons.data.EnrollmentIconData
@@ -61,13 +63,11 @@ fun SearchTeiModel.setTeiImage(
     when {
         file.exists() -> {
             teiTextImageView.visibility = View.GONE
-            Glide
-                .with(context)
-                .load(file)
-                .error(placeHolderId)
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .transform(CircleCrop())
-                .into(teiImageView)
+            teiImageView.load(file) {
+                crossfade(true)
+                transformations(CircleCropTransformation())
+                if (placeHolderId != -1) error(placeHolderId)
+            }
             teiImageView.setOnClickListener { pictureListener(profilePicturePath) }
         }
 
