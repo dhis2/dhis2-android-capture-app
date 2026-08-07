@@ -9,8 +9,6 @@ import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
 import android.view.View;
 
-import com.bumptech.glide.Glide;
-
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityQrCodesBinding;
@@ -144,6 +142,6 @@ public class QrActivity extends ActivityGlobalAbstract implements QrContracts.Vi
 
     @Override
     public void showQRBitmap(Bitmap bitmap) {
-        Glide.with(this).load(bitmap).into(binding.bitmapTest);
+        binding.bitmapTest.setImageBitmap(bitmap);
     }
 }

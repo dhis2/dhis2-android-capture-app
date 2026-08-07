@@ -55,7 +55,6 @@ conscrypt = "2.5.3"
 gson = "2.13.2"
 okhttp = "4.12.0"
 jodatime = "2.14.3"
-glide = "5.0.9"
 guava = "33.5.0-android"
 mockito = "5.20.0"
 mockito-kotlin = "6.1.0"
@@ -155,8 +154,6 @@ rx-java = { group = "io.reactivex.rxjava2", name = "rxjava", version.ref = "rxja
 rx-android = { group = "io.reactivex.rxjava2", name = "rxandroid", version.ref = "rxandroid" }
 rx-relay = { group = "com.jakewharton.rxrelay2", name = "rxrelay", version.ref = "rxrelay" }
 github-fancyshowcase = { group = "com.github.faruktoptas", name = "FancyShowCaseView", version.ref = "fancyshowcase" }
-github-glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
-github-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
 github-charts = { group = "com.github.PhilJay", name = "MPAndroidChart", version = "v3.1.0" }
 barcodeScanner-zxing = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
 barcodeScanner-zxing-android = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "zxingandroid" }

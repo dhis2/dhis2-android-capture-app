@@ -7,12 +7,24 @@ import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.DrawableCompat
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
-import com.bumptech.glide.request.target.CustomTarget
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import coil3.imageLoader
+import coil3.request.ImageRequest
+import coil3.request.SuccessResult
+import coil3.request.transformations
+import coil3.toBitmap
+import coil3.transform.CircleCropTransformation
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.bindings.dp
 import org.dhis2.maps.R
 import org.dhis2.maps.TeiMarkers
+import org.dhis2.maps.di.Injector
 import org.dhis2.maps.geometry.mapper.EventsByProgramStage
 import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
@@ -31,6 +43,7 @@ import org.maplibre.android.utils.BitmapUtils
 import org.maplibre.geojson.BoundingBox
 import org.maplibre.geojson.Feature
 import org.maplibre.geojson.FeatureCollection
+import java.io.File
 
 class TeiMapManager(
     mapView: MapView,
@@ -42,11 +55,23 @@ class TeiMapManager(
     private var hasPerformedInitialAutoSelection = false
     var mapStyle: MapStyle? = null
     private var teiImages: HashMap<String, Bitmap> = hashMapOf()
+    private val dispatcherProvider = Injector.provideDispatcher()
+    private var teiImagesJob: Job? = null
     var teiFeatureType: FeatureType? = FeatureType.POINT
     var enrollmentFeatureType: FeatureType? = FeatureType.POINT
     private var boundingBox: BoundingBox? = null
 
     override var numberOfUiIcons: Int = 3
+
+    override fun onStateChanged(
+        source: LifecycleOwner,
+        event: Lifecycle.Event,
+    ) {
+        if (event == Lifecycle.Event.ON_DESTROY) {
+            teiImagesJob?.cancel()
+        }
+        super.onStateChanged(source, event)
+    }
 
     companion object {
         const val TEIS_SOURCE_ID = "TEIS_SOURCE_ID"
@@ -202,43 +227,44 @@ class TeiMapManager(
     }
 
     private fun getImagesAndSetSource(featuresWithImages: List<Feature>) {
-        featuresWithImages.forEachIndexed { index, feature ->
-            val imageText = feature.getStringProperty(TEI_IMAGE)
-            val image =
-                if (imageText?.startsWith("dhis2_") == true || imageText?.equals("ic_default_icon") == true) {
-                    mapView.context.resources.getIdentifier(
-                        imageText,
-                        "drawable",
-                        mapView.context.packageName,
-                    )
-                } else {
-                    -1
+        teiImagesJob?.cancel()
+        teiImagesJob =
+            CoroutineScope(dispatcherProvider.io()).launch {
+                val markers =
+                    featuresWithImages
+                        .map { feature ->
+                            async { feature.getStringProperty(TEI_UID) to loadMarker(feature) }
+                        }.awaitAll()
+                markers.forEach { (teiUid, marker) ->
+                    marker?.let { teiImages[teiUid] = it }
                 }
-            Glide
-                .with(mapView.context)
-                .asBitmap()
-                .load(if (image != -1) image else feature.getStringProperty(TEI_IMAGE))
-                .transform(CircleCrop())
-                .into(
-                    object : CustomTarget<Bitmap>(30.dp, 30.dp) {
-                        override fun onResourceReady(
-                            resource: Bitmap,
-                            transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?,
-                        ) {
-                            teiImages[feature.getStringProperty(TEI_UID)] =
-                                TeiMarkers.getMarker(
-                                    mapView.context,
-                                    resource,
-                                )
-                            if (index == featuresWithImages.size - 1) {
-                                setSource()
-                            }
-                        }
+                withContext(dispatcherProvider.ui()) { setSource() }
+            }
+    }
 
-                        override fun onLoadCleared(placeholder: Drawable?) {}
-                    },
-                )
-        }
+    /**
+     * Loads a TEI marker, either from a `dhis2_*` metadata drawable or from the TEI photo on disk.
+     * Returns null when the image cannot be loaded, in which case the TEI keeps the default marker.
+     */
+    private suspend fun loadMarker(feature: Feature): Bitmap? {
+        val context = mapView.context
+        val imageText = feature.getStringProperty(TEI_IMAGE) ?: return null
+        val image =
+            if (imageText.startsWith("dhis2_") || imageText == "ic_default_icon") {
+                context.resources.getIdentifier(imageText, "drawable", context.packageName)
+            } else {
+                -1
+            }
+        val request =
+            ImageRequest
+                .Builder(context)
+                .data(if (image != -1) image else File(imageText))
+                .size(30.dp, 30.dp)
+                .transformations(CircleCropTransformation())
+                .build()
+        val result = context.imageLoader.execute(request)
+        val bitmap = (result as? SuccessResult)?.image?.toBitmap(30.dp, 30.dp) ?: return null
+        return TeiMarkers.getMarker(context, bitmap)
     }
 
     private fun addDynamicLayers() {

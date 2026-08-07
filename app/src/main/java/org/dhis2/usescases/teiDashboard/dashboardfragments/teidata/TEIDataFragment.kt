@@ -22,9 +22,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.map
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DividerItemDecoration
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import coil3.load
+import coil3.request.crossfade
+import coil3.request.fallback
+import coil3.request.transformations
+import coil3.transform.CircleCropTransformation
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -80,6 +82,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 import timber.log.Timber
+import java.io.File
 import javax.inject.Inject
 
 const val FETCH_EVENTS = "FETCH_EVENTS"
@@ -386,13 +389,11 @@ class TEIDataFragment :
             binding.cardFront.teiImage.visibility = View.GONE
         } else {
             binding.cardFront.teiImage.visibility = View.VISIBLE
-            Glide
-                .with(this)
-                .load(dashboardModel.avatarPath)
-                .fallback(R.drawable.photo_temp_gray)
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .transform(CircleCrop())
-                .into(binding.cardFront.teiImage)
+            binding.cardFront.teiImage.load(File(dashboardModel.avatarPath)) {
+                crossfade(true)
+                transformations(CircleCropTransformation())
+                fallback(R.drawable.photo_temp_gray)
+            }
         }
         binding.header =
             when {
