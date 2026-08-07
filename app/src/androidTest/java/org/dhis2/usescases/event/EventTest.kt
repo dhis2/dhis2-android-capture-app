@@ -174,10 +174,10 @@ class EventTest : BaseTest() {
         composeTestRule.waitForIdle()
 
         eventRegistrationRobot(composeTestRule) {
-            // selectTreeOrgUnit() above starts a new EventInitialActivity; wait for
-            // it to be visible before polling for its Compose content, otherwise the
-            // check can race the Activity transition.
-            waitUntilActivityVisible<EventInitialActivity>()
+            // selectTreeOrgUnit() above triggers ProgramEventDetailActivity.navigateToEvent(),
+            // which starts a new EventCaptureActivity; wait for it to be visible before
+            // polling for its Compose content, otherwise the check can race the transition.
+            waitUntilActivityVisible<EventCaptureActivity>()
             // [ANDROAPP-899] Custom event-date label from the stage.
             checkEventDateLabelIsDisplayed(FLOW_D_VISIT_DATE_LABEL)
             // [ANDROAPP-844] Non-default attribute category-combo field.
