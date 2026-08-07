@@ -88,7 +88,15 @@ class NoteRobot : BaseRobot() {
     fun clickOnClearButton() {
         waitForView(withText(R.string.clear))
             .check(matches(allOf(isDisplayed(), isEnabled())))
-            .perform(closeSoftKeyboard(), click())
+            .perform(closeSoftKeyboard())
+        // Hiding the IME starts an animated window-inset transition that Espresso's
+        // main-thread idle check doesn't reliably wait out on every OS version. Clicking
+        // in the same perform() can resolve the button's coordinates mid-animation and
+        // miss it entirely, so give the transition time to settle before re-resolving.
+        waitToDebounce(300)
+        waitForView(withText(R.string.clear))
+            .check(matches(allOf(isDisplayed(), isEnabled())))
+            .perform(click())
     }
 
     fun waitUntilBackOnNotesList() {

@@ -304,7 +304,7 @@ class MainViewModelIntegrationTest {
 
             viewModel.homeEffects.test {
                 viewModel.onBlockSession()
-                assertEquals(HomeEffect.BlockSession, awaitItem())
+                assertEquals(HomeEffect.PinAlreadyCreated, awaitItem())
             }
         }
 

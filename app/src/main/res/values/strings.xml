@@ -350,6 +350,8 @@
     <string name="granular_sync_enrollments_empty">There are no enrollments to upload</string>
     <string name="granular_sync_unsupported_task">This convertTask is not supported</string>
     <string name="set_pin">Set pin</string>
+    <string name="pin_created">PIN created</string>
+    <string name="pin_already_created">PIN is already set</string>
     <string name="conflict">Conflict</string>
     <string name="change_event_date">Change date</string>
     <string name="go_back">Go back</string>
