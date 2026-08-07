@@ -9,12 +9,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -24,6 +30,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -38,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.FirstBaseline
 import androidx.compose.ui.platform.LocalContext
@@ -51,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.TransactionType
@@ -63,6 +72,8 @@ import org.dhis2.android.rtsm.ui.managestock.STOCK_TABLE_ID
 import org.dhis2.android.rtsm.ui.managestock.components.ManageStockTable
 import org.dhis2.android.rtsm.ui.scanner.ScannerActivity
 import org.dhis2.composetable.actions.TableResizeActions
+import org.dhis2.mobile.commons.providers.InfoBarProvider
+import org.dhis2.mobile.commons.providers.InfoBarUiModel
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
@@ -75,6 +86,8 @@ fun MainContent(
     isFrontLayerDisabled: Boolean?,
     viewModel: HomeViewModel,
     manageStockViewModel: ManageStockViewModel,
+    scaffoldState: ScaffoldState,
+    syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -283,16 +296,87 @@ fun MainContent(
                 shouldDisplayTable(settingsUiState)
             ) {
                 manageStockViewModel.setup(viewModel.getData())
-                ManageStockTable(
-                    manageStockViewModel,
-                    concealBackdropState = {
-                        scope.launch { backdropState.conceal() }
-                    },
-                    onResized = { actions ->
-                        manageStockViewModel.refreshConfig()
-                        tableResizeActions = actions
-                    },
-                )
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    ManageStockTable(
+                        manageStockViewModel,
+                        concealBackdropState = {
+                            scope.launch { backdropState.conceal() }
+                        },
+                        onResized = { actions ->
+                            manageStockViewModel.refreshConfig()
+                            tableResizeActions = actions
+                        },
+                    )
+                    val dataEntryUiState =
+                        manageStockViewModel.dataEntryUiState
+                            .collectAsState()
+                            .value
+                    dataEntryUiState.infoBar
+                        ?.let {
+                            Column(
+                                modifier =
+                                    Modifier
+                                        .align(Alignment.BottomCenter)
+                                        .fillMaxWidth(),
+                            ) {
+                                AnimatedVisibility(
+                                    visible =
+                                        (
+                                            dataEntryUiState.step != DataEntryStep.EDITING_REVIEWING &&
+                                                dataEntryUiState.step != DataEntryStep.EDITING_LISTING
+                                        ),
+                                ) {
+                                    Box(
+                                        modifier =
+                                            Modifier
+                                                .fillMaxWidth()
+                                                .height(16.dp)
+                                                .background(
+                                                    brush =
+                                                        Brush.verticalGradient(
+                                                            colors =
+                                                                listOf(
+                                                                    Color.White.copy(alpha = 0f),
+                                                                    Color.White,
+                                                                ),
+                                                        ),
+                                                ),
+                                    )
+
+                                    Box(
+                                        modifier =
+                                            Modifier
+                                                .fillMaxWidth()
+                                                .background(Color.White)
+                                                .windowInsetsPadding(
+                                                    WindowInsets.navigationBars.union(
+                                                        WindowInsets(bottom = 16.dp),
+                                                    ),
+                                                ),
+                                    ) {
+                                        InfoBarProvider(
+                                            modifier =
+                                                Modifier
+                                                    .padding(
+                                                        start = 16.dp,
+                                                        end = 16.dp,
+                                                    ),
+                                            dataModel =
+                                                InfoBarUiModel(
+                                                    type = it,
+                                                ),
+                                            onActionClick = {
+                                                syncAction.invoke(scope, scaffoldState)
+                                            },
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                }
             }
 
             AnimatedVisibility(
