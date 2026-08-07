@@ -75,4 +75,7 @@
     <string name="cancel">Avbryt</string>
     <string name="ok">OK</string>
 
+    <string name="sync">Synk</string>
+    <string name="sync_error">Synkroniseringsfeil</string>
+    <string name="remove_follow_up">Fjern</string>
     </resources>

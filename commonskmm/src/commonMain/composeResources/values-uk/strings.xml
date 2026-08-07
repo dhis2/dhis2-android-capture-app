@@ -45,10 +45,10 @@
     <string name="complete">Завершити</string>
     <string name="discard_changes">Відхилити внесені зміни</string>
     <string name="saved">Збережено!</string>
-    <string name="event_error_on_complete">У вас є кілька повідомлень про помилки. Бажаєте їх переглянути?</string>
+    <string name="event_error_on_complete">У вас є кілька повідомлень про помилки. Бажаєте їх переглянути\?</string>
     <string name="not_now">Не зараз</string>
     <string name="keep_editing">Продовжити редагування</string>
-    <string name="event_can_be_completed">Ви бажаєте позначити цю форму як завершену?</string>
+    <string name="event_can_be_completed">Ви бажаєте позначити цю форму як завершену\?</string>
     <string name="discard_go_back">Якщо Ви зараз вийдете, уся інформація у формі буде відхилена.</string>
     <string name="field_errors_not_saved_discard">Деякі поля містять помилки і не були збережені. Якщо Ви вийдете зараз, внесені зміни буде скасовано.</string>
     <string name="share">Поділитися</string>
@@ -164,4 +164,8 @@
     <string name="cancel">Скасувати</string>
     <string name="ok">ОК</string>
 
+    <string name="not_synced">Не синхронізовано</string>
+    <string name="sync">Синхронізація</string>
+    <string name="sync_error">Помилка синхронізації</string>
+    <string name="remove_follow_up">Видалити</string>
     </resources>

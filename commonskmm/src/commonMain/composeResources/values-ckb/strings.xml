@@ -13,4 +13,6 @@
     <string name="cancel">لابردن</string>
     <string name="ok">تةواو</string>
 
+    <string name="sync_error">هەڵە لە هاوکاتگەری</string>
+    <string name="remove_follow_up">لابردن</string>
     </resources>

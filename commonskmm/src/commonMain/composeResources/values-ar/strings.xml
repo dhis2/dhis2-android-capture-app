@@ -166,4 +166,11 @@
     <string name="cancel">إلغاء</string>
     <string name="ok">موافق</string>
 
+    <string name="not_synced">غير متزامن</string>
+    <string name="sync">حالة التزامن</string>
+    <string name="sync_warning">تحذير المزامنة</string>
+    <string name="sync_retry">إعادة محاولة المزامنة</string>
+    <string name="sync_error">يحوي خطأ في المزامنة</string>
+    <string name="marked_follow_up">مُعلَّم للمتابعة</string>
+    <string name="remove_follow_up">إزلة</string>
     </resources>

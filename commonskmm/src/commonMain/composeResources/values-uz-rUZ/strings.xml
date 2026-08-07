@@ -68,4 +68,8 @@
     <string name="cancel">Бекор қилиш</string>
     <string name="ok">OK</string>
 
+    <string name="sync">Sinxronlash</string>
+    <string name="sync_error">Sinxronlashda xatolik</string>
+    <string name="marked_follow_up">Kuzatuv uchun belgilangan</string>
+    <string name="remove_follow_up">Олиб ташлаш</string>
     </resources>

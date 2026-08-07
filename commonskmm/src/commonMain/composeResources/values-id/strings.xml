@@ -70,4 +70,7 @@
     <string name="cancel">Batal</string>
     <string name="ok">OK</string>
 
+    <string name="sync">Sinkronkan</string>
+    <string name="sync_error">Kesalahan sinkronisasi</string>
+    <string name="remove_follow_up">Hapus</string>
     </resources>
