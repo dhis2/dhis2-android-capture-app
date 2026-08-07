@@ -101,8 +101,6 @@ dependencies {
     api(libs.rx.java)
     api(libs.rx.android)
     api(libs.analytics.timber)
-    api(libs.github.glide)
-    ksp(libs.github.glide.compiler)
     api(libs.barcodeScanner.zxing.android) {
         exclude("com.google.zxing", "core")
     }
