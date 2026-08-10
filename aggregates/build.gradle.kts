@@ -10,7 +10,7 @@ plugins {
 kotlin {
     androidLibrary {
         namespace = "org.dhis2.mobile.aggregates"
-        compileSdk = libs.versions.sdk.get().toInt()
+        compileSdk = libs.versions.compileSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
         compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) }
         androidResources { enable = true }

@@ -83,6 +83,10 @@ class SearchTETest : BaseTest() {
         prepareTestAdultWomanProgrammeIntentAndLaunchActivity(rule)
 
         teiFlowRobot(composeTestRule) {
+            // prepareTestAdultWomanProgrammeIntentAndLaunchActivity() above starts
+            // SearchTEActivity; wait for it to be visible before the first Espresso
+            // interaction, otherwise the click races the Activity transition.
+            waitUntilActivityVisible<SearchTEActivity>()
             registerTEI(registerTeiDetails)
             composeTestRule.waitForIdle()
             pressBack()
