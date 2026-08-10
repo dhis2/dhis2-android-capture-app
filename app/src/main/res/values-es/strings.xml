@@ -570,7 +570,7 @@
     <string name="scheduled_enter_event">Planificado</string>
     <string name="enter_event">Añade %1$s</string>
     <string name="cancel_event">Cancela %1$s</string>
-    <string name="program_stage">Etapa de programa</string>
+
     <string name="event">evento</string>
     <string name="timeline">Línea de tiempo</string>
     <string name="database_export_downloaded">Base de datos descargada</string>

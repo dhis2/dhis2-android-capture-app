@@ -22,6 +22,7 @@ import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventReportDate
@@ -50,6 +51,7 @@ class SchedulingViewModel(
     private val launchMode: LaunchMode,
     private val dateUtils: DateUtils,
     private val getEventPeriods: GetEventPeriods,
+    private val customLabelProvider: CustomLabelProvider,
 ) : ViewModel() {
     lateinit var repository: EventDetailsRepository
     lateinit var configureEventReportDate: ConfigureEventReportDate
@@ -79,6 +81,9 @@ class SchedulingViewModel(
 
     private val _overdueEventSubtitle: MutableStateFlow<String?> = MutableStateFlow(null)
     val overdueEventSubtitle: StateFlow<String?> = _overdueEventSubtitle
+
+    private val _programStageLabel: MutableStateFlow<String?> = MutableStateFlow(null)
+    val programStageLabel: StateFlow<String?> = _programStageLabel
 
     init {
         viewModelScope.launch {
@@ -126,7 +131,7 @@ class SchedulingViewModel(
         }
     }
 
-    private fun loadScheduleConfiguration(launchMode: LaunchMode) {
+    private suspend fun loadScheduleConfiguration(launchMode: LaunchMode) {
         val enrollment = enrollment.value
         val event =
             when (launchMode) {
@@ -165,6 +170,8 @@ class SchedulingViewModel(
                 scheduleInterval = programStage.value?.standardInterval() ?: 0,
             )
         configureEventCatCombo = ConfigureEventCatCombo(repository = repository)
+
+        _programStageLabel.update { customLabelProvider.getCustomProgramStageLabel(programId) }
 
         loadProgramStage(event = event)
     }
@@ -290,8 +297,10 @@ class SchedulingViewModel(
     }
 
     fun updateStage(stage: ProgramStage) {
-        _programStage.value = stage
-        loadScheduleConfiguration(launchMode = launchMode)
+        viewModelScope.launch {
+            _programStage.value = stage
+            loadScheduleConfiguration(launchMode = launchMode)
+        }
     }
 
     fun scheduleEvent(launchMode: LaunchMode.NewSchedule) {

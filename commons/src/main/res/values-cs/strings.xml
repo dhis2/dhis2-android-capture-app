@@ -272,7 +272,7 @@
     <string name="remove_from">Odebrat z</string>
     <string name="refresh_this_record">Obnovit tento záznam</string>
     <string name="view_timeline">Zobrazit časovou osu</string>
-    <string name="group_by_stage">Skupina podle etapy</string>
+
 
     <string name="event_label_completed">%s dokončeno</string>
     <string name="event_label_created">%s vytvořeno</string>

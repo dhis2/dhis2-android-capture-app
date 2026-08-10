@@ -33,6 +33,14 @@ interface CustomLabelProvider {
         quantity: Int? = null,
     ): String
 
+    suspend fun getCustomProgramStageLabel(
+        programUid: String?,
+        capitalizeFirstLetter: Boolean = true,
+        defaultResource: StringResource? = null,
+    ): String
+
+    suspend fun getCustomGroupByStageLabel(programUid: String?): String
+
     fun formatStringWithCustomLabel(
         stringResource: String,
         customLabel: String,
@@ -84,6 +92,15 @@ interface CustomLabelProvider {
     ) = runBlocking {
         getCustomEnrollmentLabel(programUid, quantity)
     }
+
+    @Deprecated(
+        "Use suspend function",
+        replaceWith = ReplaceWith("getCustomProgramStageLabel"),
+    )
+    fun blockingCustomGroupByStageLabel(programUid: String?) =
+        runBlocking {
+            getCustomGroupByStageLabel(programUid)
+        }
 }
 
 fun CustomLabelProvider.getCustomOrgUnitLabelBlocking(

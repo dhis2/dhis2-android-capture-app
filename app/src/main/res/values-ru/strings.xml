@@ -540,7 +540,7 @@
     <string name="scheduled_enter_event">Запланировано</string>
     <string name="enter_event">Введено %1$s</string>
     <string name="cancel_event">Отменено %1$s</string>
-    <string name="program_stage">Этап программы</string>
+
     <string name="event">событие</string>
     <string name="timeline">Временная шкала</string>
     <string name="database_export_downloaded">База данных загружена</string>

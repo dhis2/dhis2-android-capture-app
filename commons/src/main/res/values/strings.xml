@@ -286,7 +286,7 @@
     <string name="remove_from">Remove from</string>
     <string name="refresh_this_record">Refresh this record</string>
     <string name="view_timeline">View timeline</string>
-    <string name="group_by_stage">Group by stage</string>
+
 
     <!-- Event -->
     <string name="event_label_completed">%s completed</string>

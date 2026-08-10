@@ -576,7 +576,7 @@
     <string name="scheduled_enter_event">已经调度</string>
     <string name="enter_event">进入%1$s</string>
     <string name="cancel_event">取消%1$s</string>
-    <string name="program_stage">项目阶段</string>
+
     <string name="event">事件</string>
     <string name="timeline">时间线</string>
     <string name="database_export_downloaded">数据库已下载</string>

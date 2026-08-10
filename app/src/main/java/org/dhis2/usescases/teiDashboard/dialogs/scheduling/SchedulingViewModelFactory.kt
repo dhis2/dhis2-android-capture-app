@@ -11,6 +11,7 @@ import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.hisp.dhis.android.core.D2
 
 @Suppress("UNCHECKED_CAST")
@@ -24,6 +25,7 @@ class SchedulingViewModelFactory
         private val dateUtils: DateUtils,
         private val dispatcherProvider: DispatcherProvider,
         private val getEventPeriods: GetEventPeriods,
+        private val customLabelProvider: CustomLabelProvider,
         @Assisted private val launchMode: SchedulingDialog.LaunchMode,
     ) : ViewModelProvider.Factory {
         @AssistedFactory
@@ -41,5 +43,6 @@ class SchedulingViewModelFactory
                 dispatchersProvider = dispatcherProvider,
                 launchMode = launchMode,
                 getEventPeriods = getEventPeriods,
+                customLabelProvider = customLabelProvider,
             ) as T
     }
