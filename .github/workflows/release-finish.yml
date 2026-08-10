@@ -49,8 +49,9 @@ jobs:
     - name: Run Python script to update release branch version
       run: python scripts/updateVersionCode.py
 
+      # ${RELEASE_BRANCH_NAME#release/} removes the "release/" from the release branch name.
     - name: Run Python script to update release name
-      run: python scripts/updateVersionName.py
+      run: python scripts/updateVersionName.py ${RELEASE_BRANCH_NAME#release/}
 
       # Uses the GH API to create the signed commit.
     - name: Commit and Push Changes to auxiliary branch
