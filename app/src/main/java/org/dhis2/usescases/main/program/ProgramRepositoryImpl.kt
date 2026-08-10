@@ -9,6 +9,7 @@ import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
+import org.dhis2.mobile.commons.providers.CustomLabelContext
 import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.mobile.sync.model.SyncStatusData
 import org.hisp.dhis.android.core.D2
@@ -80,7 +81,11 @@ internal class ProgramRepositoryImpl(
                                     },
                                 dataSetLabel = resourceManager.defaultDataSetLabel(),
                                 filtersAreActive = filterPresenter.areFiltersActive(),
-                                metadataIconData = metadataIconProvider(dataSet.style(), SurfaceColor.Primary),
+                                metadataIconData =
+                                    metadataIconProvider(
+                                        dataSet.style(),
+                                        SurfaceColor.Primary,
+                                    ),
                             )
                         }
                 }
@@ -115,7 +120,11 @@ internal class ProgramRepositoryImpl(
                         "",
                         state,
                         filtersAreActive = false,
-                        metadataIconData = metadataIconProvider(program.style(), SurfaceColor.Primary),
+                        metadataIconData =
+                            metadataIconProvider(
+                                program.style(),
+                                SurfaceColor.Primary,
+                            ),
                     ).copy(
                         isStockUseCase = d2.isStockProgram(program.uid()),
                     )
@@ -139,16 +148,33 @@ internal class ProgramRepositoryImpl(
                 } else {
                     0
                 }
+
             val recordLabel =
-                runBlocking {
-                    if (program?.programType() == WITHOUT_REGISTRATION) {
-                        resourceManager.defaultEventLabel()
-                    } else {
-                        program?.trackedEntityType?.let {
+                if (program?.programType() == WITHOUT_REGISTRATION) {
+                    val programStage =
+                        d2
+                            .programModule()
+                            .programStages()
+                            .byProgramUid()
+                            .eq(program.uid)
+                            .blockingGet()
+                            .first()
+                    customLabelProvider.blockingCustomEventLabel(
+                        customLabelContext =
+                            CustomLabelContext.ProgramStage(
+                                programStageUid = programStage.uid,
+                                programUid = programModel.uid,
+                            ),
+                        quantity = count,
+                    )
+                } else {
+                    program?.trackedEntityType?.let {
+                        runBlocking {
                             customLabelProvider.getTeTypeCustomLabel(it.uid(), count > 1)
                         }
                     }
                 }
+
             programModel.copy(
                 count = count,
                 filtersAreActive = filterPresenter.areFiltersActive(),

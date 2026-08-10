@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.providers.CustomLabelContext
 import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailRepository
 import org.dhis2.usescases.programEventDetail.ProgramEventMapper
@@ -43,7 +44,15 @@ class EventListViewModel(
                         eventList = getPagingDataFlow(),
                         customEventLabel =
                             customLabelProvider.getCustomEventLabel(
-                                programUid = eventRepository.program().blockingGet().uid,
+                                customLabelContext =
+                                    CustomLabelContext.ProgramStage(
+                                        programStageUid =
+                                            eventRepository
+                                                .programStage()
+                                                .blockingGet()
+                                                .uid,
+                                        programUid = eventRepository.program().blockingGet().uid,
+                                    ),
                                 quantity = 2,
                             ),
                     )

@@ -146,21 +146,43 @@ class CustomLabelProviderImpl(
     }
 
     override suspend fun getCustomEventLabel(
-        programUid: String?,
+        customLabelContext: CustomLabelContext?,
         quantity: Int?,
     ) = execute(
         defaultResource = Res.plurals.event,
         quantity = quantity,
         capitalizeFirstLetter = true,
     ) {
-        d2
-            .programModule()
-            .programs()
-            .uid(programUid)
-            .blockingGet()
-            ?.let {
-                if (quantity != null && quantity > 1) it.displayEventsLabel else it.displayEventLabel
-            }
+        when (customLabelContext) {
+            is CustomLabelContext.Program ->
+                d2
+                    .programModule()
+                    .programs()
+                    .uid(customLabelContext.programUid)
+                    .blockingGet()
+                    ?.let {
+                        if (quantity != null && quantity > 1) it.displayEventsLabel else it.displayEventLabel
+                    }
+
+            is CustomLabelContext.ProgramStage ->
+                d2
+                    .programModule()
+                    .programStages()
+                    .uid(customLabelContext.programStageUid)
+                    .blockingGet()
+                    ?.let {
+                        if (quantity != null && quantity > 1) it.displayEventsLabel else it.displayEventLabel
+                    } ?: d2
+                    .programModule()
+                    .programs()
+                    .uid(customLabelContext.programUid)
+                    .blockingGet()
+                    ?.let {
+                        if (quantity != null && quantity > 1) it.displayEventsLabel else it.displayEventLabel
+                    }
+
+            null -> null
+        }
     }
 
     override fun formatStringWithCustomLabel(

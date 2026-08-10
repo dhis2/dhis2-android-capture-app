@@ -29,7 +29,7 @@ interface CustomLabelProvider {
     suspend fun getCustomMarkForFollowUpLabel(programUid: String?): String
 
     suspend fun getCustomEventLabel(
-        programUid: String?,
+        customLabelContext: CustomLabelContext?,
         quantity: Int? = null,
     ): String
 
@@ -68,10 +68,10 @@ interface CustomLabelProvider {
         replaceWith = ReplaceWith("getCustomEventLabel"),
     )
     fun blockingCustomEventLabel(
-        programUid: String?,
+        customLabelContext: CustomLabelContext?,
         quantity: Int?,
     ) = runBlocking {
-        getCustomEventLabel(programUid, quantity)
+        getCustomEventLabel(customLabelContext, quantity)
     }
 }
 
