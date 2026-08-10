@@ -56,7 +56,6 @@ class ProgramRepositoryImplTest {
     private val dhisProgramUtils: DhisProgramUtils = mock()
     private val scheduler = TrampolineSchedulerProvider()
     private val resourceManager: ResourceManager = mock()
-    private val customLabelProvider: CustomLabelProvider = mock()
     private val metadataIconProvider: MetadataIconProvider =
         mock {
             on { invoke(style = any<ObjectStyle>(), anyOrNull<Color>()) } doReturn MetadataIconData.defaultIcon()
