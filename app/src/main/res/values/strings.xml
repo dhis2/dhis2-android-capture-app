@@ -247,7 +247,8 @@
     <string name="tuto_event_initial_new_1">Enter all data to create the event</string>
     <string name="tuto_event_initial_1">Click to check the event completion status.</string>
     <string name="relationships">relationships</string>
-    <string name="empty_tei_add">There are no events registered, click \"+\" to add a new one.</string>
+    <!--empty_tracker_events will be formatted with the custom or default label for event-->
+    <string name="empty_tracker_events">There are no %s registered, click \"+\" to add a new one.</string>
     <string name="qr_data_values">Data values</string>
     <string name="info">Info</string>
     <string name="qr_no_id_error">Could not read this Id</string>

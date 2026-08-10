@@ -274,9 +274,6 @@
     <string name="group_by_stage">按阶段分组</string>
 
     <!-- Event -->
-    <plurals name="event_label">
-        <item quantity="other">活动</item>
-    </plurals>
     <string name="event_label_completed">%s 完成</string>
     <string name="event_label_created">%s 创建</string>
     <string name="new_event_label">新%s</string>

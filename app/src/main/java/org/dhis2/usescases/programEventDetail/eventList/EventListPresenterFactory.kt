@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailRepository
 import org.dhis2.usescases.programEventDetail.ProgramEventMapper
 import org.dhis2.usescases.programEventDetail.eventList.ui.mapper.EventCardMapper
@@ -15,6 +16,7 @@ class EventListPresenterFactory(
     private val dispatchers: DispatcherProvider,
     private val mapper: ProgramEventMapper,
     private val cardMapper: EventCardMapper,
+    private val customLabelProvider: CustomLabelProvider,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
         EventListViewModel(
@@ -23,5 +25,6 @@ class EventListPresenterFactory(
             dispatchers,
             mapper,
             cardMapper,
+            customLabelProvider,
         ) as T
 }

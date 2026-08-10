@@ -214,7 +214,6 @@
     <string name="tuto_event_initial_new_1">Masukkan semua data untuk membuat even</string>
     <string name="tuto_event_initial_1">Klik untuk memeriksa status penyelesaian even.</string>
     <string name="relationships">hubungan</string>
-    <string name="empty_tei_add">Tidak ada acara yang terdaftar, klik \"+\" untuk menambahkan yang baru.</string>
     <string name="qr_data_values">Nilai data</string>
     <string name="info">Info</string>
     <string name="qr_no_id_error">Tidak dapat membaca ID ini</string>

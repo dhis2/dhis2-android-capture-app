@@ -214,6 +214,10 @@
         <item quantity="one">tei</item>
         <item quantity="other">teis</item>
     </plurals>
+    <plurals name="event">
+        <item quantity="one">event</item>
+        <item quantity="other">events</item>
+    </plurals>
     <!--*******************
     Info bar labels
     **********************-->
@@ -231,7 +235,4 @@
     <string name="remove_follow_up">Remove</string>
     <string name="enrollment_completed">Enrollment completed</string>
     <string name="enrollment_cancelled">Enrollment cancelled</string>
-
-
-
 </resources>

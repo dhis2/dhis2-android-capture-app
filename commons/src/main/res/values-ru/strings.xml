@@ -277,12 +277,6 @@
     <string name="group_by_stage">Группировать по этапам</string>
 
     <!-- Event -->
-    <plurals name="event_label">
-        <item quantity="one">мероприятие</item>
-        <item quantity="few">события</item>
-        <item quantity="many">события</item>
-        <item quantity="other">событий</item>
-    </plurals>
     <string name="event_label_completed">%s завершено</string>
     <string name="event_label_created">%s создано</string>
     <string name="new_event_label">Новый %s</string>

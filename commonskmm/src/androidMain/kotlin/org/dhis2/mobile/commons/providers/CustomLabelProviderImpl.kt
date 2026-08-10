@@ -4,6 +4,7 @@ import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import org.dhis2.mobile.commons.resources.Res
 import org.dhis2.mobile.commons.resources.enrollment
+import org.dhis2.mobile.commons.resources.event
 import org.dhis2.mobile.commons.resources.follow_up
 import org.dhis2.mobile.commons.resources.mark_for_follow_up
 import org.dhis2.mobile.commons.resources.marked_for_follow_up
@@ -142,6 +143,24 @@ class CustomLabelProviderImpl(
     override suspend fun getCustomMarkForFollowUpLabel(programUid: String?): String {
         val followUpCustomLabel = getCustomFollowUpLabel(programUid)
         return getString(Res.string.mark_for_follow_up).format(followUpCustomLabel)
+    }
+
+    override suspend fun getCustomEventLabel(
+        programUid: String?,
+        quantity: Int?,
+    ) = execute(
+        defaultResource = Res.plurals.event,
+        quantity = quantity,
+        capitalizeFirstLetter = true,
+    ) {
+        d2
+            .programModule()
+            .programs()
+            .uid(programUid)
+            .blockingGet()
+            ?.let {
+                if (quantity != null && quantity > 1) it.displayEventsLabel else it.displayEventLabel
+            }
     }
 
     override fun formatStringWithCustomLabel(

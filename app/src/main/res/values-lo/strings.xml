@@ -224,7 +224,6 @@
     <string name="tuto_event_initial_new_1">ປ້ອນຂໍ້ມູນທັງໝົດເຂົ້າເພື່ອສ້າງເປັນກໍລະນີ</string>
     <string name="tuto_event_initial_1">ກົດເພື່ອກວດເບີ່ງການເຮັດສໍາເລັດການບັນທຶກກໍລະນີ</string>
     <string name="relationships">ສາຍພົວພັນ</string>
-    <string name="empty_tei_add">ບໍ່ມີເຫດການທີ່ລົງທະບຽນໃວ້, ຄລິກ \"+\" ເພື່ອເພີ່ມເຫດການໃໝ່</string>
     <string name="qr_data_values">Data values</string>
     <string name="info">ຂໍ້ມູນ</string>
     <string name="qr_no_id_error">ອ່ານໄອດີນີ້ບໍໄດ້</string>

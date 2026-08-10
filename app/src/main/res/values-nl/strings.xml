@@ -218,7 +218,6 @@
     <string name="tuto_event_initial_new_1">Voer alle gegevens in om het evenement aan te maken</string>
     <string name="tuto_event_initial_1">Klik om de voltooiingsstatus van het evenement te controleren.</string>
     <string name="relationships">relaties</string>
-    <string name="empty_tei_add">Er zijn geen evenementen geregistreerd, klik op \"+\" om een nieuwe toe te voegen.</string>
     <string name="qr_data_values">Gegevens waarden</string>
     <string name="info">Info</string>
     <string name="qr_no_id_error">Kan dit ID niet lezen</string>

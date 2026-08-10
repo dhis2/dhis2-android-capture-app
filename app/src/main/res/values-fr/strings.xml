@@ -221,7 +221,6 @@
     <string name="tuto_event_initial_new_1">Entrez toutes les données pour créer l\'événement</string>
     <string name="tuto_event_initial_1">Cliquez ici pour vérifier l\'état d\'achèvement de l\'événement</string>
     <string name="relationships">Relation</string>
-    <string name="empty_tei_add">Aucun évènement n\'a été enregistré, cliquez \"+\" pour en ajouter un nouveau.</string>
     <string name="qr_data_values">Valeurs de données</string>
     <string name="info">Info</string>
     <string name="qr_no_id_error">Impossible de lire cet Id</string>

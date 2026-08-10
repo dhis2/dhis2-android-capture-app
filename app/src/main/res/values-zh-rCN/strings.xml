@@ -235,7 +235,6 @@
     <string name="tuto_event_initial_new_1">输入所有数据创建事件</string>
     <string name="tuto_event_initial_1">点击检查事件完成状态</string>
     <string name="relationships">关系</string>
-    <string name="empty_tei_add">还没有登记的事件，点击“+”新建一个。</string>
     <string name="qr_data_values">数据值</string>
     <string name="info">信息</string>
     <string name="qr_no_id_error">不能读取该ID</string>

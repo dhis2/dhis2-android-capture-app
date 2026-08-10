@@ -287,10 +287,6 @@
     <string name="group_by_stage">Group by stage</string>
 
     <!-- Event -->
-    <plurals name="event_label">
-        <item quantity="one">event</item>
-        <item quantity="other">events</item>
-    </plurals>
     <string name="event_label_completed">%s completed</string>
     <string name="event_label_created">%s created</string>
     <string name="new_event_label">New %s</string>

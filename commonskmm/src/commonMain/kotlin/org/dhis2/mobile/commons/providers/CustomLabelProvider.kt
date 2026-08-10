@@ -28,6 +28,11 @@ interface CustomLabelProvider {
 
     suspend fun getCustomMarkForFollowUpLabel(programUid: String?): String
 
+    suspend fun getCustomEventLabel(
+        programUid: String?,
+        quantity: Int? = null,
+    ): String
+
     fun formatStringWithCustomLabel(
         stringResource: String,
         customLabel: String,
@@ -57,6 +62,17 @@ interface CustomLabelProvider {
         runBlocking {
             getCustomMarkForFollowUpLabel(programUid)
         }
+
+    @Deprecated(
+        "Use suspend function",
+        replaceWith = ReplaceWith("getCustomEventLabel"),
+    )
+    fun blockingCustomEventLabel(
+        programUid: String?,
+        quantity: Int?,
+    ) = runBlocking {
+        getCustomEventLabel(programUid, quantity)
+    }
 }
 
 fun CustomLabelProvider.getCustomOrgUnitLabelBlocking(

@@ -243,7 +243,6 @@
     <string name="tuto_event_initial_new_1">Zadejte všechna data k vytvoření události</string>
     <string name="tuto_event_initial_1">Klepnutím zkontrolujete stav dokončení události.</string>
     <string name="relationships">vztahy</string>
-    <string name="empty_tei_add">Nejsou zaregistrovány žádné události, kliknutím na „+“ přidáte novou.</string>
     <string name="qr_data_values">Datové hodnoty</string>
     <string name="info">Info</string>
     <string name="qr_no_id_error">Toto ID se nepodařilo přečíst</string>
