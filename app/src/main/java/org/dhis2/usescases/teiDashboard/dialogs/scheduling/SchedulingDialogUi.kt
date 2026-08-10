@@ -21,9 +21,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.style.TextAlign
 import org.dhis2.R
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatComboUiModel
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventInputDateUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideCategorySelector
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
@@ -55,13 +53,7 @@ fun SchedulingDialogUi(
     launchMode: LaunchMode,
     onDismiss: () -> Unit,
 ) {
-    val date by viewModel.eventDate.collectAsState()
-    val catCombo by viewModel.eventCatCombo.collectAsState()
-    val programStages by viewModel.programStages.collectAsState()
-    val selectedProgramStage by viewModel.programStage.collectAsState()
-    val enrollment by viewModel.enrollment.collectAsState()
-    val overdueSubtitle by viewModel.overdueEventSubtitle.collectAsState()
-    val programStageLabel by viewModel.programStageLabel.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     val yesNoOptions =
         InputYesNoFieldValues.entries.map {
@@ -79,7 +71,7 @@ fun SchedulingDialogUi(
     val bottomSheetTitle =
         bottomSheetTitle(
             launchMode = launchMode,
-            programStages = programStages,
+            programStages = uiState.programStages,
         )
     BottomSheetShell(
         uiState =
@@ -87,7 +79,7 @@ fun SchedulingDialogUi(
                 showTopSectionDivider = false,
                 showBottomSectionDivider = false,
                 title = bottomSheetTitle,
-                subtitle = overdueSubtitle,
+                subtitle = uiState.overdueEventSubtitle,
                 headerTextAlignment = TextAlign.Start,
                 animateHeaderOnKeyboardAppearance = false,
             ),
@@ -95,9 +87,7 @@ fun SchedulingDialogUi(
             ButtonBlock(
                 launchMode = launchMode,
                 scheduleNew = scheduleNew,
-                date = date,
-                catCombo = catCombo,
-                selectedProgramStage = selectedProgramStage,
+                uiState = uiState,
                 viewModel = viewModel,
                 onDismiss = onDismiss,
             )
@@ -124,13 +114,8 @@ fun SchedulingDialogUi(
 
                 if (scheduleNew) {
                     ProvideScheduleNewEventForm(
-                        programStages = programStages,
+                        uiState = uiState,
                         viewModel = viewModel,
-                        selectedProgramStage = selectedProgramStage,
-                        date = date,
-                        catCombo = catCombo,
-                        orgUnitUid = enrollment?.organisationUnit(),
-                        programStageLabel = programStageLabel ?: "",
                         launchMode = launchMode,
                     )
                 }
@@ -144,9 +129,7 @@ fun SchedulingDialogUi(
 private fun ButtonBlock(
     launchMode: LaunchMode,
     scheduleNew: Boolean,
-    date: EventDate,
-    catCombo: EventCatCombo,
-    selectedProgramStage: ProgramStage?,
+    uiState: SchedulingUiState,
     viewModel: SchedulingViewModel,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
@@ -162,8 +145,8 @@ private fun ButtonBlock(
                     style = ButtonStyle.FILLED,
                     enabled =
                         !scheduleNew ||
-                            date.isValid &&
-                            catCombo.isCompleted,
+                            uiState.eventDate.isValid &&
+                            uiState.eventCatCombo.isCompleted,
                     text = buttonTitle(scheduleNew),
                     onClick = {
                         when {
@@ -180,11 +163,11 @@ private fun ButtonBlock(
                     verticalArrangement = Arrangement.spacedBy(Spacing.Spacing8),
                 ) {
                     val eventLabel =
-                        selectedProgramStage?.displayEventLabel() ?: stringResource(R.string.event)
+                        uiState.programStage?.displayEventLabel() ?: stringResource(R.string.event)
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         style = ButtonStyle.FILLED,
-                        enabled = date.isValid,
+                        enabled = uiState.eventDate.isValid,
                         text = stringResource(R.string.enter_event, eventLabel),
                         onClick = {
                             viewModel.enterEvent(launchMode)
@@ -246,23 +229,18 @@ fun buttonTitle(scheduleNew: Boolean): String =
 
 @Composable
 fun ProvideScheduleNewEventForm(
-    programStages: List<ProgramStage>,
+    uiState: SchedulingUiState,
     viewModel: SchedulingViewModel,
-    selectedProgramStage: ProgramStage?,
-    date: EventDate,
-    catCombo: EventCatCombo,
-    orgUnitUid: String?,
-    programStageLabel: String,
     launchMode: LaunchMode,
 ) {
-    if (programStages.size > 1 && launchMode !is LaunchMode.EnterEvent) {
+    if (uiState.programStages.size > 1 && launchMode !is LaunchMode.EnterEvent) {
         var dropdownItems by remember {
             mutableStateOf(
-                programStages.map { DropdownItem(it.displayName().orEmpty()) },
+                uiState.programStages.map { DropdownItem(it.displayName().orEmpty()) },
             )
         }
         InputDropDown(
-            title = programStageLabel,
+            title = uiState.programStageLabel ?: "",
             state = InputShellState.UNFOCUSED,
             fetchItem = { index -> dropdownItems[index] },
             itemCount = dropdownItems.size,
@@ -271,25 +249,25 @@ fun ProvideScheduleNewEventForm(
                     if (query.isNotEmpty()) {
                         dropdownItems.filter { it.label.contains(query) }
                     } else {
-                        programStages.map { DropdownItem(it.displayName().orEmpty()) }
+                        uiState.programStages.map { DropdownItem(it.displayName().orEmpty()) }
                     }
             },
             useDropDown = dropdownItems.size < 15,
             loadOptions = {
                 // no-op
             },
-            selectedItem = DropdownItem(selectedProgramStage?.displayName().orEmpty()),
+            selectedItem = DropdownItem(uiState.programStage?.displayName().orEmpty()),
             onResetButtonClicked = {},
             onItemSelected = { index, _ ->
-                programStages[index].let { viewModel.updateStage(it) }
+                uiState.programStages[index].let { viewModel.updateStage(it) }
             },
         )
     }
 
-    if (willShowCalendar(selectedProgramStage?.periodType())) {
+    if (willShowCalendar(uiState.programStage?.periodType())) {
         ProvideInputDate(
             EventInputDateUiModel(
-                eventDate = date,
+                eventDate = uiState.eventDate,
                 detailsEnabled = true,
                 selectableDates = viewModel.getSelectableDates(),
                 onDateClick = {},
@@ -302,30 +280,30 @@ fun ProvideScheduleNewEventForm(
         ProvidePeriodSelector(
             uiModel =
                 EventInputDateUiModel(
-                    eventDate = date,
+                    eventDate = uiState.eventDate,
                     detailsEnabled = true,
                     onDateClick = { viewModel.showPeriodDialog() },
                     onDateSelected = {},
                     onClear = { viewModel.onClearEventReportDate() },
                     required = true,
-                    showField = date.active,
+                    showField = uiState.eventDate.active,
                     selectableDates = viewModel.getSelectableDates(),
                 ),
             modifier = Modifier,
         )
     }
 
-    if (!catCombo.isDefault && launchMode !is LaunchMode.EnterEvent) {
-        catCombo.categories.forEach { category ->
+    if (!uiState.eventCatCombo.isDefault && launchMode !is LaunchMode.EnterEvent) {
+        uiState.eventCatCombo.categories.forEach { category ->
 
             ProvideCategorySelector(
                 eventCatComboUiModel =
                     EventCatComboUiModel(
                         category = category,
-                        eventCatCombo = catCombo,
+                        eventCatCombo = uiState.eventCatCombo,
                         detailsEnabled = true,
-                        currentDate = date.currentDate,
-                        selectedOrgUnit = orgUnitUid,
+                        currentDate = uiState.eventDate.currentDate,
+                        selectedOrgUnit = uiState.enrollment?.organisationUnit,
                         onClearCatCombo = { viewModel.onClearCatCombo() },
                         onOptionSelected = {
                             val selectedOption = Pair(category.uid, it?.uid())
