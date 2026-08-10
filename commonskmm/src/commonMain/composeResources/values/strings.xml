@@ -129,9 +129,10 @@
     <string name="login_error_error_response">Sorry! Something failed on the server side.</string>
     <string name="login_error_no_dhis_instance">The URL provided is not a DHIS2 server.</string>
     <string name="login_error_bad_credentials">The username or password are incorrect</string>
+    <string name="login_error_bad_credentials_offline">The code is incorrect</string>
     <string name="login_error_unknown_host">Unknown server</string>
     <string name="online_search_parsing_error">Error while parsing results</string>
-    <string name="error_unexpected">Something unexpected went worng.</string>
+    <string name="error_unexpected">Something unexpected went wrong.</string>
     <string name="error_too_manu_org_units">Your user has more than one root organisation units. Review your configuration or contact your admin.</string>
     <string name="error_max_tei_count_reached">Online results exceed the maximum number of tracker instances that can be shown. Please refine your search.</string>
     <string name="error_many_requests">The server is a bit busy at this moment. Please try a bit later.</string>
@@ -187,6 +188,8 @@
     <string name="database_import_failed">Database import failed</string>
     <string name="invalid_file">Invalid file</string>
     <string name="not_in_totp_2fa_enrollment_mode">Not in TOTP 2FA enrollment mode</string>
+    <string name="oauth2_error">There was an error when authenticating with OAuth2</string>
+    <string name="error_device_not_registered">Device not registered</string>
     <!--*******************
        END OF D2 Error Messages
     **********************-->

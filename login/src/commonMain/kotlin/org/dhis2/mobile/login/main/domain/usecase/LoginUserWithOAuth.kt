@@ -12,8 +12,9 @@ class LoginUserWithOAuth(
     suspend operator fun invoke(
         serverUrl: String,
         code: String,
+        state: String,
     ): LoginResult {
-        val result = repository.loginUserWithOAuth(serverUrl, code)
+        val result = repository.loginUserWithOAuth(serverUrl, code, state)
         return when {
             result.isSuccess -> {
                 val username = result.getOrNull()

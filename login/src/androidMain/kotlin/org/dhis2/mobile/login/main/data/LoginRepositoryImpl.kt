@@ -134,11 +134,13 @@ class LoginRepositoryImpl(
     override suspend fun enrollDevice(
         iat: String,
         serverURL: String,
+        state: String,
     ) = withContext(dispatcher.io) {
         try {
             d2.userModule().oauth2Handler().blockingHandleEnrollmentResponse(
                 serverUrl = serverURL,
                 iat = iat,
+                state = state,
             )
 
             if (!d2.userModule().oauth2Handler().isDeviceRegistered()) {
@@ -156,10 +158,11 @@ class LoginRepositoryImpl(
     override suspend fun loginUserWithOAuth(
         serverUrl: String,
         code: String,
+        state: String,
     ) = withContext(dispatcher.io) {
         try {
             val user =
-                d2.userModule().oauth2Handler().blockingHandleLogInResponse(serverUrl, code)
+                d2.userModule().oauth2Handler().blockingHandleLogInResponse(serverUrl, code, state)
             kotlin.Result.success(user.username())
         } catch (d2Error: D2Error) {
             val mappedError = domainErrorMapper.mapToDomainError(d2Error)

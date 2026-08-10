@@ -10,9 +10,11 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.main.domain.model.BiometricsInfo
 import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
+import org.dhis2.mobile.login.main.domain.model.DeviceEnrollmentInfo
 import org.dhis2.mobile.login.main.domain.model.LoginResult
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.model.OpenIdLoginConfiguration
@@ -42,6 +44,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.AfterTest
@@ -551,11 +554,12 @@ class CredentialsViewModelTest {
             // GIVEN
             val serverUrl = "https://test.server.org"
             val authCode = "auth_code_123"
-            val appLinkUrl = "https://vgarciabnz.github.io?code=$authCode&state=test"
+            val appLinkUrl = "https://test.redirect.org?code=$authCode&state=test"
             val mockAppLinkFlow = MutableSharedFlow<String>()
             val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
             val logoutUrl = "$serverUrl/dhis-web-commons-security/logout.action?redirect_uri=dhis2oauth://oauth"
-            val logoutCallbackUrl = "https://vgarciabnz.github.io?state=test"
+            val state = "test"
+            val logoutCallbackUrl = "https://test.redirect.org?state=$state"
 
             whenever(getAvailableUsernames()) doReturn emptyList()
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
@@ -565,7 +569,7 @@ class CredentialsViewModelTest {
             whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
             whenever(getOAuthLogoutUrl(any())) doReturn Result.success(logoutUrl)
             whenever(
-                loginUserWithOAuth.invoke(any(), any()),
+                loginUserWithOAuth.invoke(any(), any(), any()),
             ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
 
             initViewModel(serverUrl = serverUrl, username = "testuser", entryMode = CredentialsEntryMode.NEW_ACCOUNT_OAUTH)
@@ -590,6 +594,7 @@ class CredentialsViewModelTest {
                 verify(loginUserWithOAuth).invoke(
                     serverUrl = serverUrl,
                     code = authCode,
+                    state = state,
                 )
 
                 // THEN - the server session is cleared before entering the app:
@@ -629,6 +634,64 @@ class CredentialsViewModelTest {
         }
 
     @Test
+    fun `GIVEN the device is not registered WHEN the authorization code arrives THEN the OAuth login is rejected`() =
+        runTest {
+            // GIVEN - the SDK rejects the login response with OAUTH2_DEVICE_NOT_REGISTERED,
+            // which reaches the view model as its mapped error message
+            val serverUrl = "https://test.server.org"
+            val authCode = "auth_code_123"
+            val state = "test"
+            val appLinkUrl = "https://test.redirect.org?code=$authCode&state=$state"
+            val mockAppLinkFlow = MutableSharedFlow<String>()
+            val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
+            val deviceNotRegisteredMessage = "Device not registered"
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
+            whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
+            whenever(
+                loginUserWithOAuth.invoke(any(), any(), any()),
+            ) doReturn LoginResult.Error(deviceNotRegisteredMessage)
+
+            initViewModel(serverUrl = serverUrl, username = "testuser", entryMode = CredentialsEntryMode.NEW_ACCOUNT_OAUTH)
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                // The enrollment flow starts and the view model listens for OAuth callbacks
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // WHEN - the authorization code arrives
+                mockAppLinkFlow.emit(appLinkUrl)
+                testDispatcher.scheduler.advanceUntilIdle()
+                testDispatcher.scheduler.advanceTimeBy(4.seconds)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                verify(loginUserWithOAuth).invoke(
+                    serverUrl = serverUrl,
+                    code = authCode,
+                    state = state,
+                )
+
+                // THEN - the device-not-registered message is shown and the user does not enter
+                // the app: no logout hop and no post-login actions
+                val errorState = expectMostRecentItem()
+                assertEquals(deviceNotRegisteredMessage, errorState.errorMessage)
+                assertEquals(LoginState.Enabled, errorState.loginState)
+                assertTrue(errorState.afterLoginActions.isEmpty())
+                verify(getOAuthLogoutUrl, never()).invoke(any())
+
+                // AND - the OAuth flow is over, so later app links are ignored
+                mockAppLinkFlow.emit("https://test.redirect.org?code=late_code&state=$state")
+                testDispatcher.scheduler.advanceUntilIdle()
+                verify(loginUserWithOAuth, never()).invoke(any(), eq("late_code"), any())
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
     fun `GIVEN app link with IAT token WHEN link arrives THEN device enrollment is processed`() =
         runTest {
             // GIVEN
@@ -636,7 +699,7 @@ class CredentialsViewModelTest {
             val iat = "enrollment_iat_token"
             val consentUrl = "https://test.server.org/oauth2/consent"
             val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
-            val appLinkUrl = "https://vgarciabnz.github.io?iat=$iat&state=test"
+            val appLinkUrl = "https://test.redirect.org?iat=$iat&state=test"
             val mockAppLinkFlow = MutableSharedFlow<String>()
 
             whenever(getAvailableUsernames()) doReturn emptyList()
@@ -677,11 +740,74 @@ class CredentialsViewModelTest {
         }
 
     @Test
+    fun `GIVEN the device registration is incomplete WHEN the enrollment token arrives THEN the OAuth flow is aborted`() =
+        runTest {
+            // GIVEN - the SDK rejects the enrollment response with OAUTH2_INCOMPLETE_REGISTRATION,
+            // which reaches the view model as its mapped authentication error
+            val serverUrl = "https://test.server.org"
+            val iat = "enrollment_iat_token"
+            val state = "test"
+            val appLinkUrl = "https://test.redirect.org?iat=$iat&state=$state"
+            val mockAppLinkFlow = MutableSharedFlow<String>()
+            val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
+            val oauth2ErrorMessage = "There was an error when authenticating with OAuth2"
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
+            whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
+            whenever(
+                processDeviceEnrollment.invoke(any()),
+            ) doReturn Result.failure(DomainError.AuthenticationError(oauth2ErrorMessage))
+
+            initViewModel(serverUrl = serverUrl, username = "testuser", entryMode = CredentialsEntryMode.NEW_ACCOUNT_OAUTH)
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                // The enrollment flow starts and the view model listens for OAuth callbacks
+                testDispatcher.scheduler.advanceUntilIdle()
+                verify(navigator).navigate(
+                    eq(LoginScreenState.OauthAuthentication(selectedServer = enrollmentUrl)),
+                    any(),
+                )
+
+                // WHEN - the enrollment token arrives
+                mockAppLinkFlow.emit(appLinkUrl)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                verify(processDeviceEnrollment).invoke(
+                    DeviceEnrollmentInfo(
+                        iat = iat,
+                        serverURL = serverUrl,
+                        state = state,
+                    ),
+                )
+
+                // THEN - the OAuth2 error is shown and the consent step is never reached:
+                // the enrollment navigation remains the only one
+                val errorState = expectMostRecentItem()
+                assertEquals(oauth2ErrorMessage, errorState.errorMessage)
+                assertEquals(LoginState.Enabled, errorState.loginState)
+                assertTrue(errorState.afterLoginActions.isEmpty())
+                verify(navigator, times(1)).navigate(any(), any())
+
+                // AND - the OAuth flow is over, so later app links are ignored
+                mockAppLinkFlow.emit("https://test.redirect.org?code=late_code&state=$state")
+                testDispatcher.scheduler.advanceUntilIdle()
+                verify(loginUserWithOAuth, never()).invoke(any(), any(), any())
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
     fun `GIVEN app link with error WHEN link arrives THEN error message is displayed`() =
         runTest {
             // GIVEN
             val serverUrl = "https://test.server.org"
-            val appLinkUrl = "https://vgarciabnz.github.io?error=access_denied&state=test"
+            val state = "test"
+            val appLinkUrl = "https://test.redirect.org?error=access_denied&state=$state"
             val mockAppLinkFlow = MutableSharedFlow<String>()
             val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
 
@@ -708,9 +834,9 @@ class CredentialsViewModelTest {
                 assertEquals(LoginState.Enabled, errorState.loginState)
 
                 // AND - the OAuth flow is over, so later app links are ignored
-                mockAppLinkFlow.emit("https://vgarciabnz.github.io?code=late_code&state=test")
+                mockAppLinkFlow.emit("https://test.redirect.org?code=late_code&state=$state")
                 testDispatcher.scheduler.advanceUntilIdle()
-                verify(loginUserWithOAuth, never()).invoke(any(), any())
+                verify(loginUserWithOAuth, never()).invoke(any(), any(), any())
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -723,6 +849,7 @@ class CredentialsViewModelTest {
             val staleServerUrl = "https://first.server.org"
             val oauthServerUrl = "https://second.server.org"
             val authCode = "auth_code_456"
+            val state = "test"
             val enrollmentUrl = "$oauthServerUrl/oauth2/enrollment"
             val logoutUrl = "$oauthServerUrl/dhis-web-commons-security/logout.action?redirect_uri=dhis2oauth://oauth"
             val sharedAppLinkNavigation = AppLinkNavigation()
@@ -734,7 +861,7 @@ class CredentialsViewModelTest {
             whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
             whenever(getOAuthLogoutUrl(any())) doReturn Result.success(logoutUrl)
             whenever(
-                loginUserWithOAuth.invoke(any(), any()),
+                loginUserWithOAuth.invoke(any(), any(), any()),
             ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
 
             val staleViewModel =
@@ -756,10 +883,10 @@ class CredentialsViewModelTest {
                 testDispatcher.scheduler.advanceUntilIdle()
 
                 // WHEN - the authorization code and logout callbacks arrive
-                sharedAppLinkNavigation.emit("https://vgarciabnz.github.io?code=$authCode&state=test")
+                sharedAppLinkNavigation.emit("https://test.redirect.org?code=$authCode&state=$state")
                 testDispatcher.scheduler.advanceTimeBy(4.seconds)
                 testDispatcher.scheduler.advanceUntilIdle()
-                sharedAppLinkNavigation.emit("https://vgarciabnz.github.io?state=test")
+                sharedAppLinkNavigation.emit("https://test.redirect.org?state=$state")
                 testDispatcher.scheduler.advanceUntilIdle()
 
                 // THEN - the OAuth flow owner completes the login and reaches the mandatory
@@ -767,6 +894,7 @@ class CredentialsViewModelTest {
                 verify(loginUserWithOAuth).invoke(
                     serverUrl = oauthServerUrl,
                     code = authCode,
+                    state = state,
                 )
                 val finalState = expectMostRecentItem()
                 assertEquals(LoginState.Enabled, finalState.loginState)
@@ -778,7 +906,7 @@ class CredentialsViewModelTest {
             }
 
             // AND - the stale view model never consumed the callbacks
-            verify(loginUserWithOAuth, never()).invoke(eq(staleServerUrl), any())
+            verify(loginUserWithOAuth, never()).invoke(eq(staleServerUrl), any(), any())
             assertTrue(
                 staleViewModel.credentialsScreenState.value.afterLoginActions
                     .isEmpty(),
