@@ -274,7 +274,7 @@
     <string name="remove_from">Удалить из</string>
     <string name="refresh_this_record">Обновить эту запись</string>
     <string name="view_timeline">Просмотр хронологии</string>
-    <string name="group_by_stage">Группировать по этапам</string>
+
 
     <!-- Event -->
     <string name="event_label_completed">%s завершено</string>

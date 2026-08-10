@@ -6,9 +6,12 @@ import org.dhis2.mobile.commons.resources.Res
 import org.dhis2.mobile.commons.resources.enrollment
 import org.dhis2.mobile.commons.resources.event
 import org.dhis2.mobile.commons.resources.follow_up
+import org.dhis2.mobile.commons.resources.group_by_stage_label
 import org.dhis2.mobile.commons.resources.mark_for_follow_up
 import org.dhis2.mobile.commons.resources.marked_for_follow_up
 import org.dhis2.mobile.commons.resources.org_unit
+import org.dhis2.mobile.commons.resources.program_stage
+import org.dhis2.mobile.commons.resources.stage
 import org.dhis2.mobile.commons.resources.tei
 import org.hisp.dhis.android.core.D2
 import org.jetbrains.compose.resources.PluralStringResource
@@ -183,6 +186,33 @@ class CustomLabelProviderImpl(
 
             null -> null
         }
+    }
+
+    override suspend fun getCustomProgramStageLabel(
+        programUid: String?,
+        capitalizeFirstLetter: Boolean,
+        defaultResource: StringResource?,
+    ): String =
+        execute(
+            defaultResource = defaultResource ?: Res.string.program_stage,
+            capitalizeFirstLetter = capitalizeFirstLetter,
+        ) {
+            d2
+                .programModule()
+                .programs()
+                .uid(programUid)
+                .blockingGet()
+                ?.displayProgramStageLabel
+        }
+
+    override suspend fun getCustomGroupByStageLabel(programUid: String?): String {
+        val customProgramStageLabel =
+            getCustomProgramStageLabel(
+                programUid = programUid,
+                capitalizeFirstLetter = true,
+                defaultResource = Res.string.stage,
+            )
+        return getString(Res.string.group_by_stage_label).format(customProgramStageLabel)
     }
 
     override fun formatStringWithCustomLabel(

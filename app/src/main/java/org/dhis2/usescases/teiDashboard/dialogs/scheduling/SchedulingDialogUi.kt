@@ -61,6 +61,7 @@ fun SchedulingDialogUi(
     val selectedProgramStage by viewModel.programStage.collectAsState()
     val enrollment by viewModel.enrollment.collectAsState()
     val overdueSubtitle by viewModel.overdueEventSubtitle.collectAsState()
+    val programStageLabel by viewModel.programStageLabel.collectAsState()
 
     val yesNoOptions =
         InputYesNoFieldValues.entries.map {
@@ -129,6 +130,7 @@ fun SchedulingDialogUi(
                         date = date,
                         catCombo = catCombo,
                         orgUnitUid = enrollment?.organisationUnit(),
+                        programStageLabel = programStageLabel ?: "",
                         launchMode = launchMode,
                     )
                 }
@@ -250,6 +252,7 @@ fun ProvideScheduleNewEventForm(
     date: EventDate,
     catCombo: EventCatCombo,
     orgUnitUid: String?,
+    programStageLabel: String,
     launchMode: LaunchMode,
 ) {
     if (programStages.size > 1 && launchMode !is LaunchMode.EnterEvent) {
@@ -259,7 +262,7 @@ fun ProvideScheduleNewEventForm(
             )
         }
         InputDropDown(
-            title = stringResource(id = R.string.program_stage),
+            title = programStageLabel,
             state = InputShellState.UNFOCUSED,
             fetchItem = { index -> dropdownItems[index] },
             itemCount = dropdownItems.size,

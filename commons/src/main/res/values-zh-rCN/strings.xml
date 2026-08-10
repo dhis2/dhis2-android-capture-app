@@ -271,7 +271,7 @@
     <string name="remove_from">从</string>
     <string name="refresh_this_record">刷新此记录</string>
     <string name="view_timeline">查看时间表</string>
-    <string name="group_by_stage">按阶段分组</string>
+
 
     <!-- Event -->
     <string name="event_label_completed">%s 完成</string>

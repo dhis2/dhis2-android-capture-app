@@ -68,7 +68,7 @@ private fun buildMenuForEnrollment(
         addSyncMenuItem(resourceManager)
         addIfTeiCanBeTransferred(dashboardViewModel, resourceManager)
         addFollowUpMenuItem(dashboardViewModel, presenter.programUid, customLabelProvider)
-        addTimelineOrGroupByStageMenuItem(dashboardViewModel, resourceManager)
+        addTimelineOrGroupByStageMenuItem(dashboardViewModel, resourceManager, presenter.programUid, customLabelProvider)
         addHelpMenuItem(resourceManager)
         addMoreEnrollmentsMenuItem(resourceManager)
         addShareMenuItem(resourceManager)
@@ -121,6 +121,8 @@ private fun MutableList<MenuItemData<EnrollmentMenuItem>>.addFollowUpMenuItem(
 private fun MutableList<MenuItemData<EnrollmentMenuItem>>.addTimelineOrGroupByStageMenuItem(
     dashboardViewModel: DashboardViewModel,
     resourceManager: ResourceManager,
+    programUid: String,
+    customLabelProvider: CustomLabelProvider,
 ) {
     if (dashboardViewModel.groupByStage.value) {
         add(
@@ -134,7 +136,7 @@ private fun MutableList<MenuItemData<EnrollmentMenuItem>>.addTimelineOrGroupBySt
         add(
             MenuItemData(
                 id = EnrollmentMenuItem.GROUP_BY_STAGE,
-                label = resourceManager.getString(R.string.group_by_stage),
+                label = customLabelProvider.blockingCustomGroupByStageLabel(programUid),
                 leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Workspaces),
             ),
         )

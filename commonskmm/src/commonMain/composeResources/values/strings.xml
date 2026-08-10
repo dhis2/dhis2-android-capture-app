@@ -235,4 +235,7 @@
     <string name="remove_follow_up">Remove</string>
     <string name="enrollment_completed">Enrollment completed</string>
     <string name="enrollment_cancelled">Enrollment cancelled</string>
+    <string name="program_stage">Program stage</string>
+    <string name="group_by_stage_label">Group by %s</string>
+    <string name="stage">stage</string>
 </resources>

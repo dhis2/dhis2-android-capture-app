@@ -285,7 +285,7 @@
     <string name="remove_from">Eliminar de</string>
     <string name="refresh_this_record">Actualizar este registro</string>
     <string name="view_timeline">Ver como línea de tiempo</string>
-    <string name="group_by_stage">Ver por etapa</string>
+
 
     <!-- Event -->
     <string name="event_label_completed">%s se ha completado</string>

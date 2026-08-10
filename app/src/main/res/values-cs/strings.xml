@@ -575,7 +575,7 @@
     <string name="scheduled_enter_event">Naplánováno</string>
     <string name="enter_event">Zadat %1$s</string>
     <string name="cancel_event">Zrušit %1$s</string>
-    <string name="program_stage">Programová fáze</string>
+
     <string name="event">událost</string>
     <string name="timeline">Časová osa</string>
     <string name="database_export_downloaded">Databáze stažena</string>
