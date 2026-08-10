@@ -199,7 +199,7 @@ open class BaseRobot {
         val am = getInstrumentation().targetContext.getSystemService(
             ACTIVITY_SERVICE
         ) as ActivityManager
-        val visibleActivityName = am.appTasks[0].taskInfo?.baseActivity?.className
+        val visibleActivityName = am.appTasks.firstOrNull()?.taskInfo?.topActivity?.className
         return visibleActivityName == T::class.java.name
     }
 
