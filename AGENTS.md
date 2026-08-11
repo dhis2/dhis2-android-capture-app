@@ -219,3 +219,29 @@ the skills offer to clone them if missing.
 Stack traces are deobfuscated (ProGuard mappings are uploaded on every release build),
 so library frames carry real class names. Sentry org and project are resolved
 dynamically from the plugin at runtime.
+
+---
+
+## Team Metrics Skill
+
+- **`/team-metrics`** — Generates the monthly Android team metrics report and publishes it
+  as a draft Confluence page under
+  [Android Metrics](https://dhis2.atlassian.net/wiki/spaces/MOB/pages/1948057602/Android+Metrics)
+  in the MOB space. Combines Jira ANDROAPP changelogs (intake / delivery / post-merge
+  times, throughput, where work queues), Sentry (production stability and per-release
+  regressions), SonarCloud (quality trend on `develop`) and GitHub (PR and CI health),
+  comparing a rolling 90-day window against the preceding one. It also reads the previous
+  edition, checks which action items were ticked, and reports whether they actually moved
+  the numbers.
+
+Requires `JIRA_AUTH=<email>:<api-token>` in `local.properties` (gitignored). Run
+`python3 scripts/metrics/metrics.py --preflight` to check every source and get exact
+remediation for anything missing; a read-scoped token is sufficient, since the skill only
+issues `GET` requests and its single write is the Confluence page.
+
+Definitions, the status taxonomy and the data-quality traps live in
+`.claude/skills/team-metrics/references/metrics-reference.md`. Two worth knowing before
+reading any number: flow metrics cover **Feature, Task and Bug only** (`Story` is retired,
+`Epic` is a container, Zephyr `Test` issues count as Done with no resolution), and **every
+one of the project's 38 statuses must stay classified** — unclassified time is dropped
+silently and inflates flow efficiency.
