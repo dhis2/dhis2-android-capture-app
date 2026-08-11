@@ -7,7 +7,7 @@ sidebar_position: 5
 # Open an issue
 
 Open a Jira issue
-in [Android app for DHIS2 project](https://dhis2.atlassian.net/jira/software/c/projects/ANDROAPP/boards/118).
+in [Android app for DHIS2 project](https://dhis2.atlassian.net/jira/software/c/projects/ANDROAPP/boards/113).
 
 # Open a pull request
 
