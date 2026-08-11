@@ -2,8 +2,8 @@ This is a patch version that fixes:
 
 - ANDROAPP-7682 Sync button doesn't always appear in enrollments list
 - ANDROAPP-7706 Tei list items display wrong attributes
-- ANDROAPP-7708 NullPointerException: Attempt to invoke virtual method 'java.lang.Class java.lang.Object.getClass\(\)'... \(ProgramFragment\)
-- ANDROAPP-7711 NullPointerException: Attempt to invoke virtual method 'android.content.res.Resources android.view.View.getResources\(\)' on a null object reference
+- ANDROAPP-7708 NullPointerException: Attempt to invoke virtual method 'java.lang.Class java.lang.Object.getClass'
+- ANDROAPP-7711 NullPointerException: Attempt to invoke virtual method 'android.content.res.Resources android.view.View.getResources' on a null object reference
 
 ....
 You can find all the details on Jira and Github.
