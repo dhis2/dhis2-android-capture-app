@@ -45,6 +45,7 @@ class SchedulingDialogUiTest : BaseTest() {
         .attributeOptionCombo("attributeOptionComboUid")
         .build()
     private val overdueSubtitle = "Overdue subtitle"
+    private val programStageLabel = "Program stage"
 
     private fun mockedSchedulingUiState() = SchedulingUiState(
         eventDate = EventDate(label = "Date"),
@@ -62,6 +63,7 @@ class SchedulingDialogUiTest : BaseTest() {
             ),
         ),
         overdueEventSubtitle = overdueSubtitle,
+        programStageLabel = programStageLabel
     )
 
     @Before
@@ -113,8 +115,7 @@ class SchedulingDialogUiTest : BaseTest() {
             programStages = programStages,
             programStage = programStages.first(),
             enrollment = enrollment
-        )
-        )
+        ))
 
         composeTestRule.setContent {
             SchedulingDialogUi(
