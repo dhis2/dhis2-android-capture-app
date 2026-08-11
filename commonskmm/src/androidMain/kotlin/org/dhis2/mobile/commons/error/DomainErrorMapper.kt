@@ -38,6 +38,11 @@ class DomainErrorMapper(
             D2ErrorCode.NO_AUTHENTICATED_USER_OFFLINE,
             D2ErrorCode.DIFFERENT_AUTHENTICATED_USER_OFFLINE,
             D2ErrorCode.ALREADY_AUTHENTICATED,
+            D2ErrorCode.OAUTH2_DEVICE_NOT_REGISTERED,
+            D2ErrorCode.OAUTH2_INCOMPLETE_REGISTRATION,
+            D2ErrorCode.OAUTH2_INVALID_IAT,
+            D2ErrorCode.OAUTH2_INVALID_STATE,
+            D2ErrorCode.BAD_CREDENTIALS_OFFLINE_CODE,
             -> DomainError.AuthenticationError(errorMessage)
 
             // User account issues (disabled, locked)

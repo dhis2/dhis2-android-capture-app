@@ -2,12 +2,15 @@ package org.dhis2.usescases.main.program
 
 import io.reactivex.Flowable
 import io.reactivex.parallel.ParallelFlowable
+import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.bindings.isStockProgram
 import org.dhis2.commons.filters.data.FilterPresenter
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
+import org.dhis2.mobile.commons.providers.CustomLabelContext
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.mobile.sync.model.SyncStatusData
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
@@ -23,6 +26,7 @@ internal class ProgramRepositoryImpl(
     private val resourceManager: ResourceManager,
     private val metadataIconProvider: MetadataIconProvider,
     private val schedulerProvider: SchedulerProvider,
+    private val customLabelProvider: CustomLabelProvider,
 ) : ProgramRepository {
     private val programViewModelMapper = ProgramViewModelMapper()
     private var lastSyncStatus: SyncStatusData? = null
@@ -56,7 +60,7 @@ internal class ProgramRepositoryImpl(
     private fun aggregatesModels(): Flowable<List<ProgramUiModel>> =
         filterPresenter
             .filteredDataSetInstances()
-            .get()
+            .rxGet()
             .toFlowable()
             .map { dataSetSummaries ->
                 dataSetSummaries.mapNotNull {
@@ -77,7 +81,11 @@ internal class ProgramRepositoryImpl(
                                     },
                                 dataSetLabel = resourceManager.defaultDataSetLabel(),
                                 filtersAreActive = filterPresenter.areFiltersActive(),
-                                metadataIconData = metadataIconProvider(dataSet.style(), SurfaceColor.Primary),
+                                metadataIconData =
+                                    metadataIconProvider(
+                                        dataSet.style(),
+                                        SurfaceColor.Primary,
+                                    ),
                             )
                         }
                 }
@@ -102,22 +110,21 @@ internal class ProgramRepositoryImpl(
                     .runOn(schedulerProvider.io())
                     .sequential()
             }.map { program ->
-                val recordLabel =
-                    dhisProgramUtils.getProgramRecordLabel(
-                        program,
-                        resourceManager.defaultTeiLabel(),
-                        resourceManager.defaultEventLabel(),
-                    )
+
                 val state = dhisProgramUtils.getProgramState(program)
 
                 programViewModelMapper
                     .map(
                         program,
                         0,
-                        recordLabel,
+                        "",
                         state,
                         filtersAreActive = false,
-                        metadataIconData = metadataIconProvider(program.style(), SurfaceColor.Primary),
+                        metadataIconData =
+                            metadataIconProvider(
+                                program.style(),
+                                SurfaceColor.Primary,
+                            ),
                     ).copy(
                         isStockUseCase = d2.isStockProgram(program.uid()),
                     )
@@ -141,9 +148,37 @@ internal class ProgramRepositoryImpl(
                 } else {
                     0
                 }
+
+            val recordLabel =
+                if (program?.programType() == WITHOUT_REGISTRATION) {
+                    val programStage =
+                        d2
+                            .programModule()
+                            .programStages()
+                            .byProgramUid()
+                            .eq(program.uid)
+                            .blockingGet()
+                            .first()
+                    customLabelProvider.blockingCustomEventLabel(
+                        customLabelContext =
+                            CustomLabelContext.ProgramStage(
+                                programStageUid = programStage.uid,
+                                programUid = programModel.uid,
+                            ),
+                        quantity = count,
+                    )
+                } else {
+                    program?.trackedEntityType?.let {
+                        runBlocking {
+                            customLabelProvider.getTeTypeCustomLabel(it.uid(), count > 1)
+                        }
+                    }
+                }
+
             programModel.copy(
                 count = count,
                 filtersAreActive = filterPresenter.areFiltersActive(),
+                typeName = recordLabel ?: "",
             )
         }
 

@@ -9,13 +9,13 @@ import io.reactivex.Observable
 import org.dhis2.R
 import org.dhis2.android.rtsm.utils.NetworkUtils
 import org.dhis2.commons.data.ProgramConfigurationRepository
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobile.commons.model.MetadataIconData
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.ui.ThemeManager
 import org.dhis2.usescases.teiDashboard.DashboardRepositoryImpl
 import org.dhis2.usescases.teiDashboard.DashboardViewModel
@@ -53,7 +53,7 @@ class TeiDashboardMobileActivityTest {
     private val teiAttributesProvider: TeiAttributesProvider = mock()
     private val preferences: PreferenceProvider = mock()
     private val programConfigurationRepository: ProgramConfigurationRepository = mock()
-    private val featureConfigRepository: FeatureConfigRepository = mock()
+    private val customLabelProvider: CustomLabelProvider = mock()
 
     private val metadataIconProvider: MetadataIconProvider = mock {
         on { invoke(any()) }doReturn MetadataIconData.defaultIcon()
@@ -126,7 +126,7 @@ class TeiDashboardMobileActivityTest {
             preferences,
             metadataIconProvider,
             programConfigurationRepository,
-            featureConfigRepository,
+            customLabelProvider,
         )
     }
 

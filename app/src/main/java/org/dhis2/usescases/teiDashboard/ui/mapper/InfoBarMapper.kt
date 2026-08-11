@@ -19,6 +19,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
+@Deprecated("Use InfoBarProvider instead")
 class InfoBarMapper(
     val resourceManager: ResourceManager,
 ) {
@@ -70,7 +71,7 @@ class InfoBarMapper(
                 }
             }
 
-            InfoBarType.FOLLOW_UP -> resourceManager.getString(R.string.marked_follow_up)
+            InfoBarType.FOLLOW_UP -> item.markedForFollowUpLabel
             InfoBarType.ENROLLMENT_STATUS -> {
                 if (enrollmentStatus == EnrollmentStatus.COMPLETED) {
                     resourceManager.formatWithEnrollmentLabel(

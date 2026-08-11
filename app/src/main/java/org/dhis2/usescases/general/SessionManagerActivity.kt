@@ -74,7 +74,7 @@ abstract class SessionManagerActivity :
             val isTraining = BuildConfig.FLAVOR == "dhis2Training"
             val screenShareAllowed =
                 serverComponent.userManager().isUserLoggedIn().blockingFirst() &&
-                        !serverComponent.userManager().allowScreenShare()
+                    !serverComponent.userManager().allowScreenShare()
             if (!isTraining && screenShareAllowed) {
                 window.setFlags(
                     WindowManager.LayoutParams.FLAG_SECURE,
@@ -138,18 +138,19 @@ abstract class SessionManagerActivity :
 
     private fun showPinBottomSheet() {
         if (pinComposeView != null) return
-        pinComposeView = addPinBottomSheet(
-            mode = PinMode.ASK,
-            onSuccess = {
-                startActivity(MainActivity::class.java, null, true, true, null)
-            },
-            onDismiss = {
-                analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
-                if (this !is LoginActivity) {
-                    startActivity(LoginActivity::class.java, null, true, true, null)
-                }
-            },
-        )
+        pinComposeView =
+            addPinBottomSheet(
+                mode = PinMode.ASK,
+                onSuccess = {
+                    startActivity(MainActivity::class.java, null, true, true, null)
+                },
+                onDismiss = {
+                    analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
+                    if (this !is LoginActivity) {
+                        startActivity(LoginActivity::class.java, null, true, true, null)
+                    }
+                },
+            )
     }
 
     private fun removePinBottomSheet() {
@@ -211,8 +212,8 @@ abstract class SessionManagerActivity :
             ) &&
             this !is LoginActivity
         ) {
-            workManagerController.cancelAllWork()
             lifecycleScope.launch {
+                workManagerController.cancelAllWorkAndWait()
                 syncStatusController.restore()
             }
         }

@@ -14,6 +14,11 @@ import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDefaults
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -22,6 +27,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -29,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.databinding.ActivityMainBinding
 import org.dhis2.mobile.commons.extensions.ObserveAsEvents
@@ -47,6 +54,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.TopBar
 import org.hisp.dhis.mobile.ui.designsystem.component.TopBarActionIcon
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
+import org.hisp.dhis.mobile.ui.designsystem.theme.dropShadow
 
 @Composable
 fun MainScreen(
@@ -59,14 +67,34 @@ fun MainScreen(
     onLayoutInflated: (ActivityMainBinding) -> Unit,
 ) {
     var showPinDialog by remember { mutableStateOf(false) }
-
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val pinCreatedMessage = stringResource(R.string.pin_created)
+    val pinAlreadyCreatedMessage = stringResource(R.string.pin_already_created)
     BackHandler { onAction(HomeAction.BackPressed) }
 
     ObserveAsEvents(effects) { effect ->
-        if (effect is HomeEffect.ShowPinDialog) {
-            showPinDialog = true
-        } else {
-            onEffect(effect)
+        when (effect) {
+            HomeEffect.ShowPinDialog ->
+                showPinDialog = true
+
+            HomeEffect.PinCreated ->
+                scope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = pinCreatedMessage,
+                        duration = SnackbarDuration.Long,
+                    )
+                }
+
+            HomeEffect.PinAlreadyCreated ->
+                scope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = pinAlreadyCreatedMessage,
+                        duration = SnackbarDuration.Long,
+                    )
+                }
+
+            else -> onEffect(effect)
         }
     }
 
@@ -90,18 +118,44 @@ fun MainScreen(
             if (screenState.bottomNavigationBarVisible) {
                 HomeBottomBar(screenState) { navigationPage ->
                     when (navigationPage) {
-                        NavigationPage.ANALYTICS -> onAction(HomeAction.ScreenChanged(MainScreenType.Home(HomeScreen.Visualizations)))
-                        NavigationPage.PROGRAMS -> onAction(HomeAction.ScreenChanged(MainScreenType.Home(HomeScreen.Programs)))
-                        else -> { /*no op*/ }
+                        NavigationPage.ANALYTICS ->
+                            onAction(
+                                HomeAction.ScreenChanged(
+                                    MainScreenType.Home(
+                                        HomeScreen.Visualizations,
+                                    ),
+                                ),
+                            )
+
+                        NavigationPage.PROGRAMS ->
+                            onAction(
+                                HomeAction.ScreenChanged(
+                                    MainScreenType.Home(
+                                        HomeScreen.Programs,
+                                    ),
+                                ),
+                            )
+
+                        else -> { // no op
+                        }
                     }
                 }
             }
         },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { data ->
+                Snackbar(
+                    modifier = Modifier.dropShadow(shape = SnackbarDefaults.shape),
+                    snackbarData = data,
+                )
+            }
+        },
     ) { paddingValues ->
         AndroidView(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
             factory = { context ->
                 ActivityMainBinding
                     .inflate(LayoutInflater.from(context))
@@ -198,10 +252,11 @@ fun HomeTopBar(
                 )
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors().copy(
-            containerColor = primaryColor,
-            titleContentColor = onToolbarColor,
-        ),
+        colors =
+            TopAppBarDefaults.topAppBarColors().copy(
+                containerColor = primaryColor,
+                titleContentColor = onToolbarColor,
+            ),
     )
 }
 
@@ -222,9 +277,10 @@ fun HomeBottomBar(
         }
     }
     NavigationBar(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
         items = navigationItems,
         selectedItemIndex = selectedItemIndex ?: 0,
         onItemClick = { navigationPage -> onNavigationSelected(navigationPage) },

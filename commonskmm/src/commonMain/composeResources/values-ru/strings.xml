@@ -169,4 +169,13 @@
     <string name="cancel">Отменить</string>
     <string name="ok">ОК</string>
 
-</resources>
+    <!--*******************
+   Default custom labels
+**********************-->
+    <plurals name="enrollment">
+        <item quantity="one">зачисление</item>
+        <item quantity="few">зачисления</item>
+        <item quantity="many">зачисления</item>
+        <item quantity="other">регистрации</item>
+    </plurals>
+    </resources>

@@ -121,7 +121,7 @@ class ScheduledEventActivity :
                         )
                     val dueDate =
                         EventDate(
-                            label = programStage.dueDateLabel() ?: getString(R.string.due_date),
+                            label = programStage.displayDueDateLabel() ?: getString(R.string.due_date),
                             dateValue = DateUtils.uiDateFormat().format(event.dueDate() ?: ""),
                         )
 

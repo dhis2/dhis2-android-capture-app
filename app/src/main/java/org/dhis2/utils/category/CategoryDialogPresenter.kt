@@ -40,7 +40,7 @@ class CategoryDialogPresenter(
                 .categoryModule()
                 .categoryCombos()
                 .uid(uid)
-                .get()
+                .rxGet()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -53,7 +53,6 @@ class CategoryDialogPresenter(
             view
                 .searchSource()
                 .debounce(500, TimeUnit.MILLISECONDS, schedulerProvider.io())
-                .map { it.toString() }
                 .map { textToSearch ->
                     mapCatOptComboToLivePageList(textToSearch)
                 }.subscribeOn(schedulerProvider.io())
@@ -81,7 +80,7 @@ class CategoryDialogPresenter(
                 .categoryModule()
                 .categories()
                 .uid(uid)
-                .get()
+                .rxGet()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(

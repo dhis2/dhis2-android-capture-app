@@ -220,8 +220,6 @@ fun LinkedHashMap<String, TrackedEntitySearchItemAttributeDomain>.setAttributeLi
     }
 }
 
-
-
 fun DomainEnrollment.setStatusText(
     context: Context,
     statusTextView: TextView,
@@ -258,7 +256,6 @@ fun DomainEnrollment.setStatusText(
     statusTextView.background = bgDrawable
 }
 
-
 fun List<DomainEnrollment>.hasFollowUp(): Boolean =
     firstOrNull { enrollment ->
         enrollment.followUp
@@ -271,13 +268,19 @@ fun List<DomainProgram>.getEnrollmentIconsData(
     val enrollmentIconDataList: MutableList<EnrollmentIconData> = mutableListOf()
 
     val filteredList = this.filter { it.uid != currentProgram }
-    this.filter { it.uid != currentProgram }
+    this
+        .filter { it.uid != currentProgram }
         .forEachIndexed { index, program ->
             filteredList.size.let {
                 if (it <= 4) {
                     enrollmentIconDataList.add(
-                        EnrollmentIconData(0, 0, true, 0,
-                            provideMetadataIconData(program.uid)),
+                        EnrollmentIconData(
+                            0,
+                            0,
+                            true,
+                            0,
+                            provideMetadataIconData(program.uid),
+                        ),
                     )
                 } else {
                     if (index in 0..2) {
@@ -301,4 +304,3 @@ fun List<DomainProgram>.getEnrollmentIconsData(
         }
     return enrollmentIconDataList
 }
-

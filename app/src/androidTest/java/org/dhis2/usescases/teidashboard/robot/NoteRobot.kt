@@ -1,9 +1,11 @@
 package org.dhis2.usescases.teidashboard.robot
 
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.Visibility
@@ -86,30 +88,57 @@ class NoteRobot : BaseRobot() {
     fun clickOnClearButton() {
         waitForView(withText(R.string.clear))
             .check(matches(allOf(isDisplayed(), isEnabled())))
-            .perform(closeSoftKeyboard(), click())
+            .perform(closeSoftKeyboard())
+        // Hiding the IME starts an animated window-inset transition that Espresso's
+        // main-thread idle check doesn't reliably wait out on every OS version. Clicking
+        // in the same perform() can resolve the button's coordinates mid-animation and
+        // miss it entirely, so give the transition time to settle before re-resolving.
+        waitToDebounce(300)
+        waitForView(withText(R.string.clear))
+            .check(matches(allOf(isDisplayed(), isEnabled())))
+            .perform(click())
     }
 
-    fun checkNoteDetails(user: String, noteText: String) {
-        waitForView(withId(R.id.notes_recycler), waitMillis = NOTES_WAIT_TIMEOUT_MS)
-            .check(matches(isDisplayed()))
+    fun waitUntilBackOnNotesList() {
+        waitForView(
+            allOf(withId(R.id.addNoteButton), isDisplayed()),
+            waitMillis = NOTES_WAIT_TIMEOUT_MS,
+        )
+    }
+
+    fun checkNotesListIsEmpty() {
+        waitForView(
+            allOf(withId(R.id.no_notes_layout), isDisplayed()),
+            waitMillis = NOTES_WAIT_TIMEOUT_MS,
+        )
+    }
+
+    fun clickOnNoteAtPosition(position: Int) {
+        waitForView(
+            allOf(withId(R.id.notes_recycler), isDisplayed(), isNotEmpty()),
+            waitMillis = NOTES_WAIT_TIMEOUT_MS,
+        ).perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(position, click()))
+    }
+
+    fun checkNoteDetailScreenShows(user: String, noteText: String) {
+        // storeBy + note are bound to isForm=false, so visibility alone proves
+        // we're on the read-only detail screen (no need to re-verify the intent).
         waitForView(
             allOf(
                 withId(R.id.storeBy),
                 withEffectiveVisibility(Visibility.VISIBLE),
-                withText(user)
+                withText(user),
             ),
             waitMillis = NOTES_WAIT_TIMEOUT_MS,
-        )
-            .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+        ).check(matches(isDisplayed()))
         waitForView(
             allOf(
-                withId(R.id.note_text),
+                withId(R.id.note),
                 withEffectiveVisibility(Visibility.VISIBLE),
-                withText(noteText)
+                withText(noteText),
             ),
             waitMillis = NOTES_WAIT_TIMEOUT_MS,
-        )
-            .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+        ).check(matches(isDisplayed()))
     }
 
     companion object {

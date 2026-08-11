@@ -228,7 +228,6 @@
     <string name="tuto_event_initial_new_1">Введіть усі дані для створення випадку</string>
     <string name="tuto_event_initial_1">Натисніть, щоб перевірити статус завершення випадку.</string>
     <string name="relationships">зв\'язки</string>
-    <string name="empty_tei_add">Немає зареєстрованих випадків, натисніть «+», щоб додати новий.</string>
     <string name="qr_data_values">Значення даних</string>
     <string name="info">Інформація</string>
     <string name="qr_no_id_error">Не вдалося прочитати цей ідентифікатор</string>
@@ -453,14 +452,11 @@
     <string name="action_do_not_show_again">Не показувати знову</string>
     <string name="feature_configuration">Конфігурація функції</string>
     <string name="show_radar_graph">Показати як діаграму Радар</string>
-    <string name="filter_follow_up_label">Для подальших дій %s</string>
     <string name="update_field_error">Це поле не вдалося оновити. Будь ласка спробуйте ще раз</string>
     <string name="blocked_by_completion">Ці дані не можна редагувати, оскільки вони позначені як завершені</string>
     <string name="edition_expired">Ці дані не можна редагувати, оскільки час їх редагування минув</string>
     <string name="edition_no_write_access">Ви не маєте дозволу редагувати ці дані</string>
-    <string name="event_date_not_in_orgunit_range">Ці дані не можна редагувати, оскільки організаційний підрозділ закрито</string>
     <string name="edition_no_catcombo_access">Ви не маєте дозволу редагувати ці дані</string>
-    <string name="edition_orgunit_user_scope">Ви не можете редагувати дані з цього організаційного підрозділу</string>
     <string name="error_tei_online_search_title">Онлайн-пошук дав таке повідомлення:</string>
     <string name="delete_account">Видалити обліковий запис</string>
     <string name="main_menu_troubleshooting">Усунення несправностей конфігурації</string>
@@ -472,6 +468,7 @@
     <string name="troubleshooting_pass_rule_validation">Попереджень не знайдено</string>
     <string name="troobleshooting_pass_rule_validation_title">Все виглядає чудово</string>
     <string name="not_saved">Не збережено</string>
+    <string name="review_message">Деякі поля потребують Вашої уваги. Бажаєте переглянути форму?</string>
     <string name="search_loading_more">Завантаження результатів</string>
     <string name="search_no_results_in_program">Результатів для %s не знайдено</string>
     <string name="search_outside_action">Пошук за межами цієї програми</string>
@@ -484,6 +481,8 @@
     <string name="action_ok">OK</string>
     <string name="init_search">Почніть пошук, щоб знайти будь-який %s</string>
     <string name="search_or_create">Ви можете знайти або створити новий %s</string>
+    <string name="missing_warning_fields_events">У вас є кілька попереджень. Ви хочете позначити цю форму як завершену?</string>
+    <string name="missing_error_fields_events">Деякі поля містять помилки і не були збережені. Бажаєте переглянути форму?</string>
     <string name="event_can_be_completed">Ви бажаєте позначити цю форму як завершену?</string>
     <string name="event_error_on_complete">У вас є кілька повідомлень про помилки. Бажаєте їх переглянути?</string>
     <string name="re_opened">Відкрито знову</string>
@@ -516,7 +515,6 @@
     <string name="programs">Програми</string>
     <string name="sync_successful">Синхронізація успішна</string>
     <string name="sync_error">Помилка синхронізації</string>
-    <string name="mark_follow_up">Позначити для подальших дій</string>
     <string name="schedule_next">Запланувати наступний</string>
     <string name="schedule">Запланувати</string>
     <string name="enter">Введіть</string>

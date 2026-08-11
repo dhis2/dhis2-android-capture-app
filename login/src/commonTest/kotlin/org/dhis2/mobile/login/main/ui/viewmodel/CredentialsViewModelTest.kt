@@ -10,8 +10,11 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.main.domain.model.BiometricsInfo
+import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
+import org.dhis2.mobile.login.main.domain.model.DeviceEnrollmentInfo
 import org.dhis2.mobile.login.main.domain.model.LoginResult
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.model.OpenIdLoginConfiguration
@@ -20,15 +23,18 @@ import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
 import org.dhis2.mobile.login.main.domain.usecase.GetDeviceEnrollmentUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
+import org.dhis2.mobile.login.main.domain.usecase.GetOAuthLogoutUrl
 import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUserWithOAuth
 import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
 import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
+import org.dhis2.mobile.login.main.domain.usecase.SetOAuthPin
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
+import org.dhis2.mobile.login.main.ui.state.AfterLoginAction
 import org.dhis2.mobile.login.main.ui.state.LoginState
 import org.dhis2.mobile.login.main.ui.state.OidcInfo
 import org.dhis2.mobile.login.pin.domain.usecase.ForgotPinUseCase
@@ -46,6 +52,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
 
@@ -63,6 +70,7 @@ class CredentialsViewModelTest {
     private val openIdLogin: OpenIdLogin = mock()
     private val loginUserWithOAuth: LoginUserWithOAuth = mock()
     private val getDeviceEnrollmentUrl: GetDeviceEnrollmentUrl = mock()
+    private val getOAuthLogoutUrl: GetOAuthLogoutUrl = mock()
     private val processDeviceEnrollment: ProcessDeviceEnrollment = mock()
     private val updateTrackingPermission: UpdateTrackingPermission = mock()
     private val updateBiometricPermission: UpdateBiometricPermission = mock()
@@ -70,6 +78,7 @@ class CredentialsViewModelTest {
     private val networkStatusProvider: NetworkStatusProvider = mock()
     private val getIsSessionLockedUseCase: GetIsSessionLockedUseCase = mock()
     private val forgotPinUseCase: ForgotPinUseCase = mock()
+    private val setOAuthPin: SetOAuthPin = mock()
 
     private lateinit var viewModel: CredentialsViewModel
 
@@ -100,7 +109,7 @@ class CredentialsViewModelTest {
                     displayBiometricsMessageAfterLogin = false,
                 )
             whenever(getHasOtherAccounts.invoke()) doReturn false
-            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
 
             // WHEN
             initViewModel(serverUrl = serverUrl)
@@ -111,7 +120,7 @@ class CredentialsViewModelTest {
                 val loadedState = awaitItem()
                 assertFalse(loadedState.hasOtherAccounts)
                 assertTrue(loadedState.canUseBiometrics)
-                assertEquals(loadedState.credentialsInfo.availableUsernames, usernames)
+                assertEquals(loadedState.credentialsInfo?.availableUsernames, usernames)
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -128,7 +137,7 @@ class CredentialsViewModelTest {
                     displayBiometricsMessageAfterLogin = false,
                 )
             whenever(getHasOtherAccounts.invoke()) doReturn false
-            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
 
             initViewModel()
 
@@ -140,7 +149,7 @@ class CredentialsViewModelTest {
 
                 // THEN
                 val updatedState = awaitItem()
-                assertEquals("test_user", updatedState.credentialsInfo.username)
+                assertEquals("test_user", updatedState.credentialsInfo?.username)
                 assertEquals(LoginState.Disabled, updatedState.loginState)
 
                 cancelAndIgnoreRemainingEvents()
@@ -158,7 +167,7 @@ class CredentialsViewModelTest {
                     displayBiometricsMessageAfterLogin = false,
                 )
             whenever(getHasOtherAccounts.invoke()) doReturn false
-            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
 
             initViewModel()
 
@@ -172,7 +181,7 @@ class CredentialsViewModelTest {
 
                 // THEN
                 val updatedState = awaitItem()
-                assertEquals("test_password", updatedState.credentialsInfo.password)
+                assertEquals("test_password", updatedState.credentialsInfo?.password)
                 assertEquals(LoginState.Enabled, updatedState.loginState)
             }
         }
@@ -188,10 +197,10 @@ class CredentialsViewModelTest {
                     displayBiometricsMessageAfterLogin = false,
                 )
             whenever(getHasOtherAccounts.invoke()) doReturn false
-            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
 
             whenever(
-                loginUser.invoke(any(), any(), any(), any()),
+                loginUser.invoke(any(), any(), any()),
             ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
 
             initViewModel()
@@ -233,10 +242,10 @@ class CredentialsViewModelTest {
             whenever(getAvailableUsernames()) doReturn emptyList()
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
-            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
 
             whenever(
-                loginUser.invoke(any(), any(), any(), any()),
+                loginUser.invoke(any(), any(), any()),
             ) doReturn LoginResult.Error(errorMessage)
 
             initViewModel()
@@ -270,7 +279,7 @@ class CredentialsViewModelTest {
             whenever(getAvailableUsernames()) doReturn emptyList()
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn true
-            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
 
             initViewModel()
 
@@ -297,10 +306,10 @@ class CredentialsViewModelTest {
                 whenever(getAvailableUsernames()) doReturn emptyList()
                 whenever(getBiometricInfo(any())) doReturn BiometricsInfo(true, false)
                 whenever(getHasOtherAccounts.invoke()) doReturn false
-                whenever(getIsSessionLockedUseCase()) doReturn false
+                whenever(getIsSessionLockedUseCase(any())) doReturn false
 
                 whenever(biometricLogin.invoke()) doReturn Result.success(testPassword)
-                whenever(loginUser.invoke(any(), any(), any(), any())) doReturn
+                whenever(loginUser.invoke(any(), any(), any())) doReturn
                     LoginResult.Success(
                         true,
                         false,
@@ -312,12 +321,11 @@ class CredentialsViewModelTest {
                     viewModel.onBiometricsClicked()
                     testDispatcher.scheduler.advanceUntilIdle()
                     val updatedPasswordState = awaitItem()
-                    assertEquals(testPassword, updatedPasswordState.credentialsInfo.password)
+                    assertEquals(testPassword, updatedPasswordState.credentialsInfo?.password)
                     verify(loginUser).invoke(
                         serverUrl = "https://test.server.org",
                         username = "Joe",
                         password = testPassword,
-                        isNetworkAvailable = true,
                     )
                     cancelAndIgnoreRemainingEvents()
                 }
@@ -336,7 +344,7 @@ class CredentialsViewModelTest {
                 whenever(getAvailableUsernames()) doReturn emptyList()
                 whenever(getBiometricInfo(any())) doReturn BiometricsInfo(true, false)
                 whenever(getHasOtherAccounts.invoke()) doReturn false
-                whenever(getIsSessionLockedUseCase()) doReturn false
+                whenever(getIsSessionLockedUseCase(any())) doReturn false
                 val exceptionMessage = "This is an error"
                 whenever(biometricLogin.invoke()) doReturn Result.failure(Exception(exceptionMessage))
 
@@ -352,7 +360,6 @@ class CredentialsViewModelTest {
                         serverUrl = any(),
                         username = any(),
                         password = any(),
-                        isNetworkAvailable = any(),
                     )
                     cancelAndIgnoreRemainingEvents()
                 }
@@ -366,10 +373,10 @@ class CredentialsViewModelTest {
             whenever(getAvailableUsernames()) doReturn emptyList()
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
-            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
 
             whenever(
-                loginUser.invoke(any(), any(), any(), any()),
+                loginUser.invoke(any(), any(), any()),
             ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
 
             initViewModel()
@@ -398,7 +405,6 @@ class CredentialsViewModelTest {
                     serverUrl = any(),
                     username = any(),
                     password = any(),
-                    isNetworkAvailable = any(),
                 )
 
                 cancelAndIgnoreRemainingEvents()
@@ -412,10 +418,10 @@ class CredentialsViewModelTest {
             whenever(getAvailableUsernames()) doReturn emptyList()
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn true
-            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
 
             whenever(
-                loginUser.invoke(any(), any(), any(), any()),
+                loginUser.invoke(any(), any(), any()),
             ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
 
             initViewModel()
@@ -444,7 +450,6 @@ class CredentialsViewModelTest {
                     serverUrl = any(),
                     username = eq("secondUser"),
                     password = any(),
-                    isNetworkAvailable = any(),
                 )
 
                 cancelAndIgnoreRemainingEvents()
@@ -458,10 +463,10 @@ class CredentialsViewModelTest {
             whenever(getAvailableUsernames()) doReturn listOf("user1", "user2", "user3")
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn true
-            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
 
             whenever(
-                loginUser.invoke(any(), any(), any(), any()),
+                loginUser.invoke(any(), any(), any()),
             ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
 
             initViewModel()
@@ -490,7 +495,6 @@ class CredentialsViewModelTest {
                     serverUrl = any(),
                     username = eq("user3"),
                     password = any(),
-                    isNetworkAvailable = any(),
                 )
 
                 cancelAndIgnoreRemainingEvents()
@@ -506,10 +510,10 @@ class CredentialsViewModelTest {
             whenever(getAvailableUsernames()) doReturn emptyList()
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn true
-            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
 
             whenever(
-                loginUser.invoke(any(), any(), any(), any()),
+                loginUser.invoke(any(), any(), any()),
             ) doReturn LoginResult.Error(errorMessage)
 
             initViewModel()
@@ -538,7 +542,6 @@ class CredentialsViewModelTest {
                     serverUrl = any(),
                     username = any(),
                     password = any(),
-                    isNetworkAvailable = any(),
                 )
 
                 cancelAndIgnoreRemainingEvents()
@@ -551,34 +554,33 @@ class CredentialsViewModelTest {
             // GIVEN
             val serverUrl = "https://test.server.org"
             val authCode = "auth_code_123"
-            val appLinkUrl = "https://vgarciabnz.github.io?code=$authCode&state=test"
+            val appLinkUrl = "https://test.redirect.org?code=$authCode&state=test"
             val mockAppLinkFlow = MutableSharedFlow<String>()
             val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
+            val logoutUrl = "$serverUrl/dhis-web-commons-security/logout.action?redirect_uri=dhis2oauth://oauth"
+            val state = "test"
+            val logoutCallbackUrl = "https://test.redirect.org?state=$state"
 
             whenever(getAvailableUsernames()) doReturn emptyList()
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
-            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
             whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
             whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
+            whenever(getOAuthLogoutUrl(any())) doReturn Result.success(logoutUrl)
             whenever(
-                loginUserWithOAuth.invoke(any(), any()),
+                loginUserWithOAuth.invoke(any(), any(), any()),
             ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
 
-            // Use oAuthEnable=true and fromHome=true to avoid auto-launch but enable OAuth flow
-            initViewModel(serverUrl = serverUrl, username = "testuser", oAuthEnable = true, fromHome = true)
+            initViewModel(serverUrl = serverUrl, username = "testuser", entryMode = CredentialsEntryMode.NEW_ACCOUNT_OAUTH)
 
             viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
-                awaitItem()
-                awaitItem()
-
-                // Trigger OAuth flow by clicking login
-                viewModel.onLoginClicked()
+                // The enrollment flow starts and the view model listens for OAuth callbacks
                 testDispatcher.scheduler.advanceUntilIdle()
-
-                // Login state should be running after clicking login
-                val runningState = awaitItem()
-                assertEquals(LoginState.Running, runningState.loginState)
+                verify(navigator).navigate(
+                    eq(LoginScreenState.OauthAuthentication(selectedServer = enrollmentUrl)),
+                    any(),
+                )
 
                 // WHEN - Send app link with authorization code (simulates OAuth callback)
                 mockAppLinkFlow.emit(appLinkUrl)
@@ -586,17 +588,104 @@ class CredentialsViewModelTest {
 
                 // Advance time for login to complete
                 testDispatcher.scheduler.advanceTimeBy(4.seconds)
-
-                // Login should succeed and show after login actions
-                val finalState = awaitItem()
-                assertEquals(LoginState.Enabled, finalState.loginState)
-                assertTrue(finalState.afterLoginActions.isNotEmpty())
+                testDispatcher.scheduler.advanceUntilIdle()
 
                 // Verify OAuth login was called with the correct code
                 verify(loginUserWithOAuth).invoke(
                     serverUrl = serverUrl,
                     code = authCode,
+                    state = state,
                 )
+
+                // THEN - the server session is cleared before entering the app:
+                // navigate to the logout URL and defer the after-login actions
+                verify(navigator).navigate(
+                    eq(LoginScreenState.OauthAuthentication(selectedServer = logoutUrl)),
+                    any(),
+                )
+                assertTrue(expectMostRecentItem().afterLoginActions.isEmpty())
+
+                // WHEN - the logout redirect returns (no code/iat/error)
+                mockAppLinkFlow.emit(logoutCallbackUrl)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - creating the mandatory offline credential is the first post-login
+                // action, gating navigation into the app
+                val awaitingState = expectMostRecentItem()
+                assertEquals(LoginState.Enabled, awaitingState.loginState)
+                assertIs<AfterLoginAction.CreateOfflineCredential>(
+                    awaitingState.afterLoginActions.firstOrNull(),
+                )
+
+                // WHEN - the user creates the mandatory offline credential
+                whenever(setOAuthPin("1234")) doReturn Result.success(Unit)
+                viewModel.onOfflineCredentialCreated("1234")
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - it is stored with the SDK and the create gate clears, leaving the
+                // remaining post-login actions to run
+                verify(setOAuthPin).invoke("1234")
+                val finalState = expectMostRecentItem()
+                assertTrue(finalState.afterLoginActions.none { it is AfterLoginAction.CreateOfflineCredential })
+                assertTrue(finalState.afterLoginActions.isNotEmpty())
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN the device is not registered WHEN the authorization code arrives THEN the OAuth login is rejected`() =
+        runTest {
+            // GIVEN - the SDK rejects the login response with OAUTH2_DEVICE_NOT_REGISTERED,
+            // which reaches the view model as its mapped error message
+            val serverUrl = "https://test.server.org"
+            val authCode = "auth_code_123"
+            val state = "test"
+            val appLinkUrl = "https://test.redirect.org?code=$authCode&state=$state"
+            val mockAppLinkFlow = MutableSharedFlow<String>()
+            val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
+            val deviceNotRegisteredMessage = "Device not registered"
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
+            whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
+            whenever(
+                loginUserWithOAuth.invoke(any(), any(), any()),
+            ) doReturn LoginResult.Error(deviceNotRegisteredMessage)
+
+            initViewModel(serverUrl = serverUrl, username = "testuser", entryMode = CredentialsEntryMode.NEW_ACCOUNT_OAUTH)
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                // The enrollment flow starts and the view model listens for OAuth callbacks
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // WHEN - the authorization code arrives
+                mockAppLinkFlow.emit(appLinkUrl)
+                testDispatcher.scheduler.advanceUntilIdle()
+                testDispatcher.scheduler.advanceTimeBy(4.seconds)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                verify(loginUserWithOAuth).invoke(
+                    serverUrl = serverUrl,
+                    code = authCode,
+                    state = state,
+                )
+
+                // THEN - the device-not-registered message is shown and the user does not enter
+                // the app: no logout hop and no post-login actions
+                val errorState = expectMostRecentItem()
+                assertEquals(deviceNotRegisteredMessage, errorState.errorMessage)
+                assertEquals(LoginState.Enabled, errorState.loginState)
+                assertTrue(errorState.afterLoginActions.isEmpty())
+                verify(getOAuthLogoutUrl, never()).invoke(any())
+
+                // AND - the OAuth flow is over, so later app links are ignored
+                mockAppLinkFlow.emit("https://test.redirect.org?code=late_code&state=$state")
+                testDispatcher.scheduler.advanceUntilIdle()
+                verify(loginUserWithOAuth, never()).invoke(any(), eq("late_code"), any())
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -610,33 +699,28 @@ class CredentialsViewModelTest {
             val iat = "enrollment_iat_token"
             val consentUrl = "https://test.server.org/oauth2/consent"
             val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
-            val appLinkUrl = "https://vgarciabnz.github.io?iat=$iat&state=test"
+            val appLinkUrl = "https://test.redirect.org?iat=$iat&state=test"
             val mockAppLinkFlow = MutableSharedFlow<String>()
 
             whenever(getAvailableUsernames()) doReturn emptyList()
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
-            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
             whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
             whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
             whenever(
                 processDeviceEnrollment.invoke(any()),
             ) doReturn Result.success(consentUrl)
 
-            // Use oAuthEnable=true and fromHome=true to avoid auto-launch but enable OAuth flow
-            initViewModel(serverUrl = serverUrl, username = "testuser", oAuthEnable = true, fromHome = true)
+            initViewModel(serverUrl = serverUrl, username = "testuser", entryMode = CredentialsEntryMode.NEW_ACCOUNT_OAUTH)
 
             viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
-                awaitItem()
-                awaitItem()
-
-                // Trigger OAuth flow by clicking login
-                viewModel.onLoginClicked()
+                // The enrollment flow starts and the view model listens for OAuth callbacks
                 testDispatcher.scheduler.advanceUntilIdle()
-
-                // Login state should be running after clicking login
-                val runningState = awaitItem()
-                assertEquals(LoginState.Running, runningState.loginState)
+                verify(navigator).navigate(
+                    eq(LoginScreenState.OauthAuthentication(selectedServer = enrollmentUrl)),
+                    any(),
+                )
 
                 // WHEN - Send app link with IAT token (simulates enrollment callback)
                 mockAppLinkFlow.emit(appLinkUrl)
@@ -645,8 +729,73 @@ class CredentialsViewModelTest {
                 // Verify device enrollment was called with the correct IAT
                 verify(processDeviceEnrollment).invoke(any())
 
-                // Verify navigation happened twice: once for enrollment URL, once for consent URL
-                verify(navigator, times(2)).navigate(any<LoginScreenState>(), any())
+                // Verify navigation to the consent URL
+                verify(navigator).navigate(
+                    eq(LoginScreenState.OauthAuthentication(selectedServer = consentUrl)),
+                    any(),
+                )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN the device registration is incomplete WHEN the enrollment token arrives THEN the OAuth flow is aborted`() =
+        runTest {
+            // GIVEN - the SDK rejects the enrollment response with OAUTH2_INCOMPLETE_REGISTRATION,
+            // which reaches the view model as its mapped authentication error
+            val serverUrl = "https://test.server.org"
+            val iat = "enrollment_iat_token"
+            val state = "test"
+            val appLinkUrl = "https://test.redirect.org?iat=$iat&state=$state"
+            val mockAppLinkFlow = MutableSharedFlow<String>()
+            val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
+            val oauth2ErrorMessage = "There was an error when authenticating with OAuth2"
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
+            whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
+            whenever(
+                processDeviceEnrollment.invoke(any()),
+            ) doReturn Result.failure(DomainError.AuthenticationError(oauth2ErrorMessage))
+
+            initViewModel(serverUrl = serverUrl, username = "testuser", entryMode = CredentialsEntryMode.NEW_ACCOUNT_OAUTH)
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                // The enrollment flow starts and the view model listens for OAuth callbacks
+                testDispatcher.scheduler.advanceUntilIdle()
+                verify(navigator).navigate(
+                    eq(LoginScreenState.OauthAuthentication(selectedServer = enrollmentUrl)),
+                    any(),
+                )
+
+                // WHEN - the enrollment token arrives
+                mockAppLinkFlow.emit(appLinkUrl)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                verify(processDeviceEnrollment).invoke(
+                    DeviceEnrollmentInfo(
+                        iat = iat,
+                        serverURL = serverUrl,
+                        state = state,
+                    ),
+                )
+
+                // THEN - the OAuth2 error is shown and the consent step is never reached:
+                // the enrollment navigation remains the only one
+                val errorState = expectMostRecentItem()
+                assertEquals(oauth2ErrorMessage, errorState.errorMessage)
+                assertEquals(LoginState.Enabled, errorState.loginState)
+                assertTrue(errorState.afterLoginActions.isEmpty())
+                verify(navigator, times(1)).navigate(any(), any())
+
+                // AND - the OAuth flow is over, so later app links are ignored
+                mockAppLinkFlow.emit("https://test.redirect.org?code=late_code&state=$state")
+                testDispatcher.scheduler.advanceUntilIdle()
+                verify(loginUserWithOAuth, never()).invoke(any(), any(), any())
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -657,43 +806,111 @@ class CredentialsViewModelTest {
         runTest {
             // GIVEN
             val serverUrl = "https://test.server.org"
-            val appLinkUrl = "https://vgarciabnz.github.io?error=access_denied&state=test"
+            val state = "test"
+            val appLinkUrl = "https://test.redirect.org?error=access_denied&state=$state"
             val mockAppLinkFlow = MutableSharedFlow<String>()
             val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
 
             whenever(getAvailableUsernames()) doReturn emptyList()
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
-            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
             whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
             whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
 
-            // Use oAuthEnable=true and fromHome=true to avoid auto-launch but enable OAuth flow
-            initViewModel(serverUrl = serverUrl, username = "testuser", oAuthEnable = true, fromHome = true)
+            initViewModel(serverUrl = serverUrl, username = "testuser", entryMode = CredentialsEntryMode.NEW_ACCOUNT_OAUTH)
 
             viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
-                awaitItem()
-                awaitItem()
-
-                // Trigger OAuth flow by clicking login
-                viewModel.onLoginClicked()
+                // The enrollment flow starts and the view model listens for OAuth callbacks
                 testDispatcher.scheduler.advanceUntilIdle()
-
-                // Login state should be running after clicking login
-                val runningState = awaitItem()
-                assertEquals(LoginState.Running, runningState.loginState)
 
                 // WHEN - Send app link with error (simulates OAuth error callback)
                 mockAppLinkFlow.emit(appLinkUrl)
                 testDispatcher.scheduler.advanceUntilIdle()
 
                 // THEN - Error message should be shown
-                val errorState = awaitItem()
+                val errorState = expectMostRecentItem()
                 assertEquals("access_denied", errorState.errorMessage)
                 assertEquals(LoginState.Enabled, errorState.loginState)
 
+                // AND - the OAuth flow is over, so later app links are ignored
+                mockAppLinkFlow.emit("https://test.redirect.org?code=late_code&state=$state")
+                testDispatcher.scheduler.advanceUntilIdle()
+                verify(loginUserWithOAuth, never()).invoke(any(), any(), any())
+
                 cancelAndIgnoreRemainingEvents()
             }
+        }
+
+    @Test
+    fun `GIVEN two view models sharing app links WHEN second OAuth account logs in THEN only the flow owner handles callbacks`() =
+        runTest {
+            // GIVEN - an existing account screen (stale) and a new OAuth account screen (owner)
+            val staleServerUrl = "https://first.server.org"
+            val oauthServerUrl = "https://second.server.org"
+            val authCode = "auth_code_456"
+            val state = "test"
+            val enrollmentUrl = "$oauthServerUrl/oauth2/enrollment"
+            val logoutUrl = "$oauthServerUrl/dhis-web-commons-security/logout.action?redirect_uri=dhis2oauth://oauth"
+            val sharedAppLinkNavigation = AppLinkNavigation()
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn true
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
+            whenever(getOAuthLogoutUrl(any())) doReturn Result.success(logoutUrl)
+            whenever(
+                loginUserWithOAuth.invoke(any(), any(), any()),
+            ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
+
+            val staleViewModel =
+                initViewModel(
+                    serverUrl = staleServerUrl,
+                    username = "firstUser",
+                    entryMode = CredentialsEntryMode.EXISTING_OAUTH,
+                    appLinkNavigation = sharedAppLinkNavigation,
+                )
+            val oauthViewModel =
+                initViewModel(
+                    serverUrl = oauthServerUrl,
+                    entryMode = CredentialsEntryMode.NEW_ACCOUNT_OAUTH,
+                    appLinkNavigation = sharedAppLinkNavigation,
+                )
+
+            oauthViewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                // Both view models load; only the new OAuth one starts its enrollment flow
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // WHEN - the authorization code and logout callbacks arrive
+                sharedAppLinkNavigation.emit("https://test.redirect.org?code=$authCode&state=$state")
+                testDispatcher.scheduler.advanceTimeBy(4.seconds)
+                testDispatcher.scheduler.advanceUntilIdle()
+                sharedAppLinkNavigation.emit("https://test.redirect.org?state=$state")
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - the OAuth flow owner completes the login and reaches the mandatory
+                // offline-PIN creation step
+                verify(loginUserWithOAuth).invoke(
+                    serverUrl = oauthServerUrl,
+                    code = authCode,
+                    state = state,
+                )
+                val finalState = expectMostRecentItem()
+                assertEquals(LoginState.Enabled, finalState.loginState)
+                assertIs<AfterLoginAction.CreateOfflineCredential>(
+                    finalState.afterLoginActions.firstOrNull(),
+                )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+
+            // AND - the stale view model never consumed the callbacks
+            verify(loginUserWithOAuth, never()).invoke(eq(staleServerUrl), any(), any())
+            assertTrue(
+                staleViewModel.credentialsScreenState.value.afterLoginActions
+                    .isEmpty(),
+            )
         }
 
     @Test
@@ -717,7 +934,7 @@ class CredentialsViewModelTest {
             whenever(getAvailableUsernames()) doReturn emptyList()
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
-            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
             whenever(openIdLogin.invoke(any())) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
 
             initViewModel(serverUrl = serverUrl, oidcInfo = oidcInfo)
@@ -773,7 +990,7 @@ class CredentialsViewModelTest {
             whenever(getAvailableUsernames()) doReturn emptyList()
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
-            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
             whenever(openIdLogin.invoke(any())) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
 
             initViewModel(serverUrl = serverUrl, oidcInfo = oidcInfo)
@@ -823,7 +1040,7 @@ class CredentialsViewModelTest {
             whenever(getAvailableUsernames()) doReturn emptyList()
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
-            whenever(getIsSessionLockedUseCase()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
             whenever(openIdLogin.invoke(any())) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
 
             initViewModel(serverUrl = serverUrl, oidcInfo = oidcInfo)
@@ -856,15 +1073,122 @@ class CredentialsViewModelTest {
             }
         }
 
+    @Test
+    fun `GIVEN EXISTING_OAUTH WHEN the offline credential is entered THEN offline login runs with it as password`() =
+        runTest {
+            // GIVEN
+            val serverUrl = "https://test.server.org"
+            val username = "testUser"
+            val pin = "1234"
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn
+                BiometricsInfo(
+                    canUseBiometrics = false,
+                    displayBiometricsMessageAfterLogin = false,
+                )
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(true)) doReturn true
+            whenever(loginUser.invoke(serverUrl, username, pin)) doReturn
+                LoginResult.Success(displayTrackingMessage = false, initialSyncDone = true)
+
+            initViewModel(
+                serverUrl = serverUrl,
+                username = username,
+                entryMode = CredentialsEntryMode.EXISTING_OAUTH,
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                awaitItem()
+                val lockedState = awaitItem()
+                assertTrue(lockedState.isSessionLocked)
+
+                // WHEN - the user enters their offline credential
+                viewModel.onOfflineCredentialEntered(pin)
+
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - the entered credential is used as the offline login password (verbatim)
+                verify(loginUser).invoke(serverUrl, username, pin)
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN a username with whitespace WHEN login is clicked THEN it is trimmed before the login use case`() =
+        runTest {
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(
+                loginUser.invoke(any(), any(), any()),
+            ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
+
+            initViewModel(serverUrl = "https://test.server.org", username = null)
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                awaitItem()
+                awaitItem()
+                viewModel.updateUsername("  user  ")
+                awaitItem()
+                viewModel.updatePassword("password")
+                awaitItem()
+
+                viewModel.onLoginClicked()
+                awaitItem() // LoginState.Running
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // The typed username is trimmed at the boundary before reaching the use case
+                verify(loginUser).invoke(
+                    serverUrl = "https://test.server.org",
+                    username = "user",
+                    password = "password",
+                )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN EXISTING_OAUTH initial landing WHEN loaded THEN offline dialog is not auto-shown until Login is tapped`() =
+        runTest {
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(true)) doReturn true
+
+            initViewModel(
+                entryMode = CredentialsEntryMode.EXISTING_OAUTH,
+                autoPromptLogin = false,
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                awaitItem()
+                // Passive initial landing: the offline-credential dialog is NOT auto-presented
+                val loadedState = awaitItem()
+                assertFalse(loadedState.isSessionLocked)
+
+                // WHEN - the user taps Login
+                viewModel.onLoginClicked()
+
+                // THEN - the offline-credential dialog is presented
+                assertTrue(awaitItem().isSessionLocked)
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
     private fun initViewModel(
         serverName: String? = "Test Server",
         serverUrl: String = "https://test.server.org",
         username: String? = null,
         allowRecovery: Boolean = true,
-        oAuthEnable: Boolean = false,
-        fromHome: Boolean = false,
+        entryMode: CredentialsEntryMode = CredentialsEntryMode.NEW_ACCOUNT_BASIC,
+        autoPromptLogin: Boolean = true,
         oidcInfo: OidcInfo? = null,
-    ) {
+        appLinkNavigation: AppLinkNavigation = this.appLinkNavigation,
+    ): CredentialsViewModel {
         viewModel =
             CredentialsViewModel(
                 navigator,
@@ -877,6 +1201,7 @@ class CredentialsViewModelTest {
                 openIdLogin,
                 loginUserWithOAuth,
                 getDeviceEnrollmentUrl,
+                getOAuthLogoutUrl,
                 processDeviceEnrollment,
                 updateTrackingPermission,
                 updateBiometricPermission,
@@ -889,8 +1214,10 @@ class CredentialsViewModelTest {
                 getIsSessionLockedUseCase,
                 forgotPinUseCase,
                 oidcInfo = oidcInfo,
-                fromHome = fromHome,
-                oAuthEnable = oAuthEnable,
+                entryMode = entryMode,
+                autoPromptLogin = autoPromptLogin,
+                setOAuthPin = setOAuthPin,
             )
+        return viewModel
     }
 }

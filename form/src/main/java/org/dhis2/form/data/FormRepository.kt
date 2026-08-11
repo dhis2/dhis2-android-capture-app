@@ -21,6 +21,7 @@ interface FormRepository {
     suspend fun runDataIntegrityCheck(backPressed: Boolean): DataIntegrityCheckResult
 
     fun completedFieldsPercentage(value: List<FieldUiModel>): Float
+
     fun backupOfChangedItems(): List<FieldUiModel>
 
     fun updateErrorList(action: RowAction)

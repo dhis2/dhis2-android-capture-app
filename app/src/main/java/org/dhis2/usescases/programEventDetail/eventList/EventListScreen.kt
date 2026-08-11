@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,8 +45,10 @@ fun EventListScreen(
             Modifier.padding(top = Spacing.Spacing16),
             workingListViewModel,
         )
-        val events = eventListViewModel.eventList.collectAsLazyPagingItems()
-        when (events.loadState.refresh) {
+        val eventListState by eventListViewModel.eventListState.collectAsState()
+        val events = eventListState?.eventList?.collectAsLazyPagingItems()
+
+        when (events?.loadState?.refresh) {
             is LoadState.Error -> {
                 // no-op
             }
@@ -72,7 +76,10 @@ fun EventListScreen(
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
-                            text = stringResource(id = R.string.empty_tei_add),
+                            text =
+                                stringResource(id = R.string.empty_tracker_events).format(
+                                    eventListState?.customEventLabel,
+                                ),
                         )
                     }
                 } else {
@@ -95,6 +102,10 @@ fun EventListScreen(
                         }
                     }
                 }
+            }
+
+            else -> {
+                // do nothing
             }
         }
     }

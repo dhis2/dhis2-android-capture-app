@@ -235,7 +235,6 @@
     <string name="tuto_event_initial_new_1">输入所有数据创建事件</string>
     <string name="tuto_event_initial_1">点击检查事件完成状态</string>
     <string name="relationships">关系</string>
-    <string name="empty_tei_add">还没有登记的事件，点击“+”新建一个。</string>
     <string name="qr_data_values">数据值</string>
     <string name="info">信息</string>
     <string name="qr_no_id_error">不能读取该ID</string>
@@ -462,14 +461,11 @@
     <string name="action_do_not_show_again">不再显示</string>
     <string name="feature_configuration">特征配置</string>
     <string name="show_radar_graph">显示为雷达图</string>
-    <string name="filter_follow_up_label">跟进%s</string>
     <string name="update_field_error">无法更新此字段。请再试一次</string>
     <string name="blocked_by_completion">此数据不可编辑，因为已标记为已完成</string>
     <string name="edition_expired">此数据不可编辑，因为其编辑时间已过期</string>
     <string name="edition_no_write_access">您无权编辑此数据</string>
-    <string name="event_date_not_in_orgunit_range">此数据不可修改，因为单位部门已关闭</string>
     <string name="edition_no_catcombo_access">您无权编辑此数据</string>
-    <string name="edition_orgunit_user_scope">您无法编辑此机构的数据</string>
     <string name="error_tei_online_search_title">网上搜索返回如下信息：</string>
     <string name="delete_account">删除帐户</string>
     <string name="main_menu_troubleshooting">配置疑难解答</string>
@@ -481,6 +477,7 @@
     <string name="troubleshooting_pass_rule_validation">未发现任何警告</string>
     <string name="troobleshooting_pass_rule_validation_title">一切看起来都很棒</string>
     <string name="not_saved">未保存</string>
+    <string name="review_message">有些字段需要您注意。\n您要复查表单吗？</string>
     <string name="search_loading_more">加载更多结果</string>
     <string name="search_no_results_in_program">%s 没有更多结果</string>
     <string name="search_outside_action">在此项目之外搜索</string>
@@ -494,6 +491,8 @@
     <string name="init_search">开始搜索以找到任何 %s</string>
     <string name="search_or_create">您可以搜索或创建一个新的 %s</string>
     <string name="missing_warning_fields_completed_events">您收到了一些警告信息。</string>
+    <string name="missing_warning_fields_events">您有一些警告消息。\n您想将此表单标记为完成吗？</string>
+    <string name="missing_error_fields_events">一些字段有错误并且它们没有被保存。 \n您要查看表单吗？</string>
     <string name="event_can_be_completed">您想将此表单标记为已完成吗？</string>
     <string name="event_error_on_complete">您有一些错误消息。\n您要查看它们吗？</string>
     <string name="re_opened">重新开放</string>
@@ -534,6 +533,8 @@
     <string name="download_now">现在下载</string>
     <string name="check_for_updates">检查更新</string>
     <string name="no_updates">没有新的更新</string>
+    <string name="unknow_sources_denied">未知来源权限被拒绝。\n您需要启用它才能安装版本。</string>
+    <string name="storage_denied">存储权限被拒绝。\n您需要启用它才能安装版本。</string>
     <string name="app_version">应用版本</string>
     <string name="error_applying_rule_effects">程序配置出了问题，我们无法加载此事件。请联系您的系统管理员。</string>
     <string name="dashboard_menu_delete_person">删除人员</string>
@@ -541,7 +542,6 @@
     <string name="permission_notification_granted">已授予通知许可。</string>
     <string name="not_synced">未同步</string>
     <string name="sync_retry">重试同步</string>
-    <string name="marked_follow_up">标记为后续</string>
     <string name="overdue">逾期%s</string>
     <string name="registered_in">已登记</string>
     <string name="view_only">只读</string>
@@ -552,8 +552,8 @@
     <string name="sync_successful">同步成功</string>
     <string name="sync_warning">同步警告</string>
     <string name="sync_error">同步错误</string>
-    <string name="mark_follow_up">后续标记</string>
     <string name="coordinates">坐标</string>
+    <string name="no_data_access">您无权访问数据。\n请与您的管理员联系。</string>
     <string name="sync_offline_check_connection">您似乎已离线。请检查您的连接</string>
     <string name="delete_tei_dialog_title">删除此%s？</string>
     <string name="delete_tei_dialog_message">此 %s 及其所有程序中的所有数据都将被删除。此操作无法撤消。</string>

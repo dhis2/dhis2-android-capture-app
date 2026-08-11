@@ -16,7 +16,6 @@ interface LoginRepository {
         serverUrl: String,
         username: String,
         password: String,
-        isNetworkAvailable: Boolean,
     ): Result<Unit>
 
     suspend fun getAvailableLoginUsernames(): List<String>
@@ -64,10 +63,16 @@ interface LoginRepository {
     suspend fun enrollDevice(
         iat: String,
         serverURL: String,
+        state: String,
     ): String
 
     suspend fun loginUserWithOAuth(
         serverUrl: String,
         code: String,
+        state: String,
     ): Result<String?>
+
+    suspend fun buildLogoutUrl(serverUrl: String): String
+
+    suspend fun setOfflinePin(pin: String): Result<Unit>
 }

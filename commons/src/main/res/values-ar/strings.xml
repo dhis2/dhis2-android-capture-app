@@ -34,7 +34,6 @@
     <string name="filters_title_state">حالة التزامن</string>
     <string name="filters_title_assigned">تم تعيينه لي</string>
     <string name="filters_title_date">التاريخ</string>
-    <string name="filter_follow_up_label">تمت متابعة %s</string>
     <string name="select_period">تحديد نوع الفترة الزمنية</string>
     <string name="weekly">أسبوعي</string>
     <string name="bi_weekly">كل اسبوعين</string>

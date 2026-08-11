@@ -188,10 +188,10 @@
     <string name="about_sdk">Versión del SDK: %s</string>
     <string name="about_connected">Conectado a: %s</string>
     <string name="about_user">Usuario actual: %s</string>
-    <string name="about_more">Más sobre esta app: lea <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">aquí</a> sobre lo que está y no está soportado</string>
-    <string name="about_git">Esta versión de la app y versiones anteriores, así como el código fuente está disponible en <a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>. DHIS 2 Android Capture tiene licencia según los términos del GNU General Public License publicada por la Free Software Foundation - ver <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
-    <string name="about_dev">Desarrollada y mantenida por el proyecto <a href="https://www.dhis2.org/">DHIS2</a>, parte de la Universidad de Oslo, <a href="https://www.mn.uio.no/ifi/english/">departamento de informática</a>.</string>
-    <string name="about_contact">Para más información o preguntas sobre la aplicación, por favor escriba a <a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
+    <string name="about_more">Más sobre esta app: lea \"<a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">aquí</a>\" sobre lo que está y no está soportado</string>
+    <string name="about_git">\"Esta versión de la app y versiones anteriores, así como el código fuente está disponible en \"<a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>\". DHIS 2 Android Capture tiene licencia según los términos del GNU General Public License publicada por la Free Software Foundation - ver \"<a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
+    <string name="about_dev">\"Desarrollada y mantenida por el proyecto \"<a href="https://www.dhis2.org/">DHIS2</a>\", parte de la Universidad de Oslo, \"<a href="https://www.mn.uio.no/ifi/english/">departamento de informática</a>.</string>
+    <string name="about_contact">\"Para más información o preguntas sobre la aplicación, por favor escriba a \"<a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
 
     <string name="search_program_not_selected">Seleccione un programa para habilitar nuevas admisiones</string>
     <string name="search_access_error">No tiene los permisos necesarios</string>
@@ -213,7 +213,6 @@
     <string name="tuto_event_initial_new_1">Complete todos los campos para crear el evento</string>
     <string name="tuto_event_initial_1">Aqui puedes ver el % de campos completos en el evento. </string>
     <string name="relationships">relaciones</string>
-    <string name="empty_tei_add">No hay eventos registrados, haga click en \"+\" para añadir uno.</string>
     <string name="qr_data_values">Valores de datos</string>
     <string name="info">Información</string>
     <string name="qr_no_id_error">No se ha podido leer este Id</string>
@@ -436,14 +435,11 @@
     <string name="action_do_not_show_again">No volver a mostrar</string>
     <string name="feature_configuration">Configuración de funciones</string>
     <string name="show_radar_graph">Ver como gráfico de radar</string>
-    <string name="filter_follow_up_label">Seguido %s</string>
     <string name="update_field_error">No se ha podido actualizar este campo. Prueba otra vez.</string>
     <string name="blocked_by_completion">Los datos no son editables por que está marcado como completado.</string>
     <string name="edition_expired">Los datos no son editables por que el tiempo de edición ha expirado.</string>
     <string name="edition_no_write_access">No tiene permisos de edición para estos datos.</string>
-    <string name="event_date_not_in_orgunit_range">Los datos no son editables por que la unidad organizativa está cerrada.</string>
     <string name="edition_no_catcombo_access">No tiene permisos de edición para estos datos.</string>
-    <string name="edition_orgunit_user_scope">No puede editar datos en esta unidad organizativa.</string>
     <string name="error_tei_online_search_title">La búsqueda online a devuelto este mensaje:</string>
     <string name="delete_account">Eliminar una cuenta</string>
     <string name="main_menu_troubleshooting">Revisión de configuración </string>
@@ -455,6 +451,7 @@
     <string name="troubleshooting_pass_rule_validation">No se encontraron advertencias</string>
     <string name="troobleshooting_pass_rule_validation_title">¡Parece que todo está bien!</string>
     <string name="not_saved">No guardado</string>
+    <string name="review_message">Algunos campos necesitan su atención.\n¿Desea revisar el formulario?</string>
     <string name="search_loading_more">Cargando más resultados</string>
     <string name="search_no_results_in_program">No hay más resultados para %s</string>
     <string name="search_outside_action">Búsqueda fuera del programa</string>
@@ -466,7 +463,8 @@
     <string name="action_ok">De acuerdo</string>
     <string name="init_search">Empieza una búsqueda para encontrar %s</string>
     <string name="search_or_create">Puedes buscar o crear un nuevo %s</string>
-    <string name="missing_warning_fields_events">Tienes algunos mensajes de alerta.\n¿Desea marcar el formulario como Completo\?</string>
+    <string name="missing_warning_fields_events">Tienes algunos mensajes de alerta.\n¿Desea marcar el formulario como Completo?</string>
+    <string name="missing_error_fields_events">Algunos campos tienen errores y no serán guardados. \n¿Desea revisar el formulario?</string>
     <string name="event_can_be_completed">¿Desea marcar este formulario como completo?</string>
     <string name="event_error_on_complete">Tiene algunos mensajes de error. \n¿Desea revisarlos?</string>
     <string name="re_opened">Reabrir</string>

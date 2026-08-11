@@ -15,6 +15,7 @@ import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.provider.UiEventTypesProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
@@ -471,6 +472,7 @@ class RulesUtilsProviderImplTest {
                 .code(newValue)
                 .name("optionName")
                 .displayName("OptionDisplayName")
+                .optionSet(ObjectWithUid.create("optionSetUid"))
                 .build()
 
         // When applying RuleEffects
@@ -520,6 +522,7 @@ class RulesUtilsProviderImplTest {
                 .displayName("OldDisplayName")
                 .name("optionName")
                 .code(oldValue)
+                .optionSet(ObjectWithUid.create("optionSetUid"))
                 .build()
 
         // And a target field with option set
@@ -532,6 +535,7 @@ class RulesUtilsProviderImplTest {
                 .code(newValue)
                 .name("optionName")
                 .displayName("OptionDisplayName")
+                .optionSet(ObjectWithUid.create("optionSetUid"))
                 .build()
 
         // When applying RuleEffects

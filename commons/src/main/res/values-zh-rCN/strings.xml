@@ -39,7 +39,6 @@
     <string name="filters_title_event_label_date">%s 日期</string>
     <string name="filters_title_event_label_status">%s 状态</string>
     <string name="filters_title_enrollment_status">@string/enrollment_status</string>
-    <string name="filter_follow_up_label">跟进%s</string>
     <string name="select_period">请选择周期类型</string>
     <string name="weekly">每周</string>
     <string name="bi_weekly">双周</string>
@@ -275,9 +274,6 @@
     <string name="group_by_stage">按阶段分组</string>
 
     <!-- Event -->
-    <plurals name="event_label">
-        <item quantity="other">活动</item>
-    </plurals>
     <string name="event_label_completed">%s 完成</string>
     <string name="event_label_created">%s 创建</string>
     <string name="new_event_label">新%s</string>
@@ -307,6 +303,7 @@
     <string name="period_six_monthly_title">每月六次</string>
     <string name="period_yearly_title">年</string>
     <string name="period_financial_year_title">财政年度</string>
+    <string name="no_periods">无可用时段</string>
     <string name="action_clear_all">全清除</string>
 
     <string name="enrollment_status">%s 地位</string>

@@ -129,9 +129,10 @@
     <string name="login_error_error_response">Sorry! Something failed on the server side.</string>
     <string name="login_error_no_dhis_instance">The URL provided is not a DHIS2 server.</string>
     <string name="login_error_bad_credentials">The username or password are incorrect</string>
+    <string name="login_error_bad_credentials_offline">The code is incorrect</string>
     <string name="login_error_unknown_host">Unknown server</string>
     <string name="online_search_parsing_error">Error while parsing results</string>
-    <string name="error_unexpected">Something unexpected went worng.</string>
+    <string name="error_unexpected">Something unexpected went wrong.</string>
     <string name="error_too_manu_org_units">Your user has more than one root organisation units. Review your configuration or contact your admin.</string>
     <string name="error_max_tei_count_reached">Online results exceed the maximum number of tracker instances that can be shown. Please refine your search.</string>
     <string name="error_many_requests">The server is a bit busy at this moment. Please try a bit later.</string>
@@ -187,6 +188,8 @@
     <string name="database_import_failed">Database import failed</string>
     <string name="invalid_file">Invalid file</string>
     <string name="not_in_totp_2fa_enrollment_mode">Not in TOTP 2FA enrollment mode</string>
+    <string name="oauth2_error">There was an error when authenticating with OAuth2</string>
+    <string name="error_device_not_registered">Device not registered</string>
     <!--*******************
        END OF D2 Error Messages
     **********************-->
@@ -196,4 +199,40 @@
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
 
+    <!--*******************
+   Default custom labels
+**********************-->
+    <plurals name="enrollment">
+        <item quantity="one">enrollment</item>
+        <item quantity="other">enrollments</item>
+    </plurals>
+    <plurals name="org_unit">
+        <item quantity="one">organisation unit</item>
+        <item quantity="other">organisation units</item>
+    </plurals>
+    <plurals name="tei">
+        <item quantity="one">tei</item>
+        <item quantity="other">teis</item>
+    </plurals>
+    <plurals name="event">
+        <item quantity="one">event</item>
+        <item quantity="other">events</item>
+    </plurals>
+    <!--*******************
+    Info bar labels
+    **********************-->
+    <string name="follow_up">follow-up</string>
+    <!--marked_for_follow_up will be formatted using custom terminology or the default label-->
+    <string name="marked_for_follow_up">Marked for %s</string>
+    <!--marke_for_follow_up will be formatted using custom terminology or the default label-->
+    <string name="mark_for_follow_up">Mark for %s</string>
+    <string name="not_synced">Not synced</string>
+    <string name="sync">Sync</string>
+    <string name="sync_warning">Sync warning</string>
+    <string name="sync_retry">Retry sync</string>
+    <string name="sync_error">Sync Error</string>
+    <string name="marked_follow_up">Marked for follow-up</string>
+    <string name="remove_follow_up">Remove</string>
+    <string name="enrollment_completed">Enrollment completed</string>
+    <string name="enrollment_cancelled">Enrollment cancelled</string>
 </resources>

@@ -1,5 +1,6 @@
 package dhis2.org.analytics.charts.providers
 
+import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.analytics.AnalyticsLegendStrategy
@@ -12,7 +13,6 @@ import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import kotlinx.coroutines.test.runTest
 import java.util.Date
 
 class ChartCoordinatesProviderImplTest {
@@ -23,68 +23,72 @@ class ChartCoordinatesProviderImplTest {
         ChartCoordinatesProviderImpl(d2, periodStepProvider, resourceManager)
 
     @Test
-    fun `Should get coordinates for data elements`() = runTest {
-        mockedLineListResponse(false)
-        val result =
-            coordinatesProvider.dataElementCoordinates(
-                "stageUid",
-                "teiUid",
-                "dataElementUid",
-                null,
-                null,
+    fun `Should get coordinates for data elements`() =
+        runTest {
+            mockedLineListResponse(false)
+            val result =
+                coordinatesProvider.dataElementCoordinates(
+                    "stageUid",
+                    "teiUid",
+                    "dataElementUid",
+                    null,
+                    null,
+                )
+            assertTrue(
+                result.isNotEmpty(),
             )
-        assertTrue(
-            result.isNotEmpty(),
-        )
-    }
+        }
 
     @Test
-    fun `Should return empty coordinates for data elements`() = runTest {
-        mockedLineListResponse(true)
-        val result =
-            coordinatesProvider.dataElementCoordinates(
-                "stageUid",
-                "teiUid",
-                "dataElementUid",
-                null,
-                null,
+    fun `Should return empty coordinates for data elements`() =
+        runTest {
+            mockedLineListResponse(true)
+            val result =
+                coordinatesProvider.dataElementCoordinates(
+                    "stageUid",
+                    "teiUid",
+                    "dataElementUid",
+                    null,
+                    null,
+                )
+            assertTrue(
+                result.isEmpty(),
             )
-        assertTrue(
-            result.isEmpty(),
-        )
-    }
+        }
 
     @Test
-    fun `Should get coordinates for indicators`() = runTest {
-        mockedIndicatorLineListResponse(false)
-        val result =
-            coordinatesProvider.indicatorCoordinates(
-                "stageUid",
-                "teiUid",
-                "indicatorUid",
-                null,
-                null,
+    fun `Should get coordinates for indicators`() =
+        runTest {
+            mockedIndicatorLineListResponse(false)
+            val result =
+                coordinatesProvider.indicatorCoordinates(
+                    "stageUid",
+                    "teiUid",
+                    "indicatorUid",
+                    null,
+                    null,
+                )
+            assertTrue(
+                result.isNotEmpty(),
             )
-        assertTrue(
-            result.isNotEmpty(),
-        )
-    }
+        }
 
     @Test
-    fun `Should return empty coordinates for indicator`() = runTest {
-        mockedIndicatorLineListResponse(true)
-        val result =
-            coordinatesProvider.indicatorCoordinates(
-                "stageUid",
-                "teiUid",
-                "indicatorUid",
-                null,
-                null,
+    fun `Should return empty coordinates for indicator`() =
+        runTest {
+            mockedIndicatorLineListResponse(true)
+            val result =
+                coordinatesProvider.indicatorCoordinates(
+                    "stageUid",
+                    "teiUid",
+                    "indicatorUid",
+                    null,
+                    null,
+                )
+            assertTrue(
+                result.isEmpty(),
             )
-        assertTrue(
-            result.isEmpty(),
-        )
-    }
+        }
 
     private fun mockedLineListResponse(emptyList: Boolean) {
         whenever(

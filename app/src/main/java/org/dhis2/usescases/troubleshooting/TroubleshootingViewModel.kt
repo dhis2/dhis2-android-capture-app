@@ -25,38 +25,47 @@ class TroubleshootingViewModel(
     private val _localesToDisplay = MutableLiveData<List<Locale>>()
     val localesToDisplay: LiveData<List<Locale>> = _localesToDisplay
 
-    private val supportedLocales =
+    private val supportedLocalLanguages =
         listOf(
-            Locale("en"),
-            Locale("ar"),
-            Locale("bn"),
-            Locale("ckb"),
-            Locale("cs"),
-            Locale("es"),
-            Locale("fr"),
-            Locale("id"),
-            Locale("km"),
-            Locale("lo"),
-            Locale("nb"),
-            Locale("prs"),
-            Locale("ps"),
-            Locale("pt"),
-            Locale("pt", "BR"),
-            Locale("ru"),
-            Locale("sv"),
-            Locale("tet"),
-            Locale("tg"),
-            Locale("uk"),
-            Locale("ur"),
-            Locale("uz"),
-            Locale("vi"),
-            Locale("zh"),
-            Locale("zh", "rCN"),
+            "bn",
+            "ar",
+            "en",
+            "ckb",
+            "cs",
+            "es",
+            "fr",
+            "id",
+            "km",
+            "lo",
+            "nb",
+            "prs",
+            "ps",
+            "pt",
+            "pt",
+            "BR",
+            "ru",
+            "sv",
+            "tet",
+            "tg",
+            "uk",
+            "ur",
+            "uz",
+            "vi",
+            "zh",
+            "zh",
+            "rCN",
         )
+
+    val supportedLocales =
+        Locale
+            .getAvailableLocales()
+            .filter { it.language in supportedLocalLanguages }
 
     init {
         val initialLocale =
-            localeSelector.getUserLanguage()?.let { Locale(it) } ?: Locale.getDefault()
+            localeSelector.getUserLanguage()?.let {
+                Locale.getAvailableLocales().find { locale -> locale.language == it }
+            } ?: Locale.getDefault()
         _currentLocale.postValue(initialLocale)
         _localesToDisplay.postValue(
             supportedLocales.filter { it.language != initialLocale.language },

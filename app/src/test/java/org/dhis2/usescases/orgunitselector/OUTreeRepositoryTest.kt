@@ -1,7 +1,9 @@
 package org.dhis2.usescases.orgunitselector
 
+import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.orgunitselector.OURepositoryConfiguration
 import org.dhis2.commons.orgunitselector.OUTreeRepository
+import org.dhis2.mobile.commons.model.internal.DomainOrgUnit
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -15,124 +17,126 @@ class OUTreeRepositoryTest {
     private val ouRepositoryConfiguration: OURepositoryConfiguration = mock()
 
     @Test
-    fun `Should return initial orgUnits`() {
-        val orgUnits = listOf(dummyOrgUnit(level = 1))
-        val repository = OUTreeRepository(ouRepositoryConfiguration)
+    fun `Should return initial orgUnits`() =
+        runTest {
+            val orgUnits = listOf(dummyOrgUnit(level = 1))
+            val repository = OUTreeRepository(ouRepositoryConfiguration)
 
-        whenever(
-            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull()),
-        ) doReturn mock()
+            whenever(
+                ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull()),
+            ) doReturn orgUnits
 
-        whenever(
-            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull()),
-        ) doReturn orgUnits
+            val result = repository.orgUnits()
 
-        val result = repository.orgUnits()
-
-        assertTrue(result.isNotEmpty())
-        assertTrue(result == orgUnits)
-    }
+            assertTrue(result.isNotEmpty())
+            assertTrue(result == orgUnits.map { it.toDomainModel() })
+        }
 
     @Test
-    fun `Should return all children orgUnits`() {
-        val parentUid = UUID.randomUUID().toString()
-        val orgUnits =
-            mutableListOf(
-                dummyOrgUnit(parents = listOf(parentUid)),
-                dummyOrgUnit(parents = listOf(parentUid)),
-                dummyOrgUnit(parents = listOf(parentUid)),
-            )
+    fun `Should return all children orgUnits`() =
+        runTest {
+            val parentUid = UUID.randomUUID().toString()
+            val orgUnits =
+                mutableListOf(
+                    dummyOrgUnit(parents = listOf(parentUid)),
+                    dummyOrgUnit(parents = listOf(parentUid)),
+                    dummyOrgUnit(parents = listOf(parentUid)),
+                )
 
-        val repository = OUTreeRepository(ouRepositoryConfiguration)
+            val repository = OUTreeRepository(ouRepositoryConfiguration)
 
-        whenever(
-            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull()),
-        ) doReturn orgUnits
+            whenever(
+                ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull()),
+            ) doReturn orgUnits
 
-        repository.orgUnits()
-        val result = repository.childrenOrgUnits(parentUid)
+            repository.orgUnits()
+            val result = repository.childrenOrgUnits(parentUid)
 
-        assertTrue(result.isNotEmpty())
-        assertTrue(result == orgUnits)
-    }
-
-    @Test
-    fun `Should return all orgUnits that contains name`() {
-        val orgUnits = mutableListOf(dummyOrgUnit(), dummyOrgUnit(), dummyOrgUnit(), dummyOrgUnit())
-        val name = "name"
-        val filteredOrgUnits = mutableListOf(dummyOrgUnit(), dummyOrgUnit(), dummyOrgUnit())
-
-        val repository = OUTreeRepository(ouRepositoryConfiguration)
-
-        whenever(
-            ouRepositoryConfiguration.orgUnitRepository(name = name),
-        ) doReturn filteredOrgUnits
-        whenever(
-            ouRepositoryConfiguration.orgUnitRepository(name = null),
-        ) doReturn orgUnits
-
-        val result = repository.orgUnits(name)
-
-        assertTrue(result.isNotEmpty())
-        assertTrue(result.size == 3)
-    }
+            assertTrue(result.isNotEmpty())
+            assertTrue(result == orgUnits.map { it.toDomainModel() })
+        }
 
     @Test
-    fun `Should return organisation unit`() {
-        val orgUnit = dummyOrgUnit()
-        val repository = OUTreeRepository(ouRepositoryConfiguration)
+    fun `Should return all orgUnits that contains name`() =
+        runTest {
+            val orgUnits = mutableListOf(dummyOrgUnit(), dummyOrgUnit(), dummyOrgUnit(), dummyOrgUnit())
+            val name = "name"
+            val filteredOrgUnits = mutableListOf(dummyOrgUnit(), dummyOrgUnit(), dummyOrgUnit())
 
-        whenever(
-            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull()),
-        ) doReturn listOf(orgUnit)
+            val repository = OUTreeRepository(ouRepositoryConfiguration)
 
-        repository.orgUnits()
+            whenever(
+                ouRepositoryConfiguration.orgUnitRepository(name = name),
+            ) doReturn filteredOrgUnits
+            whenever(
+                ouRepositoryConfiguration.orgUnitRepository(name = null),
+            ) doReturn orgUnits
 
-        assert(repository.orgUnit(orgUnit.uid()) == orgUnit)
-    }
+            val result = repository.orgUnits(name)
 
-    @Test
-    fun `Should return if organisation unit has children`() {
-        val parentUid = UUID.randomUUID().toString()
-        val repository = OUTreeRepository(ouRepositoryConfiguration)
-        val orgUnits =
-            mutableListOf(
-                dummyOrgUnit(parents = listOf(parentUid)),
-                dummyOrgUnit(parents = listOf(parentUid)),
-                dummyOrgUnit(parents = listOf(parentUid)),
-            )
-        whenever(
-            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull()),
-        ) doReturn orgUnits
-
-        repository.orgUnits()
-
-        assert(repository.orgUnitHasChildren(parentUid))
-    }
+            assertTrue(result.isNotEmpty())
+            assertTrue(result.size == 3)
+        }
 
     @Test
-    fun `Should return initial orgUnits ordered to display`() {
-        val ou1 = dummyOrderOrgUnit(uid = "ou1", level = 1)
-        val ou11 = dummyOrderOrgUnit(parents = listOf("ou1"), uid = "ou11", level = 2)
-        val ou12 = dummyOrderOrgUnit(parents = listOf("ou1"), uid = "ou12", level = 2)
-        val ou13 = dummyOrderOrgUnit(parents = listOf("ou1"), uid = "ou13", level = 2)
-        val ou121 = dummyOrderOrgUnit(parents = listOf("ou1", "ou12"), uid = "ou121", level = 3)
-        val ou122 = dummyOrderOrgUnit(parents = listOf("ou1", "ou12"), uid = "ou122", level = 3)
+    fun `Should return organisation unit`() =
+        runTest {
+            val orgUnit = dummyOrgUnit()
+            val repository = OUTreeRepository(ouRepositoryConfiguration)
 
-        val orgUnits = listOf(ou1, ou11, ou12, ou13, ou121, ou122)
+            whenever(
+                ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull()),
+            ) doReturn listOf(orgUnit)
 
-        val orderedOus = listOf(ou1, ou11, ou12, ou121, ou122, ou13)
-        val repository = OUTreeRepository(ouRepositoryConfiguration)
+            repository.orgUnits()
 
-        whenever(
-            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull()),
-        ) doReturn orgUnits
+            assert(repository.orgUnit(orgUnit.uid()) == orgUnit.toDomainModel())
+        }
 
-        val result = repository.orgUnits()
+    @Test
+    fun `Should return if organisation unit has children`() =
+        runTest {
+            val parentUid = UUID.randomUUID().toString()
+            val repository = OUTreeRepository(ouRepositoryConfiguration)
+            val orgUnits =
+                mutableListOf(
+                    dummyOrgUnit(parents = listOf(parentUid)),
+                    dummyOrgUnit(parents = listOf(parentUid)),
+                    dummyOrgUnit(parents = listOf(parentUid)),
+                )
+            whenever(
+                ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull()),
+            ) doReturn orgUnits
 
-        assertTrue(result.isNotEmpty())
-        assertTrue(result == orderedOus)
-    }
+            repository.orgUnits()
+
+            assert(repository.orgUnitHasChildren(parentUid))
+        }
+
+    @Test
+    fun `Should return initial orgUnits ordered to display`() =
+        runTest {
+            val ou1 = dummyOrderOrgUnit(uid = "ou1", level = 1)
+            val ou11 = dummyOrderOrgUnit(parents = listOf("ou1"), uid = "ou11", level = 2)
+            val ou12 = dummyOrderOrgUnit(parents = listOf("ou1"), uid = "ou12", level = 2)
+            val ou13 = dummyOrderOrgUnit(parents = listOf("ou1"), uid = "ou13", level = 2)
+            val ou121 = dummyOrderOrgUnit(parents = listOf("ou1", "ou12"), uid = "ou121", level = 3)
+            val ou122 = dummyOrderOrgUnit(parents = listOf("ou1", "ou12"), uid = "ou122", level = 3)
+
+            val orgUnits = listOf(ou1, ou11, ou12, ou13, ou121, ou122)
+
+            val orderedOus = listOf(ou1, ou11, ou12, ou121, ou122, ou13)
+            val repository = OUTreeRepository(ouRepositoryConfiguration)
+
+            whenever(
+                ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull()),
+            ) doReturn orgUnits
+
+            val result = repository.orgUnits()
+
+            assertTrue(result.isNotEmpty())
+            assertTrue(result == orderedOus.map { it.toDomainModel() })
+        }
 
     private fun dummyOrgUnit(
         parents: List<String> = emptyList(),
@@ -156,4 +160,13 @@ class OUTreeRepositoryTest {
         .path((parents + uid).joinToString("/"))
         .displayNamePath(parents.plus(uid))
         .build()
+
+    private fun OrganisationUnit.toDomainModel() =
+        DomainOrgUnit(
+            uid = uid,
+            label = displayName ?: uid,
+            level = level ?: 0,
+            path = path ?: "",
+            namePath = displayNamePath,
+        )
 }

@@ -4,6 +4,17 @@ tasks.register("jacocoReport", JacocoReport::class) {
     group = "Coverage"
     description = "Generate XML/HTML code coverage reports for coverage.ec"
 
+    listOf(
+        "compileDhis2DebugJavaWithJavac",
+        "compileDhis2DebugKotlin",
+        "compileDebugJavaWithJavac",
+        "compileDebugKotlin",
+        "testDhis2DebugUnitTest",
+        "testDebugUnitTest",
+    ).forEach { taskName ->
+        tasks.findByName(taskName)?.let { dependsOn(it) }
+    }
+
     sourceDirectories.setFrom("${project.projectDir}/src/main/java")
 
     val excludes = mutableSetOf<String>(
@@ -62,18 +73,24 @@ tasks.register("jacocoReport", JacocoReport::class) {
         "**/lambda\$*\$*.*"
     )
 
-    val javaClassesApp = fileTree("${buildDir}/intermediates/javac/dhisDebug"){
-        exclude(
-            excludes
-        )
-    }
-    val kotlinClassesApp = fileTree("${buildDir}/tmp/kotlin-classes/dhisDebug"){
+    val javaClassesApp = fileTree(
+        "${buildDir}/intermediates/javac/dhis2Debug/compileDhis2DebugJavaWithJavac/classes",
+    ) {
         exclude(excludes)
     }
-    val javaClasses = fileTree("${buildDir}/intermediates/javac/debug"){
+    val kotlinClassesApp = fileTree(
+        "${buildDir}/intermediates/built_in_kotlinc/dhis2Debug/compileDhis2DebugKotlin/classes",
+    ) {
         exclude(excludes)
     }
-    val kotlinClasses = fileTree("${buildDir}/tmp/kotlin-classes/debug"){
+    val javaClasses = fileTree(
+        "${buildDir}/intermediates/javac/debug/compileDebugJavaWithJavac/classes",
+    ) {
+        exclude(excludes)
+    }
+    val kotlinClasses = fileTree(
+        "${buildDir}/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes",
+    ) {
         exclude(excludes)
     }
 

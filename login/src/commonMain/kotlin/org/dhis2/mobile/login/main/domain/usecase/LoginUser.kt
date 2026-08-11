@@ -10,10 +10,8 @@ class LoginUser(
         serverUrl: String,
         username: String,
         password: String,
-        isNetworkAvailable: Boolean,
     ): LoginResult {
-        val trimmedUsername = username.trim()
-        val result = repository.loginUser(serverUrl, trimmedUsername, password, isNetworkAvailable)
-        return handleResult(result, serverUrl, trimmedUsername)
+        val result = repository.loginUser(serverUrl, username, password)
+        return handleResult(result, serverUrl, username)
     }
 }

@@ -51,7 +51,13 @@ class GranularSyncRepositoryTest {
     @Test
     fun `should return error ui state when program is missing`() {
         runTest {
-            whenever(d2.programModule().programs().uid("programUid").blockingGet()) doReturn null
+            whenever(
+                d2
+                    .programModule()
+                    .programs()
+                    .uid("programUid")
+                    .blockingGet(),
+            ) doReturn null
 
             assertMissingSyncTarget(
                 syncContext = SyncContext.TrackerProgram("programUid"),
@@ -63,8 +69,20 @@ class GranularSyncRepositoryTest {
     @Test
     fun `should return error ui state when tei is missing`() {
         runTest {
-            whenever(d2.enrollmentModule().enrollments().uid("enrollmentUid").blockingGet()) doReturn null
-            whenever(d2.trackedEntityModule().trackedEntityInstances().uid("enrollmentUid").blockingGet()) doReturn null
+            whenever(
+                d2
+                    .enrollmentModule()
+                    .enrollments()
+                    .uid("enrollmentUid")
+                    .blockingGet(),
+            ) doReturn null
+            whenever(
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityInstances()
+                    .uid("enrollmentUid")
+                    .blockingGet(),
+            ) doReturn null
 
             assertMissingSyncTarget(
                 syncContext = SyncContext.TrackerProgramTei("enrollmentUid"),
@@ -76,7 +94,13 @@ class GranularSyncRepositoryTest {
     @Test
     fun `should return error ui state when event is missing`() {
         runTest {
-            whenever(d2.eventModule().events().uid("eventUid").blockingGet()) doReturn null
+            whenever(
+                d2
+                    .eventModule()
+                    .events()
+                    .uid("eventUid")
+                    .blockingGet(),
+            ) doReturn null
 
             assertMissingSyncTarget(
                 syncContext = SyncContext.Event("eventUid"),
@@ -88,7 +112,13 @@ class GranularSyncRepositoryTest {
     @Test
     fun `should return error ui state when data set is missing`() {
         runTest {
-            whenever(d2.dataSetModule().dataSets().uid("dataSetUid").blockingGet()) doReturn null
+            whenever(
+                d2
+                    .dataSetModule()
+                    .dataSets()
+                    .uid("dataSetUid")
+                    .blockingGet(),
+            ) doReturn null
 
             assertMissingSyncTarget(
                 syncContext = SyncContext.DataSet("dataSetUid"),

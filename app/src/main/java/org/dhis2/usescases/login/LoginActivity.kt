@@ -29,7 +29,6 @@ import javax.inject.Inject
 import kotlin.getValue
 
 const val EXTRA_SKIP_SYNC = "SKIP_SYNC"
-const val FROM_MAIN_ACTIVITY = "FROM_MAIN_ACTIVITY"
 const val EXTRA_SESSION_EXPIRED = "EXTRA_SESSION_EXPIRED"
 const val EXTRA_ACCOUNT_DISABLED = "EXTRA_ACCOUNT_DISABLED"
 const val IS_DELETION = "IS_DELETION"
@@ -48,7 +47,6 @@ class LoginActivity : ActivityGlobalAbstract() {
     private var isPinScreenVisible = false
 
     private var skipSync = false
-    private var fromHome = false
 
     companion object {
         fun bundle(
@@ -57,11 +55,9 @@ class LoginActivity : ActivityGlobalAbstract() {
             isDeletion: Boolean = false,
             logOutReason: OpenIdSession.LogOutReason? = null,
             fromSplash: Boolean = false,
-            fromMainActivity: Boolean = false,
         ): Bundle =
             Bundle().apply {
                 putBoolean(EXTRA_SKIP_SYNC, skipSync)
-                putBoolean(FROM_MAIN_ACTIVITY, fromMainActivity)
                 putBoolean(IS_DELETION, isDeletion)
                 putInt(ACCOUNTS_COUNT, accountsCount)
                 putBoolean(FROM_SPLASH, fromSplash)
@@ -92,13 +88,11 @@ class LoginActivity : ActivityGlobalAbstract() {
         checkMessage()
 
         skipSync = intent.getBooleanExtra(EXTRA_SKIP_SYNC, false)
-        fromHome = intent.getBooleanExtra(FROM_MAIN_ACTIVITY, false)
 
         setContent {
             DHIS2Theme {
                 LoginScreen(
                     versionName = buildInfo(),
-                    fromHome = fromHome,
                     onNavigateToHome = {
                         app().createUserComponent()
                         startActivity(MainActivity::class.java, null, true, true, null)
@@ -130,7 +124,7 @@ class LoginActivity : ActivityGlobalAbstract() {
         val appLinkAction = intent?.action
         val appLinkData: Uri? = intent?.data
         if (Intent.ACTION_VIEW == appLinkAction && appLinkData != null) {
-            appLinkNavigation.appLink.tryEmit(appLinkData.toString())
+            appLinkNavigation.emit(appLinkData.toString())
             intent?.action = null
         }
     }

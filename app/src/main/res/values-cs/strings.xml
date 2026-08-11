@@ -243,7 +243,6 @@
     <string name="tuto_event_initial_new_1">Zadejte všechna data k vytvoření události</string>
     <string name="tuto_event_initial_1">Klepnutím zkontrolujete stav dokončení události.</string>
     <string name="relationships">vztahy</string>
-    <string name="empty_tei_add">Nejsou zaregistrovány žádné události, kliknutím na „+“ přidáte novou.</string>
     <string name="qr_data_values">Datové hodnoty</string>
     <string name="info">Info</string>
     <string name="qr_no_id_error">Toto ID se nepodařilo přečíst</string>
@@ -460,7 +459,7 @@
     <string name="filter_period_last_n_biweeks">Poslední %d dvoutýdny</string>
     <string name="section_feedback">Zpětná vazba</string>
     <string name="section_indicators">Indikátory</string>
-    <string name="camera_permission_denied">Povolení k použití kamery je zamítnuto.\nChcete-li tuto funkci používat, musíte ji povolit.</string>
+    <string name="camera_permission_denied">Povolení fotoaparátu bylo odepřeno.\nPro použití této funkce je nutné ji povolit.</string>
     <string name="section_charts_indicators">Grafy a indikátory</string>
     <string name="take_photo">Vyfotit</string>
     <string name="break_glass_dialog_title">Tento program je chráněn</string>
@@ -471,14 +470,11 @@
     <string name="action_do_not_show_again">Znovu nezobrazovat</string>
     <string name="feature_configuration">Konfigurace funkcí</string>
     <string name="show_radar_graph">Zobrazit jako radar</string>
-    <string name="filter_follow_up_label">Navázalo na %s</string>
     <string name="update_field_error">Toto pole nelze aktualizovat. Prosím zkuste to znovu</string>
     <string name="blocked_by_completion">Tato data nelze upravovat, protože jsou označena jako dokončená</string>
     <string name="edition_expired">Tato data nelze upravovat, protože vypršel čas jejich vydání</string>
     <string name="edition_no_write_access">K úpravě těchto údajů nemáte oprávnění</string>
-    <string name="event_date_not_in_orgunit_range">Tato data nelze upravovat, protože organizační jednotka je zavřená</string>
     <string name="edition_no_catcombo_access">K úpravě těchto údajů nemáte oprávnění</string>
-    <string name="edition_orgunit_user_scope">Data z této organizační jednotky nemůžete upravovat</string>
     <string name="error_tei_online_search_title">Online vyhledávání vrátilo následující zprávu:</string>
     <string name="delete_account">Smazat účet</string>
     <string name="main_menu_troubleshooting">Odstraňování problémů s konfigurací</string>
@@ -490,7 +486,7 @@
     <string name="troubleshooting_pass_rule_validation">Nebyla nalezena žádná upozornění</string>
     <string name="troobleshooting_pass_rule_validation_title">Všechno vypadá skvěle</string>
     <string name="not_saved">Neuloženo</string>
-    <string name="review_message">Některé oblasti vyžadují vaši pozornost.\nChcete formulář zkontrolovat\?</string>
+    <string name="review_message">Některá pole vyžadují vaši pozornost.\nChcete formulář zkontrolovat?</string>
     <string name="search_loading_more">Načítání dalších výsledků</string>
     <string name="search_no_results_in_program">Žádné další výsledky pro %s</string>
     <string name="search_outside_action">Hledat mimo tento program</string>
@@ -504,10 +500,10 @@
     <string name="init_search">Spusťte vyhledávání a najděte jakýkoli %s</string>
     <string name="search_or_create">Můžete vyhledat nebo vytvořit nový %s</string>
     <string name="missing_warning_fields_completed_events">Máte několik varovných hlášení.</string>
-    <string name="missing_warning_fields_events">Máte několik varovných hlášení.\nChcete tento formulář označit jako dokončený\?</string>
-    <string name="missing_error_fields_events">Některá pole obsahují chyby a neukládají se. \nChcete formulář zkontrolovat\?</string>
+    <string name="missing_warning_fields_events">Máte nějaké varovné zprávy.\nChcete tento formulář označit jako dokončený?</string>
+    <string name="missing_error_fields_events">Některá pole obsahují chyby a neuloží se. \nChcete zkontrolovat formulář?</string>
     <string name="event_can_be_completed">Chcete tento formulář označit jako vyplněný?</string>
-    <string name="event_error_on_complete">Máte několik chybových hlášení.\nChcete je zkontrolovat\?</string>
+    <string name="event_error_on_complete">Máte nějaké chybové zprávy.\nChcete je zkontrolovat?</string>
     <string name="re_opened">Znovu otevřeno</string>
     <string name="account_disable_title">Účet zakázán</string>
     <string name="account_disable_message">Váš účet byl zakázán správcem.</string>
@@ -546,6 +542,8 @@
     <string name="download_now">Stáhnout teď</string>
     <string name="check_for_updates">Kontrola aktualizací</string>
     <string name="no_updates">Nejsou žádné nové aktualizace</string>
+    <string name="unknow_sources_denied">Oprávnění k neznámým zdrojům je odepřeno.\nAbyste mohli nainstalovat verzi, musíte jej povolit.</string>
+    <string name="storage_denied">Oprávnění úložiště je odepřeno.\nAbyste mohli nainstalovat verzi, musíte jej povolit.</string>
     <string name="app_version">Verze aplikace</string>
     <string name="error_applying_rule_effects">Něco se pokazilo v konfiguraci programu, tuto událost nelze načíst. Obraťte se prosím na správce systému.</string>
     <string name="dashboard_menu_delete_person">Odstranit osobu</string>
@@ -553,12 +551,9 @@
     <string name="permission_notification_granted">Oprávnění k oznámení uděleno.</string>
     <string name="not_synced">Není synchronizováno</string>
     <string name="sync_retry">Opakování synchronizace</string>
-    <string name="marked_follow_up">Označeno pro další sledování</string>
     <string name="overdue">Zpoždění %s</string>
     <string name="registered_in">Registrováno v</string>
     <string name="view_only">Pouze zobrazení</string>
-    <string name="at_enroll_org_unit">Na %s.</string>
-    <string name="no_access_to_it">Nemáte k tomu přístup.</string>
     <string name="scheduled">Plánováno: %s</string>
     <string name="scheduled_for">Naplánováno na %s</string>
     <string name="skipped">Přeskočeno</string>
@@ -566,8 +561,8 @@
     <string name="sync_successful">Synchronizace úspěšná</string>
     <string name="sync_warning">Upozornění na synchronizaci</string>
     <string name="sync_error">Chyba synchronizace</string>
-    <string name="mark_follow_up">Označit pro další sledování</string>
     <string name="coordinates">Souřadnice</string>
+    <string name="no_data_access">Nemáte přístup k datům.\nObraťte se na správce.</string>
     <string name="sync_offline_check_connection">Vypadá to, že jste offline. Zkontrolujte prosím své připojení</string>
     <string name="delete_tei_dialog_title">Smazat tuto stránku %s?</string>
     <string name="delete_tei_dialog_message">Tato stránka %s a všechna její data ve všech programech budou odstraněna. Tuto akci nelze vrátit zpět.</string>

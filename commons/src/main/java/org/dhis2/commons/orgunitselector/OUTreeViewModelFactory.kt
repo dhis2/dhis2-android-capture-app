@@ -3,7 +3,9 @@ package org.dhis2.commons.orgunitselector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.domain.FetchOrgUnits
 
+@Suppress("UNCHECKED_CAST")
 class OUTreeViewModelFactory(
     private val repository: OUTreeRepository,
     private val dispatchers: DispatcherProvider,
@@ -18,5 +20,6 @@ class OUTreeViewModelFactory(
             selectedOrgUnits = selectedOrgUnits,
             singleSelection = singleSelection,
             model = model,
+            fetchOrgUnits = FetchOrgUnits(repository),
         ) as T
 }

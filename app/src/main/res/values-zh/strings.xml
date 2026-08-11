@@ -114,8 +114,7 @@
     <string name="every_12_hours">12小时</string>
     <string name="Manual">手工</string>
     <string name="a_week">1周</string>
-    <string name="wipe_data_meesage">数据库将被删除。
-您将被要求重新登录。</string>
+    <string name="wipe_data_meesage">数据库将被删除，\n 你将被要求再次登录。</string>
     <string name="wipe_data_ok">接受</string>
     <string name="wipe_data_no">取消</string>
     <string name="SYNC_DATA">现在同步数据</string>
@@ -244,7 +243,6 @@
     <string name="tuto_event_initial_new_1">输入所有数据创建事件</string>
     <string name="tuto_event_initial_1">点击检查事件完成状态</string>
     <string name="relationships">关系</string>
-    <string name="empty_tei_add">没有注册事件，单击“ +”添加一个新事件。</string>
     <string name="qr_data_values">数据值</string>
     <string name="info">信息</string>
     <string name="qr_no_id_error">不能读取该ID</string>
@@ -405,13 +403,11 @@
     <string name="filters_title_date">日期</string>
     <string name="privacy_policy_title">私有策略</string>
     <string name="open_privacy_policy">点击这里检查<a href="">隐私策略</a></string>
-    <string name="break_glass_error_v2">由于%s 受保护，您不能从其他组织单位注册该程序。
-请联系您的管理员。</string>
+    <string name="break_glass_error_v2">您无法在此项目中加入来自其他组织单位的 %s，因为它受到保护。\n请与您的管理员联系。</string>
     <string name="field_is_mandatory">此字段是必填字段</string>
     <string name="security_debugger_message">出于安全原因，此版本的应用程序不允许与adb一起使用。请使用培训版本。</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">哎呀！有些事情没有按计划进行。
-让我们帮你恢复行动。</string>
+    <string name="customactivityoncrash_error_activity_error_occurred_explanation">哎呀！有些事情没有按计划进行。\n让我们帮你恢复行动。</string>
     <string name="customactivityoncrash_error_activity_restart_app">后退</string>
     <string name="customactivityoncrash_error_activity_error_details_copy">复制到剪贴板</string>
     <string name="metada_first_sync_error">与您的服务器同步时发现错误。如果可能，与系统管理员共享错误。</string>
@@ -464,7 +460,7 @@
     <string name="filter_period_last_n_biweeks">最近%d双周</string>
     <string name="section_feedback">反馈</string>
     <string name="section_indicators">指标</string>
-    <string name="camera_permission_denied">相机权限被拒绝。\n您需要启用它才能使用此功能。</string>
+    <string name="camera_permission_denied">相机权限被拒绝。\n 您需要启用它才能使用此功能。</string>
     <string name="section_charts_indicators">图表和指标</string>
     <string name="take_photo">拍照</string>
     <string name="break_glass_dialog_title">该项目受保护</string>
@@ -475,14 +471,11 @@
     <string name="action_do_not_show_again">不再显示</string>
     <string name="feature_configuration">特征配置</string>
     <string name="show_radar_graph">显示为雷达图</string>
-    <string name="filter_follow_up_label">跟进%s</string>
     <string name="update_field_error">无法更新此字段。请再试一次</string>
     <string name="blocked_by_completion">此数据不可编辑，因为已标记为已完成</string>
     <string name="edition_expired">此数据不可编辑，因为其编辑时间已过期</string>
     <string name="edition_no_write_access">您无权编辑此数据</string>
-    <string name="event_date_not_in_orgunit_range">此数据不可修改，因为单位部门已关闭</string>
     <string name="edition_no_catcombo_access">您无权编辑此数据</string>
-    <string name="edition_orgunit_user_scope">您无法编辑此机构的数据</string>
     <string name="error_tei_online_search_title">网上搜索返回如下信息：</string>
     <string name="delete_account">删除帐户</string>
     <string name="main_menu_troubleshooting">配置疑难解答</string>
@@ -494,7 +487,7 @@
     <string name="troubleshooting_pass_rule_validation">未发现任何警告</string>
     <string name="troobleshooting_pass_rule_validation_title">一切看起来都很棒</string>
     <string name="not_saved">未保存</string>
-    <string name="review_message">某些字段需要您注意。\n您要查看表单吗？</string>
+    <string name="review_message">有些字段需要您注意。\n您要复查表单吗？</string>
     <string name="search_loading_more">加载更多结果</string>
     <string name="search_no_results_in_program">%s 没有更多结果</string>
     <string name="search_outside_action">在此项目之外搜索</string>
@@ -559,12 +552,9 @@
     <string name="permission_notification_granted">已授予通知许可。</string>
     <string name="not_synced">未同步</string>
     <string name="sync_retry">重试同步</string>
-    <string name="marked_follow_up">标记为后续</string>
     <string name="overdue">逾期%s</string>
     <string name="registered_in">已登记</string>
     <string name="view_only">只读</string>
-    <string name="at_enroll_org_unit">在%s.</string>
-    <string name="no_access_to_it">你无法访问它。</string>
     <string name="scheduled">已安排：%s</string>
     <string name="scheduled_for">预定%s</string>
     <string name="skipped">跳过</string>
@@ -572,7 +562,6 @@
     <string name="sync_successful">同步成功</string>
     <string name="sync_warning">同步警告</string>
     <string name="sync_error">同步错误</string>
-    <string name="mark_follow_up">后续标记</string>
     <string name="coordinates">坐标</string>
     <string name="no_data_access">您无权访问数据。\n请与您的管理员联系。</string>
     <string name="sync_offline_check_connection">您似乎已离线。请检查您的连接</string>
@@ -610,6 +599,8 @@
     <string name="complete_enrollment_label">完整%s</string>
     <string name="deactivate_enrollment_label">停用%s</string>
     <string name="reopen_enrollment_label">重新打开%s</string>
+    <string name="main_menu_developer_scree">开发人员选项</string>
+
     <plurals name="error_count_label">
         <item quantity="other">%s 错误</item>
     </plurals>

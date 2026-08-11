@@ -131,17 +131,15 @@ class TEIDataPresenter(
                                     calcResult,
                                 )
                             }.subscribeOn(schedulerProvider.io())
-                            .doOnCancel { decrement() }
+                            .doFinally { decrement() }
                     }.subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
                         { events ->
                             _events.postValue(events)
-                            decrement()
                         },
                         { t ->
                             Timber.e(t)
-                            decrement()
                         },
                     ),
             )
@@ -318,14 +316,6 @@ class TEIDataPresenter(
         }
     }
 
-    fun onScheduleEventWithoutAccess(enrollmentOrgUnitName: String?) {
-        enrollmentOrgUnitName?.let {
-            view.displayNoAccessToEventSnackbar(
-                enrollmentOrgUnit = it,
-            )
-        }
-    }
-
     fun onEventSelected(
         uid: String,
         eventStatus: EventStatus,
@@ -369,7 +359,7 @@ class TEIDataPresenter(
         program: Program,
         enrollmentUid: String?,
     ) {
-        program.uid()?.let { uid ->
+        program.uid().let { uid ->
             programUid = uid
             enrollmentUid?.let { view.restoreAdapter(uid, teiUid, it) }
         }

@@ -95,7 +95,7 @@ class FilterPeriodsDialogViewmodel(
                     if (launchMode.filterType == Filters.PERIOD) {
                         FilterManager.getInstance().addPeriod(
                             listOf(
-                                DatePeriod.create(
+                                DatePeriod(
                                     period.startDate,
                                     period.endDate,
                                 ),
@@ -104,7 +104,7 @@ class FilterPeriodsDialogViewmodel(
                     } else {
                         FilterManager.getInstance().addEnrollmentPeriod(
                             listOf(
-                                DatePeriod.create(
+                                DatePeriod(
                                     period.startDate,
                                     period.endDate,
                                 ),
@@ -116,7 +116,7 @@ class FilterPeriodsDialogViewmodel(
                 is FilterDialogLaunchMode.NewDataSetPeriodDialog -> {
                     FilterManager
                         .getInstance()
-                        .addPeriod(listOf(DatePeriod.create(period.startDate, period.endDate)))
+                        .addPeriod(listOf(DatePeriod(period.startDate, period.endDate)))
                 }
             }
             CoroutineTracker.decrement()
@@ -130,7 +130,7 @@ class FilterPeriodsDialogViewmodel(
             selectedDateMillis?.let {
                 selectedDate.timeInMillis = selectedDateMillis
             }
-            val datePeriods = mutableListOf(DatePeriod.create(selectedDate.time, selectedDate.time))
+            val datePeriods = mutableListOf(DatePeriod(selectedDate.time, selectedDate.time))
             when (launchMode) {
                 is FilterDialogLaunchMode.NewPeriodDialog -> {
                     if (launchMode.filterType == Filters.ENROLLMENT_DATE) {
@@ -163,7 +163,7 @@ class FilterPeriodsDialogViewmodel(
                 toSelectedDate.timeInMillis = it
             }
             val datePeriods =
-                mutableListOf(DatePeriod.create(fromSelectedDate.time, toSelectedDate.time))
+                mutableListOf(DatePeriod(fromSelectedDate.time, toSelectedDate.time))
             when (launchMode) {
                 is FilterDialogLaunchMode.NewPeriodDialog -> {
                     if (launchMode.filterType == Filters.ENROLLMENT_DATE) {

@@ -211,7 +211,6 @@
     <string name="tuto_dashboard_7">Oʼzaro munosabatlarni qoʼshish, koʼrsatgichlarni koʼrish yoki yozuvlarni yozish uchun menyu boʼylab harakatlananing.</string>
     <string name="tuto_event_initial_new_1">Hodisa/tadbir yaratish uchun barcha maʼlumotlarni kiriting</string>
     <string name="tuto_event_initial_1">Hodisa/tadbirning tugash holatini tekshirish uchun, bosing.</string>
-    <string name="empty_tei_add">Hech qanday hodisa/tadbir roʼyxatdan oʼtkazilmagan, yangisini qoʼshish uchun \"+\" tugmasini bosing.</string>
     <string name="qr_data_values">Maʼlumotlarning qiymatlari</string>
     <string name="info">Аxborot</string>
     <string name="qr_no_id_error">ID oʼqib boʼlmadi</string>
@@ -404,11 +403,9 @@
     <string name="sync_dialog_title_synced">Sinxronizatsiyalangan</string>
     <string name="sync_dialog_title_syncing">Sinxronlashmoqda</string>
     <string name="sync_dialog_action_send">Yuborish</string>
-    <string name="marked_follow_up">Kuzatuv uchun belgilangan</string>
     <string name="skipped">Oʼtkazib yuborildi</string>
     <string name="programs">Dasturlar</string>
     <string name="sync_error">Sinxronlashda xatolik</string>
-    <string name="mark_follow_up">Kuzatuv uchun belgilang</string>
     <string name="coordinates">Координаталар</string>
     <string name="schedule">Reja</string>
     <string name="scheduled_enter_event">Reja boʼyicha</string>

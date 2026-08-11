@@ -14,7 +14,7 @@ kotlin {
 
     android {
         namespace = "org.dhis2.mobile.login"
-        compileSdk = libs.versions.sdk.get().toInt()
+        compileSdk = libs.versions.compileSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
         enableCoreLibraryDesugaring = true
         compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) }

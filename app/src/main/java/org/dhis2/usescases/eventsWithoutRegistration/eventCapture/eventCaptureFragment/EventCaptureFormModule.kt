@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ReOpenEventUseCase
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.injection.EventDispatchers
@@ -20,6 +21,7 @@ class EventCaptureFormModule(
         activityPresenter: EventCaptureContract.Presenter,
         d2: D2,
         resourceManager: ResourceManager,
+        customLabelProvider: CustomLabelProvider,
         reOpenEventUseCase: ReOpenEventUseCase,
         eventDispatchers: EventDispatchers,
     ): EventCaptureFormPresenter =
@@ -29,6 +31,7 @@ class EventCaptureFormModule(
             d2,
             eventUid,
             resourceManager,
+            customLabelProvider,
             reOpenEventUseCase,
             eventDispatchers,
         )

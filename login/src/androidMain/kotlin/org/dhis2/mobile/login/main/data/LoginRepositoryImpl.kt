@@ -79,7 +79,7 @@ class LoginRepositoryImpl(
                         oidcIcon = oidcProvider?.icon,
                         oidcLoginText = oidcProvider?.loginText,
                         oidcUrl = oidcProvider?.url,
-                        oAuthEnabled = result.value.isOauthEnabled(),
+                        oAuthEnabled = result.value.isOauthEnabled,
                     )
                 }
 
@@ -98,20 +98,13 @@ class LoginRepositoryImpl(
         serverUrl: String,
         username: String,
         password: String,
-        isNetworkAvailable: Boolean,
     ) = withContext(dispatcher.io) {
         try {
             d2.userModule().blockingLogIn(username, password, serverUrl)
             kotlin.Result.success(Unit)
-        } catch (e: Exception) {
-            kotlin.Result.failure(
-                Exception(
-                    d2ErrorMessageProvider.getErrorMessage(
-                        e,
-                        isNetworkAvailable,
-                    ),
-                ),
-            )
+        } catch (d2Error: D2Error) {
+            val error = domainErrorMapper.mapToDomainError(d2Error)
+            kotlin.Result.failure(error)
         }
     }
 
@@ -141,11 +134,13 @@ class LoginRepositoryImpl(
     override suspend fun enrollDevice(
         iat: String,
         serverURL: String,
+        state: String,
     ) = withContext(dispatcher.io) {
         try {
             d2.userModule().oauth2Handler().blockingHandleEnrollmentResponse(
                 serverUrl = serverURL,
                 iat = iat,
+                state = state,
             )
 
             if (!d2.userModule().oauth2Handler().isDeviceRegistered()) {
@@ -163,16 +158,36 @@ class LoginRepositoryImpl(
     override suspend fun loginUserWithOAuth(
         serverUrl: String,
         code: String,
+        state: String,
     ) = withContext(dispatcher.io) {
         try {
             val user =
-                d2.userModule().oauth2Handler().blockingHandleLogInResponse(serverUrl, code)
+                d2.userModule().oauth2Handler().blockingHandleLogInResponse(serverUrl, code, state)
             kotlin.Result.success(user.username())
         } catch (d2Error: D2Error) {
             val mappedError = domainErrorMapper.mapToDomainError(d2Error)
             kotlin.Result.failure(mappedError)
         }
     }
+
+    override suspend fun buildLogoutUrl(serverUrl: String): String =
+        withContext(dispatcher.io) {
+            try {
+                val config = OAuth2Config(serverUrl = serverUrl)
+                d2.userModule().oauth2Handler().blockingBuildLogoutUrl(config)
+            } catch (d2Error: D2Error) {
+                throw domainErrorMapper.mapToDomainError(d2Error)
+            }
+        }
+
+    override suspend fun setOfflinePin(pin: String): kotlin.Result<Unit> =
+        withContext(dispatcher.io) {
+            when (val result = d2.userModule().oauth2Handler().suspendSetPin(pin)) {
+                is Result.Success -> kotlin.Result.success(Unit)
+                is Result.Failure ->
+                    kotlin.Result.failure(domainErrorMapper.mapToDomainError(result.failure))
+            }
+        }
 
     override suspend fun getAvailableLoginUsernames(): List<String> =
         withContext(dispatcher.io) {

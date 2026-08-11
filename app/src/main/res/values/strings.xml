@@ -76,6 +76,7 @@
     <string name="update">Update</string>
     <string name="org_unit">Org unit</string>
     <string name="no_org_units">There aren\'t any open Organization Units for the selected date. Please select another date or another Organisation Unit.</string>
+    <string name="no_org_units_with_label">There aren\'t any open %1$s for the selected date. Please select another date or another %1$s.</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
 
@@ -153,6 +154,8 @@
     <string name="settingsExportDBMessage">Export your database and share it with your administrator</string>
     <string name="settingTwoFA">Two factor authentication</string>
     <string name="settingsTwoFAStatus">Status</string>
+    <string name="settingsTwoFAEnabled">Enabled.</string>
+    <string name="settingsTwoFADisabled">Disabled.</string>
     <string name="settingTwoFADescr">Enable or disable the authentication in two steps.</string>
     <!--endregion-->
 
@@ -244,7 +247,8 @@
     <string name="tuto_event_initial_new_1">Enter all data to create the event</string>
     <string name="tuto_event_initial_1">Click to check the event completion status.</string>
     <string name="relationships">relationships</string>
-    <string name="empty_tei_add">There are no events registered, click \"+\" to add a new one.</string>
+    <!--empty_tracker_events will be formatted with the custom or default label for event-->
+    <string name="empty_tracker_events">There are no %s registered, click \"+\" to add a new one.</string>
     <string name="qr_data_values">Data values</string>
     <string name="info">Info</string>
     <string name="qr_no_id_error">Could not read this Id</string>
@@ -347,6 +351,8 @@
     <string name="granular_sync_enrollments_empty">There are no enrollments to upload</string>
     <string name="granular_sync_unsupported_task">This convertTask is not supported</string>
     <string name="set_pin">Set pin</string>
+    <string name="pin_created">PIN created</string>
+    <string name="pin_already_created">PIN is already set</string>
     <string name="conflict">Conflict</string>
     <string name="change_event_date">Change date</string>
     <string name="go_back">Go back</string>
@@ -483,14 +489,13 @@
     <string name="action_do_not_show_again">Do not show again</string>
     <string name="feature_configuration">Feature Configuration</string>
     <string name="show_radar_graph">Show as Radar</string>
-    <string name="filter_follow_up_label">Followed up %s</string>
     <string name="update_field_error">This field could not be updated. Please try again</string>
     <string name="blocked_by_completion">This data is not editable because is marked as completed</string>
     <string name="edition_expired">This data is not editable because its edition time is expired</string>
     <string name="edition_no_write_access">You do not have permission to edit this data</string>
-    <string name="event_date_not_in_orgunit_range">This data is not editable because the organization unit is closed</string>
+    <string name="event_date_not_in_orgunit_range">This data is not editable because the %s is closed</string>
     <string name="edition_no_catcombo_access">You do not have permission to edit this data</string>
-    <string name="edition_orgunit_user_scope">You cannot edit data from this organisation unit</string>
+    <string name="edition_orgunit_user_scope">You cannot edit data from this %s</string>
     <string name="error_tei_online_search_title">The online search returned the following message:</string>
     <string name="delete_account">Delete Account</string>
     <string name="main_menu_troubleshooting">Configuration troubleshooting</string>
@@ -567,12 +572,9 @@
     <string name="permission_notification_granted">Notification permission granted.</string>
     <string name="not_synced">Not synced</string>
     <string name="sync_retry">Retry sync</string>
-    <string name="marked_follow_up">Marked for follow-up</string>
     <string name="overdue">Overdue %s</string>
     <string name="registered_in">Registered in</string>
     <string name="view_only">View only</string>
-    <string name="at_enroll_org_unit">At %s.</string>
-    <string name="no_access_to_it">You don\'t have access to it.</string>
     <string name="scheduled">Scheduled: %s</string>
     <string name="scheduled_for">Scheduled for %s</string>
     <string name="skipped">Skipped</string>
@@ -580,7 +582,6 @@
     <string name="sync_successful">Sync successful</string>
     <string name="sync_warning">Sync warning</string>
     <string name="sync_error">Sync Error</string>
-    <string name="mark_follow_up">Mark for follow-up</string>
     <string name="coordinates">Coordinates</string>
     <string name="no_data_access">You don’t have access to data.\nContact your administrator.</string>
     <string name="sync_offline_check_connection">Looks like you\'re offline. Please check you connection</string>

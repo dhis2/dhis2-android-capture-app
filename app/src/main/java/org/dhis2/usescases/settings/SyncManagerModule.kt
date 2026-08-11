@@ -1,16 +1,25 @@
 package org.dhis2.usescases.settings
 
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import org.dhis2.R
 import org.dhis2.commons.di.dagger.PerFragment
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.VersionRepository
+import org.dhis2.mobile.commons.error.DomainErrorMapper
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.mobile.commons.files.FileHandlerImpl
+import org.dhis2.mobile.commons.network.NetworkStatusProvider
+import org.dhis2.mobile.commons.network.NetworkStatusProviderImpl
+import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider
+import org.dhis2.mobile.commons.resources.D2ErrorMessageProviderImpl
+import org.dhis2.mobile.login.authentication.data.repository.TwoFARepositoryImpl
+import org.dhis2.mobile.login.authentication.domain.repository.TwoFARepository
+import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
@@ -46,6 +55,7 @@ class SyncManagerModule(
         dispatcherProvider: DispatcherProvider,
         networkUtils: NetworkUtils,
         settingsMessages: SettingsMessages,
+        twoFaStatus: GetTwoFAStatus,
     ) = SettingsViewModelFactory(
         getSettingsState,
         updateSyncSettings,
@@ -59,6 +69,7 @@ class SyncManagerModule(
         dispatcherProvider,
         networkUtils,
         settingsMessages,
+        twoFaStatus,
     )
 
     @Provides
@@ -181,4 +192,34 @@ class SyncManagerModule(
     @Provides
     @PerFragment
     fun providesSettingsMessage(): SettingsMessages = SettingsMessages()
+
+    @Provides
+    @PerFragment
+    fun providesTwoFAStatus(twoFARepository: TwoFARepository): GetTwoFAStatus = GetTwoFAStatus(twoFARepository)
+
+    @Provides
+    @PerFragment
+    fun providesTwoRepository(
+        d2: D2,
+        domainErrorMapper: DomainErrorMapper,
+    ): TwoFARepository = TwoFARepositoryImpl(d2, domainErrorMapper)
+
+    @Provides
+    @PerFragment
+    fun provideDomainErrorMapper(
+        d2ErrorMessageProvider: D2ErrorMessageProvider,
+        networkStatusProvider: NetworkStatusProvider,
+    ): DomainErrorMapper =
+        DomainErrorMapper(
+            d2ErrorMessageProvider,
+            networkStatusProvider,
+        )
+
+    @Provides
+    @PerFragment
+    fun provideD2ErrorMessageProvider(): D2ErrorMessageProvider = D2ErrorMessageProviderImpl()
+
+    @Provides
+    @PerFragment
+    fun provideNetworkStatusProvider(context: Context): NetworkStatusProvider = NetworkStatusProviderImpl(context)
 }

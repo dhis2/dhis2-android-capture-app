@@ -160,7 +160,7 @@ class ManageStockViewModelTest {
                     ou = facility.uid,
                     config = stockUseCase,
                 ),
-            ) doReturn SearchResult(liveData { emptyList<StockItem>() })
+            ) doReturn Pair(SearchResult(liveData { emptyList<StockItem>() }), null)
 
             val transaction =
                 Transaction(
@@ -195,7 +195,7 @@ class ManageStockViewModelTest {
                     ou = facility.uid,
                     config = stockUseCase,
                 ),
-            ) doReturn SearchResult(liveData { emptyList<StockItem>() })
+            ) doReturn Pair(SearchResult(liveData { emptyList<StockItem>() }), null)
 
             val transaction =
                 Transaction(
@@ -230,7 +230,7 @@ class ManageStockViewModelTest {
                     ou = facility.uid,
                     config = stockUseCase,
                 ),
-            ) doReturn SearchResult(liveData { emptyList<StockItem>() })
+            ) doReturn Pair(SearchResult(liveData { emptyList<StockItem>() }), null)
 
             val transaction =
                 Transaction(

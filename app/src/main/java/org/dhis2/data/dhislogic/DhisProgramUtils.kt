@@ -54,7 +54,7 @@ class DhisProgramUtils
                 .programs()
                 .withTrackedEntityType()
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .get()
+                .rxGet()
                 .toFlowable()
 
         private fun getTrackerProgramState(program: Program): State {

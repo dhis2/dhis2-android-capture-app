@@ -53,6 +53,9 @@ import androidx.compose.ui.unit.dp
 import coil3.PlatformContext
 import coil3.compose.LocalPlatformContext
 import org.dhis2.mobile.commons.resources.getDrawableResource
+import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
+import org.dhis2.mobile.login.main.ui.components.OfflineCredentialDialog
+import org.dhis2.mobile.login.main.ui.components.OfflineCredentialMode
 import org.dhis2.mobile.login.main.ui.components.TaskExecutorButton
 import org.dhis2.mobile.login.main.ui.state.AfterLoginAction
 import org.dhis2.mobile.login.main.ui.state.CredentialsAction
@@ -122,8 +125,8 @@ fun CredentialsScreen(
     selectedServerFlag: String?,
     allowRecovery: Boolean,
     oidcInfo: OidcInfo?,
-    fromHome: Boolean,
-    oAuthEnable: Boolean,
+    entryMode: CredentialsEntryMode,
+    autoPromptLogin: Boolean,
 ) {
     val context = LocalPlatformContext.current
 
@@ -136,12 +139,17 @@ fun CredentialsScreen(
                 allowRecovery,
                 oidcInfo,
                 context,
-                fromHome,
-                oAuthEnable,
+                entryMode,
+                autoPromptLogin,
             )
         }
 
     val screenState by viewModel.credentialsScreenState.collectAsState()
+    val displayCreateOfflineCredential by remember {
+        derivedStateOf {
+            screenState.afterLoginActions.firstOrNull() is AfterLoginAction.CreateOfflineCredential
+        }
+    }
     val displayBiometricMessage by remember(screenState) {
         derivedStateOf {
             screenState.afterLoginActions.firstOrNull() is AfterLoginAction.DisplayBiometricsMessage
@@ -196,12 +204,12 @@ fun CredentialsScreen(
             )
         }
 
-        if (!oAuthEnable) {
+        if (screenState.credentialsInfo != null) {
             CredentialsContainer(
-                availableUsernames = screenState.credentialsInfo.availableUsernames,
-                username = screenState.credentialsInfo.username,
-                password = screenState.credentialsInfo.password,
-                isUsernameEditable = screenState.credentialsInfo.usernameCanBeEdited,
+                availableUsernames = screenState.credentialsInfo!!.availableUsernames,
+                username = screenState.credentialsInfo!!.username,
+                password = screenState.credentialsInfo!!.password,
+                isUsernameEditable = screenState.credentialsInfo!!.usernameCanBeEdited,
                 isLoggingIn = isLoggingIn,
                 onCredentialsUpdate = { credentialsUpdate ->
                     when (credentialsUpdate) {
@@ -236,22 +244,79 @@ fun CredentialsScreen(
             )
         }
     }
-    if (displayTrackingMessage) {
-        TrackingPermissionDialog(
-            onPermissionResult = viewModel::onTrackingPermission,
-            onOpenPrivacyPolicy = viewModel::checkPrivacyPolicy,
-        )
-    } else if (displayBiometricMessage) {
-        BiometricsDialog(
-            onPermissionResult = { granted ->
-                with(context) {
-                    viewModel.onEnableBiometrics(granted)
-                }
-            },
-        )
-    }
+    AfterLoginActionDialogs(
+        displayCreateOfflineCredential = displayCreateOfflineCredential,
+        displayTrackingMessage = displayTrackingMessage,
+        displayBiometricMessage = displayBiometricMessage,
+        viewModel = viewModel,
+        context = context,
+    )
 
     if (screenState.isSessionLocked) {
+        LockedSessionDialog(
+            entryMode = entryMode,
+            viewModel = viewModel,
+        )
+    }
+}
+
+@Composable
+private fun AfterLoginActionDialogs(
+    displayCreateOfflineCredential: Boolean,
+    displayTrackingMessage: Boolean,
+    displayBiometricMessage: Boolean,
+    viewModel: CredentialsViewModel,
+    context: PlatformContext,
+) {
+    when {
+        displayCreateOfflineCredential -> {
+            // Mandatory, non-dismissable: a new OAuth login must create an offline credential before
+            // entering the app. The gate keeps the dialog shown until the credential is stored.
+            OfflineCredentialDialog(
+                mode = OfflineCredentialMode.CREATE,
+                onSubmit = { credential ->
+                    viewModel.onOfflineCredentialCreated(credential)
+                },
+            )
+        }
+
+        displayTrackingMessage -> {
+            TrackingPermissionDialog(
+                onPermissionResult = viewModel::onTrackingPermission,
+                onOpenPrivacyPolicy = viewModel::checkPrivacyPolicy,
+            )
+        }
+
+        displayBiometricMessage -> {
+            BiometricsDialog(
+                onPermissionResult = { granted ->
+                    with(context) {
+                        viewModel.onEnableBiometrics(granted)
+                    }
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun LockedSessionDialog(
+    entryMode: CredentialsEntryMode,
+    viewModel: CredentialsViewModel,
+) {
+    if (entryMode == CredentialsEntryMode.EXISTING_OAUTH) {
+        // Existing OAuth account.
+        OfflineCredentialDialog(
+            mode = OfflineCredentialMode.ENTER,
+            onSubmit = { credential ->
+                viewModel.onOfflineCredentialEntered(credential)
+            },
+            onForgot = {
+                viewModel.onPinDismissed()
+            },
+        )
+    } else {
+        // Session-lock PIN (basic / OpenID account) unlock.
         PinDialog(
             mode = PinMode.ASK,
             onSuccess = {

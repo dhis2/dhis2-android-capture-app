@@ -186,4 +186,12 @@
     <string name="cancel">Cancelar</string>
     <string name="ok">Aceptar</string>
 
-</resources>
+    <!--*******************
+   Default custom labels
+**********************-->
+    <plurals name="enrollment">
+        <item quantity="one">Registro</item>
+        <item quantity="many">Registros</item>
+        <item quantity="other">Registros</item>
+    </plurals>
+    </resources>

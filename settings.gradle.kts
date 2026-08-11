@@ -14,7 +14,6 @@ dependencyResolutionManagement {
     @Suppress("UnstableApiUsage")
     repositories {
         mavenLocal()
-        maven("https://oss.sonatype.org/content/repositories/snapshots")
         maven("https://central.sonatype.com/repository/maven-snapshots")
         google()
         mavenCentral()

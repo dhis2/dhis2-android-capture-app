@@ -236,7 +236,6 @@
     <string name="tuto_event_initial_new_1">Nhập tất cả dữ liệu để tạo sự kiện</string>
     <string name="tuto_event_initial_1">Bấm để kiểm tra trạng thái hoàn tất sự kiện</string>
     <string name="relationships">mối quan hệ</string>
-    <string name="empty_tei_add">Không có sự kiện đã đăng ký, bấm vào \"+\" để thêm một sự kiện mới.</string>
     <string name="qr_data_values">Giá trị dữ liệu</string>
     <string name="info">Thông tin</string>
     <string name="qr_no_id_error">Không thể đọc được mã nhận dạng này</string>
@@ -452,7 +451,7 @@
     <string name="filter_period_last_n_biweeks">%d 2-Tuần trước</string>
     <string name="section_feedback">Phản hồi</string>
     <string name="section_indicators">Chỉ Số</string>
-    <string name="camera_permission_denied">Quyền mở máy ảnh bị từ chối..\nBạn cần bật tính năng máy ảnh để sử dụng chức năng này.</string>
+    <string name="camera_permission_denied">Quyền mở máy ảnh bị từ chối.\n Bạn cần bật tính năng máy ảnh để sử dụng chức năng này</string>
     <string name="section_charts_indicators">Biểu đồ và Chỉ số</string>
     <string name="take_photo">Chụp ảnh</string>
     <string name="break_glass_dialog_title">Chương trình này đã được bảo vệ</string>
@@ -463,14 +462,11 @@
     <string name="action_do_not_show_again">Không hiển thị lại</string>
     <string name="feature_configuration">Cấu hình chức năng</string>
     <string name="show_radar_graph">Xem Radar</string>
-    <string name="filter_follow_up_label">Đã theo dõi %s</string>
     <string name="update_field_error">Không thể cập nhật trường dữ liệu này. Xin vui lòng thử lại.</string>
     <string name="blocked_by_completion">Không thể chỉnh sửa dữ liệu này bởi vị chúng được đánh dấu đã hoàn tất</string>
     <string name="edition_expired">Không thể chỉnh sửa dữ liệu này bởi vì thời gian chỉnh sửa đã hết hạn</string>
     <string name="edition_no_write_access">Bạn không có quyền chỉnh sửa dữ liệu này</string>
-    <string name="event_date_not_in_orgunit_range">Dữ liệu này không thể sửa bởi vì đơn vị đã bị đóng</string>
     <string name="edition_no_catcombo_access">Bạn không có quyền chỉnh sửa dữ liệu này</string>
-    <string name="edition_orgunit_user_scope">Bạn không thể chỉnh sửa dữ liệu từ đơn vị này</string>
     <string name="error_tei_online_search_title">Tìm kiếm trực tuyến trả về tin nhắn sau: </string>
     <string name="delete_account">Xóa Tài khoản</string>
     <string name="main_menu_troubleshooting">Xử lý sự cố cấu hình</string>
@@ -482,7 +478,7 @@
     <string name="troubleshooting_pass_rule_validation">Không tìm thấy cảnh báo</string>
     <string name="troobleshooting_pass_rule_validation_title">Mọi thứ đều ổn</string>
     <string name="not_saved">Chưa lưu</string>
-    <string name="review_message">Một số trường dữ liệu cần bạn chú ý.\nBạn có muốn xem xét biểu nhập không\?</string>
+    <string name="review_message">Một số trường dữ liệu cần bạn chú ý.\n Bạn có muốn xem xét biểu nhập không?</string>
     <string name="search_loading_more">Đang tải thêm kết quả</string>
     <string name="search_no_results_in_program">Không còn kết quả nào khác cho %s</string>
     <string name="search_outside_action">Tìm kiếm ngoài chương trình này</string>
@@ -496,10 +492,10 @@
     <string name="init_search">Mở trang tìm kiếm để tìm bất cứ %snào</string>
     <string name="search_or_create">Bạn có thể tìm kiếm hoặc tạo một %smới</string>
     <string name="missing_warning_fields_completed_events">Bạn có một số tin nhắn cảnh báo.</string>
-    <string name="missing_warning_fields_events">Bạn có một số tin nhắn cảnh báo..\nBạn có muốn đánh dấu biểu nhập này là hoàn tất không\?</string>
-    <string name="missing_error_fields_events">Một số trường dữ liệu có lỗi và chưa được lưu. \nBạn có muốn xem lại biểu nhập không\?</string>
+    <string name="missing_warning_fields_events">Bạn có một số tin nhắn cảnh báo. \n Bạn có muốn đánh dấu biểu nhập này là hoàn tất không?</string>
+    <string name="missing_error_fields_events">Một số trường dữ liệu có lỗi và chưa được lưu. \n Bạn có muốn xem xét biểu nhập không?</string>
     <string name="event_can_be_completed">Bạn có muốn đánh dấu biểu nhập này là hoàn tất không?</string>
-    <string name="event_error_on_complete">Bạn có một số tin nhắn lỗi.\nBạn có muốn xem không\?</string>
+    <string name="event_error_on_complete">Bạn có một số tin nhắn lỗi.\n Bạn có muốn xem xét không?</string>
     <string name="re_opened">Đã Mở-lại</string>
     <string name="account_disable_title">Tài khoản đã bị vô hiệu hóa</string>
     <string name="account_disable_message">Tài khoản của bạn đã bị vô hiệu hóa bởi quản lý chương trình.</string>
@@ -538,6 +534,8 @@
     <string name="download_now">Tải xuống ngay</string>
     <string name="check_for_updates">Kiểm tra các cập nhật</string>
     <string name="no_updates">Không có cập nhật mới</string>
+    <string name="unknow_sources_denied">Quyền nguồn không xác định bị từ chối.\n Bạn cần cho phép nó để cài đặt.</string>
+    <string name="storage_denied">Quyền lưu trữ bị từ chối. \n Bạn cần cho phép để cài phiên bản.</string>
     <string name="app_version">Phiên bản ứng dụng</string>
     <string name="error_applying_rule_effects">Có lỗi trong cấu hình chương trình, chúng tôi không thể tải sự kiện này. Xin vui lòng liên hệ quản trị hệ thống của bạn.</string>
     <string name="dashboard_menu_delete_person">Xóa người</string>
@@ -545,7 +543,6 @@
     <string name="permission_notification_granted">Quyền thông báo đã được cấp.</string>
     <string name="not_synced">Chưa được đồng bộ</string>
     <string name="sync_retry">Đồng bộ lại</string>
-    <string name="marked_follow_up">Đã đánh dấu để theo dõi</string>
     <string name="overdue">Hết hạn %s</string>
     <string name="registered_in">Được đăng ký trong</string>
     <string name="view_only">Chỉ xem</string>
@@ -556,8 +553,8 @@
     <string name="sync_successful">Đồng bộ thành công</string>
     <string name="sync_warning">Cảnh báo đồng bộ</string>
     <string name="sync_error">Lỗi đồng bộ</string>
-    <string name="mark_follow_up">Đánh dấu để theo-dõi</string>
     <string name="coordinates">Toạ độ</string>
+    <string name="no_data_access">Bạn không có quyền truy cập dữ liệu.\n Liên lạc quản trị của bạn.</string>
     <string name="sync_offline_check_connection">Dường như bạn đang ngoại tuyến. Xin vui lòng kiểm tra kết nối mạng</string>
     <string name="delete_tei_dialog_title">Xóa %s này?</string>
     <string name="delete_tei_dialog_message">%snày và tất cả dữ liệu của nó giữa tất cả chương trình sẽ bị xóa. Hành động này không thể hồi phục.</string>

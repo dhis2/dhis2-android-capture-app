@@ -53,7 +53,7 @@ class EventInitialRepositoryImplTest {
                 .programModule()
                 .programStages()
                 .uid(any())
-                .get(),
+                .rxGet(),
         ) doReturn Single.just(mockedStage)
         whenever(
             d2
@@ -77,7 +77,7 @@ class EventInitialRepositoryImplTest {
     @Test
     fun `Should return editable geometry model`() {
         whenever(
-            d2.eventModule().eventService().isEditable(eventUid),
+            d2.eventModule().eventService().rxIsEditable(eventUid),
         ) doReturn Single.just(true)
         val event =
             Event
@@ -103,7 +103,7 @@ class EventInitialRepositoryImplTest {
                 .eventModule()
                 .events()
                 .uid(eventUid)
-                .get(),
+                .rxGet(),
         ) doReturn Single.just(event)
         mockStage(true)
         mockProgramAccess(true)
@@ -161,7 +161,7 @@ class EventInitialRepositoryImplTest {
                 .eventModule()
                 .events()
                 .uid(eventUid)
-                .get(),
+                .rxGet(),
         ) doReturn Single.just(event)
         mockStage(false)
         mockProgramAccess(true)
@@ -219,7 +219,7 @@ class EventInitialRepositoryImplTest {
                 .eventModule()
                 .events()
                 .uid(eventUid)
-                .get(),
+                .rxGet(),
         ) doReturn Single.just(event)
         mockStage(true)
         mockProgramAccess(false)
@@ -278,7 +278,7 @@ class EventInitialRepositoryImplTest {
                 .programModule()
                 .programStages()
                 .uid(stageUid)
-                .get(),
+                .rxGet(),
         ) doReturn
             Single.just(
                 stage,

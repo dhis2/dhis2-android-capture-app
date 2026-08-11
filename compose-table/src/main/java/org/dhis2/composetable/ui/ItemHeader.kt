@@ -44,7 +44,7 @@ fun ItemHeader(uiState: ItemHeaderUiState) {
                     .background(uiState.cellStyle.backgroundColor())
                     .semantics {
                         tableIdSemantic = uiState.tableId
-                        uiState.rowHeader.row?.let { rowIndexSemantic = uiState.rowHeader.row }
+                        uiState.rowHeader.row.let { rowIndexSemantic = uiState.rowHeader.row }
                         infoIconId = if (uiState.rowHeader.showDecoration) INFO_ICON else ""
                         rowBackground = uiState.cellStyle.backgroundColor()
                     }.testTag("${uiState.tableId}${uiState.rowHeader.row}")
@@ -104,7 +104,7 @@ fun ItemHeader(uiState: ItemHeaderUiState) {
             LocalTableSelection.current !is TableSelection.AllCellSelection &&
                 LocalTableSelection.current.isRowSelected(
                     selectedTableId = uiState.tableId,
-                    rowHeaderIndex = uiState.rowHeader.row ?: -1,
+                    rowHeaderIndex = uiState.rowHeader.row,
                 )
         if (isSelected) {
             VerticalResizingRule(

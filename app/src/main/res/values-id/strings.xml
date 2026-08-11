@@ -214,7 +214,6 @@
     <string name="tuto_event_initial_new_1">Masukkan semua data untuk membuat even</string>
     <string name="tuto_event_initial_1">Klik untuk memeriksa status penyelesaian even.</string>
     <string name="relationships">hubungan</string>
-    <string name="empty_tei_add">Tidak ada acara yang terdaftar, klik \"+\" untuk menambahkan yang baru.</string>
     <string name="qr_data_values">Nilai data</string>
     <string name="info">Info</string>
     <string name="qr_no_id_error">Tidak dapat membaca ID ini</string>
@@ -438,7 +437,6 @@
     <string name="skipped">Dilewati</string>
     <string name="programs">Program-program</string>
     <string name="sync_error">Kesalahan sinkronisasi</string>
-    <string name="mark_follow_up">Tandai untuk follow up</string>
     <string name="coordinates">Koordinat</string>
     <string name="schedule">Jadwal</string>
     <string name="refer">Merujuk</string>

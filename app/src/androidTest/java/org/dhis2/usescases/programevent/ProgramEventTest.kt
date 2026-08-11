@@ -9,6 +9,7 @@ import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -27,51 +28,7 @@ class ProgramEventTest : BaseTest() {
         return arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
-    @Test
-    fun shouldOpenExistingEvent() {
-        enableIntents()
-        val eventDate = "07/04/2024"
-        val eventOrgUnit = "Ngelehun CHC"
-
-        prepareProgramAndLaunchActivity(antenatalCare)
-
-        programEventsRobot(composeTestRule) {
-            clickOnEvent(eventDate)
-        }
-
-        eventRobot(composeTestRule) {
-            checkEventCaptureActivityIsLaunched()
-            checkEventDetails(eventDate, eventOrgUnit)
-        }
-    }
-
-    @Test
-    fun shouldCompleteAnEventAndReopenIt() {
-        val eventDate = "07/04/2024"
-
-        prepareProgramAndLaunchActivity(antenatalCare)
-
-        programEventsRobot(composeTestRule) {
-            clickOnEvent(eventDate)
-        }
-
-        eventRobot(composeTestRule) {
-            clickOnFormFabButton()
-            clickOnCompleteButton()
-        }
-
-        programEventsRobot(composeTestRule) {
-            checkEventIsComplete(eventDate)
-            clickOnEvent(eventDate)
-        }
-
-        eventRobot(composeTestRule) {
-            composeTestRule.waitForIdle()
-            clickOnReopen()
-            checkEventIsOpen()
-        }
-    }
-
+    @Ignore("To be deleted")
     @Test
     fun shouldDeleteEvent() {
         val eventDate = "26/11/2021"

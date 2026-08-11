@@ -55,19 +55,21 @@ class SplashActivity :
     override fun onResume() {
         super.onResume()
 
-        val isRooted = (!BuildConfig.DEBUG && BuildConfig.FLAVOR != "dhis2Training")  && RootBeer(this).isRootedWithBusyBoxCheck
+        val isRooted = (!BuildConfig.DEBUG && BuildConfig.FLAVOR != "dhis2Training") && RootBeer(this).isRootedWithBusyBoxCheck
         val isDebuggerActive = isDebuggerEnable() && detectDebugger()
 
         when {
-            isRooted -> showRootedDialog(
-                getString(R.string.security_title),
-                getString(R.string.security_rooted_message),
-            )
+            isRooted ->
+                showRootedDialog(
+                    getString(R.string.security_title),
+                    getString(R.string.security_rooted_message),
+                )
 
-            isDebuggerActive -> showRootedDialog(
-                getString(R.string.security_title),
-                getString(R.string.security_debugger_message),
-            )
+            isDebuggerActive ->
+                showRootedDialog(
+                    getString(R.string.security_title),
+                    getString(R.string.security_debugger_message),
+                )
 
             else -> presenter.init()
         }

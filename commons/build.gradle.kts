@@ -12,12 +12,12 @@ plugins {
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
 android {
-    compileSdk = libs.versions.sdk.get().toInt()
+    compileSdk = libs.versions.compileSdk.get().toInt()
     namespace = "org.dhis2.commons"
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
-        testOptions.targetSdk = libs.versions.sdk.get().toInt()
+        testOptions.targetSdk = libs.versions.targetSdk.get().toInt()
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -66,7 +66,7 @@ kapt {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation(project(":commonskmm"))
+    api(project(":commonskmm"))
 
     api(libs.dhis2.android.sdk) {
         this.isChanging = true

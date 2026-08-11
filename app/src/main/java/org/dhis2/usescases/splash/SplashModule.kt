@@ -40,7 +40,7 @@ class SplashModule internal constructor(
         if (userManager?.d2 != null && userManager.isUserLoggedIn.blockingFirst()) {
             val systemSetting =
                 userManager.d2
-                    .systemSettingModule()
+                    .settingModule()
                     .systemSetting()
                     .flag()
                     .blockingGet()

@@ -65,7 +65,10 @@ import timber.log.Timber.Forest.plant
 import java.io.IOException
 import javax.inject.Singleton
 
-open class App : Application(), Components, DefaultLifecycleObserver {
+open class App :
+    Application(),
+    Components,
+    DefaultLifecycleObserver {
     @Singleton
     lateinit var appComponent: AppComponent
 
@@ -108,7 +111,6 @@ open class App : Application(), Components, DefaultLifecycleObserver {
         initCustomCrashActivity()
         observeConnectivity()
     }
-
 
     private fun observeConnectivity() {
         scope.launch {
@@ -163,7 +165,8 @@ open class App : Application(), Components, DefaultLifecycleObserver {
     }
 
     private fun initCustomCrashActivity() {
-        CaocConfig.Builder.create()
+        CaocConfig.Builder
+            .create()
             .errorActivity(CrashActivity::class.java)
             .apply()
     }
@@ -175,11 +178,14 @@ open class App : Application(), Components, DefaultLifecycleObserver {
 
     protected open fun setUpServerComponent() {
         serverComponent = appComponent.plus(ServerModule())
-        if (serverComponent?.userManager()?.isUserLoggedIn()
+        if (serverComponent
+                ?.userManager()
+                ?.isUserLoggedIn()
                 ?.blockingFirst() == true
-        ) setUpUserComponent()
+        ) {
+            setUpUserComponent()
+        }
     }
-
 
     protected open fun setUpUserComponent() {
         serverComponent?.userManager()?.takeIf { it.isUserLoggedIn.blockingFirst() }?.let {
@@ -187,8 +193,9 @@ open class App : Application(), Components, DefaultLifecycleObserver {
         }
     }
 
-    protected open fun prepareAppComponent(): AppComponent.Builder {
-        return DaggerAppComponent.builder()
+    protected open fun prepareAppComponent(): AppComponent.Builder =
+        DaggerAppComponent
+            .builder()
             .appModule(AppModule(this))
             .schedulerModule(SchedulerModule(SchedulersProviderImpl()))
             .analyticsModule(AnalyticsModule())
@@ -198,32 +205,23 @@ open class App : Application(), Components, DefaultLifecycleObserver {
             .sessionManagerService(SessionManagerModule())
             .coroutineDispatchers(DispatcherModule())
             .featureConfigModule(FeatureConfigModule())
-    }
 
-    override fun appComponent(): AppComponent {
-        return appComponent
-    }
+    override fun appComponent(): AppComponent = appComponent
 
     override fun createServerComponent(): ServerComponent {
         if (!D2Manager.isD2Instantiated()) setUpServerComponent()
         return serverComponent!!
     }
 
-    override fun serverComponent(): ServerComponent? {
-        return serverComponent
-    }
+    override fun serverComponent(): ServerComponent? = serverComponent
 
     override fun releaseServerComponent() {
         serverComponent = null
     }
 
-    override fun createUserComponent(): UserComponent {
-        return (serverComponent!!.plus(UserModule()).also { userComponent = it })
-    }
+    override fun createUserComponent(): UserComponent = (serverComponent!!.plus(UserModule()).also { userComponent = it })
 
-    override fun userComponent(): UserComponent? {
-        return userComponent
-    }
+    override fun userComponent(): UserComponent? = userComponent
 
     override fun releaseUserComponent() {
         userComponent = null
@@ -237,9 +235,7 @@ open class App : Application(), Components, DefaultLifecycleObserver {
         return dashboardComponent!!
     }
 
-    fun dashboardComponent(): TeiDashboardComponent? {
-        return dashboardComponent
-    }
+    fun dashboardComponent(): TeiDashboardComponent? = dashboardComponent
 
     fun releaseDashboardComponent() {
         if (!this.recreated) {
@@ -265,8 +261,10 @@ open class App : Application(), Components, DefaultLifecycleObserver {
     val isSessionBlocked: Boolean
         get() {
             val shouldShowPinDialog =
-                fromBackGround && appComponent().preferenceProvider()
-                    .getBoolean(Preference.SESSION_LOCKED, false)
+                fromBackGround &&
+                    appComponent()
+                        .preferenceProvider()
+                        .getBoolean(Preference.SESSION_LOCKED, false)
             fromBackGround = false
             return shouldShowPinDialog
         }
@@ -286,51 +284,49 @@ open class App : Application(), Components, DefaultLifecycleObserver {
                 Timber.d("Error in app")
                 Thread.currentThread().uncaughtExceptionHandler?.uncaughtException(
                     Thread.currentThread(),
-                    e
+                    e,
                 )
             }
             if (e is IllegalStateException) {
                 Timber.d("Error in RxJava")
                 Thread.currentThread().uncaughtExceptionHandler?.uncaughtException(
                     Thread.currentThread(),
-                    e
+                    e,
                 )
             }
             Timber.d(e)
         }
     }
 
-    override fun provideFeatureConfigActivityComponent(): FeatureConfigActivityComponent? {
-        return userComponent?.plus(FeatureConfigActivityModule())
-    }
+    override fun provideFeatureConfigActivityComponent(): FeatureConfigActivityComponent? =
+        userComponent?.plus(FeatureConfigActivityModule())
 
-    override fun provideCalendarPickerComponent(): CalendarPickerComponent? {
-        return userComponent?.plus(CalendarPickerModule())
-    }
+    override fun provideCalendarPickerComponent(): CalendarPickerComponent? = userComponent?.plus(CalendarPickerModule())
 
-    override fun provideAnalyticsFragmentComponent(module: AnalyticsFragmentModule?): AnalyticsFragmentComponent? {
-        return userComponent?.plus(module)
-    }
+    override fun provideAnalyticsFragmentComponent(module: AnalyticsFragmentModule?): AnalyticsFragmentComponent? =
+        userComponent?.plus(module)
 
-    override fun provideFilterPresenter(): FilterPresenter? {
-        return userComponent?.filterPresenter()
-    }
+    override fun provideFilterPresenter(): FilterPresenter? = userComponent?.filterPresenter()
 
-    override fun provideOUTreeComponent(module: OUTreeModule): OUTreeComponent? {
-        return serverComponent?.plus(module)
-    }
+    override fun provideOUTreeComponent(module: OUTreeModule): OUTreeComponent? = serverComponent?.plus(module)
 
     override val syncComponentProvider: SyncComponentProvider
         get() = SyncStatusDialogProvider()
 
     private fun areTrackingPermissionGranted(): Boolean {
-        val isUserLoggedIn = serverComponent != null &&
+        val isUserLoggedIn =
+            serverComponent != null &&
                 serverComponent!!.userManager().isUserLoggedIn().blockingFirst()
         if (!D2Manager.isD2Instantiated() || !isUserLoggedIn) {
             return false
         }
-        val granted = D2Manager.getD2().dataStoreModule().localDataStore()
-            .value(DATA_STORE_ANALYTICS_PERMISSION_KEY).blockingGet()
+        val granted =
+            D2Manager
+                .getD2()
+                .dataStoreModule()
+                .localDataStore()
+                .value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
+                .blockingGet()
         return granted != null && granted.value().toBoolean()
     }
 }

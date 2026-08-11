@@ -218,7 +218,6 @@
     <string name="tuto_event_initial_new_1">Voer alle gegevens in om het evenement aan te maken</string>
     <string name="tuto_event_initial_1">Klik om de voltooiingsstatus van het evenement te controleren.</string>
     <string name="relationships">relaties</string>
-    <string name="empty_tei_add">Er zijn geen evenementen geregistreerd, klik op \"+\" om een nieuwe toe te voegen.</string>
     <string name="qr_data_values">Gegevens waarden</string>
     <string name="info">Info</string>
     <string name="qr_no_id_error">Kan dit ID niet lezen</string>
@@ -442,14 +441,11 @@
     <string name="action_do_not_show_again">Niet meer laten zien</string>
     <string name="feature_configuration">Functieconfiguratie</string>
     <string name="show_radar_graph">Weergeven als radar</string>
-    <string name="filter_follow_up_label">Gevolgd %s</string>
     <string name="update_field_error">Dit veld kan niet worden bijgewerkt. Probeer het opnieuw</string>
     <string name="blocked_by_completion">Deze gegevens kunnen niet worden bewerkt omdat ze als voltooid zijn gemarkeerd</string>
     <string name="edition_expired">Deze gegevens kunnen niet worden bewerkt omdat de bewerkingstijd is verstreken</string>
     <string name="edition_no_write_access">U heeft geen toestemming om deze gegevens te bewerken</string>
-    <string name="event_date_not_in_orgunit_range">Deze gegevens zijn niet bewerkbaar omdat de organisatie-eenheid gesloten is</string>
     <string name="edition_no_catcombo_access">U heeft geen toestemming om deze gegevens te bewerken</string>
-    <string name="edition_orgunit_user_scope">U kunt gegevens van deze organisatie-eenheid niet bewerken</string>
     <string name="error_tei_online_search_title">De online zoekopdracht leverde het volgende bericht op:</string>
     <string name="delete_account">Account verwijderen</string>
     <string name="main_menu_troubleshooting">Problemen met configuratie oplossen</string>
@@ -461,6 +457,7 @@
     <string name="troubleshooting_pass_rule_validation">Geen waarschuwingen gevonden</string>
     <string name="troobleshooting_pass_rule_validation_title">Alles ziet er geweldig uit</string>
     <string name="not_saved">Niet opgeslagen</string>
+    <string name="review_message">Sommige velden hebben uw aandacht nodig.\Wilt u het formulier bekijken?</string>
     <string name="search_loading_more">Meer resultaten laden</string>
     <string name="search_no_results_in_program">Geen resultaten meer voor %s</string>
     <string name="search_outside_action">Zoek buiten dit programma</string>
@@ -472,6 +469,8 @@
     <string name="action_ok">OK</string>
     <string name="init_search">Start een zoekopdracht om een %s</string>
     <string name="search_or_create">U kunt zoeken of een nieuwe creëren %s</string>
+    <string name="missing_warning_fields_events">U heeft enkele waarschuwingsberichten.\nWilt u dit formulier als voltooid markeren?</string>
+    <string name="missing_error_fields_events">Sommige velden bevatten fouten en worden niet opgeslagen. \nWilt u het formulier bekijken?</string>
     <string name="event_can_be_completed">Wilt u dit formulier als voltooid markeren?</string>
     <string name="event_error_on_complete">U heeft een aantal foutmeldingen.\nWilt u deze bekijken?</string>
     <string name="re_opened">heropend</string>
@@ -509,15 +508,15 @@
     <string name="download_now">Download nu</string>
     <string name="check_for_updates">Controleer op updates</string>
     <string name="no_updates">Er zijn geen nieuwe updates</string>
+    <string name="unknow_sources_denied">Onbekende bronnen toestemming is geweigerd.\nU moet deze inschakelen om de versie te installeren.</string>
+    <string name="storage_denied">Opslagtoestemming is geweigerd.\nU moet deze inschakelen om de versie te installeren.</string>
     <string name="app_version">App versie</string>
     <string name="error_applying_rule_effects">Er is iets misgegaan met de programmaconfiguratie, we kunnen dit evenement niet laden. Neem contact op met uw systeembeheerder.</string>
-    <string name="marked_follow_up">Gemarkeerd voor vervolg</string>
     <string name="view_only">Alleen bekijken</string>
     <string name="skipped">Overgeslaten</string>
     <string name="programs">Programma\'s</string>
     <string name="sync_warning">Sync waarschuwing</string>
     <string name="sync_error">Synchronisatiefout</string>
-    <string name="mark_follow_up">Markeer voor vervolg</string>
     <string name="schedule">Schema</string>
     <string name="refer">Refereren</string>
     <string name="scheduled_enter_event">Gepland</string>

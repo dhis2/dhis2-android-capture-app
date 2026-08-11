@@ -7,6 +7,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.dhislogic.AUTH_ALL
 import org.dhis2.data.dhislogic.AUTH_UNCOMPLETE_EVENT
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ReOpenEventUseCase
@@ -22,6 +23,7 @@ class EventCaptureFormPresenter(
     private val d2: D2,
     private val eventUid: String,
     private val resourceManager: ResourceManager,
+    private val customLabelProvider: CustomLabelProvider,
     private val reOpenEventUseCase: ReOpenEventUseCase,
     private val dispatcherProvider: DispatcherProvider,
 ) {
@@ -30,7 +32,7 @@ class EventCaptureFormPresenter(
             d2
                 .eventModule()
                 .eventService()
-                .getEditableStatus(eventUid = eventUid)
+                .rxGetEditableStatus(eventUid = eventUid)
                 .blockingGet()
 
         when (isEditable) {
@@ -51,32 +53,35 @@ class EventCaptureFormPresenter(
     }
 
     private fun configureNonEditableMessage(eventNonEditableReason: EventNonEditableReason) {
-        val (reason, canBeReOpened) =
-            when (eventNonEditableReason) {
-                EventNonEditableReason.BLOCKED_BY_COMPLETION -> resourceManager.getString(R.string.blocked_by_completion) to canReopen()
-                EventNonEditableReason.EXPIRED -> resourceManager.getString(R.string.edition_expired) to false
-                EventNonEditableReason.NO_DATA_WRITE_ACCESS -> resourceManager.getString(R.string.edition_no_write_access) to false
-                EventNonEditableReason.EVENT_DATE_IS_NOT_IN_ORGUNIT_RANGE ->
-                    resourceManager.getString(R.string.event_date_not_in_orgunit_range) to
-                        false
-                EventNonEditableReason.NO_CATEGORY_COMBO_ACCESS -> resourceManager.getString(R.string.edition_no_catcombo_access) to false
-                EventNonEditableReason.ENROLLMENT_IS_NOT_OPEN ->
-                    resourceManager.formatWithEnrollmentLabel(
-                        d2
-                            .eventModule()
-                            .events()
-                            .uid(eventUid)
-                            .blockingGet()
-                            ?.program(),
-                        R.string.edition_enrollment_is_no_open_V2,
-                        1,
-                    ) to false
+        CoroutineScope(dispatcherProvider.ui()).launch {
+            val (reason, canBeReOpened) =
+                when (eventNonEditableReason) {
+                    EventNonEditableReason.BLOCKED_BY_COMPLETION -> resourceManager.getString(R.string.blocked_by_completion) to canReopen()
+                    EventNonEditableReason.EXPIRED -> resourceManager.getString(R.string.edition_expired) to false
+                    EventNonEditableReason.NO_DATA_WRITE_ACCESS -> resourceManager.getString(R.string.edition_no_write_access) to false
+                    EventNonEditableReason.EVENT_DATE_IS_NOT_IN_ORGUNIT_RANGE ->
+                        customLabelProvider.formatStringWithCustomLabel(
+                            resourceManager.getString(R.string.event_date_not_in_orgunit_range),
+                            customLabelProvider.getCustomOrgUnitLabel(getEvent()?.program()),
+                        ) to false
+                    EventNonEditableReason.NO_CATEGORY_COMBO_ACCESS ->
+                        resourceManager.getString(R.string.edition_no_catcombo_access) to
+                            false
+                    EventNonEditableReason.ENROLLMENT_IS_NOT_OPEN ->
+                        resourceManager.formatWithEnrollmentLabel(
+                            getEvent()?.program(),
+                            R.string.edition_enrollment_is_no_open_V2,
+                            1,
+                        ) to false
 
-                EventNonEditableReason.ORGUNIT_IS_NOT_IN_USER_SCOPE ->
-                    resourceManager.getString(R.string.edition_orgunit_user_scope) to
-                        false
-            }
-        view.showNonEditableMessage(reason, canBeReOpened)
+                    EventNonEditableReason.ORGUNIT_IS_NOT_IN_USER_SCOPE ->
+                        customLabelProvider.formatStringWithCustomLabel(
+                            resourceManager.getString(R.string.edition_orgunit_user_scope),
+                            customLabelProvider.getCustomOrgUnitLabel(getEvent()?.program()),
+                        ) to false
+                }
+            view.showNonEditableMessage(reason, canBeReOpened)
+        }
     }
 
     fun reOpenEvent() {

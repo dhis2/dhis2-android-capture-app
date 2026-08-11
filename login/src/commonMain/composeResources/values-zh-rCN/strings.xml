@@ -14,5 +14,6 @@
     <string name="action_no_now">现在不要</string>
     <string name="action_yes">是</string>
     <string name="enter_pin_button">解锁</string>
+    <string name="offline_credential_enter_button">登录</string>
     <string name="importing_successful">导入成功</string>
     </resources>

@@ -71,8 +71,8 @@ class FormRepositoryImpl(
                 dataEntryRepository.firstSectionToOpen()
         }
 
-    override suspend fun composeList(skipProgramRules: Boolean): List<FieldUiModel> {
-        return itemList
+    override suspend fun composeList(skipProgramRules: Boolean): List<FieldUiModel> =
+        itemList
             .applyRuleEffects(skipProgramRules)
             .mergeListWithErrorFields(itemsWithError)
             .also {
@@ -80,7 +80,6 @@ class FormRepositoryImpl(
             }.setOpenedSection()
             .setFocusedItem()
             .setLastItem()
-    }
 
     override fun completeEvent() {
         formValueStore.completeEvent()
@@ -445,6 +444,7 @@ class FormRepositoryImpl(
         )
 
     override fun completedFieldsPercentage(value: List<FieldUiModel>): Float = completionPercentage
+
     override fun backupOfChangedItems() = backupList.minus(itemList.applyRuleEffects())
 
     private suspend fun getFieldsWithError() =
@@ -530,7 +530,7 @@ class FormRepositoryImpl(
                 item.uid == uid
             }?.let { item ->
                 updated(indexOf(item), item.setFocus())
-            } ?: this
+            }
         } ?: this
 
     private suspend fun List<FieldUiModel>.setOpenedSection(): List<FieldUiModel> =

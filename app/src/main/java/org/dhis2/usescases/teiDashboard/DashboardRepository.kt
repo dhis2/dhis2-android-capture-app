@@ -101,7 +101,7 @@ interface DashboardRepository {
         teiUid: String,
     ): Observable<List<Pair<TrackedEntityAttribute, TrackedEntityAttributeValue>>>
 
-    fun getDashboardModel(): DashboardModel?
+    suspend fun getDashboardModel(): DashboardModel?
 
     fun getGrouping(): Boolean
 

@@ -35,7 +35,6 @@
     <string name="filters_title_state">Synchroniseren</string>
     <string name="filters_title_assigned">Toegewezen aan mij</string>
     <string name="filters_title_date">Datum</string>
-    <string name="filter_follow_up_label">Gevolgd %s</string>
     <string name="weekly">Wekelijks</string>
     <string name="bi_weekly">Tweewekelijks</string>
     <string name="monthly">Maandelijks</string>

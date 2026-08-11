@@ -199,10 +199,10 @@
     <string name="about_sdk">SDK ລຸ້ນ: %s</string>
     <string name="about_connected">ເຊື່ອມຕໍ່ເຂົ້າກັບ: %s</string>
     <string name="about_user">ຜູ້ນໍາໃຊ້ປະຈຸບັນນີ້: %s</string>
-    <string name="about_more">ຂໍ້ມູນເພີ່ມຕື່ມກ່ຽວກັບໂປຣແກຣມນີ້: ອ່ານໄດ້ທີ່ <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">here</a>. ໃຊ້ໄດ້ກັບໂທລະສັບລຸ້ນໃດ ແລະ ໃຊ້ບໍ່ໄດ້ກັບລຸ້ນໃດ</string>
-    <string name="about_git">ລຸ້ນນີ້ ແລະ ລຸ້ນກ່ອນໆ ຂອງໂປຣແກຣມນີ້ ກໍ່ຄື ລະບົບໂປຣແກຣມຂອງມັນແມ່ນເບີ່ງໄດ້ທີ່ at <a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>. ໂປຣແກຣມ DHIS2 Android Capture ແມ່ນໄດ້ຮັບອະນຸຍາດພາຍໃຕ້ເງື່ອນໄຂຂອງ GNU General Public License ແລະ ປະກາດນໍາໃຊ້ໂດຍມຸນນິທິຊອບແວບໍ່ໄດ້ເສຍຄ່າ - ເບີ່ງໄດ້ທີ <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a></string>
-    <string name="about_dev">ຖືກພັດທະນາ ແລະ ບໍາລຸງຮັກສາໂດຍ <a href="https://www.dhis2.org/">DHIS2</a> ໂຄງການເຊີ່ງເປັນພາກສ່ວນໜື່ງຂອງມຫາວິທະຍາໄລ ໂອສໂລ, ກົມຂໍ້ມູນຂ່າວສານ<a href="https://www.mn.uio.no/ifi/english/">department of informatics</a>.</string>
-    <string name="about_contact">ສໍາລັບຂໍ້ມູນເພີມຕື່ມ ຫຼື ມີຄໍາຖາມກ່ຽວກັບໂປຣແກຣມນີ້, ກະລຸນາ ຂຽນໄປສອບຖາມໄດ້ທີ <a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
+    <string name="about_more">\"ຂໍ້ມູນເພີ່ມຕື່ມກ່ຽວກັບໂປຣແກຣມນີ້: ອ່ານໄດ້ທີ່ \"<a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">here</a>. ໃຊ້ໄດ້ກັບໂທລະສັບລຸ້ນໃດ ແລະ ໃຊ້ບໍ່ໄດ້ກັບລຸ້ນໃດ</string>
+    <string name="about_git">\"ລຸ້ນນີ້ ແລະ ລຸ້ນກ່ອນໆ ຂອງໂປຣແກຣມນີ້ ກໍ່ຄື ລະບົບໂປຣແກຣມຂອງມັນແມ່ນເບີ່ງໄດ້ທີ່ at \"<a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>\". ໂປຣແກຣມ DHIS2 Android Capture ແມ່ນໄດ້ຮັບອະນຸຍາດພາຍໃຕ້ເງື່ອນໄຂຂອງ GNU General Public License ແລະ ປະກາດນໍາໃຊ້ໂດຍມຸນນິທິຊອບແວບໍ່ໄດ້ເສຍຄ່າ - ເບີ່ງໄດ້ທີ \"<a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a></string>
+    <string name="about_dev">\"ຖືກພັດທະນາ ແລະ ບໍາລຸງຮັກສາໂດຍ \"<a href="https://www.dhis2.org/">DHIS2</a>\" ໂຄງການເຊີ່ງເປັນພາກສ່ວນໜື່ງຂອງມຫາວິທະຍາໄລ ໂອສໂລ, ກົມຂໍ້ມູນຂ່າວສານ\"<a href="https://www.mn.uio.no/ifi/english/">department of informatics</a>.</string>
+    <string name="about_contact">\"ສໍາລັບຂໍ້ມູນເພີມຕື່ມ ຫຼື ມີຄໍາຖາມກ່ຽວກັບໂປຣແກຣມນີ້, ກະລຸນາ ຂຽນໄປສອບຖາມໄດ້ທີ \"<a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
 
     <string name="search_program_not_selected">ເລືອກໂປຣແກຣມເພື່ອໃຫ້ສາມາດຂື້ນທະບຽນໄດ້</string>
     <string name="search_access_error">ທ່ານບໍ່ໄດ້ຮັບອະນຸຍາດຕາມທີ່ໄດ້ຮ້ອງຂໍ</string>
@@ -224,7 +224,6 @@
     <string name="tuto_event_initial_new_1">ປ້ອນຂໍ້ມູນທັງໝົດເຂົ້າເພື່ອສ້າງເປັນກໍລະນີ</string>
     <string name="tuto_event_initial_1">ກົດເພື່ອກວດເບີ່ງການເຮັດສໍາເລັດການບັນທຶກກໍລະນີ</string>
     <string name="relationships">ສາຍພົວພັນ</string>
-    <string name="empty_tei_add">ບໍ່ມີເຫດການທີ່ລົງທະບຽນໃວ້, ຄລິກ \"+\" ເພື່ອເພີ່ມເຫດການໃໝ່</string>
     <string name="qr_data_values">Data values</string>
     <string name="info">ຂໍ້ມູນ</string>
     <string name="qr_no_id_error">ອ່ານໄອດີນີ້ບໍໄດ້</string>
@@ -443,14 +442,11 @@
     <string name="action_do_not_show_again">ບໍ່ຕ້ອງສະແດງອີກ</string>
     <string name="feature_configuration">ການຕັ້ງຄ່າຄຸນສົມບັດ</string>
     <string name="show_radar_graph">ສະແດງເປັນ Radar</string>
-    <string name="filter_follow_up_label">ຕິດຕາມ%s</string>
     <string name="update_field_error">ບໍ່ສາມາດອັບເດດຫ້ອງປ້ອນຂໍ້ມູນນີ້ໄດ້. ກະລຸນາລອງໃໝ່ອີກຄັ້ງ</string>
     <string name="blocked_by_completion">ຂໍ້ມູນນີ້ບໍ່ສາມາດແກ້ໄຂໄດ້ເນື່ອງຈາກຖືກໝາຍວ່າສຳເລັດແລ້ວ</string>
     <string name="edition_expired">ຂໍ້ມູນນີ້ບໍ່ສາມາດແກ້ໄຂໄດ້ເນື່ອງຈາກເວລາຂອງມັນໝົດອາຍຸແລ້ວ</string>
     <string name="edition_no_write_access">ທ່ານບໍ່ໄດ້ຮັບອານຸຍາດໃນການແກ້ໄຂຂໍ້ມູນນີ້</string>
-    <string name="event_date_not_in_orgunit_range">ຂໍ້ມູນນີ້ບໍ່ສາມາດແກ້ໄຂໄດ້ເນື່ອງຈາກຫົວຫນ່ວຍການຈັດຕັ້ງຖືກປິດໃວ້ຢູ່</string>
     <string name="edition_no_catcombo_access">ທ່ານບໍ່ໄດ້ຮັບອານຸຍາດໃນການແກ້ໄຂຂໍ້ມູນນີ້</string>
-    <string name="edition_orgunit_user_scope">ທ່ານບໍ່ສາມາດແກ້ໄຂຂໍ້ມູນຈາກຫົວຫນ່ວຍການຈັດຕັ້ງນີ້ໄດ້</string>
     <string name="error_tei_online_search_title">ການຄົ້ນຫາອອນໄລນ໌ສົ່ງຂໍ້ຄວາມຕໍ່ໄປນີ້:</string>
     <string name="delete_account">ລົບບັນຊີ</string>
     <string name="main_menu_troubleshooting">ການ​ແກ້​ໄຂ​ບັນ​ຫາ​ການ​ກຳນົດຄ່າ</string>
@@ -461,6 +457,7 @@
     <string name="troubleshooting_ongoing_rule_validation">ກຳລັງກວດສອບຄວາມຖຶກຕ້ອງຂອງສາຍງານ...</string>
     <string name="troubleshooting_pass_rule_validation">ບໍ່ພົບຂໍ້ຄວນລະວັງ</string>
     <string name="not_saved">ບໍ່ໄດ້ບັນທຶກ</string>
+    <string name="review_message">ບາງຊ່ອງຂໍ້ມູນຈຳເປັນຕ້ອງດຳເນີນການຂອງທ່ານ.\n ທ່ານຕ້ອງການກວດສອບແບບຟອມຫຼືບໍ?</string>
     <string name="search_loading_more">ກຳລັງໂຫຼດຫາຜົນລັບເພີ່ມເຕີມ</string>
     <string name="search_no_results_in_program">ບໍ່ມີຜົນໄດ້ຮັບເພີ່ມເຕີມສໍາລັບ%s</string>
     <string name="search_outside_action">ຄົ້ນຫານອກສາຍງານນີ້</string>
@@ -472,6 +469,7 @@
     <string name="action_ok">ຕົກລົງ</string>
     <string name="init_search">ເລີ່ມການຄົ້ນຫາເພື່ອຊອກຫາອັນໃດນຶ່ງ%s</string>
     <string name="search_or_create">ທ່ານສາມາດຄົ້ນຫາຫຼືສ້າງໃຫມ່%s</string>
+    <string name="missing_warning_fields_events">ທ່ານມີບາງຂໍ້ຄວາມເຕືອນ.\nທ່ານຕ້ອງການໝາຍແບບຟອມນີ້ວ່າສຳເລັດແລ້ວຫຼືບໍ?</string>
     <string name="event_can_be_completed">ທ່ານຕ້ອງການໝາຍແບບຟອມນີ້ວ່າສຳເລັດແລ້ວຫຼືບໍ?</string>
     <string name="event_error_on_complete">ທ່ານມີຂໍ້ຜິດພາດໃນບາງຂໍ້ຄວາມ.\nທ່ານຕ້ອງການກວດເບິ່ງຄືນບໍ?</string>
     <string name="re_opened">ເປີດຄືນໃໝ່</string>
@@ -503,14 +501,12 @@
     <string name="check_for_updates">ກວດສອບເພື່ອປັບປຸງ</string>
     <string name="dashboard_menu_delete_person">ລົບບຸກຄົນ</string>
     <string name="not_synced">ບໍ່ໄດ້ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
-    <string name="marked_follow_up">ໝາຍໄວ້ເພື່ອຕິດຕາມ</string>
     <string name="overdue">ກາຍເວລາທີ່ກຳນົດ %s</string>
     <string name="view_only">ເບິ່ງໄດ້ເທົ່ານັ້ນ</string>
     <string name="skipped">ຂ້າມໄປ</string>
     <string name="programs">ສາຍງານ</string>
     <string name="sync_successful">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນສຳເລັດແລ້ວ</string>
     <string name="sync_error">ຄໍາຜິດທີ່ເກີດຈາກການທໍາງານຮ່ວມກັນຂອງລະບົບ</string>
-    <string name="mark_follow_up">ໝາຍໄວ້ເພື່ອຕິດຕາມ</string>
     <string name="coordinates">Coordinates</string>
     <string name="schedule">ກຳນົດເວລາ</string>
     <string name="refer">ອ້າງອີງ</string>

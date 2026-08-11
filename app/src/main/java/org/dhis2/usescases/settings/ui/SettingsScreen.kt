@@ -170,9 +170,10 @@ private fun SettingItemList(
     onSettingsUiAction: (SettingsUiAction) -> Unit,
 ) {
     val context = LocalContext.current
-    val primaryColor = remember(context) {
-        ColorUtils().getThemePrimaryColor(context)
-    }
+    val primaryColor =
+        remember(context) {
+            ColorUtils().getThemePrimaryColor(context)
+        }
 
     LazyColumn(
         modifier =
@@ -260,6 +261,7 @@ private fun SettingItemList(
         if (settingsUIModel.isTwoFAConfigured) {
             item {
                 TwoFASettingItem(
+                    status = settingsUIModel.twoFAStatus,
                     onClick = { onSettingsUiAction(SettingsUiAction.OnOpenTwoFASettings) },
                 )
             }

@@ -688,6 +688,7 @@ class FormValueStoreTest {
                 .name("optionName")
                 .uid("optionUid")
                 .code("optionCode")
+                .optionSet(ObjectWithUid.create("optionSetUid"))
                 .build()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues().value(
@@ -755,6 +756,7 @@ class FormValueStoreTest {
                 .name("optionName")
                 .uid("optionUid")
                 .code("optionCode")
+                .optionSet(ObjectWithUid.create("optionSetUid"))
                 .build()
         whenever(
             d2.trackedEntityModule().trackedEntityDataValues().value(
@@ -791,6 +793,7 @@ class FormValueStoreTest {
                 .name("optionName")
                 .uid("optionUid")
                 .code("optionCode")
+                .optionSet(ObjectWithUid.create("optionSetUid"))
                 .build()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues().value(
@@ -857,6 +860,7 @@ class FormValueStoreTest {
                 .name("optionName")
                 .uid("optionUid")
                 .code("optionCode")
+                .optionSet(ObjectWithUid.create("optionSetUid"))
                 .build()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues().value(

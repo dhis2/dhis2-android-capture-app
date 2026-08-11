@@ -229,7 +229,6 @@
     <string name="tuto_event_initial_new_1">أدخل جميع البيانات لإنشاء الحدث</string>
     <string name="tuto_event_initial_1">انقر للتحقق من حالة إكتمال الحدث</string>
     <string name="relationships">العلاقات</string>
-    <string name="empty_tei_add">لا توجد أحداث مسجلة، انقر على \"+\" لإضافة حدث جديد.</string>
     <string name="qr_data_values">قيم البيانات</string>
     <string name="info">معلومات</string>
     <string name="qr_no_id_error">تعذر قراءة رقم التعريف هذا</string>
@@ -450,14 +449,11 @@
     <string name="openid_session_expired_message">لقد انتهت جلستك الحالية. لأسباب أمنية ، ستحتاج إلى تقديم بيانات الاعتماد الخاصة بك مرة أخرى</string>
     <string name="week_period_span_default_label">الأسابيع %d %s إلى %s</string>
     <string name="action_do_not_show_again">لا تظهر مرة أخرى</string>
-    <string name="filter_follow_up_label">تمت المتابعة %s</string>
     <string name="update_field_error">لا يمكن تحديث هذا الحقل. حاول مرة اخرى</string>
     <string name="blocked_by_completion">هذه البيانات غير قابلة للتحرير لأنه تم تعليمها على أنها مكتملة</string>
     <string name="edition_expired">هذه البيانات غير قابلة للتعديل لأن وقت إصدارها قد انتهى</string>
     <string name="edition_no_write_access">ليس لديك إذن لتحرير هذه البيانات</string>
-    <string name="event_date_not_in_orgunit_range">هذه البيانات غير قابلة للتعديل لأنه تم اغلاق الوحدة التنظيمية</string>
     <string name="edition_no_catcombo_access">ليس لديك إذن لتحرير هذه البيانات</string>
-    <string name="edition_orgunit_user_scope">لا يمكنك تحرير البيانات من هذه الوحدة التنظيمية</string>
     <string name="error_tei_online_search_title">البحث عبر الإتصال بالسيرفر عن طريق الإنترنت ارجع الرسالة التالية:</string>
     <string name="delete_account">حذف الحساب</string>
     <string name="main_menu_troubleshooting">استكشاف أخطاء التكوين وإصلاحها</string>
@@ -466,7 +462,7 @@
     <string name="troubleshooting_pass_rule_validation">لم يتم العثور على تحذيرات</string>
     <string name="troobleshooting_pass_rule_validation_title">كل شيء يبدو جيداً</string>
     <string name="not_saved">لم يتم حفظه</string>
-    <string name="review_message">بعض الحقول تحتاج إلى انتباهك.\nهل تريد مراجعة النموذج؟</string>
+    <string name="review_message">تحتاج بعض الحقول إلى إطلاعك.\n هل تريد مراجعة النموذج؟</string>
     <string name="search_loading_more">تحميل المزيد من النتائج</string>
     <string name="search_no_results_in_program">لا يوجد المزيد من النتائج لـ %s</string>
     <string name="search_outside_action">ابحث خارج هذا البرنامج</string>
@@ -479,10 +475,10 @@
     <string name="init_search">ابدأ بحثًا للعثور على أي %s</string>
     <string name="search_or_create">يمكنك البحث أو إنشاء %s جديد</string>
     <string name="missing_warning_fields_completed_events">لديك بعض الرسائل التحذيرية.</string>
-    <string name="missing_warning_fields_events">لديك بعض الرسائل التحذيرية.\nهل تريد وضع علامة \"مكتمل\" على هذا النموذج؟</string>
-    <string name="missing_error_fields_events">بعض الحقول بها أخطاء ولم يتم حفظها. \nهل تريد مراجعة النموذج؟</string>
+    <string name="missing_warning_fields_events">لديك بعض رسائل التحذير.\n هل تريد وضع علامة على هذا النموذج كمكتمل؟</string>
+    <string name="missing_error_fields_events">بعض الحقول بها أخطاء ولم يتم حفظها. \n هل تريد مراجعة النموذج؟</string>
     <string name="event_can_be_completed">هل تريد وضع علامة على هذا النموذج كمكتمل؟</string>
-    <string name="event_error_on_complete">لديك بعض رسائل الخطأ.\nهل تريد مراجعتها؟</string>
+    <string name="event_error_on_complete">لديك بعض رسائل الخطأ. \nهل تريد مراجعتها؟</string>
     <string name="re_opened">أعيد فتحه</string>
     <string name="account_disable_title">الحساب معطل</string>
     <string name="account_disable_message">تم تعطيل حسابك من قبل المسؤول.</string>
@@ -511,7 +507,6 @@
     <string name="app_version">إصدار التطبيق</string>
     <string name="not_synced">غير متزامن</string>
     <string name="sync_retry">إعادة محاولة المزامنة</string>
-    <string name="marked_follow_up">مُعلَّم للمتابعة</string>
     <string name="registered_in">مسجل في</string>
     <string name="view_only">العرض فقط</string>
     <string name="skipped">تم تخطيه</string>
@@ -519,8 +514,8 @@
     <string name="sync_successful">تمت المزامنة بنجاح</string>
     <string name="sync_warning">تحذير المزامنة</string>
     <string name="sync_error">يحوي خطأ في المزامنة</string>
-    <string name="mark_follow_up">وضع علامة للمتابعة</string>
     <string name="coordinates">الإحداثيات</string>
+    <string name="no_data_access">ليس لديك حق الوصول إلى البيانات.\nاتصل بالمسؤول لديك.</string>
     <string name="sync_offline_check_connection">يبدو أنك غير متصل بالإنترنت. يرجى التحقق من اتصالك</string>
     <string name="schedule_next">الجدول الزمني التالي</string>
     <string name="schedule">مجدول زمنياً</string>
