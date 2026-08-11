@@ -126,7 +126,7 @@ class TEICardMapper(
 
     private fun getAdditionalInfoList(searchTEIModel: SearchTeiModel): List<AdditionalInfoItem> {
         val attributeList =
-            searchTEIModel.tei.attributeValues
+            searchTEIModel.attributeValues.values
                 .map {
                     AdditionalInfoItem(
                         key = it.displayName,
@@ -275,7 +275,7 @@ class TEICardMapper(
     ) {
         val programNames = enrolledPrograms?.map { it.displayName }
 
-        programNames?.let {
+        programNames?.takeIf { it.size > 1 }?.let {
             list.add(
                 AdditionalInfoItem(
                     key = resourceManager.getString(R.string.programs),
@@ -321,7 +321,7 @@ class TEICardMapper(
         onSyncIconClick: () -> Unit,
     ) {
         val buttonText =
-            when (searchTEIModel.tei.syncState) {
+            when (searchTEIModel.tei.aggregatedSyncState) {
                 SyncState.TO_POST,
                 SyncState.TO_UPDATE,
                     -> {
