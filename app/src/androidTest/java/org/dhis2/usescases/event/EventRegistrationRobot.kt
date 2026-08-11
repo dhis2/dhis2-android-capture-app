@@ -41,17 +41,6 @@ fun eventRegistrationRobot(
 
 class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
-    /**
-     * Waits until `EventCaptureActivity` is actually visible before this robot polls
-     * for any Compose content.
-     *
-     * Every route into this form starts a NEW Activity — `clickOnEvent()` from the
-     * program event list (both first entry and re-entry after completing), and
-     * `selectTreeOrgUnit()` which triggers `ProgramEventDetailActivity.navigateToEvent()`.
-     * Querying before the transition settles can race it: the old Activity's Compose
-     * root may not have been replaced yet, which surfaces as
-     * "No compose hierarchies found" rather than as a missing node.
-     */
     fun waitForFormToOpen() {
         waitUntilActivityVisible<EventCaptureActivity>()
     }
@@ -62,22 +51,10 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
         waitForView(withId(R.id.actionButton)).check(matches(isDisplayed()))
     }
 
-    /**
-     * Asserts the top-right `CircularCompletionView` (`R.id.completion`) is
-     * visible on the form. Drives ANDROAPP-1012 — the spec says the
-     * completion % must be shown in the corner of the event-capture screen.
-     * We don't assert a specific value because the workflow's event starts
-     * empty; just that the indicator is rendered.
-     */
     fun checkCompletionPercentIsDisplayedInCorner() {
         waitForView(withId(R.id.completion)).check(matches(isDisplayed()))
     }
 
-    /**
-     * Asserts the event's org-unit name is rendered on the form (scrolls to
-     * it if needed). Inherited from the legacy smoke test as a sanity check
-     * that the form bound to the event correctly.
-     */
     fun checkOrgUnitIsDisplayed(orgUnit: String) {
         composeTestRule.onNodeWithText(orgUnit).performScrollTo().assertIsDisplayed()
     }
@@ -104,16 +81,6 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
         waitForView(withId(R.id.syncButton)).perform(click())
     }
 
-    /**
-     * Clicks the "No" option of the form's first visible Yes/No radio
-     * group. Used by Flow 1's workflow to fill the mandatory WHOMCH
-     * Smoking DE so the event can be completed.
-     *
-     * Form renders BOOLEAN DEs via `ProvideYesNoRadioButtonInput` which
-     * tags its radio buttons with `"true"` / `"false"` uids — combined
-     * with the design system's `RADIO_BUTTON_${uid}` pattern, the "No"
-     * option's test tag is `RADIO_BUTTON_false`.
-     */
     @OptIn(ExperimentalTestApi::class)
     fun clickNoOnMandatoryField() {
         composeTestRule.waitUntilAtLeastOneExists(hasTestTag("RADIO_BUTTON_false"), TIMEOUT)
@@ -122,7 +89,7 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
             .performClick()
     }
 
-    // ── Flow 2: create-form checks (ANDROAPP-7728) ────────────────────────────
+    // ── Flow 2: create-form checks (ANDROAPP-7728)
 
     /** Asserts the stage's custom event-date label is shown (ANDROAPP-899). */
     fun checkEventDateLabelIsDisplayed(label: String) {
@@ -144,11 +111,6 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
             .assertIsDisplayed()
     }
 
-    /**
-     * Under `ON_UPDATE_AND_INSERT` an empty mandatory DE blocks the save
-     * outright: the sheet offers only "Review" (MAIN_BUTTON_TAG) with no
-     * "Not now" escape hatch (SECONDARY_BUTTON_TAG absent).
-     */
     @OptIn(ExperimentalTestApi::class)
     fun checkImmediateMandatoryBlock() {
         composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MANDATORY"), TIMEOUT)
@@ -163,12 +125,6 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
         composeTestRule.waitForIdle()
     }
 
-    /**
-     * Opens the dropdown whose field title contains [label] and picks its first
-     * option. Identified by content rather than structure: several
-     * `INPUT_DROPDOWN` nodes may coexist and the title is not a semantics
-     * sibling of the field, so match on which node's subtree carries the label.
-     */
     @OptIn(ExperimentalTestApi::class)
     fun selectFirstDropdownOption(label: String) {
         scrollFormTo(hasText(label, substring = true))
@@ -199,11 +155,6 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
         composeTestRule.waitUntilAtLeastOneExists(hasTestTag(SECONDARY_BUTTON_TAG), TIMEOUT)
     }
 
-    /**
-     * Scrolls the form's `LazyColumn` (tagged `FORM_VIEW`) to [target]. Fields
-     * below the initial viewport are not composed at all, so a plain
-     * `performScrollTo()` cannot reach them — that requires the node to exist.
-     */
     @OptIn(ExperimentalTestApi::class)
     private fun scrollFormTo(target: SemanticsMatcher) {
         composeTestRule.waitUntilAtLeastOneExists(hasTestTag("FORM_VIEW"), TIMEOUT)
@@ -224,16 +175,6 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
         composeTestRule.waitForIdle()
     }
 
-    /**
-     * Sets a DATE field via its real DatePicker dialog rather than typing digits
-     * into the masked text field.
-     *
-     * The title and the action button are neither semantics siblings nor in an
-     * ancestor/descendant relationship, so when several `INPUT_DATE_TIME` fields
-     * exist (the event's own date plus a DATE-type DE) the target is scoped by
-     * POSITION: scroll to the label first, then take `onLast()` — the field just
-     * scrolled to is lowest in composition order.
-     */
     @OptIn(ExperimentalTestApi::class)
     fun chooseDateForField(label: String, date: String) {
         scrollFormTo(hasText(label, substring = true))
