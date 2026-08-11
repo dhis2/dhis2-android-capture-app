@@ -20,6 +20,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCa
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialogUi
+import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingUiState
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingViewModel
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -28,6 +29,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito.mock
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -44,37 +46,38 @@ class SchedulingDialogUiTest : BaseTest() {
         .build()
     private val overdueSubtitle = "Overdue subtitle"
 
-
-    @Before
-    override fun setUp() {
-        whenever(viewModel.eventDate).thenReturn(MutableStateFlow(EventDate(label = "Date")))
-        whenever(viewModel.eventCatCombo).thenReturn(
-            MutableStateFlow(
-                EventCatCombo(
-                    categories = listOf(
-                        EventCategory(
-                            uid = "uid",
-                            name = "CatCombo",
-                            optionsSize = 2,
-                            options = listOf(
-                                CategoryOption.builder().uid("uidA").displayName("optionA").build(),
-                                CategoryOption.builder().uid("uidB").displayName("optionB").build(),
-                            ),
-                        ),
+    private fun mockedSchedulingUiState() = SchedulingUiState(
+        eventDate = EventDate(label = "Date"),
+        eventCatCombo = EventCatCombo(
+            categories = listOf(
+                EventCategory(
+                    uid = "uid",
+                    name = "CatCombo",
+                    optionsSize = 2,
+                    options = listOf(
+                        CategoryOption.builder().uid("uidA").displayName("optionA").build(),
+                        CategoryOption.builder().uid("uidB").displayName("optionB").build(),
                     ),
                 ),
             ),
-        )
-        whenever(viewModel.overdueEventSubtitle).thenReturn(MutableStateFlow(overdueSubtitle))
+        ),
+        overdueEventSubtitle = overdueSubtitle,
+    )
+
+    @Before
+    override fun setUp() {
+        whenever(viewModel.uiState) doReturn MutableStateFlow(mockedSchedulingUiState())
     }
 
     @Test
     fun programStageInputNotDisplayedForOneStage() {
         val programStages =
             listOf(ProgramStage.builder().uid("stageUid").displayName("PS A").build())
-        whenever(viewModel.programStage).thenReturn(MutableStateFlow(programStages.first()))
-        whenever(viewModel.programStages).thenReturn(MutableStateFlow(programStages))
-        whenever(viewModel.enrollment).thenReturn(MutableStateFlow(enrollment))
+        whenever(viewModel.uiState) doReturn MutableStateFlow(mockedSchedulingUiState().copy(
+            programStages = programStages,
+            programStage = programStages.first(),
+            enrollment = enrollment
+        ))
 
         composeTestRule.setContent {
             SchedulingDialogUi(
@@ -106,9 +109,12 @@ class SchedulingDialogUiTest : BaseTest() {
             ProgramStage.builder().uid("stageUidA").displayName("PS A").build(),
             ProgramStage.builder().uid("stageUidB").displayName("PS B").build(),
         )
-        whenever(viewModel.programStage).thenReturn(MutableStateFlow(programStages.first()))
-        whenever(viewModel.programStages).thenReturn(MutableStateFlow(programStages))
-        whenever(viewModel.enrollment).thenReturn(MutableStateFlow(enrollment))
+        whenever(viewModel.uiState) doReturn MutableStateFlow(mockedSchedulingUiState().copy(
+            programStages = programStages,
+            programStage = programStages.first(),
+            enrollment = enrollment
+        )
+        )
 
         composeTestRule.setContent {
             SchedulingDialogUi(
@@ -135,9 +141,11 @@ class SchedulingDialogUiTest : BaseTest() {
             ProgramStage.builder().uid("stageUidA").displayName("PS A").build(),
             ProgramStage.builder().uid("stageUidB").displayName("PS B").build(),
         )
-        whenever(viewModel.programStage).thenReturn(MutableStateFlow(programStages.first()))
-        whenever(viewModel.programStages).thenReturn(MutableStateFlow(programStages))
-        whenever(viewModel.enrollment).thenReturn(MutableStateFlow(enrollment))
+        whenever(viewModel.uiState) doReturn MutableStateFlow(mockedSchedulingUiState().copy(
+            programStages = programStages,
+            programStage = programStages.first(),
+            enrollment = enrollment
+        ))
 
         composeTestRule.setContent {
             SchedulingDialogUi(
@@ -173,9 +181,12 @@ class SchedulingDialogUiTest : BaseTest() {
             ProgramStage.builder().uid("stageUidA").displayName("PS A").build(),
             ProgramStage.builder().uid("stageUidB").displayName("PS B").build(),
         )
-        whenever(viewModel.programStage).thenReturn(MutableStateFlow(programStages.first()))
-        whenever(viewModel.programStages).thenReturn(MutableStateFlow(programStages))
-        whenever(viewModel.enrollment).thenReturn(MutableStateFlow(enrollment))
+        whenever(viewModel.uiState) doReturn MutableStateFlow(mockedSchedulingUiState().copy(
+            programStages = programStages,
+            programStage = programStages.first(),
+            enrollment = enrollment
+        )
+        )
 
         composeTestRule.setContent {
             SchedulingDialogUi(
@@ -207,9 +218,11 @@ class SchedulingDialogUiTest : BaseTest() {
             ProgramStage.builder().uid("stageUidA").displayName("PS A").build(),
             ProgramStage.builder().uid("stageUidB").displayName("PS B").build(),
         )
-        whenever(viewModel.programStage).thenReturn(MutableStateFlow(programStages.first()))
-        whenever(viewModel.programStages).thenReturn(MutableStateFlow(programStages))
-        whenever(viewModel.enrollment).thenReturn(MutableStateFlow(enrollment))
+        whenever(viewModel.uiState) doReturn MutableStateFlow(mockedSchedulingUiState().copy(
+            programStages = programStages,
+            programStage = programStages.first(),
+            enrollment = enrollment
+        ))
 
         composeTestRule.setContent {
             SchedulingDialogUi(
