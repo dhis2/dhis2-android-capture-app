@@ -279,10 +279,6 @@ class DashboardViewModel(
             addDeleteTeiMenuItem()
         }
 
-    private fun addTransferMenuItem() {
-        TODO("Not yet implemented")
-    }
-
     private fun buildEnrollmentMenuForNoEnrollment(): List<MenuItemData<EnrollmentMenuItem>> =
         buildList {
             addSyncMenuItem()
