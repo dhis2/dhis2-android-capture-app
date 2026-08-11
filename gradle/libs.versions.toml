@@ -5,7 +5,7 @@ navigationCompose = "2.9.2"
 targetSdk = "36"
 compileSdk = "37"
 minSdk = "23"
-vCode = "156"
+vCode = "157"
 vName = "3.5.0"
 gradle = "9.3.1"
 kotlin = '2.4.10'
@@ -13,8 +13,8 @@ dagger = '2.57.2'
 jacoco = '0.8.15'
 designSystem = "0.8.0-SNAPSHOT"
 dhis2sdk = "1.15.0-20260807.131307-73"
-ruleEngine = "3.7.2"
-expressionParser = "1.4.1"
+ruleEngine = "3.8.1"
+expressionParser = "1.4.3"
 appcompat = "1.7.1"
 annotation = "1.9.1"
 cardview = "1.0.0"
@@ -240,6 +240,7 @@ ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
 sentry = { id = "io.sentry.android.gradle", version.ref = "sentryPlugin" }
 cyclonedx = { id = "org.cyclonedx.bom", version.ref = "cyclonedx" }
+android-lint = { id = "com.android.lint", version.ref = "gradle" }
 
 [bundles]
 analytics-implementation = ["androidx-cardview", "androidx-constraintlayout"]

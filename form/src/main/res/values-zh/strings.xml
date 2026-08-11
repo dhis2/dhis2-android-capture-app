@@ -42,9 +42,6 @@
     <string name="event_can_be_completed">您想将此表单标记为已完成吗？</string>
     <string name="discard_go_back">如果您现在退出，表单中的所有信息都将被丢弃。</string>
     <string name="field_errors_not_saved_discard">某些字段有错误，无法保存。 \n如果您现在退出，更改将被丢弃。</string>
-    <string name="field_errors_not_saved">一些字段有错误并且它们没有被保存。</string>
-    <string name="fields_mandatory_missing">缺少一些必填字段，无法保存表单。</string>
-    <string name="fields_mandatory_missing_discard">某些必填字段缺失，无法保存表格。 \n如果您现在退出，更改将被丢弃。</string>
     <string name="share">分享</string>
     <string name="camera_permission_denied">相机权限被拒绝。\n您需要启用它才能使用此功能。</string>
     <string name="action_close">关闭</string>

@@ -73,7 +73,9 @@
     <string name="speech_timeout_error">Không nhận được đầu vào bằng giọng nói</string>
     <string name="unknown_speech_error">Một lỗi không xác định đã xuất hiện.</string>
     <string name="non_numeric_speech_input_error">Không chấp nhận đầu vào không phải là số: \"%s\"</string>
-    <string name="negative_number_speech_input_error">\n        Không chấp nhận đầu vào là số âm: \"%s\"\n    </string>
+    <string name="negative_number_speech_input_error">
+        Không chấp nhận đầu vào là số âm: \"%s\"
+    </string>
 
     <string name="unable_to_sync_data_no_network_available">
         Không thể đồng bộ hóa dữ liệu bởi vì không có kết nối internet

@@ -63,7 +63,7 @@
     <!--Event initial-->
     <string name="update">Mettre à jour</string>
     <string name="org_unit">Unités d´Organisation</string>
-    <string name="no_org_units">Il n\'y a pas d\'unité d\'organisation ouverte pour la date sélectionnée. Merci de sélectionner une autre date ou une autre unité d\'organisation.</string>
+    <string name="no_org_units">Il n\'y a pas d\'Unité d\'organisation Ouvert pour la date sélectionnée. Merci de sélectionner une autre date ou une autre Unité d\'Organisation.</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
 
@@ -247,9 +247,9 @@
     <string name="sent_by_sms">Envoyé par sms</string>
     <string name="action_close">Fermer</string>
     <string name="tuto_main_11">Maintenant vous pouvez vérifier l\'information de synchronisation en cliquant ici</string>
-    <string name="relationship_error_recursive">Vous ne pouvez pas établir de relation entre une donnée et elle-même</string>
+    <string name="relationship_error_recursive">Vous ne pouvez pas établir de relation une donnée avec elle-même</string>
     <string name="change_calendar_view">Changer de vue calendrier</string>
-    <string name="relationship_without_enrollment">La donnée à laquelle vous essayer d\'accéder n\'a pas d\'enrôlement. Vous ne pouvez pas accéder au tableau de bord.</string>
+    <string name="relationship_without_enrollment">La donnée à laquelle vous essayer d\'acceéer n\'a pas d\'enrôlement. Vous ne pouvez pas accéder au tableau de bord.</string>
     <string name="formatting_error">Erreur de formattage</string>
     <string name="dashboard_menu_delete_tei_v2">Supprimer 1%s</string>
     <string name="delete_authority_error">Vous n\'avez pas l\'autorité pour supprimer cette donnée</string>
