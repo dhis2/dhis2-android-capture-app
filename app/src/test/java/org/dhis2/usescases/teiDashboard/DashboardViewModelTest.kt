@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import io.reactivex.Observable
 import kotlinx.coroutines.CoroutineDispatcher
@@ -20,12 +21,14 @@ import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemData
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -107,6 +110,25 @@ class DashboardViewModelTest {
                 dashboardViewModel.setGrouping(true)
                 verify(repository).setGrouping(true)
                 assertTrue(awaitItem())
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun shouldBuildMoreOptionsMenuWithStoredGroupingAndRebuildItWhenGroupingChanges() =
+        runTest {
+            mockEnrollmentModel()
+            mockGrouping(true)
+            mockMoreOptionsMenu()
+
+            val dashboardViewModel = getViewModel()
+
+            dashboardViewModel.moreOptionsMenu.test {
+                awaitMenuContaining(EnrollmentMenuItem.VIEW_TIMELINE)
+
+                dashboardViewModel.setGrouping(false)
+
+                awaitMenuContaining(EnrollmentMenuItem.GROUP_BY_STAGE)
                 cancelAndIgnoreRemainingEvents()
             }
         }
@@ -225,6 +247,29 @@ class DashboardViewModelTest {
         whenever(repository.getGrouping()) doReturn group
     }
 
+    private suspend fun mockMoreOptionsMenu() {
+        whenever(repository.getEnrollmentUid()) doReturn "enrollmentUid"
+        whenever(repository.getProgramUid()) doReturn "programUid"
+        whenever(repository.getEnrollmentStatus("enrollmentUid")) doReturn EnrollmentStatus.ACTIVE
+        whenever(resoourcesManager.getString(any<Int>())) doReturn "label"
+        whenever(customLabelProvider.getCustomMarkForFollowUpLabel(anyOrNull())) doReturn "Follow up"
+        whenever(customLabelProvider.getCustomEnrollmentLabel(anyOrNull(), anyOrNull())) doReturn "Enrollments"
+        whenever(
+            customLabelProvider.formatStringWithCustomLabel(any(), any(), anyOrNull()),
+        ) doReturn "More Enrollments"
+    }
+
+    /**
+     * The menu is rebuilt on every change of the state it derives from, so skip the intermediate
+     * emissions until the expected entry shows up.
+     */
+    private suspend fun ReceiveTurbine<List<MenuItemData<EnrollmentMenuItem>>>.awaitMenuContaining(menuItem: EnrollmentMenuItem) {
+        repeat(MAX_MENU_EMISSIONS) {
+            if (awaitItem().any { it.id == menuItem }) return
+        }
+        throw AssertionError("$menuItem was never added to the more options menu")
+    }
+
     private val mockedEnrollmentModel: DashboardEnrollmentModel = mock()
     private val mockedTeiModel: DashboardTEIModel = mock()
     private val mockedEnrollment: Enrollment =
@@ -241,4 +286,8 @@ class DashboardViewModelTest {
             on { aggregatedSyncState() } doReturn State.TO_UPDATE
             on { status() } doReturn EnrollmentStatus.COMPLETED
         }
+
+    private companion object {
+        const val MAX_MENU_EMISSIONS = 10
+    }
 }

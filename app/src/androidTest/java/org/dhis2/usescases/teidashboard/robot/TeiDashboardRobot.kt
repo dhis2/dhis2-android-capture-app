@@ -237,7 +237,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnMenuProgramEnrollments() {
         with(InstrumentationRegistry.getInstrumentation().targetContext) {
-            val programSelectorLabel = getString(R.string.more_enrollments)
+            val programSelectorLabel = "More Enrollments"
             composeTestRule.waitUntilExactlyOneExists(
                 hasText(programSelectorLabel),
                 TIMEOUT

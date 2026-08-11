@@ -30,6 +30,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -100,16 +102,8 @@ class DashboardViewModel(
                 null,
             )
 
-    private val _groupByStage = MutableStateFlow(false)
-    val groupByStage: StateFlow<Boolean> =
-        _groupByStage
-            .onStart {
-                fetchGrouping()
-            }.stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5000L),
-                false,
-            )
+    private val _groupByStage = MutableStateFlow(repository.getGrouping())
+    val groupByStage: StateFlow<Boolean> = _groupByStage.asStateFlow()
 
     private val _noEnrollmentSelected = MutableLiveData(false)
     val noEnrollmentSelected: LiveData<Boolean> = _noEnrollmentSelected
@@ -130,44 +124,47 @@ class DashboardViewModel(
         MutableStateFlow<RelationshipTopBarIconState>(RelationshipTopBarIconState.List())
     val relationshipTopBarIconState = _relationshipTopBarIconState.asStateFlow()
 
-    private val _moreOptionsMenu: MutableStateFlow<List<MenuItemData<EnrollmentMenuItem>>> =
-        MutableStateFlow(emptyList())
-    val moreOptionsMenu =
-        _moreOptionsMenu
-            .onStart {
-                loadMoreOptionsMenu()
-            }.stateIn(
+    /**
+     * Derived from every piece of state the menu depends on, so it is rebuilt whenever the grouping
+     * preference is toggled, the follow up bar changes or the dashboard model is reloaded, instead
+     * of being snapshotted once with values that have not been resolved yet.
+     */
+    val moreOptionsMenu: StateFlow<List<MenuItemData<EnrollmentMenuItem>>> =
+        combine(
+            dashboardModel,
+            _groupByStage,
+            showFollowUpBar,
+        ) { model, grouping, followUp ->
+            CoroutineTracker.unconditionalIncrement()
+            try {
+                if (repository.getEnrollmentUid().isNullOrEmpty()) {
+                    buildEnrollmentMenuForNoEnrollment()
+                } else {
+                    buildEnrollmentMenuForEnrollment(model, grouping, followUp)
+                }
+            } catch (e: Exception) {
+                Timber.e(e)
+                emptyList()
+            } finally {
+                CoroutineTracker.unconditionalDecrement()
+            }
+        }.flowOn(dispatcher.io())
+            .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(5000L),
                 emptyList(),
             )
 
-    private fun loadMoreOptionsMenu() {
-        viewModelScope.launch(dispatcher.io()) {
-            CoroutineTracker.unconditionalIncrement()
-            try {
-                val menuItems =
-                    if (noEnrollmentSelected.value == true) {
-                        buildEnrollmentMenuForNoEnrollment()
-                    } else {
-                        buildEnrollmentMenuForEnrollment()
-                    }
-
-                _moreOptionsMenu.update { menuItems }
-            } catch (e: Exception) {
-                Timber.e(e)
-            } finally {
-                CoroutineTracker.unconditionalDecrement()
-            }
-        }
-    }
-
-    private suspend fun buildEnrollmentMenuForEnrollment(): List<MenuItemData<EnrollmentMenuItem>> =
+    private suspend fun buildEnrollmentMenuForEnrollment(
+        dashboardModel: DashboardModel?,
+        groupByStage: Boolean,
+        showFollowUpBar: Boolean,
+    ): List<MenuItemData<EnrollmentMenuItem>> =
         buildList {
             addSyncMenuItem()
             addTransferMenuItem()
-            addFollowUpMenuItem()
-            if (groupByStage.value) {
+            addFollowUpMenuItem(showFollowUpBar)
+            if (groupByStage) {
                 add(
                     MenuItemData(
                         id = EnrollmentMenuItem.VIEW_TIMELINE,
@@ -191,17 +188,7 @@ class DashboardViewModel(
                     leadingElement = MenuLeadingElement.Icon(icon = Icons.AutoMirrored.Outlined.HelpOutline),
                 ),
             )
-            add(
-                MenuItemData(
-                    id = EnrollmentMenuItem.ENROLLMENTS,
-                    label =
-                        customLabelProvider.formatStringWithCustomLabel(
-                            stringResource = resourcesManager.getString(R.string.more_enrollments_format),
-                            customLabel = customLabelProvider.getCustomEnrollmentLabel(repository.getProgramUid(), 2),
-                        ),
-                    leadingElement = MenuLeadingElement.Icon(icon = Icons.AutoMirrored.Outlined.Assignment),
-                ),
-            )
+            addMoreEnrollmentsMenuItem()
             add(
                 MenuItemData(
                     id = EnrollmentMenuItem.SHARE,
@@ -259,7 +246,6 @@ class DashboardViewModel(
                 )
             }
             if (repository.checkIfDeleteEnrollmentIsPossible(repository.getEnrollmentUid())) {
-                val dashboardModel = dashboardModel.value
                 val programmeName =
                     if (dashboardModel is DashboardEnrollmentModel) {
                         dashboardModel.currentProgram()?.displayName()
@@ -279,17 +265,10 @@ class DashboardViewModel(
             addDeleteTeiMenuItem()
         }
 
-    private fun buildEnrollmentMenuForNoEnrollment(): List<MenuItemData<EnrollmentMenuItem>> =
+    private suspend fun buildEnrollmentMenuForNoEnrollment(): List<MenuItemData<EnrollmentMenuItem>> =
         buildList {
             addSyncMenuItem()
-
-            add(
-                MenuItemData(
-                    id = EnrollmentMenuItem.ENROLLMENTS,
-                    label = resourcesManager.getString(R.string.more_enrollments_format),
-                    leadingElement = MenuLeadingElement.Icon(icon = Icons.AutoMirrored.Outlined.Assignment),
-                ),
-            )
+            addMoreEnrollmentsMenuItem()
             addDeleteTeiMenuItem()
         }
 
@@ -379,19 +358,6 @@ class DashboardViewModel(
                 CoroutineTracker.unconditionalDecrement()
             }
         }
-
-    private fun fetchGrouping() {
-        viewModelScope.launch(dispatcher.io()) {
-            CoroutineTracker.unconditionalIncrement()
-            try {
-                _groupByStage.emit(repository.getGrouping())
-            } catch (e: Exception) {
-                Timber.e(e)
-            } finally {
-                CoroutineTracker.unconditionalDecrement()
-            }
-        }
-    }
 
     fun setGrouping(groupEvents: Boolean) {
         repository.setGrouping(groupEvents)
@@ -547,8 +513,26 @@ class DashboardViewModel(
         }
     }
 
-    private suspend fun MutableList<MenuItemData<EnrollmentMenuItem>>.addFollowUpMenuItem() {
-        if (!showFollowUpBar.value) {
+    private suspend fun MutableList<MenuItemData<EnrollmentMenuItem>>.addMoreEnrollmentsMenuItem() {
+        add(
+            MenuItemData(
+                id = EnrollmentMenuItem.ENROLLMENTS,
+                label =
+                    customLabelProvider.formatStringWithCustomLabel(
+                        stringResource = resourcesManager.getString(R.string.more_enrollments_format),
+                        customLabel =
+                            customLabelProvider.getCustomEnrollmentLabel(
+                                programUid = repository.getProgramUid(),
+                                quantity = 2,
+                            ),
+                    ),
+                leadingElement = MenuLeadingElement.Icon(icon = Icons.AutoMirrored.Outlined.Assignment),
+            ),
+        )
+    }
+
+    private suspend fun MutableList<MenuItemData<EnrollmentMenuItem>>.addFollowUpMenuItem(showFollowUpBar: Boolean) {
+        if (!showFollowUpBar) {
             add(
                 MenuItemData(
                     id = EnrollmentMenuItem.FOLLOW_UP,
