@@ -40,24 +40,12 @@ class OrgUnitSelectorRobot(private val composeTestRule: ComposeTestRule) : BaseR
             runCatching { it.config[TestTag] }.getOrNull()?.startsWith("ORG_TREE_ITEM_") == true
         }
 
-    /**
-     * Asserts the org-unit tree picker is showing (ANDROAPP-4154). Matches on the
-     * `ORG_TREE_ITEM_` tag prefix rather than a named org unit, so the check holds
-     * for any program's capture scope without assuming which units are in view.
-     *
-     * Uses `assertExists()` rather than `assertIsDisplayed()`: the claim is that the
-     * picker opened, not that a particular unit is on screen. In landscape on the CI
-     * matrix the first tree item can sit below the sheet's fold, which would fail a
-     * displayed-check without proving anything about the app.
-     */
     fun checkOrgUnitTreeIsDisplayed() {
         composeTestRule.waitUntilAtLeastOneExists(orgUnitTreeItemMatcher, TIMEOUT)
         composeTestRule.onAllNodes(orgUnitTreeItemMatcher).onFirst().assertExists()
     }
 
     fun selectTreeOrgUnit(orgUnitName: String) {
-        // The tree is fetched asynchronously and OrgBottomSheet keeps it behind a spinner for
-        // 300ms every time the list changes, so wait for the item instead of assuming it is there.
         composeTestRule.waitUntilAtLeastOneExists(
             hasTestTag("ORG_TREE_ITEM_$orgUnitName"),
             TIMEOUT,
@@ -78,8 +66,6 @@ class OrgUnitSelectorRobot(private val composeTestRule: ComposeTestRule) : BaseR
     fun clickDone() {
         val doneText =
             InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.done)
-        // Done stays disabled until an org unit is selected, and clicking it disabled is a no-op
-        // that only surfaces as a failure further down the flow.
         composeTestRule.waitUntilAtLeastOneExists(hasText(doneText) and isEnabled(), TIMEOUT)
         composeTestRule.onNodeWithText(doneText)
             .assertIsDisplayed()

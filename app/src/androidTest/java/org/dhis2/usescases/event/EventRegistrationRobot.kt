@@ -169,8 +169,6 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
         composeTestRule.onNode(numberField, useUnmergedTree = true)
             .performTextInput(value)
         Espresso.closeSoftKeyboard()
-        // Clear focus via FORM_VIEW's own clickable, else the IME inset races the
-        // next field's scroll.
         composeTestRule.onNodeWithTag("FORM_VIEW").performClick()
         composeTestRule.waitForIdle()
     }
@@ -187,15 +185,12 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
 
         composeTestRule.waitUntilAtLeastOneExists(hasTestTag("DATE_PICKER"), TIMEOUT)
         composeTestRule.onNodeWithTag("DATE_PICKER").assertIsDisplayed()
-        // Toggle the picker into keyboard-entry mode ("Switch to text input mode").
         composeTestRule.onNodeWithContentDescription(
             label = "text",
             substring = true,
             useUnmergedTree = true,
         ).performClick()
         composeTestRule.onNodeWithContentDescription("Date", substring = true).performTextReplacement(date)
-        // Reads "OK", not "Accept" — DateProvider passes no acceptText, so
-        // DHIS2DatePicker falls back to its own `ok` compose resource.
         composeTestRule.onNodeWithText(DATE_PICKER_CONFIRM_TEXT, ignoreCase = true).performClick()
         composeTestRule.waitForIdle()
     }
