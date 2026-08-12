@@ -1,6 +1,7 @@
 package org.dhis2.mobile.commons.providers
 
 import kotlinx.coroutines.runBlocking
+import org.jetbrains.compose.resources.StringResource
 
 interface CustomLabelProvider {
     suspend fun getCustomEnrollmentLabel(
