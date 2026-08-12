@@ -59,6 +59,8 @@ import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.ui.icons.toIconData
 import org.dhis2.mobile.commons.extensions.toColorInt
 import org.dhis2.mobile.commons.model.MetadataIconData
+import org.dhis2.mobile.plugin.sdk.InjectionPoint
+import org.dhis2.mobile.plugin.ui.PluginSlot
 import org.dhis2.mobile.sync.model.SyncStatusData
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
@@ -82,8 +84,6 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import java.util.Date
-import org.dhis2.mobile.plugin.sdk.InjectionPoint
-import org.dhis2.mobile.plugin.ui.PluginSlot
 
 enum class ProgramLayout {
     DEFAULT,

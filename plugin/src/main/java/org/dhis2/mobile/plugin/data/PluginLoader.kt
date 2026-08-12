@@ -36,17 +36,22 @@ import java.util.zip.ZipFile
  * so the plugin's CMP Resources (`Res.string.foo`, `painterResource(Res.drawable.foo)`)
  * resolve from the extracted files without going through Android's AssetManager.
  */
-class PluginLoader(private val context: Context) {
-
+class PluginLoader(
+    private val context: Context,
+) {
     @Suppress("UnusedPrivateProperty")
     private val hostContext = context
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun load(bundleZip: File, metadata: PluginMetadata): LoadedPlugin {
-        val targetDir = File(bundleZip.parentFile, "${metadata.id}-${metadata.version}").apply {
-            deleteRecursively()
-            mkdirs()
-        }
+    fun load(
+        bundleZip: File,
+        metadata: PluginMetadata,
+    ): LoadedPlugin {
+        val targetDir =
+            File(bundleZip.parentFile, "${metadata.id}-${metadata.version}").apply {
+                deleteRecursively()
+                mkdirs()
+            }
 
         ZipFile(bundleZip).use { zip ->
             zip.entries().asSequence().filterNot { it.isDirectory }.forEach { entry ->
@@ -64,10 +69,11 @@ class PluginLoader(private val context: Context) {
         }
 
         val dexBytes = dexFile.readBytes()
-        val classLoader = InMemoryDexClassLoader(
-            ByteBuffer.wrap(dexBytes),
-            PluginLoader::class.java.classLoader,
-        )
+        val classLoader =
+            InMemoryDexClassLoader(
+                ByteBuffer.wrap(dexBytes),
+                PluginLoader::class.java.classLoader,
+            )
 
         Timber.d(
             "Loading plugin '${metadata.id}' v${metadata.version} from DEX " +
@@ -80,9 +86,10 @@ class PluginLoader(private val context: Context) {
         }
 
         @Suppress("UNCHECKED_CAST")
-        val plugin = (pluginClass as Class<out Dhis2Plugin>)
-            .getDeclaredConstructor()
-            .newInstance()
+        val plugin =
+            (pluginClass as Class<out Dhis2Plugin>)
+                .getDeclaredConstructor()
+                .newInstance()
 
         return LoadedPlugin(plugin = plugin, resourceRoot = androidRoot)
     }
