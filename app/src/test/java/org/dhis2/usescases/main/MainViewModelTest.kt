@@ -24,6 +24,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.providers.PreferenceProvider
+import org.dhis2.mobile.plugin.domain.LoadPluginsUseCase
 import org.dhis2.mobile.sync.data.METADATA_SYNC_NOW
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.domain.SyncStatusController
@@ -92,6 +93,7 @@ class MainViewModelTest {
     private val launchInitialSync: LaunchInitialSync = mock()
     private val scheduleNewVersionAlert: ScheduleNewVersionAlert = mock()
     private val syncBackgroundJobAction: SyncBackgroundJobAction = mock()
+    private val loadPlugins: LoadPluginsUseCase = mock()
 
     private lateinit var viewModel: MainViewModel
 
@@ -123,6 +125,7 @@ class MainViewModelTest {
             whenever(launchInitialSync()) doReturn Result.success(InitialSyncAction.Skip)
             whenever(checkSingleNavigation()) doReturn Result.failure(Exception("no single navigation"))
             whenever(syncBackgroundJobAction.observeMetadataJob()) doReturn metadataJobFlow
+            whenever(loadPlugins()) doReturn Result.success(Unit)
 
             viewModel =
                 MainViewModel(
@@ -143,6 +146,7 @@ class MainViewModelTest {
                     launchInitialSync = launchInitialSync,
                     scheduleNewVersionAlert = scheduleNewVersionAlert,
                     syncBackgroundJobAction = syncBackgroundJobAction,
+                    loadPlugins = loadPlugins,
                     initialScreen = MainScreenType.Home(HomeScreen.Programs),
                     dispatcher =
                         object : DispatcherProvider {

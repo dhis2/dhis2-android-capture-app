@@ -18,8 +18,9 @@ import java.net.URL
  * Note: The download is performed by the host app (not the plugin) so it is not subject to the
  * plugin's network restriction (which only allows communication with the DHIS2 server).
  */
-class PluginDownloader(private val context: Context) {
-
+class PluginDownloader(
+    private val context: Context,
+) {
     private val pluginDir: File
         get() = File(context.filesDir, "plugins").also { it.mkdirs() }
 
@@ -68,8 +69,7 @@ class PluginDownloader(private val context: Context) {
         }
     }
 
-    private fun cacheFile(metadata: PluginMetadata) =
-        File(pluginDir, "${metadata.id}-${metadata.version}.zip")
+    private fun cacheFile(metadata: PluginMetadata) = File(pluginDir, "${metadata.id}-${metadata.version}.zip")
 
     private companion object {
         const val CONNECT_TIMEOUT_MS = 10_000
