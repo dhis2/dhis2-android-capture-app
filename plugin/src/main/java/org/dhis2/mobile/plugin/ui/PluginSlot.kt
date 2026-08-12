@@ -53,9 +53,10 @@ private fun PluginContent(
     registered: RegisteredPlugin,
     contextFactory: ScopedDhis2PluginContextFactory,
 ) {
-    val reader = remember(registered.resourceRoot) {
-        FileSystemResourceReader(registered.resourceRoot)
-    }
+    val reader =
+        remember(registered.resourceRoot) {
+            FileSystemResourceReader(registered.resourceRoot)
+        }
     CompositionLocalProvider(LocalResourceReader provides reader) {
         val context = contextFactory.create(registered.plugin.metadata)
         registered.plugin.content(context)

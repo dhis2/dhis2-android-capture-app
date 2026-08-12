@@ -22,15 +22,26 @@ data class RegisteredPlugin(
  * observe the plugin list reactively.
  */
 class PluginRegistry {
-
     private val _plugins = MutableStateFlow<List<RegisteredPlugin>>(emptyList())
 
     /** All currently registered plugins. */
     val plugins: StateFlow<List<RegisteredPlugin>> = _plugins.asStateFlow()
 
-    /** Adds [plugin] with its associated [resourceRoot] to the registry. */
-    fun register(plugin: Dhis2Plugin, resourceRoot: File) {
-        _plugins.update { current -> current + RegisteredPlugin(plugin, resourceRoot) }
+    /**
+     * Adds [plugin] with its associated [resourceRoot] to the registry.
+     *
+     * Registration is idempotent per plugin id: re-registering an already known plugin replaces
+     * the previous entry instead of appending a duplicate. This keeps the registry correct when
+     * the load pipeline runs more than once in a process (e.g. logout followed by re-login).
+     */
+    fun register(
+        plugin: Dhis2Plugin,
+        resourceRoot: File,
+    ) {
+        _plugins.update { current ->
+            current.filterNot { it.plugin.metadata.id == plugin.metadata.id } +
+                RegisteredPlugin(plugin, resourceRoot)
+        }
     }
 
     /** Returns all plugins targeting [injectionPoint]. */
