@@ -10,6 +10,7 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isEnabled
 import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -34,9 +35,17 @@ class OrgUnitSelectorRobot(private val composeTestRule: ComposeTestRule) : BaseR
             runCatching { it.config[TestTag] }.getOrNull()?.startsWith("ORG_TREE_ITEM_CHECKBOX_") == true
         }
 
+    private val orgUnitTreeItemMatcher =
+        SemanticsMatcher("tag starts with ORG_TREE_ITEM_") {
+            runCatching { it.config[TestTag] }.getOrNull()?.startsWith("ORG_TREE_ITEM_") == true
+        }
+
+    fun checkOrgUnitTreeIsDisplayed() {
+        composeTestRule.waitUntilAtLeastOneExists(orgUnitTreeItemMatcher, TIMEOUT)
+        composeTestRule.onAllNodes(orgUnitTreeItemMatcher).onFirst().assertExists()
+    }
+
     fun selectTreeOrgUnit(orgUnitName: String) {
-        // The tree is fetched asynchronously and OrgBottomSheet keeps it behind a spinner for
-        // 300ms every time the list changes, so wait for the item instead of assuming it is there.
         composeTestRule.waitUntilAtLeastOneExists(
             hasTestTag("ORG_TREE_ITEM_$orgUnitName"),
             TIMEOUT,
@@ -57,8 +66,6 @@ class OrgUnitSelectorRobot(private val composeTestRule: ComposeTestRule) : BaseR
     fun clickDone() {
         val doneText =
             InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.done)
-        // Done stays disabled until an org unit is selected, and clicking it disabled is a no-op
-        // that only surfaces as a failure further down the flow.
         composeTestRule.waitUntilAtLeastOneExists(hasText(doneText) and isEnabled(), TIMEOUT)
         composeTestRule.onNodeWithText(doneText)
             .assertIsDisplayed()
