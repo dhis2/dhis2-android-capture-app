@@ -177,7 +177,7 @@ class DashboardViewModel(
                     MenuItemData(
                         id = EnrollmentMenuItem.GROUP_BY_STAGE,
                         label =
-                            customLabelProvider.blockingCustomGroupByStageLabel(
+                            customLabelProvider.getCustomGroupByStageLabel(
                                 programUid = repository.getProgramUid(),
                             ),
                         leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Workspaces),

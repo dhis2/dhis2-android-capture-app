@@ -93,15 +93,6 @@ interface CustomLabelProvider {
     ) = runBlocking {
         getCustomEnrollmentLabel(programUid, quantity)
     }
-
-    @Deprecated(
-        "Use suspend function",
-        replaceWith = ReplaceWith("getCustomProgramStageLabel"),
-    )
-    fun blockingCustomGroupByStageLabel(programUid: String?) =
-        runBlocking {
-            getCustomGroupByStageLabel(programUid)
-        }
 }
 
 fun CustomLabelProvider.getCustomOrgUnitLabelBlocking(

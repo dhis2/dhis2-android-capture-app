@@ -34,6 +34,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class DashboardViewModelTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
@@ -42,7 +43,7 @@ class DashboardViewModelTest {
     private val analyticsHelper: AnalyticsHelper = mock()
     private val testingDispatcher = StandardTestDispatcher()
     private val pageConfigurator: NavigationPageConfigurator = mock()
-    private val resoourcesManager: ResourceManager = mock()
+    private val resourcesManager: ResourceManager = mock()
     private val customLabelProvider: CustomLabelProvider = mock()
 
     @After
@@ -228,7 +229,7 @@ class DashboardViewModelTest {
                 override fun ui(): CoroutineDispatcher = testingDispatcher
             },
             pageConfigurator,
-            resoourcesManager,
+            resourcesManager,
             customLabelProvider,
         ).also {
             testingDispatcher.scheduler.advanceUntilIdle()
@@ -251,9 +252,10 @@ class DashboardViewModelTest {
         whenever(repository.getEnrollmentUid()) doReturn "enrollmentUid"
         whenever(repository.getProgramUid()) doReturn "programUid"
         whenever(repository.getEnrollmentStatus("enrollmentUid")) doReturn EnrollmentStatus.ACTIVE
-        whenever(resoourcesManager.getString(any<Int>())) doReturn "label"
+        whenever(resourcesManager.getString(any<Int>())) doReturn "label"
         whenever(customLabelProvider.getCustomMarkForFollowUpLabel(anyOrNull())) doReturn "Follow up"
         whenever(customLabelProvider.getCustomEnrollmentLabel(anyOrNull(), anyOrNull())) doReturn "Enrollments"
+        whenever(customLabelProvider.getCustomGroupByStageLabel(anyOrNull())) doReturn "Group by stage"
         whenever(
             customLabelProvider.formatStringWithCustomLabel(any(), any(), anyOrNull()),
         ) doReturn "More Enrollments"
