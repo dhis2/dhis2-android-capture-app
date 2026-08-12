@@ -46,10 +46,10 @@
     <string name="complete">Concluir</string>
     <string name="discard_changes">Descartar alterações</string>
     <string name="saved">Gravado!</string>
-    <string name="event_error_on_complete">Tem algumas mensagens de erro. Quer revê-las?</string>
+    <string name="event_error_on_complete">Tem algumas mensagens de erro. Quer revê-las\?</string>
     <string name="not_now">Agora não</string>
     <string name="keep_editing">Continue a editar</string>
-    <string name="event_can_be_completed">Deseja marcar este formulário como completo?</string>
+    <string name="event_can_be_completed">Deseja marcar este formulário como completo\?</string>
     <string name="discard_go_back">Se sair agora, todas as informações do formulário serão descartadas.</string>
     <string name="field_errors_not_saved_discard">Alguns campos têm erros e não são guardados. \Se sair agora, as suas alterações serão descartadas.</string>
     <string name="share">Partilhar</string>
@@ -120,7 +120,7 @@
     <string name="login_error_bad_credentials">O nome de utilizador ou a palavra-passe estão incorrectos</string>
     <string name="login_error_unknown_host">Servidor desconhecido</string>
     <string name="online_search_parsing_error">Erro ao analisar resultados</string>
-    <string name="error_unexpected">Algo inesperado correu mal.</string>
+    <string name="error_unexpected"> Algo inesperado correu mal.</string>
     <string name="error_too_manu_org_units">O seu utilizador tem mais do que uma unidade organizacional de raiz. Reveja a sua configuração ou contacte o seu administrador.</string>
     <string name="error_max_tei_count_reached">Os resultados online excedem o número máximo de instâncias de rastreador que podem ser mostradas. Por favor, refine a sua pesquisa.</string>
     <string name="error_many_requests">O servidor está um pouco ocupado neste momento. Por favor, tente mais tarde.</string>
@@ -177,4 +177,13 @@
     <string name="cancel">Cancelar</string>
     <string name="ok">OK</string>
 
-    </resources>
+    <string name="not_synced">Não sincronizado</string>
+    <string name="sync">Sincronizar</string>
+    <string name="sync_warning">Aviso de sincronização</string>
+    <string name="sync_retry">Repetir a sincronização</string>
+    <string name="sync_error">Erro de Sincronização</string>
+    <string name="marked_follow_up">Marcado para seguimento</string>
+    <string name="remove_follow_up">Remover</string>
+    <string name="program_stage">Estagio de programa</string>
+    <string name="stage">estágio</string>
+</resources>

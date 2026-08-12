@@ -43,4 +43,7 @@
     <string name="cancel">Avbryt</string>
     <string name="ok">ok</string>
 
+    <string name="sync">Synkronisera</string>
+    <string name="sync_error">Synkroniseringsfel</string>
+    <string name="remove_follow_up">Ta bort</string>
     </resources>

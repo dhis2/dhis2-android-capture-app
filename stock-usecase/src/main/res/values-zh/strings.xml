@@ -74,9 +74,7 @@
     <string name="speech_timeout_error">未检测到语音输入</string>
     <string name="unknown_speech_error">出现未知错误。</string>
     <string name="non_numeric_speech_input_error">不允许非数字输入：“%s”</string>
-    <string name="negative_number_speech_input_error">
-        不允许输入负数：“%s”
-    </string>
+    <string name="negative_number_speech_input_error">\n        不允许输入负数：“%s”\n    </string>
 
     <string name="unable_to_sync_data_no_network_available">
         无法同步数据，因为没有可用的网络连接

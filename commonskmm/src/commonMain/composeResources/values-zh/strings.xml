@@ -128,9 +128,10 @@
     <string name="login_error_error_response">对不起！服务器端出现问题。</string>
     <string name="login_error_no_dhis_instance">提供的 URL 不是 DHIS2 服务器。</string>
     <string name="login_error_bad_credentials">用户名或密码不正确</string>
+    <string name="login_error_bad_credentials_offline">代码有误</string>
     <string name="login_error_unknown_host">未知服务器</string>
     <string name="online_search_parsing_error">解析结果发生错误</string>
-    <string name="error_unexpected">出乎意料的事情发生了。</string>
+    <string name="error_unexpected">出乎意料的错误。</string>
     <string name="error_too_manu_org_units">您的用户拥有多个根组织单位。检查您的配置或联系您的管理员。</string>
     <string name="error_max_tei_count_reached">在线结果超过了可以显示的最大跟踪器实例数。请细化您的搜索。</string>
     <string name="error_many_requests">服务器此时有点忙。请稍后再试。</string>
@@ -186,6 +187,8 @@
     <string name="database_import_failed">数据库导入失败</string>
     <string name="invalid_file">无效文件</string>
     <string name="not_in_totp_2fa_enrollment_mode">未进入 TOTP 2FA 注册模式</string>
+    <string name="oauth2_error">使用 OAuth2 进行身份验证时发生错误</string>
+    <string name="error_device_not_registered">设备未注册</string>
     <!--*******************
        END OF D2 Error Messages
     **********************-->
@@ -201,6 +204,23 @@
     <plurals name="enrollment">
         <item quantity="other">注册人数</item>
     </plurals>
+    <plurals name="org_unit">
+        <item quantity="other">组织单位</item>
+    </plurals>
+    <plurals name="tei">
+        <item quantity="other">teis</item>
+    </plurals>
+    <plurals name="event">
+        <item quantity="other">活动</item>
+    </plurals>
+    <!--*******************
+    Info bar labels
+    **********************-->
+    <string name="follow_up">后续</string>
+    <!--marked_for_follow_up will be formatted using custom terminology or the default label-->
+    <string name="marked_for_follow_up">标记为%s</string>
+    <!--marke_for_follow_up will be formatted using custom terminology or the default label-->
+    <string name="mark_for_follow_up">标记为%s</string>
     <string name="not_synced">未同步</string>
     <string name="sync">同步</string>
     <string name="sync_warning">同步警告</string>
@@ -208,4 +228,8 @@
     <string name="sync_error">同步错误</string>
     <string name="marked_follow_up">标记为后续</string>
     <string name="remove_follow_up">移除</string>
-    </resources>
+    <string name="enrollment_completed">注册 已完成</string>
+    <string name="enrollment_cancelled">注册 已取消</string>
+    <string name="program_stage">项目阶段</string>
+    <string name="stage">阶段</string>
+</resources>
