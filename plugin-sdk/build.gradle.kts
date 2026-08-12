@@ -15,7 +15,7 @@ version = "0.1.1-SNAPSHOT"
 kotlin {
     androidLibrary {
         namespace = "org.dhis2.mobile.plugin.sdk"
-        compileSdk = libs.versions.sdk.get().toInt()
+        compileSdk = libs.versions.compileSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
         compilerOptions { jvmTarget.set(JvmTarget.JVM_17) }
     }

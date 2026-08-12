@@ -30,6 +30,7 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.commons.providers.PreferenceProvider
+import org.dhis2.mobile.plugin.domain.LoadPluginsUseCase
 import org.dhis2.mobile.sync.data.METADATA_SYNC_NOW
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.domain.SyncStatusController
@@ -77,6 +78,7 @@ class MainViewModel(
     private val launchInitialSync: LaunchInitialSync,
     private val scheduleNewVersionAlert: ScheduleNewVersionAlert,
     private val syncBackgroundJobAction: SyncBackgroundJobAction,
+    private val loadPlugins: LoadPluginsUseCase,
     private val initialScreen: MainScreenType,
     private val dispatcher: DispatcherProvider,
 ) : ViewModel() {
@@ -142,6 +144,10 @@ class MainViewModel(
                     Timber.e(it)
                 },
             )
+        }
+
+        launchUseCase(dispatcher.io()) {
+            loadPlugins().onFailure(Timber::e)
         }
     }
 

@@ -21,9 +21,11 @@ import java.util.jar.JarFile
  *    end-to-end, which forces the runtime to compute and verify signatures.
  */
 class PluginVerifier {
-
     /** SHA-256 check. Returns `true` if [bytes] match [expectedChecksum]. */
-    fun verify(bytes: ByteArray, expectedChecksum: String): Boolean {
+    fun verify(
+        bytes: ByteArray,
+        expectedChecksum: String,
+    ): Boolean {
         if (expectedChecksum.isBlank()) {
             Timber.w("Plugin has no checksum — skipping verification (not recommended in production)")
             return true
@@ -49,23 +51,35 @@ class PluginVerifier {
      * This does NOT pin against any specific certificate — any valid signature passes.
      * Certificate allow-lists can be layered on top later.
      */
-    fun verifySignature(bundle: File): Result<Unit> = runCatching {
-        JarFile(bundle, /* verify = */ true).use { jar ->
-            val entries = jar.entries().toList()
-            check(entries.any { it.name.startsWith("META-INF/") && it.name.endsWith(".RSA") || it.name.endsWith(".DSA") || it.name.endsWith(".EC") }) {
-                "Plugin bundle is not signed (no META-INF/*.RSA|DSA|EC entry)"
-            }
-            for (entry in entries) {
-                if (entry.isDirectory || entry.name.startsWith("META-INF/")) continue
-                // Reading the full entry forces JarFile to compute and verify signatures.
-                jar.getInputStream(entry).use { it.readBytes() }
-                val certs = entry.certificates
-                check(!certs.isNullOrEmpty()) {
-                    "Unsigned entry in plugin bundle: ${entry.name}"
+    fun verifySignature(bundle: File): Result<Unit> =
+        runCatching {
+            // The `true` argument turns on JarFile's own signature verification.
+            JarFile(bundle, true).use { jar ->
+                val entries = jar.entries().toList()
+                check(
+                    entries.any { entry ->
+                        entry.name.startsWith("META-INF/") &&
+                            SIGNATURE_BLOCK_EXTENSIONS.any { entry.name.endsWith(it) }
+                    },
+                ) {
+                    "Plugin bundle is not signed (no META-INF/*.RSA|DSA|EC entry)"
+                }
+                for (entry in entries) {
+                    if (entry.isDirectory || entry.name.startsWith("META-INF/")) continue
+                    // Reading the full entry forces JarFile to compute and verify signatures.
+                    jar.getInputStream(entry).use { it.readBytes() }
+                    val certs = entry.certificates
+                    check(!certs.isNullOrEmpty()) {
+                        "Unsigned entry in plugin bundle: ${entry.name}"
+                    }
                 }
             }
+        }.onFailure { err ->
+            Timber.e(err, "Plugin bundle signature verification failed")
         }
-    }.onFailure { err ->
-        Timber.e(err, "Plugin bundle signature verification failed")
+
+    private companion object {
+        /** Signature block extensions produced by `jarsigner`, all under `META-INF/`. */
+        val SIGNATURE_BLOCK_EXTENSIONS = listOf(".RSA", ".DSA", ".EC")
     }
 }
