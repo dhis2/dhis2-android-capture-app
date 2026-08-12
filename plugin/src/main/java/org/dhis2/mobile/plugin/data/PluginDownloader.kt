@@ -17,6 +17,10 @@ import java.net.URL
  *
  * Note: The download is performed by the host app (not the plugin) so it is not subject to the
  * plugin's network restriction (which only allows communication with the DHIS2 server).
+ *
+ * A response is only cached if it is an `HTTP 200` **and** begins with the zip magic bytes, so a
+ * URL that answers with HTML (a login page, an SPA fallback, a 404 page) fails here with a clear
+ * message rather than being cached and rejected later as a checksum mismatch.
  */
 class PluginDownloader(
     private val context: Context,
@@ -54,25 +58,77 @@ class PluginDownloader(
     }
 
     private fun download(urlString: String): ByteArray {
-        val url = URL(urlString)
-        val connection = url.openConnection() as HttpURLConnection
-        connection.connectTimeout = CONNECT_TIMEOUT_MS
-        connection.readTimeout = READ_TIMEOUT_MS
-        try {
-            connection.connect()
-            check(connection.responseCode == HttpURLConnection.HTTP_OK) {
-                "HTTP ${connection.responseCode} when downloading plugin from $urlString"
+        // Redirects are resolved manually rather than by HttpURLConnection, for two reasons:
+        // every hop gets logged (a bundle URL that redirects is usually a port serving something
+        // else, e.g. a DHIS2 login page, and a silently-followed redirect caches that response as
+        // the bundle), and cross-protocol hops (http -> https) work, which the built-in following
+        // refuses to do. App Hub URLs legitimately redirect to a CDN, so hops are allowed.
+        var currentUrl = urlString
+        repeat(MAX_REDIRECTS + 1) {
+            val connection =
+                (URL(currentUrl).openConnection() as HttpURLConnection).apply {
+                    connectTimeout = CONNECT_TIMEOUT_MS
+                    readTimeout = READ_TIMEOUT_MS
+                    instanceFollowRedirects = false
+                }
+            try {
+                connection.connect()
+                val code = connection.responseCode
+
+                if (code in REDIRECT_CODES) {
+                    val location = connection.getHeaderField("Location")
+                    checkNotNull(location) {
+                        "HTTP $code from $currentUrl with no Location header"
+                    }
+                    // Resolve against the current URL so relative Location headers work.
+                    val target = URL(URL(currentUrl), location).toString()
+                    Timber.w("Plugin download redirected: $currentUrl -> $target")
+                    currentUrl = target
+                    return@repeat
+                }
+
+                check(code == HttpURLConnection.HTTP_OK) {
+                    "HTTP $code when downloading plugin from $currentUrl"
+                }
+
+                val bytes = connection.inputStream.readBytes()
+                check(bytes.hasZipMagic()) {
+                    "Response from $currentUrl is not a zip bundle: ${bytes.size} bytes, " +
+                        "content-type=${connection.contentType}. Is a plugin bundle served there?"
+                }
+                return bytes
+            } finally {
+                connection.disconnect()
             }
-            return connection.inputStream.readBytes()
-        } finally {
-            connection.disconnect()
         }
+        error("Too many redirects (> $MAX_REDIRECTS) downloading plugin from $urlString")
     }
+
+    /**
+     * True if these bytes begin with the zip local-file-header signature. Catches the common
+     * misconfiguration where the download URL answers with HTML (a login page, a 404 page)
+     * under a 200 status, which would otherwise be cached and fail as a checksum mismatch.
+     */
+    private fun ByteArray.hasZipMagic(): Boolean = size >= ZIP_MAGIC.size && ZIP_MAGIC.indices.all { this[it] == ZIP_MAGIC[it] }
 
     private fun cacheFile(metadata: PluginMetadata) = File(pluginDir, "${metadata.id}-${metadata.version}.zip")
 
     private companion object {
         const val CONNECT_TIMEOUT_MS = 10_000
         const val READ_TIMEOUT_MS = 30_000
+        const val MAX_REDIRECTS = 5
+
+        /** Codes treated as a redirect, including 307/308 which `HttpURLConnection` never follows. */
+        val REDIRECT_CODES =
+            setOf(
+                HttpURLConnection.HTTP_MOVED_PERM,
+                HttpURLConnection.HTTP_MOVED_TEMP,
+                HttpURLConnection.HTTP_SEE_OTHER,
+                307,
+                308,
+            )
+
+        /** `PK\x03\x04` — the local-file-header signature that starts every non-empty zip. */
+        val ZIP_MAGIC = byteArrayOf(0x50, 0x4B, 0x03, 0x04)
     }
 }
