@@ -1,6 +1,7 @@
 package org.dhis2.mobile.commons.providers
 
 import kotlinx.coroutines.runBlocking
+import org.jetbrains.compose.resources.StringResource
 
 interface CustomLabelProvider {
     suspend fun getCustomEnrollmentLabel(
@@ -32,6 +33,14 @@ interface CustomLabelProvider {
         customLabelContext: CustomLabelContext?,
         quantity: Int? = null,
     ): String
+
+    suspend fun getCustomProgramStageLabel(
+        programUid: String?,
+        capitalizeFirstLetter: Boolean = true,
+        defaultResource: StringResource? = null,
+    ): String
+
+    suspend fun getCustomGroupByStageLabel(programUid: String?): String
 
     fun formatStringWithCustomLabel(
         stringResource: String,

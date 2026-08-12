@@ -567,7 +567,7 @@
     <string name="scheduled_enter_event">Đã xếp lịch</string>
     <string name="enter_event">Nhập %1$s</string>
     <string name="cancel_event">Hủy %1$s</string>
-    <string name="program_stage">Giai Đoạn Chương Trình</string>
+
     <string name="event">sự kiện</string>
     <string name="timeline">Dòng thời gian</string>
     <string name="database_export_downloaded">Cơ sở dữ liệu đã được tải về</string>
