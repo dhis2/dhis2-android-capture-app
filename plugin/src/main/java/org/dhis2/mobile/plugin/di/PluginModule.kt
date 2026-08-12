@@ -13,29 +13,30 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
-val pluginModule = module {
-    // Infrastructure
-    single { PluginRegistry() }
-    single { PluginLoader(androidContext()) }
-    singleOf(::PluginVerifier)
-    single { PluginDownloader(androidContext()) }
+val pluginModule =
+    module {
+        // Infrastructure
+        single { PluginRegistry() }
+        single { PluginLoader(androidContext()) }
+        singleOf(::PluginVerifier)
+        single { PluginDownloader(androidContext()) }
 
-    // Data
-    single { AppHubPluginRepository(get()) }
+        // Data
+        single { AppHubPluginRepository(get()) }
 
-    // Security
-    single { ScopedDhis2PluginContextFactory(get()) }
+        // Security
+        single { ScopedDhis2PluginContextFactory(get()) }
 
-    // Domain
-    factoryOf(::GetPluginSlotContent)
-    factory {
-        LoadPluginsUseCase(
-            appHubPluginRepository = get(),
-            pluginDownloader = get(),
-            pluginVerifier = get(),
-            pluginLoader = get(),
-            pluginRegistry = get(),
-            koin = getKoin(),
-        )
+        // Domain
+        factoryOf(::GetPluginSlotContent)
+        factory {
+            LoadPluginsUseCase(
+                appHubPluginRepository = get(),
+                pluginDownloader = get(),
+                pluginVerifier = get(),
+                pluginLoader = get(),
+                pluginRegistry = get(),
+                koin = getKoin(),
+            )
+        }
     }
-}

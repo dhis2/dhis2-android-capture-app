@@ -20,13 +20,19 @@ import java.io.RandomAccessFile
  *   `composeResources/{package}/drawable/foo.xml`
  */
 @OptIn(ExperimentalResourceApi::class)
-class FileSystemResourceReader(private val root: File) : ResourceReader {
+class FileSystemResourceReader(
+    private val root: File,
+) : ResourceReader {
+    override suspend fun read(path: String): ByteArray =
+        withContext(Dispatchers.IO) {
+            File(root, path).readBytes()
+        }
 
-    override suspend fun read(path: String): ByteArray = withContext(Dispatchers.IO) {
-        File(root, path).readBytes()
-    }
-
-    override suspend fun readPart(path: String, offset: Long, size: Long): ByteArray =
+    override suspend fun readPart(
+        path: String,
+        offset: Long,
+        size: Long,
+    ): ByteArray =
         withContext(Dispatchers.IO) {
             RandomAccessFile(File(root, path), "r").use { raf ->
                 raf.seek(offset)

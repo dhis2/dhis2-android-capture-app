@@ -11,7 +11,7 @@ private const val PLUGIN_NAMESPACE = "dhis2AndroidPlugins"
 private const val PLUGIN_CONFIG_KEY = "config"
 
 // TODO: remove — hardcoded config for local testing while the dataStore entry is not yet set up.
-//TODO: we need to download the dataStore to use it. Ideally the Android SDK is providing this info.
+// TODO: we need to download the dataStore to use it. Ideally the Android SDK is providing this info.
 private const val FALLBACK_CONFIG_JSON = """
 {
     "plugins": [
@@ -20,7 +20,7 @@ private const val FALLBACK_CONFIG_JSON = """
             "version": "1.4.0",
             "checksum": "sha256:bace3ff14439372a8bbfa076fde4974158168c84d5913df9cf530a27e448587c",
             "entryPoint": "org.dhis2.pluginimplementationtest.MyPlugin",
-            "downloadUrl": "http://10.0.2.2:8080/org.dhis2.myplugin-1.4.0.zip",
+            "downloadUrl": "http://10.0.2.2:8081/org.dhis2.myplugin-1.4.0.zip",
             "injectionPoints": ["HOME_ABOVE_PROGRAM_LIST"],
             "allowedDataSetUids": [],
             "allowedProgramUids": ["IpHINAT79UW"]
@@ -54,8 +54,9 @@ private const val FALLBACK_CONFIG_JSON = """
  *
  * Returns an empty list (not a failure) if no configuration has been set up yet.
  */
-class AppHubPluginRepository(private val d2: D2) {
-
+class AppHubPluginRepository(
+    private val d2: D2,
+) {
     private val json = Json { ignoreUnknownKeys = true }
 
     /**
@@ -65,17 +66,22 @@ class AppHubPluginRepository(private val d2: D2) {
     suspend fun getConfiguredPlugins(): Result<List<PluginMetadata>> =
         withContext(Dispatchers.IO) {
             runCatching {
-                val entry = d2.dataStoreModule()
-                    .dataStore()
-                    .byNamespace().eq(PLUGIN_NAMESPACE)
-                    .byKey().eq(PLUGIN_CONFIG_KEY)
-                    .blockingGet()
-                    .firstOrNull()
+                val entry =
+                    d2
+                        .dataStoreModule()
+                        .dataStore()
+                        .byNamespace()
+                        .eq(PLUGIN_NAMESPACE)
+                        .byKey()
+                        .eq(PLUGIN_CONFIG_KEY)
+                        .blockingGet()
+                        .firstOrNull()
 
-                val configJson = entry?.value() ?: run {
-                    Timber.w("No plugin configuration in server dataStore — using hardcoded fallback")
-                    FALLBACK_CONFIG_JSON
-                }
+                val configJson =
+                    entry?.value() ?: run {
+                        Timber.w("No plugin configuration in server dataStore — using hardcoded fallback")
+                        FALLBACK_CONFIG_JSON
+                    }
                 val config = json.decodeFromString<PluginConfig>(configJson)
                 Timber.d("Found ${config.plugins.size} plugin(s) in server configuration")
                 config.plugins

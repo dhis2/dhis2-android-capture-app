@@ -32,53 +32,54 @@ class LoadPluginsUseCase(
     private val pluginRegistry: PluginRegistry,
     private val koin: Koin,
 ) : UseCase<Unit, Unit> {
+    override suspend fun invoke(input: Unit): Result<Unit> =
+        runCatching {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                Timber.w("Plugin system requires API 26+. Skipping plugin loading on this device.")
+                return Result.success(Unit)
+            }
 
-    override suspend fun invoke(input: Unit): Result<Unit> = runCatching {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            Timber.w("Plugin system requires API 26+. Skipping plugin loading on this device.")
-            return Result.success(Unit)
-        }
-
-        val metadataList = appHubPluginRepository.getConfiguredPlugins().getOrElse { err ->
-            Timber.e(err, "Failed to fetch plugin configuration from server")
-            return Result.success(Unit)
-        }
-
-        if (metadataList.isEmpty()) {
-            Timber.d("No plugins configured for this server")
-            return Result.success(Unit)
-        }
-
-        Timber.d("Loading ${metadataList.size} plugin(s)")
-
-        for (metadata in metadataList) {
-            runCatching {
-                val bundle = pluginDownloader.getOrDownload(metadata).getOrThrow()
-
-                if (!pluginVerifier.verify(bundle.readBytes(), metadata.checksum)) {
-                    Timber.e("Plugin '${metadata.id}' failed checksum verification — skipping")
-                    pluginDownloader.evict(metadata)
-                    return@runCatching
+            val metadataList =
+                appHubPluginRepository.getConfiguredPlugins().getOrElse { err ->
+                    Timber.e(err, "Failed to fetch plugin configuration from server")
+                    return Result.success(Unit)
                 }
 
-                pluginVerifier.verifySignature(bundle).getOrElse { err ->
-                    Timber.e(err, "Plugin '${metadata.id}' signature verification failed — skipping")
-                    pluginDownloader.evict(metadata)
-                    return@runCatching
+            if (metadataList.isEmpty()) {
+                Timber.d("No plugins configured for this server")
+                return Result.success(Unit)
+            }
+
+            Timber.d("Loading ${metadataList.size} plugin(s)")
+
+            for (metadata in metadataList) {
+                runCatching {
+                    val bundle = pluginDownloader.getOrDownload(metadata).getOrThrow()
+
+                    if (!pluginVerifier.verify(bundle.readBytes(), metadata.checksum)) {
+                        Timber.e("Plugin '${metadata.id}' failed checksum verification — skipping")
+                        pluginDownloader.evict(metadata)
+                        return@runCatching
+                    }
+
+                    pluginVerifier.verifySignature(bundle).getOrElse { err ->
+                        Timber.e(err, "Plugin '${metadata.id}' signature verification failed — skipping")
+                        pluginDownloader.evict(metadata)
+                        return@runCatching
+                    }
+
+                    @Suppress("DEPRECATION")
+                    val loaded = pluginLoader.load(bundle, metadata)
+
+                    loaded.plugin.provideKoinModule()?.let { module ->
+                        koin.loadModules(listOf(module))
+                    }
+
+                    pluginRegistry.register(loaded.plugin, loaded.resourceRoot)
+                    Timber.d("Plugin '${metadata.id}' v${metadata.version} loaded successfully")
+                }.onFailure { err ->
+                    Timber.e(err, "Failed to load plugin '${metadata.id}' — skipping")
                 }
-
-                @Suppress("DEPRECATION")
-                val loaded = pluginLoader.load(bundle, metadata)
-
-                loaded.plugin.provideKoinModule()?.let { module ->
-                    koin.loadModules(listOf(module))
-                }
-
-                pluginRegistry.register(loaded.plugin, loaded.resourceRoot)
-                Timber.d("Plugin '${metadata.id}' v${metadata.version} loaded successfully")
-            }.onFailure { err ->
-                Timber.e(err, "Failed to load plugin '${metadata.id}' — skipping")
             }
         }
-    }
 }
