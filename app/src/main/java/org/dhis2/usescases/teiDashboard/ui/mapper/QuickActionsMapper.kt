@@ -88,27 +88,28 @@ class QuickActionsMapper(
 
             QuickActionType.TRANSFER -> resourceManager.getString(R.string.transfer)
             QuickActionType.COMPLETE_ENROLLMENT ->
-                resourceManager.formatWithEnrollmentLabel(
-                    programUid,
-                    R.string.complete_enrollment_label,
-                    1,
+                customLabelProvider.formatStringWithCustomLabel(
+                    stringResource = resourceManager.getString(R.string.complete_enrollment_label),
+                    customLabel = customLabelProvider.blockingCustomEnrollmentLabel(programUid, 1),
                 )
 
             QuickActionType.CANCEL_ENROLLMENT ->
-                resourceManager.formatWithEnrollmentLabel(
-                    programUid,
-                    R.string.deactivate_enrollment_label,
-                    1,
+                customLabelProvider.formatStringWithCustomLabel(
+                    stringResource = resourceManager.getString(R.string.deactivate_enrollment_label),
+                    customLabel = customLabelProvider.blockingCustomEnrollmentLabel(programUid, 1),
                 )
 
             QuickActionType.REOPEN_ENROLLMENT ->
-                resourceManager.formatWithEnrollmentLabel(
-                    programUid,
-                    R.string.reopen_enrollment_label,
-                    1,
+                customLabelProvider.formatStringWithCustomLabel(
+                    stringResource = resourceManager.getString(R.string.reopen_enrollment_label),
+                    customLabel = customLabelProvider.blockingCustomEnrollmentLabel(programUid, 1),
                 )
 
-            QuickActionType.MORE_ENROLLMENTS -> resourceManager.getString(R.string.more_enrollments)
+            QuickActionType.MORE_ENROLLMENTS ->
+                customLabelProvider.formatStringWithCustomLabel(
+                    stringResource = resourceManager.getString(R.string.more_enrollments_format),
+                    customLabel = customLabelProvider.blockingCustomEnrollmentLabel(programUid, 2),
+                )
         }
 
     private fun getIcon(quickActionType: QuickActionType) =

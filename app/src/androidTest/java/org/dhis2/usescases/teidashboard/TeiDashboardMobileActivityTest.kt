@@ -106,6 +106,7 @@ class TeiDashboardMobileActivityTest {
             dispatcher,
             pageConfigurator = pageConfigurator,
             resourcesManager = resources,
+            customLabelProvider = customLabelProvider,
         )
 
     }

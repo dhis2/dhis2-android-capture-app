@@ -12,6 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
@@ -23,18 +24,24 @@ class QuickActionsMapperTest {
     @Before
     fun setUp() {
         mapper = QuickActionsMapper("programUid", resourceManager, customLabelProvider)
-        whenever(resourceManager.getString(R.string.more_enrollments)) doReturn "More enrollments"
-        whenever(customLabelProvider.blockingCustomMarkForFollowUpLabel(anyOrNull())) doReturn "Mark follow up"
         whenever(resourceManager.getString(R.string.transfer)) doReturn "Transfer"
+        whenever(resourceManager.getString(R.string.complete_enrollment_label)) doReturn "complete_format"
+        whenever(resourceManager.getString(R.string.deactivate_enrollment_label)) doReturn "deactivate_format"
+        whenever(resourceManager.getString(R.string.reopen_enrollment_label)) doReturn "reopen_format"
+        whenever(resourceManager.getString(R.string.more_enrollments_format)) doReturn "more_format"
+        whenever(customLabelProvider.blockingCustomMarkForFollowUpLabel(anyOrNull())) doReturn "Mark follow up"
         whenever(
-            resourceManager.formatWithEnrollmentLabel(mapper.programUid, R.string.complete_enrollment_label, 1),
+            customLabelProvider.formatStringWithCustomLabel(eq("complete_format"), anyOrNull(), anyOrNull()),
         ) doReturn "Complete enrollment"
         whenever(
-            resourceManager.formatWithEnrollmentLabel(mapper.programUid, R.string.reopen_enrollment_label, 1),
+            customLabelProvider.formatStringWithCustomLabel(eq("deactivate_format"), anyOrNull(), anyOrNull()),
+        ) doReturn "Deactivate enrollment"
+        whenever(
+            customLabelProvider.formatStringWithCustomLabel(eq("reopen_format"), anyOrNull(), anyOrNull()),
         ) doReturn "Re-open enrollment"
         whenever(
-            resourceManager.formatWithEnrollmentLabel(mapper.programUid, R.string.deactivate_enrollment_label, 1),
-        ) doReturn "Deactivate enrollment"
+            customLabelProvider.formatStringWithCustomLabel(eq("more_format"), anyOrNull(), anyOrNull()),
+        ) doReturn "More enrollments"
     }
 
     @Test

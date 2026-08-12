@@ -64,6 +64,10 @@ class DashboardRepositoryImpl(
             .blockingGet()
             ?.header
 
+    override fun getProgramUid(): String? = programUid
+
+    override fun getEnrollmentUid(): String? = enrollmentUid
+
     override fun getTeiProfilePath(): String? {
         val tei =
             d2
@@ -666,7 +670,7 @@ class DashboardRepositoryImpl(
             .rxDelete()
             .andThen(Single.fromCallable { true })
 
-    override fun checkIfDeleteEnrollmentIsPossible(enrollmentUid: String): Boolean {
+    override fun checkIfDeleteEnrollmentIsPossible(enrollmentUid: String?): Boolean {
         val local =
             d2
                 .enrollmentModule()

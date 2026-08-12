@@ -4,11 +4,23 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.automirrored.filled.StickyNote2
 import androidx.compose.material.icons.automirrored.outlined.Assignment
+import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.automirrored.outlined.StickyNote2
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Hub
 import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material.icons.outlined.Cancel
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.DeleteForever
+import androidx.compose.material.icons.outlined.DeleteOutline
+import androidx.compose.material.icons.outlined.Flag
 import androidx.compose.material.icons.outlined.Hub
+import androidx.compose.material.icons.outlined.LockReset
+import androidx.compose.material.icons.outlined.MoveDown
+import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.icons.outlined.Sync
+import androidx.compose.material.icons.outlined.Timeline
+import androidx.compose.material.icons.outlined.Workspaces
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,6 +30,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -27,6 +41,7 @@ import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.tracker.NavigationBarUIState
 import org.dhis2.tracker.TEIDashboardItems
 import org.dhis2.tracker.relationships.ui.state.RelationshipTopBarIconState
@@ -39,7 +54,12 @@ import org.dhis2.utils.isPortrait
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.State.SYNCED
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemData
+import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuLeadingElement
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import timber.log.Timber
 
 class DashboardViewModel(
@@ -48,6 +68,7 @@ class DashboardViewModel(
     private val dispatcher: DispatcherProvider,
     private val pageConfigurator: NavigationPageConfigurator,
     private val resourcesManager: ResourceManager,
+    private val customLabelProvider: CustomLabelProvider,
 ) : ViewModel() {
     private val eventUid = MutableLiveData<String>()
 
@@ -81,16 +102,8 @@ class DashboardViewModel(
                 null,
             )
 
-    private val _groupByStage = MutableStateFlow(false)
-    val groupByStage: StateFlow<Boolean> =
-        _groupByStage
-            .onStart {
-                fetchGrouping()
-            }.stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5000L),
-                false,
-            )
+    private val _groupByStage = MutableStateFlow(repository.getGrouping())
+    val groupByStage: StateFlow<Boolean> = _groupByStage.asStateFlow()
 
     private val _noEnrollmentSelected = MutableLiveData(false)
     val noEnrollmentSelected: LiveData<Boolean> = _noEnrollmentSelected
@@ -110,6 +123,154 @@ class DashboardViewModel(
     private val _relationshipTopBarIconState =
         MutableStateFlow<RelationshipTopBarIconState>(RelationshipTopBarIconState.List())
     val relationshipTopBarIconState = _relationshipTopBarIconState.asStateFlow()
+
+    /**
+     * Derived from every piece of state the menu depends on, so it is rebuilt whenever the grouping
+     * preference is toggled, the follow up bar changes or the dashboard model is reloaded, instead
+     * of being snapshotted once with values that have not been resolved yet.
+     */
+    val moreOptionsMenu: StateFlow<List<MenuItemData<EnrollmentMenuItem>>> =
+        combine(
+            dashboardModel,
+            _groupByStage,
+            showFollowUpBar,
+        ) { model, grouping, followUp ->
+            CoroutineTracker.unconditionalIncrement()
+            try {
+                if (repository.getEnrollmentUid().isNullOrEmpty()) {
+                    buildEnrollmentMenuForNoEnrollment()
+                } else {
+                    buildEnrollmentMenuForEnrollment(model, grouping, followUp)
+                }
+            } catch (e: Exception) {
+                Timber.e(e)
+                emptyList()
+            } finally {
+                CoroutineTracker.unconditionalDecrement()
+            }
+        }.flowOn(dispatcher.io())
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000L),
+                emptyList(),
+            )
+
+    private suspend fun buildEnrollmentMenuForEnrollment(
+        dashboardModel: DashboardModel?,
+        groupByStage: Boolean,
+        showFollowUpBar: Boolean,
+    ): List<MenuItemData<EnrollmentMenuItem>> =
+        buildList {
+            addSyncMenuItem()
+            addTransferMenuItem()
+            addFollowUpMenuItem(showFollowUpBar)
+            if (groupByStage) {
+                add(
+                    MenuItemData(
+                        id = EnrollmentMenuItem.VIEW_TIMELINE,
+                        label = resourcesManager.getString(R.string.view_timeline),
+                        leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Timeline),
+                    ),
+                )
+            } else {
+                add(
+                    MenuItemData(
+                        id = EnrollmentMenuItem.GROUP_BY_STAGE,
+                        label = resourcesManager.getString(R.string.group_by_stage),
+                        leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Workspaces),
+                    ),
+                )
+            }
+            add(
+                MenuItemData(
+                    id = EnrollmentMenuItem.HELP,
+                    label = resourcesManager.getString(R.string.showHelp),
+                    leadingElement = MenuLeadingElement.Icon(icon = Icons.AutoMirrored.Outlined.HelpOutline),
+                ),
+            )
+            addMoreEnrollmentsMenuItem()
+            add(
+                MenuItemData(
+                    id = EnrollmentMenuItem.SHARE,
+                    label = resourcesManager.getString(R.string.share),
+                    showDivider = true,
+                    leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Share),
+                ),
+            )
+            val enrollmentStatus = repository.getEnrollmentStatus(repository.getEnrollmentUid())
+
+            if (enrollmentStatus != EnrollmentStatus.COMPLETED) {
+                add(
+                    MenuItemData(
+                        id = EnrollmentMenuItem.COMPLETE,
+                        label = resourcesManager.getString(R.string.complete),
+                        leadingElement =
+                            MenuLeadingElement.Icon(
+                                icon = Icons.Outlined.CheckCircle,
+                                defaultTintColor = SurfaceColor.CustomGreen,
+                                selectedTintColor = SurfaceColor.CustomGreen,
+                            ),
+                    ),
+                )
+            }
+
+            if (enrollmentStatus != EnrollmentStatus.ACTIVE) {
+                add(
+                    MenuItemData(
+                        id = EnrollmentMenuItem.ACTIVATE,
+                        label = resourcesManager.getString(R.string.re_open),
+                        showDivider = enrollmentStatus == EnrollmentStatus.CANCELLED,
+                        leadingElement =
+                            MenuLeadingElement.Icon(
+                                icon = Icons.Outlined.LockReset,
+                                defaultTintColor = SurfaceColor.Warning,
+                                selectedTintColor = SurfaceColor.Warning,
+                            ),
+                    ),
+                )
+            }
+
+            if (enrollmentStatus != EnrollmentStatus.CANCELLED) {
+                add(
+                    MenuItemData(
+                        id = EnrollmentMenuItem.DEACTIVATE,
+                        label = resourcesManager.getString(R.string.deactivate),
+                        showDivider = true,
+                        leadingElement =
+                            MenuLeadingElement.Icon(
+                                icon = Icons.Outlined.Cancel,
+                                defaultTintColor = TextColor.OnDisabledSurface,
+                                selectedTintColor = TextColor.OnDisabledSurface,
+                            ),
+                    ),
+                )
+            }
+            if (repository.checkIfDeleteEnrollmentIsPossible(repository.getEnrollmentUid())) {
+                val programmeName =
+                    if (dashboardModel is DashboardEnrollmentModel) {
+                        dashboardModel.currentProgram()?.displayName()
+                    } else {
+                        ""
+                    }
+                add(
+                    MenuItemData(
+                        id = EnrollmentMenuItem.REMOVE,
+                        label = resourcesManager.getString(R.string.remove_from),
+                        supportingText = programmeName,
+                        style = MenuItemStyle.ALERT,
+                        leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.DeleteOutline),
+                    ),
+                )
+            }
+            addDeleteTeiMenuItem()
+        }
+
+    private suspend fun buildEnrollmentMenuForNoEnrollment(): List<MenuItemData<EnrollmentMenuItem>> =
+        buildList {
+            addSyncMenuItem()
+            addMoreEnrollmentsMenuItem()
+            addDeleteTeiMenuItem()
+        }
 
     private fun fetchDashboardModel() {
         viewModelScope.launch(dispatcher.io()) {
@@ -197,19 +358,6 @@ class DashboardViewModel(
                 CoroutineTracker.unconditionalDecrement()
             }
         }
-
-    private fun fetchGrouping() {
-        viewModelScope.launch(dispatcher.io()) {
-            CoroutineTracker.unconditionalIncrement()
-            try {
-                _groupByStage.emit(repository.getGrouping())
-            } catch (e: Exception) {
-                Timber.e(e)
-            } finally {
-                CoroutineTracker.unconditionalDecrement()
-            }
-        }
-    }
 
     fun setGrouping(groupEvents: Boolean) {
         repository.setGrouping(groupEvents)
@@ -336,5 +484,74 @@ class DashboardViewModel(
 
     fun updateRelationshipsTopBarIconState(state: RelationshipTopBarIconState) {
         _relationshipTopBarIconState.value = state
+    }
+
+    private fun MutableList<MenuItemData<EnrollmentMenuItem>>.addSyncMenuItem() {
+        add(
+            MenuItemData(
+                id = EnrollmentMenuItem.SYNC,
+                label = resourcesManager.getString(R.string.refresh_this_record),
+                leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Sync),
+            ),
+        )
+    }
+
+    private fun MutableList<MenuItemData<EnrollmentMenuItem>>.addDeleteTeiMenuItem() {
+        if (repository.checkIfDeleteTeiIsPossible()) {
+            add(
+                MenuItemData(
+                    id = EnrollmentMenuItem.DELETE,
+                    label =
+                        resourcesManager.getString(
+                            R.string.dashboard_menu_delete_tei_v2,
+                            repository.getTETypeName() ?: "TEI",
+                        ),
+                    style = MenuItemStyle.ALERT,
+                    leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.DeleteForever),
+                ),
+            )
+        }
+    }
+
+    private suspend fun MutableList<MenuItemData<EnrollmentMenuItem>>.addMoreEnrollmentsMenuItem() {
+        add(
+            MenuItemData(
+                id = EnrollmentMenuItem.ENROLLMENTS,
+                label =
+                    customLabelProvider.formatStringWithCustomLabel(
+                        stringResource = resourcesManager.getString(R.string.more_enrollments_format),
+                        customLabel =
+                            customLabelProvider.getCustomEnrollmentLabel(
+                                programUid = repository.getProgramUid(),
+                                quantity = 2,
+                            ),
+                    ),
+                leadingElement = MenuLeadingElement.Icon(icon = Icons.AutoMirrored.Outlined.Assignment),
+            ),
+        )
+    }
+
+    private suspend fun MutableList<MenuItemData<EnrollmentMenuItem>>.addFollowUpMenuItem(showFollowUpBar: Boolean) {
+        if (!showFollowUpBar) {
+            add(
+                MenuItemData(
+                    id = EnrollmentMenuItem.FOLLOW_UP,
+                    label = customLabelProvider.getCustomMarkForFollowUpLabel(repository.getProgramUid()),
+                    leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Flag),
+                ),
+            )
+        }
+    }
+
+    private fun MutableList<MenuItemData<EnrollmentMenuItem>>.addTransferMenuItem() {
+        if (checkIfTeiCanBeTransferred()) {
+            add(
+                MenuItemData(
+                    id = EnrollmentMenuItem.TRANSFER,
+                    label = resourcesManager.getString(R.string.transfer),
+                    leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.MoveDown),
+                ),
+            )
+        }
     }
 }

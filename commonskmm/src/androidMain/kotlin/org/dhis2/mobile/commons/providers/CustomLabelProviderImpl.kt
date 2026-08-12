@@ -19,6 +19,9 @@ import org.jetbrains.compose.resources.getString
 class CustomLabelProviderImpl(
     private val d2: D2,
 ) : CustomLabelProvider {
+    private val Int?.isPlural: Boolean
+        get() = this != null && this > 1
+
     private suspend fun execute(
         capitalizeFirstLetter: Boolean,
         defaultLabel: suspend () -> String,
@@ -27,7 +30,7 @@ class CustomLabelProviderImpl(
         val customLabel =
             try {
                 block()?.capitalize(Locale.current)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         return customLabel ?: defaultLabel().let {
@@ -65,14 +68,23 @@ class CustomLabelProviderImpl(
         execute(
             defaultResource = Res.plurals.enrollment,
             quantity = quantity,
-            capitalizeFirstLetter = false,
+            capitalizeFirstLetter = true,
         ) {
-            d2
-                .programModule()
-                .programs()
-                .uid(programUid)
-                .blockingGet()
-                ?.displayEnrollmentLabel()
+            if (quantity.isPlural) {
+                d2
+                    .programModule()
+                    .programs()
+                    .uid(programUid)
+                    .blockingGet()
+                    ?.displayEnrollmentsLabel()
+            } else {
+                d2
+                    .programModule()
+                    .programs()
+                    .uid(programUid)
+                    .blockingGet()
+                    ?.displayEnrollmentLabel()
+            }
         }
 
     override suspend fun getTeTypeCustomLabel(
@@ -145,6 +157,32 @@ class CustomLabelProviderImpl(
         return getString(Res.string.mark_for_follow_up).format(followUpCustomLabel)
     }
 
+    private fun eventLabel(
+        quantity: Int?,
+        singular: String?,
+        plural: String?,
+    ) = if (quantity.isPlural) plural else singular
+
+    private fun programEventLabel(
+        programUid: String,
+        quantity: Int?,
+    ) = d2
+        .programModule()
+        .programs()
+        .uid(programUid)
+        .blockingGet()
+        ?.let { eventLabel(quantity, it.displayEventLabel, it.displayEventsLabel) }
+
+    private fun programStageEventLabel(
+        programStageUid: String,
+        quantity: Int?,
+    ) = d2
+        .programModule()
+        .programStages()
+        .uid(programStageUid)
+        .blockingGet()
+        ?.let { eventLabel(quantity, it.displayEventLabel, it.displayEventsLabel) }
+
     override suspend fun getCustomEventLabel(
         customLabelContext: CustomLabelContext?,
         quantity: Int?,
@@ -154,34 +192,14 @@ class CustomLabelProviderImpl(
         capitalizeFirstLetter = true,
     ) {
         when (customLabelContext) {
+            null -> null
+
             is CustomLabelContext.Program ->
-                d2
-                    .programModule()
-                    .programs()
-                    .uid(customLabelContext.programUid)
-                    .blockingGet()
-                    ?.let {
-                        if (quantity != null && quantity > 1) it.displayEventsLabel else it.displayEventLabel
-                    }
+                programEventLabel(customLabelContext.programUid, quantity)
 
             is CustomLabelContext.ProgramStage ->
-                d2
-                    .programModule()
-                    .programStages()
-                    .uid(customLabelContext.programStageUid)
-                    .blockingGet()
-                    ?.let {
-                        if (quantity != null && quantity > 1) it.displayEventsLabel else it.displayEventLabel
-                    } ?: d2
-                    .programModule()
-                    .programs()
-                    .uid(customLabelContext.programUid)
-                    .blockingGet()
-                    ?.let {
-                        if (quantity != null && quantity > 1) it.displayEventsLabel else it.displayEventLabel
-                    }
-
-            null -> null
+                programStageEventLabel(customLabelContext.programStageUid, quantity)
+                    ?: programEventLabel(customLabelContext.programUid, quantity)
         }
     }
 
