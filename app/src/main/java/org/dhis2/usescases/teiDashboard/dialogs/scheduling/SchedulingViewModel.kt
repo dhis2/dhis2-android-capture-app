@@ -26,12 +26,10 @@ import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventReportDate
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.LaunchMode
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.period.PeriodType
@@ -64,40 +62,26 @@ class SchedulingViewModel(
     var onDueDateUpdated: (() -> Unit)? = null
     var onEnterEvent: ((String, String) -> Unit)? = null
 
-    private val _eventDate: MutableStateFlow<EventDate> = MutableStateFlow(EventDate())
-    val eventDate: StateFlow<EventDate> = _eventDate
-
-    private val _eventCatCombo: MutableStateFlow<EventCatCombo> = MutableStateFlow(EventCatCombo())
-    val eventCatCombo: StateFlow<EventCatCombo> = _eventCatCombo
-
-    private val _programStage: MutableStateFlow<ProgramStage?> = MutableStateFlow(null)
-    val programStage: StateFlow<ProgramStage?> = _programStage
-
-    private val _programStages: MutableStateFlow<List<ProgramStage>> = MutableStateFlow(emptyList())
-    val programStages: StateFlow<List<ProgramStage>> = _programStages
-
-    private val _enrollment: MutableStateFlow<Enrollment?> = MutableStateFlow(null)
-    val enrollment: StateFlow<Enrollment?> = _enrollment
-
-    private val _overdueEventSubtitle: MutableStateFlow<String?> = MutableStateFlow(null)
-    val overdueEventSubtitle: StateFlow<String?> = _overdueEventSubtitle
-
-    private val _programStageLabel: MutableStateFlow<String?> = MutableStateFlow(null)
-    val programStageLabel: StateFlow<String?> = _programStageLabel
+    private val _uiState: MutableStateFlow<SchedulingUiState> =
+        MutableStateFlow(SchedulingUiState())
+    val uiState: StateFlow<SchedulingUiState> = _uiState
 
     init {
         viewModelScope.launch {
             val enrollment =
                 withContext(dispatchersProvider.io()) {
                     when (launchMode) {
-                        is LaunchMode.NewSchedule -> d2.enrollment(launchMode.enrollmentUid)
+                        is LaunchMode.NewSchedule -> {
+                            d2.enrollment(launchMode.enrollmentUid)
+                        }
+
                         is LaunchMode.EnterEvent -> {
                             val enrollmentUid = d2.event(launchMode.eventUid)?.enrollment()
                             enrollmentUid?.let { d2.enrollment(it) }
                         }
                     }
                 }
-            _enrollment.value = enrollment
+            _uiState.update { it.copy(enrollment = enrollment) }
 
             val programStages =
                 withContext(dispatchersProvider.io()) {
@@ -106,15 +90,20 @@ class SchedulingViewModel(
                             launchMode.programStagesUids.mapNotNull(d2::programStage)
                         }
 
-                        is LaunchMode.EnterEvent -> emptyList()
+                        is LaunchMode.EnterEvent -> {
+                            emptyList()
+                        }
                     }
                 }
-            _programStages.value = programStages
+            _uiState.update { it.copy(programStages = programStages) }
 
             val programStage =
                 withContext(dispatchersProvider.io()) {
                     when (launchMode) {
-                        is LaunchMode.NewSchedule -> programStages.first()
+                        is LaunchMode.NewSchedule -> {
+                            programStages.first()
+                        }
+
                         is LaunchMode.EnterEvent -> {
                             val eventProgramStageId = d2.event(launchMode.eventUid)?.programStage()
                             d2
@@ -125,14 +114,14 @@ class SchedulingViewModel(
                         }
                     }
                 }
-            _programStage.value = programStage
+            _uiState.update { it.copy(programStage = programStage) }
 
             loadScheduleConfiguration(launchMode)
         }
     }
 
     private suspend fun loadScheduleConfiguration(launchMode: LaunchMode) {
-        val enrollment = enrollment.value
+        val enrollment = uiState.value.enrollment
         val event =
             when (launchMode) {
                 is LaunchMode.EnterEvent -> d2.event(launchMode.eventUid)
@@ -154,7 +143,7 @@ class SchedulingViewModel(
                 d2 = d2,
                 programUid = programId,
                 eventUid = event?.uid(),
-                programStageUid = programStage.value?.uid(),
+                programStageUid = uiState.value.programStage?.uid(),
                 fieldFactory = null,
                 eventCreationType = launchMode.eventCreationType,
                 onError = resourceManager::parseD2Error,
@@ -164,14 +153,21 @@ class SchedulingViewModel(
                 creationType = launchMode.eventCreationType,
                 resourceProvider = eventDetailResourcesProvider(programId),
                 repository = repository,
-                periodType = programStage.value?.periodType(),
+                periodType = uiState.value.programStage?.periodType(),
                 periodUtils = periodUtils,
                 enrollmentId = enrollmentId,
-                scheduleInterval = programStage.value?.standardInterval() ?: 0,
+                scheduleInterval = uiState.value.programStage?.standardInterval() ?: 0,
             )
         configureEventCatCombo = ConfigureEventCatCombo(repository = repository)
 
-        _programStageLabel.update { customLabelProvider.getCustomProgramStageLabel(programId) }
+        _uiState.update {
+            it.copy(
+                programStageLabel =
+                    customLabelProvider.getCustomProgramStageLabel(
+                        programId,
+                    ),
+            )
+        }
 
         loadProgramStage(event = event)
     }
@@ -179,7 +175,7 @@ class SchedulingViewModel(
     private fun eventDetailResourcesProvider(programId: String) =
         EventDetailResourcesProvider(
             programUid = programId,
-            programStage = programStage.value?.uid(),
+            programStage = uiState.value.programStage?.uid(),
             resourceManager = resourceManager,
             eventResourcesProvider = eventResourcesProvider,
         )
@@ -187,30 +183,33 @@ class SchedulingViewModel(
     private fun loadProgramStage(event: Event? = null) {
         viewModelScope.launch {
             val selectedDate = event?.dueDate() ?: configureEventReportDate.getNextScheduleDate()
-            configureEventReportDate(selectedDate = selectedDate).collect {
-                _eventDate.value = it
+            configureEventReportDate(selectedDate = selectedDate).collect { eventDate ->
+                _uiState.update { it.copy(eventDate = eventDate) }
             }
 
-            _overdueEventSubtitle.value = getOverdueSubtitle()
+            _uiState.update { it.copy(overdueEventSubtitle = getOverdueSubtitle()) }
 
-            configureEventCatCombo().collect {
-                _eventCatCombo.value = it
+            configureEventCatCombo().collect { eventCatCombo ->
+                _uiState.update { it.copy(eventCatCombo = eventCatCombo) }
             }
         }
     }
 
     fun getSelectableDates(): SelectableDates {
         val maxDate =
-            if (!eventDate.value.allowFutureDates) {
-                SimpleDateFormat("ddMMyyyy", Locale.US).format(Date(System.currentTimeMillis() - 1000))
-            } else if (eventDate.value.maxDate != null) {
-                SimpleDateFormat("ddMMyyyy", Locale.US).format(eventDate.value.maxDate)
+            if (!uiState.value.eventDate.allowFutureDates) {
+                SimpleDateFormat(
+                    "ddMMyyyy",
+                    Locale.US,
+                ).format(Date(System.currentTimeMillis() - 1000))
+            } else if (uiState.value.eventDate.maxDate != null) {
+                SimpleDateFormat("ddMMyyyy", Locale.US).format(uiState.value.eventDate.maxDate)
             } else {
                 "12112124"
             }
         val minDate =
-            if (eventDate.value.minDate != null) {
-                SimpleDateFormat("ddMMyyyy", Locale.US).format(eventDate.value.minDate)
+            if (uiState.value.eventDate.minDate != null) {
+                SimpleDateFormat("ddMMyyyy", Locale.US).format(uiState.value.eventDate.minDate)
             } else {
                 "12111924"
             }
@@ -222,13 +221,12 @@ class SchedulingViewModel(
         viewModelScope.launch {
             configureEventReportDate(selectedDate)
                 .flowOn(dispatchersProvider.io())
-                .collect {
-                    _eventDate.value = it
-
+                .collect { eventDate ->
+                    _uiState.update { it.copy(eventDate = eventDate) }
                     if (launchMode is LaunchMode.EnterEvent) {
                         updateEventDueDate(
                             eventUid = launchMode.eventUid,
-                            dueDate = it,
+                            dueDate = eventDate,
                         )
                     }
                 }
@@ -251,35 +249,37 @@ class SchedulingViewModel(
     }
 
     fun onClearEventReportDate() {
-        _eventDate.value =
-            eventDate.value.copy(
-                currentDate = null,
-                dateValue = null,
+        _uiState.update {
+            it.copy(
+                eventDate =
+                    it.eventDate.copy(
+                        currentDate = null,
+                        dateValue = null,
+                    ),
             )
+        }
     }
 
     fun onDateError() {
-        _eventDate.update {
-            it.copy(error = true)
-        }
+        _uiState.update { it.copy(eventDate = it.eventDate.copy(error = true)) }
     }
 
     fun setUpCategoryCombo(categoryOption: Pair<String, String?>? = null) {
         viewModelScope.launch {
             configureEventCatCombo(categoryOption)
                 .flowOn(dispatchersProvider.io())
-                .collect {
-                    _eventCatCombo.value = it
+                .collect { eventCatCombo ->
+                    _uiState.update { it.copy(eventCatCombo = eventCatCombo) }
                 }
         }
     }
 
     fun onClearCatCombo() {
-        _eventCatCombo.value = eventCatCombo.value.copy(isCompleted = false)
+        _uiState.update { it.copy(eventCatCombo = it.eventCatCombo.copy(isCompleted = false)) }
     }
 
     fun showPeriodDialog() {
-        programStage.value?.periodType()?.let {
+        uiState.value.programStage?.periodType()?.let {
             showPeriods?.invoke(it)
         }
     }
@@ -298,26 +298,26 @@ class SchedulingViewModel(
 
     fun updateStage(stage: ProgramStage) {
         viewModelScope.launch {
-            _programStage.value = stage
+            _uiState.update { it.copy(programStage = stage) }
             loadScheduleConfiguration(launchMode = launchMode)
         }
     }
 
     fun scheduleEvent(launchMode: LaunchMode.NewSchedule) {
         viewModelScope.launch {
-            val eventDate = eventDate.value.currentDate ?: return@launch
-            val enrollment = enrollment.value ?: return@launch
+            val eventDate = uiState.value.eventDate.currentDate ?: return@launch
+            val enrollment = uiState.value.enrollment ?: return@launch
             val orgUnitUid = launchMode.ownerOrgUnitUid ?: enrollment.organisationUnit()
             repository
                 .scheduleEvent(
                     enrollmentUid = enrollment.uid(),
                     dueDate = eventDate,
                     orgUnitUid = orgUnitUid,
-                    categoryOptionComboUid = eventCatCombo.value.uid,
+                    categoryOptionComboUid = uiState.value.eventCatCombo.uid,
                 ).flowOn(dispatchersProvider.io())
                 .collect {
                     if (it != null) {
-                        onEventScheduled?.invoke(programStage.value?.uid() ?: "")
+                        onEventScheduled?.invoke(uiState.value.programStage?.uid() ?: "")
                     }
                 }
         }
@@ -352,7 +352,7 @@ class SchedulingViewModel(
                         .events()
                         .uid(launchMode.eventUid)
                         .setStatus(EventStatus.SKIPPED)
-                    onEventSkipped?.invoke(programStage.value?.displayEventLabel())
+                    onEventSkipped?.invoke(uiState.value.programStage?.displayEventLabel())
                 }
 
                 is LaunchMode.NewSchedule -> {
@@ -363,13 +363,13 @@ class SchedulingViewModel(
     }
 
     fun fetchPeriods(): Flow<PagingData<Period>> {
-        val programStage = programStage.value ?: return emptyFlow()
+        val programStage = uiState.value.programStage ?: return emptyFlow()
         val periodType = programStage.periodType() ?: PeriodType.Daily
-        val enrollmentUid = enrollment.value?.uid() ?: return emptyFlow()
+        val enrollmentUid = uiState.value.enrollment?.uid() ?: return emptyFlow()
         return getEventPeriods(
             eventUid = null,
             periodType = periodType,
-            selectedDate = eventDate.value.currentDate,
+            selectedDate = uiState.value.eventDate.currentDate,
             programStage = programStage,
             isScheduling = true,
             eventEnrollmentUid = enrollmentUid,
@@ -380,7 +380,7 @@ class SchedulingViewModel(
         return if (launchMode is LaunchMode.NewSchedule) {
             null
         } else {
-            val eventDate = _eventDate.value.currentDate ?: return null
+            val eventDate = uiState.value.eventDate.currentDate ?: return null
             eventDate.toOverdueOrScheduledUiText(
                 resourceManager = resourceManager,
                 isScheduling = true,
