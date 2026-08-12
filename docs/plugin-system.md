@@ -272,28 +272,44 @@ Android emulator + local Python HTTP server + the sample project.
 1. **Publish the SDK to Maven Local** (host repo):
 
    ```bash
-   cd ~/StudioProjects/ai-dhis2-android-capture-app
+   cd ~/StudioProjects/ai-dhis2-mobile/ai-dhis2-android-capture-app
    ./gradlew :plugin-sdk:publishToMavenLocal
    ```
 
 2. **Build the bundle** (sample repo):
 
    ```bash
-   cd ~/AndroidStudioProjects/Pluginimplementationtest
+   cd ~/StudioProjects/Pluginimplementationtest
    ./gradlew :plugin:buildPluginBundle
    ```
 
    Printed output gives the zip path and SHA-256.
 
-3. **Serve it to the emulator**:
+3. **Serve it to the emulator.** Pick a port that nothing else is using — a local
+   DHIS2 instance usually owns `8080`, and serving the bundle from a port already
+   taken by DHIS2 is the single most common cause of a plugin silently not loading
+   (see the troubleshooting table below):
 
    ```bash
+   # confirm the port is free first — no output means free
+   lsof -nP -iTCP:8081 -sTCP:LISTEN
+
    cd plugin/build/outputs/plugin-bundle
-   python3 -m http.server 8080
+   python3 -m http.server 8081
    ```
 
-   From the emulator: `http://10.0.2.2:8080/{id}-{version}.zip`. For a physical
+   Sanity-check that the port really serves the zip, and that its hash is the one
+   you will put in the config:
+
+   ```bash
+   curl -s http://localhost:8081/{id}-{version}.zip | shasum -a 256
+   ```
+
+   From the emulator: `http://10.0.2.2:8081/{id}-{version}.zip`. For a physical
    device on the same LAN, use the host's LAN IP instead of `10.0.2.2`.
+
+   The server must stay running for as long as you are testing — the bundle is
+   re-downloaded whenever the on-device cache is wiped or the version changes.
 
 4. **Point the Capture App at the bundle**, two options:
 
@@ -315,6 +331,7 @@ Android emulator + local Python HTTP server + the sample project.
 
    ```
    Downloading plugin 'org.dhis2.myplugin' v1.2.0 from http://…
+   Plugin cached to /data/user/0/com.dhis2.debug/files/plugins/…zip
    Loading plugin 'org.dhis2.myplugin' v1.2.0 from DEX (N bytes) with resource root …
    Plugin 'org.dhis2.myplugin' v1.2.0 loaded successfully
    ```
@@ -343,7 +360,11 @@ for quick UI tweaks without a Capture App rebuild.
 | Symptom | Cause / fix |
 |---|---|
 | `No plugin configuration found in server dataStore` | Config isn't at `dhis2AndroidPlugins/config` or the user can't read the namespace. Use the `FALLBACK_CONFIG_JSON` hack during iteration. |
-| `Plugin checksum mismatch!` | The served zip doesn't match `checksum` in the config. Re-run `shasum -a 256` and update the JSON (with `sha256:` prefix). |
+| `Response from … is not a zip bundle: N bytes, content-type=text/html` | The `downloadUrl` answers with HTML under a 200 status — almost always because nothing is serving the bundle on that port and something else answered. Check for a preceding `Plugin download redirected` warning, then `curl -sI <url>` from the host. See §8 step 3. |
+| `Plugin download redirected: … -> …/login/` | The `downloadUrl` port is owned by another service (typically a local DHIS2 instance on `8080`) that redirects to its own login page. Serve the bundle on a free port and update `downloadUrl`. Redirects themselves are fine — App Hub URLs legitimately point at a CDN — so this is a warning, not an error. |
+| `Too many redirects (> 5) downloading plugin from …` | Redirect loop at the hosting end. Resolve the final URL by hand (`curl -sIL <url>`) and use it directly. |
+| `HTTP 4xx/5xx when downloading plugin from …` | Wrong filename, wrong port, or the static server isn't running. The zip name must match `{id}-{version}.zip` exactly. |
+| `Plugin checksum mismatch!` | The served zip doesn't match `checksum` in the config. Confirm what is actually served — `curl -s <downloadUrl> \| shasum -a 256` from the host — then update the JSON (with the `sha256:` prefix). If the served bytes aren't a zip at all you'll get the `is not a zip bundle` error above instead. |
 | `Plugin bundle signature verification failed` / `Unsigned entry in plugin bundle` | The zip was edited after signing. Re-run `:plugin:buildPluginBundle`; never hand-edit the zip. |
 | `ClassCastException: … not assignable to Dhis2Plugin` | Plugin DEX bundles its own SDK copy. Keep `plugin-sdk` + all `compose.*` deps (except `compose.components.resources`) as `compileOnly`. |
 | `NoSuchMethodError` for mangled `Text`/`Card` signatures | Compose ABI mismatch. Plugin is compiled against CMP 1.10.3; consumer is on a different version. Harness `:app` and the Capture App must both use CMP (`compose.runtime` etc.), not `androidx.compose.bom`. |
