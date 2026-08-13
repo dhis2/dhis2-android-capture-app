@@ -38,10 +38,10 @@ fun PluginSlot(
     contextFactory: ScopedDhis2PluginContextFactory = koinInject(),
 ) {
     val plugins by pluginRegistry.plugins.collectAsState()
-    val slotPlugins = plugins.filter { injectionPoint in it.plugin.metadata.injectionPoints }
+    val slotPlugins = plugins.filter { injectionPoint in it.metadata.injectionPoints }
 
     slotPlugins.forEach { registered ->
-        key(registered.plugin.metadata.id) {
+        key(registered.metadata.id) {
             PluginContent(registered = registered, contextFactory = contextFactory)
         }
     }
@@ -58,7 +58,8 @@ private fun PluginContent(
             FileSystemResourceReader(registered.resourceRoot)
         }
     CompositionLocalProvider(LocalResourceReader provides reader) {
-        val context = contextFactory.create(registered.plugin.metadata)
+        // Server-configured metadata, so the plugin's data scope is granted rather than claimed.
+        val context = contextFactory.create(registered.metadata)
         registered.plugin.content(context)
     }
 }
