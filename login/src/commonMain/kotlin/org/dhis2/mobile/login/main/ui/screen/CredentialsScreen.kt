@@ -240,6 +240,7 @@ fun CredentialsScreen(
                 onCredentialsAction = { credentialsAction ->
                     handleCredentialAction(viewModel, context, credentialsAction)
                 },
+                hasOAuthEnabled = entryMode == CredentialsEntryMode.EXISTING_OAUTH,
                 hasOtherAccounts = screenState.hasOtherAccounts,
             )
         }
@@ -581,6 +582,7 @@ private fun CredentialActions(
     oidcInfo: OidcInfo?,
     canLogin: Boolean,
     hasOtherAccounts: Boolean,
+    hasOAuthEnabled: Boolean,
     onCredentialsAction: (CredentialsAction) -> Unit,
 ) {
     Column(
@@ -643,7 +645,7 @@ private fun CredentialActions(
                 }
             }
         }
-        if (oidcInfo != null) {
+        if (!hasOAuthEnabled && oidcInfo != null) {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(Spacing.Spacing16),
                 verticalAlignment = Alignment.CenterVertically,
