@@ -39,6 +39,13 @@ class LoadPluginsUseCase(
                 return Result.success(Unit)
             }
 
+            // Refresh first, then read. The dataStore is a local mirror and nothing else in the
+            // app downloads this namespace, so a read alone would only ever see a previous run's
+            // cache. A refresh failure is not fatal — offline devices carry on with that cache.
+            appHubPluginRepository.refreshConfiguration().onFailure { err ->
+                Timber.w(err, "Could not refresh plugin configuration — using cached config")
+            }
+
             val metadataList =
                 appHubPluginRepository.getConfiguredPlugins().getOrElse { err ->
                     Timber.e(err, "Failed to fetch plugin configuration from server")
