@@ -7,8 +7,8 @@
 
 Third-party developers can extend the DHIS2 Android Capture App without
 forking it. A plugin is a small Android library that implements `Dhis2Plugin`,
-is packaged as a **signed zip bundle** (DEX + resources), and is picked up at
-login time via a server-side configuration.
+is packaged as a **signed zip bundle** (DEX + resources), and is picked up when the
+home screen opens, from a server-side configuration.
 
 Two audiences:
 
@@ -27,7 +27,8 @@ its identity and data scope live in the server config.
 Developer      :plugin:buildPluginBundle  →  signed zip {module}-{version}.zip
 Developer      uploads zip to a URL reachable by the device
 DHIS2 admin    writes JSON to dataStore dhis2AndroidPlugins/config
-Capture App    at login:  download → SHA-256 → JAR signature
+Capture App    on opening Home:  refresh dhis2AndroidPlugins namespace
+                        → read config → download → SHA-256 → JAR signature
                         → extract zip → load DEX via InMemoryDexClassLoader
                         → register instance
 Capture App    at render: PluginSlot(slot) per plugin
@@ -35,6 +36,10 @@ Capture App    at render: PluginSlot(slot) per plugin
                         → ScopedDhis2PluginContext (allow-list enforcement)
                         → plugin.content(ctx)
 ```
+
+Loading is triggered from `MainViewModel`, so it runs when the home screen opens rather
+than during the login request itself — watch for the log lines in §8 after Home appears.
+The app pulls the `dhis2AndroidPlugins` namespace itself; it is not part of metadata sync.
 
 ## 3. The SDK (`:plugin-sdk`)
 
@@ -190,18 +195,25 @@ compose.resources {
 
 **Toolchain versions must track the host.** The plugin's DEX loads into the Capture App's
 process and resolves Kotlin, Compose and the SDK from the *host's* class loader, and
-`plugin-sdk` is published with the host's Kotlin metadata version and `compileSdk`. Keep these
-at or above the Capture App's `gradle/libs.versions.toml`:
+`plugin-sdk` is published with the host's Kotlin metadata version and `compileSdk`. Note the
+constraint differs per row — some must match the host exactly, others are floors:
 
-| Setting | Must be |
-|---|---|
-| `kotlin` | equal to the host's (an older compiler cannot read the SDK's metadata) |
-| `compileSdk` | >= the host's, or `checkAarMetadata` fails on `plugin-sdk-android` |
-| AGP / Gradle wrapper | new enough for that `compileSdk` (AGP 9.3.1 needs Gradle >= 9.5.0) |
-| Compose plugin | equal to the host's `composePluginVersion`, or plugin Composables hit `NoSuchMethodError` |
+| Setting | Host today | Your plugin must be | If you get it wrong |
+|---|---|---|---|
+| `kotlin` | `2.4.10` | **equal** | `Module was compiled with an incompatible version of Kotlin` — an older compiler cannot read the SDK's metadata |
+| Compose plugin | `1.10.3` (`composePluginVersion`) | **equal** | `NoSuchMethodError` on mangled `Text`/`Card` signatures |
+| `compileSdk` | `37` | **>=** host | `checkAarMetadata` fails on `plugin-sdk-android` |
+| `minSdk` | `23` | **>= 26** (not the host's) | `InMemoryDexClassLoader` needs API 26; the host itself supports 23, but a plugin cannot load below 26 |
+| JVM target | `17` | **equal** | `Unsupported class file major version` when the DEX is loaded |
+| AGP | `9.3.1` | new enough for that `compileSdk` | build fails on an unknown `compileSdk` |
+| Gradle wrapper | `9.5.1` | **>= 9.5.0** for AGP 9.3.1 | AGP refuses to run |
+| `plugin-sdk` | `0.1.1-SNAPSHOT` | `compileOnly`, from Maven Local (§8 step 1) | `ClassCastException: … not assignable to Dhis2Plugin` if bundled instead |
 
-Symptom of a Kotlin mismatch: `Module was compiled with an incompatible version of Kotlin`
-followed by a cascade of `Unresolved reference 'lazy'` in generated resource accessors.
+Values above were read from `gradle/libs.versions.toml` on 2026-08-13 — treat that file as the
+source of truth, since they move with each host release.
+
+A Kotlin mismatch is usually followed by a cascade of `Unresolved reference 'lazy'` in the
+generated resource accessors — that cascade is a symptom, not the cause; fix the version.
 
 ### 5.2 Implement `Dhis2Plugin`
 
@@ -325,9 +337,9 @@ Android emulator + local Python HTTP server + the sample project.
    **The SHA-256 changes on every rebuild, even when nothing in the plugin changed** —
    `jarsigner` embeds a timestamp in the signature, so the zip bytes are never
    reproducible. Every `buildPluginBundle` therefore requires copying the new
-   checksum into the dataStore JSON (or the fallback config) before the bundle will
-   load. `"checksum": ""` skips the SHA-256 check with a warning while still
-   enforcing the signature, which is the quicker loop while iterating on UI.
+   checksum into the dataStore JSON before the bundle will load. `"checksum": ""`
+   skips the SHA-256 check with a warning while still enforcing the signature, which
+   is the quicker loop while iterating on UI.
 
 3. **Serve it to the emulator.** Pick a port that nothing else is using — a local
    DHIS2 instance usually owns `8080`, and serving the bundle from a port already
@@ -355,15 +367,16 @@ Android emulator + local Python HTTP server + the sample project.
    The server must stay running for as long as you are testing — the bundle is
    re-downloaded whenever the on-device cache is wiped or the version changes.
 
-4. **Point the Capture App at the bundle**, two options:
+4. **Point the Capture App at the bundle.**
 
    Write the JSON (§4) to the DHIS2 server dataStore and paste the SHA-256 as `checksum`. For
    a first smoke test `"checksum": ""` works — SHA-256 is skipped with a warning while
    signature verification still runs.
 
-   The dataStore is the only source of plugin config; there is no in-app fallback. If the app
-   logs `No plugin configuration found in server dataStore`, either the entry is missing or the
-   namespace has not been synced to the device yet (see §9).
+   The dataStore is the only source of plugin config; there is no in-app fallback. The app
+   pulls the `dhis2AndroidPlugins` namespace itself each time it loads plugins, so no manual
+   sync is needed — but the logged-in user must be able to read that namespace. If the app
+   logs `No plugin configuration found in server dataStore`, see §9.
 
 5. **Run the Capture App** (`dhis2Debug` variant) and log in. Watch the logs:
 
@@ -374,17 +387,23 @@ Android emulator + local Python HTTP server + the sample project.
    Expected sequence:
 
    ```
+   Found 1 plugin(s) in server configuration
+   Loading 1 plugin(s)
    Downloading plugin 'org.dhis2.myplugin' v1.2.0 from http://…
    Plugin cached to /data/user/0/com.dhis2.debug/files/plugins/…zip
    Loading plugin 'org.dhis2.myplugin' v1.2.0 from DEX (N bytes) with resource root …
    Plugin 'org.dhis2.myplugin' v1.2.0 loaded successfully
    ```
 
+   The first two lines tell you the config was read at all — if they are missing, the
+   problem is the dataStore config, not the bundle. On later launches the download
+   lines are replaced by `Plugin '…' v… loaded from cache`.
+
    The plugin renders above the program list.
 
-6. **Iterate.** After code changes: bump `pluginVersion` in
-   `plugin/build.gradle.kts` and in the JSON/fallback, rebuild, restart the
-   app. Or wipe the device cache:
+6. **Iterate.** After code changes: bump `version` in the plugin's
+   `build.gradle.kts` and the matching `version` in the dataStore JSON, rebuild,
+   restart the app. Or wipe the device cache:
 
    ```bash
    adb shell run-as com.dhis2.debug rm -rf files/plugins
@@ -403,7 +422,8 @@ for quick UI tweaks without a Capture App rebuild.
 
 | Symptom | Cause / fix |
 |---|---|
-| `No plugin configuration found in server dataStore` | Config isn't at `dhis2AndroidPlugins/config`, the user can't read the namespace, or the namespace hasn't been synced to the device yet. Verify with `curl -u <user:pass> "https://<server>/api/dataStore/dhis2AndroidPlugins/config"`, then re-sync metadata. Zero plugins is a normal outcome, not an error — the app logs and carries on. |
+| `No plugin configuration found in server dataStore` | The entry isn't at `dhis2AndroidPlugins/config`, or the logged-in user can't read that namespace. Verify with `curl -u <user:pass> "https://<server>/api/dataStore/dhis2AndroidPlugins/config"` — if that returns the JSON but the app disagrees, check the namespace's sharing settings for the user you logged in as. Zero plugins is a normal outcome, not an error: the app logs it and carries on. |
+| `Could not refresh plugin configuration — using cached config` | The device couldn't reach the server to refresh the namespace. Expected when offline, and harmless — the app falls back to the config cached from a previous run. Only a problem on a first run, where there is no cache yet and no plugins will load. |
 | `Response from … is not a zip bundle: N bytes, content-type=text/html` | The `downloadUrl` answers with HTML under a 200 status — almost always because nothing is serving the bundle on that port and something else answered. Check for a preceding `Plugin download redirected` warning, then `curl -sI <url>` from the host. See §8 step 3. |
 | `Plugin download redirected: … -> …/login/` | The `downloadUrl` port is owned by another service (typically a local DHIS2 instance on `8080`) that redirects to its own login page. Serve the bundle on a free port and update `downloadUrl`. Redirects themselves are fine — App Hub URLs legitimately point at a CDN — so this is a warning, not an error. |
 | `Too many redirects (> 5) downloading plugin from …` | Redirect loop at the hosting end. Resolve the final URL by hand (`curl -sIL <url>`) and use it directly. |
@@ -413,7 +433,7 @@ for quick UI tweaks without a Capture App rebuild.
 | `ClassCastException: … not assignable to Dhis2Plugin` | Plugin DEX bundles its own SDK copy. Keep `plugin-sdk` + all `compose.*` deps (except `compose.components.resources`) as `compileOnly`. |
 | `NoSuchMethodError` for mangled `Text`/`Card` signatures | Compose ABI mismatch. Plugin is compiled against CMP 1.10.3; consumer is on a different version. Harness `:app` and the Capture App must both use CMP (`compose.runtime` etc.), not `androidx.compose.bom`. |
 | `MissingResourceException` for `composeResources/…` | Capture App: `PluginSlot` should provide `LocalResourceReader` per-plugin. Harness: the `stagePluginAssets` task must run and stage resources into `:app`'s assets. |
-| Plugin code changes aren't visible | Cached bundle. Bump `pluginVersion` or `adb shell run-as com.dhis2.debug rm -rf files/plugins`. |
+| Plugin code changes aren't visible | Cached bundle. Bump the plugin's `version` (and the `version` in the dataStore JSON) or `adb shell run-as com.dhis2.debug rm -rf files/plugins`. |
 | `Plugin system requires API 26+` | Device/emulator is API < 26. Use an API 26+ image. |
 
 ---
@@ -422,4 +442,4 @@ for quick UI tweaks without a Capture App rebuild.
 
 - `plugin-sdk/src/commonMain/kotlin/org/dhis2/mobile/plugin/sdk/` — `Dhis2Plugin.kt`, `Dhis2PluginContext.kt`, `PluginMetadata.kt`, `InjectionPoint.kt`, `dto/*`
 - `plugin/src/main/java/org/dhis2/mobile/plugin/` — `data/AppHubPluginRepository.kt`, `data/PluginDownloader.kt`, `data/PluginVerifier.kt`, `data/PluginLoader.kt`, `domain/LoadPluginsUseCase.kt`, `registry/PluginRegistry.kt`, `security/ScopedDhis2PluginContext.kt`, `ui/PluginSlot.kt`, `ui/FileSystemResourceReader.kt`
-- Sample project: `~/AndroidStudioProjects/Pluginimplementationtest/`
+- Sample project: `~/StudioProjects/Pluginimplementationtest/`

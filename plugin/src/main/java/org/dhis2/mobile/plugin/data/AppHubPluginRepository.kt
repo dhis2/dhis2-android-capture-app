@@ -1,8 +1,8 @@
 package org.dhis2.mobile.plugin.data
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.plugin.sdk.PluginMetadata
 import org.hisp.dhis.android.core.D2
 import timber.log.Timber
@@ -37,15 +37,39 @@ private const val PLUGIN_CONFIG_KEY = "config"
  */
 class AppHubPluginRepository(
     private val d2: D2,
+    private val dispatcher: Dispatcher,
 ) {
     private val json = Json { ignoreUnknownKeys = true }
 
     /**
-     * Returns the list of [PluginMetadata] configured on the server, or an empty list
-     * if no configuration exists.
+     * Pulls the `dhis2AndroidPlugins` namespace into the local dataStore.
+     *
+     * The SDK's dataStore is a local mirror and nothing else in the app downloads it, so without
+     * this a read can only ever return what a previous run cached. Only this namespace is
+     * requested — the whole dataStore could be large and is none of the plugin system's business.
+     *
+     * Offline-first: a failure is reported but not fatal, and [getConfiguredPlugins] still reads
+     * whatever was cached. Callers are expected to ignore the result and carry on.
+     */
+    suspend fun refreshConfiguration(): Result<Unit> =
+        withContext(dispatcher.io) {
+            runCatching {
+                d2
+                    .dataStoreModule()
+                    .dataStoreDownloader()
+                    .byNamespace()
+                    .eq(PLUGIN_NAMESPACE)
+                    .blockingDownload()
+            }
+        }
+
+    /**
+     * Returns the list of [PluginMetadata] cached locally for this server, or an empty list if no
+     * configuration exists. Reads only — call [refreshConfiguration] first to pick up server-side
+     * changes.
      */
     suspend fun getConfiguredPlugins(): Result<List<PluginMetadata>> =
-        withContext(Dispatchers.IO) {
+        withContext(dispatcher.io) {
             runCatching {
                 val entry =
                     d2
