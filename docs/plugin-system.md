@@ -285,6 +285,13 @@ Android emulator + local Python HTTP server + the sample project.
 
    Printed output gives the zip path and SHA-256.
 
+   **The SHA-256 changes on every rebuild, even when nothing in the plugin changed** —
+   `jarsigner` embeds a timestamp in the signature, so the zip bytes are never
+   reproducible. Every `buildPluginBundle` therefore requires copying the new
+   checksum into the dataStore JSON (or the fallback config) before the bundle will
+   load. `"checksum": ""` skips the SHA-256 check with a warning while still
+   enforcing the signature, which is the quicker loop while iterating on UI.
+
 3. **Serve it to the emulator.** Pick a port that nothing else is using — a local
    DHIS2 instance usually owns `8080`, and serving the bundle from a port already
    taken by DHIS2 is the single most common cause of a plugin silently not loading
