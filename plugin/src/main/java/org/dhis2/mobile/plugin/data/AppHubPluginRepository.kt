@@ -10,25 +10,6 @@ import timber.log.Timber
 private const val PLUGIN_NAMESPACE = "dhis2AndroidPlugins"
 private const val PLUGIN_CONFIG_KEY = "config"
 
-// TODO: remove — hardcoded config for local testing while the dataStore entry is not yet set up.
-// TODO: we need to download the dataStore to use it. Ideally the Android SDK is providing this info.
-private const val FALLBACK_CONFIG_JSON = """
-{
-    "plugins": [
-        {
-            "id": "org.dhis2.myplugin",
-            "version": "1.5.0",
-            "checksum": "sha256:1cadf954bbc39a3799558469d007ef0a7412ff3be53e9c8a68404de3bb8fdf15",
-            "entryPoint": "org.dhis2.pluginimplementationtest.MyPlugin",
-            "downloadUrl": "http://10.0.2.2:8081/plugin-1.5.0.zip",
-            "injectionPoints": ["HOME_ABOVE_PROGRAM_LIST"],
-            "allowedDataSetUids": [],
-            "allowedProgramUids": ["IpHINAT79UW"]
-        }
-    ]
-}
-"""
-
 /**
  * Fetches the list of plugins configured for this DHIS2 server instance.
  *
@@ -77,11 +58,18 @@ class AppHubPluginRepository(
                         .blockingGet()
                         .firstOrNull()
 
-                val configJson =
-                    entry?.value() ?: run {
-                        Timber.w("No plugin configuration in server dataStore — using hardcoded fallback")
-                        FALLBACK_CONFIG_JSON
-                    }
+                val configJson = entry?.value()
+
+                if (configJson.isNullOrBlank()) {
+                    // Either the admin has not configured any plugins, or the dataStore has not
+                    // been synced yet for this user — both are normal, not errors.
+                    Timber.d(
+                        "No plugin configuration found in server dataStore " +
+                            "($PLUGIN_NAMESPACE/$PLUGIN_CONFIG_KEY)",
+                    )
+                    return@runCatching emptyList()
+                }
+
                 val config = json.decodeFromString<PluginConfig>(configJson)
                 Timber.d("Found ${config.plugins.size} plugin(s) in server configuration")
                 config.plugins
