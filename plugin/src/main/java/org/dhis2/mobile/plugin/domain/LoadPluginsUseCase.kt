@@ -75,7 +75,7 @@ class LoadPluginsUseCase(
                         koin.loadModules(listOf(module))
                     }
 
-                    pluginRegistry.register(loaded.plugin, loaded.resourceRoot)
+                    pluginRegistry.register(loaded.plugin, metadata, loaded.resourceRoot)
                     Timber.d("Plugin '${metadata.id}' v${metadata.version} loaded successfully")
                 }.onFailure { err ->
                     Timber.e(err, "Failed to load plugin '${metadata.id}' — skipping")

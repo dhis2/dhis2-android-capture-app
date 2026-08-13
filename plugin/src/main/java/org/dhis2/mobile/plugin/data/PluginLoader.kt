@@ -17,13 +17,15 @@ import java.util.zip.ZipFile
  * Bundle layout (see the sample project's `buildPluginBundle` task):
  *
  * ```
- * {id}-{version}.zip
+ * {module}-{version}.zip
  * ├── META-INF/…                 (jarsigner; verified separately by PluginVerifier)
- * ├── plugin.json                (metadata manifest — informational, not read here)
  * └── android/
  *     ├── classes.dex            (loaded via InMemoryDexClassLoader)
  *     └── composeResources/…     (compose multiplatform resources)
  * ```
+ *
+ * The bundle carries no manifest of its own: identity, entry point and data scope all come from
+ * the server config ([PluginMetadata]), so the filename is immaterial to loading.
  *
  * On load, the bundle is unzipped into `{bundleZip.parentFile}/{id}-{version}/`.
  * The DEX is loaded via [InMemoryDexClassLoader] (requires API 26+). DEX bytes are
