@@ -22,7 +22,7 @@ val pluginModule =
         single { PluginDownloader(androidContext()) }
 
         // Data
-        single { AppHubPluginRepository(get()) }
+        single { AppHubPluginRepository(get(), get()) }
 
         // Security
         single { ScopedDhis2PluginContextFactory(get()) }
