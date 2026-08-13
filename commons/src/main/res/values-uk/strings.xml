@@ -232,7 +232,8 @@
     <string name="more_enrollments">Інші реєстрації</string>
     <string name="refresh_this_record">Оновити цей запис</string>
     <string name="view_timeline">Переглянути хронологію</string>
-    <!-- Event -->
+
+
     <string name="new_event_label">Новий 1%s</string>
     <string name="event_label_date">Дата %s </string>
     <string name="delete_event_label">Видалити %s</string>

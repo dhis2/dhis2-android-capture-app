@@ -23,7 +23,7 @@
     <string name="conf_error_value_option_set">Giá trị của trường %s không thuộc tùy chọn trong %s</string>
     <string name="field_is_mandatory">Trường dữ liệu này bắt buộc</string>
     <string name="missing_warning_fields_completed_events">Bạn có một số tin nhắn cảnh báo.</string>
-    <string name="missing_warning_fields_events">Bạn có một số tin nhắn cảnh báo..\nBạn có muốn đánh dấu biểu nhập này là hoàn tất không?</string>
+    <string name="missing_warning_fields_events">Bạn có một số tin nhắn cảnh báo..\nBạn có muốn đánh dấu biểu nhập này là hoàn tất không\?</string>
     <string name="required">Bắt buộc</string>
     <string name="polygon">Đa giác</string>
     <string name="latitude">Vĩ độ</string>
@@ -47,12 +47,12 @@
     <string name="complete">Hoàn tất</string>
     <string name="discard_changes">Hủy bỏ các thay đổi</string>
     <string name="saved">Đã lưu!</string>
-    <string name="event_error_on_complete">Bạn có một số tin nhắn lỗi.\nBạn có muốn xem không?</string>
-    <string name="missing_error_fields_events">Một số trường dữ liệu có lỗi và chưa được lưu. \nBạn có muốn xem lại biểu nhập không?</string>
-    <string name="review_message">Một số trường dữ liệu cần bạn chú ý.\nBạn có muốn xem xét biểu nhập không?</string>
+    <string name="event_error_on_complete">Bạn có một số tin nhắn lỗi.\nBạn có muốn xem không\?</string>
+    <string name="missing_error_fields_events">Một số trường dữ liệu có lỗi và chưa được lưu. \nBạn có muốn xem lại biểu nhập không\?</string>
+    <string name="review_message">Một số trường dữ liệu cần bạn chú ý.\nBạn có muốn xem xét biểu nhập không\?</string>
     <string name="not_now">Không phải bây giờ</string>
     <string name="keep_editing">Tiếp tục chỉnh sửa</string>
-    <string name="event_can_be_completed">Bạn có muốn đánh dấu biểu nhập này là hoàn tất không?</string>
+    <string name="event_can_be_completed">Bạn có muốn đánh dấu biểu nhập này là hoàn tất không\?</string>
     <string name="discard_go_back">Nếu bạn tắt bây giờ, tất cả thông tin trong biểu nhập sẽ bị hủy bỏ.</string>
     <string name="field_errors_not_saved_discard">Một số trường dữ liệu có lỗi và chưa được lưu.. \nNếu bạn tắt bây giờ, tất cả thay đổi sẽ bị hủy bỏ.</string>
     <string name="share">Chia sẻ</string>
@@ -129,7 +129,7 @@
     <string name="login_error_bad_credentials">Tên đăng nhập và mật khẩu không đúng</string>
     <string name="login_error_unknown_host">Máy chủ không xác định</string>
     <string name="online_search_parsing_error">Xảy ra lỗi khi chuyển đổi kết quả</string>
-    <string name="error_unexpected">Có gì đó không đúng</string>
+    <string name="error_unexpected">Đã xảy ra lỗi không mong muốn.</string>
     <string name="error_too_manu_org_units">Tài khoảng của bạn có nhiều hơn một đơn vị gốc. Kiểm tra lại cấu hình của bạn hoặc liên hệ với quản lý của bạn.</string>
     <string name="error_max_tei_count_reached">Các kết quả vượt quá số lượng tối đa các bệnh nhân có thể hiển thị. Xin vui lòng sửa lại các yếu tố tìm kiếm.</string>
     <string name="error_many_requests">Máy chủ đang bận. Xin vui lòng thử lại sau.</string>
@@ -196,4 +196,5 @@
     <string name="sync_error">Lỗi đồng bộ</string>
     <string name="marked_follow_up">Đã đánh dấu để theo dõi</string>
     <string name="remove_follow_up">Bỏ ra</string>
+    <string name="program_stage">Giai Đoạn Chương Trình</string>
     </resources>

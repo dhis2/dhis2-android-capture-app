@@ -23,7 +23,7 @@
     <string name="conf_error_value_option_set">Hodnota pole %s nepatří do možnosti nastavené v položce %s</string>
     <string name="field_is_mandatory">Toto pole je povinné</string>
     <string name="missing_warning_fields_completed_events">Máte několik varovných hlášení.</string>
-    <string name="missing_warning_fields_events">Máte několik varovných hlášení.\nChcete tento formulář označit jako dokončený?</string>
+    <string name="missing_warning_fields_events">Máte několik varovných hlášení.\nChcete tento formulář označit jako dokončený\?</string>
     <string name="required">Vyžadováno</string>
     <string name="polygon">Polygon</string>
     <string name="latitude">Zeměpisná šířka</string>
@@ -47,12 +47,12 @@
     <string name="complete">Dokončit</string>
     <string name="discard_changes">Zrušit změny</string>
     <string name="saved">Uloženo!</string>
-    <string name="event_error_on_complete">Máte několik chybových hlášení.\nChcete je zkontrolovat?</string>
-    <string name="missing_error_fields_events">Některá pole obsahují chyby a neukládají se. \nChcete formulář zkontrolovat?</string>
-    <string name="review_message">Některé oblasti vyžadují vaši pozornost.\nChcete formulář zkontrolovat?</string>
+    <string name="event_error_on_complete">Máte několik chybových hlášení.\nChcete je zkontrolovat\?</string>
+    <string name="missing_error_fields_events">Některá pole obsahují chyby a neukládají se. \nChcete formulář zkontrolovat\?</string>
+    <string name="review_message">Některé oblasti vyžadují vaši pozornost.\nChcete formulář zkontrolovat\?</string>
     <string name="not_now">Teď ne</string>
     <string name="keep_editing">Pokračovat v úpravách</string>
-    <string name="event_can_be_completed">Chcete tento formulář označit jako vyplněný?</string>
+    <string name="event_can_be_completed">Chcete tento formulář označit jako vyplněný\?</string>
     <string name="discard_go_back">Pokud nyní odejdete, všechny informace ve formuláři budou zahozeny.</string>
     <string name="field_errors_not_saved_discard">Některá pole obsahují chyby a neukládají se. \nPokud je nyní ukončíte, změny budou zrušeny.</string>
     <string name="share">Sdílet</string>
@@ -130,7 +130,7 @@
     <string name="login_error_bad_credentials">Uživatelské jméno nebo heslo jsou nesprávné</string>
     <string name="login_error_unknown_host">Neznámý server</string>
     <string name="online_search_parsing_error">Chyba při analýze výsledků</string>
-    <string name="error_unexpected">Něco neočekávaného se opotřebovalo.</string>
+    <string name="error_unexpected">Něco neočekávaného se pokazilo.</string>
     <string name="error_too_manu_org_units">Váš uživatel má více než jednu kořenovou organizační jednotku. Zkontrolujte svou konfiguraci nebo kontaktujte svého správce.</string>
     <string name="error_max_tei_count_reached">Online výsledky překračují maximální počet instancí sledování, které lze zobrazit. Upřesněte prosím vyhledávání.</string>
     <string name="error_many_requests">Server je v tuto chvíli trochu zaneprázdněn. Zkuste to o něco později.</string>
@@ -192,4 +192,13 @@
     <string name="cancel">Zrušit</string>
     <string name="ok">OK</string>
 
+    <string name="not_synced">Není synchronizováno</string>
+    <string name="sync">Synchronizace</string>
+    <string name="sync_warning">Upozornění na synchronizaci</string>
+    <string name="sync_retry">Opakování synchronizace</string>
+    <string name="sync_error">Chyba synchronizace</string>
+    <string name="marked_follow_up">Označeno pro další sledování</string>
+    <string name="remove_follow_up">Odstranit</string>
+    <string name="program_stage">Programová fáze</string>
+    <string name="stage">fáze</string>
 </resources>
