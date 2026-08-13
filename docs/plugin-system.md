@@ -357,13 +357,13 @@ Android emulator + local Python HTTP server + the sample project.
 
 4. **Point the Capture App at the bundle**, two options:
 
-   - **Real path**: write the JSON (§4) to the DHIS2 server dataStore. Paste
-     the SHA-256 as `checksum`. For a first smoke test `"checksum": ""` works
-     (SHA-256 is skipped with a warning; signature verification still runs).
-   - **Fast local iteration**: edit `FALLBACK_CONFIG_JSON` in
-     `plugin/src/main/java/org/dhis2/mobile/plugin/data/AppHubPluginRepository.kt`.
-     It's used when the dataStore has no config. Marked `TODO: remove` —
-     revert before merging.
+   Write the JSON (§4) to the DHIS2 server dataStore and paste the SHA-256 as `checksum`. For
+   a first smoke test `"checksum": ""` works — SHA-256 is skipped with a warning while
+   signature verification still runs.
+
+   The dataStore is the only source of plugin config; there is no in-app fallback. If the app
+   logs `No plugin configuration found in server dataStore`, either the entry is missing or the
+   namespace has not been synced to the device yet (see §9).
 
 5. **Run the Capture App** (`dhis2Debug` variant) and log in. Watch the logs:
 
@@ -403,7 +403,7 @@ for quick UI tweaks without a Capture App rebuild.
 
 | Symptom | Cause / fix |
 |---|---|
-| `No plugin configuration found in server dataStore` | Config isn't at `dhis2AndroidPlugins/config` or the user can't read the namespace. Use the `FALLBACK_CONFIG_JSON` hack during iteration. |
+| `No plugin configuration found in server dataStore` | Config isn't at `dhis2AndroidPlugins/config`, the user can't read the namespace, or the namespace hasn't been synced to the device yet. Verify with `curl -u <user:pass> "https://<server>/api/dataStore/dhis2AndroidPlugins/config"`, then re-sync metadata. Zero plugins is a normal outcome, not an error — the app logs and carries on. |
 | `Response from … is not a zip bundle: N bytes, content-type=text/html` | The `downloadUrl` answers with HTML under a 200 status — almost always because nothing is serving the bundle on that port and something else answered. Check for a preceding `Plugin download redirected` warning, then `curl -sI <url>` from the host. See §8 step 3. |
 | `Plugin download redirected: … -> …/login/` | The `downloadUrl` port is owned by another service (typically a local DHIS2 instance on `8080`) that redirects to its own login page. Serve the bundle on a free port and update `downloadUrl`. Redirects themselves are fine — App Hub URLs legitimately point at a CDN — so this is a warning, not an error. |
 | `Too many redirects (> 5) downloading plugin from …` | Redirect loop at the hosting end. Resolve the final URL by hand (`curl -sIL <url>`) and use it directly. |
