@@ -48,4 +48,10 @@ dependencies {
     implementation(libs.compose.components.resources)
 
     coreLibraryDesugaring(libs.desugar)
+
+    testImplementation(libs.test.junit)
+    testImplementation(libs.test.mockitoKotlin)
+    testImplementation(libs.test.mockitoInline)
+    testImplementation(libs.test.kotlinCoroutines)
+    testImplementation(libs.test.turbine)
 }

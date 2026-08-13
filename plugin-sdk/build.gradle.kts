@@ -30,5 +30,11 @@ kotlin {
             implementation(libs.koin.composeVM)
             implementation(libs.kotlin.serialization.json)
         }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlin.serialization.json)
+            implementation(libs.test.kotlinCoroutines)
+        }
     }
 }
