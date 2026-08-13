@@ -3,10 +3,14 @@ package org.dhis2.mobile.plugin.sdk
 import kotlinx.serialization.Serializable
 
 /**
- * Describes the plugin's identity, version, data scope, and distribution metadata.
+ * Describes a plugin's identity, version, data scope, and distribution metadata.
  *
- * This object is both embedded in the plugin JAR (via [Dhis2Plugin.metadata]) and
- * declared in the App Hub manifest. The host app validates consistency between the two.
+ * **Server-owned.** The DHIS2 administrator authors this as JSON in the server dataStore
+ * (namespace `dhis2AndroidPlugins`, key `config`); it is the single source of truth. Plugins do
+ * not declare any of it — the host reads it to decide what to download, verify and load, then
+ * hands it to the plugin through [Dhis2PluginContext.pluginMetadata]. In particular
+ * [allowedProgramUids] and [allowedDataSetUids] are *granted* by the server, so a plugin cannot
+ * widen its own access.
  *
  * @property id Unique reverse-domain identifier, e.g. `org.myorg.my-plugin`.
  * @property version Semantic version string, e.g. `1.0.0`.
