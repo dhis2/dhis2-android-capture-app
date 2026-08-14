@@ -71,7 +71,7 @@ jobs:
 
       - name: Unit Tests
         if: ${{ !contains(github.event.pull_request.title, '[skip unitTest]') && !contains(github.event.pull_request.body, '[skip unitTest]') }}
-        run: ./gradlew testDebugUnitTest testDhis2DebugUnitTest testAndroidHostTest jacocoReport --stacktrace --no-daemon
+        run: ./gradlew testDebugUnitTest testDhis2DebugUnitTest testAndroidHostTest :plugin-sdk-gradle:test :plugin-sdk:desktopTest jacocoReport --stacktrace --no-daemon
 
       - name: Upload JaCoCo Report
         if: ${{ !contains(github.event.pull_request.title, '[skip unitTest]') && !contains(github.event.pull_request.body, '[skip unitTest]') }}

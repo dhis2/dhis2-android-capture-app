@@ -105,7 +105,7 @@ class PluginMetadataTest {
             PluginMetadata(
                 id = "org.dhis2.myplugin",
                 version = "1.5.0",
-                entryPoint = "org.dhis2.pluginimplementationtest.MyPlugin",
+                entryPoint = "org.myorg.myplugin.MyPlugin",
                 allowedProgramUids = listOf("IpHINAT79UW"),
                 allowedDataSetUids = listOf("BfMAe6Itzgt"),
                 injectionPoints = listOf(InjectionPoint.HOME_ABOVE_PROGRAM_LIST),
