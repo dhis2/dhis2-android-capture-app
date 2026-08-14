@@ -10,7 +10,8 @@ plugins {
 }
 
 group = "org.dhis2.mobile"
-version = "0.1.1-SNAPSHOT"
+// Shared with :plugin-sdk-gradle so the library and its packaging plugin always publish together.
+version = libs.versions.pluginSdk.get()
 
 kotlin {
     androidLibrary {
