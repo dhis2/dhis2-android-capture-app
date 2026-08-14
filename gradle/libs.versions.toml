@@ -13,6 +13,7 @@ dagger = '2.57.2'
 jacoco = '0.8.15'
 designSystem = "0.8.0-SNAPSHOT"
 dhis2sdk = "1.15.0-20260821.111928-77"
+pluginSdk = "0.1.1-SNAPSHOT" # Published plugin API + the Gradle plugin that packages plugin bundles.
 ruleEngine = "3.8.1"
 expressionParser = "1.4.3"
 appcompat = "1.7.1"
