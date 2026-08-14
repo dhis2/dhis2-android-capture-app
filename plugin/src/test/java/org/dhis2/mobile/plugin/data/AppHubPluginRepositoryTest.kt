@@ -137,7 +137,7 @@ class AppHubPluginRepositoryTest {
                             {
                               "id": "org.dhis2.myplugin",
                               "version": "1.5.0",
-                              "entryPoint": "org.dhis2.pluginimplementationtest.MyPlugin",
+                              "entryPoint": "org.myorg.myplugin.MyPlugin",
                               "downloadUrl": "http://10.0.2.2:8081/plugin-1.5.0.zip",
                               "checksum": "sha256:deadbeef",
                               "allowedProgramUids": ["IpHINAT79UW"],
@@ -155,7 +155,7 @@ class AppHubPluginRepositoryTest {
 
             assertEquals("org.dhis2.myplugin", plugin.id)
             assertEquals("1.5.0", plugin.version)
-            assertEquals("org.dhis2.pluginimplementationtest.MyPlugin", plugin.entryPoint)
+            assertEquals("org.myorg.myplugin.MyPlugin", plugin.entryPoint)
             assertEquals("http://10.0.2.2:8081/plugin-1.5.0.zip", plugin.downloadUrl)
             assertEquals("sha256:deadbeef", plugin.checksum)
             assertEquals(listOf("IpHINAT79UW"), plugin.allowedProgramUids)

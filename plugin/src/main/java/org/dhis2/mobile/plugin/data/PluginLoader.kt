@@ -14,11 +14,11 @@ import java.util.zip.ZipFile
 /**
  * Loads a [Dhis2Plugin] from a signed zip bundle.
  *
- * Bundle layout (see the sample project's `buildPluginBundle` task):
+ * Bundle layout, as produced by `buildPluginBundle` from the `:plugin-sdk-gradle` plugin:
  *
  * ```
  * {module}-{version}.zip
- * ├── META-INF/…                 (jarsigner; verified separately by PluginVerifier)
+ * ├── META-INF/…                 (JAR signature; verified separately by PluginVerifier)
  * └── android/
  *     ├── classes.dex            (loaded via InMemoryDexClassLoader)
  *     └── composeResources/…     (compose multiplatform resources)
