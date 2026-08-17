@@ -235,6 +235,8 @@
     <string name="tuto_event_initial_new_1">输入所有数据创建事件</string>
     <string name="tuto_event_initial_1">点击检查事件完成状态</string>
     <string name="relationships">关系</string>
+    <!--empty_tracker_events will be formatted with the custom or default label for event-->
+    <string name="empty_tracker_events">没有注册%s ，点击 \"+\"可添加新的 。</string>
     <string name="qr_data_values">数据值</string>
     <string name="info">信息</string>
     <string name="qr_no_id_error">不能读取该ID</string>

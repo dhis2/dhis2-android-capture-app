@@ -238,6 +238,8 @@
     <string name="tuto_event_initial_new_1">Complete todos los campos para crear el evento</string>
     <string name="tuto_event_initial_1">Aqui puedes ver el % de campos completos en el evento. </string>
     <string name="relationships">relaciones</string>
+    <!--empty_tracker_events will be formatted with the custom or default label for event-->
+    <string name="empty_tracker_events">No hay %s registrados. Haz clic en “+” para agregar uno nuevo.</string>
     <string name="qr_data_values">Valores de datos</string>
     <string name="info">Información</string>
     <string name="qr_no_id_error">No se ha podido leer este Id</string>

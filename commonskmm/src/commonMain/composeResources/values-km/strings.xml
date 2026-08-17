@@ -44,4 +44,7 @@
     <string name="cancel">បោះបង់</string>
     <string name="ok">យល់ព្រម</string>
 
+    <string name="sync">បញ្ចូន</string>
+    <string name="sync_error">ការបញ្ចូនទិន្នន័យមានបញ្ហាបច្ចេកទេស</string>
+    <string name="remove_follow_up">លុបចេញ</string>
     </resources>

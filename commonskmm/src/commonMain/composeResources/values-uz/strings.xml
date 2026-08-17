@@ -83,4 +83,9 @@
     <string name="cancel">Рад этиш</string>
     <string name="ok">ЯХШИ</string>
 
+    <string name="sync">Синх</string>
+    <string name="sync_error">Синхронлашда хатолик</string>
+    <string name="marked_follow_up">Кузатув учун белгиланган</string>
+    <string name="remove_follow_up">Олиб ташлаш</string>
+    <string name="program_stage">Дастур босқичи</string>
     </resources>

@@ -120,7 +120,6 @@
     <string name="login_error_bad_credentials">用户名或密码不正确</string>
     <string name="login_error_unknown_host">未知服务器</string>
     <string name="online_search_parsing_error">解析结果发生错误</string>
-    <string name="error_unexpected">出乎意料的事情发生了。</string>
     <string name="error_too_manu_org_units">您的用户拥有多个根组织单位。检查您的配置或联系您的管理员。</string>
     <string name="error_max_tei_count_reached">在线结果超过了可以显示的最大跟踪器实例数。请细化您的搜索。</string>
     <string name="error_many_requests">服务器此时有点忙。请稍后再试。</string>
@@ -183,6 +182,9 @@
     <plurals name="enrollment">
         <item quantity="other">注册人数</item>
     </plurals>
+    <plurals name="event">
+        <item quantity="other">活动</item>
+    </plurals>
     <string name="not_synced">未同步</string>
     <string name="sync">同步</string>
     <string name="sync_warning">同步警告</string>
@@ -190,4 +192,6 @@
     <string name="sync_error">同步错误</string>
     <string name="marked_follow_up">标记为后续</string>
     <string name="remove_follow_up">移除</string>
-    </resources>
+    <string name="program_stage">项目阶段</string>
+    <string name="stage">阶段</string>
+</resources>

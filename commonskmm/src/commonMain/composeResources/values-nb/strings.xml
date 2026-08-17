@@ -75,4 +75,9 @@
     <string name="cancel">Avbryt</string>
     <string name="ok">OK</string>
 
-    </resources>
+    <string name="sync">Synk</string>
+    <string name="sync_error">Synkroniseringsfeil</string>
+    <string name="remove_follow_up">Fjern</string>
+    <string name="program_stage">Programfase</string>
+    <string name="stage">fase</string>
+</resources>

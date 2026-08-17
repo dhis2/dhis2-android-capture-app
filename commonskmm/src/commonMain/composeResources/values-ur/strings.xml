@@ -29,4 +29,6 @@
     <string name="cancel">منسوخ</string>
     <string name="ok">ٹھیک</string>
 
-</resources>
+    <string name="remove_follow_up">حذف</string>
+    <string name="program_stage">پروگرام کا مرحلہ</string>
+    </resources>
