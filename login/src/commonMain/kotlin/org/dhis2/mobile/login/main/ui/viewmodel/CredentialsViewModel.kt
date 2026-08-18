@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coil3.PlatformContext
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
@@ -27,6 +28,7 @@ import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
 import org.dhis2.mobile.login.main.domain.usecase.GetOAuthLogoutUrl
 import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
+import org.dhis2.mobile.login.main.domain.usecase.LoginUserOffline
 import org.dhis2.mobile.login.main.domain.usecase.LoginUserWithOAuth
 import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
 import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
@@ -35,6 +37,7 @@ import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
+import org.dhis2.mobile.login.main.ui.provider.CredentialsResourceProvider
 import org.dhis2.mobile.login.main.ui.state.AfterLoginAction
 import org.dhis2.mobile.login.main.ui.state.CredentialsInfo
 import org.dhis2.mobile.login.main.ui.state.CredentialsUiState
@@ -43,6 +46,7 @@ import org.dhis2.mobile.login.main.ui.state.OidcInfo
 import org.dhis2.mobile.login.main.ui.state.ServerInfo
 import org.dhis2.mobile.login.pin.domain.usecase.ForgotPinUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.GetIsSessionLockedUseCase
+import kotlin.time.Duration.Companion.seconds
 
 class CredentialsViewModel(
     private val navigator: Navigator,
@@ -71,7 +75,13 @@ class CredentialsViewModel(
     private val entryMode: CredentialsEntryMode,
     private val autoPromptLogin: Boolean,
     private val setOAuthPin: SetOAuthPin,
+    private val loginUserOfflineWithCode: LoginUserOffline,
+    private val credentialsResourceProvider: CredentialsResourceProvider,
 ) : ViewModel() {
+    companion object {
+        private val COUNTDOWN_TICK_INTERVAL = 1.seconds
+    }
+
     private val isNetworkOnline =
         networkStatusProvider.connectionStatus
             .stateIn(
@@ -101,6 +111,11 @@ class CredentialsViewModel(
         )
 
     private var loginJob: Job? = null
+
+    private var lockoutJob: Job? = null
+
+    private val isLockoutActive: Boolean
+        get() = lockoutJob?.isActive == true
 
     private var pendingOAuthLoginResult: LoginResult.Success? = null
 
@@ -333,7 +348,7 @@ class CredentialsViewModel(
                         )
                     }
 
-                    is LoginResult.Error -> {
+                    is LoginResult.Error, is LoginResult.LockOut -> {
                         stopListeningForOAuthCallbacks()
                         handleLoginResult(result)
                         _credentialsScreenState.update {
@@ -483,10 +498,12 @@ class CredentialsViewModel(
                 handleLoginResult(result)
             }
         loginJob?.invokeOnCompletion {
-            _credentialsScreenState.update {
-                it.copy(
-                    loginState = LoginState.Enabled,
-                )
+            if (!isLockoutActive) {
+                _credentialsScreenState.update {
+                    it.copy(
+                        loginState = LoginState.Enabled,
+                    )
+                }
             }
         }
     }
@@ -514,13 +531,42 @@ class CredentialsViewModel(
             }
 
             is LoginResult.Error -> {
+                val errorMessage =
+                    result.attemptsLeft?.let { attemptsLeft ->
+                        credentialsResourceProvider.getLoginErrorWithAttempts(result.message, attemptsLeft)
+                    } ?: result.message
                 _credentialsScreenState.update {
                     it.copy(
-                        errorMessage = result.message,
+                        errorMessage = errorMessage,
                     )
                 }
             }
+            is LoginResult.LockOut -> {
+                startLockoutCountdown(result.lockoutSeconds)
+            }
         }
+
+    private fun startLockoutCountdown(lockoutSeconds: Int) {
+        lockoutJob?.cancel()
+        lockoutJob =
+            viewModelScope.launch {
+                for (remainingSeconds in lockoutSeconds downTo 1) {
+                    _credentialsScreenState.update {
+                        it.copy(
+                            loginState = LoginState.Disabled,
+                            errorMessage = credentialsResourceProvider.getLockoutCountdownMessage(remainingSeconds),
+                        )
+                    }
+                    delay(COUNTDOWN_TICK_INTERVAL)
+                }
+                _credentialsScreenState.update {
+                    it.copy(
+                        loginState = LoginState.Enabled,
+                        errorMessage = null,
+                    )
+                }
+            }
+    }
 
     fun cancelLogin() {
         loginJob?.cancel()
@@ -645,10 +691,10 @@ class CredentialsViewModel(
         launchUseCase {
             _credentialsScreenState.update { it.copy(isSessionLocked = false) }
             startLoginJob {
-                loginUser(
+                loginUserOfflineWithCode(
                     serverUrl = serverUrl,
                     username = username ?: "",
-                    password = credential,
+                    code = credential,
                 )
             }
         }
