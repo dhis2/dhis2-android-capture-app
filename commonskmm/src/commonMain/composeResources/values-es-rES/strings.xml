@@ -102,7 +102,6 @@
     <string name="login_error_bad_credentials">El usuario y la contraseña son incorrectas</string>
     <string name="login_error_unknown_host">Servidor desconocido</string>
     <string name="online_search_parsing_error">Error al obtener los resultados</string>
-    <string name="error_unexpected">Disculpe, algo inesperado salió mal.</string>
     <string name="error_too_manu_org_units">Su usuario tiene más de una unidad organizativa raíz. Revise su configuración o contacte a su administrador.</string>
     <string name="error_max_tei_count_reached">Los resultados de la búsqueda online sobrepasan el número máximo de instancias que se pueden mostrar. Redefina los criterios de búsqueda.</string>
     <string name="error_many_requests">El servidor se encuentra ocupado en estos momentos. Por favor inténtelo más tarde.</string>
@@ -153,4 +152,8 @@
     <string name="cancel">Cancelar</string>
     <string name="ok">Correcto</string>
 
-    </resources>
+    <string name="sync">Sincronizado</string>
+    <string name="sync_error">Error en sincronizacion</string>
+    <string name="remove_follow_up">Eliminar</string>
+    <string name="stage">Etapa</string>
+</resources>

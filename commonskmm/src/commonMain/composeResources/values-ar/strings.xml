@@ -115,7 +115,7 @@
     <string name="login_error_bad_credentials">إسمك او كلمة المرور الخاصة بك غير صحيحة</string>
     <string name="login_error_unknown_host">خادم غير معروف</string>
     <string name="online_search_parsing_error">خطأ اثناء تحليل البيانات</string>
-    <string name="error_unexpected">حدثت مشكلة غير متوقعة.</string>
+    <string name="error_unexpected">حدث خطأ ما غير متوقع.</string>
     <string name="error_max_tei_count_reached">تتجاوز النتائج عبر الإنترنت الحد الأقصى لعدد حالات المتتبعة التي يمكن عرضها. يرجى إضافة تفاصيل أخرى لبحثك لحصر النتائج.</string>
     <string name="error_many_requests">الخادم مشغول بعض الشيء في هذه اللحظة. من فضلك حاول بعد وقت قصير.</string>
     <string name="error_already_authenticated">المستخدم مسجل للدخول مسبقًا</string>
@@ -166,4 +166,12 @@
     <string name="cancel">إلغاء</string>
     <string name="ok">موافق</string>
 
+    <string name="not_synced">غير متزامن</string>
+    <string name="sync">حالة التزامن</string>
+    <string name="sync_warning">تحذير المزامنة</string>
+    <string name="sync_retry">إعادة محاولة المزامنة</string>
+    <string name="sync_error">يحوي خطأ في المزامنة</string>
+    <string name="marked_follow_up">مُعلَّم للمتابعة</string>
+    <string name="remove_follow_up">إزلة</string>
+    <string name="program_stage">مرحلة البرنامج</string>
     </resources>

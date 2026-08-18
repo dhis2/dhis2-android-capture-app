@@ -62,6 +62,13 @@
     <string name="pin_error_save_failed">密码保存失败</string>
     <string name="pin_error_reset_failed">重置密码失败</string>
     <string name="pin_error_remaining_attempts">%1$s 剩余尝试次数</string>
+    <string name="offline_credential_create_title">创建离线PIN码</string>
+    <string name="offline_credential_create_description">设置一个 PIN 码，以便在离线状态下登录此账户。</string>
+    <string name="offline_credential_create_button">创建PIN码</string>
+    <string name="offline_credential_enter_title">请输入您的离线密码</string>
+    <string name="offline_credential_enter_description">请输入您的4位数字PIN码以进行离线登录。</string>
+    <string name="offline_credential_enter_button">登录</string>
+    <string name="offline_credential_forgot_button">忘记密码了吗？</string>
     <string name="import_database">导入数据库</string>
     <string name="importing_successful">导入成功</string>
     <string name="openid_process_cancelled">登录被取消</string>

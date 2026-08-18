@@ -129,7 +129,7 @@
     <string name="login_error_bad_credentials">Tên đăng nhập và mật khẩu không đúng</string>
     <string name="login_error_unknown_host">Máy chủ không xác định</string>
     <string name="online_search_parsing_error">Xảy ra lỗi khi chuyển đổi kết quả</string>
-    <string name="error_unexpected">Có gì đó không đúng</string>
+    <string name="error_unexpected">Đã xảy ra lỗi không mong muốn.</string>
     <string name="error_too_manu_org_units">Tài khoảng của bạn có nhiều hơn một đơn vị gốc. Kiểm tra lại cấu hình của bạn hoặc liên hệ với quản lý của bạn.</string>
     <string name="error_max_tei_count_reached">Các kết quả vượt quá số lượng tối đa các bệnh nhân có thể hiển thị. Xin vui lòng sửa lại các yếu tố tìm kiếm.</string>
     <string name="error_many_requests">Máy chủ đang bận. Xin vui lòng thử lại sau.</string>
@@ -196,4 +196,5 @@
     <string name="sync_error">Lỗi đồng bộ</string>
     <string name="marked_follow_up">Đã đánh dấu để theo dõi</string>
     <string name="remove_follow_up">Bỏ ra</string>
+    <string name="program_stage">Giai Đoạn Chương Trình</string>
     </resources>

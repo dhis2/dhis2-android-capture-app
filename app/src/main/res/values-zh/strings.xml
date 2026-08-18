@@ -75,6 +75,7 @@
     <string name="update">更新</string>
     <string name="org_unit">机构</string>
     <string name="no_org_units">选择的日期没有开放的机构，请选择另外的日期或机构</string>
+    <string name="no_org_units_with_label">所选日期没有可预订的%1$s 。请选择其他日期或另一家%1$s 。</string>
     <string name="latitude">纬度</string>
     <string name="longitude">经度</string>
 
@@ -152,6 +153,8 @@
     <string name="settingsExportDBMessage">导出数据库并与管理员共享</string>
     <string name="settingTwoFA">双重身份验证</string>
     <string name="settingsTwoFAStatus">状态</string>
+    <string name="settingsTwoFAEnabled">已启用。</string>
+    <string name="settingsTwoFADisabled">已禁用。</string>
     <string name="settingTwoFADescr">分两步启用或禁用身份验证。</string>
     <!--endregion-->
 
@@ -243,6 +246,8 @@
     <string name="tuto_event_initial_new_1">输入所有数据创建事件</string>
     <string name="tuto_event_initial_1">点击检查事件完成状态</string>
     <string name="relationships">关系</string>
+    <!--empty_tracker_events will be formatted with the custom or default label for event-->
+    <string name="empty_tracker_events">没有注册%s ，点击 \"+\"可添加新的 。</string>
     <string name="qr_data_values">数据值</string>
     <string name="info">信息</string>
     <string name="qr_no_id_error">不能读取该ID</string>
@@ -345,6 +350,8 @@
     <string name="granular_sync_enrollments_empty">没有登记可以上传</string>
     <string name="granular_sync_unsupported_task">转换任务不支持。</string>
     <string name="set_pin">设置PIN</string>
+    <string name="pin_created">已创建PIN码</string>
+    <string name="pin_already_created">PIN 码已设置</string>
     <string name="conflict">冲突</string>
     <string name="change_event_date">改变日期</string>
     <string name="go_back">后退</string>
@@ -475,7 +482,9 @@
     <string name="blocked_by_completion">此数据不可编辑，因为已标记为已完成</string>
     <string name="edition_expired">此数据不可编辑，因为其编辑时间已过期</string>
     <string name="edition_no_write_access">您无权编辑此数据</string>
+    <string name="event_date_not_in_orgunit_range">该数据 无法编辑，因为%s 已关闭</string>
     <string name="edition_no_catcombo_access">您无权编辑此数据</string>
+    <string name="edition_orgunit_user_scope">您无法从这里编辑数据 %s</string>
     <string name="error_tei_online_search_title">网上搜索返回如下信息：</string>
     <string name="delete_account">删除帐户</string>
     <string name="main_menu_troubleshooting">配置疑难解答</string>

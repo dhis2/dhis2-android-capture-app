@@ -116,7 +116,6 @@
     <string name="login_error_bad_credentials">Nom d\'utilisateur ou le mot de passe sont incorrects</string>
     <string name="login_error_unknown_host">Serveur inconnu</string>
     <string name="online_search_parsing_error">Erreur lors de l\'analyse des résultats</string>
-    <string name="error_unexpected">Un probème inattendu s\'est produit</string>
     <string name="error_too_manu_org_units">Votre utilisateur possède plusieurs unités d\'organisation . Vérifiez votre configuration ou contactez votre administrateur.</string>
     <string name="error_many_requests">Le serveur est un peu occupé en ce moment. Veuillez essayer un peu plus tard.</string>
     <string name="error_already_authenticated">L\'utilisateur est déjà connecté</string>
@@ -146,4 +145,13 @@
     <string name="cancel">Annuler</string>
     <string name="ok">Ok</string>
 
-    </resources>
+    <string name="not_synced">Non synchronisé</string>
+    <string name="sync">Synchronisation</string>
+    <string name="sync_warning">Alerte de synchronisation</string>
+    <string name="sync_retry">Réessayer la synchronisation</string>
+    <string name="sync_error">Erreur de synchronisation</string>
+    <string name="marked_follow_up">Marqué pour le suivi</string>
+    <string name="remove_follow_up">Supprimer</string>
+    <string name="program_stage">Stade de programme</string>
+    <string name="stage">stade</string>
+</resources>

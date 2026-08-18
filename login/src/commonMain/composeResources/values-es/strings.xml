@@ -17,6 +17,7 @@
     <string name="action_no_now">Ahora no</string>
     <string name="action_yes">Sí</string>
     <string name="enter_pin_button">Desbloquear</string>
+    <string name="offline_credential_enter_button">Iniciar sesión</string>
     <string name="import_database">Importar base de datos</string>
     <string name="importing_successful">Importado con éxito</string>
     </resources>

@@ -274,6 +274,7 @@
     <string name="view_timeline">Zobrazit časovou osu</string>
 
 
+    <!-- Event -->
     <string name="event_label_completed">%s dokončeno</string>
     <string name="event_label_created">%s vytvořeno</string>
     <string name="new_event_label">Nový %s</string>

@@ -47,7 +47,7 @@ jobs:
         if: steps.check.outputs.has_changes == 'true'
         uses: flex-development/gh-commit@177be4b5bca1b102400ca7220932d9ff7980fddb
         with:
-          message: 'fix(translations): remove KMP-incompatible escaped question marks [skip ci]'
+          message: 'fix(translations): remove KMP-incompatible escaped question marks'
           ref: ${{ github.head_ref }}
           token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
 

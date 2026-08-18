@@ -111,7 +111,6 @@
     <string name="login_error_bad_credentials">Ім\'я користувача або пароль неправильні</string>
     <string name="login_error_unknown_host">Невідомий сервер</string>
     <string name="online_search_parsing_error">Помилка аналізу результатів</string>
-    <string name="error_unexpected">Неочікувана помилка.</string>
     <string name="error_too_manu_org_units">Ваш користувач має більше одного кореневого організаційного підрозділу. Перегляньте свою конфігурацію або зверніться до адміністратора.</string>
     <string name="error_max_tei_count_reached">Онлайн-результати перевищують максимальну кількість об\'єктів, які можливо показати. Будь ласка, уточніть свій пошук.</string>
     <string name="error_many_requests">На даний момент сервер трохи зайнятий. Будь ласка, спробуйте пізніше.</string>
@@ -164,4 +163,16 @@
     <string name="cancel">Скасувати</string>
     <string name="ok">ОК</string>
 
-    </resources>
+    <plurals name="event">
+        <item quantity="one">подія</item>
+        <item quantity="few">події</item>
+        <item quantity="many">події</item>
+        <item quantity="other">події</item>
+    </plurals>
+    <string name="not_synced">Не синхронізовано</string>
+    <string name="sync">Синхронізація</string>
+    <string name="sync_error">Помилка синхронізації</string>
+    <string name="remove_follow_up">Видалити</string>
+    <string name="program_stage">Етап програми</string>
+    <string name="stage">Етап</string>
+</resources>

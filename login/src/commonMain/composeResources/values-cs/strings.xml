@@ -62,6 +62,9 @@
     <string name="pin_error_save_failed">Nepodařilo se uložit kód PIN</string>
     <string name="pin_error_reset_failed">Nepodařilo se resetovat kód PIN</string>
     <string name="pin_error_remaining_attempts">%1$s zbývající pokusy</string>
+    <string name="offline_credential_create_button">Vytvořit kód PIN</string>
+    <string name="offline_credential_enter_button">Přihlášení</string>
+    <string name="offline_credential_forgot_button">Zapomněli jste kód PIN?</string>
     <string name="import_database">Importovat databázi</string>
     <string name="importing_successful">Import byl úspěšný</string>
     <string name="openid_process_cancelled">Přihlášení bylo zrušeno</string>

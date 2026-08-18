@@ -16,5 +16,6 @@
     <string name="action_no_now">Không phải bây giờ</string>
     <string name="action_yes">Có</string>
     <string name="enter_pin_button">Mở khoá</string>
+    <string name="offline_credential_enter_button">Đăng nhập</string>
     <string name="importing_successful">Nhập thành công</string>
     </resources>

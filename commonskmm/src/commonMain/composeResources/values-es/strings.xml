@@ -194,4 +194,20 @@
         <item quantity="many">Registros</item>
         <item quantity="other">Registros</item>
     </plurals>
-    </resources>
+    <plurals name="event">
+        <item quantity="one">evento</item>
+        <item quantity="many">eventos</item>
+        <item quantity="other">eventos</item>
+    </plurals>
+    <string name="not_synced">No Sincronizado</string>
+    <string name="sync">Sincronizar</string>
+    <string name="sync_warning">Advertencia de sincronización</string>
+    <string name="sync_retry">Reintentar sincronización</string>
+    <string name="sync_error">Error en la sincronización</string>
+    <string name="marked_follow_up">Marcado para hacer seguimiento</string>
+    <string name="remove_follow_up">Eliminar</string>
+    <string name="enrollment_completed">Inscripción Completada</string>
+    <string name="enrollment_cancelled">Inscripción Cancelada</string>
+    <string name="program_stage">Etapa de programa</string>
+    <string name="stage">etapa</string>
+</resources>

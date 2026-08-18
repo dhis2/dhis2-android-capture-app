@@ -105,7 +105,7 @@
     <string name="login_error_bad_credentials">ຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານບໍ່ຖຶກຕ້ອງ</string>
     <string name="login_error_unknown_host">ບໍ່ຮູ້ເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່</string>
     <string name="online_search_parsing_error">ມີຄໍາຜິດໃນຂະນະທີ່ສົ່ງຜົນໄດ້ຮັບ</string>
-    <string name="error_unexpected">ມີບາງຢ່າງທີ່ບໍ່ຄາດຄິດເກີດຂຶ້ນ.</string>
+    <string name="error_unexpected">ມີບາງຢ່າງທີ່ບໍ່ຄາດຄິດເກີດຂື້ນ.</string>
     <string name="error_too_manu_org_units">ຜູ້ໃຊ້ຂອງທ່ານມີຫຼາຍກວ່າຫນຶ່ງຫົວໜ່ວຍການຈັດຕັ້ງ. ກວດເບິ່ງການຕັ້ງຄ່າຂອງທ່ານ ຫຼື ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
     <string name="error_max_tei_count_reached">ຜົນໄດ້ຮັບອອນລາຍເກີນຈໍານວນຕົວຕິດຕາມສູງສຸດທີ່ສາມາດສະແດງໃຫ້ເຫັນໄດ້. ກະລຸນາປັບປຸງການຄົ້ນຫາຂອງທ່ານ.</string>
     <string name="error_many_requests">ຄອມພິວເຕິ້ໜ່ວຍແມ່ຍັງບໍ່ຫວ່າງໃນເວລານີ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</string>
@@ -158,4 +158,12 @@
     <string name="cancel">ຍົກເລີກ</string>
     <string name="ok">​ຕົກ​ລົງ</string>
 
+    <string name="not_synced">ບໍ່ໄດ້ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
+    <string name="sync">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
+    <string name="sync_error">ຄໍາຜິດທີ່ເກີດຈາກການທໍາງານຮ່ວມກັນຂອງລະບົບ</string>
+    <string name="marked_follow_up">ໝາຍໄວ້ເພື່ອຕິດຕາມ</string>
+    <string name="remove_follow_up">ລຶບອອກ</string>
+    <string name="enrollment_completed">ການລົງທະບຽນສຳເລັດແລ້ວ</string>
+    <string name="enrollment_cancelled">ການລົງທະບຽນຖຶກຍົກເລິກ</string>
+    <string name="program_stage">ຂັ້ນຂອງສາຍງານ</string>
     </resources>

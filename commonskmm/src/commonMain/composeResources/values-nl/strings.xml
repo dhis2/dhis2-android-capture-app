@@ -158,4 +158,10 @@
     <string name="cancel">Annuleren</string>
     <string name="ok">OK</string>
 
+    <string name="sync">Synchroniseren</string>
+    <string name="sync_warning">Sync waarschuwing</string>
+    <string name="sync_error">Synchronisatiefout</string>
+    <string name="marked_follow_up">Gemarkeerd voor vervolg</string>
+    <string name="remove_follow_up">Verwijderen</string>
+    <string name="program_stage">Programma fase</string>
     </resources>

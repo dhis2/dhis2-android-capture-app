@@ -178,4 +178,18 @@
         <item quantity="many">зачисления</item>
         <item quantity="other">регистрации</item>
     </plurals>
+    <plurals name="event">
+        <item quantity="one">мероприятие</item>
+        <item quantity="few">события</item>
+        <item quantity="many">события</item>
+        <item quantity="other">событий</item>
+    </plurals>
+    <string name="not_synced">Не синхронизировано</string>
+    <string name="sync">Синхронизировать</string>
+    <string name="sync_warning">Предупреждение по синхронизации</string>
+    <string name="sync_retry">Повторить синхронизацию</string>
+    <string name="sync_error">Ошибка синхронизации</string>
+    <string name="marked_follow_up">Отмечено для последующего наблюдения</string>
+    <string name="remove_follow_up">Убрать</string>
+    <string name="program_stage">Этап программы</string>
     </resources>
