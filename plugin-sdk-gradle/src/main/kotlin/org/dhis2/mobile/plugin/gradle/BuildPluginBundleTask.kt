@@ -108,6 +108,7 @@ abstract class BuildPluginBundleTask
 
             val classesJar = extractClassesJar(staging)
             failOnHostOwnedClasses(classesJar)
+            failOnDeniedReferences(classesJar)
             copyPreparedResources(classesJar, androidDir)
             dex(classesJar, androidDir)
 
@@ -150,6 +151,33 @@ abstract class BuildPluginBundleTask
                     "compose.* dependency (except compose.components.resources) compileOnly. Offending " +
                     "entries: ${forbidden.take(MAX_REPORTED_ENTRIES).joinToString(", ")}" +
                     if (forbidden.size > MAX_REPORTED_ENTRIES) " (+${forbidden.size - MAX_REPORTED_ENTRIES} more)" else "",
+            )
+        }
+
+        /**
+         * Fails on references the host's plugin class loader will refuse.
+         *
+         * Without this the author would learn about it as a `ClassNotFoundException` on a device,
+         * with nothing to say why the class is missing. It is a static check and so cannot see a
+         * name built at runtime — the host enforces the same list when it loads the DEX.
+         */
+        private fun failOnDeniedReferences(classesJar: File) {
+            val denied = ClassesJarInspector.deniedReferences(classesJar)
+            if (denied.isEmpty()) return
+
+            val detail =
+                denied.entries
+                    .take(MAX_REPORTED_ENTRIES)
+                    .joinToString("\n") { (owner, references) ->
+                        "  $owner references ${references.joinToString(", ")}"
+                    }
+
+            throw GradleException(
+                "This plugin references classes the DHIS2 Capture App does not expose to plugins, so " +
+                    "they will not resolve at runtime:\n$detail\n" +
+                    "DHIS2 data access goes through Dhis2PluginContext.sdk, which is the SDK scoped to " +
+                    "what the server granted this plugin. The host's own classes, the unrestricted D2 " +
+                    "entry points and Koin's global context are deliberately out of reach.",
             )
         }
 

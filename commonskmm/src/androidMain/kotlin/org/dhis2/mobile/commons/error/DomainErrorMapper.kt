@@ -79,6 +79,10 @@ class DomainErrorMapper(
             D2ErrorCode.OWNERSHIP_ACCESS_DENIED,
             -> PermissionDeniedError(errorMessage)
 
+            // Read or write outside the D2DataScope the caller's repository was created with
+            D2ErrorCode.SCOPE_VIOLATION,
+            -> DomainError.PermissionDeniedError(errorMessage)
+
             // Network connectivity errors
             D2ErrorCode.SOCKET_TIMEOUT,
             D2ErrorCode.UNKNOWN_HOST,

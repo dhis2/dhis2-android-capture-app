@@ -24,9 +24,6 @@ val pluginModule =
         // Data
         single { AppHubPluginRepository(get(), get()) }
 
-        // Security
-        single { ScopedDhis2PluginContextFactory(get()) }
-
         // Domain
         factoryOf(::GetPluginSlotContent)
         factory {
@@ -36,7 +33,10 @@ val pluginModule =
                 pluginVerifier = get(),
                 pluginLoader = get(),
                 pluginRegistry = get(),
-                koin = getKoin(),
+                // Constructed inline rather than registered as a definition. It holds the real D2
+                // and mints a context from whatever metadata it is handed, so a plugin that could
+                // resolve it from the container could hand it a scope granting everything.
+                contextFactory = ScopedDhis2PluginContextFactory(get()),
             )
         }
     }

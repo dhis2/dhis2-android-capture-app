@@ -251,6 +251,12 @@ class D2ErrorMessageProviderImpl : D2ErrorMessageProvider {
 
             D2ErrorCode.AUTHENTICATED_USER_MISMATCH ->
                 getString(Res.string.error_authenticated_user_mismatch)
+
+            // Raised when code holding a scoped D2 reaches past its grant — a misconfigured plugin,
+            // not something the person using the app can act on. The detail is in the D2Error
+            // description and the log; the user gets the generic message.
+            D2ErrorCode.SCOPE_VIOLATION ->
+                getString(Res.string.error_unexpected)
         }
 
     private suspend fun defaultError() = getString(Res.string.error_unexpected)

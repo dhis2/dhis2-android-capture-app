@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi
 import dalvik.system.InMemoryDexClassLoader
 import org.dhis2.mobile.plugin.sdk.Dhis2Plugin
 import org.dhis2.mobile.plugin.sdk.PluginMetadata
+import org.dhis2.mobile.plugin.security.FilteringClassLoader
 import timber.log.Timber
 import java.io.File
 import java.nio.ByteBuffer
@@ -57,7 +58,7 @@ class PluginLoader(
 
         ZipFile(bundleZip).use { zip ->
             zip.entries().asSequence().filterNot { it.isDirectory }.forEach { entry ->
-                val outFile = File(targetDir, entry.name).apply { parentFile?.mkdirs() }
+                val outFile = resolveWithin(targetDir, entry.name).apply { parentFile?.mkdirs() }
                 zip.getInputStream(entry).use { input ->
                     outFile.outputStream().use { output -> input.copyTo(output) }
                 }
@@ -71,10 +72,13 @@ class PluginLoader(
         }
 
         val dexBytes = dexFile.readBytes()
+        // The parent is a filtering loader rather than the host's directly, so the plugin cannot
+        // name D2Manager, Koin's GlobalContext or the host's own classes. See
+        // PluginClassLoaderPolicy for what this does and does not achieve.
         val classLoader =
             InMemoryDexClassLoader(
                 ByteBuffer.wrap(dexBytes),
-                PluginLoader::class.java.classLoader,
+                FilteringClassLoader(checkNotNull(PluginLoader::class.java.classLoader)),
             )
 
         Timber.d(
@@ -93,12 +97,43 @@ class PluginLoader(
                 .getDeclaredConstructor()
                 .newInstance()
 
-        return LoadedPlugin(plugin = plugin, resourceRoot = androidRoot)
+        return LoadedPlugin(
+            plugin = plugin,
+            resourceRoot = androidRoot,
+            classLoader = classLoader,
+        )
+    }
+
+    /**
+     * Resolves [entryName] under [targetDir], refusing anything that escapes it.
+     *
+     * Zip entry names are attacker-controlled — and stay attacker-controlled inside a *validly
+     * signed* bundle, since the signature attests to who built the zip, not to what is in it. An
+     * entry named `../../databases/dhis.db` would otherwise be written wherever it pointed.
+     */
+    private fun resolveWithin(
+        targetDir: File,
+        entryName: String,
+    ): File {
+        val target = File(targetDir, entryName)
+        val canonicalDir = targetDir.canonicalPath + File.separator
+        require(target.canonicalPath.startsWith(canonicalDir)) {
+            "Plugin bundle entry '$entryName' resolves outside the extraction directory"
+        }
+        return target
     }
 }
 
-/** A loaded plugin paired with its extracted resource root (the `android/` directory). */
+/**
+ * A loaded plugin paired with its extracted resource root (the `android/` directory) and the class
+ * loader it was loaded with.
+ *
+ * The loader is carried so the render path can hand the plugin a [android.content.Context] whose
+ * `getClassLoader()` returns *this* loader rather than the app's — otherwise
+ * `LocalContext.current.classLoader` would give straight back the unfiltered host loader.
+ */
 data class LoadedPlugin(
     val plugin: Dhis2Plugin,
     val resourceRoot: File,
+    val classLoader: ClassLoader,
 )

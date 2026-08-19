@@ -17,11 +17,21 @@ class DataStoreSnippetTest {
                   "entryPoint": "org.dhis2.pluginimplementationtest.MyPlugin",
                   "downloadUrl": "http://10.0.2.2:8081/plugin-1.5.0.zip",
                   "checksum": "sha256:abc123",
-                  "allowedProgramUids": [],
-                  "allowedDataSetUids": [],
                   "injectionPoints": [
                     "HOME_ABOVE_PROGRAM_LIST"
-                  ]
+                  ],
+                  "scope": {
+                    "programs": { "uids": [] },
+                    "dataSets": { "uids": [] },
+                    "orgUnits": { "uids": [], "mode": "DESCENDANTS" },
+                    "capabilities": [
+                      "READ_METADATA"
+                    ],
+                    "writable": {
+                      "programs": { "uids": [] },
+                      "dataSets": { "uids": [] }
+                    }
+                  }
                 }
               ]
             }

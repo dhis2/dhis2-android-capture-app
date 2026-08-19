@@ -30,9 +30,21 @@ internal object AndroidPluginWiring {
      */
     fun addPluginSdkDependency(project: Project) {
         val kotlin = project.extensions.findByType(KotlinMultiplatformExtension::class.java) ?: return
+
         kotlin.sourceSets.named("commonMain").configure { sourceSet ->
             sourceSet.dependencies {
                 compileOnly("org.dhis2.mobile:plugin-sdk:${HostToolchain.PLUGIN_SDK_VERSION}")
+            }
+        }
+
+        // The plugin API — Dhis2Plugin, Dhis2PluginContext and the ScopedD2 it hands out — is
+        // Android-only, because ScopedD2 is the DHIS2 Android SDK. Added here rather than left to
+        // the plugin author so it can never be pinned to a version other than the host's: the DEX
+        // resolves these classes from the host's class loader, and a mismatch is a runtime
+        // NoSuchMethodError rather than a build failure.
+        kotlin.sourceSets.matching { it.name == ANDROID_MAIN_SOURCE_SET }.configureEach { sourceSet ->
+            sourceSet.dependencies {
+                compileOnly("org.hisp.dhis:android-core:${HostToolchain.DHIS2_SDK_VERSION}")
             }
         }
     }
@@ -132,6 +144,9 @@ internal object AndroidPluginWiring {
     private const val LEGACY_ANDROID_LIBRARY_PLUGIN = "com.android.library"
     private const val COMPOSE_PLUGIN = "org.jetbrains.compose"
 
+    /** Named by AGP's KMP library plugin; matched lazily since it is created after this runs. */
+    private const val ANDROID_MAIN_SOURCE_SET = "androidMain"
+
     /**
      * Groups the host is known to provide, so declaring them non-`compileOnly` is not worth a
      * warning. `compose.components.resources` in particular *must* be `implementation` — the Compose
@@ -142,5 +157,8 @@ internal object AndroidPluginWiring {
             "org.jetbrains.compose",
             "org.jetbrains.kotlin",
             "org.dhis2.mobile:plugin-sdk",
+            // The host runs the DHIS2 SDK; a plugin must never carry its own copy.
+            "org.hisp.dhis",
+            "io.insert-koin",
         )
 }

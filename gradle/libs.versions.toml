@@ -12,7 +12,11 @@ kotlin = '2.4.10'
 dagger = '2.57.2'
 jacoco = '0.8.15'
 designSystem = "0.8.0-SNAPSHOT"
-dhis2sdk = "1.15.0-20260821.111928-77"
+# LOCAL TEST ONLY - patched SDK from ../ai-dhis2-android-sdk. No published snapshot carries the
+# scoped-access API yet (checked -74, -75 and develop's -77: zero `scopedaccess` classes); repin
+# when it lands.
+dhis2sdk = "1.15.0-SNAPSHOT"
+pluginSdk = "0.1.2-SNAPSHOT" # Published plugin API + the Gradle plugin that packages plugin bundles.
 pluginSdk = "0.1.2-SNAPSHOT" # Published plugin API + the Gradle plugin that packages plugin bundles.
 ruleEngine = "3.8.1"
 expressionParser = "1.4.3"

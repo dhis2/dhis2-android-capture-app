@@ -7,7 +7,8 @@ import org.dhis2.mobile.plugin.data.PluginDownloader
 import org.dhis2.mobile.plugin.data.PluginLoader
 import org.dhis2.mobile.plugin.data.PluginVerifier
 import org.dhis2.mobile.plugin.registry.PluginRegistry
-import org.koin.core.Koin
+import org.dhis2.mobile.plugin.security.ScopedDhis2PluginContextFactory
+import org.koin.dsl.koinApplication
 import timber.log.Timber
 
 /**
@@ -30,7 +31,7 @@ class LoadPluginsUseCase(
     private val pluginVerifier: PluginVerifier,
     private val pluginLoader: PluginLoader,
     private val pluginRegistry: PluginRegistry,
-    private val koin: Koin,
+    private val contextFactory: ScopedDhis2PluginContextFactory,
 ) : UseCase<Unit, Unit> {
     override suspend fun invoke(input: Unit): Result<Unit> =
         runCatching {
@@ -78,11 +79,26 @@ class LoadPluginsUseCase(
                     @Suppress("DEPRECATION")
                     val loaded = pluginLoader.load(bundle, metadata)
 
-                    loaded.plugin.provideKoinModule()?.let { module ->
-                        koin.loadModules(listOf(module))
-                    }
+                    // A private container per plugin, not the host's. Loading a plugin module into
+                    // the application container let it resolve every host binding — including D2 —
+                    // and, because Koin's loadModules allows override by default, silently *replace*
+                    // them for the rest of the app. Nothing from the host is seeded in: a plugin
+                    // reaches DHIS2 data through its scoped context, not through DI.
+                    val pluginKoin =
+                        loaded.plugin.provideKoinModule()?.let { module ->
+                            koinApplication { modules(module) }
+                        }
 
-                    pluginRegistry.register(loaded.plugin, metadata, loaded.resourceRoot)
+                    // Built here, from the server metadata, and carried on the registry entry — so
+                    // the render path never has to ask a factory for one.
+                    pluginRegistry.register(
+                        plugin = loaded.plugin,
+                        metadata = metadata,
+                        resourceRoot = loaded.resourceRoot,
+                        context = contextFactory.create(metadata),
+                        classLoader = loaded.classLoader,
+                        koinApplication = pluginKoin,
+                    )
                     Timber.d("Plugin '${metadata.id}' v${metadata.version} loaded successfully")
                 }.onFailure { err ->
                     Timber.e(err, "Failed to load plugin '${metadata.id}' — skipping")

@@ -25,11 +25,21 @@ internal object DataStoreSnippet {
               "entryPoint": "$entryPoint",
               "downloadUrl": "http://10.0.2.2:8081/$bundleFileName",
               "checksum": "$checksum",
-              "allowedProgramUids": [],
-              "allowedDataSetUids": [],
               "injectionPoints": [
                 "HOME_ABOVE_PROGRAM_LIST"
-              ]
+              ],
+              "scope": {
+                "programs": { "uids": [] },
+                "dataSets": { "uids": [] },
+                "orgUnits": { "uids": [], "mode": "DESCENDANTS" },
+                "capabilities": [
+                  "READ_METADATA"
+                ],
+                "writable": {
+                  "programs": { "uids": [] },
+                  "dataSets": { "uids": [] }
+                }
+              }
             }
           ]
         }

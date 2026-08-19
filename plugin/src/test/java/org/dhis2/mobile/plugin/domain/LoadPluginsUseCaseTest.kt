@@ -7,9 +7,9 @@ import org.dhis2.mobile.plugin.data.PluginDownloader
 import org.dhis2.mobile.plugin.data.PluginLoader
 import org.dhis2.mobile.plugin.data.PluginVerifier
 import org.dhis2.mobile.plugin.registry.PluginRegistry
+import org.dhis2.mobile.plugin.security.ScopedDhis2PluginContextFactory
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import org.koin.core.Koin
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verifyNoInteractions
 
@@ -33,7 +33,7 @@ class LoadPluginsUseCaseTest {
     private val verifier: PluginVerifier = mock()
     private val loader: PluginLoader = mock()
     private val registry = PluginRegistry()
-    private val koin: Koin = mock()
+    private val contextFactory: ScopedDhis2PluginContextFactory = mock()
 
     private val useCase =
         LoadPluginsUseCase(
@@ -42,7 +42,7 @@ class LoadPluginsUseCaseTest {
             pluginVerifier = verifier,
             pluginLoader = loader,
             pluginRegistry = registry,
-            koin = koin,
+            contextFactory = contextFactory,
         )
 
     @Test
@@ -77,6 +77,7 @@ class LoadPluginsUseCaseTest {
             verifyNoInteractions(downloader)
             verifyNoInteractions(verifier)
             verifyNoInteractions(loader)
-            verifyNoInteractions(koin)
+            // In particular no scoped context is minted for a plugin that was never loaded.
+            verifyNoInteractions(contextFactory)
         }
 }

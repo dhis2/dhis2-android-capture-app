@@ -10,6 +10,7 @@ import org.dhis2.mobile.plugin.sdk.PluginMetadata
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.mockito.kotlin.mock
 import java.io.File
 
 class GetPluginSlotContentTest {
@@ -33,6 +34,8 @@ class GetPluginSlotContentTest {
             injectionPoints = slots,
         ),
         File("/tmp/$id"),
+        mock<Dhis2PluginContext>(),
+        javaClass.classLoader!!,
     )
 
     @Test

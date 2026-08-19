@@ -26,10 +26,21 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(compose.runtime)
-            api(libs.koin.core)
+            // `implementation`, not `api`: an `api` dependency puts org.koin.core.context.GlobalContext
+            // on every plugin author's compile classpath, which is a service locator straight into the
+            // host's container. Plugins that need Koin get a private container from the host instead.
+            implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.composeVM)
             implementation(libs.kotlin.serialization.json)
+        }
+
+        androidMain.dependencies {
+            // compileOnly on both sides: the host provides these at runtime through the plugin
+            // class loader's parent, and a second copy inside a plugin DEX is what produces
+            // ClassCastException / NoSuchMethodError.
+            compileOnly(libs.dhis2.android.sdk)
+            compileOnly(libs.koin.core)
         }
 
         commonTest.dependencies {

@@ -6,12 +6,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import org.dhis2.mobile.plugin.registry.PluginRegistry
 import org.dhis2.mobile.plugin.registry.RegisteredPlugin
 import org.dhis2.mobile.plugin.sdk.InjectionPoint
-import org.dhis2.mobile.plugin.security.ScopedDhis2PluginContextFactory
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.LocalResourceReader
+import org.koin.compose.KoinIsolatedContext
 import org.koin.compose.koinInject
 
 /**
@@ -35,31 +36,64 @@ import org.koin.compose.koinInject
 fun PluginSlot(
     injectionPoint: InjectionPoint,
     pluginRegistry: PluginRegistry = koinInject(),
-    contextFactory: ScopedDhis2PluginContextFactory = koinInject(),
 ) {
     val plugins by pluginRegistry.plugins.collectAsState()
     val slotPlugins = plugins.filter { injectionPoint in it.metadata.injectionPoints }
 
     slotPlugins.forEach { registered ->
         key(registered.metadata.id) {
-            PluginContent(registered = registered, contextFactory = contextFactory)
+            PluginContent(registered = registered)
         }
     }
 }
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-private fun PluginContent(
-    registered: RegisteredPlugin,
-    contextFactory: ScopedDhis2PluginContextFactory,
-) {
+private fun PluginContent(registered: RegisteredPlugin) {
     val reader =
         remember(registered.resourceRoot) {
             FileSystemResourceReader(registered.resourceRoot)
         }
-    CompositionLocalProvider(LocalResourceReader provides reader) {
-        // Server-configured metadata, so the plugin's data scope is granted rather than claimed.
-        val context = contextFactory.create(registered.metadata)
-        registered.plugin.content(context)
+
+    val hostContext = LocalContext.current
+    val pluginContext =
+        remember(hostContext, registered.classLoader) {
+            PluginAndroidContext(hostContext, registered.classLoader)
+        }
+
+    CompositionLocalProvider(
+        LocalResourceReader provides reader,
+        // Without this, `LocalContext.current.classLoader` inside a plugin returns the app's own
+        // loader and walks straight past FilteringClassLoader. Closing the obvious door is the
+        // point; see PluginClassLoaderPolicy for the ones that stay open.
+        LocalContext provides pluginContext,
+    ) {
+        val koinApplication = registered.koinApplication
+        if (koinApplication == null) {
+            PluginContentBody(registered)
+        } else {
+            // The plugin's own container, isolated from the host's: koinInject/koinViewModel inside
+            // the plugin resolve here and nowhere else.
+            KoinIsolatedContext(context = koinApplication) {
+                PluginContentBody(registered)
+            }
+        }
     }
+}
+
+/**
+ * Invokes the plugin.
+ *
+ * The context was built at load time from the server-authored metadata, so the plugin's data scope
+ * is granted rather than claimed, and nothing at render time can influence it.
+ *
+ * There is deliberately no error boundary around this call, because Compose cannot express one: the
+ * compiler rejects `try`/`catch` around a composable invocation, since recomposition has no way to
+ * unwind a partially-applied composition. A plugin that throws while composing takes the enclosing
+ * screen with it. The mitigations are upstream — the load pipeline refuses to register a plugin that
+ * fails to load, and plugin authors are expected to keep their own failures inside their own state.
+ */
+@Composable
+private fun PluginContentBody(registered: RegisteredPlugin) {
+    registered.plugin.content(registered.context)
 }
