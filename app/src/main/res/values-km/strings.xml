@@ -44,6 +44,8 @@
     <string name="read_only">បានត្រឹមតែអាន</string>
     <string name="completed">បានបញ្ចប់</string>
     <string name="cancelled">បានលុបចោល</string>
+    <string name="active">កំពុងដំណើរការ</string>
+
     <!-- State -->
     <string name="state_synced">បញ្ចូន</string>
     <string name="state_to_update">ដើម្បីធ្វើបច្ចុប្បន្នភាព</string>
@@ -214,6 +216,7 @@
     <string name="sync_dialog_action_send">ផ្ញើទៅ</string>
     <string name="sync_error">ការបញ្ចូនទិន្នន័យមានបញ្ហាបច្ចេកទេស</string>
     <string name="show_more">បង្ហាញច្រើនទៀត</string>
+    <string name="show_less">បង្ហាញតិច</string>
     <string name="sync">បញ្ចូន</string>
     <string name="show_description">បង្ហាញការពិពណ៌នា</string>
     <string name="hide_description">លាក់ការពិពណ៌នា</string>
