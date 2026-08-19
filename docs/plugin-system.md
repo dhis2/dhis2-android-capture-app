@@ -1,6 +1,6 @@
 # DHIS2 Android Plugin System
 
-> Status: preview (`plugin-sdk 0.1.1-SNAPSHOT`). API, bundle format, and
+> Status: preview (`plugin-sdk 0.1.2-SNAPSHOT`). API, bundle format, and
 > injection points may still change.
 
 ## 1. What it is
@@ -152,7 +152,10 @@ Contract:
 
 - A plugin declares **no identity of its own** — no id, version, entry point or
   data scope. All of it comes from the server config, so there is exactly one
-  place to change it and a plugin cannot widen its own access.
+  place to change it and a plugin cannot widen its own access. The one apparent
+  exception is cosmetic: `pluginBundle { pluginId; entryPoint }` (§5.3) fills in the
+  generated `plugin-config.json` and reaches nothing else — not the bundle, not the
+  host, which reads both from the dataStore.
 - The entry-point class must be **public** with a **no-arg constructor** — the
   host instantiates it via reflection.
 - `content()` runs inside the host composition; don't navigate outside the slot.
@@ -245,7 +248,7 @@ DHIS2 artifacts:
 agp = "9.3.1"
 kotlin = "2.4.10"                 # must equal the host's
 composeMultiplatform = "1.10.3"   # must equal the host's
-pluginSdk = "0.1.1-SNAPSHOT"
+pluginSdk = "0.1.2-SNAPSHOT"
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -273,7 +276,7 @@ plugins {
     alias(libs.plugins.dhis2.pluginBundle)                     // registers buildPluginBundle
 }
 
-version = "1.0.0"                                  // names the bundle; nothing else to declare
+version = "1.0.0"                                  // names the bundle; see §5.3 for the rest
 
 kotlin {
     androidLibrary {
@@ -309,7 +312,7 @@ compose.resources {
 ```
 
 Without a version catalog, the plugin line is
-`id("org.dhis2.mobile.plugin-bundle") version "0.1.1-SNAPSHOT"`.
+`id("org.dhis2.mobile.plugin-bundle") version "0.1.2-SNAPSHOT"`.
 
 `plugin-sdk` is **not** declared as a dependency: the plugin-bundle plugin adds it as `compileOnly`
 at its own version, so it can never be pinned to the wrong one.
@@ -381,6 +384,22 @@ The zip's file name is only a convenience for whoever hosts it; the host locates
 config's `downloadUrl` and identifies it by the config's `id`/`version`, so it can be called
 anything.
 
+`plugin-config.json` is rewritten on every build, so editing it in place does not survive. Its
+`id` and `entryPoint` are the only fields the build cannot work out for itself, and they default to
+obvious placeholders (`org.myorg.my-plugin`, `org.myorg.myplugin.MyPlugin`) — declare them once and
+the file is postable as it is:
+
+```kotlin
+pluginBundle {
+    pluginId = "org.myorg.my-plugin"
+    entryPoint = "org.myorg.plugin.MyPlugin"
+}
+```
+
+Neither value reaches the bundle. They are there so the checksum and the identity arrive together
+in one postable file; the dataStore is still the only thing the host reads identity from, and
+`allowedProgramUids` / `allowedDataSetUids` remain the administrator's to grant.
+
 Bundle layout:
 
 ```
@@ -414,10 +433,10 @@ pluginBundle {
 }
 ```
 
-Everything else in `pluginBundle { }` is optional: `resourcePackage` (read back from the compiled
-`Res` class by default), `minApi` (26), `bundleFileName`, `outputDirectory`, `d8Executable` /
-`apksignerExecutable` (found in the SDK's newest build-tools), `verifyToolchain` (§5.1) and
-`emitDataStoreSnippet`.
+Everything else in `pluginBundle { }` is optional: `pluginId` / `entryPoint` (above),
+`resourcePackage` (read back from the compiled `Res` class by default), `minApi` (26),
+`bundleFileName`, `outputDirectory`, `d8Executable` / `apksignerExecutable` (found in the SDK's
+newest build-tools), `verifyToolchain` (§5.1) and `emitDataStoreSnippet`.
 
 ### 5.4 Ship it
 
@@ -520,8 +539,9 @@ you can write a dataStore namespace on, and a local static file server.
 4. **Point the Capture App at the bundle.**
 
    Write the JSON (§4) to the DHIS2 server dataStore. `plugin-config.json` next to the bundle is
-   that JSON with `version` and `checksum` already filled in — replace its placeholder `id`,
-   `entryPoint`, `downloadUrl` and scope, then post it:
+   that JSON with `version` and `checksum` already filled in, plus `id` and `entryPoint` if you
+   declared them (§5.3) — fill in whatever is left, `downloadUrl` and the granted scope, then
+   post it:
 
    ```bash
    # first time — POST creates the key; use PUT to update it afterwards
@@ -612,7 +632,8 @@ with fake data (there is no `plugin-sdk-test` artefact yet — see §7). Two thi
   `Dhis2PluginContext.kt`, `PluginMetadata.kt`, `InjectionPoint.kt`, `dto/*`
 - `plugin-sdk-gradle/src/main/kotlin/org/dhis2/mobile/plugin/gradle/` — `PluginBundlePlugin.kt`,
   `PluginBundleExtension.kt`, `BuildPluginBundleTask.kt`, `ToolchainPreflight.kt`,
-  `DeterministicZip.kt`, `ClassesJarInspector.kt`, `AndroidPluginWiring.kt`, `AndroidSdkTools.kt`
+  `DeterministicZip.kt`, `ClassesJarInspector.kt`, `DataStoreSnippet.kt`, `AndroidPluginWiring.kt`,
+  `AndroidSdkTools.kt`
 - `plugin/src/main/java/org/dhis2/mobile/plugin/` — `data/AppHubPluginRepository.kt`,
   `data/PluginDownloader.kt`, `data/PluginVerifier.kt`, `data/PluginLoader.kt`,
   `domain/LoadPluginsUseCase.kt`, `registry/PluginRegistry.kt`,
