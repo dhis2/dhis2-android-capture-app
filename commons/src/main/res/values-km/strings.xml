@@ -33,6 +33,7 @@
     <!-- Status -->
     <string name="filter_event_status_open">បើក</string>
     <string name="filter_event_status_completed">បានបញ្ចប់</string>
+    <string name="active">កំពុងដំណើរការ</string>
     <string name="cancelled">បានលុបចោល</string>
     <string name="enrollment_status_active">បើក</string>
     <string name="enrollment_status_completed">បញ្ចប់</string>
