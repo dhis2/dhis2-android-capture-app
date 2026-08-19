@@ -38,6 +38,8 @@ class PluginBundlePlugin : Plugin<Project> {
         extension.minApi.convention(HostToolchain.MIN_SDK_FLOOR)
         extension.verifyToolchain.convention(true)
         extension.emitDataStoreSnippet.convention(true)
+        extension.pluginId.convention(PLACEHOLDER_PLUGIN_ID)
+        extension.entryPoint.convention(PLACEHOLDER_ENTRY_POINT)
         extension.bundleFileName.convention(provider { "$name-$version.zip" })
         extension.outputDirectory.convention(layout.buildDirectory.dir("outputs/plugin-bundle"))
         extension.signing.alias.convention(DEBUG_KEY_ALIAS)
@@ -59,6 +61,8 @@ class PluginBundlePlugin : Plugin<Project> {
             task.bundleFileName.set(extension.bundleFileName)
             task.pluginVersion.set(provider { version.toString() })
             task.emitDataStoreSnippet.set(extension.emitDataStoreSnippet)
+            task.pluginId.set(extension.pluginId)
+            task.entryPoint.set(extension.entryPoint)
             task.outputDirectory.set(extension.outputDirectory)
             task.signing.keystore.set(extension.signing.keystore)
             task.signing.alias.set(extension.signing.alias)
@@ -112,6 +116,11 @@ class PluginBundlePlugin : Plugin<Project> {
         const val COMPOSE_PLUGIN = "org.jetbrains.compose"
         const val PREPARE_RESOURCES_TASK_PREFIX = "prepareComposeResourcesTaskFor"
         const val BUNDLE_TASK_NAME = "buildPluginBundle"
+
+        // Snippet defaults, kept plainly fake so an unedited plugin-config.json cannot be
+        // mistaken for a real one — see PluginBundleExtension.pluginId.
+        const val PLACEHOLDER_PLUGIN_ID = "org.myorg.my-plugin"
+        const val PLACEHOLDER_ENTRY_POINT = "org.myorg.myplugin.MyPlugin"
         const val DEBUG_KEYSTORE = ".android/debug.keystore"
         const val DEBUG_KEY_ALIAS = "androiddebugkey"
         const val DEBUG_KEY_PASSWORD = "android"
