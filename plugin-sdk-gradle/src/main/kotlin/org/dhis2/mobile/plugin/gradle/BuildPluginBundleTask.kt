@@ -77,6 +77,14 @@ abstract class BuildPluginBundleTask
         @get:Input
         abstract val emitDataStoreSnippet: Property<Boolean>
 
+        /** `id` written into the dataStore snippet. Configured through `pluginBundle.pluginId`. */
+        @get:Input
+        abstract val pluginId: Property<String>
+
+        /** `entryPoint` written into the dataStore snippet, likewise configured on the extension. */
+        @get:Input
+        abstract val entryPoint: Property<String>
+
         @get:Nested
         abstract val signing: SigningSpec
 
@@ -272,25 +280,13 @@ abstract class BuildPluginBundleTask
         }
 
         private fun dataStoreSnippet(checksum: String): String =
-            """
-            {
-              "plugins": [
-                {
-                  "id": "org.myorg.my-plugin",
-                  "version": "${pluginVersion.get()}",
-                  "entryPoint": "org.myorg.myplugin.MyPlugin",
-                  "downloadUrl": "http://10.0.2.2:8081/${bundleFileName.get()}",
-                  "checksum": "$checksum",
-                  "allowedProgramUids": [],
-                  "allowedDataSetUids": [],
-                  "injectionPoints": [
-                    "HOME_ABOVE_PROGRAM_LIST"
-                  ]
-                }
-              ]
-            }
-
-            """.trimIndent()
+            DataStoreSnippet.render(
+                pluginId = pluginId.get(),
+                version = pluginVersion.get(),
+                entryPoint = entryPoint.get(),
+                bundleFileName = bundleFileName.get(),
+                checksum = checksum,
+            )
 
         private fun execute(
             tool: File,
