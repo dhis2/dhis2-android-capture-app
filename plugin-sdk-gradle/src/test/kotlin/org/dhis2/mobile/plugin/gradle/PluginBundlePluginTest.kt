@@ -33,6 +33,16 @@ class PluginBundlePluginTest {
     }
 
     @Test
+    fun `the dataStore snippet identity defaults to a placeholder`() {
+        // Unset they have to stay obviously fake: a config posted with these would name a plugin
+        // that does not exist, which is a far better failure than a plausible-looking wrong id.
+        val extension = applyToBareProject()
+
+        assertEquals("org.myorg.my-plugin", extension.pluginId.get())
+        assertEquals("org.myorg.myplugin.MyPlugin", extension.entryPoint.get())
+    }
+
+    @Test
     fun `nothing is wired without the android multiplatform library plugin`() {
         // Applying to an unrelated project must be inert rather than fail: everything the plugin
         // wires depends on AGP's Kotlin Multiplatform library plugin being there too.

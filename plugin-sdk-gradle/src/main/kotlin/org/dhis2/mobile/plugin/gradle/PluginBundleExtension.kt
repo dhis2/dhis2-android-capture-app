@@ -56,6 +56,24 @@ abstract class PluginBundleExtension
          */
         abstract val emitDataStoreSnippet: Property<Boolean>
 
+        /**
+         * `id` written into the emitted `plugin-config.json`. Defaults to an obvious placeholder.
+         *
+         * This and [entryPoint] are the only fields of that snippet a build cannot work out for
+         * itself, and they are here so the file is postable as it is rather than needing the same
+         * two edits after every build. They feed the snippet and nothing else: neither value
+         * reaches the bundle, and the server dataStore remains the single source of truth for a
+         * plugin's identity — the host reads the id and entry point from there, never from anything
+         * the plugin shipped.
+         */
+        abstract val pluginId: Property<String>
+
+        /**
+         * Fully qualified name of the class implementing `Dhis2Plugin`, written into the emitted
+         * `plugin-config.json`. Defaults to an obvious placeholder. See [pluginId].
+         */
+        abstract val entryPoint: Property<String>
+
         /** Signing configuration. See [SigningSpec]. */
         val signing: SigningSpec = objects.newInstance(SigningSpec::class.java)
 
