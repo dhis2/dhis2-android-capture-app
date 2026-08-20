@@ -17,7 +17,6 @@ designSystem = "0.8.0-SNAPSHOT"
 # when it lands.
 dhis2sdk = "1.15.0-SNAPSHOT"
 pluginSdk = "0.1.2-SNAPSHOT" # Published plugin API + the Gradle plugin that packages plugin bundles.
-pluginSdk = "0.1.2-SNAPSHOT" # Published plugin API + the Gradle plugin that packages plugin bundles.
 ruleEngine = "3.8.1"
 expressionParser = "1.4.3"
 appcompat = "1.7.1"
