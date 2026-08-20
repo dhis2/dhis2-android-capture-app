@@ -214,6 +214,12 @@ Contract:
 - The entry-point class must be **public** with a **no-arg constructor** — the
   host instantiates it via reflection.
 - `content()` runs inside the host composition; don't navigate outside the slot.
+- **Composition state does not survive a plugin reload.** The load pipeline runs more than once per
+  process — a metadata sync is enough — and each run builds a fresh class loader, so the plugin's
+  classes are replaced wholesale. `PluginSlot` keys the composition on that loader and discards the
+  previous one, because state remembered across the swap would be an instance of the *old* loader's
+  class and any cast to the new one fails. Keep anything that must outlive a reload out of the
+  composition.
 - `Dhis2Plugin` and `Dhis2PluginContext` live in `plugin-sdk`'s **androidMain**, because `ScopedD2`
   is the Android SDK. Write your plugin class in `src/androidMain`; `PluginMetadata`,
   `PluginScope` and `InjectionPoint` stay in `commonMain`.
@@ -750,6 +756,74 @@ you can write a dataStore namespace on, and a local static file server.
 8. **Locale test.** Switch the emulator language (Settings → Languages) and
    reopen the screen. The plugin's strings should change accordingly.
 
+### 8.1 Testing writes
+
+Steps 1-8 only exercise reads, and reads are the half that fails *quietly*. The two directions are
+enforced by different mechanisms, so passing one says nothing about the other:
+
+- **Reads** are enforced by the filters already on the repository. They are append-only, so an
+  out-of-scope query is AND-ed down to nothing and returns an empty list. No exception, no log line.
+- **Writes** are enforced by a guard carried on the same scope, consulted at every write entry point,
+  which inspects *the object being written* rather than the query that produced it. An out-of-scope
+  write throws `D2Error` with `D2ErrorCode.SCOPE_VIOLATION`.
+
+Only a write can demonstrate the second, and a read-only plugin will pass every scope test while the
+write path is entirely unverified. Add a button to the plugin project from §5 — the shape is the
+same in any plugin:
+
+```kotlin
+sdk.events().blockingAdd(
+    EventCreateProjection.create(enrollmentUid, programUid, programStageUid, orgUnitUid, null),
+)
+```
+
+Event creation is the useful probe because it is the write with the widest guard coverage —
+`ScopedAccessGuard.checkEvent` validates the `WRITE_EVENT` capability, the writable program **and**
+the writable org unit, so one call can fail three distinct ways. It is also the case the design note
+in §3 is about: the projection carries its own program and org unit, which no read filter constrains.
+
+Resolve the write target from readable data and let the guard reject it, rather than pre-checking
+against `pluginMetadata.scope`. A target that exists and is refused anyway is the interesting
+outcome — it is what shows read and write are separate grants that get intersected, not one grant
+used twice.
+
+A scope that permits the write:
+
+```json
+"scope": {
+  "programs": { "uids": ["IpHINAT79UW"] },
+  "orgUnits": { "uids": ["ImspTQPwCqd"], "mode": "DESCENDANTS" },
+  "capabilities": ["READ_METADATA","READ_TRACKED_ENTITY","READ_ENROLLMENT","READ_EVENT","WRITE_EVENT"],
+  "writable": {
+    "programs": { "uids": ["IpHINAT79UW"] },
+    "orgUnits": { "uids": ["ImspTQPwCqd"], "mode": "DESCENDANTS" }
+  }
+}
+```
+
+`writable.orgUnits` is load-bearing and the easiest line to leave out. `WritableGrant.orgUnits`
+defaults to `OrgUnitGrant.NONE`, and `writableOrgUnits()` intersects it with the read grant, so
+**omitting it refuses every write** on the org-unit check even with `WRITE_EVENT` granted and the
+program writable. Closed by default applies here like everywhere else.
+
+Then change only the `scope` block between cases — PUT the config and force-stop the app. No rebuild
+and no cache wipe, because the bundle is unchanged and so is its checksum.
+
+| Change to `scope`                                         | Expected                                                            |
+|-----------------------------------------------------------|---------------------------------------------------------------------|
+| The block above                                           | Write permitted; the new event appears in a re-read                 |
+| Drop `WRITE_EVENT` from `capabilities`                     | `…does not permit writing an operation requiring the WRITE_EVENT capability` |
+| `writable.programs: { "uids": [] }`                        | `…writing event <uid> in program '<program>'`                       |
+| Remove the `writable.orgUnits` line                        | `…in organisation unit '<ou>'` — the default-closed case            |
+| `writable.programs` names a program **not** in `programs`  | Refused. Proves `writable ∩ readable`: naming an unreadable program grants nothing |
+| Swap them — read one program, make a *different* one writable | The target is not even found, so there is nothing to refuse. Writable cannot exceed readable |
+| Drop `READ_ENROLLMENT`                                     | No write target; reads unaffected. A write needs a readable target first |
+
+Two cautions. A permitted write is a **real** write: the object lands in state `TO_POST` and uploads
+on the next sync, so use an instance you are willing to dirty. And a refusal is not a plugin bug —
+render it as the guard doing its job, distinctly from an actual failure, or the test reads as broken
+software when it is working.
+
 ### Previewing without the Capture App (optional)
 
 The loop above is slow for UI work. You can add an Android application module to *your own* plugin
@@ -793,9 +867,10 @@ Two more things that trip this up:
 | `This module packages classes the host already owns`                                        | Build-time form of the `ClassCastException` above, caught by inspecting the AAR before dexing. Move the listed dependency to `compileOnly`. The list now includes `org/hisp/dhis/` and `org/koin/` — a plugin must never carry its own copy of the SDK or Koin.                                                                                                                                            |                                                                                                                                                                                    |
 | `This plugin references classes the DHIS2 Capture App does not expose to plugins`            | The plugin names something the host's class loader refuses — usually `D2Manager`, `GlobalContext`, or a host `org.dhis2.*` class. Data access goes through `context.sdk`; there is no supported route to an unrestricted `D2`. The message lists the referencing class and what it referenced.                                                                                                             |                                                                                                                                                                                    |
 | `ClassNotFoundException: Class '…' is not available to plugins` (at runtime)                 | The same rule, hit at load time rather than build time — typically because the name was assembled at runtime and the static check could not see it.                                                                                                                                                                                                                                                       |                                                                                                                                                                                    |
-| `D2Error … SCOPE_VIOLATION` / `SecurityException` on a write                                 | The write fell outside the granted scope. Unlike the query path, writes are checked against the object being written: its org unit, program or data element. Check the `scope.writable` block in the dataStore config — it is intersected with the read grant, so a data set that is writable but not readable grants nothing.                                                                             |                                                                                                                                                                                    |
+| `D2Error … SCOPE_VIOLATION` / `SecurityException` on a write                                 | The write fell outside the granted scope. Unlike the query path, writes are checked against the object being written: its org unit, program or data element. Check the `scope.writable` block in the dataStore config against two closed-by-default rules: it is intersected with the read grant, so anything writable but not readable grants nothing; and `writable.orgUnits` defaults to `NONE`, so leaving that line out refuses every write on the org-unit check even with the capability and the program granted. §8.1 has a case-by-case matrix.                                                                             |                                                                                                                                                                                    |
 | A scoped query returns nothing when you expected rows                                       | The grant and your filter are AND-ed, so filtering for something outside the grant yields empty rather than an error. Read `context.pluginMetadata.scope` to see what was actually granted. Note also that `capabilities` is opt-in — an accessor whose capability is missing throws rather than returning empty.                                                                                          |                                                                                                                                                                                    |
 | `No Android build-tools installed under …` / `d8 not found` / `apksigner not found`         | Install build-tools through the SDK Manager, or set `pluginBundle.d8Executable` / `pluginBundle.apksignerExecutable`.                                                                                                                                                                                                                                                                                    |                                                                                                                                                                                    |
+| The plugin's error message is just `D2Error`, with no detail                                  | `D2Error` is `data class D2Error(…) : Exception()` and passes nothing to the `Exception` constructor, so `Throwable.message` is **always null**. The whole diagnostic is in `errorCode()` / `errorDescription()` — read those instead of `message` when rendering a failure, or every scope violation looks identical.                                                                                       |
 | `Signing keystore not found at …`                                                           | No `~/.android/debug.keystore` on this machine (install Android Studio, or create one with `keytool`), or configure `pluginBundle.signing`.                                                                                                                                                                                                                                                              |                                                                                                                                                                                    |
 
 ---
