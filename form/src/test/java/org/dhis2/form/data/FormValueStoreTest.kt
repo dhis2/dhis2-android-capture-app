@@ -221,7 +221,7 @@ class FormValueStoreTest {
             d2.fileResourceModule().fileResources(),
         ) doReturn mock()
         whenever(
-            d2.fileResourceModule().fileResources().blockingAdd(File("filePath")),
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any(), any()),
         ) doReturn generatedUid
         val result =
             deValueStore.storeFile(
