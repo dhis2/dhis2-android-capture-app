@@ -26,6 +26,7 @@ import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
 import org.dhis2.mobile.login.main.domain.usecase.GetOAuthLogoutUrl
 import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
+import org.dhis2.mobile.login.main.domain.usecase.LoginUserOffline
 import org.dhis2.mobile.login.main.domain.usecase.LoginUserWithOAuth
 import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
 import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
@@ -34,6 +35,7 @@ import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
+import org.dhis2.mobile.login.main.ui.provider.CredentialsResourceProvider
 import org.dhis2.mobile.login.main.ui.state.AfterLoginAction
 import org.dhis2.mobile.login.main.ui.state.LoginState
 import org.dhis2.mobile.login.main.ui.state.OidcInfo
@@ -79,6 +81,8 @@ class CredentialsViewModelTest {
     private val getIsSessionLockedUseCase: GetIsSessionLockedUseCase = mock()
     private val forgotPinUseCase: ForgotPinUseCase = mock()
     private val setOAuthPin: SetOAuthPin = mock()
+    private val loginUserOfflineWithCode: LoginUserOffline = mock()
+    private val credentialsResourceProvider: CredentialsResourceProvider = mock()
 
     private lateinit var viewModel: CredentialsViewModel
 
@@ -1088,7 +1092,7 @@ class CredentialsViewModelTest {
                 )
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(true)) doReturn true
-            whenever(loginUser.invoke(serverUrl, username, pin)) doReturn
+            whenever(loginUserOfflineWithCode.invoke(serverUrl, username, pin)) doReturn
                 LoginResult.Success(displayTrackingMessage = false, initialSyncDone = true)
 
             initViewModel(
@@ -1107,8 +1111,64 @@ class CredentialsViewModelTest {
 
                 testDispatcher.scheduler.advanceUntilIdle()
 
-                // THEN - the entered credential is used as the offline login password (verbatim)
-                verify(loginUser).invoke(serverUrl, username, pin)
+                // THEN - the entered credential is used as the offline login code (verbatim)
+                verify(loginUserOfflineWithCode).invoke(serverUrl, username, pin)
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN too many failed offline attempts WHEN lockout is triggered THEN login is disabled then re-enabled`() =
+        runTest {
+            // GIVEN
+            val serverUrl = "https://test.server.org"
+            val username = "testUser"
+            val pin = "1234"
+            val lockoutSeconds = 3
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn
+                BiometricsInfo(
+                    canUseBiometrics = false,
+                    displayBiometricsMessageAfterLogin = false,
+                )
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(true)) doReturn true
+            val countdownMessage = "Locked out, try again shortly"
+            whenever(loginUserOfflineWithCode.invoke(serverUrl, username, pin)) doReturn
+                LoginResult.LockOut(lockoutSeconds)
+            whenever(credentialsResourceProvider.getLockoutCountdownMessage(any())) doReturn countdownMessage
+
+            initViewModel(
+                serverUrl = serverUrl,
+                username = username,
+                entryMode = CredentialsEntryMode.EXISTING_OAUTH,
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                awaitItem()
+                val lockedState = awaitItem()
+                assertTrue(lockedState.isSessionLocked)
+
+                // WHEN - the offline credential triggers a lockout
+                viewModel.onOfflineCredentialEntered(pin)
+
+                // Advance just past the login spinner's minimum duration, landing right after
+                // the countdown's first tick
+                testDispatcher.scheduler.advanceTimeBy(3.1.seconds)
+
+                // THEN - login is disabled and the countdown message is shown
+                val lockedOutState = expectMostRecentItem()
+                assertEquals(LoginState.Disabled, lockedOutState.loginState)
+                assertEquals(countdownMessage, lockedOutState.errorMessage)
+
+                // WHEN - the lockout duration fully elapses
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - login is re-enabled and the countdown message is cleared
+                val finalState = expectMostRecentItem()
+                assertEquals(LoginState.Enabled, finalState.loginState)
+                assertEquals(null, finalState.errorMessage)
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -1217,6 +1277,8 @@ class CredentialsViewModelTest {
                 entryMode = entryMode,
                 autoPromptLogin = autoPromptLogin,
                 setOAuthPin = setOAuthPin,
+                loginUserOfflineWithCode = loginUserOfflineWithCode,
+                credentialsResourceProvider = credentialsResourceProvider,
             )
         return viewModel
     }

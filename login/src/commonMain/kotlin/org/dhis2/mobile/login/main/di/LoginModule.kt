@@ -13,6 +13,7 @@ import org.dhis2.mobile.login.main.domain.usecase.GetOAuthLogoutUrl
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
 import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
+import org.dhis2.mobile.login.main.domain.usecase.LoginUserOffline
 import org.dhis2.mobile.login.main.domain.usecase.LoginUserWithOAuth
 import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
 import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
@@ -23,6 +24,7 @@ import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.DefaultNavigator
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
+import org.dhis2.mobile.login.main.ui.provider.CredentialsResourceProvider
 import org.dhis2.mobile.login.main.ui.state.OidcInfo
 import org.dhis2.mobile.login.main.ui.viewmodel.CredentialsViewModel
 import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
@@ -98,6 +100,12 @@ internal val mainLoginModule =
             SetOAuthPin(get { parametersOf(params.get()) })
         }
 
+        factory { params ->
+            LoginUserOffline(get { parametersOf(params.get()) })
+        }
+
+        single { CredentialsResourceProvider() }
+
         viewModel { parameters ->
             val context = parameters.get<PlatformContext>()
             LoginViewModel(
@@ -144,6 +152,8 @@ internal val mainLoginModule =
                 entryMode = entryMode,
                 autoPromptLogin = autoPromptLogin,
                 setOAuthPin = get { parametersOf(context) },
+                loginUserOfflineWithCode = get { parametersOf(context) },
+                credentialsResourceProvider = get(),
             )
         }
     }
