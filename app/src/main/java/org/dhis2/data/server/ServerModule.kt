@@ -31,8 +31,6 @@ import org.dhis2.form.data.UniqueAttributeController
 import org.dhis2.metadata.usecases.DataSetConfiguration
 import org.dhis2.metadata.usecases.ProgramConfiguration
 import org.dhis2.metadata.usecases.TrackedEntityTypeConfiguration
-import org.dhis2.mobile.commons.files.FileController
-import org.dhis2.mobile.commons.files.FileControllerImpl
 import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.mobile.commons.providers.CustomLabelProviderImpl
 import org.dhis2.mobile.commons.reporting.CrashReportController
@@ -144,10 +142,6 @@ class ServerModule {
     @Provides
     @PerServer
     fun providesVersionStatusController(d2: D2): VersionRepository = VersionRepository(d2)
-
-    @Provides
-    @PerServer
-    fun providesFileController(): FileController = FileControllerImpl()
 
     @Provides
     @PerServer

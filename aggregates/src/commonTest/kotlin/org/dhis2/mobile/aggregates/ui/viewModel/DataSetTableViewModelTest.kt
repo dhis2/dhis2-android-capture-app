@@ -165,6 +165,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                 DataSetInstanceData(
                     dataSetDetails =
                         DataSetDetails(
+                            dataSetUid = "dataSetUid",
                             customTitle =
                                 DataSetCustomTitle(
                                     header = "title",
@@ -829,6 +830,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                 DataSetInstanceData(
                     dataSetDetails =
                         DataSetDetails(
+                            dataSetUid = "dataSetUid",
                             customTitle =
                                 DataSetCustomTitle(
                                     header = "Title",
@@ -878,6 +880,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                 DataSetInstanceData(
                     dataSetDetails =
                         DataSetDetails(
+                            dataSetUid = "dataSetUid",
                             customTitle =
                                 DataSetCustomTitle(
                                     header = "Title",
@@ -925,6 +928,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                 DataSetInstanceData(
                     dataSetDetails =
                         DataSetDetails(
+                            dataSetUid = "dataSetUid",
                             customTitle =
                                 DataSetCustomTitle(
                                     header = "Title",

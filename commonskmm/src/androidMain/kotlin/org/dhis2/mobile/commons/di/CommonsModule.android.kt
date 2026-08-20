@@ -10,8 +10,6 @@ import org.dhis2.mobile.commons.data.ValueParserImpl
 import org.dhis2.mobile.commons.error.DomainErrorMapper
 import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepositoryImpl
-import org.dhis2.mobile.commons.files.FileController
-import org.dhis2.mobile.commons.files.FileControllerImpl
 import org.dhis2.mobile.commons.files.FileHandler
 import org.dhis2.mobile.commons.files.FileHandlerImpl
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
@@ -38,9 +36,6 @@ actual val commonsModule: Module
             }
             single<CustomIntentRepository> {
                 CustomIntentRepositoryImpl(get())
-            }
-            single<FileController> {
-                FileControllerImpl()
             }
             single<FileHandler> {
                 FileHandlerImpl()

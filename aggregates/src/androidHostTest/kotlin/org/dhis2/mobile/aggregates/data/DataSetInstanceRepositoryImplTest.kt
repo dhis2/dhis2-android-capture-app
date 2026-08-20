@@ -30,7 +30,6 @@ class DataSetInstanceRepositoryImplTest {
         DataSetInstanceRepositoryImpl(
             d2 = d2,
             periodLabelProvider = PeriodLabelProvider(),
-            fileController = mock(),
         )
 
     private val dataSetUid = "dataSetUid"

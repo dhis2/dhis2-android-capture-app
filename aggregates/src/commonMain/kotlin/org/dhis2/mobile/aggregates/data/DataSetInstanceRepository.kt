@@ -172,6 +172,8 @@ internal interface DataSetInstanceRepository {
 
     suspend fun uploadFile(
         path: String,
+        dataElementUid: String,
+        dataSetUid: String,
         isImage: Boolean,
     ): Result<String?>
 

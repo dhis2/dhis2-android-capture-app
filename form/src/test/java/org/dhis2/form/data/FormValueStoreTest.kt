@@ -8,7 +8,6 @@ import org.dhis2.form.model.EnrollmentDetail
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.model.ValueStoreResult.VALUE_CHANGED
 import org.dhis2.form.model.ValueStoreResult.VALUE_NOT_UNIQUE
-import org.dhis2.mobile.commons.files.FileController
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.FeatureType
@@ -49,7 +48,6 @@ class FormValueStoreTest {
     private val crashReportController: CrashReportController = mock()
     private val networkUtils: NetworkUtils = mock()
     private val resourceManager: ResourceManager = mock()
-    private val fileController: FileController = mock()
     private val enrollmentRepository: EnrollmentObjectRepository = mock()
     private val eventRepository: EventObjectRepository =
         mock {
@@ -69,7 +67,6 @@ class FormValueStoreTest {
                 crashReportController,
                 networkUtils,
                 resourceManager,
-                fileController,
                 uniqueAttributeController,
             )
         deValueStore =
@@ -82,7 +79,6 @@ class FormValueStoreTest {
                 crashReportController,
                 networkUtils,
                 resourceManager,
-                fileController,
                 uniqueAttributeController,
             )
         dvValueStore =
@@ -95,7 +91,6 @@ class FormValueStoreTest {
                 crashReportController,
                 networkUtils,
                 resourceManager,
-                fileController,
                 uniqueAttributeController,
             )
     }
@@ -236,34 +231,6 @@ class FormValueStoreTest {
 
         assertTrue(result.valueStoreResult == ValueStoreResult.FILE_SAVED)
         assertTrue(result.uid == generatedUid)
-    }
-
-    @Test
-    fun `Should try to resize image`() {
-        val generatedUid = "fileResourceUid"
-        val mockedDataElement: DataElement =
-            mock {
-                on { valueType() } doReturn ValueType.IMAGE
-            }
-        whenever(
-            d2
-                .dataElementModule()
-                .dataElements()
-                .uid(any())
-                .blockingGet(),
-        ) doReturn mockedDataElement
-        whenever(
-            d2.fileResourceModule().fileResources(),
-        ) doReturn mock()
-        whenever(
-            d2.fileResourceModule().fileResources().blockingAdd(File("filePath")),
-        ) doReturn generatedUid
-        deValueStore.storeFile(
-            uid = "uid",
-            filePath = "filePath",
-        )
-
-        verify(fileController).resize("filePath")
     }
 
     @Test

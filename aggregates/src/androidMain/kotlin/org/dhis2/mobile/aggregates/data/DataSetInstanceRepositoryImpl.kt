@@ -24,11 +24,11 @@ import org.dhis2.mobile.aggregates.model.ValidationResultStatus
 import org.dhis2.mobile.aggregates.model.ValidationRulesResult
 import org.dhis2.mobile.aggregates.model.Violation
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
-import org.dhis2.mobile.commons.files.FileController
 import org.dhis2.mobile.commons.input.InputType
 import org.dhis2.mobile.commons.validation.validators.FieldMaskValidator
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
+import org.hisp.dhis.android.core.arch.helpers.ResourceContext
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
@@ -50,7 +50,6 @@ import java.util.Locale
 internal class DataSetInstanceRepositoryImpl(
     private val d2: D2,
     private val periodLabelProvider: PeriodLabelProvider,
-    private val fileController: FileController,
 ) : DataSetInstanceRepository {
     override suspend fun getDataSetInstance(
         dataSetUid: String,
@@ -197,12 +196,14 @@ internal class DataSetInstanceRepositoryImpl(
                 attributeOptionCombo = attrOptionComboUid,
             ).blockingGet()
             ?.toDataSetDetails(
+                dataSetUid = dataSetUid,
                 periodLabel = periodLabel,
                 isDefaultCatCombo = isDefaultCatCombo == true,
                 customText = dataSetDTOCustomTitle,
                 isCompleted = isComplete(dataSetUid, periodId, orgUnitUid, attrOptionComboUid),
                 edition = edition,
             ) ?: DataSetDetails(
+            dataSetUid = dataSetUid,
             customTitle = dataSetDTOCustomTitle.toCustomTitle(),
             dataSetTitle = dataSet?.displayName()!!,
             dateLabel = periodLabel,
@@ -1280,16 +1281,26 @@ internal class DataSetInstanceRepositoryImpl(
 
     override suspend fun uploadFile(
         path: String,
+        dataElementUid: String,
+        dataSetUid: String,
         isImage: Boolean,
     ): Result<String?> {
-        val file =
+        val fileContext =
             if (isImage) {
-                fileController.resize(path)
+                ResourceContext.ImageContext.DatasetImageContext(
+                    datasetUid = dataSetUid,
+                    resourceUid = dataElementUid,
+                )
             } else {
-                File(path)
+                ResourceContext.FileContext
             }
         return try {
-            Result.success(d2.fileResourceModule().fileResources().blockingAdd(file))
+            Result.success(
+                d2.fileResourceModule().fileResources().blockingProcessAndAdd(
+                    File(path),
+                    fileContext,
+                ),
+            )
         } catch (e: Exception) {
             Result.failure(e)
         }
