@@ -10,6 +10,7 @@ import org.dhis2.form.model.ValueStoreResult.VALUE_CHANGED
 import org.dhis2.form.model.ValueStoreResult.VALUE_NOT_UNIQUE
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.helpers.ResourceContext
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
@@ -32,6 +33,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.mock
@@ -231,6 +233,116 @@ class FormValueStoreTest {
 
         assertTrue(result.valueStoreResult == ValueStoreResult.FILE_SAVED)
         assertTrue(result.uid == generatedUid)
+    }
+
+    @Test
+    fun `Should use FileContext when storing file resource for data element entry mode`() {
+        val mockedDataElement: DataElement =
+            mock {
+                on { valueType() } doReturn ValueType.FILE_RESOURCE
+            }
+        whenever(
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid(any())
+                .blockingGet(),
+        ) doReturn mockedDataElement
+        whenever(d2.fileResourceModule().fileResources()) doReturn mock()
+        whenever(
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any(), any()),
+        ) doReturn "fileResourceUid"
+
+        deValueStore.storeFile(uid = "uid", filePath = "filePath")
+
+        verify(d2.fileResourceModule().fileResources()).blockingProcessAndAdd(
+            any(),
+            argThat { this is ResourceContext.FileContext },
+        )
+    }
+
+    @Test
+    fun `Should use FileContext when storing file resource for attribute entry mode`() {
+        val mockedAttribute: TrackedEntityAttribute =
+            mock {
+                on { valueType() } doReturn ValueType.FILE_RESOURCE
+            }
+        whenever(
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid(any())
+                .blockingGet(),
+        ) doReturn mockedAttribute
+        whenever(d2.fileResourceModule().fileResources()) doReturn mock()
+        whenever(
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any(), any()),
+        ) doReturn "fileResourceUid"
+
+        attrValueStore.storeFile(uid = "uid", filePath = "filePath")
+
+        verify(d2.fileResourceModule().fileResources()).blockingProcessAndAdd(
+            any(),
+            argThat { this is ResourceContext.FileContext },
+        )
+    }
+
+    @Test
+    fun `Should use ProgramImageContext when storing image for attribute entry mode`() {
+        val generatedUid = "fileResourceUid"
+        val programUid = "programUid"
+        val mockedAttribute: TrackedEntityAttribute =
+            mock {
+                on { valueType() } doReturn ValueType.IMAGE
+            }
+        val mockedEnrollment: Enrollment =
+            mock {
+                on { program() } doReturn programUid
+            }
+        whenever(
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid(any())
+                .blockingGet(),
+        ) doReturn mockedAttribute
+        whenever(enrollmentRepository.blockingGet()) doReturn mockedEnrollment
+        whenever(d2.fileResourceModule().fileResources()) doReturn mock()
+        whenever(
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any(), any()),
+        ) doReturn generatedUid
+
+        val result = attrValueStore.storeFile(uid = "uid", filePath = "filePath")
+
+        verify(d2.fileResourceModule().fileResources()).blockingProcessAndAdd(
+            any(),
+            argThat {
+                (this as? ResourceContext.ImageContext.ProgramImageContext)?.let {
+                    it.programUid == programUid && it.resourceUid == "uid"
+                } ?: false
+            },
+        )
+        assertTrue(result.valueStoreResult == ValueStoreResult.FILE_SAVED)
+        assertTrue(result.uid == generatedUid)
+    }
+
+    @Test
+    fun `Should return error when storing image for data element entry mode with null enrollment`() {
+        val mockedDataElement: DataElement =
+            mock {
+                on { valueType() } doReturn ValueType.IMAGE
+            }
+        whenever(
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid(any())
+                .blockingGet(),
+        ) doReturn mockedDataElement
+
+        val result = deValueStore.storeFile(uid = "uid", filePath = "filePath")
+
+        assertTrue(result.valueStoreResult == ValueStoreResult.ERROR_UPDATING_VALUE)
     }
 
     @Test

@@ -716,6 +716,7 @@ internal class DataSetTableViewModel(
                     onUiAction(UiAction.OnValueChanged(cellId, it))
                 },
                 onFailure = {
+                    showSnackbar(resourceManager.provideFileUploadError())
                 },
             )
         }

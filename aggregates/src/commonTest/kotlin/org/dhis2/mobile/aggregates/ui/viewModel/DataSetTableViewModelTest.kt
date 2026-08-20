@@ -87,6 +87,7 @@ import org.koin.test.mock.declareMock
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.verify
@@ -997,6 +998,105 @@ internal class DataSetTableViewModelTest : KoinTest {
                     assertTrue(this.currentSection() == "section_uid1")
                 }
                 expectNoEvents()
+            }
+        }
+
+    @Test
+    fun `should call uploadFile with dataElementUid and isImage true when image selected from gallery`() =
+        runTest {
+            val testingId =
+                CellIdGenerator.generateId(
+                    rowIds = listOf(TableId("rowId123456", TableIdType.DataElement)),
+                    columnIds = listOf(TableId("columnId123", TableIdType.CategoryOptionCombo)),
+                )
+            val imagePath = "imagePath"
+            val resourceManager: ResourceManager = get()
+            whenever(runBlocking { resourceManager.provideFileUploadError() }) doReturn "upload error"
+            whenever(uploadFile(any(), any(), any(), any())) doReturn Result.failure(Exception("test"))
+
+            viewModel.dataSetScreenState.test {
+                awaitInitialization()
+                viewModel.onUiAction(UiAction.OnAddImage(testingId))
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                val callbackCaptor = argumentCaptor<(String?) -> Unit>()
+                verify(uiActionHandler).onAddImage(any(), callbackCaptor.capture())
+                callbackCaptor.firstValue.invoke(imagePath)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                verify(uploadFile).invoke(imagePath, "rowId123456", "dataSetUid", true)
+            }
+        }
+
+    @Test
+    fun `should call uploadFile with dataElementUid and isImage true when photo taken`() =
+        runTest {
+            val testingId =
+                CellIdGenerator.generateId(
+                    rowIds = listOf(TableId("rowId123456", TableIdType.DataElement)),
+                    columnIds = listOf(TableId("columnId123", TableIdType.CategoryOptionCombo)),
+                )
+            val photoPath = "photoPath"
+            val resourceManager: ResourceManager = get()
+            whenever(runBlocking { resourceManager.provideFileUploadError() }) doReturn "upload error"
+            whenever(uploadFile(any(), any(), any(), any())) doReturn Result.failure(Exception("test"))
+
+            viewModel.dataSetScreenState.test {
+                awaitInitialization()
+                viewModel.onUiAction(UiAction.OnTakePhoto(testingId))
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                val callbackCaptor = argumentCaptor<(String?) -> Unit>()
+                verify(uiActionHandler).onTakePicture(callbackCaptor.capture())
+                callbackCaptor.firstValue.invoke(photoPath)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                verify(uploadFile).invoke(photoPath, "rowId123456", "dataSetUid", true)
+            }
+        }
+
+    @Test
+    fun `should call uiActionHandler onSelectFile when selecting file`() =
+        runTest {
+            val testingId =
+                CellIdGenerator.generateId(
+                    rowIds = listOf(TableId("rowId123456", TableIdType.DataElement)),
+                    columnIds = listOf(TableId("columnId123", TableIdType.CategoryOptionCombo)),
+                )
+
+            viewModel.dataSetScreenState.test {
+                awaitInitialization()
+                viewModel.onUiAction(UiAction.OnSelectFile(testingId))
+                testDispatcher.scheduler.advanceUntilIdle()
+                verify(uiActionHandler).onSelectFile(any(), any(), any())
+            }
+        }
+
+    @Test
+    fun `should call uploadFile with dataElementUid and isImage false when file selected`() =
+        runTest {
+            val testingId =
+                CellIdGenerator.generateId(
+                    rowIds = listOf(TableId("rowId123456", TableIdType.DataElement)),
+                    columnIds = listOf(TableId("columnId123", TableIdType.CategoryOptionCombo)),
+                )
+            val filePath = "filePath"
+            val resourceManager: ResourceManager = get()
+            whenever(runBlocking { resourceManager.provideFileUploadError() }) doReturn "upload error"
+            whenever(uploadFile(any(), any(), any(), any())) doReturn Result.failure(Exception("test"))
+
+            viewModel.dataSetScreenState.test {
+                awaitInitialization()
+                viewModel.onUiAction(UiAction.OnSelectFile(testingId))
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                val successCaptor = argumentCaptor<(String?) -> Unit>()
+                val failureCaptor = argumentCaptor<() -> Unit>()
+                verify(uiActionHandler).onSelectFile(any(), successCaptor.capture(), failureCaptor.capture())
+                successCaptor.firstValue.invoke(filePath)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                verify(uploadFile).invoke(filePath, "rowId123456", "dataSetUid", false)
             }
         }
 
