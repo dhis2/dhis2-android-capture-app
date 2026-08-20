@@ -41,7 +41,14 @@ fun PluginSlot(
     val slotPlugins = plugins.filter { injectionPoint in it.metadata.injectionPoints }
 
     slotPlugins.forEach { registered ->
-        key(registered.metadata.id) {
+        // Keyed on the class loader as well as the id, because a reload replaces the registry entry
+        // with a new InMemoryDexClassLoader and therefore new plugin classes. Keying on the id alone
+        // kept the previous composition's `remember`ed slots alive across that swap, so state a
+        // plugin had stored — a `produceState` value, for instance — was an instance of the *old*
+        // loader's class while the new code cast it to the new loader's, giving
+        // `ClassCastException: Foo cannot be cast to Foo`. Adding the loader to the key discards the
+        // stale composition instead.
+        key(registered.metadata.id, registered.classLoader) {
             PluginContent(registered = registered)
         }
     }
