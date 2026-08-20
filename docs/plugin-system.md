@@ -824,6 +824,50 @@ on the next sync, so use an instance you are willing to dirty. And a refusal is 
 render it as the guard doing its job, distinctly from an actual failure, or the test reads as broken
 software when it is working.
 
+### 8.2 Testing tracker search
+
+Tracker search needs its own test, because it is the one accessor the read model in §3 does not
+cover. Everywhere else the grant rides on `RepositoryScope` filters, which are append-only — a
+plugin's own `by*()` can only narrow, so there is nothing to probe. `trackedEntitySearch()` uses the
+SDK's *other* scope type, `TrackedEntityInstanceQueryRepositoryScope`, whose fields are
+**single-valued and replaced** rather than accumulated: `program`, `orgUnits`, `orgUnitMode` and the
+online/offline mode. A caller who sets one overwrites whatever was there.
+
+The SDK closes that by re-applying the grant in `TrackedEntitySearchOperators.scope`, which every
+`by*()` rebuilds through, so a widening cannot survive the call that requested it. `applyGrant()`
+does four things, and each is worth one probe:
+
+| Probe                                | Mechanism                                                                | Expected            |
+|--------------------------------------|--------------------------------------------------------------------------|---------------------|
+| `byProgram()` a granted program      | baseline — the number the rest are compared against                      | some count *B*      |
+| `byProgram()` an **ungranted** one   | the program is rewritten to `__scope_denied__`                             | **0**               |
+| no program filter at all             | `appendGrantWhere()` adds a sub-select over the granted programs          | bounded to the grant |
+| `byOrgUnitMode().eq(ACCESSIBLE)`     | forced to `SELECTED` over the grant's own pre-expanded unit set           | **= *B***           |
+| `onlineOnly()`                       | forced to `OFFLINE_ONLY`                                                 | **= *B***           |
+
+The last two are the ones that matter most, and neither is intuitive. `ACCESSIBLE` and `ALL` resolve
+against the logged-in *user* rather than the org units the config named, so honouring them would let
+a plugin reach past its grant with one call — which is also why §4 refuses them in the config.
+`onlineOnly()` is worse: an online search is answered by the server, where none of these local
+restrictions exist at all, so the grant would simply not be in the request.
+
+Assert against the baseline rather than absolute numbers. The claim under test is "asking for more
+did not return more", which is portable across databases; "27 results" is not. The plugin project
+from §5 implements these as a button that runs all five and prints a pass/fail per row.
+
+Search needs `SEARCH_TRACKED_ENTITY` in `capabilities`, which is **not** implied by
+`READ_TRACKED_ENTITY` — without it `trackedEntitySearch()` throws `SCOPE_VIOLATION` before any query
+runs, and that is a valid probe result rather than a malfunction. Grant it explicitly:
+
+```json
+"capabilities": ["READ_METADATA","READ_TRACKED_ENTITY","SEARCH_TRACKED_ENTITY"]
+```
+
+What these probes cannot cover: `TrackedEntityInstanceQueryRepositoryScope` still has a public
+constructor (§7), so a plugin can in principle build a scope directly instead of going through the
+builder the grant is installed on. The probes exercise the fluent API, which is the path an honest
+plugin takes; closing the other one is a public-API break and needs a deprecation cycle.
+
 ### Previewing without the Capture App (optional)
 
 The loop above is slow for UI work. You can add an Android application module to *your own* plugin
@@ -870,6 +914,7 @@ Two more things that trip this up:
 | `D2Error … SCOPE_VIOLATION` / `SecurityException` on a write                                 | The write fell outside the granted scope. Unlike the query path, writes are checked against the object being written: its org unit, program or data element. Check the `scope.writable` block in the dataStore config against two closed-by-default rules: it is intersected with the read grant, so anything writable but not readable grants nothing; and `writable.orgUnits` defaults to `NONE`, so leaving that line out refuses every write on the org-unit check even with the capability and the program granted. §8.1 has a case-by-case matrix.                                                                             |                                                                                                                                                                                    |
 | A scoped query returns nothing when you expected rows                                       | The grant and your filter are AND-ed, so filtering for something outside the grant yields empty rather than an error. Read `context.pluginMetadata.scope` to see what was actually granted. Note also that `capabilities` is opt-in — an accessor whose capability is missing throws rather than returning empty.                                                                                          |                                                                                                                                                                                    |
 | `No Android build-tools installed under …` / `d8 not found` / `apksigner not found`         | Install build-tools through the SDK Manager, or set `pluginBundle.d8Executable` / `pluginBundle.apksignerExecutable`.                                                                                                                                                                                                                                                                                    |                                                                                                                                                                                    |
+| `onlineOnly()` / `onlineFirst()` appear to be ignored in tracker search                      | They are, deliberately. A scoped search is forced to `OFFLINE_ONLY`, because an online search is answered by the server where none of the local restrictions exist. A scoped plugin therefore only ever searches what is already on the device — sync first if results look short. Same for `byOrgUnitMode().eq(ACCESSIBLE)`, which is forced to `SELECTED`. See §8.2.                                        |
 | The plugin's error message is just `D2Error`, with no detail                                  | `D2Error` is `data class D2Error(…) : Exception()` and passes nothing to the `Exception` constructor, so `Throwable.message` is **always null**. The whole diagnostic is in `errorCode()` / `errorDescription()` — read those instead of `message` when rendering a failure, or every scope violation looks identical.                                                                                       |
 | `Signing keystore not found at …`                                                           | No `~/.android/debug.keystore` on this machine (install Android Studio, or create one with `keytool`), or configure `pluginBundle.signing`.                                                                                                                                                                                                                                                              |                                                                                                                                                                                    |
 
