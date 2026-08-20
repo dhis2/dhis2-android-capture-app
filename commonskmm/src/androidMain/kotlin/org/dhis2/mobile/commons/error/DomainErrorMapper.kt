@@ -45,6 +45,12 @@ class DomainErrorMapper(
             D2ErrorCode.BAD_CREDENTIALS_OFFLINE_CODE,
             -> DomainError.AuthenticationError(errorMessage)
 
+            // Expired, rejected or missing tokens: the account still works offline, but the
+            // user has to go through the online login again to reach the server
+            D2ErrorCode.OAUTH2_NO_VALID_TOKEN,
+            D2ErrorCode.OPEN_ID_CONNECT_NO_VALID_TOKEN,
+            -> DomainError.OnlineLoginRequiredError(errorMessage)
+
             // User account issues (disabled, locked)
             D2ErrorCode.USER_ACCOUNT_DISABLED,
             D2ErrorCode.USER_ACCOUNT_LOCKED,

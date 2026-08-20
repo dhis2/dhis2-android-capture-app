@@ -243,6 +243,11 @@ class D2ErrorMessageProviderImpl : D2ErrorMessageProvider {
             D2ErrorCode.OAUTH2_INVALID_STATE,
             ->
                 getString(Res.string.oauth2_error)
+
+            D2ErrorCode.OAUTH2_NO_VALID_TOKEN,
+            D2ErrorCode.OPEN_ID_CONNECT_NO_VALID_TOKEN,
+            ->
+                getString(Res.string.error_online_login_required)
         }
 
     private suspend fun defaultError() = getString(Res.string.error_unexpected)

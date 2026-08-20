@@ -25,6 +25,16 @@ sealed class DomainError : Throwable() {
     ) : DomainError()
 
     /**
+     * The session can no longer reach the server: the stored tokens are expired, were rejected
+     * or were never present on this device. Different from AuthenticationError: the credentials
+     * are not wrong and the account keeps working offline, so the app must ask the user to log
+     * in online again instead of reporting a failure.
+     */
+    data class OnlineLoginRequiredError(
+        override val message: String,
+    ) : DomainError()
+
+    /**
      * User lacks authorization for this operation (program/feature not accessible).
      * Different from PermissionDeniedError: this is about user rights/enrollment in programs.
      * Typically shows access denied message and suggests contacting admin.
