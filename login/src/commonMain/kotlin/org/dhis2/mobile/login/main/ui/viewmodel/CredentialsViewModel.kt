@@ -121,6 +121,8 @@ class CredentialsViewModel(
 
     private var appLinkJob: Job? = null
 
+    private var offlinePin: String = ""
+
     private val _credentialsScreenState = MutableStateFlow(initialState)
     val credentialsScreenState =
         _credentialsScreenState
@@ -592,8 +594,14 @@ class CredentialsViewModel(
 
                 when {
                     result.isSuccess -> {
-                        updatePassword(password = result.getOrNull() ?: "")
-                        onLoginClicked()
+                        if (entryMode == CredentialsEntryMode.EXISTING_OAUTH) {
+                            result.getOrNull()?.let {
+                                onOfflineCredentialEntered(it)
+                            } ?: { onLoginClicked() }
+                        } else {
+                            updatePassword(password = result.getOrNull() ?: "")
+                            onLoginClicked()
+                        }
                     }
 
                     else -> {
@@ -647,11 +655,17 @@ class CredentialsViewModel(
 
     context(platformContext: PlatformContext)
     fun onEnableBiometrics(granted: Boolean) {
+        val credential =
+            if (entryMode == CredentialsEntryMode.NEW_ACCOUNT_OAUTH) {
+                offlinePin
+            } else {
+                credentialsScreenState.value.credentialsInfo?.password ?: ""
+            }
         launchUseCase {
             updateBiometricPermission(
                 serverUrl,
                 credentialsScreenState.value.credentialsInfo?.username ?: "",
-                credentialsScreenState.value.credentialsInfo?.password ?: "",
+                credential,
                 granted,
             )
             _credentialsScreenState.update {
@@ -717,14 +731,15 @@ class CredentialsViewModel(
         launchUseCase {
             setOAuthPin(credential).fold(
                 onSuccess = {
-                    _credentialsScreenState.update {
-                        it.copy(
-                            afterLoginActions =
-                                it.afterLoginActions.toMutableList().apply {
-                                    remove(AfterLoginAction.CreateOfflineCredential)
-                                },
-                        )
-                    }
+                    _credentialsScreenState
+                        .update {
+                            it.copy(
+                                afterLoginActions =
+                                    it.afterLoginActions.toMutableList().apply {
+                                        remove(AfterLoginAction.CreateOfflineCredential)
+                                    },
+                            )
+                        }.also { offlinePin = credential }
                 },
                 onFailure = { error ->
                     logOutUser.invoke()

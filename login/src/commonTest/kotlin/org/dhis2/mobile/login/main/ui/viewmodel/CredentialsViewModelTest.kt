@@ -1175,6 +1175,118 @@ class CredentialsViewModelTest {
         }
 
     @Test
+    fun `GIVEN EXISTING_OAUTH WHEN biometric login succeeds THEN it logs in via the offline-credential path`() =
+        runTest {
+            // GIVEN - biometrics decrypts the stored offline PIN
+            val platformContext = mock<PlatformContext>()
+            val serverUrl = "https://test.server.org"
+            val username = "testUser"
+            val pin = "1234"
+
+            initViewModel(
+                serverUrl = serverUrl,
+                username = username,
+                entryMode = CredentialsEntryMode.EXISTING_OAUTH,
+            )
+
+            with(platformContext) {
+                whenever(getAvailableUsernames()) doReturn emptyList()
+                whenever(getBiometricInfo(any())) doReturn BiometricsInfo(true, false)
+                whenever(getHasOtherAccounts.invoke()) doReturn false
+                whenever(getIsSessionLockedUseCase(any())) doReturn false
+                whenever(biometricLogin.invoke()) doReturn Result.success(pin)
+                whenever(loginUserOfflineWithCode.invoke(serverUrl, username, pin)) doReturn
+                    LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
+
+                viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                    awaitItem()
+                    awaitItem()
+
+                    // WHEN
+                    viewModel.onBiometricsClicked()
+                    testDispatcher.scheduler.advanceUntilIdle()
+
+                    // THEN - the biometric credential is used directly as the offline-login
+                    // password (via onOfflineCredentialEntered), not routed through
+                    // updatePassword()/onLoginClicked() as before
+                    verify(loginUserOfflineWithCode).invoke(serverUrl, username, pin)
+
+                    cancelAndIgnoreRemainingEvents()
+                }
+            }
+        }
+
+    @Test
+    fun `GIVEN NEW_ACCOUNT_OAUTH WHEN biometrics enabled after offline pin creation THEN the pin is saved as the biometric credential`() =
+        runTest {
+            // GIVEN - a fresh OAuth account that just created its mandatory offline PIN
+            val platformContext = mock<PlatformContext>()
+            val serverUrl = "https://test.server.org"
+            val enrollmentUrl = "$serverUrl/oauth2/enrollment"
+            val pin = "1234"
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
+            whenever(setOAuthPin(pin)) doReturn Result.success(Unit)
+
+            initViewModel(serverUrl = serverUrl, entryMode = CredentialsEntryMode.NEW_ACCOUNT_OAUTH)
+
+            with(platformContext) {
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // WHEN - the mandatory offline PIN is created after OAuth login
+                viewModel.onOfflineCredentialCreated(pin)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // AND - the user later opts in to biometrics
+                viewModel.onEnableBiometrics(true)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - the stored offline PIN (not the empty basic-auth password) becomes
+                // the biometric credential
+                verify(updateBiometricPermission).invoke(serverUrl, "", pin, true)
+            }
+        }
+
+    @Test
+    fun `GIVEN a basic account WHEN biometrics enabled THEN the typed password is saved as the biometric credential`() =
+        runTest {
+            // GIVEN - a basic-auth account with username/password typed in
+            val platformContext = mock<PlatformContext>()
+            val serverUrl = "https://test.server.org"
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(true, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+
+            initViewModel(serverUrl = serverUrl)
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                awaitItem()
+                awaitItem()
+                viewModel.updateUsername("user")
+                awaitItem()
+                viewModel.updatePassword("myPassword")
+                awaitItem()
+
+                with(platformContext) {
+                    // WHEN
+                    viewModel.onEnableBiometrics(true)
+                    testDispatcher.scheduler.advanceUntilIdle()
+
+                    // THEN - the untouched branch still saves the typed password, not offlinePin
+                    verify(updateBiometricPermission).invoke(serverUrl, "user", "myPassword", true)
+                }
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
     fun `GIVEN a username with whitespace WHEN login is clicked THEN it is trimmed before the login use case`() =
         runTest {
             whenever(getAvailableUsernames()) doReturn emptyList()
