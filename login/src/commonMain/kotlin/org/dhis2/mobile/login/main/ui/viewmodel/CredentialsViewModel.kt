@@ -80,6 +80,7 @@ class CredentialsViewModel(
     private val loginUserOfflineWithCode: LoginUserOffline,
     private val credentialsResourceProvider: CredentialsResourceProvider,
     private val getSessionRenewalUrl: GetSessionRenewalUrl,
+    private val autoStartRenewal: Boolean,
 ) : ViewModel() {
     companion object {
         private val COUNTDOWN_TICK_INTERVAL = 1.seconds
@@ -173,6 +174,10 @@ class CredentialsViewModel(
     }
 
     private fun handleExistingOAuthAccount() {
+        if (autoStartRenewal) {
+            onRenewSession()
+            return
+        }
         launchUseCase {
             val biometricInfo = getBiometricInfo(serverUrl)
             _credentialsScreenState.update { current ->

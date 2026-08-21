@@ -36,7 +36,7 @@ class AndroidSyncRepositoryTest {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    val repository =
+    internal val repository =
         AndroidSyncRepository(
             d2 = d2,
             preferences = preferences,

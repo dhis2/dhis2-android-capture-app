@@ -26,6 +26,7 @@ class LoginViewModel(
     private val importDatabase: ImportDatabase,
     private val validateServer: ValidateServer,
     private val networkStatusProvider: NetworkStatusProvider,
+    private val renewSession: Boolean = false,
 ) : ViewModel() {
     private val _serverValidationState = MutableStateFlow(ServerValidationUiState())
     val serverValidationState = _serverValidationState.asStateFlow()
@@ -41,7 +42,7 @@ class LoginViewModel(
 
     private fun goToInitialScreen() {
         launchUseCase {
-            val destination = getInitialScreen()
+            val destination = getInitialScreen(renewSession)
             navigator.navigate(
                 destination = destination,
                 navOptions = {

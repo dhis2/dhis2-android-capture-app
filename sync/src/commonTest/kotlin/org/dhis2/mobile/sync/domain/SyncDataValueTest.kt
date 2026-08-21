@@ -1,17 +1,21 @@
 package org.dhis2.mobile.sync.domain
 
 import kotlinx.coroutines.runBlocking
+import org.dhis2.mobile.commons.error.DomainError
+import org.dhis2.mobile.commons.session.SessionRenewalNotifier
 import org.dhis2.mobile.sync.data.SyncDataValueRepository
 import org.dhis2.mobile.sync.model.SyncDataValueInput
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class SyncDataValueTest {
     private val repository: SyncDataValueRepository = mock()
-    private val useCase = SyncDataValue(repository)
+    private val sessionRenewalNotifier: SessionRenewalNotifier = mock()
+    private val useCase = SyncDataValue(repository, sessionRenewalNotifier)
 
     private val input =
         SyncDataValueInput(
@@ -99,5 +103,28 @@ class SyncDataValueTest {
             val result = useCase(input)
 
             assertTrue(result.isFailure)
+        }
+
+    @Test
+    fun `should request a session renewal when the tokens are no longer valid`() =
+        runBlocking {
+            // GIVEN
+            val error = DomainError.SessionRenewalRequiredError("Your session has expired")
+            whenever(
+                repository.uploadDataValues(
+                    dataSetUid = input.dataSetUid,
+                    orgUnitUid = input.orgUnitUid,
+                    periodId = input.periodId,
+                    attributeOptionComboUid = input.attrOptionComboUid,
+                    categoryOptionComboUids = input.categoryOptionComboUid,
+                ),
+            ).thenAnswer { throw error }
+
+            // WHEN
+            val result = useCase(input)
+
+            // THEN
+            assertEquals(error, result.exceptionOrNull())
+            verify(sessionRenewalNotifier).notifyIfRequired(error)
         }
 }

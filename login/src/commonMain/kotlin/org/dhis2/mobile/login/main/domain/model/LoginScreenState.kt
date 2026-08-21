@@ -24,6 +24,7 @@ sealed interface LoginScreenState {
         val allowRecovery: Boolean,
         val entryMode: CredentialsEntryMode,
         val autoPromptLogin: Boolean = true,
+        val autoStartRenewal: Boolean = false,
     ) : LoginScreenState
 
     @Serializable

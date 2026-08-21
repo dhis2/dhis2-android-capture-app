@@ -1724,6 +1724,68 @@ class CredentialsViewModelTest {
             }
         }
 
+    @Test
+    fun `GIVEN the screen is opened to renew the session WHEN it loads THEN the browser opens right away`() =
+        runTest {
+            // GIVEN - the user already accepted renewing in the expired-session dialog, so nothing
+            // else should be asked of them here
+            val serverUrl = "https://test.server.org"
+            val authorizationUrl = "$serverUrl/oauth2/authorize"
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn true
+            whenever(getSessionRenewalUrl(any())) doReturn Result.success(authorizationUrl)
+
+            // WHEN
+            initViewModel(
+                serverUrl = serverUrl,
+                username = "testuser",
+                entryMode = CredentialsEntryMode.EXISTING_OAUTH,
+                autoStartRenewal = true,
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - the browser is opened without a tap, and the offline dialog is not left
+                // sitting behind it
+                verify(navigator).navigate(
+                    eq(LoginScreenState.OauthAuthentication(selectedServer = authorizationUrl)),
+                    any(),
+                )
+                assertFalse(expectMostRecentItem().isSessionLocked)
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN the screen is opened normally WHEN it loads THEN no renewal is started`() =
+        runTest {
+            // GIVEN - the ordinary landing on an existing OAuth account
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+
+            // WHEN
+            initViewModel(
+                entryMode = CredentialsEntryMode.EXISTING_OAUTH,
+                autoPromptLogin = false,
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - the user decides when to go through the browser
+                verify(getSessionRenewalUrl, never()).invoke(any())
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
     private fun initViewModel(
         serverName: String? = "Test Server",
         serverUrl: String = "https://test.server.org",
@@ -1733,6 +1795,7 @@ class CredentialsViewModelTest {
         autoPromptLogin: Boolean = true,
         oidcInfo: OidcInfo? = null,
         appLinkNavigation: AppLinkNavigation = this.appLinkNavigation,
+        autoStartRenewal: Boolean = false,
     ): CredentialsViewModel {
         viewModel =
             CredentialsViewModel(
@@ -1765,6 +1828,7 @@ class CredentialsViewModelTest {
                 loginUserOfflineWithCode = loginUserOfflineWithCode,
                 credentialsResourceProvider = credentialsResourceProvider,
                 getSessionRenewalUrl = getSessionRenewalUrl,
+                autoStartRenewal = autoStartRenewal,
             )
         return viewModel
     }

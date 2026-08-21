@@ -2,6 +2,7 @@ package org.dhis2.mobile.sync.domain
 
 import org.dhis2.mobile.commons.domain.UseCase
 import org.dhis2.mobile.commons.error.DomainError
+import org.dhis2.mobile.commons.session.SessionRenewalNotifier
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.data.SyncRepository
 import org.dhis2.mobile.sync.model.SMSConfigResult
@@ -12,6 +13,7 @@ private const val SYNC_METADATA_NAME = "SYNC_METADATA"
 class SyncMetadata(
     private val repository: SyncRepository,
     private val syncBackgroundJobAction: SyncBackgroundJobAction,
+    private val sessionRenewalNotifier: SessionRenewalNotifier,
 ) : UseCase<(progress: Int) -> Unit, Unit> {
     override suspend fun invoke(input: (progress: Int) -> Unit): Result<Unit> =
         try {
@@ -60,6 +62,7 @@ class SyncMetadata(
                 Result.success(Unit)
             } else {
                 repository.saveMetadataSyncState(false)
+                sessionRenewalNotifier.notifyIfRequired(syncMetadataResult.exceptionOrNull())
                 Result.failure(syncMetadataResult.exceptionOrNull()!!)
             }
         } catch (e: Exception) {
