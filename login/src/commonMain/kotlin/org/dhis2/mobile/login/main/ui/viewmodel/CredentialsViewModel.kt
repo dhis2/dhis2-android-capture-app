@@ -20,12 +20,14 @@ import org.dhis2.mobile.login.main.domain.model.DeviceEnrollmentInfo
 import org.dhis2.mobile.login.main.domain.model.LoginResult
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.model.OpenIdLoginConfiguration
+import org.dhis2.mobile.login.main.domain.model.SessionRenewalRequest
 import org.dhis2.mobile.login.main.domain.usecase.BiometricLogin
 import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
 import org.dhis2.mobile.login.main.domain.usecase.GetDeviceEnrollmentUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
 import org.dhis2.mobile.login.main.domain.usecase.GetOAuthLogoutUrl
+import org.dhis2.mobile.login.main.domain.usecase.GetSessionRenewalUrl
 import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUserOffline
@@ -77,6 +79,7 @@ class CredentialsViewModel(
     private val setOAuthPin: SetOAuthPin,
     private val loginUserOfflineWithCode: LoginUserOffline,
     private val credentialsResourceProvider: CredentialsResourceProvider,
+    private val getSessionRenewalUrl: GetSessionRenewalUrl,
 ) : ViewModel() {
     companion object {
         private val COUNTDOWN_TICK_INTERVAL = 1.seconds
@@ -250,6 +253,50 @@ class CredentialsViewModel(
         }
     }
 
+    fun onOfflineCredentialDismissed() {
+        _credentialsScreenState.update {
+            it.copy(isSessionLocked = false)
+        }
+    }
+
+    fun onRenewSession() {
+        _credentialsScreenState.update {
+            it.copy(
+                loginState = LoginState.Running,
+                errorMessage = null,
+                isSessionLocked = false,
+            )
+        }
+        launchUseCase {
+            getSessionRenewalUrl(
+                SessionRenewalRequest(
+                    serverUrl = serverUrl,
+                    isNetworkAvailable = isNetworkOnline.value,
+                ),
+            ).fold(
+                onSuccess = { loginUrl ->
+                    startListeningForOAuthCallbacks()
+                    navigator.navigate(
+                        LoginScreenState.OauthAuthentication(
+                            selectedServer = loginUrl,
+                        ),
+                    )
+                    _credentialsScreenState.update {
+                        it.copy(loginState = LoginState.Enabled)
+                    }
+                },
+                onFailure = { error ->
+                    _credentialsScreenState.update {
+                        it.copy(
+                            loginState = LoginState.Enabled,
+                            errorMessage = error.message,
+                        )
+                    }
+                },
+            )
+        }
+    }
+
     // AppLinkNavigation is a single-delivery channel shared by every CredentialsViewModel alive
     // on the back stack, so only the instance that launched the OAuth browser round-trip may
     // collect it. Collection starts when the flow begins and stops when it terminates.
@@ -366,7 +413,7 @@ class CredentialsViewModel(
         pendingOAuthLoginResult = null
         stopListeningForOAuthCallbacks()
         launchUseCase {
-            handleLoginResult(pending)
+            handleLoginResult(pending, sessionOpenedInBrowser = true)
             _credentialsScreenState.update {
                 it.copy(loginState = LoginState.Enabled)
             }
@@ -510,43 +557,49 @@ class CredentialsViewModel(
         }
     }
 
-    private suspend fun handleLoginResult(result: LoginResult) =
-        when (result) {
-            is LoginResult.Success -> {
-                _credentialsScreenState.update {
-                    it.copy(
-                        afterLoginActions =
-                            buildList {
-                                if (entryMode == CredentialsEntryMode.NEW_ACCOUNT_OAUTH) {
-                                    add(AfterLoginAction.CreateOfflineCredential)
-                                }
-                                if (result.displayTrackingMessage) {
-                                    add(AfterLoginAction.DisplayTrackingMessage)
-                                }
-                                if (getBiometricInfo(serverUrl).displayBiometricsMessageAfterLogin) {
-                                    add(AfterLoginAction.DisplayBiometricsMessage)
-                                }
-                                add(AfterLoginAction.NavigateToNextScreen(result.initialSyncDone))
-                            },
-                    )
-                }
-            }
-
-            is LoginResult.Error -> {
-                val errorMessage =
-                    result.attemptsLeft?.let { attemptsLeft ->
-                        credentialsResourceProvider.getLoginErrorWithAttempts(result.message, attemptsLeft)
-                    } ?: result.message
-                _credentialsScreenState.update {
-                    it.copy(
-                        errorMessage = errorMessage,
-                    )
-                }
-            }
-            is LoginResult.LockOut -> {
-                startLockoutCountdown(result.lockoutSeconds)
+    private suspend fun handleLoginResult(
+        result: LoginResult,
+        sessionOpenedInBrowser: Boolean = false,
+    ) = when (result) {
+        is LoginResult.Success -> {
+            _credentialsScreenState.update {
+                it.copy(
+                    afterLoginActions =
+                        buildList {
+                            if (sessionOpenedInBrowser) {
+                                add(AfterLoginAction.CreateOfflineCredential)
+                            }
+                            if (result.displayTrackingMessage) {
+                                add(AfterLoginAction.DisplayTrackingMessage)
+                            }
+                            if (getBiometricInfo(serverUrl).displayBiometricsMessageAfterLogin) {
+                                add(AfterLoginAction.DisplayBiometricsMessage)
+                            }
+                            add(AfterLoginAction.NavigateToNextScreen(result.initialSyncDone))
+                        },
+                )
             }
         }
+
+        is LoginResult.Error -> {
+            val errorMessage =
+                result.attemptsLeft?.let { attemptsLeft ->
+                    credentialsResourceProvider.getLoginErrorWithAttempts(
+                        result.message,
+                        attemptsLeft,
+                    )
+                } ?: result.message
+            _credentialsScreenState.update {
+                it.copy(
+                    errorMessage = errorMessage,
+                )
+            }
+        }
+
+        is LoginResult.LockOut -> {
+            startLockoutCountdown(result.lockoutSeconds)
+        }
+    }
 
     private fun startLockoutCountdown(lockoutSeconds: Int) {
         lockoutJob?.cancel()
@@ -556,7 +609,10 @@ class CredentialsViewModel(
                     _credentialsScreenState.update {
                         it.copy(
                             loginState = LoginState.Disabled,
-                            errorMessage = credentialsResourceProvider.getLockoutCountdownMessage(remainingSeconds),
+                            errorMessage =
+                                credentialsResourceProvider.getLockoutCountdownMessage(
+                                    remainingSeconds,
+                                ),
                         )
                     }
                     delay(COUNTDOWN_TICK_INTERVAL)

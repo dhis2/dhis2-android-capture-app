@@ -44,6 +44,7 @@
     <string name="openid_or">Or</string>
     <string name="action_openid_log_in">Log in with openID</string>
     <string name="action_manage_account">Manage accounts</string>
+    <string name="oauth_login_url_error">The session could not be renewed. Check the server configuration and try again.</string>
     <string name="tracking_title">Do you want to help us improve this app?</string>
     <string name="tracking_description">If you say yes the app will send anonymous statistics and error logs which help us improve user experience and performance.</string>
     <string name="tracking_description_link">For further details, please refer to our </string>

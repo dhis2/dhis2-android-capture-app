@@ -66,6 +66,7 @@ internal actual val accountModule =
                 openIdController = get(),
                 dispatcher = get(),
                 domainErrorMapper = get(),
+                loginErrorMessageProvider = get(),
             )
         }
 

@@ -313,7 +313,10 @@ private fun LockedSessionDialog(
                 viewModel.onOfflineCredentialEntered(credential)
             },
             onForgot = {
-                viewModel.onPinDismissed()
+                viewModel.onRenewSession()
+            },
+            onDismiss = {
+                viewModel.onOfflineCredentialDismissed()
             },
         )
     } else {

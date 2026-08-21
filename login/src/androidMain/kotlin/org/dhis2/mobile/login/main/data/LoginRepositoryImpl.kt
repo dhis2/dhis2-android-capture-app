@@ -3,6 +3,7 @@ package org.dhis2.mobile.login.main.data
 import androidx.core.net.toUri
 import coil3.PlatformContext
 import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import org.dhis2.mobile.commons.biometrics.BiometricActions
@@ -55,6 +56,7 @@ class LoginRepositoryImpl(
     private val openIdController: OpenIdController,
     private val dispatcher: Dispatcher,
     private val domainErrorMapper: DomainErrorMapper,
+    private val loginErrorMessageProvider: LoginErrorMessageProvider,
 ) : LoginRepository {
     override suspend fun validateServer(
         server: String,
@@ -128,6 +130,28 @@ class LoginRepositoryImpl(
                 d2.userModule().oauth2Handler().blockingBuildEnrollmentUrl(serverUrl)
             } catch (d2Error: D2Error) {
                 throw domainErrorMapper.mapToDomainError(d2Error)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                throw DomainError.ConfigurationError(loginErrorMessageProvider.oauthUrlError())
+            }
+        }
+
+    override suspend fun isDeviceRegistered(): Boolean =
+        withContext(dispatcher.io) {
+            d2.userModule().oauth2Handler().isDeviceRegistered()
+        }
+
+    override suspend fun getAuthorizationUrl(serverUrl: String): String =
+        withContext(dispatcher.io) {
+            try {
+                d2.userModule().oauth2Handler().blockingLogIn(OAuth2Config(serverUrl = serverUrl))
+            } catch (d2Error: D2Error) {
+                throw domainErrorMapper.mapToDomainError(d2Error)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                throw DomainError.ConfigurationError(loginErrorMessageProvider.oauthUrlError())
             }
         }
 

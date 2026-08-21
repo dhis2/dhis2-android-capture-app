@@ -2,6 +2,7 @@ package org.dhis2.mobile.login.main.di
 
 import coil3.PlatformContext
 import org.dhis2.mobile.login.authentication.di.twoFAModule
+import org.dhis2.mobile.login.main.data.LoginErrorMessageProvider
 import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
 import org.dhis2.mobile.login.main.domain.usecase.BiometricLogin
 import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
@@ -10,6 +11,7 @@ import org.dhis2.mobile.login.main.domain.usecase.GetDeviceEnrollmentUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.GetOAuthLogoutUrl
+import org.dhis2.mobile.login.main.domain.usecase.GetSessionRenewalUrl
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
 import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
@@ -85,6 +87,10 @@ internal val mainLoginModule =
         }
 
         factory { params ->
+            GetSessionRenewalUrl(get { parametersOf(params.get()) })
+        }
+
+        factory { params ->
             GetOAuthLogoutUrl(get { parametersOf(params.get()) })
         }
 
@@ -105,6 +111,8 @@ internal val mainLoginModule =
         }
 
         single { CredentialsResourceProvider() }
+
+        single { LoginErrorMessageProvider() }
 
         viewModel { parameters ->
             val context = parameters.get<PlatformContext>()
@@ -154,6 +162,7 @@ internal val mainLoginModule =
                 setOAuthPin = get { parametersOf(context) },
                 loginUserOfflineWithCode = get { parametersOf(context) },
                 credentialsResourceProvider = get(),
+                getSessionRenewalUrl = get { parametersOf(context) },
             )
         }
     }

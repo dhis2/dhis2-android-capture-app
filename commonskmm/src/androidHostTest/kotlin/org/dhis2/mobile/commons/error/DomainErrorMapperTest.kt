@@ -74,4 +74,60 @@ class DomainErrorMapperTest {
                 domainError,
             )
         }
+
+    @Test
+    fun `GIVEN an OAuth2 no valid token error WHEN it is mapped THEN a session renewal is required`() =
+        runTest {
+            // GIVEN - the refresh token was rejected, so the session can no longer reach the server
+            val noValidTokenMessage = "Log in again to keep syncing"
+            val d2Error =
+                D2Error
+                    .builder()
+                    .errorCode(D2ErrorCode.OAUTH2_NO_VALID_TOKEN)
+                    .errorDescription("There is no valid OAuth2 token")
+                    .build()
+
+            whenever(networkStatusProvider.connectionStatus) doReturn flowOf(true)
+            whenever(
+                d2ErrorMessageProvider.getErrorMessage(d2Error, true),
+            ) doReturn noValidTokenMessage
+
+            // WHEN
+            val domainError = mapper.mapToDomainError(d2Error)
+
+            // THEN - this is not a credentials problem: the account keeps working offline and the
+            // app has to send the user through the login again, so it gets its own error
+            assertEquals(
+                DomainError.SessionRenewalRequiredError(noValidTokenMessage),
+                domainError,
+            )
+        }
+
+    @Test
+    fun `GIVEN an OpenId no valid token error WHEN it is mapped THEN a session renewal is required`() =
+        runTest {
+            // GIVEN - the provider rejected the refresh token of an OpenId Connect account
+            val noValidTokenMessage = "Log in again to keep syncing"
+            val d2Error =
+                D2Error
+                    .builder()
+                    .errorCode(D2ErrorCode.OPEN_ID_CONNECT_NO_VALID_TOKEN)
+                    .errorDescription("There is no valid OpenId Connect token")
+                    .build()
+
+            whenever(networkStatusProvider.connectionStatus) doReturn flowOf(true)
+            whenever(
+                d2ErrorMessageProvider.getErrorMessage(d2Error, true),
+            ) doReturn noValidTokenMessage
+
+            // WHEN
+            val domainError = mapper.mapToDomainError(d2Error)
+
+            // THEN - OpenId Connect shares the OAuth2 model once the account exists, so both
+            // codes lead the app to the same session renewal prompt
+            assertEquals(
+                DomainError.SessionRenewalRequiredError(noValidTokenMessage),
+                domainError,
+            )
+        }
 }
