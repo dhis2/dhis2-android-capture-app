@@ -1195,7 +1195,7 @@ class CredentialsViewModelTest {
                 whenever(getHasOtherAccounts.invoke()) doReturn false
                 whenever(getIsSessionLockedUseCase(any())) doReturn false
                 whenever(biometricLogin.invoke()) doReturn Result.success(pin)
-                whenever(loginUser.invoke(serverUrl, username, pin)) doReturn
+                whenever(loginUserOfflineWithCode.invoke(serverUrl, username, pin)) doReturn
                     LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
 
                 viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
@@ -1209,7 +1209,7 @@ class CredentialsViewModelTest {
                     // THEN - the biometric credential is used directly as the offline-login
                     // password (via onOfflineCredentialEntered), not routed through
                     // updatePassword()/onLoginClicked() as before
-                    verify(loginUser).invoke(serverUrl, username, pin)
+                    verify(loginUserOfflineWithCode).invoke(serverUrl, username, pin)
 
                     cancelAndIgnoreRemainingEvents()
                 }
