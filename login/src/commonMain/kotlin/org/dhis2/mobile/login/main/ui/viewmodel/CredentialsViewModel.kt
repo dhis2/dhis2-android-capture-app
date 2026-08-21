@@ -273,6 +273,8 @@ class CredentialsViewModel(
             )
         }
         launchUseCase {
+            // An expired session is still open, the SDK refuses a new login. Login out before renew
+            logOutUser.invoke()
             getSessionRenewalUrl(
                 SessionRenewalRequest(
                     serverUrl = serverUrl,
@@ -381,6 +383,7 @@ class CredentialsViewModel(
                             serverUrl = serverUrl,
                             code = code,
                             state = state,
+                            expectedUsername = username,
                         )
                     }
                 when (result) {

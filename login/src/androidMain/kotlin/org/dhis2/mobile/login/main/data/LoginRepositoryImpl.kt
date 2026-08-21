@@ -183,10 +183,16 @@ class LoginRepositoryImpl(
         serverUrl: String,
         code: String,
         state: String,
+        expectedUsername: String?,
     ) = withContext(dispatcher.io) {
         try {
             val user =
-                d2.userModule().oauth2Handler().blockingHandleLogInResponse(serverUrl, code, state)
+                d2.userModule().oauth2Handler().blockingHandleLogInResponse(
+                    existingUsername = expectedUsername,
+                    serverUrl = serverUrl,
+                    authorizationCode = code,
+                    state = state,
+                )
             kotlin.Result.success(user.username())
         } catch (d2Error: D2Error) {
             val mappedError = domainErrorMapper.mapToDomainError(d2Error)

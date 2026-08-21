@@ -13,8 +13,9 @@ class LoginUserWithOAuth(
         serverUrl: String,
         code: String,
         state: String,
+        expectedUsername: String?,
     ): LoginResult {
-        val result = repository.loginUserWithOAuth(serverUrl, code, state)
+        val result = repository.loginUserWithOAuth(serverUrl, code, state, expectedUsername)
         return when {
             result.isSuccess -> {
                 val username = result.getOrNull()

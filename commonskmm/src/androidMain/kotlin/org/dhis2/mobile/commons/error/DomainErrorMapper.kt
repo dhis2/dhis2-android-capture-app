@@ -1,6 +1,18 @@
 package org.dhis2.mobile.commons.error
 
 import kotlinx.coroutines.flow.firstOrNull
+import org.dhis2.mobile.commons.error.DomainError.ApiError
+import org.dhis2.mobile.commons.error.DomainError.AuthenticationError
+import org.dhis2.mobile.commons.error.DomainError.ConfigurationError
+import org.dhis2.mobile.commons.error.DomainError.DataNotFoundError
+import org.dhis2.mobile.commons.error.DomainError.DataValidationError
+import org.dhis2.mobile.commons.error.DomainError.DatabaseError
+import org.dhis2.mobile.commons.error.DomainError.NetworkError
+import org.dhis2.mobile.commons.error.DomainError.PermissionDeniedError
+import org.dhis2.mobile.commons.error.DomainError.ServerError
+import org.dhis2.mobile.commons.error.DomainError.SessionRenewalRequiredError
+import org.dhis2.mobile.commons.error.DomainError.UnauthorizedAccessError
+import org.dhis2.mobile.commons.error.DomainError.UnexpectedError
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider
 import org.dhis2.mobile.commons.resources.Res
@@ -43,26 +55,29 @@ class DomainErrorMapper(
             D2ErrorCode.OAUTH2_INVALID_IAT,
             D2ErrorCode.OAUTH2_INVALID_STATE,
             D2ErrorCode.BAD_CREDENTIALS_OFFLINE_CODE,
-            -> DomainError.AuthenticationError(errorMessage)
+            // The renewal was authorized by a different user than the account being restored.
+            // Nothing was replaced, so the user only has to try again with the right account
+            D2ErrorCode.AUTHENTICATED_USER_MISMATCH,
+            -> AuthenticationError(errorMessage)
 
             // Expired, rejected or missing tokens: the account still works offline, but the
             // session has to be renewed through the login before the server can be reached
             D2ErrorCode.OAUTH2_NO_VALID_TOKEN,
             D2ErrorCode.OPEN_ID_CONNECT_NO_VALID_TOKEN,
-            -> DomainError.SessionRenewalRequiredError(errorMessage)
+            -> SessionRenewalRequiredError(errorMessage)
 
             // User account issues (disabled, locked)
             D2ErrorCode.USER_ACCOUNT_DISABLED,
             D2ErrorCode.USER_ACCOUNT_LOCKED,
-            -> DomainError.PermissionDeniedError(errorMessage)
+            -> PermissionDeniedError(errorMessage)
 
             // User lacks authorization for program/operation access
             D2ErrorCode.PROGRAM_ACCESS_CLOSED,
-            -> DomainError.UnauthorizedAccessError(errorMessage)
+            -> UnauthorizedAccessError(errorMessage)
 
             // Ownership-based access denied
             D2ErrorCode.OWNERSHIP_ACCESS_DENIED,
-            -> DomainError.PermissionDeniedError(errorMessage)
+            -> PermissionDeniedError(errorMessage)
 
             // Network connectivity errors
             D2ErrorCode.SOCKET_TIMEOUT,
@@ -70,14 +85,14 @@ class DomainErrorMapper(
             D2ErrorCode.URL_NOT_FOUND,
             D2ErrorCode.SSL_ERROR,
             D2ErrorCode.TOO_MANY_REQUESTS,
-            -> DomainError.NetworkError(errorMessage)
+            -> NetworkError(errorMessage)
 
             // Server errors
             D2ErrorCode.SERVER_CONNECTION_ERROR,
             ->
                 when {
-                    isNetworkAvailable -> DomainError.ServerError(errorMessage)
-                    else -> DomainError.NetworkError(errorMessage)
+                    isNetworkAvailable -> ServerError(errorMessage)
+                    else -> NetworkError(errorMessage)
                 }
 
             // API/Request errors
@@ -85,7 +100,7 @@ class DomainErrorMapper(
             D2ErrorCode.API_RESPONSE_PROCESS_ERROR,
             D2ErrorCode.API_INVALID_QUERY,
             D2ErrorCode.SEARCH_GRID_PARSE,
-            -> DomainError.ApiError(errorMessage)
+            -> ApiError(errorMessage)
 
             // Server configuration/URL errors
             D2ErrorCode.NO_DHIS2_SERVER,
@@ -93,7 +108,7 @@ class DomainErrorMapper(
             D2ErrorCode.SERVER_URL_MALFORMED,
             D2ErrorCode.INVALID_CONFIGURATION,
             D2ErrorCode.INVALID_DHIS_VERSION,
-            -> DomainError.ConfigurationError(errorMessage)
+            -> ConfigurationError(errorMessage)
 
             // Database errors
             D2ErrorCode.DATABASE_EXPORT_LOGIN_FIRST,
@@ -103,7 +118,7 @@ class DomainErrorMapper(
             D2ErrorCode.DATABASE_IMPORT_VERSION_HIGHER_THAN_SUPPORTED,
             D2ErrorCode.DATABASE_IMPORT_FAILED,
             D2ErrorCode.DATABASE_IMPORT_INVALID_FILE,
-            -> DomainError.DatabaseError(errorMessage)
+            -> DatabaseError(errorMessage)
 
             // Data validation errors
             D2ErrorCode.INVALID_CHARACTERS,
@@ -119,12 +134,12 @@ class DomainErrorMapper(
             D2ErrorCode.TOO_MANY_PERIODS,
             D2ErrorCode.MIN_SEARCH_ATTRIBUTES_REQUIRED,
             D2ErrorCode.ORGUNIT_NOT_IN_SEARCH_SCOPE,
-            -> DomainError.DataValidationError(errorMessage)
+            -> DataValidationError(errorMessage)
 
             // Data not found errors
             D2ErrorCode.NO_RESERVED_VALUES,
             D2ErrorCode.FILE_NOT_FOUND,
-            -> DomainError.DataNotFoundError(errorMessage)
+            -> DataNotFoundError(errorMessage)
 
             // App configuration errors
             D2ErrorCode.APP_NAME_NOT_SET,
@@ -133,14 +148,14 @@ class DomainErrorMapper(
             D2ErrorCode.SETTINGS_APP_NOT_INSTALLED,
             D2ErrorCode.CANT_ACCESS_KEYSTORE,
             D2ErrorCode.CANT_INSTANTIATE_KEYSTORE,
-            -> DomainError.ConfigurationError(errorMessage)
+            -> ConfigurationError(errorMessage)
 
             // Reserved values/quota errors - use DataValidationError
             D2ErrorCode.COULD_NOT_RESERVE_VALUE_ON_SERVER,
             D2ErrorCode.NOT_ENOUGH_VALUES_LEFT_TO_RESERVE_ON_SERVER,
             D2ErrorCode.MIGHT_BE_RUNNING_LOW_ON_AVAILABLE_VALUES,
             D2ErrorCode.VALUES_RESERVATION_TOOK_TOO_LONG,
-            -> DomainError.DataValidationError(errorMessage)
+            -> DataValidationError(errorMessage)
 
             // Uncommon/rare errors - use UnexpectedError
             D2ErrorCode.UNEXPECTED,
@@ -150,7 +165,7 @@ class DomainErrorMapper(
             D2ErrorCode.SMS_NOT_SUPPORTED,
             D2ErrorCode.ALREADY_EXECUTED,
             D2ErrorCode.NOT_IN_TOTP_2FA_ENROLLMENT_MODE,
-            -> DomainError.UnexpectedError(errorMessage)
+            -> UnexpectedError(errorMessage)
         }
     }
 }

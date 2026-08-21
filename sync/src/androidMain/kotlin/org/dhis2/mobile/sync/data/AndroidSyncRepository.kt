@@ -7,7 +7,9 @@ import kotlinx.datetime.format
 import kotlinx.datetime.toLocalDateTime
 import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.dates.dateTimeFormat
+import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.mobile.commons.error.DomainErrorMapper
+import org.dhis2.mobile.commons.error.asD2Error
 import org.dhis2.mobile.commons.error.withDomainErrorsAsResult
 import org.dhis2.mobile.commons.providers.EVENT_MAX
 import org.dhis2.mobile.commons.providers.EVENT_MAX_DEFAULT
@@ -188,17 +190,17 @@ internal class AndroidSyncRepository(
 
     override suspend fun isLoggedIn() = D2Manager.isD2Instantiated() && d2.userModule().blockingIsLogged()
 
-    override suspend fun isServerAvailable(syncJobName: String): Boolean {
-        val isServerAvailable =
-            try {
-                d2.systemInfoModule().ping().blockingGet()
-                true
-            } catch (e: Exception) {
-                false
+    override suspend fun isServerAvailable(syncJobName: String): Boolean =
+        try {
+            d2.systemInfoModule().ping().blockingGet()
+            true
+        } catch (error: Exception) {
+            val domainError = error.asD2Error()?.let { domainErrorMapper.mapToDomainError(it) }
+            if (domainError is DomainError.SessionRenewalRequiredError) {
+                throw domainError
             }
-
-        return isServerAvailable
-    }
+            false
+        }
 
     override suspend fun setUnnavailableFlag(syncJobName: String) {
         d2

@@ -65,6 +65,9 @@ class SyncMetadata(
                 sessionRenewalNotifier.notifyIfRequired(syncMetadataResult.exceptionOrNull())
                 Result.failure(syncMetadataResult.exceptionOrNull()!!)
             }
+        } catch (domainError: DomainError) {
+            sessionRenewalNotifier.notifyIfRequired(domainError)
+            Result.failure(domainError)
         } catch (e: Exception) {
             Result.failure(e)
         }

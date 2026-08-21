@@ -248,6 +248,9 @@ class D2ErrorMessageProviderImpl : D2ErrorMessageProvider {
             D2ErrorCode.OPEN_ID_CONNECT_NO_VALID_TOKEN,
             ->
                 getString(Res.string.error_session_renewal_required)
+
+            D2ErrorCode.AUTHENTICATED_USER_MISMATCH ->
+                getString(Res.string.error_authenticated_user_mismatch)
         }
 
     private suspend fun defaultError() = getString(Res.string.error_unexpected)

@@ -164,4 +164,19 @@ class SyncMetadataTest {
 
             verify(sessionRenewalNotifier, never()).notifyRenewalRequired()
         }
+
+    @Test
+    fun `Should request a session renewal when the server check reports an expired session`() =
+        runBlocking {
+            // GIVEN - the ping itself fails because the tokens are gone
+            val error = DomainError.SessionRenewalRequiredError("Your session has expired")
+            whenever(repository.isServerAvailable(any())).thenAnswer { throw error }
+
+            // WHEN
+            val result = syncMetadata.invoke { }
+
+            // THEN - the use case reports it instead of letting it escape into the worker
+            assertEquals(error, result.exceptionOrNull())
+            verify(sessionRenewalNotifier).notifyIfRequired(error)
+        }
 }

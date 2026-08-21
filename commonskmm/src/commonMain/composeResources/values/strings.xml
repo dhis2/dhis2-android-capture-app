@@ -191,6 +191,7 @@
     <string name="oauth2_error">There was an error when authenticating with OAuth2</string>
     <string name="error_device_not_registered">Device not registered</string>
     <string name="error_session_renewal_required">Your session has expired. Log in again to sync with the server.</string>
+    <string name="error_authenticated_user_mismatch">You logged in with a different account. Log in again with the account you are restoring.</string>
     <!--*******************
        END OF D2 Error Messages
     **********************-->
