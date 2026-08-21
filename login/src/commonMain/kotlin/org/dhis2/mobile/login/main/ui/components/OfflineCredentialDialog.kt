@@ -63,7 +63,7 @@ enum class OfflineCredentialMode {
     /** First login on a new account: create the mandatory offline credential. Non-dismissable. */
     CREATE,
 
-    /** Re-opening an existing account offline: enter the credential to log in. Dismissable ("forgot"). */
+    /** Re-opening an existing account offline: enter the credential to log in. Dismissable. */
     ENTER,
 }
 
@@ -78,8 +78,11 @@ enum class OfflineCredentialMode {
  * @param mode Whether the user is creating ([OfflineCredentialMode.CREATE]) or entering
  * ([OfflineCredentialMode.ENTER]) the credential.
  * @param onSubmit Invoked with the entered credential when the primary button is pressed.
- * @param onForgot Invoked in [OfflineCredentialMode.ENTER] when the user forgot the credential
- * (secondary button or dismiss). Ignored in CREATE mode, which is non-dismissable.
+ * @param onForgot Invoked in [OfflineCredentialMode.ENTER] when the user presses the secondary
+ * button because they forgot the credential. Ignored in CREATE mode, which is non-dismissable.
+ * @param onDismiss Invoked in [OfflineCredentialMode.ENTER] when the dialog is closed without
+ * using it, which is a different intent from [onForgot] and must not start a recovery. Ignored in
+ * CREATE mode, which is non-dismissable.
  * @param length Number of credential digits.
  */
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -88,6 +91,7 @@ fun OfflineCredentialDialog(
     mode: OfflineCredentialMode,
     onSubmit: (String) -> Unit,
     onForgot: () -> Unit = {},
+    onDismiss: () -> Unit = {},
     modifier: Modifier = Modifier,
     length: Int = 4,
     windowSizeClass: WindowSizeClass = getWindowSizeClass(),
@@ -116,7 +120,7 @@ fun OfflineCredentialDialog(
         onPrimaryClick = { if (isComplete) onSubmit(value) },
         onSecondaryClick = onForgot,
         // CREATE is mandatory and non-dismissable: swallow dismiss so the caller's gate keeps it shown.
-        onDismiss = if (isCreate) ({}) else onForgot,
+        onDismiss = if (isCreate) ({}) else onDismiss,
         modifier = modifier,
     )
 }

@@ -44,10 +44,6 @@
     <string name="openid_or">Or</string>
     <string name="action_openid_log_in">Log in with openID</string>
     <string name="action_manage_account">Manage accounts</string>
-    <string name="action_log_in_again">Log in again</string>
-    <string name="action_continue">Continue</string>
-    <string name="different_user_title">Logged in as a different user</string>
-    <string name="different_user_message">The session that was opened belongs to %1$s, so that is the account you are working on now. Log in again if you meant to open a different one.</string>
     <string name="oauth_login_url_error">The session could not be renewed. Check the server configuration and try again.</string>
     <string name="tracking_title">Do you want to help us improve this app?</string>
     <string name="tracking_description">If you say yes the app will send anonymous statistics and error logs which help us improve user experience and performance.</string>

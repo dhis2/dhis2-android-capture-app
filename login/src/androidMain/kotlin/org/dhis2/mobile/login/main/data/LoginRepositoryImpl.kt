@@ -23,7 +23,6 @@ import org.dhis2.mobile.login.main.domain.model.OpenIdLoginConfiguration
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.error_device_not_registered
-import org.dhis2.mobile.login.resources.oauth_login_url_error
 import org.dhis2.mobile.login.resources.openid_invalid_auth_result
 import org.dhis2.mobile.login.resources.openid_process_cancelled
 import org.dhis2.mobile.login.resources.server_url_error
@@ -57,6 +56,7 @@ class LoginRepositoryImpl(
     private val openIdController: OpenIdController,
     private val dispatcher: Dispatcher,
     private val domainErrorMapper: DomainErrorMapper,
+    private val loginErrorMessageProvider: LoginErrorMessageProvider,
 ) : LoginRepository {
     override suspend fun validateServer(
         server: String,
@@ -133,8 +133,7 @@ class LoginRepositoryImpl(
             } catch (e: CancellationException) {
                 throw e
             } catch (_: Exception) {
-                // The SDK reports a missing or unusable OAuth2 configuration outside D2Error
-                throw DomainError.ConfigurationError(getString(Res.string.oauth_login_url_error))
+                throw DomainError.ConfigurationError(loginErrorMessageProvider.oauthUrlError())
             }
         }
 
@@ -152,9 +151,7 @@ class LoginRepositoryImpl(
             } catch (e: CancellationException) {
                 throw e
             } catch (_: Exception) {
-                // Without a stored authorization endpoint the SDK throws IllegalStateException
-                // instead of a D2Error, which would otherwise reach the UI as a crash
-                throw DomainError.ConfigurationError(getString(Res.string.oauth_login_url_error))
+                throw DomainError.ConfigurationError(loginErrorMessageProvider.oauthUrlError())
             }
         }
 
@@ -190,11 +187,6 @@ class LoginRepositoryImpl(
         try {
             val user =
                 d2.userModule().oauth2Handler().blockingHandleLogInResponse(serverUrl, code, state)
-            /**
-             * if there is a username will check if is the same user account if not, throws an error
-             d2.userModule().oauth2Handler().blockingHandleLogInResponse(username, serverUrl, code, state)
-             *
-             */
             kotlin.Result.success(user.username())
         } catch (d2Error: D2Error) {
             val mappedError = domainErrorMapper.mapToDomainError(d2Error)

@@ -315,6 +315,9 @@ private fun LockedSessionDialog(
             onForgot = {
                 viewModel.onRenewSession()
             },
+            onDismiss = {
+                viewModel.onOfflineCredentialDismissed()
+            },
         )
     } else {
         // Session-lock PIN (basic / OpenID account) unlock.

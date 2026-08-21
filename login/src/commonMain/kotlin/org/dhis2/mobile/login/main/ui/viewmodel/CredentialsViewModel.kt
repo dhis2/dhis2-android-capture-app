@@ -253,17 +253,18 @@ class CredentialsViewModel(
         }
     }
 
-    /**
-     * Renews the session of an account that already exists on this device, which is what the user
-     * needs once the tokens expired or were never stored here. Enrollment is only repeated when
-     * this device holds no client registration; the account database is left untouched either way,
-     * so the redirect is handled by the same callbacks as a first login.
-     */
+    fun onOfflineCredentialDismissed() {
+        _credentialsScreenState.update {
+            it.copy(isSessionLocked = false)
+        }
+    }
+
     fun onRenewSession() {
         _credentialsScreenState.update {
             it.copy(
                 loginState = LoginState.Running,
                 errorMessage = null,
+                isSessionLocked = false,
             )
         }
         launchUseCase {
@@ -565,9 +566,6 @@ class CredentialsViewModel(
                 it.copy(
                     afterLoginActions =
                         buildList {
-                            // A session opened through the browser always sets the offline
-                            // credential: on a first login there is none yet, and on a renewal
-                            // this is also how a forgotten one is replaced
                             if (sessionOpenedInBrowser) {
                                 add(AfterLoginAction.CreateOfflineCredential)
                             }
@@ -586,7 +584,10 @@ class CredentialsViewModel(
         is LoginResult.Error -> {
             val errorMessage =
                 result.attemptsLeft?.let { attemptsLeft ->
-                    credentialsResourceProvider.getLoginErrorWithAttempts(result.message, attemptsLeft)
+                    credentialsResourceProvider.getLoginErrorWithAttempts(
+                        result.message,
+                        attemptsLeft,
+                    )
                 } ?: result.message
             _credentialsScreenState.update {
                 it.copy(
@@ -594,6 +595,7 @@ class CredentialsViewModel(
                 )
             }
         }
+
         is LoginResult.LockOut -> {
             startLockoutCountdown(result.lockoutSeconds)
         }
@@ -607,7 +609,10 @@ class CredentialsViewModel(
                     _credentialsScreenState.update {
                         it.copy(
                             loginState = LoginState.Disabled,
-                            errorMessage = credentialsResourceProvider.getLockoutCountdownMessage(remainingSeconds),
+                            errorMessage =
+                                credentialsResourceProvider.getLockoutCountdownMessage(
+                                    remainingSeconds,
+                                ),
                         )
                     }
                     delay(COUNTDOWN_TICK_INTERVAL)

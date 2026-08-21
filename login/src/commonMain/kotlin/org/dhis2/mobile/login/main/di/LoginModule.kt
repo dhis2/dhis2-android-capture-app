@@ -2,6 +2,7 @@ package org.dhis2.mobile.login.main.di
 
 import coil3.PlatformContext
 import org.dhis2.mobile.login.authentication.di.twoFAModule
+import org.dhis2.mobile.login.main.data.LoginErrorMessageProvider
 import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
 import org.dhis2.mobile.login.main.domain.usecase.BiometricLogin
 import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
@@ -110,6 +111,8 @@ internal val mainLoginModule =
         }
 
         single { CredentialsResourceProvider() }
+
+        single { LoginErrorMessageProvider() }
 
         viewModel { parameters ->
             val context = parameters.get<PlatformContext>()

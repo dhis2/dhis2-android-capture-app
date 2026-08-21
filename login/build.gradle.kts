@@ -88,7 +88,10 @@ kotlin {
 
         getByName("androidHostTest") {
             dependencies {
+                implementation(kotlin("test"))
                 implementation(libs.junit.jupiter)
+                implementation(libs.test.kotlinCoroutines)
+                implementation(libs.test.mockitoKotlin)
             }
         }
 

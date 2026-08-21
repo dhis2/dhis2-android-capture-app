@@ -1592,6 +1592,138 @@ class CredentialsViewModelTest {
             }
         }
 
+    @Test
+    fun `GIVEN a locked session WHEN the offline code is forgotten THEN the dialog closes and the browser opens`() =
+        runTest {
+            // GIVEN - the account is locked behind its offline credential dialog
+            val serverUrl = "https://test.server.org"
+            val authorizationUrl = "$serverUrl/oauth2/authorize"
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(true)) doReturn true
+            whenever(getSessionRenewalUrl(any())) doReturn Result.success(authorizationUrl)
+
+            initViewModel(
+                serverUrl = serverUrl,
+                username = "testuser",
+                entryMode = CredentialsEntryMode.EXISTING_OAUTH,
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                testDispatcher.scheduler.advanceUntilIdle()
+                assertTrue(expectMostRecentItem().isSessionLocked)
+
+                // WHEN - the user cannot remember the code and renews the session instead
+                viewModel.onRenewSession()
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - the dialog is gone, so it does not sit behind the browser tab
+                assertFalse(expectMostRecentItem().isSessionLocked)
+                verify(navigator).navigate(
+                    eq(LoginScreenState.OauthAuthentication(selectedServer = authorizationUrl)),
+                    any(),
+                )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN a locked session WHEN the offline dialog is dismissed THEN no browser is opened`() =
+        runTest {
+            // GIVEN - the account is locked behind its offline credential dialog
+            val serverUrl = "https://test.server.org"
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(true)) doReturn true
+
+            initViewModel(
+                serverUrl = serverUrl,
+                username = "testuser",
+                entryMode = CredentialsEntryMode.EXISTING_OAUTH,
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                testDispatcher.scheduler.advanceUntilIdle()
+                assertTrue(expectMostRecentItem().isSessionLocked)
+
+                // WHEN - the user backs out of the dialog instead of using it
+                viewModel.onOfflineCredentialDismissed()
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - they land back on the credentials screen: dismissing is not the same as
+                // forgetting the code, so no session renewal is started
+                assertFalse(expectMostRecentItem().isSessionLocked)
+                verify(getSessionRenewalUrl, never()).invoke(any())
+                verify(navigator, never()).navigate(any(), any())
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN a renewed session WHEN the new offline code cannot be stored THEN the session is closed`() =
+        runTest {
+            // GIVEN - a renewal that completed and is asking for a new offline credential
+            val serverUrl = "https://test.server.org"
+            val authorizationUrl = "$serverUrl/oauth2/authorize"
+            val state = "test"
+            val storeErrorMessage = "The PIN could not be stored"
+            val mockAppLinkFlow = MutableSharedFlow<String>()
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
+            whenever(getSessionRenewalUrl(any())) doReturn Result.success(authorizationUrl)
+            whenever(getOAuthLogoutUrl(any())) doReturn Result.success("$serverUrl/logout")
+            whenever(
+                loginUserWithOAuth.invoke(any(), any(), any()),
+            ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
+            whenever(setOAuthPin("5678")) doReturn
+                Result.failure(DomainError.AuthenticationError(storeErrorMessage))
+
+            initViewModel(
+                serverUrl = serverUrl,
+                username = "testuser",
+                entryMode = CredentialsEntryMode.EXISTING_OAUTH,
+                autoPromptLogin = false,
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                viewModel.onRenewSession()
+                testDispatcher.scheduler.advanceUntilIdle()
+                mockAppLinkFlow.emit("https://test.redirect.org?code=auth_code_123&state=$state")
+                testDispatcher.scheduler.advanceUntilIdle()
+                testDispatcher.scheduler.advanceTimeBy(4.seconds)
+                testDispatcher.scheduler.advanceUntilIdle()
+                mockAppLinkFlow.emit("https://test.redirect.org?state=$state")
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // WHEN - storing the new credential fails
+                viewModel.onOfflineCredentialCreated("5678")
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - the account cannot be left without an offline credential, so the session
+                // just renewed is closed and the reason is shown. Note this also gives up the
+                // renewed tokens: the user has to renew again to reach the server
+                verify(loginOutUser).invoke()
+                val failedState = expectMostRecentItem()
+                assertEquals(storeErrorMessage, failedState.errorMessage)
+                assertTrue(failedState.afterLoginActions.isEmpty())
+                assertEquals(LoginState.Enabled, failedState.loginState)
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
     private fun initViewModel(
         serverName: String? = "Test Server",
         serverUrl: String = "https://test.server.org",
