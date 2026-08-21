@@ -27,10 +27,10 @@ sealed class DomainError : Throwable() {
     /**
      * The session can no longer reach the server: the stored tokens are expired, were rejected
      * or were never present on this device. Different from AuthenticationError: the credentials
-     * are not wrong and the account keeps working offline, so the app must ask the user to log
-     * in online again instead of reporting a failure.
+     * are not wrong and the account keeps working offline, so the app must send the user through
+     * the login again to renew the session, instead of reporting a failure.
      */
-    data class OnlineLoginRequiredError(
+    data class SessionRenewalRequiredError(
         override val message: String,
     ) : DomainError()
 

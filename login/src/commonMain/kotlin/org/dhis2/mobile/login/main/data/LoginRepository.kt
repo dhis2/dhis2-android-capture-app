@@ -60,6 +60,14 @@ interface LoginRepository {
 
     suspend fun getDeviceEnrollmentUrl(serverUrl: String): String
 
+    suspend fun isDeviceRegistered(): Boolean
+
+    /**
+     * Url that opens the authorization process for an already registered device. The server must
+     * have been checked first, otherwise there is no stored authorization endpoint to build it.
+     */
+    suspend fun getAuthorizationUrl(serverUrl: String): String
+
     suspend fun enrollDevice(
         iat: String,
         serverURL: String,

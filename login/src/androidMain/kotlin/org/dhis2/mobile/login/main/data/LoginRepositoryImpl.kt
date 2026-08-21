@@ -3,6 +3,7 @@ package org.dhis2.mobile.login.main.data
 import androidx.core.net.toUri
 import coil3.PlatformContext
 import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import org.dhis2.mobile.commons.biometrics.BiometricActions
@@ -22,6 +23,7 @@ import org.dhis2.mobile.login.main.domain.model.OpenIdLoginConfiguration
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.error_device_not_registered
+import org.dhis2.mobile.login.resources.oauth_login_url_error
 import org.dhis2.mobile.login.resources.openid_invalid_auth_result
 import org.dhis2.mobile.login.resources.openid_process_cancelled
 import org.dhis2.mobile.login.resources.server_url_error
@@ -128,6 +130,31 @@ class LoginRepositoryImpl(
                 d2.userModule().oauth2Handler().blockingBuildEnrollmentUrl(serverUrl)
             } catch (d2Error: D2Error) {
                 throw domainErrorMapper.mapToDomainError(d2Error)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                // The SDK reports a missing or unusable OAuth2 configuration outside D2Error
+                throw DomainError.ConfigurationError(getString(Res.string.oauth_login_url_error))
+            }
+        }
+
+    override suspend fun isDeviceRegistered(): Boolean =
+        withContext(dispatcher.io) {
+            d2.userModule().oauth2Handler().isDeviceRegistered()
+        }
+
+    override suspend fun getAuthorizationUrl(serverUrl: String): String =
+        withContext(dispatcher.io) {
+            try {
+                d2.userModule().oauth2Handler().blockingLogIn(OAuth2Config(serverUrl = serverUrl))
+            } catch (d2Error: D2Error) {
+                throw domainErrorMapper.mapToDomainError(d2Error)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                // Without a stored authorization endpoint the SDK throws IllegalStateException
+                // instead of a D2Error, which would otherwise reach the UI as a crash
+                throw DomainError.ConfigurationError(getString(Res.string.oauth_login_url_error))
             }
         }
 
@@ -163,6 +190,11 @@ class LoginRepositoryImpl(
         try {
             val user =
                 d2.userModule().oauth2Handler().blockingHandleLogInResponse(serverUrl, code, state)
+            /**
+             * if there is a username will check if is the same user account if not, throws an error
+             d2.userModule().oauth2Handler().blockingHandleLogInResponse(username, serverUrl, code, state)
+             *
+             */
             kotlin.Result.success(user.username())
         } catch (d2Error: D2Error) {
             val mappedError = domainErrorMapper.mapToDomainError(d2Error)

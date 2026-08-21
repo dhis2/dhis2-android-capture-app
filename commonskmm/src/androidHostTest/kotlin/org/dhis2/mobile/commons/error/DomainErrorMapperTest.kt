@@ -76,10 +76,10 @@ class DomainErrorMapperTest {
         }
 
     @Test
-    fun `GIVEN an OAuth2 no valid token error WHEN it is mapped THEN an online login is required`() =
+    fun `GIVEN an OAuth2 no valid token error WHEN it is mapped THEN a session renewal is required`() =
         runTest {
             // GIVEN - the refresh token was rejected, so the session can no longer reach the server
-            val noValidTokenMessage = "Log in online to keep syncing"
+            val noValidTokenMessage = "Log in again to keep syncing"
             val d2Error =
                 D2Error
                     .builder()
@@ -96,18 +96,18 @@ class DomainErrorMapperTest {
             val domainError = mapper.mapToDomainError(d2Error)
 
             // THEN - this is not a credentials problem: the account keeps working offline and the
-            // app has to send the user through the online login again, so it gets its own error
+            // app has to send the user through the login again, so it gets its own error
             assertEquals(
-                DomainError.OnlineLoginRequiredError(noValidTokenMessage),
+                DomainError.SessionRenewalRequiredError(noValidTokenMessage),
                 domainError,
             )
         }
 
     @Test
-    fun `GIVEN an OpenId no valid token error WHEN it is mapped THEN an online login is required`() =
+    fun `GIVEN an OpenId no valid token error WHEN it is mapped THEN a session renewal is required`() =
         runTest {
             // GIVEN - the provider rejected the refresh token of an OpenId Connect account
-            val noValidTokenMessage = "Log in online to keep syncing"
+            val noValidTokenMessage = "Log in again to keep syncing"
             val d2Error =
                 D2Error
                     .builder()
@@ -124,9 +124,9 @@ class DomainErrorMapperTest {
             val domainError = mapper.mapToDomainError(d2Error)
 
             // THEN - OpenId Connect shares the OAuth2 model once the account exists, so both
-            // codes lead the app to the same online login prompt
+            // codes lead the app to the same session renewal prompt
             assertEquals(
-                DomainError.OnlineLoginRequiredError(noValidTokenMessage),
+                DomainError.SessionRenewalRequiredError(noValidTokenMessage),
                 domainError,
             )
         }
