@@ -771,10 +771,7 @@ class CredentialsViewModel(
     }
 
     fun onPinDismissed() {
-        // User dismissed the PIN dialog (forgot PIN)
-        // Logout the user from the app and ask for the password
         launchUseCase {
-            forgotPinUseCase()
             _credentialsScreenState.update {
                 it.copy(
                     isSessionLocked = false,
@@ -808,6 +805,19 @@ class CredentialsViewModel(
                     }
                 },
             )
+        }
+    }
+
+    fun onPinForgot() {
+        // User dismissed the PIN dialog (forgot PIN)
+        // Logout the user from the app and ask for the password
+        launchUseCase {
+            forgotPinUseCase()
+            _credentialsScreenState.update {
+                it.copy(
+                    isSessionLocked = false,
+                )
+            }
         }
     }
 }
