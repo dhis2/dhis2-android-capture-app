@@ -44,6 +44,7 @@
     <string name="openid_or">或</string>
     <string name="action_openid_log_in">使用 openID 登录</string>
     <string name="action_manage_account">管理账户</string>
+    <string name="oauth_login_url_error">无法刷新会话。请检查服务器配置，然后重试。</string>
     <string name="tracking_title">你想帮助我们改进这个应用程序吗？</string>
     <string name="tracking_description">如果您同意，应用程序将发送匿名统计数据和错误日志，帮助我们改善用户体验和性能。</string>
     <string name="tracking_description_link">更多详情，请参阅我们的 </string>
@@ -62,6 +63,7 @@
     <string name="pin_error_save_failed">密码保存失败</string>
     <string name="pin_error_reset_failed">重置密码失败</string>
     <string name="pin_error_remaining_attempts">%1$s 剩余尝试次数</string>
+    <string name="pin_error_locked_countdown">尝试次数过多。请在%1$s 秒后重试</string>
     <string name="offline_credential_create_title">创建离线PIN码</string>
     <string name="offline_credential_create_description">设置一个 PIN 码，以便在离线状态下登录此账户。</string>
     <string name="offline_credential_create_button">创建PIN码</string>
