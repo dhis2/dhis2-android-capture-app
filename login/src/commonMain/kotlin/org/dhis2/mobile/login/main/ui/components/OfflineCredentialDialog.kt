@@ -33,12 +33,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.commons.extensions.deviceIsInLandscapeMode
 import org.dhis2.mobile.commons.extensions.getWindowSizeClass
 import org.dhis2.mobile.login.resources.Res
+import org.dhis2.mobile.login.resources.cancel
+import org.dhis2.mobile.login.resources.forgot_pin_button
+import org.dhis2.mobile.login.resources.forgot_pin_description
+import org.dhis2.mobile.login.resources.login_online
 import org.dhis2.mobile.login.resources.offline_credential_create_button
 import org.dhis2.mobile.login.resources.offline_credential_create_description
 import org.dhis2.mobile.login.resources.offline_credential_create_title
@@ -46,12 +51,15 @@ import org.dhis2.mobile.login.resources.offline_credential_enter_button
 import org.dhis2.mobile.login.resources.offline_credential_enter_description
 import org.dhis2.mobile.login.resources.offline_credential_enter_title
 import org.dhis2.mobile.login.resources.offline_credential_forgot_button
+import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.FullScreenDialog
 import org.hisp.dhis.mobile.ui.designsystem.component.InputSegmentedShell
 import org.hisp.dhis.mobile.ui.designsystem.component.model.SegmentedShellType
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefaults
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
@@ -99,6 +107,7 @@ fun OfflineCredentialDialog(
     var value by remember { mutableStateOf("") }
     val isComplete = value.length == length
     val isCreate = mode == OfflineCredentialMode.CREATE
+    var displayResetPinAlert by remember { mutableStateOf(false) }
 
     OfflineCredentialContent(
         title = stringResource(if (isCreate) Res.string.offline_credential_create_title else Res.string.offline_credential_enter_title),
@@ -118,11 +127,45 @@ fun OfflineCredentialDialog(
         windowSizeClass = windowSizeClass,
         onValueChanged = { value = it.replace("-", "") },
         onPrimaryClick = { if (isComplete) onSubmit(value) },
-        onSecondaryClick = onForgot,
+        onSecondaryClick = { displayResetPinAlert = true },
         // CREATE is mandatory and non-dismissable: swallow dismiss so the caller's gate keeps it shown.
         onDismiss = if (isCreate) ({}) else onDismiss,
         modifier = modifier,
     )
+    if (displayResetPinAlert) {
+        BottomSheetShell(
+            uiState =
+                BottomSheetShellUIState(
+                    title = stringResource(Res.string.forgot_pin_button),
+                    description = stringResource(Res.string.forgot_pin_description),
+                    headerTextAlignment = TextAlign.Start,
+                    showBottomSectionDivider = false,
+                ),
+            buttonBlock = {
+                ButtonBlock(
+                    modifier = Modifier.padding(BottomSheetShellDefaults.buttonBlockPaddings()),
+                    primaryButton = {
+                        Button(
+                            modifier = Modifier.fillMaxWidth(),
+                            style = ButtonStyle.OUTLINED,
+                            text = stringResource(Res.string.cancel),
+                            onClick = { displayResetPinAlert = false },
+                        )
+                    },
+                    secondaryButton = {
+                        Button(
+                            modifier = Modifier.fillMaxWidth(),
+                            style = ButtonStyle.FILLED,
+                            text = stringResource(Res.string.login_online),
+                            onClick = onForgot,
+                        )
+                    },
+                )
+            },
+            content = null,
+            onDismiss = { displayResetPinAlert = false },
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
