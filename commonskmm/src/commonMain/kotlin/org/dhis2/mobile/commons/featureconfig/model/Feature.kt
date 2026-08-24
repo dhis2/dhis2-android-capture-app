@@ -6,5 +6,4 @@ enum class Feature(
     AUTO_LOGOUT("automatic log out"),
     RESPONSIVE_HOME("responsive home"),
     TWO_FACTOR_AUTHENTICATION("Two Factor Authentication"),
-    FORCE_SESSION_EXPIRY("Force session expiry"),
 }

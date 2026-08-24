@@ -31,9 +31,6 @@ import org.dhis2.form.data.UniqueAttributeController
 import org.dhis2.metadata.usecases.DataSetConfiguration
 import org.dhis2.metadata.usecases.ProgramConfiguration
 import org.dhis2.metadata.usecases.TrackedEntityTypeConfiguration
-import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.mobile.commons.featureconfig.model.Feature
-import org.dhis2.mobile.commons.featureconfig.model.FeatureState
 import org.dhis2.mobile.commons.files.FileController
 import org.dhis2.mobile.commons.files.FileControllerImpl
 import org.dhis2.mobile.commons.providers.CustomLabelProvider
@@ -46,7 +43,6 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.D2Configuration
 import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.D2Manager.blockingInstantiateD2
-import org.koin.java.KoinJavaComponent
 
 @Module
 class ServerModule {
@@ -219,19 +215,13 @@ class ServerModule {
             if (BuildConfig.DEBUG) {
                 listOf(
                     ForceSessionExpiryInterceptor(
-                        isArmed = { featureConfig().isFeatureEnable(Feature.FORCE_SESSION_EXPIRY) },
-                        disarm = {
-                            featureConfig().updateItem(
-                                FeatureState(Feature.FORCE_SESSION_EXPIRY, enable = false),
-                            )
-                        },
+                        isArmed = { ForcedSessionExpiry.isArmed },
+                        disarm = ForcedSessionExpiry::disarm,
                     ),
                 )
             } else {
                 emptyList()
             }
-
-        private fun featureConfig(): FeatureConfigRepository = KoinJavaComponent.get(FeatureConfigRepository::class.java)
     }
 
     @Provides

@@ -10,6 +10,7 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.runBlocking
 import org.dhis2.R
 import org.dhis2.commons.featureconfig.ui.FeatureConfigView
+import org.dhis2.data.server.ForcedSessionExpiry
 import org.dhis2.databinding.DevelopmentActivityBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.hisp.dhis.android.core.D2
@@ -39,6 +40,7 @@ class DevelopmentActivity : ActivityGlobalAbstract() {
         loadConflicts()
         loadMultiText()
         loadCustomIcons()
+        loadSessionExpiry()
     }
 
     private fun loadCustomIcons() {
@@ -261,6 +263,23 @@ class DevelopmentActivity : ActivityGlobalAbstract() {
     private fun loadCrashControl() {
         binding!!.crashButton.setOnClickListener { _: View? ->
             throw IllegalArgumentException("KA BOOOOOM!")
+        }
+    }
+
+    /**
+     * Arms the development interceptor for one session: the next call to the server goes out with
+     * a spoiled token, the refresh behind it is rejected, and the SDK discards the tokens. From
+     * there the app behaves as it does after a real expiry, until the session is renewed.
+     */
+    private fun loadSessionExpiry() {
+        binding!!.expireSessionButton.setOnClickListener { _: View? ->
+            ForcedSessionExpiry.arm()
+            Toast
+                .makeText(
+                    this,
+                    "The next sync will find the session expired",
+                    Toast.LENGTH_SHORT,
+                ).show()
         }
     }
 

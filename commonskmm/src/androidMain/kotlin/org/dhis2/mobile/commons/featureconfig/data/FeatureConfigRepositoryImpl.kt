@@ -68,7 +68,6 @@ class FeatureConfigRepositoryImpl(
             Feature.AUTO_LOGOUT -> null
             Feature.RESPONSIVE_HOME -> FeatureOptions.ResponsiveHome(totalItems = getResponsiveHomeTotalItems())
             Feature.TWO_FACTOR_AUTHENTICATION -> null
-            Feature.FORCE_SESSION_EXPIRY -> null
         }
 
     private fun getResponsiveHomeTotalItems(): Int? {
