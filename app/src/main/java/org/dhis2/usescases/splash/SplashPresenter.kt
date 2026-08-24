@@ -33,18 +33,18 @@ class SplashPresenter internal constructor(
                 userManager.isUserLoggedIn
                     .delay(2000, TimeUnit.MILLISECONDS, schedulerProvider.io())
                     .subscribeOn(schedulerProvider.io())
+                    // Resolve the blocking SDK reads here, upstream of observeOn(ui): if they
+                    // run after the switch to the UI scheduler they block the main thread on
+                    // SQLiteConnectionPool while background sync holds the connection, causing
+                    // an ANR (DHIS2-ANDROID-CAPTURE-83NF / 83P1).
+                    .map { userLogged -> userLogged to trackingInfoFor(userManager, userLogged) }
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
-                        { userLogged ->
-                            if (userLogged && trackingPermissionGranted()) {
-                                val systemInfo =
-                                    userManager.d2
-                                        .systemInfoModule()
-                                        .systemInfo()
-                                        .blockingGet()
+                        { (userLogged, trackingInfo) ->
+                            trackingInfo?.let {
                                 trackUserInfo(
-                                    serverUrl = systemInfo?.contextPath() ?: "",
-                                    serverVersion = systemInfo?.version() ?: "",
+                                    serverUrl = it.serverUrl,
+                                    serverVersion = it.serverVersion,
                                 )
                             }
                             view.goToNextScreen(
@@ -74,13 +74,30 @@ class SplashPresenter internal constructor(
         )
     }
 
-    private fun trackingPermissionGranted(): Boolean =
-        userManager
-            ?.d2
-            ?.dataStoreModule()
-            ?.localDataStore()
-            ?.value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
-            ?.blockingGet()
+    private fun trackingInfoFor(
+        userManager: UserManager,
+        userLogged: Boolean,
+    ): TrackingInfo? =
+        if (userLogged && trackingPermissionGranted(userManager)) {
+            val systemInfo =
+                userManager.d2
+                    .systemInfoModule()
+                    .systemInfo()
+                    .blockingGet()
+            TrackingInfo(
+                serverUrl = systemInfo?.contextPath() ?: "",
+                serverVersion = systemInfo?.version() ?: "",
+            )
+        } else {
+            null
+        }
+
+    private fun trackingPermissionGranted(userManager: UserManager): Boolean =
+        userManager.d2
+            .dataStoreModule()
+            .localDataStore()
+            .value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
+            .blockingGet()
             ?.value() == true.toString()
 
     private fun trackUserInfo(
@@ -97,4 +114,9 @@ class SplashPresenter internal constructor(
             ?.accountManager()
             ?.getAccounts()
             ?.count() ?: 0
+
+    private data class TrackingInfo(
+        val serverUrl: String,
+        val serverVersion: String,
+    )
 }
