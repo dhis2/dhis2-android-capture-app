@@ -130,4 +130,33 @@ class DomainErrorMapperTest {
                 domainError,
             )
         }
+
+    @Test
+    fun `GIVEN a renewal authorized by another user WHEN it is mapped THEN it is an authentication error`() =
+        runTest {
+            // GIVEN - the browser session belonged to someone else, so the SDK refuses the login
+            // before touching the account being restored
+            val mismatchMessage = "You logged in with a different account"
+            val d2Error =
+                D2Error
+                    .builder()
+                    .errorCode(D2ErrorCode.AUTHENTICATED_USER_MISMATCH)
+                    .errorDescription("The authorized user does not match the account being restored")
+                    .build()
+
+            whenever(networkStatusProvider.connectionStatus) doReturn flowOf(true)
+            whenever(
+                d2ErrorMessageProvider.getErrorMessage(d2Error, true),
+            ) doReturn mismatchMessage
+
+            // WHEN
+            val domainError = mapper.mapToDomainError(d2Error)
+
+            // THEN - nothing was replaced and no renewal is pending: the user simply has to try
+            // again with the right account, so it is reported like any other credentials problem
+            assertEquals(
+                DomainError.AuthenticationError(mismatchMessage),
+                domainError,
+            )
+        }
 }

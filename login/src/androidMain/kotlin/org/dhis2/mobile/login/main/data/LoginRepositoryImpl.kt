@@ -186,7 +186,14 @@ class LoginRepositoryImpl(
     ) = withContext(dispatcher.io) {
         try {
             val user =
-                d2.userModule().oauth2Handler().blockingHandleLogInResponse(serverUrl, code, state)
+                d2.userModule().oauth2Handler().blockingHandleLogInResponse(
+                    // No account to check against yet: the renewal flow threads in the account
+                    // being restored so the SDK can refuse a session another user authorized.
+                    existingUsername = null,
+                    serverUrl = serverUrl,
+                    authorizationCode = code,
+                    state = state,
+                )
             kotlin.Result.success(user.username())
         } catch (d2Error: D2Error) {
             val mappedError = domainErrorMapper.mapToDomainError(d2Error)
