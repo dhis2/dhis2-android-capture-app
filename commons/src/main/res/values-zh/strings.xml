@@ -272,6 +272,8 @@
     <string name="new_enrollment">新%s</string>
     <string name="enrolling_ou">加入：</string>
     <string name="more_enrollments">更多注册人数</string>
+    <string name="more_enrollments_format">更多%s</string>
+
     <string name="remove_from">从</string>
     <string name="refresh_this_record">刷新此记录</string>
     <string name="view_timeline">查看时间表</string>
