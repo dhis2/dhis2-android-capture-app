@@ -1,17 +1,21 @@
 package org.dhis2.mobile.sync.domain
 
 import kotlinx.coroutines.runBlocking
+import org.dhis2.mobile.commons.error.DomainError
+import org.dhis2.mobile.commons.session.SessionRenewalNotifier
 import org.dhis2.mobile.sync.data.SyncTeiRepository
 import org.dhis2.mobile.sync.model.EnrollmentInfo
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class SyncTeiTest {
     private val repository: SyncTeiRepository = mock()
-    private val useCase = SyncTei(repository)
+    private val sessionRenewalNotifier: SessionRenewalNotifier = mock()
+    private val useCase = SyncTei(repository, sessionRenewalNotifier)
 
     private val enrollmentUid = "enrollmentUid"
     private val enrollmentInfo =
@@ -78,5 +82,20 @@ class SyncTeiTest {
             val result = useCase(enrollmentUid)
 
             assertTrue(result.isFailure)
+        }
+
+    @Test
+    fun `should request a session renewal when the tokens are no longer valid`() =
+        runBlocking {
+            // GIVEN
+            val error = DomainError.SessionRenewalRequiredError("Your session has expired")
+            whenever(repository.getEnrollmentInfo(enrollmentUid)).thenAnswer { throw error }
+
+            // WHEN
+            val result = useCase(enrollmentUid)
+
+            // THEN
+            assertEquals(error, result.exceptionOrNull())
+            verify(sessionRenewalNotifier).notifyIfRequired(error)
         }
 }
