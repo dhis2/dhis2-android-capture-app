@@ -55,8 +55,8 @@ class DomainErrorMapper(
             D2ErrorCode.OAUTH2_INVALID_IAT,
             D2ErrorCode.OAUTH2_INVALID_STATE,
             D2ErrorCode.BAD_CREDENTIALS_OFFLINE_CODE,
+
             // The renewal was authorized by a different user than the account being restored.
-            // Nothing was replaced, so the user only has to try again with the right account
             D2ErrorCode.AUTHENTICATED_USER_MISMATCH,
             -> AuthenticationError(errorMessage)
 

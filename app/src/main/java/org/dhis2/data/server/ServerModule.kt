@@ -207,10 +207,6 @@ class ServerModule {
                 .build()
         }
 
-        /**
-         * Only in debug builds: the feature switch can also be turned on from the server settings,
-         * and spoiling a real user's session would be no development tool at all.
-         */
         private fun developmentInterceptors(): List<Interceptor> =
             if (BuildConfig.DEBUG) {
                 listOf(

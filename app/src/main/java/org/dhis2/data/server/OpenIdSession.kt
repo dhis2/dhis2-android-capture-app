@@ -35,8 +35,6 @@ class OpenIdSession(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onCreate() {
-        // Expired tokens no longer close the session: the SDK reports them as an error and the
-        // account keeps working offline, so a deleted account is the only reason left here
         disposable.add(
             d2
                 .userModule()

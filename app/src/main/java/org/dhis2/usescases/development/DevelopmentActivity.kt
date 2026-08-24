@@ -266,11 +266,6 @@ class DevelopmentActivity : ActivityGlobalAbstract() {
         }
     }
 
-    /**
-     * Arms the development interceptor for one session: the next call to the server goes out with
-     * a spoiled token, the refresh behind it is rejected, and the SDK discards the tokens. From
-     * there the app behaves as it does after a real expiry, until the session is renewed.
-     */
     private fun loadSessionExpiry() {
         binding!!.expireSessionButton.setOnClickListener { _: View? ->
             ForcedSessionExpiry.arm()
