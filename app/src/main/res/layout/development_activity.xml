@@ -151,6 +151,29 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:background="@color/primaryAlpha"
+                    android:text="Session"
+                    android:textColor="@color/colorAccent" />
+
+                <TextView
+                    style="@style/TextSecondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Spoils the next call to the server so its session expires, as it does after 30 days of inactivity. The account keeps working offline and stays expired until the session is renewed." />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/expireSessionButton"
+                    style="@style/Widget.MaterialComponents.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:text="Expire session" />
+
+                <TextView
+                    style="@style/TextPrimary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@color/primaryAlpha"
                     android:text="Tracker Import conflicts"
                     android:textColor="@color/colorAccent" />
 
