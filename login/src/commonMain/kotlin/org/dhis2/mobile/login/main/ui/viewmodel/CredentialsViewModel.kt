@@ -121,7 +121,7 @@ class CredentialsViewModel(
     private val isLockoutActive: Boolean
         get() = lockoutJob?.isActive == true
 
-    private var pendingOAuthLoginResult: LoginResult.Success? = null
+    private var pendingOAuthLoginResult: LoginResult? = null
 
     private var appLinkJob: Job? = null
 
@@ -386,33 +386,21 @@ class CredentialsViewModel(
                             expectedUsername = username,
                         )
                     }
-                when (result) {
-                    is LoginResult.Success -> {
-                        // Defer entering the app until the server session cookie is cleared
-                        pendingOAuthLoginResult = result
-                        getOAuthLogoutUrl(serverUrl).fold(
-                            onSuccess = { logoutUrl ->
-                                navigator.navigate(
-                                    LoginScreenState.OauthAuthentication(
-                                        selectedServer = logoutUrl,
-                                    ),
-                                )
-                            },
-                            onFailure = {
-                                // Best-effort: proceed into the app if the logout URL can't be built
-                                completeOAuthLogin()
-                            },
-                        )
-                    }
 
-                    is LoginResult.Error, is LoginResult.LockOut -> {
-                        stopListeningForOAuthCallbacks()
-                        handleLoginResult(result)
-                        _credentialsScreenState.update {
-                            it.copy(loginState = LoginState.Enabled)
-                        }
-                    }
-                }
+                pendingOAuthLoginResult = result
+
+                getOAuthLogoutUrl(serverUrl).fold(
+                    onSuccess = { logoutUrl ->
+                        navigator.navigate(
+                            LoginScreenState.OauthAuthentication(
+                                selectedServer = logoutUrl,
+                            ),
+                        )
+                    },
+                    onFailure = {
+                        completeOAuthLogin()
+                    },
+                )
             }
     }
 
@@ -421,7 +409,10 @@ class CredentialsViewModel(
         pendingOAuthLoginResult = null
         stopListeningForOAuthCallbacks()
         launchUseCase {
-            handleLoginResult(pending, sessionOpenedInBrowser = true)
+            handleLoginResult(
+                result = pending,
+                sessionOpenedInBrowser = pending is LoginResult.Success,
+            )
             _credentialsScreenState.update {
                 it.copy(loginState = LoginState.Enabled)
             }

@@ -658,6 +658,7 @@ class CredentialsViewModelTest {
             val appLinkUrl = "https://test.redirect.org?code=$authCode&state=$state"
             val mockAppLinkFlow = MutableSharedFlow<String>()
             val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
+            val logoutUrl = "$serverUrl/logout"
             val deviceNotRegisteredMessage = "Device not registered"
 
             whenever(getAvailableUsernames()) doReturn emptyList()
@@ -666,6 +667,7 @@ class CredentialsViewModelTest {
             whenever(getIsSessionLockedUseCase(any())) doReturn false
             whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
             whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
+            whenever(getOAuthLogoutUrl(any())) doReturn Result.success(logoutUrl)
             whenever(
                 loginUserWithOAuth.invoke(any(), any(), any(), anyOrNull()),
             ) doReturn LoginResult.Error(deviceNotRegisteredMessage)
@@ -693,13 +695,22 @@ class CredentialsViewModelTest {
                     expectedUsername = "testuser",
                 )
 
-                // THEN - the device-not-registered message is shown and the user does not enter
-                // the app: no logout hop and no post-login actions
+                // THEN - the browser session is cleared even though the login failed, or the
+                // next attempt would silently reuse the account that just failed
+                verify(navigator).navigate(
+                    eq(LoginScreenState.OauthAuthentication(selectedServer = logoutUrl)),
+                    any(),
+                )
+
+                // WHEN - the logout redirect returns
+                mockAppLinkFlow.emit("https://test.redirect.org?state=$state")
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - the message is shown and the user does not enter the app
                 val errorState = expectMostRecentItem()
                 assertEquals(deviceNotRegisteredMessage, errorState.errorMessage)
                 assertEquals(LoginState.Enabled, errorState.loginState)
                 assertTrue(errorState.afterLoginActions.isEmpty())
-                verify(getOAuthLogoutUrl, never()).invoke(any())
 
                 // AND - the OAuth flow is over, so later app links are ignored
                 mockAppLinkFlow.emit("https://test.redirect.org?code=late_code&state=$state")
@@ -1877,6 +1888,66 @@ class CredentialsViewModelTest {
                         any(),
                     )
                 }
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN a renewal authorized by another user WHEN it fails THEN the browser session is cleared`() =
+        runTest {
+            // GIVEN - the browser held a session for somebody else, so the SDK refuses the login
+            val serverUrl = "https://test.server.org"
+            val authorizationUrl = "$serverUrl/oauth2/authorize"
+            val logoutUrl = "$serverUrl/logout"
+            val state = "test"
+            val mismatchMessage = "You logged in with a different account"
+            val mockAppLinkFlow = MutableSharedFlow<String>()
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
+            whenever(getSessionRenewalUrl(any())) doReturn Result.success(authorizationUrl)
+            whenever(getOAuthLogoutUrl(any())) doReturn Result.success(logoutUrl)
+            whenever(
+                loginUserWithOAuth.invoke(any(), any(), any(), anyOrNull()),
+            ) doReturn LoginResult.Error(mismatchMessage)
+
+            initViewModel(
+                serverUrl = serverUrl,
+                username = "testuser",
+                entryMode = CredentialsEntryMode.EXISTING_OAUTH,
+                autoPromptLogin = false,
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                viewModel.onRenewSession()
+                testDispatcher.scheduler.advanceUntilIdle()
+                mockAppLinkFlow.emit("https://test.redirect.org?code=auth_code_123&state=$state")
+                testDispatcher.scheduler.advanceUntilIdle()
+                testDispatcher.scheduler.advanceTimeBy(4.seconds)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - the browser is sent through the logout, so the next attempt can ask for
+                // credentials again instead of reusing the account that just failed
+                verify(navigator).navigate(
+                    eq(LoginScreenState.OauthAuthentication(selectedServer = logoutUrl)),
+                    any(),
+                )
+
+                // WHEN - the logout redirect returns
+                mockAppLinkFlow.emit("https://test.redirect.org?state=$state")
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - and only then the user is told what happened
+                val errorState = expectMostRecentItem()
+                assertEquals(mismatchMessage, errorState.errorMessage)
+                assertEquals(LoginState.Enabled, errorState.loginState)
+                assertTrue(errorState.afterLoginActions.isEmpty())
 
                 cancelAndIgnoreRemainingEvents()
             }
