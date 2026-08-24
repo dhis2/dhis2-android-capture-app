@@ -481,8 +481,6 @@
     <string name="take_photo">Take Photo</string>
     <string name="break_glass_dialog_title">This program is protected</string>
     <string name="break_glass_hint">Describe the reason here</string>
-    <string name="openid_session_expired">The session has expired</string>
-    <string name="openid_session_expired_message">Your current session has expired. For security reasons you will need to provide your credentials again</string>
     <string name="period_span_default_label" translatable="false">%s - %s</string>
     <string name="week_period_span_default_label">Week %d %s to %s</string>
     <string name="biweek_period_span_default_label" translatable="false">%d %s - %d %s</string>
@@ -556,6 +554,9 @@
     <string name="sync_dialog_action_send">Send</string>
     <string name="sync_dialog_action_refresh">Refresh</string>
     <string name="sync_dialog_action_not_now">Not now</string>
+    <string name="session_renewal_title">Your session has expired</string>
+    <string name="session_renewal_message">Log in again to sync with the server. You can keep working offline and log in later.</string>
+    <string name="session_renewal_action">Log in again</string>
     <string name="tap_to_explore_action">Tap here to explore</string>
     <string name="new_version_message">App version <b>%s</b> is now available. Do you want to download it?</string>
     <string name="software_update">Software update</string>
