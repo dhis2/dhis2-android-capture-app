@@ -127,6 +127,7 @@ fun CredentialsScreen(
     oidcInfo: OidcInfo?,
     entryMode: CredentialsEntryMode,
     autoPromptLogin: Boolean,
+    autoStartRenewal: Boolean,
 ) {
     val context = LocalPlatformContext.current
 
@@ -141,6 +142,7 @@ fun CredentialsScreen(
                 context,
                 entryMode,
                 autoPromptLogin,
+                autoStartRenewal,
             )
         }
 

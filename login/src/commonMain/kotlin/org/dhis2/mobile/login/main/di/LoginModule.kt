@@ -122,6 +122,7 @@ internal val mainLoginModule =
                 importDatabase = get { parametersOf(context) },
                 validateServer = get { parametersOf(context) },
                 networkStatusProvider = get(),
+                renewSession = parameters.getOrNull<Boolean>() ?: false,
             )
         }
         viewModel { parameters ->
@@ -133,6 +134,7 @@ internal val mainLoginModule =
             val context = parameters[5] as PlatformContext
             val entryMode = parameters[6] as CredentialsEntryMode
             val autoPromptLogin = parameters[7] as Boolean
+            val autoStartRenewal = parameters[8] as Boolean
             CredentialsViewModel(
                 navigator = get(),
                 getAvailableUsernames = get { parametersOf(context) },
@@ -163,6 +165,7 @@ internal val mainLoginModule =
                 loginUserOfflineWithCode = get { parametersOf(context) },
                 credentialsResourceProvider = get(),
                 getSessionRenewalUrl = get { parametersOf(context) },
+                autoStartRenewal = autoStartRenewal,
             )
         }
     }

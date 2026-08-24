@@ -74,10 +74,15 @@ interface LoginRepository {
         state: String,
     ): String
 
+    /**
+     * @param expectedUsername the account being restored, so the SDK can refuse a session that was
+     * authorized by a different user. Null when the account does not exist yet.
+     */
     suspend fun loginUserWithOAuth(
         serverUrl: String,
         code: String,
         state: String,
+        expectedUsername: String?,
     ): Result<String?>
 
     suspend fun buildLogoutUrl(serverUrl: String): String
