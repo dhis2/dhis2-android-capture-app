@@ -220,8 +220,9 @@ Load the `android-testing` skill for full patterns. At minimum write:
 
 **Placement**:
 - `commonTest/` — for classes in `commonMain`
-- `androidUnitTest/` — for classes in `androidMain`
-- Existing module test source set — for legacy Android modules (`form`, `commons`, `tracker`, `app`)
+- `androidHostTest/` — for classes in `androidMain` (e.g. anything mocking `D2`)
+- Existing module test source set (`src/test/java`) — for AGP modules (`form`,
+  `commons`, `app`, …). Note `tracker` is KMP, not legacy
 - **SDK** — `core/src/test/java/`, class named `<Class>Should`, mirroring the
   neighboring tests of the touched class
 - **Design system** — put pure-Kotlin tests next to the existing tests of the
@@ -244,13 +245,13 @@ inside the worktree from Step 2). Fix any failures before moving on.
 ./gradlew ktlintCheck
 
 # 3. Run tests for the affected module
-# KMP module (commonTest source set):
+# KMP module — runs BOTH the commonTest and androidHostTest source sets:
 ./gradlew :<module>:testAndroidHostTest
 
-# KMP module (androidUnitTest source set):
-./gradlew :<module>:testAndroidDebugUnitTest
+# app (it has flavours):
+./gradlew :app:testDhis2DebugUnitTest
 
-# Legacy Android module:
+# Other AGP modules:
 ./gradlew :<module>:testDebugUnitTest
 ```
 
