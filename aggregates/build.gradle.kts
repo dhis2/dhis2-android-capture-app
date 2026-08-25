@@ -55,7 +55,6 @@ kotlin {
             implementation(kotlin("test"))
             // Koin Test features
             implementation(libs.koin.test)
-            implementation(libs.koin.test.junit5)
             implementation(libs.koin.test.junit4)
             implementation(libs.test.turbine)
             implementation(libs.test.kotlinCoroutines)
@@ -72,10 +71,6 @@ kotlin {
             implementation(project(":commons"))
             implementation(project(":dhis2_android_maps"))
             compileOnly(libs.androidx.compose.uitooling)
-        }
-
-        getByName("androidHostTest") {
-            dependencies { implementation(libs.junit.jupiter) }
         }
 
         val desktopMain by getting {
