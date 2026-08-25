@@ -2,10 +2,7 @@
 # This will make exit immediately if any command fails
 set -e
 
-echo "Running Ktlint check..."
-./gradlew ktlintCheck
-
-echo "Running Unit Tests..."
-./gradlew testDebugUnitTest testDhis2DebugUnitTest testAndroidHostTest
+echo "Running full verification (ktlint + unit tests + coverage)..."
+./gradlew verifyAll
 
 echo "All tasks completed!"
