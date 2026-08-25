@@ -4,4 +4,5 @@
     <string name="username_hint">Nama pengguna</string>
     <string name="password_hint">Sandi</string>
     <string name="action_yes">Iya</string>
-    </resources>
+    <string name="cancel">Batal</string>
+</resources>
