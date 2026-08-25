@@ -189,6 +189,7 @@
     <string name="not_in_totp_2fa_enrollment_mode">未进入 TOTP 2FA 注册模式</string>
     <string name="oauth2_error">使用 OAuth2 进行身份验证时发生错误</string>
     <string name="error_device_not_registered">设备未注册</string>
+    <string name="error_session_renewal_required">您的会话已过期。请重新登录以与服务器同步。</string>
     <!--*******************
        END OF D2 Error Messages
     **********************-->
@@ -231,5 +232,6 @@
     <string name="enrollment_completed">注册 已完成</string>
     <string name="enrollment_cancelled">注册 已取消</string>
     <string name="program_stage">项目阶段</string>
+    <string name="group_by_stage_label">按%s分组</string>
     <string name="stage">阶段</string>
 </resources>
