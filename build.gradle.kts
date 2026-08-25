@@ -71,6 +71,20 @@ allprojects {
         }
     }
 
+    // Tell Sonar where jacoco actually writes. jacoco/jacoco.gradle.kts uses a
+    // non-default location, and without this the scanner looks only at its own default
+    // path, finds nothing and reports 0% for every module -- silently, because a missing
+    // coverage report is a warning, not an error. The path is relative to each module's
+    // projectBaseDir and matches the layout the CI artifact restores into the workspace.
+    extensions.findByName("sonar")?.let { sonarExtension ->
+        (sonarExtension as org.sonarqube.gradle.SonarExtension).properties {
+            property(
+                "sonar.coverage.jacoco.xmlReportPaths",
+                "build/coverage-report/jacocoTestReport.xml",
+            )
+        }
+    }
+
     // JUnit Jupiter must never reach a test configuration. useJUnitPlatform() is set
     // nowhere in this build, so a Jupiter @Test is not run -- it is silently never
     // collected: the class compiles, the build goes green, and no result file is
