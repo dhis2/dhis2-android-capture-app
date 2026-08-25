@@ -68,10 +68,24 @@ allprojects {
         resolutionStrategy {
             cacheDynamicVersionsFor(10, TimeUnit.MINUTES)
             cacheChangingModulesFor(0, TimeUnit.SECONDS)
-            eachDependency {
-                if (requested.group == "org.jacoco")
-                    useVersion("0.8.10")
-            }
+        }
+    }
+
+    // JUnit Jupiter must never reach a test configuration. useJUnitPlatform() is set
+    // nowhere in this build, so a Jupiter @Test is not run -- it is silently never
+    // collected: the class compiles, the build goes green, and no result file is
+    // written. Failing to resolve is the loud alternative.
+    configurations.matching { it.name.contains("test", ignoreCase = true) }.configureEach {
+        exclude(group = "org.junit.jupiter")
+    }
+
+    // The jacoco plugin's toolVersion is what governs the report engine -- libs.jacoco is
+    // only on the buildscript classpath. Left alone it silently falls back to whatever
+    // version Gradle bundles (0.8.14 today), which is how the catalog's value ends up
+    // decorative. The removed useVersion("0.8.10") override was what previously forced it.
+    plugins.withType<org.gradle.testing.jacoco.plugins.JacocoPlugin> {
+        extensions.configure<org.gradle.testing.jacoco.plugins.JacocoPluginExtension> {
+            toolVersion = libs.versions.jacoco.get()
         }
     }
 
@@ -126,6 +140,47 @@ allprojects {
             })
         )
     }
+}
+
+// One command for humans and CI, so "what CI runs" has a single definition.
+// run_tests.sh calls this; ci.yml deliberately still calls the tasks directly, because
+// its unit-tests job already needs the separate lint-check job and would run ktlint twice.
+//
+// No mustRunAfter is needed here: jacocoReport already orders itself after the unit
+// tests. The dependsOn loop in jacoco/jacoco.gradle.kts runs inside that task's
+// registration action, which Gradle realises after AGP has created the test tasks, so
+// findByName does resolve them. Verified with `./gradlew :app:jacocoReport --dry-run`.
+val verificationTaskNames = listOf(
+    "ktlintCheck",
+    "testDebugUnitTest",
+    "testDhis2DebugUnitTest",
+    "testAndroidHostTest",
+    "jacocoReport",
+)
+
+tasks.register("verifyAll") {
+    group = "verification"
+    description = "Runs ktlint, every unit-test task and the coverage reports. Mirrors CI."
+
+    // A Provider, not a plain list: with org.gradle.configureondemand=true the subprojects
+    // are not all configured while this script runs, so resolving the tasks eagerly here
+    // yields an empty set. A Provider is resolved when the task graph is built, by which
+    // point the allprojects { } block above has forced every project to configure.
+    dependsOn(
+        provider {
+            rootProject.allprojects
+                .flatMap { project ->
+                    verificationTaskNames.mapNotNull { project.tasks.findByName(it) }
+                }
+                .also { resolved ->
+                    // A verification task that resolves to nothing passes without running
+                    // anything -- exactly the silent success this task exists to prevent.
+                    check(resolved.isNotEmpty()) {
+                        "verifyAll resolved no tasks to run."
+                    }
+                }
+        },
+    )
 }
 
 // Initialize extra properties on the root project for storing totals
