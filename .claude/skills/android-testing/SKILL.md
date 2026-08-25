@@ -123,7 +123,7 @@ run the gate — it allows lines that *deny* the names and flags every other use
 ```bash
 grep -rn "androidUnitTest\|androidInstrumentedTest\|testAndroidDebugUnitTest" \
   --include="*.md" --include="*.kts" --include="*.yml" . \
-  | grep -v "/build/" | grep -v "does not exist\|not a task"
+  | grep -v "/build/" | grep -vE "does not exist|not a task|--include="
 ```
 
 The testing guidance lives here and only here. `.github/agents/testing.agent.md` and
