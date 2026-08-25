@@ -117,6 +117,15 @@ troubleshooting table in `references/unit-testing.md` (or the relevant section o
 are the point of this skill; a lesson learned and not written down will be paid for
 again.
 
+To check that no document has drifted back to teaching the nonexistent source sets,
+run the gate — it allows lines that *deny* the names and flags every other use:
+
+```bash
+grep -rn "androidUnitTest\|androidInstrumentedTest\|testAndroidDebugUnitTest" \
+  --include="*.md" --include="*.kts" --include="*.yml" . \
+  | grep -v "/build/" | grep -v "does not exist\|not a task"
+```
+
 The testing guidance lives here and only here. `.github/agents/testing.agent.md` and
 the Testing section of `AGENTS.md` are deliberately thin pointers — put new
 guidance in this skill, not in those.

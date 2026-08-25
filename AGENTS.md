@@ -34,10 +34,15 @@ targeting Android, Desktop, and iOS. The app uses MVVM + Repository + Use Case a
 ```
 
 **Gradle task naming by module type:**
-- Legacy Android modules (`form`, `commons`, `tracker`, etc.): `testDebugUnitTest`
-- KMP modules (`login`, `commonskmm`, `sync`, `aggregates`), `commonTest` source set: `testAndroidHostTest`
-- KMP modules, `androidUnitTest` source set: `testAndroidDebugUnitTest`
-- Desktop targets in KMP modules: `desktopTest`
+- `app`: `testDhis2DebugUnitTest` (it has flavours; the others do not)
+- Other AGP modules (`form`, `commons`, `compose-table`, `stock-usecase`,
+  `dhis_android_analytics`, `dhis2_android_maps`, `dhis2-mobile-program-rules`):
+  `testDebugUnitTest`
+- KMP modules (`login`, `sync`, `aggregates`, `commonskmm`, `tracker`) — **both** the
+  `commonTest` and `androidHostTest` source sets: `testAndroidHostTest`
+
+`testAndroidDebugUnitTest` is **not a task in this repo**, and there is no
+`desktopTest` source set in any module despite the desktop targets.
 
 ---
 
@@ -50,11 +55,14 @@ root/
 ├── login/                  # KMP login feature (Android + Desktop)
 ├── sync/                   # KMP sync feature
 ├── aggregates/             # KMP aggregate data feature
-├── tracker/                # Android tracker feature
+├── tracker/                # KMP tracker feature
 ├── form/                   # Android form module
 ├── commons/                # Android shared utilities (legacy)
 ├── compose-table/          # Compose table component
-├── dhis2-mobile-program-rules/ # KMP program rules engine
+├── stock-usecase/          # Android stock management feature
+├── dhis_android_analytics/ # Android analytics/charts
+├── dhis2_android_maps/     # Android maps
+├── dhis2-mobile-program-rules/ # Android (com.android.library) program rules engine
 └── gradle/libs.versions.toml   # Central dependency catalog
 ```
 
@@ -64,10 +72,14 @@ modulekmm/src/
 ├── commonMain/kotlin/      # Shared business logic, interfaces, use cases
 ├── commonTest/kotlin/      # Shared unit tests (kotlin-test + mockito-kotlin + turbine)
 ├── androidMain/kotlin/     # Android implementations, SDK access
-├── androidUnitTest/kotlin/ # Android-specific unit tests
+├── androidHostTest/kotlin/ # Unit tests that need androidMain (e.g. mock D2)
 ├── desktopMain/kotlin/     # Desktop implementations
 └── composeResources/       # Shared Compose resources (strings, images)
 ```
+
+`androidHostTest` **depends on** `commonTest`, so a test dependency declared in
+`commonTest` is already on its compile classpath — no need to declare it twice.
+Both source sets are run by the same `testAndroidHostTest` task.
 
 ---
 
@@ -110,7 +122,7 @@ di/               # Koin module definitions
 ```
 
 ### UseCase interface (commonskmm)
-All use cases must implement `UseCase<in R, out T>` from
+New use cases implement `UseCase<in R, out T>` from
 `commonskmm/src/commonMain/kotlin/org/dhis2/mobile/commons/domain/UseCase.kt`:
 
 ```kotlin
@@ -122,6 +134,10 @@ fun interface UseCase<in R, out T> {
 suspend operator fun <T> UseCase<Unit, T>.invoke() = this(Unit)
 ```
 
+It is the dominant pattern already — 33 implementations across `app` (14), `sync` (9),
+`login` (6), `tracker` (3) and `commonskmm` (1). Where it is not used, a plain
+`suspend operator fun invoke` returning `Result<T>` is accepted.
+
 Implementation pattern:
 ```kotlin
 class SavePinUseCase(private val repo: SessionRepository) : UseCase<String, Unit> {
@@ -129,24 +145,44 @@ class SavePinUseCase(private val repo: SessionRepository) : UseCase<String, Unit
         try {
             repo.savePin(input)
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
+        } catch (cancellation: CancellationException) {
+            throw cancellation
+        } catch (error: Throwable) {
+            Result.failure(error)
         }
 }
 ```
 
+**Catch `Throwable`, not `Exception`.** `DomainError` is declared
+`sealed class DomainError : Throwable()`, so `catch (e: Exception)` does **not**
+match it: a mapped SDK error escapes the `try` entirely and propagates to a caller
+that was promised a `Result`. Rethrow `CancellationException` first, as coroutine
+convention requires.
+
 ### ViewModel pattern
 - Use `launchUseCase { }` (not `viewModelScope.launch`) — it wraps `CoroutineTracker`
-  which integrates with Espresso's `IdlingResource` for reliable UI tests
+  which integrates with Espresso's `IdlingResource` for reliable UI tests.
+  **Required** in KMP-module ViewModels and in any ViewModel with instrumented
+  coverage. The ~140 existing `viewModelScope.launch` sites in legacy modules are
+  not being migrated; do not "fix" them as drive-by changes
 - Expose state via `StateFlow`; collect in composables with `collectAsState()`
 
 ### Repository pattern (Android implementations)
-- Translate `D2Error` → domain errors via `DomainErrorMapper`
-- Required imports for Android impls:
-  ```kotlin
-  import org.dhis2.mobile.commons.error.DomainErrorMapper
-  import org.hisp.dhis.android.core.maintenance.D2Error
-  ```
+Wrap SDK calls in `withDomainErrors { }` / `withDomainErrorsAsResult { }` from
+`org.dhis2.mobile.commons.error` rather than catching `D2Error` inline:
+
+```kotlin
+suspend fun getData(): List<Item> = withDomainErrors {
+    d2.someModule().someRepository().blockingGet().map(::toDomain)
+}
+```
+
+Why: the SDK's blocking RxJava operators rewrap the checked `D2Error` in a
+`RuntimeException`, so an inline `catch (d2Error: D2Error)` misses every blocking
+call. The wrappers unwrap the cause chain before mapping, so both shapes are handled.
+
+> These helpers land with **ANDROAPP-7733**. Until it merges, repositories map
+> inline via `DomainErrorMapper` — write new code against the wrappers.
 
 ### Dependency Injection (Koin 4.x)
 ```kotlin
@@ -174,12 +210,20 @@ val featureModule = module {
 
 ## Testing
 
-- **Unit tests**: `mockito-kotlin` + `kotlin.test` in `commonTest`; `mockito-kotlin` + JUnit in `androidUnitTest` and legacy modules
-- **Flow assertions**: Turbine (`app.cash.turbine`) + `kotlinx-coroutines-test`
-- **UI tests**: Compose Testing + Espresso, Robot pattern, located in `androidInstrumentedTest/`
-- **ViewModel coroutines**: always use `launchUseCase { }` — it wraps `CoroutineTracker` which integrates with Espresso's `IdlingResource`; never use `Thread.sleep()`
+**The source of truth is `.claude/skills/android-testing/`** — load it before writing
+any test. `SKILL.md` routes you to the right source set and Gradle task,
+`references/unit-testing.md` covers host tests, `references/instrumented-testing.md`
+covers device tests.
 
-For patterns, examples, and common mistakes load the **android-testing** skill.
+The rules that hold everywhere:
+- **mockito-kotlin only** (`mock()`, `whenever()`, `verify()`). Never MockK
+- **JUnit4 / `kotlin.test` annotations only** — `org.junit.jupiter` is excluded from
+  every test configuration and a Jupiter `@Test` fails the build
+- **`D2` must be mocked with `RETURNS_DEEP_STUBS`** — its call chains NPE otherwise
+- **Never `Thread.sleep()`** or any hard-coded delay
+- **Confirm the test actually ran** — check `build/test-results/<task>/TEST-<FQCN>.xml`
+  for `tests="N"`. A class that was never collected produces no file, and the build
+  still goes green
 
 ---
 

@@ -290,7 +290,7 @@ order:
 ## Flows
 
 ### Flow A — `<TestClassName>`
-- **Source set**: androidInstrumentedTest | commonTest
+- **Source set**: src/androidTest | commonTest
 - **Module path**: `app/src/androidTest/java/org/dhis2/usescases/<feature>/`
 - **Claimed program**: `<UID>` `<Program Name>` (proposed / claimed)
 - **Program config changes**: <e.g., add formName on DE X; add SHOWWARNING
