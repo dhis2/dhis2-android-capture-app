@@ -7,7 +7,10 @@ import kotlinx.datetime.format
 import kotlinx.datetime.toLocalDateTime
 import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.dates.dateTimeFormat
+import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.mobile.commons.error.DomainErrorMapper
+import org.dhis2.mobile.commons.error.asD2Error
+import org.dhis2.mobile.commons.error.withDomainErrorsAsResult
 import org.dhis2.mobile.commons.providers.EVENT_MAX
 import org.dhis2.mobile.commons.providers.EVENT_MAX_DEFAULT
 import org.dhis2.mobile.commons.providers.LAST_DATA_SYNC
@@ -32,14 +35,13 @@ import org.hisp.dhis.android.core.arch.call.D2ProgressStatus
 import org.hisp.dhis.android.core.arch.call.D2ProgressSyncStatus
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.fileresource.FileResourceDomainType
-import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.settings.LimitScope
 import kotlin.math.ceil
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
-class AndroidSyncRepository(
+internal class AndroidSyncRepository(
     private val d2: D2,
     private val preferences: PreferenceProvider,
     private val analyticsHelper: AnalyticActions,
@@ -48,19 +50,10 @@ class AndroidSyncRepository(
 ) : SyncRepository {
     private suspend fun <T> execute(block: suspend () -> Result<T>): Result<T> =
         withContext(dispatcher.io) {
-            try {
-                block()
-            } catch (d2Error: D2Error) {
-                Result.failure(domainErrorMapper.mapToDomainError(d2Error))
-            }
+            run(block)
         }
 
-    private suspend fun <T> run(block: suspend () -> Result<T>): Result<T> =
-        try {
-            block()
-        } catch (d2Error: D2Error) {
-            Result.failure(domainErrorMapper.mapToDomainError(d2Error))
-        }
+    private suspend fun <T> run(block: suspend () -> Result<T>): Result<T> = domainErrorMapper.withDomainErrorsAsResult(block)
 
     override suspend fun currentMetadataSyncPeriod() =
         withContext(dispatcher.io) {
@@ -197,17 +190,17 @@ class AndroidSyncRepository(
 
     override suspend fun isLoggedIn() = D2Manager.isD2Instantiated() && d2.userModule().blockingIsLogged()
 
-    override suspend fun isServerAvailable(syncJobName: String): Boolean {
-        val isServerAvailable =
-            try {
-                d2.systemInfoModule().ping().blockingGet()
-                true
-            } catch (e: Exception) {
-                false
+    override suspend fun isServerAvailable(syncJobName: String): Boolean =
+        try {
+            d2.systemInfoModule().ping().blockingGet()
+            true
+        } catch (error: Exception) {
+            val domainError = error.asD2Error()?.let { domainErrorMapper.mapToDomainError(it) }
+            if (domainError is DomainError.SessionRenewalRequiredError) {
+                throw domainError
             }
-
-        return isServerAvailable
-    }
+            false
+        }
 
     override suspend fun setUnnavailableFlag(syncJobName: String) {
         d2
