@@ -77,12 +77,18 @@ allprojects {
     // coverage report is a warning, not an error. The path is relative to each module's
     // projectBaseDir and matches the layout the CI artifact restores into the workspace.
     extensions.findByName("sonar")?.let { sonarExtension ->
+        val coverageReport =
+            layout.buildDirectory
+                .file("coverage-report/jacocoTestReport.xml")
+                .get()
+                .asFile
         (sonarExtension as org.sonarqube.gradle.SonarExtension).properties {
-            property(
-                "sonar.coverage.jacoco.xmlReportPaths",
-                "build/coverage-report/jacocoTestReport.xml",
-            )
+            property("sonar.coverage.jacoco.xmlReportPaths", coverageReport.absolutePath)
         }
+        // TEMPORARY diagnostic: tells us whether the report is present when Gradle
+        // configures. Combined with the sensor's own message this separates "the path is
+        // wrong" from "the file was there and something deleted it mid-build".
+        logger.lifecycle("COVERAGE_PROBE ${path} exists=${coverageReport.exists()} at=${coverageReport.absolutePath}")
     }
 
     // JUnit Jupiter must never reach a test configuration. useJUnitPlatform() is set
