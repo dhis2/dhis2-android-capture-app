@@ -169,8 +169,9 @@ Map with `withDomainErrors { }` / `withDomainErrorsAsResult { }` from
 They unwrap the cause chain (`Throwable.asD2Error()` walks causes up to a depth of
 5, with a self-reference guard) before mapping, so both shapes are handled.
 
-> Those helpers land with **ANDROAPP-7733**. Until that merges, repositories map
-> inline — but write new code against the helpers.
+They are extensions on `DomainErrorMapper`, so the call reads
+`domainErrorMapper.withDomainErrors { ... }`. `SyncDataSetRepositoryImpl` is a
+worked example.
 
 Whichever you use, a repository test must cover **both** shapes:
 

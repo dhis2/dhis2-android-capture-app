@@ -171,18 +171,22 @@ convention requires.
 Wrap SDK calls in `withDomainErrors { }` / `withDomainErrorsAsResult { }` from
 `org.dhis2.mobile.commons.error` rather than catching `D2Error` inline:
 
+They are extension functions on `DomainErrorMapper`, so call them on the injected
+mapper:
+
 ```kotlin
-suspend fun getData(): List<Item> = withDomainErrors {
+suspend fun getData(): List<Item> = domainErrorMapper.withDomainErrors {
     d2.someModule().someRepository().blockingGet().map(::toDomain)
 }
 ```
 
 Why: the SDK's blocking RxJava operators rewrap the checked `D2Error` in a
 `RuntimeException`, so an inline `catch (d2Error: D2Error)` misses every blocking
-call. The wrappers unwrap the cause chain before mapping, so both shapes are handled.
+call. The wrappers walk the cause chain (`Throwable.asD2Error()`, depth 5, with a
+self-reference guard) before mapping, so both shapes are handled.
 
-> These helpers land with **ANDROAPP-7733**. Until it merges, repositories map
-> inline via `DomainErrorMapper` — write new code against the wrappers.
+Use `withDomainErrorsAsResult { }` when the call reports failure as a `Result`
+instead of throwing. `SyncDataSetRepositoryImpl` is a worked example.
 
 ### Dependency Injection (Koin 4.x)
 ```kotlin
