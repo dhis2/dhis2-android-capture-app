@@ -1,441 +1,122 @@
 ---
 name: android-testing
 description: >
-  Guidelines for writing unit tests (mockito-kotlin, Turbine, runTest) and
-  UI instrumented tests (Robot pattern, CoroutineTracker, Compose test tags)
-  for the DHIS2 Android KMP project. Load this when creating, fixing, or
-  reviewing any test in the codebase.
+  Guidelines for writing tests in the DHIS2 Android KMP project — host unit tests
+  (commonTest / androidHostTest, mockito-kotlin, Turbine, runTest) and instrumented
+  device tests (src/androidTest, Robot pattern, Compose test tags). Routes to
+  references/unit-testing.md and references/instrumented-testing.md. Load this when
+  creating, fixing, or reviewing any test in the codebase.
 ---
 
-# DHIS2 Android Testing Guidelines
+# DHIS2 Android Testing
 
-## Testing Stack
+Start here, then open the reference you need. This file is the router and the
+invariants; the details live in `references/`.
 
-- **Unit Tests**: `mockito-kotlin` (`mock()`, `whenever()`, `verify()`), JUnit / `kotlin.test`
-- **Flow tests**: Turbine (`app.cash.turbine`) + `kotlinx-coroutines-test`
-- **UI Tests**: Compose Testing + Espresso with Robot pattern
-- **Test locations**:
-  - `commonTest/` — platform-agnostic unit tests (`kotlin.test` annotations: `@Test`, `@BeforeTest`)
-  - `androidUnitTest/` — Android-specific unit tests (JUnit `@Test`)
-  - `androidInstrumentedTest/` / `androidTest/` — UI/instrumented tests
+## Which test am I writing?
 
-## Run Commands
+| What you are testing | Module type | Source set | Gradle task |
+| --- | --- | --- | --- |
+| Domain logic, use case, ViewModel | KMP | `src/commonTest/kotlin` | `:mod:testAndroidHostTest` |
+| Anything touching `org.hisp.dhis.android.core.*` (i.e. mocks `D2`) | KMP | `src/androidHostTest/kotlin` | `:mod:testAndroidHostTest` |
+| Anything in `app` | AGP | `src/test/java` | `:app:testDhis2DebugUnitTest` |
+| Anything in another AGP module | AGP | `src/test/java` | `:mod:testDebugUnitTest` |
+| UI flow on a device | AGP | `src/androidTest/java` | BrowserStack matrix |
+
+KMP modules: `login`, `sync`, `aggregates`, `commonskmm`, `tracker`.
+AGP modules: `app`, `form`, `commons`, `compose-table`, `stock-usecase`,
+`dhis_android_analytics`, `dhis2_android_maps`, `dhis2-mobile-program-rules`.
+
+Both KMP source sets run under the **same** task — the split is about what the test
+can see, not how it is run. The SDK is an `androidMain` dependency, so a test that
+mocks `D2` must be in `androidHostTest`; `androidHostTest` depends on `commonTest`,
+so `commonTest` dependencies are already on its classpath.
+
+## These do not exist in this repo
+
+Guidance elsewhere on the internet (and older copies of this file) will tell you to
+use these. They are wrong **here** — a test placed in one of them is never compiled
+and never run, and nothing fails to tell you so:
+
+- `androidUnitTest/` — does not exist. Use `androidHostTest/`.
+- `androidInstrumentedTest/` — does not exist. Use `src/androidTest/`.
+- `src/desktopTest/` — no module has one, despite the desktop targets.
+- `testAndroidDebugUnitTest` — **not a task.** Use `testAndroidHostTest`.
+
+`commonskmm`, `login` and `sync` do declare an `androidDeviceTest` source set, but
+no test has been written in one yet.
+
+## Run commands
 
 ```bash
-# Shortcut: lint + all unit tests (mirrors CI)
+# lint + all unit tests (what CI runs)
 ./run_tests.sh
 
-# All unit tests (legacy + KMP host + KMP debug)
+# all unit tests
 ./gradlew testDebugUnitTest testDhis2DebugUnitTest testAndroidHostTest
 
-# Desktop targets in KMP modules
-./gradlew desktopTest
-
-# Single KMP module test class (commonTest + androidUnitTest source sets)
+# one KMP test class (either source set)
 ./gradlew :login:testAndroidHostTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest"
 
-# Single KMP module test class (androidUnitTest source set only)
-./gradlew :login:testAndroidDebugUnitTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest"
-
-# Single legacy Android module test class
-./gradlew :form:testDebugUnitTest --tests "org.dhis2.form.ui.FormViewModelTest"
-
-# Single test method (commonTest + androidUnitTest source sets)
+# one test method
 ./gradlew :login:testAndroidHostTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest.initial screen is set correctly when starting"
+
+# one AGP module test class
+./gradlew :form:testDebugUnitTest --tests "org.dhis2.form.ui.FormViewModelTest"
 ```
 
-## Critical Rule: No Hard-Coded Delays
+## Confirm your test actually ran
 
-ViewModels use `launchUseCase { }` which wraps `CoroutineTracker`. Espresso's
-`IdlingResource` automatically waits for tracked coroutines. `Thread.sleep()` and
-hard-coded timeouts are **forbidden**.
+A green build does **not** mean your test ran. A class that was never collected —
+wrong source set, wrong annotation — produces no result file at all, and the build
+succeeds.
 
-```kotlin
-// ✅ CORRECT — IdlingResource waits automatically
-@Test
-fun shouldLoadData() {
-    exampleRobot(composeTestRule) {
-        clickLoadButton()
-        verifyDataDisplayed()  // no delay needed
-    }
-}
-
-// ❌ WRONG
-@Test
-fun shouldLoadData() {
-    clickLoadButton()
-    Thread.sleep(2000)  // FORBIDDEN
-    verifyDataDisplayed()
-}
+```bash
+ls build/test-results/<task>/TEST-<FQCN>.xml
 ```
 
-## Mocking: mockito-kotlin only
-
-Use `mock()`, `whenever()`, `verify()` from `org.mockito.kotlin`. Do **not** use MockK.
-
-```kotlin
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
-```
-
-## Unit Test Patterns
-
-### Use Case test
-
-```kotlin
-class SavePinUseCaseTest {
-    private val repository: SessionRepository = mock()
-    private val useCase = SavePinUseCase(repository)
-
-    @Test
-    fun `should return success when pin is saved`() = runTest {
-        whenever(repository.savePin("1234")).thenReturn(Unit)
-
-        val result = useCase("1234")
-
-        assertTrue(result.isSuccess)
-        verify(repository).savePin("1234")
-    }
-}
-```
-
-### ViewModel test
-
-```kotlin
-class ExampleViewModelTest {
-    private val useCase: GetDataUseCase = mock()
-    private val testDispatcher = UnconfinedTestDispatcher()
-    private lateinit var viewModel: ExampleViewModel
-
-    @BeforeTest
-    fun setUp() {
-        Dispatchers.setMain(testDispatcher)
-    }
-
-    @AfterTest
-    fun tearDown() {
-        Dispatchers.resetMain()
-    }
-
-    @Test
-    fun `should emit success state when use case succeeds`() = runTest {
-        whenever(useCase()).thenReturn(Result.success(flowOf(listOf(item))))
-
-        viewModel = ExampleViewModel(useCase)
-
-        viewModel.uiState.test {
-            assertEquals(UiState.Success(listOf(item)), awaitItem())
-        }
-    }
-}
-```
-
-### Repository test
-
-```kotlin
-class ExampleRepositoryTest {
-    // D2 chains calls across multiple intermediate objects — RETURNS_DEEP_STUBS is required
-    // so that d2.someModule().someRepository().blockingGet() doesn't NPE on the intermediates.
-    private val d2: D2 = mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
-    private val domainErrorMapper: DomainErrorMapper = mock()
-    private val repository = ExampleRepositoryImpl(d2, domainErrorMapper)
-
-    @Test
-    fun `should map D2Error to domain error`() = runTest {
-        val d2Error = D2Error.builder().errorCode(D2ErrorCode.API_RESPONSE_PROCESS_ERROR).build()
-        whenever(d2.exampleModule().examples().blockingGet()).thenThrow(d2Error)
-        whenever(domainErrorMapper.mapToDomainError(d2Error)).thenReturn(DomainException("error"))
-
-        val result = runCatching { repository.getData() }
-
-        assertTrue(result.isFailure)
-        verify(domainErrorMapper).mapToDomainError(d2Error)
-    }
-}
-```
-
-## UI Tests: Robot Pattern
-
-All UI tests go in `androidInstrumentedTest/`. Always use the Robot pattern. Tests extend
-`BaseTest`, which provides `mockWebServerRobot` — a helper that stubs HTTP responses from the
-DHIS2 server so tests run fully offline against a local `MockWebServer`. Register stubs
-**before** launching the robot body.
-
-```kotlin
-fun exampleRobot(rule: ComposeTestRule, body: ExampleRobot.() -> Unit) =
-    ExampleRobot(rule).apply { body() }
-
-class ExampleRobot(val rule: ComposeTestRule) : BaseRobot() {
-    fun typeUsername(username: String) {
-        rule.waitUntilExactlyOneExists(hasTestTag(USERNAME_TAG), TIMEOUT)
-        rule.onNodeWithTag(USERNAME_TAG).performClick()
-        rule.onAllNodesWithTag("INPUT_TEXT_FIELD")[0].performTextInput(username)
-    }
-
-    fun clickSubmitButton() {
-        rule.waitUntilExactlyOneExists(hasTestTag(SUBMIT_TAG), TIMEOUT)
-        rule.onNodeWithTag(SUBMIT_TAG).performClick()
-    }
-}
-
-class ExampleTest : BaseTest() {
-    @get:Rule val rule = createComposeRule()
-
-    @Test
-    fun shouldPerformSuccessfulAction() {
-        // Stub the network response before any UI interaction
-        mockWebServerRobot.addResponse(GET, "/api/endpoint", MOCK_RESPONSE, 200)
-        exampleRobot(rule) {
-            typeUsername("user")
-            clickSubmitButton()
-            verifySuccessMessageDisplayed()
-        }
-        // Call cleanDatabase() after any test that writes to the local DB —
-        // it clears all DHIS2 SDK tables so state doesn't leak into the next test.
-        cleanDatabase()
-    }
-}
-```
-
-### What belongs in a robot, and which robot
-
-- **One robot per screen or dialog.** A dialog reached from several screens gets its
-  own robot rather than duplicated methods in each caller's robot —
-  `OrgUnitSelectorRobot` is the existing example.
-- **Waiting for a screen belongs to that screen's robot**, not the test. If a step
-  navigates to a new Activity, expose e.g. `waitForFormToOpen()` on the destination's
-  robot; the test then reads as intent, and the reason for the wait is documented once
-  instead of repeated at every call site.
-- **Keep framework plumbing out of the test class.** Reaching into
-  `supportFragmentManager` / `ActivityLifecycleMonitorRegistry` from a `@Test` bypasses
-  the pattern; assert on what the dialog renders through its robot instead.
-
-## Test Tags
-
-Export constants from the screen file. Format: `{SCREEN}_{COMPONENT}_TAG`.
-
-```kotlin
-const val LOGIN_BUTTON_TAG = "LOGIN_BUTTON_TAG"
-const val USERNAME_INPUT_TAG = "USERNAME_INPUT_TAG"
-
-@Composable
-fun LoginScreen() {
-    InputField(modifier = Modifier.testTag(USERNAME_INPUT_TAG))
-    Button(
-        onClick = { /* submit */ },
-        modifier = Modifier.testTag(LOGIN_BUTTON_TAG),
-    ) {
-        Text("Log in")
-    }
-}
-```
-
-### Never assume a test tag exists — verify it is emitted first
-
-A matcher built on a tag that the UI never renders fails silently: it just
-times out with no hint that the tag was the problem. Before you write
-`hasTestTag("FOO")`, confirm `FOO` is actually set on a node — grep the screen
-(and the design-system component source) for `testTag("FOO")`, or dump the tree
-with `composeTestRule.onRoot().printToLog("TREE")` and read what's really there.
-
-This bites hardest with tags that come from the design-system library rather
-than app code (e.g. a list-card item tag). If you can't confirm a tag is
-emitted, match on **confirmable text or semantics** instead — text you can see
-on screen is always safer than a tag you're guessing at.
-
-### Prefix matchers: check no longer tag shares the prefix
-
-When matching on a tag *prefix* rather than an exact tag, verify that no longer tag
-starts with the same string. `OrgBottomSheet` declares both `ORG_TREE_ITEM_` and
-`ORG_TREE_ITEM_CHECKBOX_`, so a `startsWith("ORG_TREE_ITEM_")` matcher also selects
-every checkbox. Harmless for an existence check, wrong if you meant "a tree row".
-
-### Merged vs unmerged semantics tree
-
-Any node with `mergeDescendants = true` collapses its whole subtree in the **merged**
-tree — the default for every query. `Modifier.clickable` sets it, so a clickable
-`LazyColumn` or a design-system list card merges everything inside it.
-
-| Symptom | Cause | Fix |
-| --- | --- | --- |
-| `onAllNodesWithTag(X)` → 0 nodes, but X is on screen | tag absorbed by a merging ancestor | add `useUnmergedTree = true` |
-| `performScrollTo()` → "no parent layout with a Scroll SemanticsAction" | matched the scroller, not the child | query unmerged, or scroll the container with `performScrollToNode` |
-| a child-counting assertion passes suspiciously | nodes inside a merged subtree report `children == []` — a vacuous pass | read the merged node's aggregated text instead |
-
-**What makes this look self-contradictory:** *clickable* descendants (radio buttons,
-icon buttons) set their own `mergeDescendants` and survive merging, so some merged
-lookups work on the same screen where others return nothing.
-
-**`waitUntilAtLeastOneExists` always searches the merged tree** — it has no unmerged
-option. For a tag that exists only unmerged, spell the wait out:
-
-```kotlin
-composeTestRule.waitUntil(TIMEOUT) {
-    composeTestRule.onAllNodesWithTag(TAG, useUnmergedTree = true)
-        .fetchSemanticsNodes().isNotEmpty()
-}
-```
-
-An unmerged node carries only its **own** text, so to find a field by its label you
-must recurse the subtree — the label often sits several levels below the tagged node.
-`BaseRobot` provides `texts()` (own text, merged nodes) and `subtreeTexts()`
-(recursive, unmerged) for exactly this split.
-
-## DHIS2 Design System Inputs
-
-DHIS2 input components are composite. Click the wrapper to focus, then target the
-inner field. Use `performTextInput()`, never `performTextReplacement()`.
-
-The inner-field tag depends on the component. Most text-style inputs follow the
-pattern `INPUT_<COMPONENT_NAME>_FIELD` — e.g. `InputText` uses `INPUT_TEXT_FIELD`,
-`InputEmail` uses `INPUT_EMAIL_FIELD`, `InputNumber` uses `INPUT_NUMBER_FIELD`,
-`InputPhoneNumber` uses `INPUT_PHONE_NUMBER_FIELD`, and so on. Non-text inputs
-(checkboxes, dropdowns, dialogs, pickers, org-unit, coordinate, etc.) use their
-own tag schemes.
-
-To find the exact testTag for any design-system component, check the API docs:
-<https://dhis2.github.io/dhis2-mobile-ui/api/-mobile%20-u-i/org.hisp.dhis.mobile.ui.designsystem.component/index.html>
-— or open the component source in
-`../dhis2-mobile-ui/designsystem/src/commonMain/kotlin/org/hisp/dhis/mobile/ui/designsystem/component/<Component>.kt`
-and grep for `testTag(`.
-
-```kotlin
-// ✅ CORRECT — InputText example
-rule.onNodeWithTag(USERNAME_TAG).performClick()
-rule.onAllNodesWithTag("INPUT_TEXT_FIELD")[0].performTextInput(username)
-
-// ❌ WRONG
-rule.onNodeWithTag(USERNAME_TAG).performTextReplacement(username)
-```
-
-## Instrumented Test State: Fixtures & Assertions
-
-### Assert through the UI, not the SDK
-
-In an instrumented test, verify what the **user sees** — visible text, tags,
-semantics — not the SDK's internal state. Reaching into
-`D2Manager.getD2()…blockingGet()` to check a status couples the test to the
-database layer instead of the screen, and no other test in this codebase does
-it. If the UI shows "Event completed", assert on that; don't probe
-`event.status()`.
-
-```kotlin
-// ✅ CORRECT — assert what's on screen
-programEventsRobot(composeTestRule) {
-    checkEventIsComplete(eventDate)
-}
-
-// ❌ WRONG — probing SDK state from an instrumented test
-val status = D2Manager.getD2().eventModule().events().uid(uid).blockingGet()?.status()
-assertTrue(status == EventStatus.COMPLETED)
-```
-
-The SDK is still fine for **seeding** a fixture (see below) — the rule is about
-*assertions*: check the UI, not the database.
-
-### Seed fixtures at runtime — don't hardcode demo UIDs
-
-The test DB is a snapshot; a specific demo event UID like `"ohAH6BXIMad"` can
-disappear or change the moment the snapshot is regenerated, breaking the test
-for reasons unrelated to the app. Instead, **create the fixture you need at the
-start of the test** via the SDK, in an intent helper, and use the UID it
-returns:
-
-```kotlin
-// In EventIntents.kt — create a fresh event, return its UID + display date
-fun createFreshFlowAEvent(): FreshFlowAEvent {
-    val uid = d2.eventModule().events().blockingAdd(
-        EventCreateProjection.builder()
-            .program(FLOW_A_PROGRAM_UID)      // anchor to the stable program…
-            .programStage(FLOW_A_STAGE_UID)
-            .organisationUnit(FLOW_A_ORG_UNIT_UID)
-            .build(),
-    )
-    d2.eventModule().events().uid(uid).setEventDate(now)
-    return FreshFlowAEvent(uid, displayDate)  // …generate the fragile event yourself
-}
-```
-
-You still depend on the **program** existing (a big, stable structural object),
-but you generate the **event** (the fragile row) yourself — so a DB refresh
-can't pull the rug out. Prefer this over hardcoded demo UIDs for any test that
-needs a specific event/enrollment to act on.
-
-### Tests run isolated per class — but state leaks within one run
-
-CI runs each test class in its own instrumentation process, so each class
-starts from the fresh DB snapshot. But within a **single** `connectedAndroidTest`
-invocation that spans multiple classes, SDK writes persist across tests — a
-fixture one test seeds (or a status it changes) is still there for the next
-test. Two consequences:
-
-- A multi-class local run can fail a later test that a single-class run passes
-  (stale state, not a real bug). Reproduce CI by running one class at a time.
-- When a seeded fixture coexists with demo data, clean up with
-  `cleanDatabase()` where the next test needs a pristine list.
-
-## Write for the CI device matrix — including landscape
-
-Tests run on the BrowserStack device matrix (multiple devices **and
-orientations**), not just your local emulator. A test that passes locally in
-portrait can fail on CI in landscape — almost always because landscape has far
-less vertical height, so a node that was on-screen in portrait is now scrolled
-out of the viewport. Compose reports such a node as **present but not
-displayed**, so `assertIsDisplayed()` fails (and `performClick()` may miss)
-even though the element exists and the app is fine.
-
-Make assertions orientation-independent:
-
-- **Scroll the target into view before asserting or clicking.** Call
-  `performScrollTo()` (Compose) / `scrollTo()` (Espresso) on the node first.
-
-  ```kotlin
-  // ✅ robust in any orientation — bring it on-screen, then assert
-  composeTestRule.onNodeWithText(orgUnit).performScrollTo().assertIsDisplayed()
-
-  // ❌ portrait-only — fails in landscape when the node is below the fold
-  composeTestRule.onNodeWithText(orgUnit).assertIsDisplayed()
-  ```
-
-- **`performScrollTo()` only works if the node has a Compose scroll ancestor**
-  (`verticalScroll`, `LazyColumn`, …). It is not a free safety net: with no such
-  ancestor it throws *"no parent layout with a Scroll SemanticsAction"* on **every**
-  device, portrait included. `BottomSheetDialogContent` has no scroll container — the
-  sheet's drag is View-level `BottomSheetBehavior`, invisible to Compose semantics — so
-  nothing inside a bottom sheet can be scrolled to. Check the component before
-  applying the rule above; where there is no scroller, use `assertExists()`.
-- **Match the assertion to the claim.** "Did this screen/dialog open" is an
-  *existence* claim → `assertExists()`. "Can the user see or act on this" is a
-  *visibility* claim → `assertIsDisplayed()`, scrolled into view first.
-- **When you only need to prove a node is in the tree** (not that it's
-  visible right now), use `assertExists()` instead of `assertIsDisplayed()`.
-- **Don't assume layout positions.** Toolbars, FABs, and bottom sheets reflow
-  in landscape; the soft keyboard can also go fullscreen (extract mode) and
-  cover the form. Target nodes by tag/text and scroll to them rather than
-  relying on where they sit in portrait.
-- **"Green locally" ≠ "green on CI".** Don't declare a flow done on a local
-  portrait run alone — the matrix exercises orientations your emulator didn't.
-
-## Common Mistakes to Avoid
-
-- Using `Thread.sleep()` or any hard-coded delays
-- Using MockK (`mockk()`, `every {}`, `coEvery {}`) — use mockito-kotlin instead
-- Using `performTextReplacement()` on DHIS2 design system components
-- Not exporting test tag constants from screen files
-- Not extending `BaseRobot` for robot classes
-- Not cleaning up after tests (`cleanDatabase()`, clear preferences)
-- Testing implementation details instead of user flows
-- Probing SDK state (`D2Manager…blockingGet()`) to assert in an instrumented
-  test instead of checking what's on screen
-- Building a matcher on a test tag you haven't confirmed is emitted (especially
-  design-system tags) — verify or match on text instead
-- Matching a tag *prefix* without checking whether a longer tag shares it
-- Querying the merged tree for a tag inside a merging container (returns 0 nodes),
-  or using `waitUntilAtLeastOneExists` for an unmerged-only tag
-- Adding `performScrollTo()` to a node with no Compose scroll ancestor — it throws
-  rather than hardening the assertion
-- Hardcoding demo fixture UIDs instead of seeding the fixture at runtime via
-  the SDK
-- Asserting `assertIsDisplayed()` / clicking without `performScrollTo()` first —
-  fails in landscape on the CI matrix when the node is below the fold
+Check the file exists and its root element says `tests="N"` with the N you expect.
+No file means the test never ran. Do this before reporting a test as passing.
+
+## Invariants
+
+1. **mockito-kotlin only** — `mock()`, `whenever()`, `verify()`. Never MockK.
+2. **JUnit4 / `kotlin.test` annotations only.** JUnit Jupiter is excluded from every
+   test configuration; an `org.junit.jupiter.api.Test` fails the build.
+3. **`D2` must be mocked with `RETURNS_DEEP_STUBS`** — its call chains NPE otherwise.
+4. **`DomainError` and `D2Error` need `thenAnswer { throw ... }`**, not `doThrow` —
+   mockito rejects them as invalid checked exceptions.
+5. **No `Thread.sleep()` or hard-coded delays**, in any test.
+6. **ViewModels use `launchUseCase { }`**, not `viewModelScope.launch` — it wraps
+   `CoroutineTracker`, which drives Espresso's `IdlingResource`.
+7. **Pass one dispatcher everywhere** — `Dispatcher(testDispatcher, testDispatcher,
+   testDispatcher)` — and install it with `Dispatchers.setMain`, or the schedulers
+   diverge.
+8. **Test both SDK error shapes** — the blocking RxJava operators rewrap `D2Error`
+   in a `RuntimeException`.
+9. **Never resolve a UI string inline in domain/data code** — it cannot resolve in a
+   host test. Inject a `*ResourceProvider`.
+10. **Assert through the UI in instrumented tests**, never by probing SDK state.
+
+## References
+
+- **[references/unit-testing.md](references/unit-testing.md)** — host (JVM) tests:
+  source sets and Turbine availability per module, coroutine/dispatcher setup,
+  Turbine and `StateFlow` semantics, mocking, SDK error mapping, `DomainError`
+  pitfalls, resource providers, multi-step use cases, and a symptom → cause → fix
+  troubleshooting table.
+- **[references/instrumented-testing.md](references/instrumented-testing.md)** —
+  device tests: Robot pattern, test tags, merged vs unmerged semantics,
+  design-system inputs, fixtures and cleanup, and the landscape/CI-matrix rules.
+
+## Keeping this true
+
+If a test problem costs you more than about 30 minutes, add a row to the
+troubleshooting table in `references/unit-testing.md` (or the relevant section of
+`references/instrumented-testing.md`) **in the same PR that fixes it**. The tables
+are the point of this skill; a lesson learned and not written down will be paid for
+again.
+
+The testing guidance lives here and only here. `.github/agents/testing.agent.md` and
+the Testing section of `AGENTS.md` are deliberately thin pointers — put new
+guidance in this skill, not in those.
