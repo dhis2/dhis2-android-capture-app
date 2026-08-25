@@ -1,6 +1,7 @@
 package org.dhis2.mobile.login.pin.domain.usecase
 
 import org.dhis2.mobile.commons.domain.UseCase
+import org.dhis2.mobile.commons.domain.resultOf
 import org.dhis2.mobile.login.pin.data.SessionRepository
 
 /**
@@ -15,12 +16,9 @@ class ForgotPinUseCase(
      * @return Result indicating success or failure.
      */
     override suspend operator fun invoke(input: Unit): Result<Unit> =
-        try {
+        resultOf {
             sessionRepository.deletePin()
             sessionRepository.logout()
             sessionRepository.setSessionLocked(false)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
         }
 }
