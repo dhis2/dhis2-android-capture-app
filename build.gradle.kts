@@ -71,22 +71,6 @@ allprojects {
         }
     }
 
-    // State the coverage report location explicitly instead of relying on the scanner
-    // working it out. jacoco/jacoco.gradle.kts writes to a non-default path, and nothing
-    // here declared it; coverage was still reaching SonarCloud (develop reports ~10.5%),
-    // so this is explicit configuration rather than a repair. Absolute, because a relative
-    // path is resolved per module and is easy to get wrong.
-    extensions.findByName("sonar")?.let { sonarExtension ->
-        val coverageReport =
-            layout.buildDirectory
-                .file("coverage-report/jacocoTestReport.xml")
-                .get()
-                .asFile
-        (sonarExtension as org.sonarqube.gradle.SonarExtension).properties {
-            property("sonar.coverage.jacoco.xmlReportPaths", coverageReport.absolutePath)
-        }
-    }
-
     // JUnit Jupiter must never reach a test configuration. useJUnitPlatform() is set
     // nowhere in this build, so a Jupiter @Test is not run -- it is silently never
     // collected: the class compiles, the build goes green, and no result file is

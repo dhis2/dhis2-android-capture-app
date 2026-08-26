@@ -22,6 +22,8 @@ android {
 
     buildTypes {
         getByName("debug") {
+            // See app/build.gradle.kts -- debug-only instrumentation for androidTest.
+            enableAndroidTestCoverage = true
         }
         getByName("release") {
             isMinifyEnabled = false
