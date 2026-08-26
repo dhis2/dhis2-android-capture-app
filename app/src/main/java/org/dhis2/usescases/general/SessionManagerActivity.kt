@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.launch
 import org.dhis2.App
@@ -20,9 +22,11 @@ import org.dhis2.commons.service.SessionManagerServiceImpl
 import org.dhis2.commons.ui.extensions.handleInsets
 import org.dhis2.data.server.OpenIdSession.LogOutReason
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.mobile.commons.session.SessionRenewalNotifier
 import org.dhis2.mobile.login.pin.addPinBottomSheet
 import org.dhis2.mobile.login.pin.domain.model.PinMode
 import org.dhis2.mobile.sync.domain.SyncStatusController
+import org.dhis2.usescases.general.ui.SessionRenewalDialog
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.login.LoginActivity.Companion.bundle
 import org.dhis2.usescases.main.MainActivity
@@ -56,6 +60,8 @@ abstract class SessionManagerActivity :
         BehaviorSubject.create()
 
     val syncStatusController: SyncStatusController by inject()
+
+    private val sessionRenewalNotifier: SessionRenewalNotifier by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val serverComponent = (applicationContext as App).serverComponent
@@ -107,6 +113,8 @@ abstract class SessionManagerActivity :
         if (handleEdgeToEdge) handleInsets()
 
         super.onCreate(savedInstanceState)
+
+        observeSessionRenewalRequests()
     }
 
     override fun onUserInteraction() {
@@ -202,6 +210,35 @@ abstract class SessionManagerActivity :
             activityResultObserver = null
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun observeSessionRenewalRequests() {
+        if (this is LoginActivity || this is SplashActivity) return
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                sessionRenewalNotifier.renewalRequired.collect {
+                    showSessionRenewalDialog()
+                }
+            }
+        }
+    }
+
+    private fun showSessionRenewalDialog() {
+        SessionRenewalDialog(
+            onNotNow = {
+                sessionRenewalNotifier.consume()
+            },
+            onLogInAgain = {
+                sessionRenewalNotifier.consume()
+                startActivity(
+                    LoginActivity::class.java,
+                    bundle(renewSession = true),
+                    true,
+                    true,
+                    null,
+                )
+            },
+        ).show(supportFragmentManager)
     }
 
     private fun checkSessionTimeout() {
