@@ -1,6 +1,8 @@
 package org.dhis2.mobile.sync.domain
 
 import kotlinx.coroutines.runBlocking
+import org.dhis2.mobile.commons.error.DomainError
+import org.dhis2.mobile.commons.session.SessionRenewalNotifier
 import org.dhis2.mobile.sync.data.SyncProgramRepository
 import org.dhis2.mobile.sync.model.ProgramType
 import org.junit.Test
@@ -8,12 +10,14 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class SyncProgramTest {
     private val repository: SyncProgramRepository = mock()
     private val syncStatusController = SyncStatusController()
-    private val useCase = SyncProgram(repository, syncStatusController)
+    private val sessionRenewalNotifier: SessionRenewalNotifier = mock()
+    private val useCase = SyncProgram(repository, syncStatusController, sessionRenewalNotifier)
 
     @Test
     fun `should sync event program successfully when all events are synced`() =
@@ -95,5 +99,21 @@ class SyncProgramTest {
             val result = useCase(programUid)
 
             assertTrue(result.isFailure)
+        }
+
+    @Test
+    fun `should request a session renewal when the tokens are no longer valid`() =
+        runBlocking {
+            // GIVEN
+            val programUid = "programUid"
+            val error = DomainError.SessionRenewalRequiredError("Your session has expired")
+            whenever(repository.getProgramType(programUid)).thenAnswer { throw error }
+
+            // WHEN
+            val result = useCase(programUid)
+
+            // THEN
+            assertEquals(error, result.exceptionOrNull())
+            verify(sessionRenewalNotifier).notifyIfRequired(error)
         }
 }
