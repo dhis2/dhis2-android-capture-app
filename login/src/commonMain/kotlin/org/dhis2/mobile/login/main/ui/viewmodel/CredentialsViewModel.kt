@@ -80,6 +80,7 @@ class CredentialsViewModel(
     private val loginUserOfflineWithCode: LoginUserOffline,
     private val credentialsResourceProvider: CredentialsResourceProvider,
     private val getSessionRenewalUrl: GetSessionRenewalUrl,
+    private val autoStartRenewal: Boolean,
 ) : ViewModel() {
     companion object {
         private val COUNTDOWN_TICK_INTERVAL = 1.seconds
@@ -120,7 +121,7 @@ class CredentialsViewModel(
     private val isLockoutActive: Boolean
         get() = lockoutJob?.isActive == true
 
-    private var pendingOAuthLoginResult: LoginResult.Success? = null
+    private var pendingOAuthLoginResult: LoginResult? = null
 
     private var appLinkJob: Job? = null
 
@@ -173,6 +174,10 @@ class CredentialsViewModel(
     }
 
     private fun handleExistingOAuthAccount() {
+        if (autoStartRenewal) {
+            onRenewSession()
+            return
+        }
         launchUseCase {
             val biometricInfo = getBiometricInfo(serverUrl)
             _credentialsScreenState.update { current ->
@@ -268,6 +273,8 @@ class CredentialsViewModel(
             )
         }
         launchUseCase {
+            // An expired session is still open, the SDK refuses a new login. Login out before renew
+            logOutUser.invoke()
             getSessionRenewalUrl(
                 SessionRenewalRequest(
                     serverUrl = serverUrl,
@@ -376,35 +383,24 @@ class CredentialsViewModel(
                             serverUrl = serverUrl,
                             code = code,
                             state = state,
-                        )
-                    }
-                when (result) {
-                    is LoginResult.Success -> {
-                        // Defer entering the app until the server session cookie is cleared
-                        pendingOAuthLoginResult = result
-                        getOAuthLogoutUrl(serverUrl).fold(
-                            onSuccess = { logoutUrl ->
-                                navigator.navigate(
-                                    LoginScreenState.OauthAuthentication(
-                                        selectedServer = logoutUrl,
-                                    ),
-                                )
-                            },
-                            onFailure = {
-                                // Best-effort: proceed into the app if the logout URL can't be built
-                                completeOAuthLogin()
-                            },
+                            expectedUsername = username,
                         )
                     }
 
-                    is LoginResult.Error, is LoginResult.LockOut -> {
-                        stopListeningForOAuthCallbacks()
-                        handleLoginResult(result)
-                        _credentialsScreenState.update {
-                            it.copy(loginState = LoginState.Enabled)
-                        }
-                    }
-                }
+                pendingOAuthLoginResult = result
+
+                getOAuthLogoutUrl(serverUrl).fold(
+                    onSuccess = { logoutUrl ->
+                        navigator.navigate(
+                            LoginScreenState.OauthAuthentication(
+                                selectedServer = logoutUrl,
+                            ),
+                        )
+                    },
+                    onFailure = {
+                        completeOAuthLogin()
+                    },
+                )
             }
     }
 
@@ -413,7 +409,10 @@ class CredentialsViewModel(
         pendingOAuthLoginResult = null
         stopListeningForOAuthCallbacks()
         launchUseCase {
-            handleLoginResult(pending, sessionOpenedInBrowser = true)
+            handleLoginResult(
+                result = pending,
+                sessionOpenedInBrowser = pending is LoginResult.Success,
+            )
             _credentialsScreenState.update {
                 it.copy(loginState = LoginState.Enabled)
             }

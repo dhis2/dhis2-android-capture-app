@@ -86,9 +86,10 @@ fun LoginScreen(
     onNavigateToHome: () -> Unit,
     onNavigateToPrivacyPolicy: () -> Unit,
     onFinish: () -> Unit,
+    renewSession: Boolean = false,
 ) {
     val context = LocalPlatformContext.current
-    val viewModel = koinViewModel<LoginViewModel> { parametersOf(context) }
+    val viewModel = koinViewModel<LoginViewModel> { parametersOf(context, renewSession) }
     val fixedOidcInfo = koinInject<OidcInfo>()
     var displayMoreActions by remember { mutableStateOf(false) }
     var displayBackArrow by remember { mutableStateOf(false) }
@@ -212,6 +213,7 @@ fun LoginScreen(
                             },
                         entryMode = arg.entryMode,
                         autoPromptLogin = arg.autoPromptLogin,
+                        autoStartRenewal = arg.autoStartRenewal,
                     )
                 }
                 composable<LoginScreenState.OauthAuthentication> {

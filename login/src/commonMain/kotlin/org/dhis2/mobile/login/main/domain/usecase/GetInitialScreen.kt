@@ -10,7 +10,7 @@ class GetInitialScreen(
     private val accountRepository: AccountRepository,
     private val sessionRepository: SessionRepository,
 ) {
-    suspend operator fun invoke(): LoginScreenState {
+    suspend operator fun invoke(renewSession: Boolean = false): LoginScreenState {
         val accounts = accountRepository.getLoggedInAccounts()
 
         return when {
@@ -21,13 +21,16 @@ class GetInitialScreen(
                     hasAccounts = false,
                 )
 
-            accounts.size == 1 -> handleSingleAccount(accounts.first())
-            sessionRepository.isSessionLocked() -> handleLockedSession()
+            accounts.size == 1 -> handleSingleAccount(accounts.first(), renewSession)
+            sessionRepository.isSessionLocked() -> handleLockedSession(renewSession)
             else -> LoginScreenState.Accounts
         }
     }
 
-    private fun handleSingleAccount(account: AccountModel): LoginScreenState =
+    private fun handleSingleAccount(
+        account: AccountModel,
+        renewSession: Boolean,
+    ): LoginScreenState =
         LoginScreenState.LoginCredentials(
             selectedServer = account.serverUrl,
             selectedUsername = account.name,
@@ -36,9 +39,10 @@ class GetInitialScreen(
             allowRecovery = account.allowRecovery,
             entryMode = CredentialsEntryMode.existing(account.authorizationMethod),
             autoPromptLogin = false,
+            autoStartRenewal = renewSession,
         )
 
-    private suspend fun handleLockedSession(): LoginScreenState {
+    private suspend fun handleLockedSession(renewSession: Boolean): LoginScreenState {
         val activeAccount = accountRepository.getActiveAccount() ?: return LoginScreenState.Accounts
         return LoginScreenState.LoginCredentials(
             selectedServer = activeAccount.serverUrl,
@@ -48,6 +52,7 @@ class GetInitialScreen(
             allowRecovery = activeAccount.allowRecovery,
             entryMode = CredentialsEntryMode.existing(activeAccount.authorizationMethod),
             autoPromptLogin = false,
+            autoStartRenewal = renewSession,
         )
     }
 }

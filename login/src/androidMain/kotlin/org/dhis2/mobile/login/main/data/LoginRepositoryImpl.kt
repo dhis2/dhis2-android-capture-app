@@ -183,13 +183,12 @@ class LoginRepositoryImpl(
         serverUrl: String,
         code: String,
         state: String,
+        expectedUsername: String?,
     ) = withContext(dispatcher.io) {
         try {
             val user =
                 d2.userModule().oauth2Handler().blockingHandleLogInResponse(
-                    // No account to check against yet: the renewal flow threads in the account
-                    // being restored so the SDK can refuse a session another user authorized.
-                    existingUsername = null,
+                    existingUsername = expectedUsername,
                     serverUrl = serverUrl,
                     authorizationCode = code,
                     state = state,
