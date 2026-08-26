@@ -82,6 +82,17 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
+      # The raw execution data, so code-quality can merge it with the instrumented
+      # coverage that comes back from BrowserStack and regenerate the XML.
+      - name: Upload JaCoCo execution data
+        if: ${{ !contains(github.event.pull_request.title, '[skip unitTest]') && !contains(github.event.pull_request.body, '[skip unitTest]') }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: jacoco-exec
+          path: '**/build/jacoco/*.exec'
+          if-no-files-found: warn
+          retention-days: 7
+
   build-test-apks:
     runs-on: ubuntu-latest
     permissions:
@@ -141,6 +152,15 @@ jobs:
           chmod +x browserstackJenkinsForm.sh
           ./browserstackJenkinsForm.sh
 
+      - name: Upload BrowserStack coverage
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: browserstack-coverage-form
+          path: browserstack-coverage/**
+          if-no-files-found: warn
+          retention-days: 7
+
   run-ui-portrait:
     runs-on: ubuntu-latest
     permissions:
@@ -168,6 +188,15 @@ jobs:
           cd scripts
           chmod +x browserstackJenkins.sh
           ./browserstackJenkins.sh
+
+      - name: Upload BrowserStack coverage
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: browserstack-coverage-portrait
+          path: browserstack-coverage/**
+          if-no-files-found: warn
+          retention-days: 7
 
   run-ui-landscape:
     runs-on: ubuntu-latest
@@ -197,11 +226,23 @@ jobs:
           chmod +x browserstackJenkinsLandscape.sh
           ./browserstackJenkinsLandscape.sh
 
+      - name: Upload BrowserStack coverage
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: browserstack-coverage-landscape
+          path: browserstack-coverage/**
+          if-no-files-found: warn
+          retention-days: 7
+
   code-quality:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    needs: unit-tests
+    # Waits on the BrowserStack jobs so their instrumented coverage is merged in before
+    # the analysis. Without this the job would run alongside them and Sonar would only
+    # ever see unit-test coverage. It costs turnaround time on the Sonar result.
+    needs: [ unit-tests, run-form-tests, run-ui-portrait, run-ui-landscape ]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -214,12 +255,43 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      - name: Download JaCoCo Report
+      - name: Download JaCoCo execution data
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: jacoco-report
+          name: jacoco-exec
           path: .
+
+      - name: Download BrowserStack coverage
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: browserstack-coverage-*
+          path: browserstack-coverage
+          merge-multiple: true
         continue-on-error: true
+
+      # One .ec covers the whole app process, so every module that reports coverage needs
+      # a copy; jacocoReport ignores classes outside its own classDirectories, which makes
+      # the duplication harmless. Reports the count so an empty result is visible in the
+      # log rather than silently becoming "unit tests only".
+      - name: Stage instrumented coverage
+        run: |
+          ec_count=$(find browserstack-coverage -name '*.ec' 2>/dev/null | wc -l | tr -d ' ')
+          echo "instrumented coverage files retrieved: $ec_count"
+          if [ "$ec_count" -gt 0 ]; then
+            for module in app form commons compose-table stock-usecase \
+                          dhis_android_analytics dhis2_android_maps dhis2-mobile-program-rules; do
+              mkdir -p "$module/build/outputs/code_coverage/browserstack"
+              find browserstack-coverage -name '*.ec' -exec cp {} "$module/build/outputs/code_coverage/browserstack/" \;
+            done
+          else
+            echo "No instrumented coverage retrieved; the report will cover unit tests only."
+          fi
+
+      # Regenerate the XML now that unit-test .exec and instrumented .ec sit side by side.
+      # The test tasks are excluded because their results already arrived as artifacts;
+      # the compile tasks jacocoReport also depends on still run, and are needed anyway.
+      - name: Merge coverage
+        run: ./gradlew jacocoReport -x testDebugUnitTest -x testDhis2DebugUnitTest --stacktrace --no-daemon
 
       - name: SonarQube
         env:
