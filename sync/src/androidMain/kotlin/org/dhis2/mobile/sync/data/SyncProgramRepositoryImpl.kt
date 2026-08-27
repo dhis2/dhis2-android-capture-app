@@ -43,6 +43,7 @@ internal class SyncProgramRepositoryImpl(
                 .trackedEntityModule()
                 .trackedEntityInstanceDownloader()
                 .byProgramUid(programUid)
+                .downloadFileResources(true)
                 .blockingDownload()
         }
     }
@@ -64,6 +65,7 @@ internal class SyncProgramRepositoryImpl(
                 .eventModule()
                 .eventDownloader()
                 .byProgramUid(programUid)
+                .downloadFileResources(true)
                 .blockingDownload()
         }
     }
