@@ -352,4 +352,16 @@ class LoginUserTest {
             verify(repository).loginUser(serverUrl, rawUsername, password)
             verify(repository).updateAvailableUsers(rawUsername)
         }
+
+    @Test
+    fun `GIVEN a serverUrl without scheme WHEN users logs in THEN https scheme is appened`() =
+        runTest {
+            whenever(repository.loginUser(any(), any(), any())) doReturn
+                    Result.success(Unit)
+            whenever(repository.numberOfAccounts()) doReturn 0
+            whenever(repository.displayTrackingMessage()) doReturn false
+            whenever(repository.initialSyncDone(any(), any())) doReturn true
+            loginUser("play.dhis2.org/2.43", "test", "test")
+            verify(repository).loginUser("https://play.dhis2.org/2.43", "test", "test")
+        }
 }
