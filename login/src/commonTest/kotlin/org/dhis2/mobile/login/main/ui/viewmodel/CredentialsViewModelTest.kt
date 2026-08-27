@@ -1404,6 +1404,100 @@ class CredentialsViewModelTest {
         }
 
     @Test
+    fun `GIVEN OAuth offline code and biometrics enabled WHEN the screen loads THEN only the biometric challenge is shown`() =
+        runTest {
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(true, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(true)) doReturn true
+
+            initViewModel(
+                entryMode = CredentialsEntryMode.EXISTING_OAUTH,
+                autoPromptLogin = true,
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                awaitItem()
+                val loadedState = awaitItem()
+
+                // THEN - the biometric prompt is triggered, the offline-PIN dialog stays hidden
+                assertTrue(loadedState.displayBiometricsDialog)
+                assertFalse(loadedState.isSessionLocked)
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN OAuth offline code but biometrics NOT enabled WHEN the screen loads THEN the offline-PIN dialog is shown`() =
+        runTest {
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(true)) doReturn true
+
+            initViewModel(
+                entryMode = CredentialsEntryMode.EXISTING_OAUTH,
+                autoPromptLogin = true,
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                awaitItem()
+                val loadedState = awaitItem()
+
+                // THEN - the offline-PIN dialog is shown
+                assertFalse(loadedState.displayBiometricsDialog)
+                assertTrue(loadedState.isSessionLocked)
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN biometrics enabled WHEN the biometric challenge fails THEN Log in still opens the offline-PIN dialog`() =
+        runTest {
+            val platformContext = mock<PlatformContext>()
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(true, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(true)) doReturn true
+
+            initViewModel(
+                entryMode = CredentialsEntryMode.EXISTING_OAUTH,
+                autoPromptLogin = true,
+            )
+
+            with(platformContext) {
+                whenever(biometricLogin.invoke()) doReturn Result.failure(Exception("biometric failed"))
+
+                viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                    awaitItem()
+                    val loadedState = awaitItem()
+                    assertTrue(loadedState.displayBiometricsDialog)
+                    assertFalse(loadedState.isSessionLocked)
+
+                    // WHEN - the biometric challenge fails/is cancelled
+                    viewModel.onBiometricsClicked()
+                    testDispatcher.scheduler.advanceUntilIdle()
+
+                    // THEN - back to the bare Credentials screen, no offline-PIN dialog forced
+                    val failedState = awaitItem()
+                    assertFalse(failedState.displayBiometricsDialog)
+                    assertFalse(failedState.isSessionLocked)
+
+                    // WHEN - the user manually taps Log in
+                    viewModel.onLoginClicked()
+
+                    // THEN - the offline-PIN dialog opens manually, as before
+                    assertTrue(awaitItem().isSessionLocked)
+
+                    cancelAndIgnoreRemainingEvents()
+                }
+            }
+        }
+
+    @Test
     fun `GIVEN an existing OAuth account WHEN the session is renewed THEN the authorization url is opened`() =
         runTest {
             // GIVEN - an account whose tokens can no longer reach the server
