@@ -2,4 +2,5 @@
 <resources>
     <string name="action_next">داهاتوو</string>
     <string name="action_yes">بەڵێ</string>
-    </resources>
+    <string name="cancel">لابردن</string>
+</resources>

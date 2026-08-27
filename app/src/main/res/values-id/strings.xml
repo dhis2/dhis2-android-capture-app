@@ -426,8 +426,6 @@
     <string name="take_photo">Ambil gambar</string>
     <string name="break_glass_dialog_title">Program ini dilindungi</string>
     <string name="break_glass_hint">Jelaskan alasannya di sini</string>
-    <string name="openid_session_expired">Sesi telah berakhir</string>
-    <string name="openid_session_expired_message">Sesi Anda saat ini telah kedaluwarsa. Untuk alasan keamanan, Anda harus memberikan kredensial Anda lagi</string>
     <string name="week_period_span_default_label">Minggu %d %s hingga %s</string>
     <string name="action_do_not_show_again">Jangan perlihatkan lagi</string>
     <string name="troubleshooting_language_title">Bahasa</string>

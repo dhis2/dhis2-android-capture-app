@@ -438,8 +438,6 @@
     <string name="take_photo">Prendre une photo</string>
     <string name="break_glass_dialog_title">Ce programme est protégé</string>
     <string name="break_glass_hint">Décrivez la raison ici</string>
-    <string name="openid_session_expired">La session a expiré</string>
-    <string name="openid_session_expired_message">Votre session actuelle a expiré. Pour des raisons de sécurité, vous devrez fournir à nouveau vos informations d\'identification</string>
     <string name="week_period_span_default_label">Semaine %d %s à %s</string>
     <string name="action_do_not_show_again">Ne pas montrer de nouveau</string>
     <string name="update_field_error">Ce champ n\'a pas pu être mis à jour. Veuillez réessayer</string>

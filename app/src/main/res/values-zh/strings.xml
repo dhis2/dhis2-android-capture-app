@@ -472,8 +472,6 @@
     <string name="take_photo">拍照</string>
     <string name="break_glass_dialog_title">该项目受保护</string>
     <string name="break_glass_hint">在此说明原因</string>
-    <string name="openid_session_expired">会话已过期</string>
-    <string name="openid_session_expired_message">您当前的会话已过期。出于安全原因，您将需要再次提供凭据</string>
     <string name="week_period_span_default_label">星期%d %s到%s</string>
     <string name="action_do_not_show_again">不再显示</string>
     <string name="feature_configuration">特征配置</string>
