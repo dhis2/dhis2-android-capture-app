@@ -663,7 +663,6 @@ class TEIDataFragment :
                 presenter.fetchEvents()
             }
         }
-        // intercept select event here
         if (dashboardActivity is EventCaptureActivity) {
             val selectedEventUid = intent.getStringExtra(Constants.EVENT_UID)
             dashboardViewModel.updateSelectedEventUid(selectedEventUid)
