@@ -68,6 +68,10 @@ allprojects {
         resolutionStrategy {
             cacheDynamicVersionsFor(10, TimeUnit.MINUTES)
             cacheChangingModulesFor(0, TimeUnit.SECONDS)
+            eachDependency {
+                if (requested.group == "org.jacoco")
+                    useVersion("0.8.10")
+            }
         }
     }
 
@@ -77,16 +81,6 @@ allprojects {
     // written. Failing to resolve is the loud alternative.
     configurations.matching { it.name.contains("test", ignoreCase = true) }.configureEach {
         exclude(group = "org.junit.jupiter")
-    }
-
-    // The jacoco plugin's toolVersion is what governs the report engine -- libs.jacoco is
-    // only on the buildscript classpath. Left alone it silently falls back to whatever
-    // version Gradle bundles (0.8.14 today), which is how the catalog's value ends up
-    // decorative. The removed useVersion("0.8.10") override was what previously forced it.
-    plugins.withType<org.gradle.testing.jacoco.plugins.JacocoPlugin> {
-        extensions.configure<org.gradle.testing.jacoco.plugins.JacocoPluginExtension> {
-            toolVersion = libs.versions.jacoco.get()
-        }
     }
 
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
