@@ -17,60 +17,49 @@ tasks.register("jacocoReport", JacocoReport::class) {
 
     sourceDirectories.setFrom("${project.projectDir}/src/main/java")
 
+    // Only genuinely generated code belongs here. The previous list excluded 82% of the
+    // app module's compiled classes -- every Activity, Fragment, Dialog, Adapter, View,
+    // anything with "Module" in its name, everything under a ui package, and via `**/*$*`
+    // every nested class, lambda and coroutine state machine. What it reported was not
+    // the project's coverage but the coverage of the 18% that survived the filter.
+    //
+    // Android UI classes are excluded no longer: instrumented tests now contribute their
+    // execution data, so those classes are genuinely exercised and hiding them
+    // understates the suite that covers them.
     val excludes = mutableSetOf<String>(
-        "android/databinding/**/*.class",
-        "**/android/databinding/*Binding.class",
-        "**/android/databinding/*",
-        "**/androidx/databinding/*",
-        "**/BR.*",
+        // Android resource and build plumbing -- no source to cover.
         "**/R.class",
         "**/R\$*.class",
+        "**/BR.*",
         "**/BuildConfig.*",
         "**/Manifest*.*",
-        "**/*Test*.*",
-        "android/**/*.*",
-        "**/*MapperImpl*.*",
-        "**/*\$ViewInjector*.*",
-        "**/*\$ViewBinder*.*",
-        "**/BuildConfig.*",
-        "**/*Component*.*",
-        "**/*BR*.*",
-        "**/Manifest*.*",
-        "**/*\$Lambda\$*.*",
-        "**/*Companion*.*",
-        "**/*Module*.*",
-        "**/*Dagger*.*",
-        "**/*MembersInjector*.*",
-        "**/*_MembersInjector.class",
+
+        // Data Binding / View Binding generated classes.
+        "android/databinding/**/*.class",
+        "**/android/databinding/*",
+        "**/androidx/databinding/*",
+        "**/databinding/*.*",
+        "**/*Binding.class",
+
+        // Dagger / Hilt generated classes.
+        "**/Dagger*.*",
         "**/*_Factory*.*",
         "**/*_Provide*Factory*.*",
-        "**/*Extensions*.*",
-        "**/*\$Result.*",
-        "**/*\$Result\$*.*",
+        "**/*_MembersInjector.class",
+        "**/*_HiltModules*.*",
+
+        // Other annotation processors.
         "**/*JsonAdapter.*",
-        "**/databinding/*.*",
-        "**/customviews/*.*",
-        "**/ui/*.class",
-        "**/*Activity.*",
-        "**/Activity*.*",
-        "**/*Activity*.*",
-        "**/*Fragment.*",
-        "**/Fragment*.*",
-        "**/*View.*",
-        "**/*Adapter.*",
-        "**/*Contract*.*",
-        "**/*Bindings*.*",
         "**/AutoValue*.*",
-        "**/*\$*",
-        "**/*Navigator.*",
-        "**/*\$*\$*.*",
-        "**/animations/*.*",
-        "**/*Holder*.*",
-        "**/*Dialog*.*",
-        "**/*Service*.*",
-        "**/*Button*.*",
-        "**/SearchTEList.*",
-        "**/lambda\$*\$*.*"
+        "**/*_Impl*.*",
+
+        // Compiler output with no corresponding source lines.
+        "**/*\$WhenMappings.class",
+        "**/*\$\$serializer.class",
+        "**/ComposableSingletons*.*",
+
+        // Test code itself.
+        "**/*Test*.*",
     )
 
     val javaClassesApp = fileTree(
