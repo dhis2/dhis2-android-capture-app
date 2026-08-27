@@ -357,7 +357,7 @@ class LoginUserTest {
     fun `GIVEN a serverUrl without scheme WHEN users logs in THEN https scheme is appened`() =
         runTest {
             whenever(repository.loginUser(any(), any(), any())) doReturn
-                    Result.success(Unit)
+                Result.success(Unit)
             whenever(repository.numberOfAccounts()) doReturn 0
             whenever(repository.displayTrackingMessage()) doReturn false
             whenever(repository.initialSyncDone(any(), any())) doReturn true
