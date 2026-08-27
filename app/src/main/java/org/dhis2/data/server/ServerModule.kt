@@ -195,10 +195,23 @@ class ServerModule {
                 .connectTimeoutInSeconds(10 * 60)
                 .readTimeoutInSeconds(10 * 60)
                 .networkInterceptors(interceptors)
+                .interceptors(developmentInterceptors())
                 .writeTimeoutInSeconds(10 * 60)
                 .context(context)
                 .build()
         }
+
+        private fun developmentInterceptors(): List<Interceptor> =
+            if (BuildConfig.DEBUG) {
+                listOf(
+                    ForceSessionExpiryInterceptor(
+                        isArmed = { ForcedSessionExpiry.isArmed },
+                        disarm = ForcedSessionExpiry::disarm,
+                    ),
+                )
+            } else {
+                emptyList()
+            }
     }
 
     @Provides
