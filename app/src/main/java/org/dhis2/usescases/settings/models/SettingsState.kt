@@ -11,7 +11,7 @@ data class SettingsState(
     val syncParametersViewModel: SyncParametersViewModel,
     val reservedValueSettingsViewModel: ReservedValueSettingsViewModel,
     val smsSettingsViewModel: SMSSettingsViewModel,
-    val isTwoFAConfigured: Boolean,
+    val accountType: AccountType,
     val versionName: String,
     val deleteDataState: DeleteDataState = DeleteDataState.None,
     val twoFAStatus: TwoFAStatus = TwoFAStatus.NoConnection,
