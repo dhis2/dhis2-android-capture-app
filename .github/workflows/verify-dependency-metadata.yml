@@ -12,16 +12,6 @@ on:
       - '**/*.gradle.kts'
       - '**/build.gradle'
 
-# Without this, runs stack up: each takes several minutes, so two can be alive at once.
-# Both regenerate the same metadata, but each compares the result against the commit it
-# checked out rather than the branch tip. The slower one therefore still sees a
-# difference after the faster one has already committed the fix, and pushes a commit
-# whose tree is identical to the tip. That empty push cancels the in-flight CI run
-# (ci.yml cancels in progress) and starts the cycle again.
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   verify-dependency-metadata:
     runs-on: ubuntu-latest

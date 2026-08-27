@@ -17,8 +17,7 @@ json=$(jq -n \
                 --arg deviceLogs "$browserstack_deviceLogs" \
                 --arg singleRunnerInvocation "$browserstack_singleRunnerInvocation" \
                 --arg buildTag "$buildTag" \
-                --argjson coverage "$browserstack_coverage" \
-                '{devices: $devices, testSuite: $module_url, video: $video, deviceLogs: $deviceLogs, singleRunnerInvocation: $singleRunnerInvocation, buildTag: $buildTag, coverage: $coverage}')
+                '{devices: $devices, testSuite: $module_url, video: $video, deviceLogs: $deviceLogs, singleRunnerInvocation: $singleRunnerInvocation, buildTag: $buildTag}')
 
 test_execution_response="$(curl -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/module-build -d \ "$json" -H "Content-Type: application/json" -u "$BROWSERSTACK_USR:$BROWSERSTACK_PSW")"
 
@@ -41,10 +40,6 @@ do
   # Sleep until next poll
   sleep $polling_interval
 done
-
-# Pull the JaCoCo execution data off BrowserStack before any exit path below.
-# Runs even when tests failed -- partial coverage is still worth reporting.
-./fetchBrowserstackCoverage.sh "$build_id" "form"
 
 # Export test reports to bitrise
 test_reports_url="https://app-automate.browserstack.com/dashboard/v2/builds/$build_id"
