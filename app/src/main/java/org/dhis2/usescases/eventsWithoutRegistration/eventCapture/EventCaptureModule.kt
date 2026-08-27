@@ -19,7 +19,6 @@ import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.UniqueAttributeController
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FieldViewModelFactory
-import org.dhis2.mobile.commons.files.FileController
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.mobileProgramRules.EvaluationType
 import org.dhis2.mobileProgramRules.RuleEngineHelper
@@ -79,7 +78,6 @@ class EventCaptureModule(
         crashReportController: CrashReportController,
         networkUtils: NetworkUtils,
         resourceManager: ResourceManager,
-        fileController: FileController,
         uniqueAttributeController: UniqueAttributeController,
     ): FormValueStore =
         FormValueStore(
@@ -91,7 +89,6 @@ class EventCaptureModule(
             crashReportController,
             networkUtils,
             resourceManager,
-            fileController,
             uniqueAttributeController,
         )
 

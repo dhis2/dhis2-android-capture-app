@@ -1,6 +1,7 @@
 package org.dhis2.mobile.aggregates.model
 
 internal data class DataSetDetails(
+    val dataSetUid: String,
     val customTitle: DataSetCustomTitle,
     val dataSetTitle: String,
     val dateLabel: String,
