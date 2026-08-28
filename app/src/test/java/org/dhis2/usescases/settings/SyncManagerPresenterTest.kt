@@ -28,6 +28,7 @@ import org.dhis2.usescases.settings.domain.SettingsMessages
 import org.dhis2.usescases.settings.domain.UpdateSmsModule
 import org.dhis2.usescases.settings.domain.UpdateSmsResponse
 import org.dhis2.usescases.settings.domain.UpdateSyncSettings
+import org.dhis2.usescases.settings.models.AccountType
 import org.dhis2.usescases.settings.models.DataSettingsViewModel
 import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
@@ -504,7 +505,7 @@ class SyncManagerPresenterTest {
             syncParametersViewModel = mockedParamsViewModel(),
             reservedValueSettingsViewModel = mockedReservecValuesViewModel(),
             smsSettingsViewModel = mockedSMSViewModel(),
-            isTwoFAConfigured = true,
+            accountType = AccountType.OAUTH,
             versionName = "1.0.0",
             twoFAStatus = TwoFAStatus.NoConnection,
         )

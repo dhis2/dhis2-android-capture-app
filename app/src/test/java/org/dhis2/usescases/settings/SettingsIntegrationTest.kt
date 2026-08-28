@@ -25,12 +25,14 @@ import org.dhis2.usescases.settings.domain.SettingsMessages
 import org.dhis2.usescases.settings.domain.UpdateSmsModule
 import org.dhis2.usescases.settings.domain.UpdateSmsResponse
 import org.dhis2.usescases.settings.domain.UpdateSyncSettings
+import org.dhis2.usescases.settings.models.AccountType
 import org.dhis2.usescases.settings.models.DataSettingsViewModel
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
 import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel
 import org.dhis2.usescases.settings.models.SyncParametersViewModel
 import org.dhis2.utils.MainCoroutineScopeRule
+import org.hisp.dhis.android.core.common.AuthorizationType
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -137,7 +139,7 @@ class SettingsIntegrationTest {
     fun `should display TFA and status enabled when it is configured`() =
         runTest {
             // Given TFA configured
-            whenever(settingsRepository.isTwoFAConfigured()) doReturn true
+            whenever(settingsRepository.authType()) doReturn AuthorizationType.OAUTH2
             whenever(twoFAStatus.invoke()) doReturn TwoFAStatus.Enabled()
 
             // When set settings config
@@ -146,7 +148,7 @@ class SettingsIntegrationTest {
             // Then TFA should be displayed
             syncManagerPresenter.settingsState.test {
                 assert(awaitItem() == null)
-                assert(awaitItem()?.isTwoFAConfigured == true)
+                assert(awaitItem()?.accountType == AccountType.OAUTH)
                 assert(awaitItem()?.twoFAStatus is TwoFAStatus.Enabled)
             }
         }
@@ -155,7 +157,7 @@ class SettingsIntegrationTest {
     fun `should display TFA and status disabled when it is configured`() =
         runTest {
             // Given TFA configured
-            whenever(settingsRepository.isTwoFAConfigured()) doReturn true
+            whenever(settingsRepository.authType()) doReturn AuthorizationType.OAUTH2
             whenever(twoFAStatus.invoke()) doReturn TwoFAStatus.Disabled("SECRET")
 
             // When set settings config
@@ -164,7 +166,7 @@ class SettingsIntegrationTest {
             // Then TFA should be displayed
             syncManagerPresenter.settingsState.test {
                 assert(awaitItem() == null)
-                assert(awaitItem()?.isTwoFAConfigured == true)
+                assert(awaitItem()?.accountType == AccountType.OAUTH)
                 assert(awaitItem()?.twoFAStatus is TwoFAStatus.Disabled)
             }
         }
@@ -173,7 +175,7 @@ class SettingsIntegrationTest {
     fun `should not display TFA when it is not configured`() =
         runTest {
             // Given TFA not configured
-            whenever(settingsRepository.isTwoFAConfigured()) doReturn false
+            whenever(settingsRepository.authType()) doReturn AuthorizationType.BASIC
 
             // When set settings config
             buildPresenter()
@@ -181,7 +183,7 @@ class SettingsIntegrationTest {
             // Then TFA should not be displayed
             syncManagerPresenter.settingsState.test {
                 assert(awaitItem() == null)
-                assert(awaitItem()?.isTwoFAConfigured == false)
+                assert(awaitItem()?.accountType == AccountType.BASIC)
             }
         }
 }

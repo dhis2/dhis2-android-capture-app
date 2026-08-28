@@ -27,6 +27,7 @@ import org.dhis2.usescases.settings.domain.SettingsMessages
 import org.dhis2.usescases.settings.domain.UpdateSmsModule
 import org.dhis2.usescases.settings.domain.UpdateSmsResponse
 import org.dhis2.usescases.settings.domain.UpdateSyncSettings
+import org.dhis2.usescases.settings.models.AccountType
 import org.dhis2.usescases.settings.models.DeleteDataState
 import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.settings.models.SettingsState
@@ -130,7 +131,7 @@ class SyncManagerPresenter(
                 _settingsState
                     .update { settingsState }
                     .also {
-                        if (_settingsState.value?.isTwoFAConfigured == true) {
+                        if (_settingsState.value?.accountType == AccountType.OAUTH) {
                             getTwoFAStatus()
                         }
                     }

@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.usescases.settings.SettingItem
 import org.dhis2.usescases.settings.SyncManagerPresenter
+import org.dhis2.usescases.settings.models.AccountType
 import org.dhis2.usescases.settings.models.DeleteDataState
 import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.settings.models.SettingsState
@@ -258,7 +259,7 @@ private fun SettingItemList(
             )
         }
 
-        if (settingsUIModel.isTwoFAConfigured) {
+        if (settingsUIModel.accountType == AccountType.OAUTH) {
             item {
                 TwoFASettingItem(
                     status = settingsUIModel.twoFAStatus,
@@ -267,14 +268,16 @@ private fun SettingItemList(
             }
         }
 
-        item {
-            ExportDatabaseSettingsSettingItem(
-                displayProgress = exportingDatabase,
-                isOpened = settingsUIModel.openedItem == SettingItem.EXPORT_DB,
-                onClick = { onSettingsUiAction(SettingsUiAction.OnItemClick(SettingItem.EXPORT_DB)) },
-                onShare = { onSettingsUiAction(SettingsUiAction.OnShare) },
-                onDownload = { onSettingsUiAction(SettingsUiAction.OnDownload) },
-            )
+        if (settingsUIModel.accountType == AccountType.BASIC) {
+            item {
+                ExportDatabaseSettingsSettingItem(
+                    displayProgress = exportingDatabase,
+                    isOpened = settingsUIModel.openedItem == SettingItem.EXPORT_DB,
+                    onClick = { onSettingsUiAction(SettingsUiAction.OnItemClick(SettingItem.EXPORT_DB)) },
+                    onShare = { onSettingsUiAction(SettingsUiAction.OnShare) },
+                    onDownload = { onSettingsUiAction(SettingsUiAction.OnDownload) },
+                )
+            }
         }
 
         item {
