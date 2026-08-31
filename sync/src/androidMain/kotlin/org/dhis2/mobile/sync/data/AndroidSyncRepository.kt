@@ -450,6 +450,7 @@ internal class AndroidSyncRepository(
                 .limit(eventLimit)
                 .limitByOrgunit(limitByOrgUnit)
                 .limitByProgram(limitByProgram)
+                .downloadFileResources(true)
                 .download()
                 .blockingForEach { progress ->
                     val progressData =
@@ -513,6 +514,7 @@ internal class AndroidSyncRepository(
                 .trackedEntityInstanceDownloader()
                 .limit(teiLimit)
                 .limitByOrgunit(limitByOrgUnit)
+                .downloadFileResources(true)
                 .limitByProgram(limitByProgram)
                 .download()
                 .blockingForEach { progress ->

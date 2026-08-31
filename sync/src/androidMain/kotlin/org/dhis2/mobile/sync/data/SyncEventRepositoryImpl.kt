@@ -26,6 +26,7 @@ internal class SyncEventRepositoryImpl(
                 .eventDownloader()
                 .byUid()
                 .eq(eventUid)
+                .downloadFileResources(true)
                 .blockingDownload()
         }
     }

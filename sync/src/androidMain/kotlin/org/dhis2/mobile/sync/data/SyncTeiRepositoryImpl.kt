@@ -55,6 +55,7 @@ internal class SyncTeiRepositoryImpl(
                 .byUid()
                 .eq(enrollmentInfo.teiUid)
                 .byProgramUid(enrollmentInfo.programUid)
+                .downloadFileResources(true)
                 .blockingDownload()
         }
     }
