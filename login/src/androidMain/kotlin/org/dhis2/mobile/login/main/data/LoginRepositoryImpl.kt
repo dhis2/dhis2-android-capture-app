@@ -28,6 +28,7 @@ import org.dhis2.mobile.login.resources.openid_process_cancelled
 import org.dhis2.mobile.login.resources.server_url_error
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.Result
+import org.hisp.dhis.android.core.common.AuthorizationType
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.user.oauth2.OAuth2Config
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
@@ -212,7 +213,20 @@ class LoginRepositoryImpl(
 
     override suspend fun setOfflinePin(pin: String): kotlin.Result<Unit> =
         withContext(dispatcher.io) {
-            when (val result = d2.userModule().oauth2Handler().suspendSetPin(pin)) {
+            val result =
+                when (
+                    d2
+                        .userModule()
+                        .accountManager()
+                        .getCurrentAccount()
+                        ?.authorizationType
+                ) {
+                    AuthorizationType.OPEN_ID_CONNECT ->
+                        d2.userModule().openIdHandler().suspendSetPin(pin)
+
+                    else -> d2.userModule().oauth2Handler().suspendSetPin(pin)
+                }
+            when (result) {
                 is Result.Success -> kotlin.Result.success(Unit)
                 is Result.Failure ->
                     kotlin.Result.failure(domainErrorMapper.mapToDomainError(result.failure))

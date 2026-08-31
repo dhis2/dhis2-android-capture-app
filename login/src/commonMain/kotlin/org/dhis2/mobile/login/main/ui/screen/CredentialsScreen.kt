@@ -242,7 +242,6 @@ fun CredentialsScreen(
                 onCredentialsAction = { credentialsAction ->
                     handleCredentialAction(viewModel, context, credentialsAction)
                 },
-                hasOAuthEnabled = entryMode == CredentialsEntryMode.EXISTING_OAUTH,
                 hasOtherAccounts = screenState.hasOtherAccounts,
             )
         }
@@ -307,8 +306,7 @@ private fun LockedSessionDialog(
     entryMode: CredentialsEntryMode,
     viewModel: CredentialsViewModel,
 ) {
-    if (entryMode == CredentialsEntryMode.EXISTING_OAUTH) {
-        // Existing OAuth account.
+    if (entryMode.usesOfflineCredential()) {
         OfflineCredentialDialog(
             mode = OfflineCredentialMode.ENTER,
             onSubmit = { credential ->
@@ -322,7 +320,6 @@ private fun LockedSessionDialog(
             },
         )
     } else {
-        // Session-lock PIN (basic / OpenID account) unlock.
         PinDialog(
             mode = PinMode.ASK,
             onSuccess = {
@@ -587,7 +584,6 @@ private fun CredentialActions(
     oidcInfo: OidcInfo?,
     canLogin: Boolean,
     hasOtherAccounts: Boolean,
-    hasOAuthEnabled: Boolean,
     onCredentialsAction: (CredentialsAction) -> Unit,
 ) {
     Column(
@@ -650,7 +646,8 @@ private fun CredentialActions(
                 }
             }
         }
-        if (!hasOAuthEnabled && oidcInfo != null) {
+
+        if (oidcInfo != null) {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(Spacing.Spacing16),
                 verticalAlignment = Alignment.CenterVertically,

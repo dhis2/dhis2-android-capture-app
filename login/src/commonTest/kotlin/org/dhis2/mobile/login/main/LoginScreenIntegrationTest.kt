@@ -128,7 +128,7 @@ class LoginScreenIntegrationTest {
                         serverName = singleAccount.serverName,
                         selectedServerFlag = singleAccount.serverFlag,
                         allowRecovery = singleAccount.allowRecovery,
-                        entryMode = CredentialsEntryMode.EXISTING_BASIC,
+                        entryMode = CredentialsEntryMode.EXISTING_PASSWORD,
                         autoPromptLogin = false,
                     ),
                 ),
