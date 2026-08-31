@@ -2,6 +2,7 @@ package org.dhis2.mobile.login.main.data
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -17,12 +18,16 @@ import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider
 import org.dhis2.mobile.login.authentication.OpenIdController
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.helpers.Result
+import org.hisp.dhis.android.core.common.AuthorizationType
+import org.hisp.dhis.android.core.configuration.internal.DatabaseAccount
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.user.oauth2.OAuth2Config
 import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.AfterTest
@@ -33,7 +38,12 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class LoginRepositoryImplTest {
+    private companion object {
+        const val PIN = "1234"
+    }
+
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val domainErrorMapper: DomainErrorMapper = mock()
     private val loginErrorMessageProvider: LoginErrorMessageProvider = mock()
@@ -45,6 +55,7 @@ class LoginRepositoryImplTest {
     private val urlErrorMessage = "The session could not be renewed"
 
     private val oauth2Handler get() = d2.userModule().oauth2Handler()
+    private val openIdHandler get() = d2.userModule().openIdHandler()
 
     private val repository =
         LoginRepositoryImpl(
@@ -222,6 +233,62 @@ class LoginRepositoryImplTest {
                 assertEquals(cancellation.message, e.message)
             }
         }
+
+    @Test
+    fun `GIVEN an OpenID account WHEN the offline pin is stored THEN the OpenID handler keeps it`() =
+        runTest {
+            // GIVEN - each SDK handler refuses the pin unless its own state is in the credentials,
+            // so the account's authorization method decides which one is asked
+            givenActiveAccountWith(AuthorizationType.OPEN_ID_CONNECT)
+            whenever(openIdHandler.suspendSetPin(PIN)) doReturn Result.Success(Unit)
+
+            // WHEN
+            val result = repository.setOfflinePin(PIN)
+
+            // THEN
+            assertTrue(result.isSuccess)
+            verify(openIdHandler).suspendSetPin(PIN)
+            verify(oauth2Handler, never()).suspendSetPin(PIN)
+        }
+
+    @Test
+    fun `GIVEN an OAuth2 account WHEN the offline pin is stored THEN the OAuth2 handler keeps it`() =
+        runTest {
+            // GIVEN
+            givenActiveAccountWith(AuthorizationType.OAUTH2)
+            whenever(oauth2Handler.suspendSetPin(PIN)) doReturn Result.Success(Unit)
+
+            // WHEN
+            val result = repository.setOfflinePin(PIN)
+
+            // THEN
+            assertTrue(result.isSuccess)
+            verify(oauth2Handler).suspendSetPin(PIN)
+            verify(openIdHandler, never()).suspendSetPin(PIN)
+        }
+
+    @Test
+    fun `GIVEN the handler rejects the pin WHEN it is stored THEN the mapped error is returned`() =
+        runTest {
+            // GIVEN
+            val d2Error = d2Error(D2ErrorCode.NO_AUTHENTICATED_USER)
+            val mappedError = DomainError.AuthenticationError("There is no active session")
+            givenActiveAccountWith(AuthorizationType.OPEN_ID_CONNECT)
+            whenever(openIdHandler.suspendSetPin(PIN)) doReturn Result.Failure(d2Error)
+            whenever(domainErrorMapper.mapToDomainError(d2Error)) doReturn mappedError
+
+            // WHEN
+            val result = repository.setOfflinePin(PIN)
+
+            // THEN - the caller logs the user out on failure, so the reason has to survive
+            assertEquals(mappedError, result.exceptionOrNull())
+        }
+
+    private fun givenActiveAccountWith(authorizationType: AuthorizationType) {
+        val account: DatabaseAccount = mock()
+        whenever(account.authorizationType) doReturn authorizationType
+        whenever(d2.userModule().accountManager().getCurrentAccount()) doReturn account
+    }
 
     private fun d2Error(errorCode: D2ErrorCode): D2Error =
         D2Error

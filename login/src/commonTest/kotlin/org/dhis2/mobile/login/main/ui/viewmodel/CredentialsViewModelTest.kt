@@ -58,6 +58,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
 
@@ -2046,6 +2047,303 @@ class CredentialsViewModelTest {
                 cancelAndIgnoreRemainingEvents()
             }
         }
+
+    // region OpenID Connect offline code
+
+    @Test
+    fun `GIVEN EXISTING_OPEN_ID WHEN loaded THEN neither password fields nor the OpenID button are offered`() =
+        runTest {
+            // GIVEN - an account that logged in with OpenID: it has no password, and its only way
+            // back to the server is the offline code dialog
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+
+            initViewModel(
+                username = "testuser",
+                entryMode = CredentialsEntryMode.EXISTING_OPEN_ID,
+                oidcInfo = discoveryOidcInfo(),
+                autoPromptLogin = false,
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                // WHEN
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN
+                val state = expectMostRecentItem()
+                assertNull(state.credentialsInfo)
+                assertNull(state.oidcInfo)
+                assertEquals(LoginState.Enabled, state.loginState)
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN EXISTING_OPEN_ID WHEN log in is tapped THEN the offline code is asked for`() =
+        runTest {
+            // GIVEN
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+
+            initViewModel(
+                username = "testuser",
+                entryMode = CredentialsEntryMode.EXISTING_OPEN_ID,
+                oidcInfo = discoveryOidcInfo(),
+                autoPromptLogin = false,
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // WHEN
+                viewModel.onLoginClicked()
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - the offline dialog opens instead of a password login being attempted
+                assertTrue(expectMostRecentItem().isSessionLocked)
+                verify(loginUser, never()).invoke(any(), any(), any())
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN an OpenID login WHEN it succeeds THEN an offline code is requested before entering`() =
+        runTest {
+            // GIVEN - a new account on a server that offers OpenID
+            val serverUrl = "https://test.server.org"
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(openIdLogin.invoke(any())) doReturn
+                LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
+
+            initViewModel(
+                serverUrl = serverUrl,
+                entryMode = CredentialsEntryMode.NEW_ACCOUNT_BASIC,
+                oidcInfo = discoveryOidcInfo(serverUrl),
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // WHEN
+                viewModel.onOpenIdLogin()
+                testDispatcher.scheduler.advanceUntilIdle()
+                testDispatcher.scheduler.advanceTimeBy(4.seconds)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - the account is now token based, so it is unusable offline until a code
+                // is stored
+                assertIs<AfterLoginAction.CreateOfflineCredential>(
+                    expectMostRecentItem().afterLoginActions.firstOrNull(),
+                )
+
+                // AND - storing it with the SDK clears the gate
+                whenever(setOfflinePin("1234")) doReturn Result.success(Unit)
+                viewModel.onOfflineCredentialCreated("1234")
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                verify(setOfflinePin).invoke("1234")
+                assertTrue(
+                    expectMostRecentItem().afterLoginActions.none {
+                        it is AfterLoginAction.CreateOfflineCredential
+                    },
+                )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN EXISTING_OPEN_ID WHEN the offline code is forgotten THEN it logs out before authenticating`() =
+        runTest {
+            // GIVEN - the account is locked behind the offline code dialog
+            val serverUrl = "https://test.server.org"
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(openIdLogin.invoke(any())) doReturn
+                LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
+
+            initViewModel(
+                serverUrl = serverUrl,
+                username = "testuser",
+                entryMode = CredentialsEntryMode.EXISTING_OPEN_ID,
+                oidcInfo = discoveryOidcInfo(serverUrl),
+                autoPromptLogin = false,
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // WHEN
+                viewModel.onRenewSession()
+                testDispatcher.scheduler.advanceUntilIdle()
+                testDispatcher.scheduler.advanceTimeBy(4.seconds)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - the expired session is closed first, otherwise the SDK refuses the login
+                inOrder(loginOutUser, openIdLogin) {
+                    verify(loginOutUser).invoke()
+                    verify(openIdLogin).invoke(any())
+                }
+
+                // AND - the dialog is gone and a fresh code is asked for
+                val state = expectMostRecentItem()
+                assertFalse(state.isSessionLocked)
+                assertIs<AfterLoginAction.CreateOfflineCredential>(
+                    state.afterLoginActions.firstOrNull(),
+                )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN no OpenID configuration WHEN the OpenID login starts THEN it reports it instead of authenticating`() =
+        runTest {
+            // GIVEN - a renewal reaches the OpenID login on a server with no OIDC configuration
+            val message = "OpenID login is not configured for this server"
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(credentialsResourceProvider.getMissingOidcConfigMessage()) doReturn message
+
+            initViewModel(
+                username = "testuser",
+                entryMode = CredentialsEntryMode.EXISTING_OPEN_ID,
+                oidcInfo = null,
+                autoPromptLogin = false,
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // WHEN
+                viewModel.onOpenIdLogin()
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - no request goes out with an empty client id
+                verify(openIdLogin, never()).invoke(any())
+                val state = expectMostRecentItem()
+                assertEquals(message, state.errorMessage)
+                assertEquals(LoginState.Enabled, state.loginState)
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN EXISTING_OPEN_ID WHEN biometric login succeeds THEN the stored code logs in offline`() =
+        runTest {
+            // GIVEN - biometrics guard the offline code, not a password
+            val serverUrl = "https://test.server.org"
+            val username = "testuser"
+            val pin = "1234"
+            val platformContext = mock<PlatformContext>()
+
+            initViewModel(
+                serverUrl = serverUrl,
+                username = username,
+                entryMode = CredentialsEntryMode.EXISTING_OPEN_ID,
+                oidcInfo = discoveryOidcInfo(serverUrl),
+                autoPromptLogin = false,
+            )
+
+            with(platformContext) {
+                whenever(getAvailableUsernames()) doReturn emptyList()
+                whenever(getBiometricInfo(any())) doReturn BiometricsInfo(true, false)
+                whenever(getHasOtherAccounts.invoke()) doReturn false
+                whenever(getIsSessionLockedUseCase(any())) doReturn false
+                whenever(biometricLogin.invoke()) doReturn Result.success(pin)
+                whenever(loginUserOfflineWithCode.invoke(serverUrl, username, pin)) doReturn
+                    LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
+
+                viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                    testDispatcher.scheduler.advanceUntilIdle()
+
+                    // WHEN
+                    viewModel.onBiometricsClicked()
+                    testDispatcher.scheduler.advanceUntilIdle()
+                    testDispatcher.scheduler.advanceTimeBy(4.seconds)
+                    testDispatcher.scheduler.advanceUntilIdle()
+
+                    // THEN - the credential is used as the offline code, never as a password
+                    verify(loginUserOfflineWithCode).invoke(serverUrl, username, pin)
+                    verify(loginUser, never()).invoke(any(), any(), any())
+
+                    cancelAndIgnoreRemainingEvents()
+                }
+            }
+        }
+
+    @Test
+    fun `GIVEN an offline code was just created WHEN biometrics are enabled THEN the code is what they unlock`() =
+        runTest {
+            // GIVEN - an OpenID login that stored an offline code and then offers biometrics
+            val serverUrl = "https://test.server.org"
+            val username = "testuser"
+            val pin = "1234"
+            val platformContext = mock<PlatformContext>()
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(true, true)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(setOfflinePin(pin)) doReturn Result.success(Unit)
+            whenever(openIdLogin.invoke(any())) doReturn
+                LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
+
+            initViewModel(
+                serverUrl = serverUrl,
+                username = username,
+                entryMode = CredentialsEntryMode.EXISTING_OPEN_ID,
+                oidcInfo = discoveryOidcInfo(serverUrl),
+                autoPromptLogin = false,
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                testDispatcher.scheduler.advanceUntilIdle()
+                viewModel.onOpenIdLogin()
+                testDispatcher.scheduler.advanceUntilIdle()
+                testDispatcher.scheduler.advanceTimeBy(4.seconds)
+                testDispatcher.scheduler.advanceUntilIdle()
+                viewModel.onOfflineCredentialCreated(pin)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                with(platformContext) {
+                    // WHEN
+                    viewModel.onEnableBiometrics(granted = true)
+                    testDispatcher.scheduler.advanceUntilIdle()
+
+                    // THEN - there is no password to fall back on, so the code has to be stored
+                    verify(updateBiometricPermission).invoke(serverUrl, username, pin, true)
+                }
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    private fun discoveryOidcInfo(serverUrl: String = "https://test.server.org") =
+        OidcInfo.Discovery(
+            server = serverUrl,
+            loginButtonText = null,
+            clientId = "client-123",
+            redirectUri = "dhis2://oauth",
+            discoveryUri = "$serverUrl/.well-known/openid-configuration",
+            prompt = null,
+        )
+
+    // endregion
 
     private fun initViewModel(
         serverName: String? = "Test Server",
