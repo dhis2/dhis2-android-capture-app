@@ -28,6 +28,14 @@ class DisplayNameProviderImpl(
         }
     }
 
+    override fun provideFileName(
+        valueType: ValueType?,
+        value: String?,
+    ): String? =
+        value
+            ?.takeIf { it.isNotEmpty() && valueType?.isFile == true }
+            ?.let { fileResourceConfiguration.getFileName(it) }
+
     private fun getOptionSetValue(
         value: String,
         optionSet: String,

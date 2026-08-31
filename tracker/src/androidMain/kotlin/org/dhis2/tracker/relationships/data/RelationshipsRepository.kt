@@ -1,5 +1,6 @@
 package org.dhis2.tracker.relationships.data
 
+import org.dhis2.bindings.fileResourceNameOf
 import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.date.toUi
 import org.dhis2.commons.resources.ResourceManager
@@ -13,6 +14,7 @@ import org.dhis2.tracker.relationships.model.RelationshipOwnerType
 import org.dhis2.tracker.relationships.model.RelationshipSection
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -45,6 +47,13 @@ abstract class RelationshipsRepository(
         relationshipTypeUid: String,
         relationshipSide: RelationshipConstraintSide,
     ): Relationship
+
+    private fun String.resolveFileName(valueType: ValueType?): String =
+        if (valueType?.isFile == true) {
+            d2.fileResourceNameOf(this) ?: this
+        } else {
+            this
+        }
 
     protected fun orgUnitInScope(orgUnitUid: String?): Boolean =
         orgUnitUid?.let {
@@ -103,13 +112,13 @@ abstract class RelationshipsRepository(
         // Get a list of Pair<label, value>
         val attributes =
             trackedEntityAttributesUids?.mapNotNull { attributeUid ->
-                val fieldName =
+                val attribute =
                     d2
                         .trackedEntityModule()
                         .trackedEntityAttributes()
                         .uid(attributeUid)
                         .blockingGet()
-                        ?.displayFormName()
+                val fieldName = attribute?.displayFormName()
 
                 val value =
                     d2
@@ -118,6 +127,7 @@ abstract class RelationshipsRepository(
                         .value(attributeUid, teiUid!!)
                         .blockingGet()
                         ?.userFriendlyValue(d2)
+                        ?.resolveFileName(attribute?.valueType())
                 if (fieldName != null && value != null) {
                     Pair(fieldName, value)
                 } else {
@@ -185,18 +195,19 @@ abstract class RelationshipsRepository(
 
         val dataElements =
             dataElementUids?.mapNotNull { dataElementUid ->
-                val formName =
+                val dataElement =
                     d2
                         .dataElementModule()
                         .dataElements()
                         .uid(dataElementUid)
                         .blockingGet()
-                        ?.displayName()
+                val formName = dataElement?.displayName()
                 val value =
                     event
                         ?.trackedEntityDataValues()
                         ?.find { it.dataElement() == dataElementUid }
                         .userFriendlyValue(d2)
+                        ?.resolveFileName(dataElement?.valueType())
                 if (formName != null && value != null) {
                     Pair(formName, value)
                 } else {

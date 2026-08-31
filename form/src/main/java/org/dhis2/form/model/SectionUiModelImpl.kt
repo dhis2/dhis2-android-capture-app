@@ -45,6 +45,7 @@ data class SectionUiModelImpl(
     override val eventCategories: List<EventCategory>? = null,
     override val periodSelector: PeriodSelector? = null,
     override var customIntent: CustomIntentModel? = null,
+    override val fileName: String? = null,
 ) : FieldUiModel {
     private var sectionNumber: Int = 0
     private var showBottomShadow: Boolean = false
@@ -109,6 +110,8 @@ data class SectionUiModelImpl(
     override fun setIsLoadingData(isLoadingData: Boolean) = this.copy(isLoadingData = isLoadingData)
 
     override fun setDisplayName(displayName: String?) = this.copy(displayName = displayName)
+
+    override fun setFileName(fileName: String?) = this.copy(fileName = fileName)
 
     override fun setKeyBoardActionDone() = this.copy(keyboardActionType = KeyboardActionType.DONE)
 
