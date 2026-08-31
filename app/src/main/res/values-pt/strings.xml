@@ -456,8 +456,6 @@
     <string name="take_photo"> Tirar fotografia</string>
     <string name="break_glass_dialog_title">Este programa está protegido</string>
     <string name="break_glass_hint">Descreva aqui o motivo</string>
-    <string name="openid_session_expired">A sessão expirou</string>
-    <string name="openid_session_expired_message">A sua sessão atual expirou. Por motivos de segurança, terá de fornecer novamente as suas credenciais</string>
     <string name="week_period_span_default_label">Semana %d %s a%s</string>
     <string name="action_do_not_show_again">Não voltar a mostrar</string>
     <string name="feature_configuration">Configuração de funções</string>

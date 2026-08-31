@@ -16,4 +16,5 @@
     <string name="enter_pin_button">解锁</string>
     <string name="offline_credential_enter_button">登录</string>
     <string name="importing_successful">导入成功</string>
-    </resources>
+    <string name="cancel">取消</string>
+</resources>

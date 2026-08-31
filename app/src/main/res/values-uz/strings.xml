@@ -422,8 +422,6 @@
     <string name="take_photo">Суратга олиш</string>
     <string name="break_glass_dialog_title">Ушбу дастур ҳимояланган</string>
     <string name="break_glass_hint">Сабабини шу ерда ёзиб қолдиринг</string>
-    <string name="openid_session_expired">Сессия муддати тугаган</string>
-    <string name="openid_session_expired_message">Сизнинг жорий сессиянгиз муддати тугаган. Хавфсизлик нуқтаи назаридан, сиз қайтадан аккаунт маълумотларини тақдим этишингиз лозим.</string>
     <string name="show_radar_graph">Радар (тўрсимон) сифатда кўриш</string>
     <string name="troubleshooting_language_title">Тил</string>
     <string name="search_too_many_results">Натижа жуда кўп</string>

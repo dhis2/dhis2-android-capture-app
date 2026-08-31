@@ -11,4 +11,5 @@
     <string name="action_no_now">ليس الان</string>
     <string name="action_yes">نعم</string>
     <string name="enter_pin_button">إلغاء القفل</string>
-    </resources>
+    <string name="cancel">إلغاء</string>
+</resources>
