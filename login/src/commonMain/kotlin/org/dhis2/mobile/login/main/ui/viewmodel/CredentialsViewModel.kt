@@ -180,6 +180,10 @@ class CredentialsViewModel(
         }
         launchUseCase {
             val biometricInfo = getBiometricInfo(serverUrl)
+            // When biometrics is available it takes over as the unlock challenge: the
+            // offline-credential dialog stays hidden so only the biometric prompt is shown,
+            // over the bare Credentials screen. It remains reachable manually via "Log in".
+            val shouldPromptBiometrics = biometricInfo.canUseBiometrics && autoPromptLogin
             _credentialsScreenState.update { current ->
                 current.copy(
                     loginState = LoginState.Enabled,
@@ -191,8 +195,9 @@ class CredentialsViewModel(
                     hasOtherAccounts = getHasOtherAccounts(),
                     isSessionLocked =
                         getIsSessionLockedUseCase(requireOfflineCredentials = true) &&
-                            autoPromptLogin,
-                    displayBiometricsDialog = biometricInfo.canUseBiometrics && autoPromptLogin,
+                            autoPromptLogin &&
+                            !shouldPromptBiometrics,
+                    displayBiometricsDialog = shouldPromptBiometrics,
                 )
             }
         }
