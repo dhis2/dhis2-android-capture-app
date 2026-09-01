@@ -579,21 +579,6 @@ class FormValueStore(
         return fileResourceUid
     }
 
-    /**
-     * The program the value belongs to, which the Sdk needs in order to look up the image upload
-     * quality configured for this field.
-     *
-     * Both repositories are scoped to a single uid, the enrollment in attribute mode and the event in
-     * data element mode, so the program they report is the one the form is being filled for. There is
-     * deliberately no lookup by record as a fallback: the record of this store is the tracked entity
-     * instance, and querying its enrollments would return one row per program it is enrolled in, with
-     * nothing to tell which of them this form belongs to.
-     *
-     * A null means neither repository was injected, which is the case for the stores the event
-     * capture and the tei dashboard build. Those only apply program rule effects and never store a
-     * file; were that to change, no program level image setting would be found and the Sdk would
-     * apply its default quality.
-     */
     private fun resolveProgramUid(): String? =
         enrollmentRepository?.blockingGet()?.program()
             ?: eventRepository?.blockingGet()?.program()
