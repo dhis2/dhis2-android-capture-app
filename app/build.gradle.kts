@@ -200,9 +200,8 @@ android {
             // install debug and release builds at the same time
             applicationIdSuffix = ".debug"
 
-            // Instrument debug builds so androidTest runs emit .ec execution data for
-            // jacocoReport. Debug only: release builds, and therefore the shipped APK,
-            // are unaffected.
+            // Emits .ec execution data from androidTest runs, for jacocoReport.
+            // Debug only; release builds are unaffected.
             enableAndroidTestCoverage = true
 
             buildConfigField("int", "MATOMO_ID", "2")

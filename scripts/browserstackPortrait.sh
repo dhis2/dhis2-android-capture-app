@@ -59,8 +59,7 @@ do
   sleep $polling_interval
 done
 
-# Pull the JaCoCo execution data off BrowserStack before any exit path below.
-# Runs even when tests failed -- partial coverage is still worth reporting.
+# Fetch coverage before the exit paths below, so a failed suite still contributes.
 ./fetchBrowserstackCoverage.sh "$build_id" "portrait"
 
 # Export test reports to bitrise
