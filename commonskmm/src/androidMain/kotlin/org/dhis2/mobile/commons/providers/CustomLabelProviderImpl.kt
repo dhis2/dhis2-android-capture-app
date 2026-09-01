@@ -11,6 +11,7 @@ import org.dhis2.mobile.commons.resources.mark_for_follow_up
 import org.dhis2.mobile.commons.resources.marked_for_follow_up
 import org.dhis2.mobile.commons.resources.org_unit
 import org.dhis2.mobile.commons.resources.program_stage
+import org.dhis2.mobile.commons.resources.relationship
 import org.dhis2.mobile.commons.resources.stage
 import org.dhis2.mobile.commons.resources.tei
 import org.hisp.dhis.android.core.D2
@@ -232,6 +233,23 @@ class CustomLabelProviderImpl(
             )
         return getString(Res.string.group_by_stage_label).format(customProgramStageLabel)
     }
+
+    override suspend fun getCustomRelationshipLabel(
+        programUid: String?,
+        quantity: Int?,
+    ): String =
+        execute(
+            Res.plurals.relationship,
+            quantity = quantity,
+            capitalizeFirstLetter = false,
+        ) {
+            d2
+                .programModule()
+                .programs()
+                .uid(programUid)
+                .blockingGet()
+                ?.displayRelationshipLabel
+        }
 
     override fun formatStringWithCustomLabel(
         stringResource: String,

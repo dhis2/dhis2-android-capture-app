@@ -13,7 +13,9 @@ sealed class RelationshipsUiState {
 
     data object Loading : RelationshipsUiState()
 
-    data object Empty : RelationshipsUiState()
+    data class Empty(
+        val relationshipLabel: String,
+    ) : RelationshipsUiState()
 
     data class Success(
         val data: List<RelationshipSectionUiState>,
@@ -21,5 +23,6 @@ sealed class RelationshipsUiState {
 
     data class Error(
         val message: String,
+        val relationshipLabel: String,
     ) : RelationshipsUiState()
 }
