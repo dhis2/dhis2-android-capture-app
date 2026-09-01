@@ -15,11 +15,14 @@ Two audiences:
 - **DHIS2 server administrators** — decide which plugins an instance uses, by
   writing a small JSON config into the server dataStore.
 - **Third-party Android developers** — build Composable UI and domain logic
-  that runs inside the Capture App under a scope-enforced SDK.
+  that runs inside the Capture App with the DHIS2 SDK available to it.
 
-The host app does download, integrity + signature verification, sandboxing, DI
-wiring, resource injection, and rendering. The plugin only provides a Composable —
-its identity and data scope live in the server config.
+The host app does download, integrity and signature verification, DI wiring, resource
+injection, and rendering. The plugin only provides a Composable — its identity lives in
+the server config, not in the plugin.
+
+A plugin runs with the host's full SDK authority and in the host's own process; **§6 is the
+part to read before enabling this on a real instance.**
 
 ## 2. How it works
 
@@ -82,9 +85,7 @@ class MyPlugin : Dhis2Plugin {
 ```
 
 Optionally provide a Koin module with the plugin's own dependencies (ViewModels, repositories, use
-cases, etc.).
-
-These bindings are loaded into the host app's Koin container at plugin load time.
+cases, etc.). Those bindings go into a container private to the plugin — never the host's (§6).
 
 ### PluginMetadata
 
@@ -116,10 +117,9 @@ data class PluginMetadata(
 ### Injection points
 Named slots in the host app where a plugin's Composable UI can be rendered.
 
-A plugin declares the slots it targets in [PluginMetadata.injectionPoints].
-The host app renders registered plugins at each slot via `PluginSlot`.
-
-In the future we can create as many injections point in the app as we need.
+A plugin declares the slots it targets in [PluginMetadata.injectionPoints], and the host renders
+them at each slot via `PluginSlot`. There is one slot today (§7); more can be added as they are
+needed.
 
 ```kotlin
 enum class InjectionPoint {
@@ -151,10 +151,8 @@ val overdue = context.sdk.eventModule().events()
     .blockingGet()
 ```
 
-That is a deliberate choice for this iteration, and it has a cost worth stating plainly: **there is no
-data-access control.** A plugin can read and write anything the logged-in user can. See §6 — the
-security decision is which plugins you choose to run. Narrowing that access is the next iteration and
-belongs in the SDK, not here.
+**There is no data-access control**: a plugin can read and write anything the logged-in user can.
+That is deliberate for this iteration — see §6 for what follows from it.
 
 Two consequences of exposing the SDK rather than DTOs:
 
@@ -195,6 +193,8 @@ Contract:
 
 ## 4. Server-side configuration
 
+### 4.1 The config entry
+
 The admin writes a JSON object into the DHIS2 server dataStore at:
 
 - **namespace:** `dhis2AndroidPlugins`
@@ -216,6 +216,22 @@ The admin writes a JSON object into the DHIS2 server dataStore at:
   ]
 }
 ```
+
+Removing a plugin is deleting its entry from this array (and see §7 for the device-side cache).
+
+### 4.2 Who may write it
+
+**This key names code that every device on the instance will execute**, so write access to it is
+the whole trust boundary of the plugin system (§6). DHIS2 creates dataStore keys publicly
+writable by default, so it does not start restricted.
+
+Restrict the `dhis2AndroidPlugins` namespace to administrators using your server's dataStore
+sharing settings, and confirm two things afterwards: that an ordinary user *cannot* write the key,
+and that they *can* still read it — the app reads this namespace as the logged-in user, so a key
+they cannot read means no plugins load for them (§9).
+
+The exact sharing mechanism differs by DHIS2 version; check the dataStore sharing documentation
+for the version you run rather than assuming the default is safe.
 
 ## 5. Writing a plugin
 
@@ -524,21 +540,26 @@ enforcement.
 
 ## 7. Current limitations
 
-- One injection point: `HOME_ABOVE_PROGRAM_LIST`. Mora can be added in the future.
+- **Unrestricted SDK access, no crash isolation, and no certificate pinning** — the three that
+  decide whether this is safe to enable, covered in §6. Narrowing access is the next iteration and
+  belongs in the SDK, not the host.
+- **No uninstall or kill switch** — delete the dataStore entry (§4.1) and the device cache
+  (`/data/data/com.dhis2.debug/files/plugins/{id}-{version}.zip` — the cache is named from
+  the config's id/version, not the served filename). There is no way to disable a
+  misbehaving plugin remotely — which matters more than it looks, given the bullet above.
+- One injection point: `HOME_ABOVE_PROGRAM_LIST`. More can be added as consumers need them.
 - The plugin-bundle Gradle plugin is published to Maven Local only — not yet to Maven Central or
   the Gradle Plugin Portal, so plugin authors need `mavenLocal()` in `pluginManagement`.
-- No plugin uninstall flow — delete the dataStore entry (§4.1) and the device cache
-  (`/data/data/com.dhis2.debug/files/plugins/{id}-{version}.zip` — the cache is named from
-  the config's id/version, not the served filename).
-- No per-publisher cert allow-list.
-- Plugins share the host's `D2` session and Koin graph — a misbehaving Koin
-  binding in a plugin can affect the host.
-- `Dhis2PluginContext` exposes only TEIs and data values; events, enrollments,
-  and org-units are future work.
-- DHIS2 data is accessed through `Dhis2PluginContext` so the capacity is limited and the context 
-  provided and granularity is not possible.
-- No `plugin-sdk-test` artefact — plugin authors copy-paste their own
-  `StubDhis2PluginContext` for previews.
+- **A plugin cannot stub its own context for previews**, and there is no `plugin-sdk-test`
+  artefact. `Dhis2PluginContext.sdk` is `D2`, which cannot be constructed outside a logged-in
+  app — so a preview harness renders the plugin's own composables against sample UI state
+  instead, which is why keeping the SDK-touching code behind a repository interface (§5.2)
+  is what makes a plugin testable at all.
+- **A plugin must compile against the host's exact androidx Compose versions.** Matching
+  `composeMultiplatform` is not sufficient: the host resolves androidx Compose separately and
+  higher, and a plugin built against a lower `foundation` crashes at composition with
+  `NoSuchMethodError` on a synthetic default method (`Modifier.weight` is the one that bites).
+  The bundle plugin pins the SDK version for you; Compose is still on the author.
 
 ## 8. Testing a plugin locally
 
@@ -600,8 +621,7 @@ you can write a dataStore namespace on, and a local static file server.
 
    Write the JSON (§4) to the DHIS2 server dataStore. `plugin-config.json` next to the bundle is
    that JSON with `version` and `checksum` already filled in, plus `id` and `entryPoint` if you
-   declared them (§5.3) — fill in whatever is left, `downloadUrl` and the granted scope, then
-   post it:
+   declared them (§5.3) — fill in what is left, which is `downloadUrl`, then post it:
 
    ```bash
    # first time — POST creates the key; use PUT to update it afterwards
@@ -651,8 +671,13 @@ you can write a dataStore namespace on, and a local static file server.
 ### Previewing without the Capture App (optional)
 
 The loop above is slow for UI work. You can add an Android application module to *your own* plugin
-project that instantiates the plugin class directly, passing a hand-written `Dhis2PluginContext`
-with fake data (there is no `plugin-sdk-test` artefact yet — see §7). Two things that trip this up:
+project that renders the plugin's Composables directly with sample data.
+
+Note it cannot render `Dhis2Plugin.content` itself: that needs a `Dhis2PluginContext`, whose `sdk`
+is a `D2` that cannot be constructed outside a logged-in app, and there is no `plugin-sdk-test`
+artefact (§7). This is the practical reason to keep SDK access behind a repository interface and
+your Composables taking plain data (§5.2) — the part worth previewing is then the part with no
+context in it. Two things that trip this up:
 
 - Use Compose Multiplatform artifacts (`compose.runtime`, `compose.ui`, `compose.material3`), never
   `androidx.compose.bom` — the two ABIs are incompatible and the plugin's Composables fail with
@@ -688,14 +713,16 @@ with fake data (there is no `plugin-sdk-test` artefact yet — see §7). Two thi
 
 *Source files for reference:*
 
-- `plugin-sdk/src/commonMain/kotlin/org/dhis2/mobile/plugin/sdk/` — `Dhis2Plugin.kt`,
-  `Dhis2PluginContext.kt`, `PluginMetadata.kt`, `InjectionPoint.kt`, `dto/*`
+- `plugin-sdk/src/commonMain/kotlin/org/dhis2/mobile/plugin/sdk/` — `PluginMetadata.kt`,
+  `InjectionPoint.kt`
+- `plugin-sdk/src/androidMain/kotlin/org/dhis2/mobile/plugin/sdk/` — `Dhis2Plugin.kt`,
+  `Dhis2PluginContext.kt` (androidMain because `D2` is Android-only; see §3)
 - `plugin-sdk-gradle/src/main/kotlin/org/dhis2/mobile/plugin/gradle/` — `PluginBundlePlugin.kt`,
   `PluginBundleExtension.kt`, `BuildPluginBundleTask.kt`, `ToolchainPreflight.kt`,
   `DeterministicZip.kt`, `ClassesJarInspector.kt`, `DataStoreSnippet.kt`, `AndroidPluginWiring.kt`,
-  `AndroidSdkTools.kt`
+  `AndroidSdkTools.kt`, `SigningSpec.kt`
 - `plugin/src/main/java/org/dhis2/mobile/plugin/` — `data/AppHubPluginRepository.kt`,
   `data/PluginDownloader.kt`, `data/PluginVerifier.kt`, `data/PluginLoader.kt`,
   `domain/LoadPluginsUseCase.kt`, `registry/PluginRegistry.kt`,
-  `security/HostDhis2PluginContext.kt`, `di/PluginContainer.kt`, `ui/PluginSlot.kt`,
-  `ui/FileSystemResourceReader.kt`
+  `security/HostDhis2PluginContext.kt`, `di/PluginContainer.kt`, `di/PluginModule.kt`,
+  `ui/PluginSlot.kt`, `ui/FileSystemResourceReader.kt`
