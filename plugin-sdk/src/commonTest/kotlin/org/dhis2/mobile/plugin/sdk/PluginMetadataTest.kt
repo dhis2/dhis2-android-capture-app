@@ -5,7 +5,6 @@ import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertTrue
 
 /**
  * [PluginMetadata] is the wire format of the server dataStore config
@@ -39,8 +38,6 @@ class PluginMetadataTest {
         assertEquals("org.myorg.plugin.MyPlugin", decoded.entryPoint)
         assertEquals("https://example.com/my-plugin-1.0.0.zip", decoded.downloadUrl)
         assertEquals("sha256:abc123", decoded.checksum)
-        assertEquals(listOf("UID1"), decoded.allowedProgramUids)
-        assertEquals(emptyList(), decoded.allowedDataSetUids)
         assertEquals(listOf(InjectionPoint.HOME_ABOVE_PROGRAM_LIST), decoded.injectionPoints)
     }
 
@@ -51,8 +48,6 @@ class PluginMetadataTest {
                 """{"id":"a","version":"1","entryPoint":"E"}""",
             )
 
-        assertEquals(emptyList(), decoded.allowedProgramUids)
-        assertEquals(emptyList(), decoded.allowedDataSetUids)
         assertEquals(emptyList(), decoded.injectionPoints)
         assertEquals("", decoded.downloadUrl)
         assertEquals("", decoded.checksum)
@@ -66,9 +61,6 @@ class PluginMetadataTest {
             json.decodeFromString<PluginMetadata>(
                 """{"id":"a","version":"1","entryPoint":"E"}""",
             )
-
-        assertTrue(decoded.allowedProgramUids.isEmpty())
-        assertTrue(decoded.allowedDataSetUids.isEmpty())
     }
 
     @Test
@@ -100,14 +92,33 @@ class PluginMetadataTest {
     }
 
     @Test
+    fun `a config still carrying the removed scope fields keeps loading`() {
+        // allowedProgramUids / allowedDataSetUids were dropped once the plugin API began exposing
+        // the SDK directly — they promised enforcement that no longer existed. Configs already
+        // deployed with them must not stop working, and `ignoreUnknownKeys` is what guarantees that.
+        val decoded =
+            json.decodeFromString<PluginMetadata>(
+                """
+                {
+                  "id": "org.myorg.my-plugin",
+                  "version": "1.0.0",
+                  "entryPoint": "org.myorg.plugin.MyPlugin",
+                  "allowedProgramUids": ["UID1"],
+                  "allowedDataSetUids": ["UID2"]
+                }
+                """.trimIndent(),
+            )
+
+        assertEquals("org.myorg.my-plugin", decoded.id)
+    }
+
+    @Test
     fun `survives a round trip`() {
         val original =
             PluginMetadata(
                 id = "org.dhis2.myplugin",
                 version = "1.5.0",
                 entryPoint = "org.myorg.myplugin.MyPlugin",
-                allowedProgramUids = listOf("IpHINAT79UW"),
-                allowedDataSetUids = listOf("BfMAe6Itzgt"),
                 injectionPoints = listOf(InjectionPoint.HOME_ABOVE_PROGRAM_LIST),
                 downloadUrl = "http://10.0.2.2:8081/plugin-1.5.0.zip",
                 checksum = "sha256:deadbeef",

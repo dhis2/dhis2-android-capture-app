@@ -35,6 +35,15 @@ internal object AndroidPluginWiring {
                 compileOnly("org.dhis2.mobile:plugin-sdk:${HostToolchain.PLUGIN_SDK_VERSION}")
             }
         }
+        // The plugin API exposes D2, so a plugin compiles against the DHIS2 SDK — and must compile
+        // against exactly the version the host runs, or the DEX resolves methods that are not there.
+        // Injected rather than declared by the plugin author, so it cannot drift silently.
+        // androidMain only: D2 is the Android SDK and has no common-source equivalent.
+        kotlin.sourceSets.named("androidMain").configure { sourceSet ->
+            sourceSet.dependencies {
+                compileOnly("org.hisp.dhis:android-core:${HostToolchain.DHIS2_SDK_VERSION}")
+            }
+        }
     }
 
     /**

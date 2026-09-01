@@ -140,8 +140,6 @@ class AppHubPluginRepositoryTest {
                               "entryPoint": "org.myorg.myplugin.MyPlugin",
                               "downloadUrl": "http://10.0.2.2:8081/plugin-1.5.0.zip",
                               "checksum": "sha256:deadbeef",
-                              "allowedProgramUids": ["IpHINAT79UW"],
-                              "allowedDataSetUids": [],
                               "injectionPoints": ["HOME_ABOVE_PROGRAM_LIST"]
                             }
                           ]
@@ -158,7 +156,6 @@ class AppHubPluginRepositoryTest {
             assertEquals("org.myorg.myplugin.MyPlugin", plugin.entryPoint)
             assertEquals("http://10.0.2.2:8081/plugin-1.5.0.zip", plugin.downloadUrl)
             assertEquals("sha256:deadbeef", plugin.checksum)
-            assertEquals(listOf("IpHINAT79UW"), plugin.allowedProgramUids)
             assertEquals(listOf(InjectionPoint.HOME_ABOVE_PROGRAM_LIST), plugin.injectionPoints)
         }
 

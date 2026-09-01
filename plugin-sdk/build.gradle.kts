@@ -32,6 +32,13 @@ kotlin {
             implementation(libs.kotlin.serialization.json)
         }
 
+        androidMain.dependencies {
+            // The plugin API now exposes D2 itself, so this artifact compiles against the DHIS2 SDK.
+            // compileOnly: at runtime the classes come from the host's class loader, and a second
+            // copy inside a plugin DEX is what produces ClassCastException.
+            compileOnly(libs.dhis2.android.sdk)
+        }
+
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlin.serialization.json)
