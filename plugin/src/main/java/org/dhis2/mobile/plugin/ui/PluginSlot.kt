@@ -9,9 +9,9 @@ import androidx.compose.runtime.remember
 import org.dhis2.mobile.plugin.registry.PluginRegistry
 import org.dhis2.mobile.plugin.registry.RegisteredPlugin
 import org.dhis2.mobile.plugin.sdk.InjectionPoint
-import org.dhis2.mobile.plugin.security.ScopedDhis2PluginContextFactory
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.LocalResourceReader
+import org.koin.compose.KoinIsolatedContext
 import org.koin.compose.koinInject
 
 /**
@@ -35,31 +35,36 @@ import org.koin.compose.koinInject
 fun PluginSlot(
     injectionPoint: InjectionPoint,
     pluginRegistry: PluginRegistry = koinInject(),
-    contextFactory: ScopedDhis2PluginContextFactory = koinInject(),
 ) {
     val plugins by pluginRegistry.plugins.collectAsState()
     val slotPlugins = plugins.filter { injectionPoint in it.metadata.injectionPoints }
 
     slotPlugins.forEach { registered ->
-        key(registered.metadata.id) {
-            PluginContent(registered = registered, contextFactory = contextFactory)
+        // Keyed on the class loader as well as the id, because a reload replaces the registry entry
+        // with a new InMemoryDexClassLoader and therefore new plugin classes. Keying on the id alone
+        // kept the previous composition's `remember`ed slots alive across that swap, so state a
+        // plugin had stored — a `produceState` value, for instance — was an instance of the *old*
+        // loader's class while the new code cast it to the new loader's, giving
+        // `ClassCastException: Foo cannot be cast to Foo`.
+        key(registered.metadata.id, registered.classLoader) {
+            PluginContent(registered = registered)
         }
     }
 }
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-private fun PluginContent(
-    registered: RegisteredPlugin,
-    contextFactory: ScopedDhis2PluginContextFactory,
-) {
+private fun PluginContent(registered: RegisteredPlugin) {
     val reader =
         remember(registered.resourceRoot) {
             FileSystemResourceReader(registered.resourceRoot)
         }
     CompositionLocalProvider(LocalResourceReader provides reader) {
-        // Server-configured metadata, so the plugin's data scope is granted rather than claimed.
-        val context = contextFactory.create(registered.metadata)
-        registered.plugin.content(context)
+        // The plugin's own container, isolated from the host's: koinInject/koinViewModel inside the
+        // plugin resolve here and nowhere else, so a plugin binding cannot override a host one.
+        KoinIsolatedContext(context = registered.koinApplication) {
+            // Built at load time from the server metadata, so nothing at render time influences it.
+            registered.plugin.content(registered.context)
+        }
     }
 }

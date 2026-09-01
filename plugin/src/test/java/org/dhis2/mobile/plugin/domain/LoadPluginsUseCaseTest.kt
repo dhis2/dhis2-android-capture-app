@@ -7,6 +7,7 @@ import org.dhis2.mobile.plugin.data.PluginDownloader
 import org.dhis2.mobile.plugin.data.PluginLoader
 import org.dhis2.mobile.plugin.data.PluginVerifier
 import org.dhis2.mobile.plugin.registry.PluginRegistry
+import org.dhis2.mobile.plugin.security.HostDhis2PluginContextFactory
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.koin.core.Koin
@@ -33,6 +34,7 @@ class LoadPluginsUseCaseTest {
     private val verifier: PluginVerifier = mock()
     private val loader: PluginLoader = mock()
     private val registry = PluginRegistry()
+    private val contextFactory: HostDhis2PluginContextFactory = mock()
     private val koin: Koin = mock()
 
     private val useCase =
@@ -42,7 +44,7 @@ class LoadPluginsUseCaseTest {
             pluginVerifier = verifier,
             pluginLoader = loader,
             pluginRegistry = registry,
-            koin = koin,
+            contextFactory = contextFactory,
         )
 
     @Test

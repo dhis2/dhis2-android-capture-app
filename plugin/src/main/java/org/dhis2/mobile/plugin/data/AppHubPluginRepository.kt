@@ -25,8 +25,6 @@ private const val PLUGIN_CONFIG_KEY = "config"
  *       "entryPoint": "org.myorg.plugin.MyPlugin",
  *       "downloadUrl": "https://apps.dhis2.org/api/apps/my-plugin/1.0.0/plugin.dex",
  *       "checksum": "sha256:abc123...",
- *       "allowedProgramUids": ["UID1"],
- *       "allowedDataSetUids": [],
  *       "injectionPoints": ["HOME_ABOVE_PROGRAM_LIST"]
  *     }
  *   ]

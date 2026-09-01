@@ -60,6 +60,8 @@ val generateHostToolchain by tasks.registering {
     val composeVersion = libs.versions.composePluginVersion.get()
     val compileSdk = libs.versions.compileSdk.get()
     val pluginSdkVersion = libs.versions.pluginSdk.get()
+    // A plugin compiles against D2, so it must compile against exactly the SDK the host runs.
+    val dhis2SdkVersion = libs.versions.dhis2sdk.get()
     val jvmTarget = JavaVersion.VERSION_17.majorVersion
     // Not the host's minSdk (23): InMemoryDexClassLoader needs API 26, so a plugin cannot go lower
     // even though the app itself supports older devices.
@@ -70,6 +72,7 @@ val generateHostToolchain by tasks.registering {
     inputs.property("composeVersion", composeVersion)
     inputs.property("compileSdk", compileSdk)
     inputs.property("pluginSdkVersion", pluginSdkVersion)
+    inputs.property("dhis2SdkVersion", dhis2SdkVersion)
     inputs.property("jvmTarget", jvmTarget)
     inputs.property("minSdkFloor", minSdkFloor)
     outputs.dir(outputDir)
@@ -90,6 +93,7 @@ val generateHostToolchain by tasks.registering {
                 const val JVM_TARGET = $jvmTarget
                 const val MIN_SDK_FLOOR = $minSdkFloor
                 const val PLUGIN_SDK_VERSION = "$pluginSdkVersion"
+                const val DHIS2_SDK_VERSION = "$dhis2SdkVersion"
             }
 
             """.trimIndent(),

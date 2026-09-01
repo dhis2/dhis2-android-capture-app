@@ -5,8 +5,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import org.dhis2.mobile.plugin.sdk.Dhis2Plugin
+import org.dhis2.mobile.plugin.sdk.Dhis2PluginContext
 import org.dhis2.mobile.plugin.sdk.InjectionPoint
 import org.dhis2.mobile.plugin.sdk.PluginMetadata
+import org.koin.core.KoinApplication
 import java.io.File
 
 /**
@@ -20,6 +22,23 @@ data class RegisteredPlugin(
     val plugin: Dhis2Plugin,
     val metadata: PluginMetadata,
     val resourceRoot: File,
+    /**
+     * The context this plugin renders with, built once at load time from [metadata].
+     *
+     * Deliberately not something the render path asks a factory for: a factory that mints a context
+     * from caller-supplied metadata is a factory a plugin can call itself.
+     */
+    val context: Dhis2PluginContext,
+    /**
+     * The loader that defined this plugin's classes.
+     *
+     * Carried because the load pipeline can run more than once per process, and each run builds a
+     * fresh loader — so the same plugin id can be backed by two generations of its own classes. The
+     * render path keys on this to avoid handing one generation's state to the other.
+     */
+    val classLoader: ClassLoader,
+    /** The plugin's private Koin container. Always present; see `PluginContainer`. */
+    val koinApplication: KoinApplication,
 )
 
 /**
@@ -46,10 +65,17 @@ class PluginRegistry {
         plugin: Dhis2Plugin,
         metadata: PluginMetadata,
         resourceRoot: File,
+        context: Dhis2PluginContext,
+        classLoader: ClassLoader,
+        koinApplication: KoinApplication,
     ) {
         _plugins.update { current ->
+            // Closing the outgoing container matters: re-registration happens on logout/re-login,
+            // and a leaked container keeps every singleton the previous session built.
+            current.firstOrNull { it.metadata.id == metadata.id }?.koinApplication?.close()
+
             current.filterNot { it.metadata.id == metadata.id } +
-                RegisteredPlugin(plugin, metadata, resourceRoot)
+                RegisteredPlugin(plugin, metadata, resourceRoot, context, classLoader, koinApplication)
         }
     }
 
@@ -59,6 +85,9 @@ class PluginRegistry {
 
     /** Removes all registered plugins (e.g. on user logout). */
     fun clear() {
-        _plugins.update { emptyList() }
+        _plugins.update { current ->
+            current.forEach { it.koinApplication.close() }
+            emptyList()
+        }
     }
 }
