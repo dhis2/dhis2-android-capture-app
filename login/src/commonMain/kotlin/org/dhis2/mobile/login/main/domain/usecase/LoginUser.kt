@@ -11,7 +11,13 @@ class LoginUser(
         username: String,
         password: String,
     ): LoginResult {
-        val result = repository.loginUser(serverUrl, username, password)
-        return handleResult(result, serverUrl, username)
+        val urlWithScheme =
+            if (serverUrl.startsWith("https://") || serverUrl.startsWith("http://")) {
+                serverUrl
+            } else {
+                "https://$serverUrl"
+            }
+        val result = repository.loginUser(urlWithScheme, username, password)
+        return handleResult(result, urlWithScheme, username)
     }
 }
