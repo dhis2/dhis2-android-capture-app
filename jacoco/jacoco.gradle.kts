@@ -17,15 +17,8 @@ tasks.register("jacocoReport", JacocoReport::class) {
 
     sourceDirectories.setFrom("${project.projectDir}/src/main/java")
 
-    // Only genuinely generated code belongs here. The previous list excluded 82% of the
-    // app module's compiled classes -- every Activity, Fragment, Dialog, Adapter, View,
-    // anything with "Module" in its name, everything under a ui package, and via `**/*$*`
-    // every nested class, lambda and coroutine state machine. What it reported was not
-    // the project's coverage but the coverage of the 18% that survived the filter.
-    //
-    // Android UI classes are excluded no longer: instrumented tests now contribute their
-    // execution data, so those classes are genuinely exercised and hiding them
-    // understates the suite that covers them.
+    // Generated code only. Anything hand-written, including Android UI classes, is
+    // measured.
     val excludes = mutableSetOf<String>(
         // Android resource and build plumbing -- no source to cover.
         "**/R.class",

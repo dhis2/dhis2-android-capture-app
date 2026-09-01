@@ -1,20 +1,13 @@
 #!/bin/bash
 #
-# Downloads JaCoCo execution data (.ec) produced by an Espresso build on BrowserStack.
+# Downloads the JaCoCo execution data (.ec) an Espresso build produced on BrowserStack's
+# devices. Requires "coverage": true in the build request and enableAndroidTestCoverage
+# on the debug build type.
 #
-# BrowserStack runs the instrumented tests on its own devices, so the .ec files are
-# written there and never reach the workspace on their own. Without this step
-# jacocoReport finds an empty build/outputs/code_coverage tree and the reported
-# coverage reflects unit tests only.
-#
-# Requires "coverage": true in the build request (see browserstackJenkins*.sh) and
-# enableAndroidTestCoverage on the debug build type.
-#
-# Usage: ./fetchBrowserstackCoverage.sh <build_id> <label>
+# Usage:  ./fetchBrowserstackCoverage.sh <build_id> <label>
 # Writes: <repo-root>/browserstack-coverage/<label>/<session_id>.ec
 #
-# Deliberately never fails the calling job: missing coverage should not turn a green
-# test run red. It reports what it did and exits 0.
+# Always exits 0 -- missing coverage must not fail the calling job.
 
 build_id="$1"
 label="$2"
