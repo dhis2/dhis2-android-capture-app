@@ -93,7 +93,7 @@ sonarqube = "7.2.3.7755"
 browser = "1.9.0"
 biometric = "1.1.0"
 coil = "3.3.0"
-cyclonedx = "2.1.0"
+cyclonedx = "3.4.1"
 jetbrains-material3="1.9.0"
 materialIconsExtended = "1.7.3"
 
