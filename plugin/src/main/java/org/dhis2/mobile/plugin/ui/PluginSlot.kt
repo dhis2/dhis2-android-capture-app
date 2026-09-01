@@ -8,6 +8,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import org.dhis2.mobile.plugin.registry.PluginRegistry
 import org.dhis2.mobile.plugin.registry.RegisteredPlugin
+import org.dhis2.mobile.plugin.registry.forSlot
 import org.dhis2.mobile.plugin.sdk.InjectionPoint
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.LocalResourceReader
@@ -37,7 +38,7 @@ fun PluginSlot(
     pluginRegistry: PluginRegistry = koinInject(),
 ) {
     val plugins by pluginRegistry.plugins.collectAsState()
-    val slotPlugins = plugins.filter { injectionPoint in it.metadata.injectionPoints }
+    val slotPlugins = plugins.forSlot(injectionPoint)
 
     slotPlugins.forEach { registered ->
         // Keyed on the class loader as well as the id, because a reload replaces the registry entry
