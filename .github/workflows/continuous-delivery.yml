@@ -42,32 +42,25 @@ jobs:
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
 
-      - name: Decode Keystore
-        id: decode_keystore
-        uses: timheuer/base64-to-file@dfa5a5dd38803cb4f5c3a081eeb28e8362d43e9c
-        with:
-          fileName: 'debug.keystore'
-          encodedString: ${{ secrets.DEBUG_KEYSTORE_BASE64 }}
-
       # Create APK Debug
       - name: Build apk debug project (APK) - ${{ env.main_project_module }} module
-        run: ./gradlew assembleDhis2Debug
-        env:
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          DEBUG_KEYSTORE_ALIAS: ${{ secrets.DEBUG_KEYSTORE_ALIAS }}
-          DEBUG_KEY_PASS: ${{ secrets.DEBUG_KEY_PASS }}
-          DEBUG_KEYSTORE_PASSWORD: ${{ secrets.DEBUG_KEYSTORE_PASSWORD }}
-          DEBUG_KEYSTORE_PATH: ${{ steps.decode_keystore.outputs.filePath }}
-          OPEN_ID_AUTH_SCHEME: ${{ secrets.OPEN_ID_AUTH_SCHEME }}
-          OPEN_ID_TYPE: ${{ secrets.OPEN_ID_TYPE }}
-          OPEN_ID_SERVER: ${{ secrets.OPEN_ID_SERVER }}
-          OPEN_ID_CLIENT: ${{ secrets.OPEN_ID_CLIENT }}
-          OPEN_ID_REDIRECT_URI: ${{ secrets.OPEN_ID_REDIRECT_URI }}
-          OPEN_ID_DISCOVERY_URI: ${{ secrets.OPEN_ID_DISCOVERY_URI }}
-          OPEN_ID_AUTHORIZATION_URL: ${{ secrets.OPEN_ID_AUTHORIZATION_URL }}
-          OPEN_ID_TOKEN_URL: ${{ secrets.OPEN_ID_TOKEN_URL }}
-          OPEN_ID_BUTTON_TEXT: ${{ secrets.OPEN_ID_BUTTON_TEXT }}
-      
+        uses: ./.github/actions/build-signed-apk
+        with:
+          keystore-base64: ${{ secrets.DEBUG_KEYSTORE_BASE64 }}
+          keystore-alias: ${{ secrets.DEBUG_KEYSTORE_ALIAS }}
+          key-pass: ${{ secrets.DEBUG_KEY_PASS }}
+          keystore-password: ${{ secrets.DEBUG_KEYSTORE_PASSWORD }}
+          sentry-dsn: ${{ secrets.SENTRY_DSN }}
+          open-id-auth-scheme: ${{ secrets.OPEN_ID_AUTH_SCHEME }}
+          open-id-type: ${{ secrets.OPEN_ID_TYPE }}
+          open-id-server: ${{ secrets.OPEN_ID_SERVER }}
+          open-id-client: ${{ secrets.OPEN_ID_CLIENT }}
+          open-id-redirect-uri: ${{ secrets.OPEN_ID_REDIRECT_URI }}
+          open-id-discovery-uri: ${{ secrets.OPEN_ID_DISCOVERY_URI }}
+          open-id-authorization-url: ${{ secrets.OPEN_ID_AUTHORIZATION_URL }}
+          open-id-token-url: ${{ secrets.OPEN_ID_TOKEN_URL }}
+          open-id-button-text: ${{ secrets.OPEN_ID_BUTTON_TEXT }}
+
       - name: Locate built APK
         id: apk-path
         run: |

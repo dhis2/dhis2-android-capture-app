@@ -1,0 +1,78 @@
+name: Build signed debug APK
+description: >-
+  Decodes the debug keystore and assembles the signed Dhis2 debug APK.
+  Assumes the repository is checked out and a JDK is already set up.
+
+inputs:
+  keystore-base64:
+    description: Base64-encoded debug keystore.
+    required: true
+  keystore-alias:
+    description: Debug keystore alias.
+    required: true
+  key-pass:
+    description: Debug key password.
+    required: true
+  keystore-password:
+    description: Debug keystore password.
+    required: true
+  sentry-dsn:
+    description: Sentry DSN.
+    required: false
+    default: ''
+  open-id-auth-scheme:
+    required: false
+    default: ''
+  open-id-type:
+    required: false
+    default: ''
+  open-id-server:
+    required: false
+    default: ''
+  open-id-client:
+    required: false
+    default: ''
+  open-id-redirect-uri:
+    required: false
+    default: ''
+  open-id-discovery-uri:
+    required: false
+    default: ''
+  open-id-authorization-url:
+    required: false
+    default: ''
+  open-id-token-url:
+    required: false
+    default: ''
+  open-id-button-text:
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Decode keystore
+      id: decode_keystore
+      uses: timheuer/base64-to-file@dfa5a5dd38803cb4f5c3a081eeb28e8362d43e9c
+      with:
+        fileName: 'debug.keystore'
+        encodedString: ${{ inputs.keystore-base64 }}
+
+    - name: Assemble Dhis2 debug APK
+      shell: bash
+      env:
+        SENTRY_DSN: ${{ inputs.sentry-dsn }}
+        DEBUG_KEYSTORE_ALIAS: ${{ inputs.keystore-alias }}
+        DEBUG_KEY_PASS: ${{ inputs.key-pass }}
+        DEBUG_KEYSTORE_PASSWORD: ${{ inputs.keystore-password }}
+        DEBUG_KEYSTORE_PATH: ${{ steps.decode_keystore.outputs.filePath }}
+        OPEN_ID_AUTH_SCHEME: ${{ inputs.open-id-auth-scheme }}
+        OPEN_ID_TYPE: ${{ inputs.open-id-type }}
+        OPEN_ID_SERVER: ${{ inputs.open-id-server }}
+        OPEN_ID_CLIENT: ${{ inputs.open-id-client }}
+        OPEN_ID_REDIRECT_URI: ${{ inputs.open-id-redirect-uri }}
+        OPEN_ID_DISCOVERY_URI: ${{ inputs.open-id-discovery-uri }}
+        OPEN_ID_AUTHORIZATION_URL: ${{ inputs.open-id-authorization-url }}
+        OPEN_ID_TOKEN_URL: ${{ inputs.open-id-token-url }}
+        OPEN_ID_BUTTON_TEXT: ${{ inputs.open-id-button-text }}
+      run: ./gradlew assembleDhis2Debug
