@@ -7,7 +7,7 @@ import org.dhis2.mobile.plugin.data.PluginVerifier
 import org.dhis2.mobile.plugin.domain.GetPluginSlotContent
 import org.dhis2.mobile.plugin.domain.LoadPluginsUseCase
 import org.dhis2.mobile.plugin.registry.PluginRegistry
-import org.dhis2.mobile.plugin.security.ScopedDhis2PluginContextFactory
+import org.dhis2.mobile.plugin.security.HostDhis2PluginContextFactory
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -24,8 +24,8 @@ val pluginModule =
         // Data
         single { AppHubPluginRepository(get(), get()) }
 
-        // Security
-        single { ScopedDhis2PluginContextFactory(get()) }
+        // The context handed to each plugin, built from the server metadata at load time.
+        single { HostDhis2PluginContextFactory(get()) }
 
         // Domain
         factoryOf(::GetPluginSlotContent)
@@ -36,7 +36,7 @@ val pluginModule =
                 pluginVerifier = get(),
                 pluginLoader = get(),
                 pluginRegistry = get(),
-                koin = getKoin(),
+                contextFactory = get(),
             )
         }
     }

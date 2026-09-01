@@ -6,8 +6,9 @@ import org.dhis2.mobile.plugin.data.AppHubPluginRepository
 import org.dhis2.mobile.plugin.data.PluginDownloader
 import org.dhis2.mobile.plugin.data.PluginLoader
 import org.dhis2.mobile.plugin.data.PluginVerifier
+import org.dhis2.mobile.plugin.di.PluginContainer
 import org.dhis2.mobile.plugin.registry.PluginRegistry
-import org.koin.core.Koin
+import org.dhis2.mobile.plugin.security.HostDhis2PluginContextFactory
 import timber.log.Timber
 
 /**
@@ -30,7 +31,7 @@ class LoadPluginsUseCase(
     private val pluginVerifier: PluginVerifier,
     private val pluginLoader: PluginLoader,
     private val pluginRegistry: PluginRegistry,
-    private val koin: Koin,
+    private val contextFactory: HostDhis2PluginContextFactory,
 ) : UseCase<Unit, Unit> {
     override suspend fun invoke(input: Unit): Result<Unit> =
         runCatching {
@@ -78,11 +79,23 @@ class LoadPluginsUseCase(
                     @Suppress("DEPRECATION")
                     val loaded = pluginLoader.load(bundle, metadata)
 
-                    loaded.plugin.provideKoinModule()?.let { module ->
-                        koin.loadModules(listOf(module))
-                    }
+                    // Built here, from the server metadata, and carried on the registry entry — so
+                    // the render path never has to ask a factory for one.
+                    val context = contextFactory.create(metadata)
 
-                    pluginRegistry.register(loaded.plugin, metadata, loaded.resourceRoot)
+                    // A private container per plugin, not the host's. Loading plugin modules into
+                    // the application container let a plugin's binding silently override a host one
+                    // for the rest of the app, because Koin allows override by default.
+                    val pluginKoin = PluginContainer.create(context, loaded.plugin.provideKoinModule())
+
+                    pluginRegistry.register(
+                        plugin = loaded.plugin,
+                        metadata = metadata,
+                        resourceRoot = loaded.resourceRoot,
+                        context = context,
+                        classLoader = loaded.classLoader,
+                        koinApplication = pluginKoin,
+                    )
                     Timber.d("Plugin '${metadata.id}' v${metadata.version} loaded successfully")
                 }.onFailure { err ->
                     Timber.e(err, "Failed to load plugin '${metadata.id}' — skipping")
