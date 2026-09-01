@@ -79,9 +79,8 @@ class PluginRegistry {
         }
     }
 
-    /** Returns all plugins the server configured for [injectionPoint]. */
-    fun getPluginsForSlot(injectionPoint: InjectionPoint): List<RegisteredPlugin> =
-        _plugins.value.filter { injectionPoint in it.metadata.injectionPoints }
+    /** Returns all plugins the server configured for [injectionPoint], as of now. */
+    fun getPluginsForSlot(injectionPoint: InjectionPoint): List<RegisteredPlugin> = _plugins.value.forSlot(injectionPoint)
 
     /** Removes all registered plugins (e.g. on user logout). */
     fun clear() {
@@ -91,3 +90,13 @@ class PluginRegistry {
         }
     }
 }
+
+/**
+ * The plugins in this list that target [injectionPoint].
+ *
+ * Shared by [PluginRegistry.getPluginsForSlot] and the render path, which needs to filter the
+ * collected state rather than take a snapshot. One definition means the slot rule is covered by
+ * `PluginRegistryTest` for both callers.
+ */
+fun List<RegisteredPlugin>.forSlot(injectionPoint: InjectionPoint): List<RegisteredPlugin> =
+    filter { injectionPoint in it.metadata.injectionPoints }

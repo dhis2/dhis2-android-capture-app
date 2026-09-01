@@ -32,10 +32,20 @@ class LoadPluginsUseCase(
     private val pluginLoader: PluginLoader,
     private val pluginRegistry: PluginRegistry,
     private val contextFactory: HostDhis2PluginContextFactory,
+    /**
+     * The running device's API level, read once at construction.
+     *
+     * Injected rather than read inline so the pipeline below is reachable from a JVM unit test:
+     * `Build.VERSION.SDK_INT` reads `0` against the stubbed `android.jar` and is a `static final`
+     * that reflection cannot reassign on JDK 17, so an inline read made every test here a test of
+     * the guard. Kept as the level rather than a `Boolean` so the API 26 boundary is itself
+     * assertable instead of being restated by the test double.
+     */
+    private val deviceApiLevel: Int = Build.VERSION.SDK_INT,
 ) : UseCase<Unit, Unit> {
     override suspend fun invoke(input: Unit): Result<Unit> =
         runCatching {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            if (deviceApiLevel < Build.VERSION_CODES.O) {
                 Timber.w("Plugin system requires API 26+. Skipping plugin loading on this device.")
                 return Result.success(Unit)
             }
