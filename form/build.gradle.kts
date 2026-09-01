@@ -68,12 +68,7 @@ dependencies {
     testImplementation(libs.bundles.form.test)
     testImplementation(libs.test.junit)
     testImplementation(libs.test.turbine)
-    androidTestImplementation(libs.test.compose.ui.test)
-    androidTestImplementation(libs.test.mockitoCore)
-    androidTestImplementation(libs.test.mockitoKotlin)
-    androidTestImplementation(libs.test.dexmaker.mockitoInline)
     debugImplementation(libs.androidx.compose.uitooling)
-    debugImplementation(libs.test.ui.test.manifest)
 
     coreLibraryDesugaring(libs.desugar)
 }
