@@ -13,7 +13,7 @@ import org.dhis2.tracker.relationships.ui.state.RelationshipsUiState
 @Preview
 @Composable
 fun NoRelationshipsPreview() {
-    NoRelationships()
+    NoRelationships("Relationships")
 }
 
 @Preview

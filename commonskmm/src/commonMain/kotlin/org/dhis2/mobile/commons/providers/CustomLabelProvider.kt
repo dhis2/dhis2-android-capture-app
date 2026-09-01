@@ -42,6 +42,11 @@ interface CustomLabelProvider {
 
     suspend fun getCustomGroupByStageLabel(programUid: String?): String
 
+    suspend fun getCustomRelationshipLabel(
+        programUid: String?,
+        quantity: Int?,
+    ): String
+
     fun formatStringWithCustomLabel(
         stringResource: String,
         customLabel: String,
@@ -92,6 +97,17 @@ interface CustomLabelProvider {
         quantity: Int? = null,
     ) = runBlocking {
         getCustomEnrollmentLabel(programUid, quantity)
+    }
+
+    @Deprecated(
+        "Use suspend function",
+        replaceWith = ReplaceWith("getCustomRelationshipLabel"),
+    )
+    fun blockingCustomRelationshipLabel(
+        programUid: String?,
+        quantity: Int?,
+    ) = runBlocking {
+        getCustomRelationshipLabel(programUid, quantity)
     }
 }
 

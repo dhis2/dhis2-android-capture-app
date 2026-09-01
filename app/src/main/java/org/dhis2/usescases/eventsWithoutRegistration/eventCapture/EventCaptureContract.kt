@@ -138,5 +138,7 @@ class EventCaptureContract {
         fun getTeiUid(): String?
 
         fun getEnrollmentUid(): String?
+
+        suspend fun getEventProgram(eventUid: String): String?
     }
 }
