@@ -36,7 +36,7 @@ jobs:
               -F "autoCreate=true" \
               -F "projectName=$PROJECT_NAME" \
               -F "projectVersion=$PROJECT_VERSION" \
-              -F "bom=@build/reports/bom.json")
+              -F "bom=@build/reports/cyclonedx/bom.json")
 
           token=$(printf '%s' "$response" | jq -r '.token // empty')
           if [ -z "$token" ]; then
