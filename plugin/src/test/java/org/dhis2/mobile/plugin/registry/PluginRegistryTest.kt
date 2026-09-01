@@ -10,6 +10,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.koin.dsl.koinApplication
 import org.mockito.kotlin.mock
 import java.io.File
 
@@ -44,7 +45,14 @@ class PluginRegistryTest {
         plugin: Dhis2Plugin,
         metadata: PluginMetadata,
         resourceRoot: File,
-    ) = register(plugin, metadata, resourceRoot, mock<Dhis2PluginContext>(), javaClass.classLoader!!)
+    ) = register(
+        plugin,
+        metadata,
+        resourceRoot,
+        mock<Dhis2PluginContext>(),
+        javaClass.classLoader!!,
+        koinApplication { },
+    )
 
     @Test
     fun `starts empty`() {

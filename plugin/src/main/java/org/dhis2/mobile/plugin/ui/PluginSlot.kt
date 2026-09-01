@@ -75,15 +75,10 @@ private fun PluginContent(registered: RegisteredPlugin) {
         // point; see PluginClassLoaderPolicy for the ones that stay open.
         LocalContext provides pluginContext,
     ) {
-        val koinApplication = registered.koinApplication
-        if (koinApplication == null) {
+        // The plugin's own container, isolated from the host's: koinInject/koinViewModel inside the
+        // plugin resolve here and nowhere else. Always present, so there is no unscoped path.
+        KoinIsolatedContext(context = registered.koinApplication) {
             PluginContentBody(registered)
-        } else {
-            // The plugin's own container, isolated from the host's: koinInject/koinViewModel inside
-            // the plugin resolve here and nowhere else.
-            KoinIsolatedContext(context = koinApplication) {
-                PluginContentBody(registered)
-            }
         }
     }
 }

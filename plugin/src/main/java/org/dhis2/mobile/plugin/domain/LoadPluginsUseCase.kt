@@ -6,9 +6,9 @@ import org.dhis2.mobile.plugin.data.AppHubPluginRepository
 import org.dhis2.mobile.plugin.data.PluginDownloader
 import org.dhis2.mobile.plugin.data.PluginLoader
 import org.dhis2.mobile.plugin.data.PluginVerifier
+import org.dhis2.mobile.plugin.di.PluginContainer
 import org.dhis2.mobile.plugin.registry.PluginRegistry
 import org.dhis2.mobile.plugin.security.ScopedDhis2PluginContextFactory
-import org.koin.dsl.koinApplication
 import timber.log.Timber
 
 /**
@@ -79,23 +79,23 @@ class LoadPluginsUseCase(
                     @Suppress("DEPRECATION")
                     val loaded = pluginLoader.load(bundle, metadata)
 
+                    // Built here, from the server metadata, and carried on the registry entry — so
+                    // the render path never has to ask a factory for one. Built *before* the
+                    // container, because the container is seeded from it.
+                    val context = contextFactory.create(metadata)
+
                     // A private container per plugin, not the host's. Loading a plugin module into
                     // the application container let it resolve every host binding — including D2 —
                     // and, because Koin's loadModules allows override by default, silently *replace*
-                    // them for the rest of the app. Nothing from the host is seeded in: a plugin
-                    // reaches DHIS2 data through its scoped context, not through DI.
-                    val pluginKoin =
-                        loaded.plugin.provideKoinModule()?.let { module ->
-                            koinApplication { modules(module) }
-                        }
+                    // them for the rest of the app. Seeded with the plugin's own scoped gateway and
+                    // nothing else; see PluginContainer.
+                    val pluginKoin = PluginContainer.create(context, loaded.plugin.provideKoinModule())
 
-                    // Built here, from the server metadata, and carried on the registry entry — so
-                    // the render path never has to ask a factory for one.
                     pluginRegistry.register(
                         plugin = loaded.plugin,
                         metadata = metadata,
                         resourceRoot = loaded.resourceRoot,
-                        context = contextFactory.create(metadata),
+                        context = context,
                         classLoader = loaded.classLoader,
                         koinApplication = pluginKoin,
                     )

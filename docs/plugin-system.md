@@ -36,7 +36,8 @@ Capture App    on opening Home:  refresh dhis2AndroidPlugins namespace
                         → load DEX via InMemoryDexClassLoader, parented by
                           FilteringClassLoader
                         → build ScopedD2 from the granted scope
-                        → build a private Koin container for the plugin's module
+                        → build a private Koin container, seeded with that ScopedD2
+                          plus the plugin's own module
                         → register instance
 Capture App    at render: PluginSlot(slot) per plugin
                         → FileSystemResourceReader via LocalResourceReader
@@ -87,13 +88,28 @@ class MyPlugin : Dhis2Plugin {
 }
 ```
 
-Optionally provide a Koin module with the plugin's own dependencies (ViewModels, repositories, use
-cases, etc.).
+Optionally provide a Koin module with the plugin's own dependencies (ViewModels, repositories, and
+so on).
 
-These bindings go into a **private container for that plugin**, not the host's. Nothing from the
-host is seeded into it, so `get<D2>()` will not resolve — data access goes through
-`Dhis2PluginContext.sdk`. `koinInject()` and `koinViewModel()` inside the plugin's Composables
-resolve against that container.
+These bindings go into a **private container for that plugin**, not the host's, and `get<D2>()` will
+not resolve there. `koinInject()` and `koinViewModel()` inside the plugin's Composables resolve
+against that container.
+
+The container is seeded with exactly three things — the plugin's own `ScopedD2`, its
+`PluginMetadata`, and the `Dhis2PluginContext` itself — so a plugin's repository can be constructed
+by Koin instead of having `context.sdk` threaded through every call site:
+
+```kotlin
+override fun provideKoinModule() = module {
+    single<MyRepository> { MyRepositoryImpl(get()) }   // get() is the plugin's ScopedD2
+    viewModel { MyViewModel(get()) }
+}
+```
+
+That is a convenience, not a widening: they are the same objects the plugin already receives as a
+parameter, and what it may read or write is decided by the grant carried on that `ScopedD2`. Nothing
+else is seeded, and a container is created whether or not the plugin declares a module — so there is
+no unscoped render path.
 
 ### PluginMetadata
 
@@ -214,6 +230,11 @@ Contract:
 - The entry-point class must be **public** with a **no-arg constructor** — the
   host instantiates it via reflection.
 - `content()` runs inside the host composition; don't navigate outside the slot.
+- **Budget your height.** `HOME_ABOVE_PROGRAM_LIST` is a plain, non-scrolling `Column` sitting above
+  the host's own scrolling program list, so every pixel a plugin takes is a pixel the host loses, and
+  anything past the viewport is unreachable rather than scrollable. Keep the resting state short,
+  put detail behind a toggle, and if a section can grow, bound it (`heightIn(max = …)` plus
+  `verticalScroll`) so it scrolls inside the plugin instead of pushing the host's content off screen.
 - **Composition state does not survive a plugin reload.** The load pipeline runs more than once per
   process — a metadata sync is enough — and each run builds a fresh class loader, so the plugin's
   classes are replaced wholesale. `PluginSlot` keys the composition on that loader and discards the
@@ -424,6 +445,7 @@ constraint differs per row — some must match the host exactly, others are boun
 |----------------|-----------------------------------|----------------------------------|-----------------------------------------------------------------------------------------------------------------|
 | `kotlin`       | `2.4.10`                          | **equal**                        | `Module was compiled with an incompatible version of Kotlin` — an older compiler cannot read the SDK's metadata |
 | Compose plugin | `1.10.3` (`composePluginVersion`) | **equal**                        | `NoSuchMethodError` on mangled `Text`/`Card` signatures                                                         |
+| androidx Compose | `1.10.6` (`compose`)            | **equal** — see the note below   | `NoSuchMethodError` on a defaulted overload, e.g. `RowScope.weight$default`                                     |
 | `compileSdk`   | `37`                              | **>=** host                      | `checkAarMetadata` fails on `plugin-sdk-android`                                                                |
 | `minSdk`       | `23`                              | **>= 26** (not the host's)       | `InMemoryDexClassLoader` needs API 26; the host itself supports 23, but a plugin cannot load below 26           |
 | JVM target     | `17`                              | **<=** host                      | `Unsupported class file major version` when the DEX is loaded. Lower is safe, higher is not                     |
@@ -437,6 +459,19 @@ opts out and trades these build errors for runtime failures on device.
 
 Values above are generated into the Gradle plugin from `gradle/libs.versions.toml`, so the checks
 move with each host release; treat that file as the source of truth.
+
+**Matching `composeMultiplatform` is necessary but not sufficient.** The host declares *two* Compose
+versions: `composePluginVersion` (the Compose Multiplatform plugin, `1.10.3`) and `compose` (the
+androidx artifacts, `1.10.6`), and it depends on the latter directly. Compose Multiplatform 1.10.3
+brings `androidx.compose.foundation:foundation-layout:1.10.5` transitively, so a plugin that declares
+only `composeMultiplatform = "1.10.3"` compiles against 1.10.5 while the host runs 1.10.6.
+
+Most of the API is identical across those two, which is what makes this nasty: `Row`, `Column`,
+`clickable` and `verticalScroll` all work, and the first thing to break is a *defaulted* overload
+whose synthetic `…$default` signature changed. It surfaces as
+`NoSuchMethodError: No static method weight$default(…)` at composition time — long after the build
+succeeded. Declare the androidx Compose version the host uses, and prefer APIs without default
+arguments in a plugin's layout code.
 
 A Kotlin mismatch is usually followed by a cascade of `Unresolved reference 'lazy'` in the
 generated resource accessors — that cascade is a symptom, not the cause; fix the version.
@@ -583,9 +618,12 @@ security decision that matters.
   that loader too. Still open by construction: `Thread.currentThread().contextClassLoader`,
   `ClassLoader.getSystemClassLoader()`, the loader of any host object the plugin holds, and
   reflection — Kotlin `internal` is public in JVM bytecode.
-- Each plugin gets a **private Koin container**, seeded with nothing from the host. Loading plugin
-  modules into the application container previously let a plugin resolve every host binding
-  including `D2`, and — since Koin allows override by default — silently *replace* them.
+- Each plugin gets a **private Koin container**, seeded only with its own `ScopedD2`,
+  `PluginMetadata` and context — never with a host binding. Loading plugin modules into the
+  application container previously let a plugin resolve every host binding including `D2`, and —
+  since Koin allows override by default — silently *replace* them. The seeding adds no reach: those
+  three objects are already handed to `content()` as a parameter, and the grant that bounds them
+  lives on the `ScopedD2`, not on how it was obtained.
 - The bundle build fails on references to denied classes, and on packaging any class the host owns
   (`plugin-sdk`, Compose, Kotlin, the DHIS2 SDK, Koin). Static analysis, so a name assembled at
   runtime passes; the value is a clear build error for the honest mistake.
@@ -901,6 +939,7 @@ Two more things that trip this up:
 | `Plugin checksum mismatch!`                                                                 | The served zip doesn't match `checksum` in the config. Confirm what is actually served — `curl -s <downloadUrl> \                                                                                                                                                                                                                                                                                        | shasum -a 256` from the host — then update the JSON (with the `sha256:` prefix). If the served bytes aren't a zip at all you'll get the `is not a zip bundle` error above instead. |
 | `Plugin bundle signature verification failed` / `Unsigned entry in plugin bundle`           | The zip was edited after signing. Re-run `:plugin:buildPluginBundle`; never hand-edit the zip.                                                                                                                                                                                                                                                                                                           |                                                                                                                                                                                    |
 | `ClassCastException: … not assignable to Dhis2Plugin`                                       | Plugin DEX bundles its own SDK copy. Keep `plugin-sdk` + all `compose.*` deps (except `compose.components.resources`) as `compileOnly`.                                                                                                                                                                                                                                                                  |                                                                                                                                                                                    |
+| `NoSuchMethodError` for a `…$default` method, e.g. `RowScope.weight$default`                  | A *defaulted overload* whose signature changed between the androidx Compose version the plugin compiled against and the one the host ships. Matching `composeMultiplatform` does not prevent this — the host pins androidx `compose` separately and higher. See §5.1. Align that version, or avoid defaulted layout APIs (`Modifier.weight()` was the one that bit).                                       |
 | `NoSuchMethodError` for mangled `Text`/`Card` signatures                                    | Compose ABI mismatch. Plugin is compiled against CMP 1.10.3; consumer is on a different version. A preview app and the Capture App must both use CMP (`compose.runtime` etc.), not `androidx.compose.bom`.                                                                                                                                                                                               |                                                                                                                                                                                    |
 | `MissingResourceException` for `composeResources/…`                                         | Capture App: `PluginSlot` should provide `LocalResourceReader` per-plugin. Preview app: the plugin's `composeResources` must be staged into its assets.                                                                                                                                                                                                                                                  |                                                                                                                                                                                    |
 | Plugin code changes aren't visible                                                          | Cached bundle. Bump the plugin's `version` (and the `version` in the dataStore JSON) or `adb shell run-as com.dhis2.debug rm -rf files/plugins`.                                                                                                                                                                                                                                                         |                                                                                                                                                                                    |

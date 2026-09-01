@@ -28,8 +28,13 @@ data class RegisteredPlugin(
     val resourceRoot: File,
     val context: Dhis2PluginContext,
     val classLoader: ClassLoader,
-    /** The plugin's private Koin container, or null if it declared no module. */
-    val koinApplication: KoinApplication?,
+    /**
+     * The plugin's private container. Always present: it is seeded with the plugin's own
+     * [ScopedD2][org.hisp.dhis.android.core.scopedaccess.ScopedD2] and [metadata] whether or not the
+     * plugin declared a module, so `koinInject` works without an empty module. See
+     * [PluginContainer][org.dhis2.mobile.plugin.di.PluginContainer].
+     */
+    val koinApplication: KoinApplication,
 )
 
 /**
@@ -58,7 +63,7 @@ class PluginRegistry {
         resourceRoot: File,
         context: Dhis2PluginContext,
         classLoader: ClassLoader,
-        koinApplication: KoinApplication? = null,
+        koinApplication: KoinApplication,
     ) {
         _plugins.update { current ->
             // Closing the outgoing container matters: re-registration happens on logout/re-login,
@@ -77,7 +82,7 @@ class PluginRegistry {
     /** Removes all registered plugins and closes their private containers (e.g. on user logout). */
     fun clear() {
         _plugins.update { current ->
-            current.forEach { it.koinApplication?.close() }
+            current.forEach { it.koinApplication.close() }
             emptyList()
         }
     }
