@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Context.ACTIVITY_SERVICE
+import android.os.SystemClock
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.compose.ui.semantics.SemanticsNode
@@ -20,6 +21,7 @@ import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.base.DefaultFailureHandler
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.util.TreeIterables
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
@@ -76,6 +78,42 @@ open class BaseRobot {
 
     fun waitToDebounce(millis: Long) {
         sleep(millis)
+    }
+
+    /**
+     * Waits until the view matched by [viewMatcher] has stopped moving on screen.
+     *
+     * Use before clicking a view that an animation may still be repositioning, such as one
+     * next to a keyboard that is opening or closing.
+     */
+    fun waitUntilViewIsStable(viewMatcher: Matcher<View>, waitMillis: Long = TIMEOUT) {
+        waitForView(viewMatcher, waitMillis.toInt()).perform(waitForStablePosition(waitMillis))
+    }
+
+    private fun waitForStablePosition(timeoutMillis: Long): ViewAction = object : ViewAction {
+
+        override fun getConstraints(): Matcher<View> = isDisplayed()
+
+        override fun getDescription(): String = "wait until the view stops moving on screen"
+
+        override fun perform(uiController: UiController, view: View) {
+            val deadline = SystemClock.uptimeMillis() + timeoutMillis
+            val current = IntArray(2)
+            val previous = IntArray(2)
+            view.getLocationOnScreen(previous)
+            var stableSamples = 0
+            while (SystemClock.uptimeMillis() < deadline) {
+                uiController.loopMainThreadForAtLeast(STABILITY_POLL_INTERVAL)
+                view.getLocationOnScreen(current)
+                if (current.contentEquals(previous)) {
+                    stableSamples++
+                    if (stableSamples >= REQUIRED_STABLE_SAMPLES) return
+                } else {
+                    stableSamples = 0
+                    current.copyInto(previous)
+                }
+            }
+        }
     }
 
     /** This node's own text entries (does not descend into children). */
@@ -206,5 +244,7 @@ open class BaseRobot {
     companion object {
         const val TIMEOUT = 5000L
         const val CONDITION_CHECK_INTERVAL = 200L
+        private const val STABILITY_POLL_INTERVAL = 50L
+        private const val REQUIRED_STABLE_SAMPLES = 2
     }
 }
