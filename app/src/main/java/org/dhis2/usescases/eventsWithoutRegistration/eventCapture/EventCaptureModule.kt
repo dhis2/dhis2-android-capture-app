@@ -19,6 +19,7 @@ import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.UniqueAttributeController
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FieldViewModelFactory
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.mobileProgramRules.EvaluationType
 import org.dhis2.mobileProgramRules.RuleEngineHelper
@@ -41,6 +42,7 @@ class EventCaptureModule(
         preferences: PreferenceProvider,
         pageConfigurator: NavigationPageConfigurator,
         resourceManager: ResourceManager,
+        customLabelProvider: CustomLabelProvider,
     ): EventCaptureContract.Presenter =
         EventCapturePresenterImpl(
             view,
@@ -50,6 +52,7 @@ class EventCaptureModule(
             preferences,
             pageConfigurator,
             resourceManager,
+            customLabelProvider,
         )
 
     @Provides

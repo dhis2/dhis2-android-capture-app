@@ -47,7 +47,7 @@ class EventCapturePresenterImpl(
     private val preferences: PreferenceProvider,
     private val pageConfigurator: NavigationPageConfigurator,
     private val resourceManager: ResourceManager,
-    private val customLabelPresenterImpl: CustomLabelProvider,
+    private val customLabelProvider: CustomLabelProvider,
 ) : ViewModel(),
     EventCaptureContract.Presenter {
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -135,7 +135,7 @@ class EventCapturePresenterImpl(
                         icon = Icons.Outlined.Hub,
                         selectedIcon = Icons.Filled.Hub,
                         label =
-                            customLabelPresenterImpl.getCustomRelationshipLabel(
+                            customLabelProvider.getCustomRelationshipLabel(
                                 programUid = eventCaptureRepository.getEventProgram(eventUid),
                                 quantity = 2,
                             ),
