@@ -10,6 +10,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.koin.dsl.koinApplication
+import org.mockito.kotlin.mock
 import java.io.File
 
 class PluginRegistryTest {
@@ -33,6 +35,24 @@ class PluginRegistryTest {
     )
 
     private fun root(name: String) = File("/tmp/$name")
+
+    /**
+     * Registration also carries the plugin's context, class loader and private container. None is
+     * exercised by these tests — they are about the registry's bookkeeping — so a stub of each keeps
+     * the call sites readable.
+     */
+    private fun PluginRegistry.register(
+        plugin: Dhis2Plugin,
+        metadata: PluginMetadata,
+        resourceRoot: File,
+    ) = register(
+        plugin,
+        metadata,
+        resourceRoot,
+        mock<Dhis2PluginContext>(),
+        javaClass.classLoader!!,
+        koinApplication { },
+    )
 
     @Test
     fun `starts empty`() {

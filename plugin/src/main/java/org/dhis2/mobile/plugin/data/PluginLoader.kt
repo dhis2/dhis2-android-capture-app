@@ -93,7 +93,7 @@ class PluginLoader(
                 .getDeclaredConstructor()
                 .newInstance()
 
-        return LoadedPlugin(plugin = plugin, resourceRoot = androidRoot)
+        return LoadedPlugin(plugin = plugin, resourceRoot = androidRoot, classLoader = classLoader)
     }
 }
 
@@ -101,4 +101,11 @@ class PluginLoader(
 data class LoadedPlugin(
     val plugin: Dhis2Plugin,
     val resourceRoot: File,
+    /**
+     * The loader that defined [plugin]'s classes.
+     *
+     * Returned because a fresh one is built on every load, and the render path needs to know which
+     * generation of the plugin's classes it is holding.
+     */
+    val classLoader: ClassLoader,
 )

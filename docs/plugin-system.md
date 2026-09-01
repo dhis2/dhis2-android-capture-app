@@ -30,10 +30,12 @@ DHIS2 admin    writes JSON to dataStore dhis2AndroidPlugins/config
 Capture App    on opening Home:  refresh dhis2AndroidPlugins namespace
                         → read config → download → SHA-256 → JAR signature
                         → extract zip → load DEX via InMemoryDexClassLoader
+                        → build the context (D2 + metadata)
+                        → build a private Koin container for the plugin
                         → register instance
-Capture App    at render: PluginSlot(slot) per plugin
+Capture App    at render: PluginSlot(slot) per plugin, keyed on its class loader
                         → FileSystemResourceReader via LocalResourceReader
-                        → ScopedDhis2PluginContext (allow-list enforcement)
+                        → KoinIsolatedContext(plugin's own container)
                         → plugin.content(ctx)
 ```
 
@@ -86,14 +88,18 @@ These bindings are loaded into the host app's Koin container at plugin load time
 
 ### PluginMetadata
 
-Describes a plugin's identity, version, data scope, and distribution metadata.
+Describes a plugin's identity, version, and distribution metadata.
 
 **Server-owned.** The DHIS2 administrator authors this as JSON in the server dataStore
 (namespace `dhis2AndroidPlugins`, key `config`); it is the single source of truth. Plugins do
 not declare any of it — the host reads it to decide what to download, verify and load, then
-hands it to the plugin through `[Dhis2PluginContext.pluginMetadata]`. In particular
-`[allowedProgramUids]` and `[allowedDataSetUids]` are *granted* by the server, so a plugin cannot
-widen its own access.
+hands it to the plugin through `[Dhis2PluginContext.pluginMetadata]`, so there is exactly one place
+to change a plugin's identity and a plugin cannot rename itself into someone else's configuration.
+
+There is deliberately **no data-scope field.** An earlier version carried `allowedProgramUids` /
+`allowedDataSetUids`; they were removed when the API began exposing the SDK, because a grant nothing
+enforces is worse than no grant — it reads like a control. Configs still carrying them keep loading:
+unknown keys are ignored.
 
 ```kotlin
 @Serializable
@@ -101,8 +107,6 @@ data class PluginMetadata(
     val id: String,                                 // "org.myorg.my-plugin"
     val version: String,                            // "1.0.0"
     val entryPoint: String,                         // "org.myorg.plugin.MyPlugin"
-    val allowedProgramUids: List<String> = emptyList(),
-    val allowedDataSetUids: List<String> = emptyList(),
     val injectionPoints: List<InjectionPoint> = emptyList(),
     val downloadUrl: String = "",
     val checksum: String = "",                      // "sha256:<hex>"
@@ -126,44 +130,68 @@ enum class InjectionPoint {
 
 ### Plugin context
 
-Security facade that is the **only** gateway through which a plugin may access DHIS2 data.
-
-All operations are automatically scoped to the programs and data sets declared in
-`[pluginMetadata]`. Attempts to access out-of-scope resources return a failure `[Result]`
-containing a `[SecurityException]`; they never silently return empty data.
-
-Plugin developers receive a `[Dhis2PluginContext]` as a parameter to `[Dhis2Plugin.content]`.
-The host app provides a concrete implementation (`[ScopedDhis2PluginContext]`) at runtime.
+The gateway through which a plugin reaches DHIS2 data. A plugin receives one as the parameter to
+`Dhis2Plugin.content`.
 
 ```kotlin
-
 interface Dhis2PluginContext {
     val pluginMetadata: PluginMetadata
-    suspend fun getTrackedEntityInstances(programUid: String):
-            Result<List<TrackedEntityInstanceDto>>
-    suspend fun getDataValues(orgUnitUid: String, dataSetUid: String, period: String):
-            Result<List<DataValueDto>>
-    suspend fun saveDataValue(dataSetUid: String, dataValue: DataValueDto):
-            Result<Unit>
+    val sdk: D2
 }
 ```
 
+`sdk` is **the DHIS2 Android SDK itself**, unrestricted. A plugin gets the whole fluent API — filters,
+ordering, paging, children, `blockingGet()` — with no wrapper in the way:
+
+```kotlin
+val overdue = context.sdk.eventModule().events()
+    .byStatus().eq(EventStatus.OVERDUE)
+    .byOrganisationUnitUid().eq(clinicUid)
+    .orderByDueDate(RepositoryScope.OrderByDirection.ASC)
+    .blockingGet()
+```
+
+That is a deliberate choice for this iteration, and it has a cost worth stating plainly: **there is no
+data-access control.** A plugin can read and write anything the logged-in user can. See §6 — the
+security decision is which plugins you choose to run. Narrowing that access is the next iteration and
+belongs in the SDK, not here.
+
+Two consequences of exposing the SDK rather than DTOs:
+
+- **A plugin is pinned to the host's SDK version.** The plugin ABI now includes the DHIS2 SDK's, so
+  the plugin-bundle Gradle plugin injects `org.hisp.dhis:android-core` at the host's version
+  (§5.1) — a plugin never declares it, and so cannot drift onto a version whose methods are not
+  there at runtime.
+- **`Dhis2Plugin` and `Dhis2PluginContext` live in `plugin-sdk`'s `androidMain`**, because `D2` is the
+  Android SDK and has no common-source equivalent. Write your plugin class in `src/androidMain`;
+  `PluginMetadata` and `InjectionPoint` stay in `commonMain`.
+
+`blockingGet()` and friends must not run on the main thread — wrap them in `Dispatchers.IO`.
+
 Contract:
 
-- A plugin declares **no identity of its own** — no id, version, entry point or
-  data scope. All of it comes from the server config, so there is exactly one
-  place to change it and a plugin cannot widen its own access. The one apparent
-  exception is cosmetic: `pluginBundle { pluginId; entryPoint }` (§5.3) fills in the
-  generated `plugin-config.json` and reaches nothing else — not the bundle, not the
-  host, which reads both from the dataStore.
-- The entry-point class must be **public** with a **no-arg constructor** — the
-  host instantiates it via reflection.
+- A plugin declares **no identity of its own** — no id, version or entry point. All of it comes from
+  the server config, so there is exactly one place to change it. The one apparent exception is
+  cosmetic: `pluginBundle { pluginId; entryPoint }` (§5.3) fills in the generated
+  `plugin-config.json` and reaches nothing else — not the bundle, not the host, which reads both
+  from the dataStore.
+- The entry-point class must be **public** with a **no-arg constructor** — the host instantiates it
+  via reflection.
 - `content()` runs inside the host composition; don't navigate outside the slot.
-- Every `Dhis2PluginContext` operation is scope-checked against the **server-granted**
-  allow-lists. Out-of-scope access returns `Result.failure(SecurityException)`
-  — never silently empty, never thrown.
-- Plugins only see DTOs (`TrackedEntityInstanceDto`, `DataValueDto`), never
-  raw SDK (`D2`) types.
+- **Budget your height.** `HOME_ABOVE_PROGRAM_LIST` is a plain, non-scrolling `Column` sitting above
+  the host's own scrolling program list, so every pixel a plugin takes is a pixel the host loses, and
+  anything past the viewport is unreachable rather than scrollable. Keep the resting state short, put
+  detail behind a toggle, and if a section can grow, bound it (`heightIn(max = …)` plus
+  `verticalScroll`) so it scrolls inside the plugin instead of pushing the host's content off screen.
+- **Composition state does not survive a plugin reload.** The load pipeline runs more than once per
+  process — a metadata sync is enough — and each run builds a fresh class loader, so the plugin's
+  classes are replaced wholesale. `PluginSlot` keys the composition on that loader and discards the
+  previous one, because state remembered across the swap would be an instance of the *old* loader's
+  class and any cast to the new one fails. Keep anything that must outlive a reload out of the
+  composition.
+- **`koinInject` and `koinViewModel` resolve against the plugin's own private container**, seeded
+  with its `D2`, `PluginMetadata` and context. Nothing host-owned leaks in, and — more importantly —
+  nothing the plugin binds leaks *out* into the host's container.
 
 ## 4. Server-side configuration
 
@@ -181,10 +209,6 @@ The admin writes a JSON object into the DHIS2 server dataStore at:
       "entryPoint": "org.myorg.plugin.MyPlugin",
       "downloadUrl": "https://example.com/my-plugin-1.0.0.zip",
       "checksum": "sha256:abc…",
-      "allowedProgramUids": [
-        "UID1"
-      ],
-      "allowedDataSetUids": [],
       "injectionPoints": [
         "HOME_ABOVE_PROGRAM_LIST"
       ]
@@ -207,10 +231,14 @@ my-plugin/
 │   └── wrapper/…                                   Gradle 9.5+ (AGP 9.3.1 requires it)
 └── plugin/
     ├── build.gradle.kts
-    └── src/commonMain/
-        ├── kotlin/org/myorg/myplugin/MyPlugin.kt
-        └── composeResources/values/strings.xml     optional
+    └── src/
+        ├── androidMain/kotlin/org/myorg/myplugin/MyPlugin.kt
+        └── commonMain/composeResources/values/strings.xml   optional
 ```
+
+The plugin class goes in **`androidMain`**, not `commonMain`: `Dhis2PluginContext.sdk` is `D2`, the
+DHIS2 *Android* SDK, which has no common-source equivalent. Compose resources stay in `commonMain`,
+where the resource generator expects them — the generated `Res` class is visible from `androidMain`.
 
 ### 5.1 Set up the build
 
@@ -233,6 +261,12 @@ dependencyResolutionManagement {
         mavenLocal()          // ← org.dhis2.mobile:plugin-sdk
         google()
         mavenCentral()
+        // A plugin now compiles against org.hisp.dhis:android-core, which pulls
+        // com.github.dhis2:sms-compression from JitPack. Without this the build fails at dependency
+        // *resolution*, with an error that never mentions the DHIS2 SDK.
+        maven("https://jitpack.io")
+        // The host tracks SDK snapshots, so the injected android-core version is usually a snapshot.
+        maven("https://central.sonatype.com/repository/maven-snapshots")
     }
 }
 
@@ -350,20 +384,33 @@ to already exist in the host process. Keep everything the host provides — `plu
 
 ### 5.2 Implement `Dhis2Plugin`
 
+In `src/androidMain/kotlin/org/myorg/myplugin/MyPlugin.kt`:
+
 ```kotlin
 package org.myorg.myplugin
 
 class MyPlugin : Dhis2Plugin {
     @Composable
     override fun content(context: Dhis2PluginContext) {
-        Text(stringResource(Res.string.plugin_title))
+        val events by produceState(emptyList<Event>(), context) {
+            value = withContext(Dispatchers.IO) {
+                context.sdk.eventModule().events()
+                    .byStatus().eq(EventStatus.OVERDUE)
+                    .blockingGet()
+            }
+        }
+        Text(stringResource(Res.string.plugin_title, events.size))
     }
 }
 ```
 
-That is the whole plugin. The id, version, entry-point class name, injection points and
-allowed program/data-set UIDs are the server admin's to declare (§4) — the plugin restates
-none of them, and reads them back from `context.pluginMetadata` if it needs them.
+That is the whole plugin. The id, version, entry-point class name and injection points are the
+server admin's to declare (§4) — the plugin restates none of them, and reads them back from
+`context.pluginMetadata` if it needs them.
+
+`context.sdk` is the SDK's full API, and `blockingGet()` must not run on the main thread — hence the
+`Dispatchers.IO` wrapper. Keep data access out of your Composables where you can: a Composable that
+takes plain data is one you can render in a `@Preview` without a context.
 
 ### 5.3 Build the bundle
 
@@ -397,8 +444,7 @@ pluginBundle {
 ```
 
 Neither value reaches the bundle. They are there so the checksum and the identity arrive together
-in one postable file; the dataStore is still the only thing the host reads identity from, and
-`allowedProgramUids` / `allowedDataSetUids` remain the administrator's to grant.
+in one postable file; the dataStore is still the only thing the host reads identity from.
 
 Bundle layout:
 
@@ -445,11 +491,18 @@ dataStore JSON (§4). Done.
 
 ## 6. Security model
 
-- **Scope enforcement.** `Dhis2PluginContext` rejects programs/datasets not in the
-  **server-granted** allow-list (`Result.failure(SecurityException)`). The allow-list comes
-  from the dataStore config, never from the plugin, so a plugin cannot widen its own access.
-- **DTO boundary.** Plugins never see `D2`. Insulates plugins from SDK
-  evolution and prevents escape via the SDK's fluent API.
+**Read this first: a plugin gets the DHIS2 SDK unrestricted.** `Dhis2PluginContext.sdk` is `D2`
+itself, so a loaded plugin can read and write anything the logged-in user can — including
+`d2.wipeModule()`. There is no data-access control in this iteration, and the previous
+`allowedProgramUids` / `allowedDataSetUids` allow-list has been removed rather than left in place,
+because it only ever covered three DTO methods and would now read as a control that does not exist.
+
+**So the security decision is which plugins you run.** Everything below protects the *integrity of
+the delivery pipeline* — that the code executed is the code the administrator intended, unmodified —
+not what that code may then touch. Narrowing access is the next iteration of this work, and belongs
+in the SDK rather than here, so a future out-of-process host can sit in front of the same
+enforcement.
+
 - **Integrity.** SHA-256 verified before load. Mismatch evicts the cache.
 - **Config write access.** The dataStore key names the code the app will execute, and DHIS2 creates
   dataStore keys publicly writable. Whoever can write that key can add a plugin to every device on
@@ -459,8 +512,15 @@ dataStore JSON (§4). Done.
   future work.
 - **API guard.** `InMemoryDexClassLoader` requires API 26+; older devices skip
   the whole plugin system (log + empty registry).
-- **Process.** Plugins run **in-process** with the host. A crash propagates to
-  the enclosing composition — pick trusted authors.
+- **Host DI integrity.** Each plugin gets a **private Koin container**, seeded only with its own
+  `D2`, `PluginMetadata` and context. Plugin modules used to be loaded into the *application*
+  container, and because Koin allows override by default a plugin declaring a binding for a type the
+  host also binds would silently *replace* it for the rest of the app — one plugin breaking unrelated
+  screens, with nothing to say so.
+- **Process.** Plugins run **in-process** with the host. A crash propagates to the enclosing
+  composition, and Compose cannot express an error boundary around a composable call — the compiler
+  rejects `try`/`catch` there, because recomposition has no way to unwind a partially-applied
+  composition. Pick trusted authors.
 
 ## 7. Current limitations
 
@@ -637,4 +697,5 @@ with fake data (there is no `plugin-sdk-test` artefact yet — see §7). Two thi
 - `plugin/src/main/java/org/dhis2/mobile/plugin/` — `data/AppHubPluginRepository.kt`,
   `data/PluginDownloader.kt`, `data/PluginVerifier.kt`, `data/PluginLoader.kt`,
   `domain/LoadPluginsUseCase.kt`, `registry/PluginRegistry.kt`,
-  `security/ScopedDhis2PluginContext.kt`, `ui/PluginSlot.kt`, `ui/FileSystemResourceReader.kt`
+  `security/HostDhis2PluginContext.kt`, `di/PluginContainer.kt`, `ui/PluginSlot.kt`,
+  `ui/FileSystemResourceReader.kt`
