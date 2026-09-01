@@ -456,8 +456,6 @@
     <string name="take_photo">Chụp ảnh</string>
     <string name="break_glass_dialog_title">Chương trình này đã được bảo vệ</string>
     <string name="break_glass_hint">Mô tả lý do ở đây</string>
-    <string name="openid_session_expired">Phiên đăng nhập đã hết hạn</string>
-    <string name="openid_session_expired_message">Phiên đăng nhập của bạn đã hết hạn. Vì lý do bảo mật, bạn cần cung cấp thông tin đăng nhập lại. </string>
     <string name="week_period_span_default_label">Tuần 1%d 2%s đến 2%s</string>
     <string name="action_do_not_show_again">Không hiển thị lại</string>
     <string name="feature_configuration">Cấu hình chức năng</string>

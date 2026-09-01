@@ -18,4 +18,5 @@
     <string name="enter_pin_button">Mở khoá</string>
     <string name="offline_credential_enter_button">Đăng nhập</string>
     <string name="importing_successful">Nhập thành công</string>
-    </resources>
+    <string name="cancel">Hủy</string>
+</resources>

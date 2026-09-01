@@ -435,8 +435,6 @@
     <string name="take_photo">Neem foto</string>
     <string name="break_glass_dialog_title">Dit programma is beveiligd</string>
     <string name="break_glass_hint">Omschrijf hier de reden</string>
-    <string name="openid_session_expired">De sessie is verlopen</string>
-    <string name="openid_session_expired_message">Uw huidige sessie is verlopen. Om veiligheidsredenen moet u uw inloggegevens opnieuw opgeven</string>
     <string name="week_period_span_default_label">Week %d %s tot %s</string>
     <string name="action_do_not_show_again">Niet meer laten zien</string>
     <string name="feature_configuration">Functieconfiguratie</string>

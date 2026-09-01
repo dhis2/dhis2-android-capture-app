@@ -16,4 +16,5 @@
     <string name="action_yes">Oui</string>
     <string name="enter_pin_button">Déverrouiller</string>
     <string name="offline_credential_enter_button">Se connecter</string>
-    </resources>
+    <string name="cancel">Annuler</string>
+</resources>

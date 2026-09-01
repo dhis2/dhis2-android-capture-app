@@ -10,4 +10,5 @@
     <string name="action_no_now">ບໍ່​ແມ່ນ​ຕອນ​ນີ້</string>
     <string name="action_yes">ແມ່ນ</string>
     <string name="enter_pin_button">Unlock</string>
-    </resources>
+    <string name="cancel">ຍົກເລີກ</string>
+</resources>

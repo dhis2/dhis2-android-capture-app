@@ -466,8 +466,6 @@
     <string name="take_photo">Vyfotit</string>
     <string name="break_glass_dialog_title">Tento program je chráněn</string>
     <string name="break_glass_hint">Zde popište důvod</string>
-    <string name="openid_session_expired">Platnost relace vypršela</string>
-    <string name="openid_session_expired_message">Vaše aktuální relace vypršela. Z bezpečnostních důvodů budete muset znovu zadat své přihlašovací údaje</string>
     <string name="week_period_span_default_label">Týden %d %s až %s</string>
     <string name="action_do_not_show_again">Znovu nezobrazovat</string>
     <string name="feature_configuration">Konfigurace funkcí</string>

@@ -20,4 +20,5 @@
     <string name="offline_credential_enter_button">Iniciar sesión</string>
     <string name="import_database">Importar base de datos</string>
     <string name="importing_successful">Importado con éxito</string>
-    </resources>
+    <string name="cancel">Cancelar</string>
+</resources>

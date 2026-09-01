@@ -445,8 +445,6 @@
     <string name="take_photo">التقط صورة</string>
     <string name="break_glass_dialog_title">هذا البرنامج محمي</string>
     <string name="break_glass_hint">صف السبب هنا</string>
-    <string name="openid_session_expired">انتهت الجلسة</string>
-    <string name="openid_session_expired_message">لقد انتهت جلستك الحالية. لأسباب أمنية ، ستحتاج إلى تقديم بيانات الاعتماد الخاصة بك مرة أخرى</string>
     <string name="week_period_span_default_label">الأسابيع %d %s إلى %s</string>
     <string name="action_do_not_show_again">لا تظهر مرة أخرى</string>
     <string name="update_field_error">لا يمكن تحديث هذا الحقل. حاول مرة اخرى</string>
