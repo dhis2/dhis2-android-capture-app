@@ -71,14 +71,8 @@ allprojects {
         }
     }
 
-    // The jacoco plugin's toolVersion is what governs the instrumenter and the report
-    // engine -- libs.jacoco is only on the buildscript classpath, so left alone this
-    // silently falls back to whatever version Gradle bundles.
-    //
-    // The removed pin to 0.8.10 predates instrumented coverage and cannot survive it:
-    // enableAndroidTestCoverage makes AGP run JacocoTransform over every dependency, and
-    // 0.8.10 fails on modern bytecode --
-    //   Execution failed for JacocoTransform: byte-buddy-1.17.7.jar
+    // toolVersion governs both the instrumenter and the report engine. libs.jacoco is
+    // only on the buildscript classpath, so without this Gradle's bundled version is used.
     plugins.withType<org.gradle.testing.jacoco.plugins.JacocoPlugin> {
         extensions.configure<org.gradle.testing.jacoco.plugins.JacocoPluginExtension> {
             toolVersion = libs.versions.jacoco.get()

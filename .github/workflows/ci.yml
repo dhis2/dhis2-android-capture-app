@@ -73,8 +73,7 @@ jobs:
         if: ${{ !contains(github.event.pull_request.title, '[skip unitTest]') && !contains(github.event.pull_request.body, '[skip unitTest]') }}
         run: ./gradlew testDebugUnitTest testDhis2DebugUnitTest testAndroidHostTest jacocoReport --stacktrace --no-daemon
 
-      # The raw execution data, so code-quality can merge it with the instrumented
-      # coverage that comes back from BrowserStack and regenerate the XML.
+      # Raw execution data; code-quality merges it with the instrumented coverage.
       - name: Upload JaCoCo execution data
         if: ${{ !contains(github.event.pull_request.title, '[skip unitTest]') && !contains(github.event.pull_request.body, '[skip unitTest]') }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
@@ -208,8 +207,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    # Waits on the BrowserStack jobs so their instrumented coverage is merged in before
-    # the analysis. It costs turnaround time on the Sonar result.
+    # Runs after the device jobs so their coverage is included in the analysis.
     needs: [ unit-tests, run-ui-portrait, run-ui-landscape ]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -237,9 +235,8 @@ jobs:
           merge-multiple: true
         continue-on-error: true
 
-      # One .ec covers the whole app process, so every module that reports coverage needs
-      # a copy; jacocoReport ignores classes outside its own classDirectories. The count is
-      # logged so an empty result is visible rather than silently unit-tests-only.
+      # One .ec covers the whole app process, so every reporting module gets a copy.
+      # jacocoReport ignores classes outside its own classDirectories.
       - name: Stage instrumented coverage
         run: |
           ec_count=$(find browserstack-coverage -name '*.ec' 2>/dev/null | wc -l | tr -d ' ')
