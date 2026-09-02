@@ -25,6 +25,7 @@ import org.dhis2.tracker.search.model.TrackedEntitySearchItemResult
 import org.dhis2.tracker.search.model.TrackedEntitySearchPagingItem
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.maintenance.D2Error
