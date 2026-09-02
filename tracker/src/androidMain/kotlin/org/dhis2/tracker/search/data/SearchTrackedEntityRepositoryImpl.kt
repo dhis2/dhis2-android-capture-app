@@ -1,10 +1,14 @@
 package org.dhis2.tracker.search.data
 
+import androidx.paging.DataSource
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.dhis2.commons.filters.data.FilterPresenter
+import org.dhis2.mobile.commons.error.DomainErrorMapper
 import org.dhis2.mobile.commons.extensions.getTodayAsInstant
 import org.dhis2.mobile.commons.extensions.toKtxInstant
 import org.dhis2.tracker.data.ProfilePictureProvider
@@ -18,11 +22,12 @@ import org.dhis2.tracker.search.model.DomainProgram
 import org.dhis2.tracker.search.model.SearchOperator
 import org.dhis2.tracker.search.model.SearchTrackedEntityAttribute
 import org.dhis2.tracker.search.model.TrackedEntitySearchItemResult
+import org.dhis2.tracker.search.model.TrackedEntitySearchPagingItem
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
-import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
+import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.relationship.RelationshipItem
 import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
@@ -31,11 +36,13 @@ import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchCollec
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItem
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItemHelper.toTrackedEntityInstance
 import kotlin.time.Instant
+import org.hisp.dhis.android.core.arch.helpers.Result as SdkResult
 
 class SearchTrackedEntityRepositoryImpl(
     private val d2: D2,
     private val filterPresenter: FilterPresenter,
     private val profilePictureProvider: ProfilePictureProvider,
+    private val domainErrorMapper: DomainErrorMapper,
 ) : SearchTrackedEntityRepository {
     private var trackedEntityInstanceQuery: TrackedEntitySearchCollectionRepository? = null
 
@@ -121,7 +128,7 @@ class SearchTrackedEntityRepositoryImpl(
         hasStateFilters: Boolean,
         allowCache: Boolean,
         selectedProgram: String?,
-    ): Flow<PagingData<TrackedEntitySearchItemResult>> {
+    ): Flow<PagingData<TrackedEntitySearchPagingItem>> {
         // if the device is online and there are no state filters, we can use online cache
         val pagerFlow =
             if (isOnline && !hasStateFilters) {
@@ -130,13 +137,46 @@ class SearchTrackedEntityRepositoryImpl(
                 // otherwise we use offline only
                 trackedEntityInstanceQuery?.allowOnlineCache()?.eq(allowCache)?.offlineOnly()
             }
+        val query =
+            pagerFlow
+                ?: throw IllegalStateException("TrackedEntityInstanceQuery is not initialized")
         val displayOrgUnit = shouldDisplayOrgUnit(selectedProgram)
-        // map the paging data to TrackedEntitySearchItemResult
-        return pagerFlow?.getPagingData(10)?.map { pagingData ->
-            pagingData.map { item ->
-                mapItemToDomainResult(item, selectedProgram, hasStateFilters, displayOrgUnit, isOnline)
+
+        // resultDataSource (Paging 2) wraps each row in Result.Success/Result.Failure instead of
+        // throwing on a page-load error, so a failure can be reported per row instead of failing
+        // the whole page. Bridge it into Paging 3 via asPagingSourceFactory().
+        val pagingSourceFactory =
+            object :
+                DataSource.Factory<TrackedEntitySearchItem, SdkResult<TrackedEntitySearchItem, D2Error>>() {
+                override fun create() = query.resultDataSource
+            }.asPagingSourceFactory()
+
+        return Pager(
+            config = PagingConfig(pageSize = 10),
+            pagingSourceFactory = pagingSourceFactory,
+        ).flow.map { pagingData ->
+            pagingData.map { result ->
+                when (result) {
+                    is SdkResult.Success ->
+                        TrackedEntitySearchPagingItem.Item(
+                            mapItemToDomainResult(
+                                result.value,
+                                selectedProgram,
+                                hasStateFilters,
+                                displayOrgUnit,
+                                isOnline,
+                            ),
+                        )
+
+                    is SdkResult.Failure ->
+                        TrackedEntitySearchPagingItem.Error(
+                            domainErrorMapper.mapToDomainError(
+                                result.failure,
+                            ),
+                        )
+                }
             }
-        } ?: throw IllegalStateException("TrackedEntityInstanceQuery is not initialized")
+        }
     }
 
     override suspend fun fetchImmediateResults(

@@ -2,6 +2,7 @@ package org.dhis2.tracker.search.data
 
 import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.filters.data.FilterPresenter
+import org.dhis2.mobile.commons.error.DomainErrorMapper
 import org.dhis2.tracker.data.ProfilePictureProvider
 import org.dhis2.tracker.search.model.SearchOperator
 import org.hisp.dhis.android.core.D2
@@ -28,6 +29,7 @@ class SearchTrackedEntityRepositoryImplTest {
     private val d2: D2 = mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
     private val filterPresenter: FilterPresenter = mock()
     private val profilePictureProvider: ProfilePictureProvider = mock()
+    private val domainErrorMapper: DomainErrorMapper = mock()
     private val teType = "personType"
     private val programUid = "programUid"
 
@@ -38,6 +40,7 @@ class SearchTrackedEntityRepositoryImplTest {
                 d2 = d2,
                 filterPresenter = filterPresenter,
                 profilePictureProvider = profilePictureProvider,
+                domainErrorMapper = domainErrorMapper,
             )
     }
 
