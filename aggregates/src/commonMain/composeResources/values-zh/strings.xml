@@ -39,6 +39,7 @@
     <string name="add_file">添加文件</string>
     <string name="file_downloaded">文件下载成功</string>
     <string name="file_download_error">无法下载文件</string>
+    <string name="file_upload_error">无法上传文件</string>
     <string name="add_image">添加图片</string>
     <string name="take_photo">拍照</string>
     <string name="from_gallery">从图库添加</string>
