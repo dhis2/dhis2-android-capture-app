@@ -352,7 +352,9 @@ app-repo-only — library base branches are fixed in Step 9b.)
      over one broad one — an unscoped `text ~` search across the whole
      project can return an oversized result.
   2. **Found an existing open issue** covering the same crash → reuse its key
-     as `JIRA_KEY`; do not create a duplicate.
+     as `JIRA_KEY`; do not create a duplicate. Leave its description alone
+     except to append the `## How to test manually` section described in 3 if
+     it has none.
   3. **Nothing found** → create a new `Bug` in `ANDROAPP`. Before creating,
      fetch this issue type's required fields
      (`getJiraIssueTypeMetaWithFields`) — at the time of writing `Bug`
@@ -367,14 +369,22 @@ app-repo-only — library base branches are fixed in Step 9b.)
        for section headers. Do **not** use Jira wiki markup (`h2.`, `{code}`,
        `*bold*`) — it renders literally and makes the ticket harder to read.
      - Aim for three short sections — what breaks, why, and impact — of a
-       couple of sentences each. Prose over bullets-of-bullets.
+       couple of sentences each, then the manual test below. Prose over
+       bullets-of-bullets.
      - **Never paste a stack trace, event payload, or log dump.** Link the
        Sentry issue and let it hold the crash detail — it is always more
        current than a copy, and the dump is what makes these tickets
        unreadable. Name the crash site as `File.kt:line` in prose instead.
      - Include: the Sentry issue link(s) with user/event counts, the
        one-sentence root cause from Step 3, the affected release, and (once
-       known) the PR link. Nothing else.
+       known) the PR link.
+     - Close with a `## How to test manually` section — steps a field tester can
+       run on a release APK, with no adb and no debug build. Derive it from the
+       code you read in Steps 2-5 and follow
+       `.claude/skills/sentry-fix/references/manual-test.md`, including its
+       self-check. A test that a correct build would fail, or a broken build
+       would pass, is worse than no test at all.
+     - Nothing else — no stack traces, no tool transcripts, no fix history.
   4. If the search in 1 (or a `/sentry-triage` report) surfaced a clearly
      related prior ticket — same anti-pattern, adjacent call site or repo —
      link `JIRA_KEY` to it (`createIssueLink`, type `Relates`) and mention the
