@@ -12,7 +12,7 @@ import org.dhis2.tracker.search.model.QueryData
 import org.dhis2.tracker.search.model.SearchOperator
 import org.dhis2.tracker.search.model.SearchTrackedEntitiesInput
 import org.dhis2.tracker.search.model.SearchTrackedEntityAttribute
-import org.dhis2.tracker.search.model.TrackedEntitySearchItemResult
+import org.dhis2.tracker.search.model.TrackedEntitySearchPagingItem
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -70,8 +70,8 @@ class SearchTrackedEntitiesTest {
                     queryDataList = queryDataList,
                 )
 
-            val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
-            val mockFlow: Flow<PagingData<TrackedEntitySearchItemResult>> = flowOf(mockPagingData)
+            val mockPagingData: PagingData<TrackedEntitySearchPagingItem> = PagingData.empty()
+            val mockFlow: Flow<PagingData<TrackedEntitySearchPagingItem>> = flowOf(mockPagingData)
 
             whenever(repository.isTETypeAttribute(any(), any())) doReturn true
             whenever(repository.getTEAttribute(any())) doReturn
@@ -125,8 +125,8 @@ class SearchTrackedEntitiesTest {
                     queryDataList = null,
                 )
 
-            val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
-            val mockFlow: Flow<PagingData<TrackedEntitySearchItemResult>> = flowOf(mockPagingData)
+            val mockPagingData: PagingData<TrackedEntitySearchPagingItem> = PagingData.empty()
+            val mockFlow: Flow<PagingData<TrackedEntitySearchPagingItem>> = flowOf(mockPagingData)
 
             whenever(repository.fetchResults(any(), any(), any(), any())) doReturn mockFlow
 
@@ -160,8 +160,8 @@ class SearchTrackedEntitiesTest {
                     queryDataList = null,
                 )
 
-            val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
-            val mockFlow: Flow<PagingData<TrackedEntitySearchItemResult>> = flowOf(mockPagingData)
+            val mockPagingData: PagingData<TrackedEntitySearchPagingItem> = PagingData.empty()
+            val mockFlow: Flow<PagingData<TrackedEntitySearchPagingItem>> = flowOf(mockPagingData)
 
             whenever(repository.fetchResults(any(), any(), any(), any())) doReturn mockFlow
 
@@ -188,8 +188,8 @@ class SearchTrackedEntitiesTest {
                     queryDataList = null,
                 )
 
-            val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
-            val mockFlow: Flow<PagingData<TrackedEntitySearchItemResult>> = flowOf(mockPagingData)
+            val mockPagingData: PagingData<TrackedEntitySearchPagingItem> = PagingData.empty()
+            val mockFlow: Flow<PagingData<TrackedEntitySearchPagingItem>> = flowOf(mockPagingData)
 
             whenever(repository.fetchResults(any(), any(), any(), any())) doReturn mockFlow
 
@@ -223,8 +223,8 @@ class SearchTrackedEntitiesTest {
                     queryDataList = queryData,
                 )
 
-            val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
-            val mockFlow: Flow<PagingData<TrackedEntitySearchItemResult>> = flowOf(mockPagingData)
+            val mockPagingData: PagingData<TrackedEntitySearchPagingItem> = PagingData.empty()
+            val mockFlow: Flow<PagingData<TrackedEntitySearchPagingItem>> = flowOf(mockPagingData)
 
             whenever(repository.isTETypeAttribute(eq(teType), any())) doReturn true
             whenever(repository.getTEAttribute("uniqueAttr")) doReturn
@@ -274,8 +274,8 @@ class SearchTrackedEntitiesTest {
                     queryDataList = queryData,
                 )
 
-            val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
-            val mockFlow: Flow<PagingData<TrackedEntitySearchItemResult>> = flowOf(mockPagingData)
+            val mockPagingData: PagingData<TrackedEntitySearchPagingItem> = PagingData.empty()
+            val mockFlow: Flow<PagingData<TrackedEntitySearchPagingItem>> = flowOf(mockPagingData)
 
             whenever(repository.isTETypeAttribute(eq(teType), any())) doReturn true
             whenever(repository.getTEAttribute("optionSetAttr")) doReturn
@@ -325,8 +325,8 @@ class SearchTrackedEntitiesTest {
                     queryDataList = queryData,
                 )
 
-            val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
-            val mockFlow: Flow<PagingData<TrackedEntitySearchItemResult>> = flowOf(mockPagingData)
+            val mockPagingData: PagingData<TrackedEntitySearchPagingItem> = PagingData.empty()
+            val mockFlow: Flow<PagingData<TrackedEntitySearchPagingItem>> = flowOf(mockPagingData)
 
             whenever(repository.isTETypeAttribute(eq(teType), any())) doReturn true
             whenever(repository.getTEAttribute(any())) doReturn
@@ -376,8 +376,8 @@ class SearchTrackedEntitiesTest {
                     queryDataList = queryData,
                 )
 
-            val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
-            val mockFlow: Flow<PagingData<TrackedEntitySearchItemResult>> = flowOf(mockPagingData)
+            val mockPagingData: PagingData<TrackedEntitySearchPagingItem> = PagingData.empty()
+            val mockFlow: Flow<PagingData<TrackedEntitySearchPagingItem>> = flowOf(mockPagingData)
 
             whenever(repository.isTETypeAttribute(eq(teType), any())) doReturn true
             whenever(repository.getTEAttribute(any())) doReturn
@@ -432,8 +432,8 @@ class SearchTrackedEntitiesTest {
                     queryDataList = queryData,
                 )
 
-            val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
-            val mockFlow: Flow<PagingData<TrackedEntitySearchItemResult>> = flowOf(mockPagingData)
+            val mockPagingData: PagingData<TrackedEntitySearchPagingItem> = PagingData.empty()
+            val mockFlow: Flow<PagingData<TrackedEntitySearchPagingItem>> = flowOf(mockPagingData)
 
             whenever(repository.isTETypeAttribute(teType, "attr1")) doReturn true
             whenever(repository.isTETypeAttribute(teType, "attr2")) doReturn false
@@ -504,8 +504,8 @@ class SearchTrackedEntitiesTest {
                     queryDataList = null,
                 )
 
-            val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
-            val mockFlow: Flow<PagingData<TrackedEntitySearchItemResult>> = flowOf(mockPagingData)
+            val mockPagingData: PagingData<TrackedEntitySearchPagingItem> = PagingData.empty()
+            val mockFlow: Flow<PagingData<TrackedEntitySearchPagingItem>> = flowOf(mockPagingData)
 
             whenever(repository.fetchResults(any(), any(), any(), any())) doReturn mockFlow
 
@@ -536,8 +536,8 @@ class SearchTrackedEntitiesTest {
                     queryDataList = null,
                 )
 
-            val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
-            val mockFlow: Flow<PagingData<TrackedEntitySearchItemResult>> = flowOf(mockPagingData)
+            val mockPagingData: PagingData<TrackedEntitySearchPagingItem> = PagingData.empty()
+            val mockFlow: Flow<PagingData<TrackedEntitySearchPagingItem>> = flowOf(mockPagingData)
 
             whenever(repository.fetchResults(any(), any(), any(), any())) doReturn mockFlow
 
