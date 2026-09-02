@@ -190,6 +190,7 @@
     <string name="oauth2_error">使用 OAuth2 进行身份验证时发生错误</string>
     <string name="error_device_not_registered">设备未注册</string>
     <string name="error_session_renewal_required">您的会话已过期。请重新登录以与服务器同步。</string>
+    <string name="error_authenticated_user_mismatch">您使用的是另一个账户登录。请使用您要恢复的账户重新登录。</string>
     <!--*******************
        END OF D2 Error Messages
     **********************-->

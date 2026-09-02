@@ -543,6 +543,9 @@
     <string name="sync_dialog_action_send">发送</string>
     <string name="sync_dialog_action_refresh">刷新</string>
     <string name="sync_dialog_action_not_now">现在不要</string>
+    <string name="session_renewal_title">您的会话已过期</string>
+    <string name="session_renewal_message">请重新登录以与服务器同步。您可以继续离线工作，稍后再登录。</string>
+    <string name="session_renewal_action">请重新登录</string>
     <string name="tap_to_explore_action">点击此处探索</string>
     <string name="new_version_message">应用程序版本<b>%s </b> 现已推出。您想下载吗？</string>
     <string name="software_update">软件更新</string>
