@@ -24,6 +24,7 @@ import org.dhis2.mobile.aggregates.model.ValidationResultStatus
 import org.dhis2.mobile.aggregates.model.ValidationRulesResult
 import org.dhis2.mobile.aggregates.model.Violation
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
+import org.dhis2.mobile.commons.files.deleteStagedFile
 import org.dhis2.mobile.commons.input.InputType
 import org.dhis2.mobile.commons.validation.validators.FieldMaskValidator
 import org.hisp.dhis.android.core.D2
@@ -1295,12 +1296,13 @@ internal class DataSetInstanceRepositoryImpl(
                 ResourceContext.FileContext
             }
         return try {
-            Result.success(
+            val fileResourceUid =
                 d2.fileResourceModule().fileResources().blockingProcessAndAdd(
                     File(path),
                     fileContext,
-                ),
-            )
+                )
+            deleteStagedFile(path)
+            Result.success(fileResourceUid)
         } catch (e: Exception) {
             Result.failure(e)
         }

@@ -69,6 +69,7 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.dhis2.android.sdk)
+            implementation(libs.androidx.exifinterface)
             implementation(libs.test.espresso.idlingresource)
             api(libs.analytics.timber)
             implementation(libs.androidx.browser)

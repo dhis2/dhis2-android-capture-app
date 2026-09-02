@@ -17,6 +17,7 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
+import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventObjectRepository
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
@@ -34,8 +35,10 @@ import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
@@ -188,14 +191,18 @@ class FormValueStoreTest {
         whenever(
             d2.fileResourceModule().fileResources(),
         ) doReturn mock()
-        whenever(
-            d2.fileResourceModule().fileResources().blockingAdd(File("filePath")),
-        ) doThrow
+        // blockingProcessAndAdd does throw a D2Error, but it does not declare it, so the stub has to
+        // go through an answer: Mockito rejects doThrow for a checked exception the method does not
+        // list.
+        val d2Error =
             D2Error
                 .builder()
                 .errorCode(D2ErrorCode.UNEXPECTED)
                 .errorDescription("error test")
                 .build()
+        whenever(
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(eq(File("filePath")), any()),
+        ) doAnswer { throw d2Error }
         val result =
             deValueStore.storeFile(
                 uid = "uid",
@@ -327,10 +334,16 @@ class FormValueStoreTest {
     }
 
     @Test
-    fun `Should return error when storing image for data element entry mode with null enrollment`() {
+    fun `Should use the event program as ProgramImageContext when storing image for data element entry mode`() {
+        val generatedUid = "fileResourceUid"
+        val programUid = "programUid"
         val mockedDataElement: DataElement =
             mock {
                 on { valueType() } doReturn ValueType.IMAGE
+            }
+        val mockedEvent: Event =
+            mock {
+                on { program() } doReturn programUid
             }
         whenever(
             d2
@@ -339,10 +352,24 @@ class FormValueStoreTest {
                 .uid(any())
                 .blockingGet(),
         ) doReturn mockedDataElement
+        whenever(eventRepository.blockingGet()) doReturn mockedEvent
+        whenever(d2.fileResourceModule().fileResources()) doReturn mock()
+        whenever(
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any(), any()),
+        ) doReturn generatedUid
 
         val result = deValueStore.storeFile(uid = "uid", filePath = "filePath")
 
-        assertTrue(result.valueStoreResult == ValueStoreResult.ERROR_UPDATING_VALUE)
+        verify(d2.fileResourceModule().fileResources()).blockingProcessAndAdd(
+            any(),
+            argThat {
+                (this as? ResourceContext.ImageContext.ProgramImageContext)?.let {
+                    it.programUid == programUid && it.resourceUid == "uid"
+                } ?: false
+            },
+        )
+        assertTrue(result.valueStoreResult == ValueStoreResult.FILE_SAVED)
+        assertTrue(result.uid == generatedUid)
     }
 
     @Test
