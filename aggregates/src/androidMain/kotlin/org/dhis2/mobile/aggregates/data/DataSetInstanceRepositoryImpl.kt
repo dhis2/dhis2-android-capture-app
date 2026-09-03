@@ -1308,13 +1308,13 @@ internal class DataSetInstanceRepositoryImpl(
         }
     }
 
-    override suspend fun getFilePath(fileUid: String): String? =
+    override suspend fun getFilePath(fileUid: String): String =
         d2
             .fileResourceModule()
             .fileResources()
             .uid(fileUid)
             .blockingGet()
-            ?.path()
+            ?.path() ?: "fileNotFound"
 
     private fun mapViolations(
         violations: List<ValidationResultViolation>,

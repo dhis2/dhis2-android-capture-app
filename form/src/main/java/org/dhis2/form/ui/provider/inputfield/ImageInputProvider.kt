@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
@@ -23,7 +22,6 @@ import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.files.rememberCameraPicker
 import org.dhis2.form.ui.files.rememberFilePicker
 import org.dhis2.form.ui.intent.FormIntent
-import org.dhis2.mobile.commons.extensions.toImageBitmap
 import org.dhis2.mobile.commons.ui.ImagePickerOptionsDialog
 import org.hisp.dhis.mobile.ui.designsystem.component.InputImage
 import org.hisp.dhis.mobile.ui.designsystem.component.UploadState
@@ -47,8 +45,6 @@ internal fun ProvideInputImage(
         )
     }
 
-    val painter = fieldUiModel.displayName?.toImageBitmap()?.let { BitmapPainter(it) }
-
     val filePicker = rememberFilePicker(onFileSelected)
 
     val cameraPicker =
@@ -71,16 +67,13 @@ internal fun ProvideInputImage(
     InputImage(
         modifier = modifier.fillMaxWidth(),
         title = fieldUiModel.label,
+        imageFilePath = fieldUiModel.displayName,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
         addImageBtnText = stringResource(R.string.add_image),
         isRequired = fieldUiModel.mandatory,
         uploadState = uploadState,
-        painterFor = { remember { it!! } },
-        load = {
-            painter
-        },
         onDownloadButtonClick = {
             uiEventHandler.invoke(RecyclerViewUiEvents.OpenFile(fieldUiModel))
         },

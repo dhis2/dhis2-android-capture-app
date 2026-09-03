@@ -110,7 +110,7 @@ fun checkValueTypeValue(
                 .fileResources()
                 .uid(value)
                 .blockingGet()
-                ?.path() ?: ""
+                ?.path() ?: "fileNotFound"
 
         ValueType.DATE, ValueType.AGE ->
             try {
@@ -292,7 +292,7 @@ private fun check(
                 }
             } else {
                 when (valueType) {
-                    ValueType.FILE_RESOURCE, ValueType.IMAGE ->
+                    ValueType.FILE_RESOURCE ->
                         d2
                             .fileResourceModule()
                             .fileResources()
