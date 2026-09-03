@@ -51,7 +51,7 @@ internal fun ProvideInputImage(
 
     val filePicker = rememberFilePicker(onFileSelected)
 
-    val (tempFileUri, imagePicker, cameraPermission) =
+    val cameraPicker =
         rememberCameraPicker(
             onSuccess = { filePath ->
                 onFileSelected(filePath)
@@ -122,9 +122,9 @@ internal fun ProvideInputImage(
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
                 uploadState = getUploadState(fieldUiModel.displayName, true)
-                imagePicker.launch(tempFileUri)
+                cameraPicker.takePicture()
             } else {
-                cameraPermission.launch(Manifest.permission.CAMERA)
+                cameraPicker.requestCameraPermission()
             }
         },
         onSelectFromGallery = {

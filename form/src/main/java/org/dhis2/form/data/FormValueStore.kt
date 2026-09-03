@@ -15,6 +15,7 @@ import org.dhis2.form.data.EventRepository.Companion.EVENT_REPORT_DATE_UID
 import org.dhis2.form.model.EnrollmentDetail
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.mobile.commons.files.deleteStagedFile
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.ResourceContext
@@ -560,20 +561,27 @@ class FormValueStore(
         uid: String,
         isImage: Boolean,
     ): String {
-        val programUid = enrollmentRepository?.blockingGet()?.program()
-
         val fileContext =
             if (isImage) {
                 ResourceContext.ImageContext.ProgramImageContext(
-                    programUid = programUid!!,
+                    programUid = resolveProgramUid().orEmpty(),
                     resourceUid = uid,
                 )
             } else {
                 ResourceContext.FileContext
             }
 
-        return d2.fileResourceModule().fileResources().blockingProcessAndAdd(File(path), fileContext)
+        val fileResourceUid =
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(File(path), fileContext)
+
+        deleteStagedFile(path)
+
+        return fileResourceUid
     }
+
+    private fun resolveProgramUid(): String? =
+        enrollmentRepository?.blockingGet()?.program()
+            ?: eventRepository?.blockingGet()?.program()
 
     private fun saveDataElement(
         uid: String,

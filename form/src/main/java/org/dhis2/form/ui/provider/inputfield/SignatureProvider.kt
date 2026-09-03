@@ -14,9 +14,8 @@ import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiEventType
-import org.dhis2.form.ui.FormView
 import org.dhis2.form.ui.intent.FormIntent
-import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
+import org.dhis2.mobile.commons.files.createSignatureFile
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputSignature
 import java.io.File
@@ -61,11 +60,7 @@ fun ProvideInputSignature(
         },
         onSaveSignature = {
             it.asAndroidBitmap().let {
-                val file =
-                    File(
-                        FileResourceDirectoryHelper.getFileResourceDirectory(context),
-                        FormView.TEMP_FILE,
-                    )
+                val file = createSignatureFile(context)
                 file.outputStream().use { out ->
                     it.compress(Bitmap.CompressFormat.PNG, 85, out)
                     out.flush()
