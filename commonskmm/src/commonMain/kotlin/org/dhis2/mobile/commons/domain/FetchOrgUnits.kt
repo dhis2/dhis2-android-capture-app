@@ -23,8 +23,8 @@ class FetchOrgUnits(
                         label = orgUnit.label,
                         tag =
                             orgUnit
-                                .closestDifferentParentName()
-                                .takeIf { hasDuplicatedLabel && parentIsMissing },
+                                .closestDifferentParentName(orgUnits)
+                                ?.takeIf { hasDuplicatedLabel && parentIsMissing },
                         isOpen = true,
                         hasChildren = orgUnitTreeRepository.orgUnitHasChildren(orgUnit.uid),
                         selected = input.selectedOrgUnits.contains(orgUnit.uid),
@@ -58,4 +58,5 @@ private fun DomainOrgUnit.parentUid(): String? =
         .ifEmpty { null }
         ?.lastOrNull()
 
-private fun DomainOrgUnit.closestDifferentParentName(): String? = namePath.dropLast(1).lastOrNull { it != label }
+private fun DomainOrgUnit.closestDifferentParentName(orgUnits: List<DomainOrgUnit>): String? =
+    namePath.find { name -> orgUnits.any { !it.namePath.contains(name) } }

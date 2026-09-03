@@ -57,4 +57,52 @@ class FetchOrgUnitsTest {
                 assertEquals("Madrid", list[1].tag)
             }
         }
+
+    @Test
+    fun shouldSetNextDifferentParentTag() =
+        runTest {
+            whenever(repository.orgUnits("Hospital")) doReturn
+                listOf(
+                    DomainOrgUnit(
+                        uid = "uid_parent_4",
+                        label = "Hospital",
+                        level = 3,
+                        path = "uid_parent_1/uid_parent_2/uid_parent_21",
+                        namePath = listOf("Spain", "Extremadura", "Salud", "Centro"),
+                    ),
+                    DomainOrgUnit(
+                        uid = "uid_parent_4",
+                        label = "Hospital",
+                        level = 3,
+                        path = "uid_parent_1/uid_parent_3/uid_parent_31",
+                        namePath = listOf("Spain", "Madrid", "Salud", "Centro"),
+                    ),
+                    DomainOrgUnit(
+                        uid = "uid_parent_4",
+                        label = "Hospital",
+                        level = 3,
+                        path = "uid_parent_1/uid_parent_3/uid_parent_31",
+                        namePath = listOf("Spain", "Asturias", "Centro"),
+                    ),
+                )
+
+            whenever(repository.orgUnitHasChildren(any())) doReturn false
+            whenever(repository.countSelectedChildren(any(), any())) doReturn 0
+            whenever(repository.canBeSelected(any())) doReturn true
+
+            val result =
+                fetchOrgUnits(
+                    FetchOrgUnitsInput(
+                        query = "Hospital",
+                        selectedOrgUnits = emptyList(),
+                    ),
+                )
+            with(result) {
+                assertTrue(isSuccess)
+                val list = getOrDefault(emptyList())
+                assertEquals("Extremadura", list[0].tag)
+                assertEquals("Madrid", list[1].tag)
+                assertEquals("Asturias", list[2].tag)
+            }
+        }
 }
