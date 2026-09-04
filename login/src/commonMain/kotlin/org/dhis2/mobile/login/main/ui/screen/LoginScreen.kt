@@ -77,7 +77,6 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 /**
  * The scheme the DHIS2 OAuth2 flow redirects back to.
  *
@@ -86,6 +85,7 @@ import org.koin.core.parameter.parametersOf
  */
 private const val OAUTH_REDIRECT_SCHEME = "dhis2oauth"
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun LoginScreen(
     navController: NavHostController = rememberNavController(),

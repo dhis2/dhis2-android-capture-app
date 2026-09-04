@@ -340,11 +340,11 @@ class CredentialsViewModel(
         appLinkJob = null
     }
 
-    private fun abortOAuthFlow(errorMessage: String?) {
+    private fun abortOAuthFlow(errorMessage: String? = null) {
         stopListeningForOAuthCallbacks()
         _credentialsScreenState.update {
             it.copy(
-                errorMessage = errorMessage,
+                errorMessage = errorMessage ?: it.errorMessage,
                 loginState = LoginState.Enabled,
             )
         }

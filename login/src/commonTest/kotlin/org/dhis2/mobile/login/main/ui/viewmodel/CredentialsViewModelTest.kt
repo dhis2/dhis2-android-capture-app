@@ -2348,7 +2348,7 @@ class CredentialsViewModelTest {
     // endregion
 
     @Test
-    fun `GIVEN a callback pushes the next oauth leg WHEN it is handled THEN it does not also pop`() =
+    fun `GIVEN an authorization code callback WHEN it is handled THEN the logout leg is pushed once`() =
         runTest {
             // GIVEN - the tab's RESULT_CANCELED has already popped this leg's destination, because
             // the framework delivers a pending activity result before it resumes the activity and
@@ -2382,13 +2382,12 @@ class CredentialsViewModelTest {
             testDispatcher.scheduler.advanceTimeBy(4.seconds)
             testDispatcher.scheduler.advanceUntilIdle()
 
-            // THEN - the logout leg is pushed, and popping is left entirely to the tab's result, so
-            // a second pop cannot discard the destination this callback just pushed
-            verify(navigator).navigate(
+            // THEN - the logout leg is pushed exactly once. Popping is left entirely to the tab's
+            // activity result, so this callback only ever adds a destination.
+            verify(navigator, times(1)).navigate(
                 eq(LoginScreenState.OauthAuthentication(selectedServer = logoutUrl)),
                 any(),
             )
-            verify(navigator, never()).navigateUp()
         }
 
     @Test
@@ -2436,7 +2435,7 @@ class CredentialsViewModelTest {
         }
 
     @Test
-    fun `GIVEN an error callback WHEN it arrives THEN the error surfaces without a second pop`() =
+    fun `GIVEN an error callback WHEN it arrives THEN the error surfaces and no further leg opens`() =
         runTest {
             // GIVEN
             val serverUrl = "https://test.server.org"
@@ -2461,13 +2460,21 @@ class CredentialsViewModelTest {
             mockAppLinkFlow.emit(errorCallbackUrl)
             testDispatcher.scheduler.advanceUntilIdle()
 
-            // THEN - the error surfaces on the credentials screen, and popping stays with the tab's
-            // result so the abort cannot pop a second destination
+            // THEN - the error surfaces on the credentials screen, the login button is released,
+            // and the flow ends without opening another browser leg
             assertEquals(
                 "access_denied",
                 viewModel.credentialsScreenState.value.errorMessage,
             )
-            verify(navigator, never()).navigateUp()
+            assertEquals(
+                LoginState.Enabled,
+                viewModel.credentialsScreenState.value.loginState,
+            )
+            // Only the enrollment leg from setup; the error must not open another one.
+            verify(navigator, times(1)).navigate(
+                any<LoginScreenState.OauthAuthentication>(),
+                any(),
+            )
         }
 
     @Test
