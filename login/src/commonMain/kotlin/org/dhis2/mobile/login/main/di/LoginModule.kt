@@ -19,7 +19,7 @@ import org.dhis2.mobile.login.main.domain.usecase.LoginUserOffline
 import org.dhis2.mobile.login.main.domain.usecase.LoginUserWithOAuth
 import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
 import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
-import org.dhis2.mobile.login.main.domain.usecase.SetOAuthPin
+import org.dhis2.mobile.login.main.domain.usecase.SetOfflinePin
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
@@ -103,7 +103,7 @@ internal val mainLoginModule =
         }
 
         factory { params ->
-            SetOAuthPin(get { parametersOf(params.get()) })
+            SetOfflinePin(get { parametersOf(params.get()) })
         }
 
         factory { params ->
@@ -161,7 +161,7 @@ internal val mainLoginModule =
                 forgotPinUseCase = get(),
                 entryMode = entryMode,
                 autoPromptLogin = autoPromptLogin,
-                setOAuthPin = get { parametersOf(context) },
+                setOfflinePin = get { parametersOf(context) },
                 loginUserOfflineWithCode = get { parametersOf(context) },
                 credentialsResourceProvider = get(),
                 getSessionRenewalUrl = get { parametersOf(context) },

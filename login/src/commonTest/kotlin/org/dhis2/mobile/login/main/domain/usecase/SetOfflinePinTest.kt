@@ -8,9 +8,9 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.assertTrue
 
-class SetOAuthPinTest {
+class SetOfflinePinTest {
     private val repository: LoginRepository = mock()
-    private val setOAuthPin = SetOAuthPin(repository)
+    private val setOfflinePin = SetOfflinePin(repository)
 
     private val pin = "1234"
 
@@ -19,7 +19,7 @@ class SetOAuthPinTest {
         runTest {
             whenever(repository.setOfflinePin(pin)) doReturn Result.success(Unit)
 
-            val result = setOAuthPin(pin)
+            val result = setOfflinePin(pin)
 
             assertTrue(result.isSuccess)
             verify(repository).setOfflinePin(pin)
@@ -31,7 +31,7 @@ class SetOAuthPinTest {
             val error = Exception("cannot set pin")
             whenever(repository.setOfflinePin(pin)) doReturn Result.failure(error)
 
-            val result = setOAuthPin(pin)
+            val result = setOfflinePin(pin)
 
             assertTrue(result.isFailure)
             verify(repository).setOfflinePin(pin)

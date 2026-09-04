@@ -31,7 +31,7 @@ import org.dhis2.mobile.login.main.domain.usecase.LoginUserOffline
 import org.dhis2.mobile.login.main.domain.usecase.LoginUserWithOAuth
 import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
 import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
-import org.dhis2.mobile.login.main.domain.usecase.SetOAuthPin
+import org.dhis2.mobile.login.main.domain.usecase.SetOfflinePin
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
@@ -84,7 +84,7 @@ class CredentialsViewModelTest {
     private val networkStatusProvider: NetworkStatusProvider = mock()
     private val getIsSessionLockedUseCase: GetIsSessionLockedUseCase = mock()
     private val forgotPinUseCase: ForgotPinUseCase = mock()
-    private val setOAuthPin: SetOAuthPin = mock()
+    private val setOfflinePin: SetOfflinePin = mock()
     private val loginUserOfflineWithCode: LoginUserOffline = mock()
     private val credentialsResourceProvider: CredentialsResourceProvider = mock()
 
@@ -632,13 +632,13 @@ class CredentialsViewModelTest {
                 )
 
                 // WHEN - the user creates the mandatory offline credential
-                whenever(setOAuthPin("1234")) doReturn Result.success(Unit)
+                whenever(setOfflinePin("1234")) doReturn Result.success(Unit)
                 viewModel.onOfflineCredentialCreated("1234")
                 testDispatcher.scheduler.advanceUntilIdle()
 
                 // THEN - it is stored with the SDK and the create gate clears, leaving the
                 // remaining post-login actions to run
-                verify(setOAuthPin).invoke("1234")
+                verify(setOfflinePin).invoke("1234")
                 val finalState = expectMostRecentItem()
                 assertTrue(finalState.afterLoginActions.none { it is AfterLoginAction.CreateOfflineCredential })
                 assertTrue(finalState.afterLoginActions.isNotEmpty())
@@ -1282,7 +1282,7 @@ class CredentialsViewModelTest {
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(any())) doReturn false
             whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
-            whenever(setOAuthPin(pin)) doReturn Result.success(Unit)
+            whenever(setOfflinePin(pin)) doReturn Result.success(Unit)
 
             initViewModel(serverUrl = serverUrl, entryMode = CredentialsEntryMode.NEW_ACCOUNT_OAUTH)
 
@@ -1645,11 +1645,11 @@ class CredentialsViewModelTest {
                 )
 
                 // AND - storing it with the SDK clears the gate
-                whenever(setOAuthPin("5678")) doReturn Result.success(Unit)
+                whenever(setOfflinePin("5678")) doReturn Result.success(Unit)
                 viewModel.onOfflineCredentialCreated("5678")
                 testDispatcher.scheduler.advanceUntilIdle()
 
-                verify(setOAuthPin).invoke("5678")
+                verify(setOfflinePin).invoke("5678")
                 val finalState = expectMostRecentItem()
                 assertTrue(
                     finalState.afterLoginActions.none {
@@ -1796,7 +1796,7 @@ class CredentialsViewModelTest {
             whenever(
                 loginUserWithOAuth.invoke(any(), any(), any(), anyOrNull()),
             ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
-            whenever(setOAuthPin("5678")) doReturn
+            whenever(setOfflinePin("5678")) doReturn
                 Result.failure(DomainError.AuthenticationError(storeErrorMessage))
 
             initViewModel(
@@ -2085,7 +2085,7 @@ class CredentialsViewModelTest {
                 oidcInfo = oidcInfo,
                 entryMode = entryMode,
                 autoPromptLogin = autoPromptLogin,
-                setOAuthPin = setOAuthPin,
+                setOfflinePin = setOfflinePin,
                 loginUserOfflineWithCode = loginUserOfflineWithCode,
                 credentialsResourceProvider = credentialsResourceProvider,
                 getSessionRenewalUrl = getSessionRenewalUrl,

@@ -34,7 +34,7 @@ import org.dhis2.mobile.login.main.domain.usecase.LoginUserOffline
 import org.dhis2.mobile.login.main.domain.usecase.LoginUserWithOAuth
 import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
 import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
-import org.dhis2.mobile.login.main.domain.usecase.SetOAuthPin
+import org.dhis2.mobile.login.main.domain.usecase.SetOfflinePin
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
@@ -76,7 +76,7 @@ class CredentialsViewModel(
     private val oidcInfo: OidcInfo?,
     private val entryMode: CredentialsEntryMode,
     private val autoPromptLogin: Boolean,
-    private val setOAuthPin: SetOAuthPin,
+    private val setOfflinePin: SetOfflinePin,
     private val loginUserOfflineWithCode: LoginUserOffline,
     private val credentialsResourceProvider: CredentialsResourceProvider,
     private val getSessionRenewalUrl: GetSessionRenewalUrl,
@@ -142,10 +142,9 @@ class CredentialsViewModel(
         when (entryMode) {
             CredentialsEntryMode.NEW_ACCOUNT_BASIC -> handleNewBasicAccount()
             CredentialsEntryMode.NEW_ACCOUNT_OAUTH -> fetchOAuthEnrollmentUrl()
-            CredentialsEntryMode.EXISTING_OAUTH -> handleExistingOAuthAccount()
-            CredentialsEntryMode.EXISTING_BASIC,
-            CredentialsEntryMode.EXISTING_OPEN_ID,
-            -> handleExistingPasswordAccount()
+            CredentialsEntryMode.EXISTING_OAUTH -> handleExistingAccountWithOfflineCode()
+            CredentialsEntryMode.EXISTING_PASSWORD -> handleExistingPasswordAccount()
+            CredentialsEntryMode.EXISTING_OPEN_ID -> handleExistingAccountWithOfflineCode()
         }
     }
 
@@ -173,7 +172,7 @@ class CredentialsViewModel(
         }
     }
 
-    private fun handleExistingOAuthAccount() {
+    private fun handleExistingAccountWithOfflineCode() {
         if (autoStartRenewal) {
             onRenewSession()
             return
@@ -190,7 +189,7 @@ class CredentialsViewModel(
                     errorMessage = null,
                     allowRecovery = allowRecovery,
                     canUseBiometrics = biometricInfo.canUseBiometrics,
-                    oidcInfo = oidcInfo,
+                    oidcInfo = null,
                     afterLoginActions = emptyList(),
                     hasOtherAccounts = getHasOtherAccounts(),
                     isSessionLocked =
@@ -219,7 +218,7 @@ class CredentialsViewModel(
                     errorMessage = null,
                     allowRecovery = allowRecovery,
                     canUseBiometrics = biometricInfo.canUseBiometrics,
-                    oidcInfo = oidcInfo,
+                    oidcInfo = null,
                     afterLoginActions = emptyList(),
                     hasOtherAccounts = getHasOtherAccounts(),
                     isSessionLocked = getIsSessionLockedUseCase(requireOfflineCredentials = false),
@@ -277,35 +276,48 @@ class CredentialsViewModel(
                 isSessionLocked = false,
             )
         }
-        launchUseCase {
-            // An expired session is still open, the SDK refuses a new login. Login out before renew
-            logOutUser.invoke()
-            getSessionRenewalUrl(
-                SessionRenewalRequest(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkOnline.value,
-                ),
-            ).fold(
-                onSuccess = { loginUrl ->
-                    startListeningForOAuthCallbacks()
-                    navigator.navigate(
-                        LoginScreenState.OauthAuthentication(
-                            selectedServer = loginUrl,
+        when (entryMode) {
+            CredentialsEntryMode.EXISTING_OPEN_ID ->
+                launchUseCase {
+                    logOutUser.invoke()
+                    onOpenIdLogin()
+                }
+            CredentialsEntryMode.EXISTING_OAUTH -> {
+                launchUseCase {
+                    // An expired session is still open, the SDK refuses a new login. Login out before renew
+                    logOutUser.invoke()
+                    getSessionRenewalUrl(
+                        SessionRenewalRequest(
+                            serverUrl = serverUrl,
+                            isNetworkAvailable = isNetworkOnline.value,
                         ),
+                    ).fold(
+                        onSuccess = { loginUrl ->
+                            startListeningForOAuthCallbacks()
+                            navigator.navigate(
+                                LoginScreenState.OauthAuthentication(
+                                    selectedServer = loginUrl,
+                                ),
+                            )
+                            _credentialsScreenState.update {
+                                it.copy(loginState = LoginState.Enabled)
+                            }
+                        },
+                        onFailure = { error ->
+                            _credentialsScreenState.update {
+                                it.copy(
+                                    loginState = LoginState.Enabled,
+                                    errorMessage = error.message,
+                                )
+                            }
+                        },
                     )
-                    _credentialsScreenState.update {
-                        it.copy(loginState = LoginState.Enabled)
-                    }
-                },
-                onFailure = { error ->
-                    _credentialsScreenState.update {
-                        it.copy(
-                            loginState = LoginState.Enabled,
-                            errorMessage = error.message,
-                        )
-                    }
-                },
-            )
+                }
+            }
+
+            // No other entry mode can renew a session; undo the running state.
+            else ->
+                _credentialsScreenState.update { it.copy(loginState = LoginState.Enabled) }
         }
     }
 
@@ -416,7 +428,7 @@ class CredentialsViewModel(
         launchUseCase {
             handleLoginResult(
                 result = pending,
-                sessionOpenedInBrowser = pending is LoginResult.Success,
+                requiresOfflineCredential = pending is LoginResult.Success,
             )
             _credentialsScreenState.update {
                 it.copy(loginState = LoginState.Enabled)
@@ -504,10 +516,14 @@ class CredentialsViewModel(
     fun onLoginClicked() {
         when (entryMode) {
             CredentialsEntryMode.NEW_ACCOUNT_OAUTH -> fetchOAuthEnrollmentUrl()
-            CredentialsEntryMode.EXISTING_OAUTH ->
+            CredentialsEntryMode.EXISTING_OAUTH,
+            CredentialsEntryMode.EXISTING_OPEN_ID,
+            ->
                 _credentialsScreenState.update { it.copy(isSessionLocked = true) }
 
-            else ->
+            CredentialsEntryMode.NEW_ACCOUNT_BASIC,
+            CredentialsEntryMode.EXISTING_PASSWORD,
+            ->
                 startLoginJob {
                     loginUser(
                         serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
@@ -519,23 +535,38 @@ class CredentialsViewModel(
     }
 
     fun onOpenIdLogin() {
-        startLoginJob {
+        val info = oidcInfo ?: return reportMissingOidcConfiguration()
+        startLoginJob(requiresOfflineCredential = true) {
             openIdLogin(
                 OpenIdLoginConfiguration(
-                    serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
+                    serverUrl = serverUrl,
                     isNetworkAvailable = isNetworkOnline.value,
-                    clientId = _credentialsScreenState.value.oidcInfo?.oidcClientId ?: "",
-                    redirectUri = _credentialsScreenState.value.oidcInfo?.oidcRedirectUri ?: "",
-                    discoveryUri = _credentialsScreenState.value.oidcInfo?.discoveryUri(),
-                    authorizationUri = _credentialsScreenState.value.oidcInfo?.authorizationUri(),
-                    tokenUrl = _credentialsScreenState.value.oidcInfo?.tokenUrl(),
-                    prompt = _credentialsScreenState.value.oidcInfo?.userPrompt,
+                    clientId = info.oidcClientId,
+                    redirectUri = info.oidcRedirectUri,
+                    discoveryUri = info.discoveryUri(),
+                    authorizationUri = info.authorizationUri(),
+                    tokenUrl = info.tokenUrl(),
+                    prompt = info.userPrompt,
                 ),
             )
         }
     }
 
-    private fun startLoginJob(loginCall: suspend () -> LoginResult) {
+    private fun reportMissingOidcConfiguration() {
+        launchUseCase {
+            _credentialsScreenState.update {
+                it.copy(
+                    loginState = LoginState.Enabled,
+                    errorMessage = credentialsResourceProvider.getMissingOidcConfigMessage(),
+                )
+            }
+        }
+    }
+
+    private fun startLoginJob(
+        requiresOfflineCredential: Boolean = false,
+        loginCall: suspend () -> LoginResult,
+    ) {
         _credentialsScreenState.update {
             it.copy(
                 loginState = LoginState.Running,
@@ -548,7 +579,7 @@ class CredentialsViewModel(
                     withMinimumDuration {
                         loginCall()
                     }
-                handleLoginResult(result)
+                handleLoginResult(result, requiresOfflineCredential)
             }
         loginJob?.invokeOnCompletion {
             if (!isLockoutActive) {
@@ -563,14 +594,14 @@ class CredentialsViewModel(
 
     private suspend fun handleLoginResult(
         result: LoginResult,
-        sessionOpenedInBrowser: Boolean = false,
+        requiresOfflineCredential: Boolean = false,
     ) = when (result) {
         is LoginResult.Success -> {
             _credentialsScreenState.update {
                 it.copy(
                     afterLoginActions =
                         buildList {
-                            if (sessionOpenedInBrowser) {
+                            if (requiresOfflineCredential) {
                                 add(AfterLoginAction.CreateOfflineCredential)
                             }
                             if (result.displayTrackingMessage) {
@@ -651,29 +682,27 @@ class CredentialsViewModel(
         loginJob =
             launchUseCase {
                 val result = biometricLogin()
+                when (val credential = result.getOrNull()) {
+                    null -> dismissBiometricPrompt(result.exceptionOrNull()?.message)
 
-                when {
-                    result.isSuccess -> {
-                        if (entryMode == CredentialsEntryMode.EXISTING_OAUTH) {
-                            result.getOrNull()?.let {
-                                onOfflineCredentialEntered(it)
-                            } ?: { onLoginClicked() }
+                    else ->
+                        if (entryMode.usesOfflineCredential()) {
+                            onOfflineCredentialEntered(credential)
                         } else {
-                            updatePassword(password = result.getOrNull() ?: "")
+                            updatePassword(password = credential)
                             onLoginClicked()
                         }
-                    }
-
-                    else -> {
-                        _credentialsScreenState.update {
-                            it.copy(
-                                errorMessage = result.exceptionOrNull()?.message,
-                                displayBiometricsDialog = false,
-                            )
-                        }
-                    }
                 }
             }
+    }
+
+    private fun dismissBiometricPrompt(errorMessage: String?) {
+        _credentialsScreenState.update {
+            it.copy(
+                errorMessage = errorMessage,
+                displayBiometricsDialog = false,
+            )
+        }
     }
 
     fun onManageAccountsClicked() {
@@ -716,15 +745,13 @@ class CredentialsViewModel(
     context(platformContext: PlatformContext)
     fun onEnableBiometrics(granted: Boolean) {
         val credential =
-            if (entryMode == CredentialsEntryMode.NEW_ACCOUNT_OAUTH) {
-                offlinePin
-            } else {
-                credentialsScreenState.value.credentialsInfo?.password ?: ""
-            }
+            offlinePin.takeIf { it.isNotEmpty() }
+                ?: credentialsScreenState.value.credentialsInfo?.password
+                ?: ""
         launchUseCase {
             updateBiometricPermission(
                 serverUrl,
-                credentialsScreenState.value.credentialsInfo?.username ?: "",
+                credentialsScreenState.value.username(),
                 credential,
                 granted,
             )
@@ -789,7 +816,7 @@ class CredentialsViewModel(
 
     fun onOfflineCredentialCreated(credential: String) {
         launchUseCase {
-            setOAuthPin(credential).fold(
+            setOfflinePin(credential).fold(
                 onSuccess = {
                     _credentialsScreenState
                         .update {
