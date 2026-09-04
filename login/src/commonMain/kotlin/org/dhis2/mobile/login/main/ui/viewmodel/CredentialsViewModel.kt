@@ -123,6 +123,8 @@ class CredentialsViewModel(
 
     private var pendingOAuthLoginResult: LoginResult? = null
 
+    private var enrollmentJob: Job? = null
+
     private var appLinkJob: Job? = null
 
     private var offlinePin: String = ""
@@ -178,11 +180,10 @@ class CredentialsViewModel(
             return
         }
         launchUseCase {
+            // When biometrics is available it takes over as the unlock challenge.
             val biometricInfo = getBiometricInfo(serverUrl)
-            // When biometrics is available it takes over as the unlock challenge: the
-            // offline-credential dialog stays hidden so only the biometric prompt is shown,
-            // over the bare Credentials screen. It remains reachable manually via "Log in".
             val shouldPromptBiometrics = biometricInfo.canUseBiometrics && autoPromptLogin
+
             _credentialsScreenState.update { current ->
                 current.copy(
                     loginState = LoginState.Enabled,
@@ -339,17 +340,21 @@ class CredentialsViewModel(
         appLinkJob = null
     }
 
+    private fun abortOAuthFlow(errorMessage: String?) {
+        stopListeningForOAuthCallbacks()
+        _credentialsScreenState.update {
+            it.copy(
+                errorMessage = errorMessage,
+                loginState = LoginState.Enabled,
+            )
+        }
+    }
+
     private fun handleOAuthCallbacks(urlString: String) {
         // First check if there is any error
         val error = urlString.substringAfter("error=", "").substringBefore('&')
         if (error.isNotEmpty()) {
-            stopListeningForOAuthCallbacks()
-            _credentialsScreenState.update {
-                it.copy(
-                    errorMessage = error,
-                    loginState = LoginState.Enabled,
-                )
-            }
+            abortOAuthFlow(errorMessage = error)
             return
         }
 
@@ -374,18 +379,16 @@ class CredentialsViewModel(
             return
         }
 
-        stopListeningForOAuthCallbacks()
-        _credentialsScreenState.update {
-            it.copy(
-                loginState = LoginState.Enabled,
-            )
-        }
+        abortOAuthFlow(errorMessage = null)
     }
 
     private fun loginWithOAuthCode(
         code: String,
         state: String,
     ) {
+        // An authorization code is single use, so refuse to exchange twice.
+        if (loginJob?.isActive == true) return
+
         _credentialsScreenState.update {
             it.copy(
                 loginState = LoginState.Running,
@@ -440,37 +443,35 @@ class CredentialsViewModel(
         enrollmentIat: String,
         state: String,
     ) {
-        launchUseCase {
-            _credentialsScreenState.update {
-                it.copy(loginState = LoginState.Running)
-            }
+        // An enrollment token is single use.
+        if (enrollmentJob?.isActive == true) return
 
-            processDeviceEnrollment(
-                DeviceEnrollmentInfo(
-                    iat = enrollmentIat,
-                    serverURL = serverUrl,
-                    state = state,
-                ),
-            ).fold(
-                onSuccess = { consentUrl ->
-                    // Second OAuth call (consent) - keep session from enrollment
-                    navigator.navigate(
-                        LoginScreenState.OauthAuthentication(
-                            selectedServer = consentUrl,
-                        ),
-                    )
-                },
-                onFailure = { error ->
-                    stopListeningForOAuthCallbacks()
-                    _credentialsScreenState.update {
-                        it.copy(
-                            errorMessage = error.message,
-                            loginState = LoginState.Enabled,
+        enrollmentJob =
+            launchUseCase {
+                _credentialsScreenState.update {
+                    it.copy(loginState = LoginState.Running)
+                }
+
+                processDeviceEnrollment(
+                    DeviceEnrollmentInfo(
+                        iat = enrollmentIat,
+                        serverURL = serverUrl,
+                        state = state,
+                    ),
+                ).fold(
+                    onSuccess = { consentUrl ->
+                        // Second OAuth call (consent) - keep session from enrollment
+                        navigator.navigate(
+                            LoginScreenState.OauthAuthentication(
+                                selectedServer = consentUrl,
+                            ),
                         )
-                    }
-                },
-            )
-        }
+                    },
+                    onFailure = { error ->
+                        abortOAuthFlow(errorMessage = error.message)
+                    },
+                )
+            }
     }
 
     fun updateUsername(username: String) {

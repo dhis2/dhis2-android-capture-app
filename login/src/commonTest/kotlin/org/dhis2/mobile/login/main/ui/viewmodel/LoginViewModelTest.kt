@@ -13,12 +13,14 @@ import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
+import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
 import org.dhis2.mobile.login.main.ui.state.DatabaseImportState
 import org.dhis2.mobile.login.main.ui.state.ServerValidationUiState
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.BeforeTest
@@ -37,6 +39,7 @@ class LoginViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private val networkStatusProvider: NetworkStatusProvider = mock()
     private val mockNetworkStatusFlow = MutableStateFlow(true)
+    private val appLinkNavigation: AppLinkNavigation = mock()
 
     @BeforeTest
     fun setUp() {
@@ -63,6 +66,7 @@ class LoginViewModelTest {
                     importDatabase = importDatabase,
                     validateServer = validateServer,
                     networkStatusProvider = networkStatusProvider,
+                    appLinkNavigation = appLinkNavigation,
                 )
 
             verify(navigator).navigate(
@@ -97,6 +101,7 @@ class LoginViewModelTest {
                     importDatabase = importDatabase,
                     validateServer = validateServer,
                     networkStatusProvider = networkStatusProvider,
+                    appLinkNavigation = appLinkNavigation,
                 )
 
             viewModel.serverValidationState.test(timeout = 5.seconds) {
@@ -122,6 +127,49 @@ class LoginViewModelTest {
             }
         }
 
+    private suspend fun initViewModel(): LoginViewModel {
+        whenever(getInitialScreen()).thenReturn(
+            LoginScreenState.ServerValidation(
+                currentServer = "https://test.dhis2.org",
+                availableServers = listOf("https://test.dhis2.org"),
+                hasAccounts = false,
+            ),
+        )
+        return LoginViewModel(
+            navigator = navigator,
+            getInitialScreen = getInitialScreen,
+            importDatabase = importDatabase,
+            validateServer = validateServer,
+            networkStatusProvider = networkStatusProvider,
+            appLinkNavigation = appLinkNavigation,
+        ).also { viewModel = it }
+    }
+
+    @Test
+    fun `every oauth leg closes its browser destination when the tab reports closing`() =
+        runTest {
+            initViewModel()
+
+            // A tab that handed its redirect to the app is finished either way, so each leg pops
+            // here and the redirect that follows pushes the next one.
+            viewModel.onOauthLoginCancelled()
+            viewModel.onOauthLoginCancelled()
+            viewModel.onOauthLoginCancelled()
+
+            verify(navigator, times(3)).navigateUp()
+        }
+
+    @Test
+    fun `an auth tab redirect is routed to the same handler as an app link redirect`() =
+        runTest {
+            initViewModel()
+            val redirectUri = "dhis2oauth://oauth?code=auth-code&state=state"
+
+            viewModel.onOauthRedirect(redirectUri)
+
+            verify(appLinkNavigation).emit(redirectUri)
+        }
+
     @Test
     fun `cancel server validation stops the validation job`() =
         runTest {
@@ -140,6 +188,7 @@ class LoginViewModelTest {
                     importDatabase = importDatabase,
                     validateServer = validateServer,
                     networkStatusProvider = networkStatusProvider,
+                    appLinkNavigation = appLinkNavigation,
                 )
 
             viewModel.serverValidationState.test {
@@ -173,6 +222,7 @@ class LoginViewModelTest {
                     importDatabase = importDatabase,
                     validateServer = validateServer,
                     networkStatusProvider = networkStatusProvider,
+                    appLinkNavigation = appLinkNavigation,
                 )
 
             viewModel.importDatabaseState.test {
@@ -199,6 +249,7 @@ class LoginViewModelTest {
                     importDatabase = importDatabase,
                     validateServer = validateServer,
                     networkStatusProvider = networkStatusProvider,
+                    appLinkNavigation = appLinkNavigation,
                 )
 
             viewModel.importDatabaseState.test {

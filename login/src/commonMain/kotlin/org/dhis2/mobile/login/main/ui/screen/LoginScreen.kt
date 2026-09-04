@@ -78,6 +78,14 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+/**
+ * The scheme the DHIS2 OAuth2 flow redirects back to.
+ *
+ * Must stay in sync with `OAuth2Config.DEFAULT_REDIRECT_URI` in the DHIS2 Android SDK and with the
+ * `LoginActivity` intent filter that receives it in the app manifest.
+ */
+private const val OAUTH_REDIRECT_SCHEME = "dhis2oauth"
+
 @Composable
 fun LoginScreen(
     navController: NavHostController = rememberNavController(),
@@ -220,6 +228,10 @@ fun LoginScreen(
                     val args = it.toRoute<LoginScreenState.OauthAuthentication>()
                     WebAuthenticator(
                         url = args.selectedServer,
+                        redirectScheme = OAUTH_REDIRECT_SCHEME,
+                        onAuthCallback = { redirectUri ->
+                            viewModel.onOauthRedirect(redirectUri)
+                        },
                         onDismiss = {
                             viewModel.onOauthLoginCancelled()
                         },
