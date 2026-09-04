@@ -122,6 +122,7 @@ internal val mainLoginModule =
                 importDatabase = get { parametersOf(context) },
                 validateServer = get { parametersOf(context) },
                 networkStatusProvider = get(),
+                appLinkNavigation = get(),
                 renewSession = parameters.getOrNull<Boolean>() ?: false,
             )
         }

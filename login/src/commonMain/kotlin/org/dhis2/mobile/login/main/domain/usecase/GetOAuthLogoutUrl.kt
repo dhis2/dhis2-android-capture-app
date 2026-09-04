@@ -14,8 +14,4 @@ class GetOAuthLogoutUrl(
         } catch (e: DomainError) {
             Result.failure(e)
         }
-
-    companion object {
-        private const val REDIRECT_URI = "dhis2oauth://oauth"
-    }
 }
