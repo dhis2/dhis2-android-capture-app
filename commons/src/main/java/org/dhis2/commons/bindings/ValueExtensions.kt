@@ -110,7 +110,7 @@ fun checkValueTypeValue(
                 .fileResources()
                 .uid(value)
                 .blockingGet()
-                ?.path() ?: "fileNotFound"
+                ?.path() ?: FILE_NOT_FOUND
 
         ValueType.DATE, ValueType.AGE ->
             try {
@@ -346,3 +346,5 @@ private fun assureCodeForOptionSet(
             value
         }
     } ?: value
+
+const val FILE_NOT_FOUND = "fileNotFound"
