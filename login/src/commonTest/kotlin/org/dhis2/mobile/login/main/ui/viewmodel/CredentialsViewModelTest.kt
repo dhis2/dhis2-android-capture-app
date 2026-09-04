@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import coil3.PlatformContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -45,6 +46,7 @@ import org.dhis2.mobile.login.pin.domain.usecase.GetIsSessionLockedUseCase
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.mock
@@ -2344,6 +2346,174 @@ class CredentialsViewModelTest {
         )
 
     // endregion
+
+    @Test
+    fun `GIVEN a callback pushes the next oauth leg WHEN it is handled THEN it does not also pop`() =
+        runTest {
+            // GIVEN - the tab's RESULT_CANCELED has already popped this leg's destination, because
+            // the framework delivers a pending activity result before it resumes the activity and
+            // emits the app link
+            val serverUrl = "https://test.server.org"
+            val appLinkUrl = "https://test.redirect.org?code=auth_code_123&state=test"
+            val mockAppLinkFlow = MutableSharedFlow<String>()
+            val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
+            val logoutUrl = "$serverUrl/logout"
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
+            whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
+            whenever(getOAuthLogoutUrl(any())) doReturn Result.success(logoutUrl)
+            whenever(
+                loginUserWithOAuth.invoke(any(), any(), any(), anyOrNull()),
+            ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
+
+            initViewModel(
+                serverUrl = serverUrl,
+                username = "testuser",
+                entryMode = CredentialsEntryMode.NEW_ACCOUNT_OAUTH,
+            )
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // WHEN
+            mockAppLinkFlow.emit(appLinkUrl)
+            testDispatcher.scheduler.advanceTimeBy(4.seconds)
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // THEN - the logout leg is pushed, and popping is left entirely to the tab's result, so
+            // a second pop cannot discard the destination this callback just pushed
+            verify(navigator).navigate(
+                eq(LoginScreenState.OauthAuthentication(selectedServer = logoutUrl)),
+                any(),
+            )
+            verify(navigator, never()).navigateUp()
+        }
+
+    @Test
+    fun `GIVEN the same authorization code arrives twice WHEN both are handled THEN it is exchanged once`() =
+        runTest {
+            // GIVEN - a browser that both reports the redirect and fires the app link
+            val serverUrl = "https://test.server.org"
+            val authCode = "auth_code_123"
+            val appLinkUrl = "https://test.redirect.org?code=$authCode&state=test"
+            val mockAppLinkFlow = MutableSharedFlow<String>()
+            val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
+            val logoutUrl = "$serverUrl/logout"
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
+            whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
+            whenever(getOAuthLogoutUrl(any())) doReturn Result.success(logoutUrl)
+            whenever(
+                loginUserWithOAuth.invoke(any(), any(), any(), anyOrNull()),
+            ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
+
+            initViewModel(
+                serverUrl = serverUrl,
+                username = "testuser",
+                entryMode = CredentialsEntryMode.NEW_ACCOUNT_OAUTH,
+            )
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // WHEN - the duplicate lands while the first exchange is still running
+            mockAppLinkFlow.emit(appLinkUrl)
+            mockAppLinkFlow.emit(appLinkUrl)
+            testDispatcher.scheduler.advanceTimeBy(4.seconds)
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // THEN - an authorization code is single use, so it must not be redeemed twice
+            verify(loginUserWithOAuth, times(1)).invoke(
+                serverUrl = serverUrl,
+                code = authCode,
+                state = "test",
+                expectedUsername = "testuser",
+            )
+        }
+
+    @Test
+    fun `GIVEN an error callback WHEN it arrives THEN the error surfaces without a second pop`() =
+        runTest {
+            // GIVEN
+            val serverUrl = "https://test.server.org"
+            val errorCallbackUrl = "https://test.redirect.org?error=access_denied"
+            val mockAppLinkFlow = MutableSharedFlow<String>()
+            val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
+            whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
+
+            initViewModel(
+                serverUrl = serverUrl,
+                entryMode = CredentialsEntryMode.NEW_ACCOUNT_OAUTH,
+            )
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // WHEN
+            mockAppLinkFlow.emit(errorCallbackUrl)
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // THEN - the error surfaces on the credentials screen, and popping stays with the tab's
+            // result so the abort cannot pop a second destination
+            assertEquals(
+                "access_denied",
+                viewModel.credentialsScreenState.value.errorMessage,
+            )
+            verify(navigator, never()).navigateUp()
+        }
+
+    @Test
+    fun `GIVEN the same enrollment token arrives twice WHEN both are handled THEN the device enrols once`() =
+        runTest {
+            // GIVEN - a browser that both reports its redirect and fires the app link, the same
+            // double-delivery the authorization code is already guarded against
+            val serverUrl = "https://test.server.org"
+            val enrollmentCallback = "dhis2oauth://oauth?iat=enrollment_token&state=test"
+            val mockAppLinkFlow = MutableSharedFlow<String>()
+            val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
+            val consentUrl = "https://test.server.org/oauth2/authorize"
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
+            whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
+            // Enrolment is a network call, so the first one is still in flight when a duplicate
+            // callback lands milliseconds later. An instant mock would return before the guard
+            // could ever see the job as active.
+            whenever(processDeviceEnrollment.invoke(any())).doSuspendableAnswer {
+                delay(1.seconds)
+                Result.success(consentUrl)
+            }
+
+            initViewModel(
+                serverUrl = serverUrl,
+                entryMode = CredentialsEntryMode.NEW_ACCOUNT_OAUTH,
+            )
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // WHEN - the duplicate lands while the first enrolment is still running
+            mockAppLinkFlow.emit(enrollmentCallback)
+            mockAppLinkFlow.emit(enrollmentCallback)
+            testDispatcher.scheduler.advanceTimeBy(2.seconds)
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // THEN - an enrolment token is single use, and a second consent leg must not be pushed
+            verify(processDeviceEnrollment, times(1)).invoke(any())
+            verify(navigator, times(1)).navigate(
+                eq(LoginScreenState.OauthAuthentication(selectedServer = consentUrl)),
+                any(),
+            )
+        }
 
     private fun initViewModel(
         serverName: String? = "Test Server",

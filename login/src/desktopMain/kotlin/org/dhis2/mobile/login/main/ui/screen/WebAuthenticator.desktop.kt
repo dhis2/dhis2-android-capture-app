@@ -17,7 +17,7 @@ actual fun WebAuthenticator(
             try {
                 Desktop.getDesktop().browse(URI(url))
                 onDismiss()
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 // Handle case where a browser is not available or other error
                 onDismiss()
             }
