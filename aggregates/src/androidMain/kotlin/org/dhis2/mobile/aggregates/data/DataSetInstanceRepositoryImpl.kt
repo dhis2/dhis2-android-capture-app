@@ -1,5 +1,6 @@
 package org.dhis2.mobile.aggregates.data
 
+import org.dhis2.bindings.FILE_NOT_FOUND
 import org.dhis2.commons.bindings.dataElement
 import org.dhis2.commons.periods.data.PeriodLabelProvider
 import org.dhis2.mobile.aggregates.data.mappers.toCustomTitle
@@ -1308,13 +1309,13 @@ internal class DataSetInstanceRepositoryImpl(
         }
     }
 
-    override suspend fun getFilePath(fileUid: String): String? =
+    override suspend fun getFilePath(fileUid: String): String =
         d2
             .fileResourceModule()
             .fileResources()
             .uid(fileUid)
             .blockingGet()
-            ?.path()
+            ?.path() ?: FILE_NOT_FOUND
 
     private fun mapViolations(
         violations: List<ValidationResultViolation>,
