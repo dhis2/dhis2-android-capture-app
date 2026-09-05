@@ -188,7 +188,14 @@ For **app-owned** fixes follow all rules from `AGENTS.md`:
   - Trailing commas on every multi-line parameter/argument list
   - Expression bodies for single-expression functions
 - **No comments** unless the WHY is non-obvious (hidden constraint, workaround for a
-  specific upstream bug)
+  specific upstream bug). Specifically, **never narrate the fix in the source** —
+  no "moved this here because it caused an ANR", no Sentry issue IDs, no
+  before/after explanation, no multi-line block justifying the change. That
+  history belongs in the PR body and the Jira ticket, which is where a reader
+  goes looking for it. The diff already shows what changed.
+  When a comment *is* warranted, make it one concise line describing what the
+  code does or the constraint it satisfies — stated in the present tense, as if
+  the code had always looked this way.
 
 For **library-owned** fixes the app's conventions do NOT apply (no
 `launchUseCase`, no `DomainErrorMapper`). Follow the target repo's own guidance:
@@ -345,16 +352,39 @@ app-repo-only — library base branches are fixed in Step 9b.)
      over one broad one — an unscoped `text ~` search across the whole
      project can return an oversized result.
   2. **Found an existing open issue** covering the same crash → reuse its key
-     as `JIRA_KEY`; do not create a duplicate.
-  3. **Nothing found** → create a new `Bug` in `ANDROAPP`: summary matching
-     the Sentry issue title, description with the Sentry issue link, a
-     trimmed stack trace, the one-sentence root cause from Step 3, and (once
-     known) the PR link. Before creating, fetch this issue type's required
-     fields (`getJiraIssueTypeMetaWithFields`) — at the time of writing `Bug`
+     as `JIRA_KEY`; do not create a duplicate. Leave its description alone
+     except to append the `## How to test manually` section described in 3 if
+     it has none.
+  3. **Nothing found** → create a new `Bug` in `ANDROAPP`. Before creating,
+     fetch this issue type's required fields
+     (`getJiraIssueTypeMetaWithFields`) — at the time of writing `Bug`
      requires `components` (use `AndroidApp` unless a more specific component
      obviously fits), `environment` (free text — release + platform is
      enough), and `versions` (`Affects versions` — the crashing release, e.g.
      the `release` tag from Step 1). Store the new key as `JIRA_KEY`.
+
+     **Write the description short and scannable** — a developer opening the
+     ticket should grasp the problem in about fifteen seconds:
+     - Pass `contentFormat: "markdown"` and write **real Markdown**. Use `##`
+       for section headers. Do **not** use Jira wiki markup (`h2.`, `{code}`,
+       `*bold*`) — it renders literally and makes the ticket harder to read.
+     - Aim for three short sections — what breaks, why, and impact — of a
+       couple of sentences each, then the manual test below. Prose over
+       bullets-of-bullets.
+     - **Never paste a stack trace, event payload, or log dump.** Link the
+       Sentry issue and let it hold the crash detail — it is always more
+       current than a copy, and the dump is what makes these tickets
+       unreadable. Name the crash site as `File.kt:line` in prose instead.
+     - Include: the Sentry issue link(s) with user/event counts, the
+       one-sentence root cause from Step 3, the affected release, and (once
+       known) the PR link.
+     - Close with a `## How to test manually` section — steps a field tester can
+       run on a release APK, with no adb and no debug build. Derive it from the
+       code you read in Steps 2-5 and follow
+       `.claude/skills/sentry-fix/references/manual-test.md`, including its
+       self-check. A test that a correct build would fail, or a broken build
+       would pass, is worse than no test at all.
+     - Nothing else — no stack traces, no tool transcripts, no fix history.
   4. If the search in 1 (or a `/sentry-triage` report) surfaced a clearly
      related prior ticket — same anti-pattern, adjacent call site or repo —
      link `JIRA_KEY` to it (`createIssueLink`, type `Relates`) and mention the
