@@ -3,9 +3,9 @@ package org.dhis2.mobile.login.pin.data
 import kotlinx.coroutines.withContext
 import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.error.DomainErrorMapper
+import org.dhis2.mobile.commons.error.withDomainErrors
 import org.dhis2.mobile.commons.providers.PreferenceProvider
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.maintenance.D2Error
 
 /**
  * Android implementation of SessionRepository using DHIS2 SDK.
@@ -22,54 +22,47 @@ class SessionRepositoryImpl(
         private const val PREF_SESSION_LOCKED = "SessionLocked"
     }
 
-    override suspend fun savePin(pin: String) =
+    override suspend fun savePin(pin: String) {
         withContext(dispatcher.io) {
-            try {
+            domainErrorMapper.withDomainErrors {
                 d2
                     .dataStoreModule()
                     .localDataStore()
                     .value(PIN_KEY)
                     .blockingSet(pin)
-            } catch (d2Error: D2Error) {
-                throw domainErrorMapper.mapToDomainError(d2Error)
             }
         }
+    }
 
     override suspend fun getStoredPin(): String? =
         withContext(dispatcher.io) {
-            try {
+            domainErrorMapper.withDomainErrors {
                 d2
                     .dataStoreModule()
                     .localDataStore()
                     .value(PIN_KEY)
                     .blockingGet()
                     ?.value()
-            } catch (d2Error: D2Error) {
-                throw domainErrorMapper.mapToDomainError(d2Error)
             }
         }
 
-    override suspend fun deletePin() =
+    override suspend fun deletePin() {
         withContext(dispatcher.io) {
-            try {
+            domainErrorMapper.withDomainErrors {
                 d2
                     .dataStoreModule()
                     .localDataStore()
                     .value(PIN_KEY)
                     .blockingDeleteIfExist()
-            } catch (d2Error: D2Error) {
-                throw domainErrorMapper.mapToDomainError(d2Error)
             }
         }
+    }
 
-    override suspend fun setSessionLocked(locked: Boolean) =
+    override suspend fun setSessionLocked(locked: Boolean) {
         withContext(dispatcher.io) {
-            try {
-                preferenceProvider.setValue(PREF_SESSION_LOCKED, locked)
-            } catch (e: Exception) {
-                throw e
-            }
+            preferenceProvider.setValue(PREF_SESSION_LOCKED, locked)
         }
+    }
 
     override suspend fun isSessionLocked(): Boolean =
         withContext(dispatcher.io) {
@@ -84,12 +77,11 @@ class SessionRepositoryImpl(
             }
         }
 
-    override suspend fun logout() =
+    override suspend fun logout() {
         withContext(dispatcher.io) {
-            try {
+            domainErrorMapper.withDomainErrors {
                 d2.userModule().blockingLogOut()
-            } catch (d2Error: D2Error) {
-                throw domainErrorMapper.mapToDomainError(d2Error)
             }
         }
+    }
 }
