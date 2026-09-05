@@ -12,6 +12,12 @@ on:
       - '**/*.gradle.kts'
       - '**/build.gradle'
 
+# One run per ref. Concurrent runs each compare against their own checkout, so they can
+# push duplicate metadata commits.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   verify-dependency-metadata:
     runs-on: ubuntu-latest
