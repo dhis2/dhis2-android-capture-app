@@ -3,9 +3,10 @@ package org.dhis2.tracker.relationships.data
 import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.date.toUi
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.mobile.tracker.R
 import org.dhis2.mobile.tracker.resources.Res
-import org.dhis2.mobile.tracker.resources.relation_creation_date
+import org.dhis2.mobile.tracker.resources.relation_creation_date_v2
 import org.dhis2.mobile.tracker.resources.relationship
 import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
 import org.dhis2.tracker.relationships.model.RelationshipModel
@@ -33,6 +34,8 @@ typealias label = String
 abstract class RelationshipsRepository(
     private val d2: D2,
     private val resources: ResourceManager,
+    private val customLabelProvider: CustomLabelProvider,
+    private val programUid: String,
 ) : RelationshipsRepositoryActions {
     abstract override suspend fun getRelationshipTypes(): List<RelationshipSection>
 
@@ -134,10 +137,15 @@ abstract class RelationshipsRepository(
                     .uid(teiTypeUid)
                     .blockingGet()
                     ?.name() ?: ""
+            val relationshipLabel =
+                customLabelProvider.getCustomRelationshipLabel(
+                    programUid = programUid,
+                    quantity = 1,
+                )
             listOf(
                 Pair(teiTypeName, ""),
                 Pair(
-                    getString(Res.string.relation_creation_date),
+                    getString(Res.string.relation_creation_date_v2).format(relationshipLabel),
                     relationshipCreationDate?.toUi() ?: "",
                 ),
             )
@@ -205,6 +213,12 @@ abstract class RelationshipsRepository(
             } ?: emptyList()
 
         return dataElements.ifEmpty {
+            val relationshipLabel =
+                customLabelProvider.getCustomRelationshipLabel(
+                    programUid = programUid,
+                    quantity = 1,
+                )
+
             val stage =
                 d2
                     .programModule()
@@ -217,7 +231,7 @@ abstract class RelationshipsRepository(
                     "",
                 ),
                 Pair(
-                    getString(Res.string.relation_creation_date),
+                    getString(Res.string.relation_creation_date_v2).format(relationshipLabel),
                     relationshipCreationDate?.toUi() ?: "",
                 ),
             )

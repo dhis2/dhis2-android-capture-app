@@ -1,6 +1,7 @@
 package org.dhis2.tracker.relationships.data
 
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.tracker.data.ProfilePictureProvider
 import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
 import org.dhis2.tracker.relationships.model.RelationshipDirection
@@ -24,7 +25,9 @@ class EventRelationshipsRepository(
     resources: ResourceManager,
     private val eventUid: String,
     private val profilePictureProvider: ProfilePictureProvider,
-) : RelationshipsRepository(d2, resources) {
+    customLabelProvider: CustomLabelProvider,
+    programUid: String,
+) : RelationshipsRepository(d2, resources, customLabelProvider, programUid) {
     override suspend fun getRelationshipTypes(): List<RelationshipSection> {
         val event =
             d2

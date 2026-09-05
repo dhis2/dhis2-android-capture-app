@@ -1,13 +1,22 @@
 package org.dhis2.usescases.qrCodes;
 
-import androidx.databinding.DataBindingUtil;
+import static org.dhis2.data.qr.QRjson.ATTR_JSON;
+import static org.dhis2.data.qr.QRjson.DATA_JSON;
+import static org.dhis2.data.qr.QRjson.DATA_JSON_WO_REGISTRATION;
+import static org.dhis2.data.qr.QRjson.ENROLLMENT_JSON;
+import static org.dhis2.data.qr.QRjson.EVENTS_JSON;
+import static org.dhis2.data.qr.QRjson.EVENT_JSON;
+import static org.dhis2.data.qr.QRjson.RELATIONSHIP_JSON;
+import static org.dhis2.data.qr.QRjson.TEI_JSON;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
 import androidx.viewpager.widget.ViewPager;
-import android.view.View;
 
 import com.bumptech.glide.Glide;
 
@@ -21,15 +30,6 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
-
-import static org.dhis2.data.qr.QRjson.ATTR_JSON;
-import static org.dhis2.data.qr.QRjson.DATA_JSON;
-import static org.dhis2.data.qr.QRjson.DATA_JSON_WO_REGISTRATION;
-import static org.dhis2.data.qr.QRjson.ENROLLMENT_JSON;
-import static org.dhis2.data.qr.QRjson.EVENTS_JSON;
-import static org.dhis2.data.qr.QRjson.EVENT_JSON;
-import static org.dhis2.data.qr.QRjson.RELATIONSHIP_JSON;
-import static org.dhis2.data.qr.QRjson.TEI_JSON;
 
 public class QrActivity extends ActivityGlobalAbstract implements QrContracts.View {
 
@@ -113,7 +113,7 @@ public class QrActivity extends ActivityGlobalAbstract implements QrContracts.Vi
                         binding.setTitle(getString(R.string.qr_events));
                         break;
                     case RELATIONSHIP_JSON:
-                        binding.setTitle(getString(R.string.qr_relationships));
+                        binding.setTitle(getString(R.string.relationships).toUpperCase());
                         break;
                     default:
                         break;

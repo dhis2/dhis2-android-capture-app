@@ -220,6 +220,10 @@
         <item quantity="one">event</item>
         <item quantity="other">events</item>
     </plurals>
+    <plurals name="relationship">
+        <item quantity="one">Relation</item>
+        <item quantity="other">Relations</item>
+    </plurals>
     <!--*******************
     Info bar labels
     **********************-->

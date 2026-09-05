@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.commons.model.AvatarProviderConfiguration
 import org.dhis2.mobile.tracker.resources.Res
 import org.dhis2.mobile.tracker.resources.cancel
-import org.dhis2.mobile.tracker.resources.empty_relationships
+import org.dhis2.mobile.tracker.resources.empty_relationships_v2
 import org.dhis2.mobile.tracker.resources.no_data
 import org.dhis2.mobile.tracker.resources.no_relationships
 import org.dhis2.mobile.tracker.resources.remove
@@ -144,10 +144,19 @@ fun RelationShipsScreen(
                     }
                 }
 
-                is RelationshipsUiState.Empty,
-                is RelationshipsUiState.Error,
-                -> {
-                    item { NoRelationships() }
+                is RelationshipsUiState.Empty ->
+                    item {
+                        NoRelationships(
+                            uiState.relationshipLabel,
+                        )
+                    }
+
+                is RelationshipsUiState.Error -> {
+                    item {
+                        NoRelationships(
+                            uiState.relationshipLabel,
+                        )
+                    }
                 }
 
                 is RelationshipsUiState.Success -> {
@@ -329,7 +338,7 @@ private fun RelationShipTypeSection(
 }
 
 @Composable
-internal fun NoRelationships() {
+internal fun NoRelationships(relationshipsLabel: String) {
     Column(
         modifier =
             Modifier
@@ -345,7 +354,10 @@ internal fun NoRelationships() {
                     .padding(Spacing.Spacing1)
                     .fillMaxWidth(),
             painter = rememberVectorPainter(vectorResource(resource = Res.drawable.no_relationships)),
-            contentDescription = stringResource(resource = Res.string.empty_relationships),
+            contentDescription =
+                stringResource(resource = Res.string.empty_relationships_v2).format(
+                    relationshipsLabel,
+                ),
         )
         Spacer(
             modifier =
@@ -354,7 +366,10 @@ internal fun NoRelationships() {
                     .fillMaxWidth(),
         )
         Text(
-            text = stringResource(resource = Res.string.empty_relationships),
+            text =
+                stringResource(resource = Res.string.empty_relationships_v2).format(
+                    relationshipsLabel,
+                ),
             style = getTextStyle(style = DHIS2TextStyle.BODY_MEDIUM),
         )
     }
