@@ -5,14 +5,26 @@ import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.mobile.commons.model.MetadataIconData
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.repositories.filters.internal.StringFilterConnector
+import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
+import org.hisp.dhis.android.core.fileresource.FileResource
+import org.hisp.dhis.android.core.fileresource.FileResourceCollectionRepository
+import org.hisp.dhis.android.core.fileresource.FileResourceObjectRepository
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.hisp.dhis.android.core.program.ProgramStageDataElement
+import org.hisp.dhis.android.core.program.ProgramStageDataElementCollectionRepository
+import org.hisp.dhis.android.core.program.ProgramStageSectionsCollectionRepository
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -115,6 +127,123 @@ class ProgramEventMapperTest {
         val result = mapper.eventToEventViewModel(event)
 
         assert(result.displayDate.isNullOrEmpty())
+    }
+
+    @Test
+    fun `Should show the original file name instead of the file path for file data elements`() {
+        val fileUid = "afl3jai2i4u"
+        val filePath = "/sdk_resources/db/afl3jai2i4u.pdf"
+
+        mockOrgUnitName()
+        mockProgram()
+        mockCategoryOptionCombo()
+        mockStageSections()
+        mockFileDataElementInReports(fileUid, filePath)
+
+        val event =
+            dummyEvent()
+                .toBuilder()
+                .trackedEntityDataValues(
+                    listOf(
+                        TrackedEntityDataValue
+                            .builder()
+                            .event("eventUid")
+                            .dataElement("fileDataElement")
+                            .value(fileUid)
+                            .build(),
+                    ),
+                ).build()
+
+        val result = mapper.eventToProgramEvent(event)
+
+        assertEquals(listOf("File" to "report.pdf"), result.eventDisplayData)
+    }
+
+    /**
+     * The filter connectors cannot be reached through deep stubs, because `eq()` erases to its
+     * `BaseRepository` upper bound, so every step of the chain is mocked explicitly.
+     */
+    private fun mockStageSections() {
+        val byProgramStageUid: StringFilterConnector<ProgramStageSectionsCollectionRepository> = mock()
+        val filtered: ProgramStageSectionsCollectionRepository = mock()
+        val withDataElements: ProgramStageSectionsCollectionRepository = mock()
+        val ordered: ProgramStageSectionsCollectionRepository = mock()
+
+        whenever(d2.programModule().programStageSections().byProgramStageUid()) doReturn byProgramStageUid
+        whenever(byProgramStageUid.eq("programStage")) doReturn filtered
+        whenever(filtered.withDataElements()) doReturn withDataElements
+        whenever(withDataElements.orderBySortOrder(any())) doReturn ordered
+        whenever(ordered.blockingGet()) doReturn emptyList()
+    }
+
+    private fun mockFileDataElementInReports(
+        fileUid: String,
+        filePath: String,
+    ) {
+        val fileDataElement: DataElement =
+            mock {
+                on { uid() } doReturn "fileDataElement"
+                on { displayFormName() } doReturn "File"
+                on { valueType() } doReturn ValueType.FILE_RESOURCE
+            }
+        val stageDataElement: ProgramStageDataElement =
+            mock {
+                on { uid() } doReturn "programStageDataElement"
+                on { displayInReports() } doReturn true
+                on { dataElement() } doReturn ObjectWithUid.create("fileDataElement")
+            }
+        val fileResource: FileResource =
+            mock {
+                on { uid() } doReturn fileUid
+                on { path() } doReturn filePath
+                on { name() } doReturn "report.pdf"
+            }
+
+        val byProgramStage: StringFilterConnector<ProgramStageDataElementCollectionRepository> = mock()
+        val stageDataElements: ProgramStageDataElementCollectionRepository = mock()
+        val orderedStageDataElements: ProgramStageDataElementCollectionRepository = mock()
+
+        whenever(d2.programModule().programStageDataElements().byProgramStage()) doReturn byProgramStage
+        whenever(byProgramStage.eq("programStage")) doReturn stageDataElements
+        whenever(stageDataElements.orderBySortOrder(any())) doReturn orderedStageDataElements
+        whenever(orderedStageDataElements.blockingGet()) doReturn listOf(stageDataElement)
+        whenever(
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid("fileDataElement")
+                .blockingGet(),
+        ) doReturn fileDataElement
+
+        val fileResources: FileResourceCollectionRepository = mock()
+        val byUid: StringFilterConnector<FileResourceCollectionRepository> = mock()
+        val byPath: StringFilterConnector<FileResourceCollectionRepository> = mock()
+        val byUidEqUid: FileResourceCollectionRepository = mock()
+        val byUidEqPath: FileResourceCollectionRepository = mock()
+        val byPathEqPath: FileResourceCollectionRepository = mock()
+        val oneByUidEqUid: ReadOnlyOneObjectRepositoryFinalImpl<FileResource> = mock()
+        val oneByUidEqPath: ReadOnlyOneObjectRepositoryFinalImpl<FileResource> = mock()
+        val oneByPathEqPath: ReadOnlyOneObjectRepositoryFinalImpl<FileResource> = mock()
+        val byUidObjectRepository: FileResourceObjectRepository = mock()
+
+        whenever(d2.fileResourceModule().fileResources()) doReturn fileResources
+        whenever(fileResources.byUid()) doReturn byUid
+        whenever(fileResources.byPath()) doReturn byPath
+        whenever(byUid.eq(fileUid)) doReturn byUidEqUid
+        whenever(byUid.eq(filePath)) doReturn byUidEqPath
+        whenever(byPath.eq(filePath)) doReturn byPathEqPath
+        whenever(byUidEqUid.one()) doReturn oneByUidEqUid
+        whenever(byUidEqPath.one()) doReturn oneByUidEqPath
+        whenever(byPathEqPath.one()) doReturn oneByPathEqPath
+
+        // check() and checkValueTypeValue() resolve the value to the path of the file on disk
+        whenever(oneByUidEqUid.blockingExists()) doReturn true
+        whenever(fileResources.uid(fileUid)) doReturn byUidObjectRepository
+        whenever(byUidObjectRepository.blockingGet()) doReturn fileResource
+
+        // fileResourceNameOf() resolves the path back to the original file name
+        whenever(oneByUidEqPath.blockingGet()) doReturn null
+        whenever(oneByPathEqPath.blockingGet()) doReturn fileResource
     }
 
     private fun mockOrgUnitName() {

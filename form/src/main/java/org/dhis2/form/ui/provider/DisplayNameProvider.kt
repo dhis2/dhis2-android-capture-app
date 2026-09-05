@@ -10,4 +10,9 @@ interface DisplayNameProvider {
         optionSet: String? = null,
         periodType: PeriodType? = null,
     ): String?
+
+    fun provideFileName(
+        valueType: ValueType?,
+        value: String?,
+    ): String?
 }

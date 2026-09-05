@@ -45,6 +45,8 @@ interface FieldUiModel {
 
     val displayName: String?
 
+    val fileName: String?
+
     val renderingType: UiRenderType?
 
     val optionSetConfiguration: OptionSetConfiguration?
@@ -104,6 +106,8 @@ interface FieldUiModel {
     fun setFieldMandatory(): FieldUiModel
 
     fun setDisplayName(displayName: String?): FieldUiModel
+
+    fun setFileName(fileName: String?): FieldUiModel
 
     fun setKeyBoardActionDone(): FieldUiModel
 
