@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import org.dhis2.tracker.search.model.SearchOperator
 import org.dhis2.tracker.search.model.SearchTrackedEntityAttribute
 import org.dhis2.tracker.search.model.TrackedEntitySearchItemResult
+import org.dhis2.tracker.search.model.TrackedEntitySearchPagingItem
 
 interface SearchTrackedEntityRepository {
     suspend fun isTETypeAttribute(
@@ -32,7 +33,7 @@ interface SearchTrackedEntityRepository {
         hasStateFilters: Boolean,
         allowCache: Boolean,
         selectedProgram: String?,
-    ): Flow<PagingData<TrackedEntitySearchItemResult>>
+    ): Flow<PagingData<TrackedEntitySearchPagingItem>>
 
     suspend fun fetchImmediateResults(
         isOnline: Boolean,

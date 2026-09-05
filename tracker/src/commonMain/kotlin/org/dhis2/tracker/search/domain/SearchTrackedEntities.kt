@@ -9,13 +9,14 @@ import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
 import org.dhis2.tracker.search.data.SearchTrackedEntityRepository
 import org.dhis2.tracker.search.model.SearchTrackedEntitiesInput
 import org.dhis2.tracker.search.model.TrackedEntitySearchItemResult
+import org.dhis2.tracker.search.model.TrackedEntitySearchPagingItem
 
 class SearchTrackedEntities(
     private val repository: SearchTrackedEntityRepository,
     private val customIntentRepository: CustomIntentRepository,
     private val teType: String,
-) : UseCase<SearchTrackedEntitiesInput, Flow<PagingData<TrackedEntitySearchItemResult>>> {
-    override suspend fun invoke(input: SearchTrackedEntitiesInput): Result<Flow<PagingData<TrackedEntitySearchItemResult>>> {
+) : UseCase<SearchTrackedEntitiesInput, Flow<PagingData<TrackedEntitySearchPagingItem>>> {
+    override suspend fun invoke(input: SearchTrackedEntitiesInput): Result<Flow<PagingData<TrackedEntitySearchPagingItem>>> {
         try {
             prepareQuery(input, teType)
             // Due to performance issues and possible duplicates we exclude the values in the exclude list only when no program is selected

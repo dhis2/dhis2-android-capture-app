@@ -437,12 +437,14 @@ public class SearchTEModule {
     SearchTrackedEntityRepository provideLoadSearchResultsRepository(
             D2 d2,
             FilterPresenter filterPresenter,
-            ProfilePictureProvider profilePictureProvider
+            ProfilePictureProvider profilePictureProvider,
+            DomainErrorMapper domainErrorMapper
     ) {
         return new SearchTrackedEntityRepositoryImpl(
                 d2,
                 filterPresenter,
-                profilePictureProvider
+                profilePictureProvider,
+                domainErrorMapper
         );
     }
 
