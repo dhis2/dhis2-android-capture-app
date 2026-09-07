@@ -820,7 +820,7 @@ class DataSetTest : BaseTest() {
         }
 
         dataSetDetailRobot(composeTestRule) {
-            assertEquals(5, getListItemCount())
+            assertEquals(4, getListItemCount())
             filterRobot(composeTestRule) {
                 //Open filter
                 openFilters()
