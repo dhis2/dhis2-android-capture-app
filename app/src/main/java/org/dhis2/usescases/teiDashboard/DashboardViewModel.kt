@@ -335,7 +335,11 @@ class DashboardViewModel(
                             id = TEIDashboardItems.RELATIONSHIPS,
                             icon = Icons.Outlined.Hub,
                             selectedIcon = Icons.Filled.Hub,
-                            label = resourcesManager.getString(R.string.navigation_relations),
+                            label =
+                                customLabelProvider.getCustomRelationshipLabel(
+                                    programUid = repository.getProgramUid(),
+                                    quantity = 2,
+                                ),
                         ),
                     )
                 }

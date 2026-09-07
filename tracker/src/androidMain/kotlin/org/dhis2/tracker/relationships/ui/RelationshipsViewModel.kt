@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.tracker.relationships.domain.AddRelationship
 import org.dhis2.tracker.relationships.domain.DeleteRelationships
 import org.dhis2.tracker.relationships.domain.GetRelationshipsByType
@@ -24,6 +25,8 @@ class RelationshipsViewModel(
     private val addRelationship: AddRelationship,
     private val d2ErrorUtils: D2ErrorUtils,
     private val relationshipsUiStateMapper: RelationshipsUiStateMapper,
+    private val customLabelProvider: CustomLabelProvider,
+    private val programUid: String,
 ) : ViewModel() {
     private val _relationshipsUiState =
         MutableStateFlow<RelationshipsUiState>(RelationshipsUiState.Loading)
@@ -41,7 +44,13 @@ class RelationshipsViewModel(
             val relationships = getRelationshipsByType()
             _relationshipsUiState.value =
                 if (relationships.isEmpty()) {
-                    RelationshipsUiState.Empty
+                    RelationshipsUiState.Empty(
+                        relationshipLabel =
+                            customLabelProvider.getCustomRelationshipLabel(
+                                programUid = programUid,
+                                quantity = 2,
+                            ),
+                    )
                 } else {
                     RelationshipsUiState.Success(relationshipsUiStateMapper.map(relationships))
                 }
