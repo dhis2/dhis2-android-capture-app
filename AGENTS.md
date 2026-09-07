@@ -230,11 +230,19 @@ dynamically from the plugin at runtime.
   in the MOB space. Combines Jira ANDROAPP changelogs (intake / delivery / post-merge
   times, throughput, where work queues), Sentry (production stability and per-release
   regressions), SonarCloud (quality trend on `develop`) and GitHub (PR and CI health),
-  comparing a rolling 90-day window against the preceding one. It also reads the previous
-  edition, checks which action items were ticked, and reports whether they actually moved
-  the numbers.
+  comparing a rolling 90-day window against the preceding one. Four of the findings are
+  drawn as charts by `scripts/metrics/charts.py` and attached to the page — the journey
+  breakdown, stage shares, the SonarCloud trend and per-release Sentry regressions — each
+  with its numbers kept underneath in a collapsed table, since a figure that exists only
+  inside a PNG is invisible to Confluence search and to next month's edition. It also reads
+  the previous edition, checks which action items were ticked, and reports whether they
+  actually moved the numbers.
 
-Requires `JIRA_AUTH=<email>:<api-token>` in `local.properties` (gitignored). Run
+Jira needs no credentials — ANDROAPP is world-readable over the REST API, changelogs
+included — so the whole analysis runs with zero setup. `JIRA_AUTH=<email>:<api-token>` in
+`local.properties` (gitignored) is needed only for Confluence: reading the previous edition
+and creating the draft. Setting it also covers permission-restricted Jira issues, which are
+invisible anonymously. Run
 `python3 scripts/metrics/metrics.py --preflight` to check every source and get exact
 remediation for anything missing; a read-scoped token is sufficient, since the skill only
 issues `GET` requests and its single write is the Confluence page.
