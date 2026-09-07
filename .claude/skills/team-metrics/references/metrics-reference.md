@@ -127,6 +127,61 @@ curl "https://sonarcloud.io/api/measures/component?component=dhis2_dhis2-android
 curl "https://sonarcloud.io/api/qualitygates/project_status?projectKey=dhis2_dhis2-android-capture-app&branch=develop"
 ```
 
+## Charts
+
+`scripts/metrics/charts.py` draws four, and only four. The test for charting something is
+whether it has **internal structure** — a composition, a distribution, a trend over many
+points. Everything else in this report is one number now against one number then, and a
+two-bar chart of that is strictly worse than the sentence: same information, more pixels,
+slower to read.
+
+| File | Form | Why it earns a chart |
+|---|---|---|
+| `01-journey` | stacked bar ×2 | intake + delivery + post-merge is a composition, and the two windows show whether the *shape* changed, not just the total |
+| `02-where-time-goes` | grouped bars | eight stages × two windows; the point is which stages dominate, which no table conveys at a glance |
+| `03-sonarcloud-trend` | small multiples | ~20 real monthly measurements, four metrics on four scales |
+| `04-sentry-issues` | ranked bars | magnitude plus a categorical split (regression vs pre-existing) |
+
+Rules the script already encodes — do not undo them by hand:
+
+- **Never two y-axes on one plot.** The four SonarCloud metrics get four panels. A shared axis
+  invents a correlation that is not in the data.
+- **Colour is never the only channel.** Every bar carries a value label, every Sentry row
+  carries its release scope in words and a `▲` for regressions. Required: the palette's aqua
+  sits below 3:1 on the light surface.
+- **Palette is fixed** and validated for colour-blindness in both light and dark
+  (`#2a78d6` / `#eb6834` / `#1baf7a`, status red `#d03b3b`). Colours are emitted as
+  `var(--role, #fallback)` so the SVG can be re-themed without editing the shapes.
+- Bars are rounded on the data end only, separated by a 2px surface gap, never a border.
+
+**Not charted, deliberately:** throughput, coverage, lead-time percentiles, flow efficiency,
+WIP, epics, releases. And **PR size against the 400-line gate** — the gate figure is computed
+over a different window from the rest of the report (see the `gh pr list` note above); charting
+it would put a visible contradiction on the page. Fix the query first, then it becomes a
+candidate.
+
+### Attaching them to Confluence
+
+```bash
+# upload / replace one chart on the page (JIRA_AUTH is email:api-token)
+curl -u "$JIRA_AUTH" -X PUT -H "X-Atlassian-Token: nocheck" \
+  -F "file=@scripts/metrics/charts/02-where-time-goes.png" \
+  -F "minorEdit=true" \
+  "https://dhis2.atlassian.net/wiki/rest/api/content/<pageId>/child/attachment"
+
+# list what is already attached, to replace rather than duplicate
+curl -u "$JIRA_AUTH" \
+  "https://dhis2.atlassian.net/wiki/rest/api/content/<pageId>/child/attachment?limit=50"
+```
+
+`PUT` on `/child/attachment` updates an attachment of the same filename in place; `POST`
+creates a second copy with a suffixed name. Use `PUT`. The page body then references it as
+`<ac:image><ri:attachment ri:filename="02-where-time-goes.png"/></ac:image>` — filename only,
+no path, no URL.
+
+If `JIRA_AUTH` is unavailable the charts cannot be attached at all. Say so and publish the
+tables instead; do not fall back to typing into the editor to place images.
+
 ## Computation rules
 
 - **Percentiles, not averages** (p50/p85). Averages hide the tail where bottlenecks live.
@@ -136,6 +191,30 @@ curl "https://sonarcloud.io/api/qualitygates/project_status?projectKey=dhis2_dhi
   issues at source. Keep the allow-list and this stays true.
 - Calendar days, not working days.
 - Filter bot authors (`dependabot`, `copilot`, `github-actions`, `dhis2-bot`) from PR figures.
+
+## Auth model
+
+Verified 7 Sep 2026 against `dhis2.atlassian.net`:
+
+| Endpoint | Anonymous | Evidence |
+|---|---|---|
+| `GET /rest/api/3/search/jql` + `expand=changelog` | **200** | 100/100 issues returned with changelog histories |
+| `GET /rest/api/3/issue/{key}?expand=changelog` | **200** | ANDROAPP-7679, 23 histories |
+| `GET /rest/api/3/project/ANDROAPP` | **200** | |
+| `GET /wiki/rest/api/content/{id}` | **404** `authorized:false` | MOB space is not public |
+
+So flow metrics need no credentials at all, and `metrics.py` sends no `Authorization`
+header when no token is configured. Cross-checked against the recorded baseline: the
+anonymous count for 13 May – 11 Aug is exactly 100, matching that edition's 81 Done plus
+19 closed-without-a-fix, so anonymous access sees the same issue set.
+
+Two consequences to hold on to:
+
+- **Anonymous is a floor, not a certainty.** A permission-restricted issue is invisible and
+  drops out of every count silently. A token removes the doubt; without one, say "anonymous"
+  in the Method section.
+- **Confluence still needs the token** — for reading the previous edition in step 2 and for
+  creating the draft and attaching charts in step 6. There is no anonymous fallback.
 
 ## Known data-quality limits — restate these in every report
 
