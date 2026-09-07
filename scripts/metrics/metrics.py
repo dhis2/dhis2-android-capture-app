@@ -13,7 +13,7 @@ import sys
 import urllib.parse
 import urllib.request
 from collections import Counter, defaultdict
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 BASE = "https://dhis2.atlassian.net"
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -82,7 +82,11 @@ def classify(name):
 
 
 MISSING_TOKEN = """
-JIRA_AUTH is not set, so flow metrics cannot be computed.
+Jira could not be read even anonymously, so flow metrics cannot be computed.
+
+ANDROAPP is normally world-readable over the REST API, so this usually means the
+project's permissions changed or the network is blocking the request. Setting a
+token restores access in the first case:
 
 Add this line to local.properties in the repo root (the file is gitignored, so the
 token is never committed):
@@ -90,7 +94,7 @@ token is never committed):
     JIRA_AUTH=your.name@dhis2.org:<api-token>
 
 Create the token at https://id.atlassian.com/manage-profile/security/api-tokens
-A read-scoped token is enough - this script only ever issues GET requests.
+Jira reads only need read scope; publishing the report to Confluence needs write.
 """
 
 
@@ -107,30 +111,57 @@ def find_token():
 
 
 def auth():
+    """Basic header, or None. ANDROAPP is world-readable over the REST API — including
+    expand=changelog — so flow metrics work without a token. A token is still preferred:
+    it also sees any issue that has been permission-restricted, and anonymous access
+    would silently drop those from every count."""
     c = find_token()
-    if not c:
-        sys.exit(MISSING_TOKEN)
-    return "Basic " + base64.b64encode(c.encode()).decode()
+    return "Basic " + base64.b64encode(c.encode()).decode() if c else None
 
 
 def preflight():
     """Report which data sources are reachable, and how to fix the ones that aren't."""
     ok = True
     tok = find_token()
-    if not tok:
-        print("FAIL  Jira      JIRA_AUTH not found in env or local.properties")
-        print(MISSING_TOKEN)
-        ok = False
-    else:
+
+    # A token that is present is not a token that works: ANDROAPP reads fine
+    # anonymously, so a bad credential still returns 200 from search. Verify it
+    # against an endpoint that actually requires auth, or publishing fails later
+    # with a 403 that looks like a permissions problem and isn't.
+    identity = None
+    if tok:
         try:
-            d = get("/rest/api/3/search/jql",
-                    {"jql": "project = ANDROAPP", "fields": "key", "maxResults": 1})
-            print(f"OK    Jira      authenticated, search returns "
-                  f"{len(d.get('issues', []))} row(s)")
-        except Exception as e:
-            print(f"FAIL  Jira      token present but rejected: {e}")
-            print("      Regenerate the token and update local.properties.")
+            identity = get("/rest/api/3/myself", {}).get("displayName")
+        except Exception as e:                                    # noqa: BLE001
+            print(f"FAIL  Jira      JIRA_AUTH is set but rejected ({e}).")
+            print("      Jira reads still work anonymously, so metrics will compute — but")
+            print("      Confluence will refuse to create the page. Check the value is")
+            print("      email:api-token with a full-length token, then re-run.")
             ok = False
+            tok = None
+
+    mode = f"authenticated as {identity}" if identity else "anonymous"
+    try:
+        d = get("/rest/api/3/search/jql",
+                {"jql": "project = ANDROAPP", "fields": "key", "maxResults": 1})
+        print(f"OK    Jira      {mode}, search returns {len(d.get('issues', []))} row(s)")
+        if not tok:
+            print("      No JIRA_AUTH set. ANDROAPP is world-readable, so every flow metric")
+            print("      still computes — but any permission-restricted issue is invisible")
+            print("      and would be missing from the counts without warning. Set a token")
+            print("      to rule that out, and say 'anonymous' in the report's Method section.")
+    except Exception as e:
+        print(f"FAIL  Jira      {mode} request rejected: {e}")
+        if tok:
+            print("      Regenerate the token and update local.properties.")
+        else:
+            print(MISSING_TOKEN)
+        ok = False
+
+    if not tok:
+        print("WARN  Confluence anonymous reads are refused (404), so a token is required to")
+        print("      read the previous edition and to create the draft and attach the charts.")
+        print("      Without one the report can be computed but not published.")
 
     import shutil
     import subprocess
@@ -163,10 +194,13 @@ _HDR = None
 
 
 def hdr():
-    """Built lazily so --preflight can report a missing token instead of exiting."""
+    """Built lazily so --preflight can report the auth mode before any request."""
     global _HDR
     if _HDR is None:
-        _HDR = {"Accept": "application/json", "Authorization": auth()}
+        _HDR = {"Accept": "application/json"}
+        a = auth()
+        if a:
+            _HDR["Authorization"] = a
     return _HDR
 
 
@@ -360,10 +394,24 @@ def main():
                   f"{i['fields']['status']['name']:<32}{i['key']}")
         return
 
+    # Window end: today unless --as-of pins it to a past date, which is what lets an
+    # edition be regenerated later and still match the page it was published on.
+    as_of = NOW.date()
+    for i, a in enumerate(sys.argv):
+        if a == "--as-of" and i + 1 < len(sys.argv):
+            as_of = datetime.strptime(sys.argv[i + 1], "%Y-%m-%d").date()
+    if as_of > NOW.date():
+        sys.exit("--as-of is in the future")
+    w0, w1, w2 = (as_of - timedelta(days=180), as_of - timedelta(days=90), as_of)
+    if as_of != NOW.date():
+        print(f"window pinned to {w1} .. {w2} (--as-of). Work-in-progress, backlog and epic\n"
+              f"counts are still current-state, so they describe today, not {w2}.",
+              file=sys.stderr)
+
     data = {}
     for name, jql, exp in [
-        ("cur", f'{base} AND resolutiondate >= -90d', "changelog"),
-        ("prev", f'{base} AND resolutiondate >= -180d AND resolutiondate < -90d', "changelog"),
+        ("cur", f'{base} AND resolutiondate >= "{w1}" AND resolutiondate <= "{w2}"', "changelog"),
+        ("prev", f'{base} AND resolutiondate >= "{w0}" AND resolutiondate < "{w1}"', "changelog"),
         ("flight", f'{base} AND status in ({q(IN_FLIGHT)})', "changelog"),
         ("backlog", f'{base} AND status in ({q(BACKLOG)})', None),
         ("bugs", 'project = ANDROAPP AND issuetype = Bug AND statusCategory != Done', None),
@@ -455,7 +503,9 @@ def main():
           f"p85 {pct(ages,85):.0f}d oldest {max(ages):.0f}d")
     print("  by status:", dict(Counter(e["fields"]["status"]["name"] for e in ep).most_common()))
 
-    json.dump({"cur": cur, "prev": prev, "live": live, "orphans": orph,
+    json.dump({"window": {"as_of": str(w2), "cur_from": str(w1), "prev_from": str(w0),
+                          "anonymous": find_token() is None},
+               "cur": cur, "prev": prev, "live": live, "orphans": orph,
                "backlog": len(data["backlog"]), "bugs": len(data["bugs"]),
                "epics": {"open": len(ep), "age_p50": pct(ages, 50),
                          "age_p85": pct(ages, 85), "oldest": max(ages),
