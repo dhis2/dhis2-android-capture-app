@@ -187,7 +187,6 @@
     <string name="qr_attributes">Thuộc Tính</string>
     <string name="qr_enrollment">Đăng ký</string>
     <string name="qr_events">Sự kiện</string>
-    <string name="qr_relationships">Mối quan hệ</string>
     <string name="read_more_qr">Đọc mã QR tiếp theo để lấy thêm thông tin</string>
     <string name="save_qr">Ngừng đọc và lưu dữ liệu</string>
     <string name="qr_no_data">không có dữ liệu</string>
@@ -411,7 +410,6 @@
     <string name="navigation_tasks">Các nhiệm vụ</string>
     <string name="navigation_programs">Chương trình</string>
     <string name="navigation_charts">Biểu Đồ</string>
-    <string name="navigation_relationships">Các mối quan hệ</string>
     <string name="navigation_notes">Ghi Chú</string>
     <string name="navigation_data_entry">Nhập dữ liệu</string>
     <string name="navigation_form">Biểu nhập</string>

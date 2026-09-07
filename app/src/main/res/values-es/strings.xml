@@ -189,7 +189,6 @@
     <string name="qr_attributes">Atributos</string>
     <string name="qr_enrollment">Admisiones</string>
     <string name="qr_events">Eventos</string>
-    <string name="qr_relationships">Relaciones</string>
     <string name="read_more_qr">Lea el siguiente QR para obtener más información.</string>
     <string name="save_qr">Parar de leer y guardar datos</string>
     <string name="qr_no_data">sin datos</string>
@@ -416,7 +415,6 @@
     <string name="navigation_tasks">Tareas</string>
     <string name="navigation_programs">Programas</string>
     <string name="navigation_charts">Gráficas</string>
-    <string name="navigation_relationships">Relaciones</string>
     <string name="navigation_notes">Notas</string>
     <string name="navigation_data_entry">Introducción de datos</string>
     <string name="navigation_form">Formulario</string>

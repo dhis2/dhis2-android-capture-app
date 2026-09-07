@@ -194,7 +194,6 @@
     <string name="qr_attributes">Atributy</string>
     <string name="qr_enrollment">Zápisy</string>
     <string name="qr_events">Události</string>
-    <string name="qr_relationships">Vztahy</string>
     <string name="read_more_qr">Přečtěte si další QR a získejte více informací.</string>
     <string name="save_qr">Přestaňte číst a ukládejte data</string>
     <string name="qr_no_data">žádná data</string>
@@ -421,7 +420,6 @@
     <string name="navigation_tasks">Úkoly</string>
     <string name="navigation_programs">Programy</string>
     <string name="navigation_charts">Grafy</string>
-    <string name="navigation_relationships">Vztahy</string>
     <string name="navigation_notes">Poznámky</string>
     <string name="navigation_data_entry">Vstup dat</string>
     <string name="navigation_form">Formulář</string>

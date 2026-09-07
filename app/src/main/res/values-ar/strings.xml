@@ -180,7 +180,6 @@
     <string name="qr_attributes">السمات</string>
     <string name="qr_enrollment">التسجيلات</string>
     <string name="qr_events">الأحداث</string>
-    <string name="qr_relationships">علاقات</string>
     <string name="read_more_qr">اقرأ رمز QR التالي للحصول على مزيد من المعلومات.</string>
     <string name="save_qr">أوقف القراءة واحفظ البيانات</string>
     <string name="qr_no_data">لا وجود لبيانات</string>

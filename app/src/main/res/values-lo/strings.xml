@@ -177,7 +177,6 @@
     <string name="qr_attributes">Attributes</string>
     <string name="qr_enrollment">ການຂື້ນທະບຽນ</string>
     <string name="qr_events">ເຫດການ</string>
-    <string name="qr_relationships">ສາຍພົວພັນ</string>
     <string name="read_more_qr">ອ່ານລະຫັດ QR ຕໍ່ໄປເພື່ອເອົາຂໍ່້ມູນເພື່ມຕື່ມ</string>
     <string name="save_qr">ຢຸດການອ່ານ ແລະ ບັນທຶກຂໍ້ມູນ</string>
     <string name="qr_no_data">ບໍໍ່ມີຂໍ້ມູນ</string>
