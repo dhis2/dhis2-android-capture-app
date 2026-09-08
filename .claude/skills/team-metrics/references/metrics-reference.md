@@ -163,24 +163,86 @@ candidate.
 ### Attaching them to Confluence
 
 ```bash
-# upload / replace one chart on the page (JIRA_AUTH is email:api-token)
-curl -u "$JIRA_AUTH" -X PUT -H "X-Atlassian-Token: nocheck" \
-  -F "file=@scripts/metrics/charts/02-where-time-goes.png" \
-  -F "minorEdit=true" \
-  "https://dhis2.atlassian.net/wiki/rest/api/content/<pageId>/child/attachment"
-
-# list what is already attached, to replace rather than duplicate
-curl -u "$JIRA_AUTH" \
-  "https://dhis2.atlassian.net/wiki/rest/api/content/<pageId>/child/attachment?limit=50"
+python3 scripts/metrics/attach_charts.py <pageId>            # add or replace all four
+python3 scripts/metrics/attach_charts.py <pageId> --dry-run   # check auth without writing
 ```
 
-`PUT` on `/child/attachment` updates an attachment of the same filename in place; `POST`
-creates a second copy with a suffixed name. Use `PUT`. The page body then references it as
-`<ac:image><ri:attachment ri:filename="02-where-time-goes.png"/></ac:image>` — filename only,
-no path, no URL.
+Do not hand-roll the `curl`. The transport depends on which token type is configured, and
+getting it wrong produces a 401 that looks like a permissions problem and is not:
 
-If `JIRA_AUTH` is unavailable the charts cannot be attached at all. Say so and publish the
-tables instead; do not fall back to typing into the editor to place images.
+| Token type | Scheme | Host |
+|---|---|---|
+| Scoped (`Create API token with scopes`) | `Bearer <secret>` | `api.atlassian.com/ex/confluence/<cloudId>/wiki/rest/api` |
+| Classic (`Create API token`) | `Basic <email:token>` | `dhis2.atlassian.net/wiki/rest/api` |
+
+**Upload is API v1 only.** Verified 8 Sep 2026: the v2 attachment group
+(`/api/v2/pages/{id}/attachments`) offers GET and DELETE and **no create operation**, so the
+only upload route is v1 `POST /wiki/rest/api/content/{id}/child/attachment`. A v2-scoped
+token reads attachments happily and cannot write one, which produces a `401 scope does not
+match` on every write route and looks like a missing write scope when it is not.
+
+Both are ~192 chars and start `ATATT`, so **the two cannot be told apart by looking at the
+string** — only by what the auth schemes say about it. `metrics.py:classify_token` does that
+probe and caches it; `--preflight` prints the verdict, including the case that matters most:
+a valid scoped token whose grant is incomplete, which must be reported as "add a scope", not
+"bad token".
+
+Scopes for the scoped path — **no Jira scopes**:
+
+    read:content-details:confluence     write:attachment:confluence
+
+(the single classic equivalent is `write:confluence-file`)
+
+`read:attachment:confluence` is the trap: it is the obvious-sounding name, it grants the v2
+reads, and it cannot upload. A token holding only the two attachment scopes fails every
+write with `scope does not match` — which reads as "write scope missing" even when the
+consent screen plainly lists it. `read:content-details:confluence` is what the v1 create
+route actually requires, to resolve the page container.
+
+**Use `PUT` on the collection path.** Three neighbouring routes look interchangeable and are
+not — all three were tried against a correctly-scoped token on 8 Sep 2026:
+
+| Route | Result with `read:content-details` + `write:attachment` |
+|---|---|
+| `PUT /content/{id}/child/attachment` | **works** — creates, or versions a same-named file |
+| `POST /content/{id}/child/attachment` | creates, but **400** on a filename that already exists: *"Cannot add a new attachment with same file name"* — so re-runs break |
+| `PUT /content/{id}/child/attachment/{attachmentId}/data` | **401 scope does not match** — needs more than these two |
+| `POST /api/v2/pages/{id}/attachments` | **401** — v2 has no create operation at all |
+
+So a re-run for the same period versions the four files in place and the attachment count
+stays at four. Verified by running twice: v2 → v3, still four attachments.
+
+Other mechanics the script handles: `X-Atlassian-Token: nocheck` (the v1 attachment API
+applies an XSRF check that otherwise 403s with no explanation), and **attaching only to a
+published page** — the API refuses attachments on a draft, so publish to `current` first.
+Note the connector cannot publish an existing draft: `updateConfluencePage` sends the
+draft's version number and Confluence demands version 1 for a first publish, so create the
+page with `status: current` when it is going to carry charts.
+
+### Referencing an attachment from the body
+
+The connector's HTML+ADF format cannot reference an attachment by filename — it needs the
+**Media API fileId**, a UUID that appears only under `expand=extensions` on the v1
+attachment listing (the `att…` id from the upload response is *not* it).
+`attach_charts.py` prints ready-to-paste figure HTML for exactly this reason.
+
+```html
+<figure data-type="media-single" data-layout="center"
+        data-width="100" data-width-type="percentage">
+  <div data-type="media" data-media-type="file" data-id="<fileId>"
+       data-collection="contentId-<pageId>" data-alt="02-where-time-goes.png"></div>
+</figure>
+```
+
+`data-width-type="percentage"` is not optional. Omit it and Confluence reads `data-width` as
+**pixels** — the format guide's own `data-width="80"` example then renders an 80-pixel-wide
+chart. Confluence rewrites the whole thing to `<ac:image ac:width="680">` +
+`<ri:attachment ri:filename="…">` on save, and stamps the real intrinsic dimensions onto the
+media node, which is the cheapest confirmation that the reference actually bound to a file.
+
+If no token is configured the charts cannot be attached, and that is a supported outcome:
+publish the `expand` tables *expanded*, say so in the report, and do not fall back to typing
+into the editor to place images.
 
 ## Computation rules
 
@@ -208,13 +270,31 @@ header when no token is configured. Cross-checked against the recorded baseline:
 anonymous count for 13 May – 11 Aug is exactly 100, matching that edition's 81 Done plus
 19 closed-without-a-fix, so anonymous access sees the same issue set.
 
-Two consequences to hold on to:
+Three consequences to hold on to:
 
 - **Anonymous is a floor, not a certainty.** A permission-restricted issue is invisible and
-  drops out of every count silently. A token removes the doubt; without one, say "anonymous"
-  in the Method section.
-- **Confluence still needs the token** — for reading the previous edition in step 2 and for
-  creating the draft and attaching charts in step 6. There is no anonymous fallback.
+  drops out of every count silently. A classic token removes the doubt; without one, say
+  "anonymous" in the Method section.
+- **A scoped token does not authenticate Jira at all.** It is refused by Basic auth, so
+  sending it turns a 200 into a 401. `auth()` deliberately returns `None` for one, and
+  `metrics.json` still records `anonymous: true` — keyed off `auth()`, not off whether a
+  token exists, or the Method section would claim coverage the run did not have.
+- **Confluence needs no token.** Reading the previous edition (step 2) and creating or
+  updating the page (step 6) both go through the Atlassian connector's per-user OAuth. Only
+  chart attachment needs a credential, because the connector has no upload tool.
+
+### Why not native Confluence chart macros
+
+Tested 8 Sep 2026 by authoring them through the connector. The macros round-trip into
+storage cleanly, so this looks viable and is not: Confluence Cloud renders the native Chart
+macro as **"Chart (Deprecated)"**. Building a monthly report on a deprecated macro means it
+works until some Atlassian release where it silently does not, on a page nobody re-reads
+until the following month.
+
+The Jira Chart macro (`jirachart`) is worse for this report for a different reason: it
+re-queries JQL on every page view, so the picture drifts away from the prose around it as
+work moves. That breaks the single-snapshot rule outright. Both are dead ends — keep the
+PNG-or-table approach.
 
 ## Known data-quality limits — restate these in every report
 

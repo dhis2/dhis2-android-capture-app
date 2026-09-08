@@ -375,7 +375,9 @@ def render_png(svg_path):
     tmp, png = svg_path + ".html", svg_path[:-4] + ".png"
     open(tmp, "w").write(wrap)
     try:
-        for exe in ("google-chrome", "chromium", "chromium-browser"):
+        for exe in ("google-chrome", "chromium", "chromium-browser",
+                    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+                    "/Applications/Chromium.app/Contents/MacOS/Chromium"):
             try:
                 subprocess.run([exe, "--headless=new", "--disable-gpu", "--no-sandbox",
                                 "--hide-scrollbars", "--force-device-scale-factor=2",

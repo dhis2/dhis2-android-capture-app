@@ -238,14 +238,27 @@ dynamically from the plugin at runtime.
   the previous edition, checks which action items were ticked, and reports whether they
   actually moved the numbers.
 
-Jira needs no credentials — ANDROAPP is world-readable over the REST API, changelogs
-included — so the whole analysis runs with zero setup. `JIRA_AUTH=<email>:<api-token>` in
-`local.properties` (gitignored) is needed only for Confluence: reading the previous edition
-and creating the draft. Setting it also covers permission-restricted Jira issues, which are
-invisible anonymously. Run
-`python3 scripts/metrics/metrics.py --preflight` to check every source and get exact
-remediation for anything missing; a read-scoped token is sufficient, since the skill only
-issues `GET` requests and its single write is the Confluence page.
+**The whole report runs with zero credentials.** Jira is world-readable over the REST API,
+changelogs included; Confluence reading and publishing go through the Atlassian connector's
+per-user OAuth, so it works in a worktree, in a cloud session, and for any teammate who has
+the connector but no local checkout of anything but this repo.
+
+`JIRA_AUTH=<email>:<api-token>` in `local.properties` (gitignored, and a worktree inherits
+the main checkout's file) is optional, and buys exactly two things: attaching the four chart
+PNGs — the only step the connector cannot do, since it has no attachment-upload tool — and
+covering permission-restricted Jira issues, which are invisible anonymously. Without it the
+report publishes with the chart data as expanded tables instead, which is a supported
+outcome rather than a failure.
+
+Prefer a **scoped** token (`Create API token with scopes`) over a classic one, and grant
+only `read:content-details:confluence` + `write:attachment:confluence` — no Jira scopes.
+(Not `read:attachment:confluence`: it grants the v2 attachment reads, and v2 has no upload
+operation at all.) A classic token is a full impersonation credential across every project
+and space. The two look
+identical as strings and only differ in how they authenticate, so run
+`python3 scripts/metrics/metrics.py --preflight` to see which you have and what it can do,
+and `--token-help` for the details. Attach with
+`python3 scripts/metrics/attach_charts.py <pageId>` after the page is published.
 
 Definitions, the status taxonomy and the data-quality traps live in
 `.claude/skills/team-metrics/references/metrics-reference.md`. Two worth knowing before

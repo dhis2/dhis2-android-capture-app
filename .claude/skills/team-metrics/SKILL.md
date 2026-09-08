@@ -38,16 +38,23 @@ user rather than working around it — a silently skipped source produces a misl
 | Source | Needed for | Auth | If missing |
 |---|---|---|---|
 | Jira | all flow metrics | **none** — ANDROAPP is world-readable over REST, `expand=changelog` included | Only fails if project permissions or the network changed. Blocking; investigate rather than working around |
-| Confluence | reading the previous edition, creating the draft, attaching charts | **`JIRA_AUTH` required** — anonymous reads are refused (404) | Compute the report and hand it over as text; say it could not be published |
+| Confluence | reading the previous edition, creating and updating the page | **the Atlassian connector** (per-user OAuth, no token) | Confirm the Atlassian tools are in-session; if not, authorize with `/mcp`. **You cannot run OAuth yourself.** Without it, hand the report over as text |
+| Charts | attaching the four PNGs — and *only* this | scoped `JIRA_AUTH`, optional: `read:content-details:confluence` + `write:attachment:confluence` | Publish the collapsed tables instead and say so. Nothing else is affected |
 | GitHub (`gh auth`) | PR cycle time, review latency, PR size, CI | `gh` login | Skip the Delivery section and say so |
 | SonarCloud | code quality trend | none | Skip; no token needed, so failure means network |
 | Sentry MCP | production stability | per-user OAuth | Check the Sentry tools are available in-session. If not, tell the user to authorize with `/mcp` — **you cannot run OAuth yourself.** Mark the section unavailable |
 
-**A token is optional but preferred.** Anonymous sees only public issues, so a
-permission-restricted issue would drop out of every count with no error. If the run was
-anonymous, say so in the Method section — the numbers are a floor, not a certainty.
+**No credential is needed to produce or publish the report.** Jira is world-readable,
+and Confluence read/write goes through the Atlassian connector. A token buys exactly two
+things: attaching the chart PNGs, and covering permission-restricted Jira issues.
 
-Never print, echo or commit the token value.
+Anonymous Jira sees only public issues, so a restricted issue would drop out of every
+count with no error. Say "anonymous" in the Method section when the run was — the numbers
+are a floor, not a certainty. Note a *scoped* token does not change this: it cannot read
+Jira at all, so those runs are still anonymous and `metrics.json` records them as such.
+
+`--token-help` explains the two token types and which scopes to grant. Never print, echo
+or commit the token value.
 
 ## 2. Close the loop on the previous edition
 
@@ -119,6 +126,10 @@ disagree with the page they sit on. If a chart is skipped (SonarCloud unreachabl
 `--issue` given) the script says so — say it in the report too, and keep that section's
 existing table rather than leaving a hole.
 
+PNG rasterization needs Chrome (looked up under both Linux binary names and the macOS
+`/Applications` paths). Without it the script emits SVG only, and there is nothing to attach —
+fall back to the tables as above.
+
 ## 5. Compose
 
 Structure, in order. Keep it short enough to read in a meeting; push detail into the collapsed
@@ -161,6 +172,13 @@ Writing rules:
 
 ## 6. Publish
 
+**Publishing goes through the Atlassian connector, not a token.** `createConfluencePage` /
+`updateConfluencePage` authenticate as the user over OAuth, which is why this works in a
+worktree, in a cloud session, and for any teammate who has the connector — no credential in
+the repo. The connector uses **HTML+ADF**, not storage format: `<div data-type="panel-info">`,
+`<span data-type="status">`, `<details>`, `<ul data-type="task-list">`. Do not emit
+`<ac:structured-macro>`; it renders as literal text.
+
 Create as a **draft** first, hand the user the link, and only set `status: current` once they
 confirm. Confluence HTML notes:
 
@@ -171,22 +189,41 @@ confirm. Confluence HTML notes:
 - Jira links become live issue macros automatically
 - Tables cannot nest inside table cells; panels cannot contain tables
 
-**Attaching the charts.** Upload each PNG to the page, then reference it by filename:
+**Attaching the charts — the one step a token is for.** The connector has no
+attachment-upload tool, so run:
 
-```html
-<ac:image ac:align="center" ac:width="900">
-  <ri:attachment ri:filename="02-where-time-goes.png"/>
-</ac:image>
+```bash
+python3 scripts/metrics/attach_charts.py <pageId>
 ```
 
-Upload with the REST API — `JIRA_AUTH` is already required for Jira and the same token works
-here (see the reference for the exact call). Do **not** drive the Confluence editor by
-simulated typing to place charts: the caret moves between an upload and the next keystroke,
-so images and text land in the wrong blocks, and an editor click can select and replace an
-image with whatever is typed next. Both have happened.
+It handles either token type (scoped → Bearer via `api.atlassian.com`; classic → Basic via
+the site host) and prints the exact missing scope if the grant is short. Re-running does not
+duplicate: v1 `POST /child/attachment` versions a same-named file in place. **Attach only
+after the page is `current`** — the API refuses attachments on a draft.
 
-Every chart also needs, in this order: a sentence above it, the `<ac:image>`, then that
-chart's `expand` block copied verbatim from `charts/tables.html`.
+Upload is **v1 only**. The v2 attachment API has GET and DELETE but no create operation, so
+`read:attachment:confluence` cannot upload anything despite its name — see the reference.
+
+The script prints ready-to-paste figure HTML for each file, with the Media API fileId already
+resolved — **paste that verbatim**. The body cannot reference an attachment by filename, the
+fileId is not the id the upload returns, and `data-width` is read as pixels unless
+`data-width-type="percentage"` is present. The reference has the details.
+
+A page that will carry charts must be **created** with `status: current`: the connector
+cannot publish an existing draft, because Confluence demands version 1 for a first publish
+and the update call sends the draft's own version.
+
+**With no token, there are no images — and that is a supported outcome, not a failure.**
+Publish each chart's `expand` block from `charts/tables.html` *expanded* rather than
+collapsed, note in the report that the charts could not be attached, and move on. No number
+is lost: the tables carry all of them, which is exactly what they are for.
+
+Do **not** drive the Confluence editor by simulated typing to place charts: the caret moves
+between an upload and the next keystroke, so images and text land in the wrong blocks, and an
+editor click can select and replace an image with whatever is typed next. Both have happened.
+
+Every chart that *is* attached needs, in this order: a sentence above it, the figure, then
+that chart's `expand` block copied verbatim from `charts/tables.html`.
 
 Re-running for the same period should **update** the existing page, not create a duplicate
 title, and should **replace** the attachments rather than adding a second copy.
@@ -194,7 +231,9 @@ title, and should **replace** the attachments rather than adding a second copy.
 ## Guardrails
 
 - Read-only against Jira, GitHub, Sentry and SonarCloud. The only writes are the Confluence
-  page and its chart attachments.
+  page and its chart attachments. Never write to Jira — not a comment, not a transition.
+- **Do not treat a missing token as a blocker.** Every step except chart attachment works
+  without one. A run that stops short because `JIRA_AUTH` is unset has failed for no reason.
 - Take every figure in one report from a **single snapshot** — Jira counts drift between runs.
   Re-run all compute steps after any re-fetch rather than mixing. **Charts count**: re-run
   `charts.py` after any re-fetch, or the page shows one snapshot in text and another in
