@@ -11,4 +11,8 @@ interface ProgramRepository {
     fun aggregatesModels(syncStatusData: SyncStatusData): Flowable<List<ProgramUiModel>>
 
     fun clearCache()
+
+    suspend fun isSingleNavigationDone(): Boolean
+
+    suspend fun setSingleNavigationDone()
 }
