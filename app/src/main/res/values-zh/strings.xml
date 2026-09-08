@@ -197,7 +197,6 @@
     <string name="qr_attributes">属性</string>
     <string name="qr_enrollment">加入</string>
     <string name="qr_events">事件</string>
-    <string name="qr_relationships">关系</string>
     <string name="read_more_qr">读取下一个二维码获取更多信息</string>
     <string name="save_qr">停止读取并保存数据</string>
     <string name="qr_no_data">无数据</string>
@@ -427,7 +426,6 @@
     <string name="navigation_tasks">任务</string>
     <string name="navigation_programs">项目</string>
     <string name="navigation_charts">可视化图表应用</string>
-    <string name="navigation_relationships">关系</string>
     <string name="navigation_notes">笔记</string>
     <string name="navigation_data_entry">数据输入</string>
     <string name="navigation_form">表单</string>

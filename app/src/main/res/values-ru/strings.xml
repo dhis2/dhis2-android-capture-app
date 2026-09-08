@@ -181,7 +181,6 @@
     <string name="qr_attributes">Атрибуты</string>
     <string name="qr_enrollment">Регистрации</string>
     <string name="qr_events">События</string>
-    <string name="qr_relationships">Зависимости</string>
     <string name="read_more_qr">Читайте следующий QR-код, чтобы получить больше информации.</string>
     <string name="save_qr">Остановить чтение и сохранить данные</string>
     <string name="qr_no_data">нет данных</string>
@@ -393,7 +392,6 @@
     <string name="navigation_tasks">Задачи</string>
     <string name="navigation_programs">Программы</string>
     <string name="navigation_charts">Диаграммы</string>
-    <string name="navigation_relationships">Связи</string>
     <string name="navigation_notes">Заметки</string>
     <string name="navigation_data_entry">Ввод данных</string>
     <string name="navigation_form">Форма</string>
