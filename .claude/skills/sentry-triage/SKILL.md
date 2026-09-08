@@ -101,10 +101,31 @@ Call `mcp__plugin_sentry_sentry__search_issues` with:
 - `limit`: 10
 
 Note: `PROD_VERSION` is the full release string including the package and build,
-e.g. `com.dhis2@3.4.1+156`. The `sort: user` window is release-scoped, so the
-returned order can differ from each issue's all-release user total shown in the
-issue detail — use the per-issue `Users Impacted` for Impact scoring and note the
-distinction.
+e.g. `com.dhis2@3.4.1+156`.
+
+**Then fetch the two numbers Impact scoring actually needs.** Do NOT score from the
+issue detail's `Users Impacted`: that is a **lifetime, all-release** total, so
+comparing it to one release's user base mixes two denominators and inflates every
+share. (Observed: 79TN reports 1,171 lifetime users but only 353 on 3.4.2 — a 3.3×
+overstatement.)
+
+Release-scoped users per issue, and the release's own user total, both via
+`search_events` with `dataset: "errors"`:
+
+```
+# per issue, release-scoped
+query:  environment:production release:<PROD_VERSION>
+fields: ["issue", "count_unique(user)", "count()"]
+sort:   -count_unique(user)
+
+# the denominator: everyone Sentry saw on this release
+query:  environment:production release:<PROD_VERSION>
+fields: ["release", "count_unique(user)", "count()"]
+```
+
+Store the denominator as `RELEASE_USERS`. Impact is scored on
+`issue_users / RELEASE_USERS`, and both figures go in the Scoring Detail so the
+share can be checked.
 
 If 0 results come back, retry in this order:
 1. Try `release:<PROD_VERSION>+<build-number>` — the Sentry Gradle plugin sometimes uploads
@@ -168,17 +189,36 @@ continue to the next frame.
 
 Take the **highest** matching base score, then apply modifiers:
 
-| Score | Base criteria |
+Score on **share of the release's users**, not an absolute count:
+`REACH = issue_users / RELEASE_USERS`, both release-scoped (Step 2).
+
+| Score | Base criteria (crash = unhandled exception or ANR) |
 |-------|---------------|
-| 5 | Crash (unhandled exception / ANR) affecting ≥ 100 unique users |
-| 4 | Crash affecting 10–99 unique users |
-| 3 | Non-crash degradation (wrong data, feature disabled, blank screen) affecting ≥ 50 users |
-| 2 | Non-crash affecting 10–49 users OR crash affecting < 10 users |
-| 1 | Non-crash < 10 users OR cosmetic / UI glitch |
+| 5 | Crash with REACH ≥ 5% |
+| 4 | Crash with REACH 3–5% |
+| 3 | Crash with REACH 1.5–3% OR non-crash degradation (wrong data, feature disabled, blank screen) with REACH ≥ 5% |
+| 2 | Crash with REACH 0.5–1.5% OR non-crash with REACH 1.5–5% |
+| 1 | Crash with REACH < 0.5% OR non-crash < 1.5% OR cosmetic / UI glitch |
+
+**Why shares, and why these boundaries.** The scale was originally absolute
+(≥ 100 users = 5) and **saturated completely**: this app has 7,000–19,000 users per
+production release, so every issue in the top 10 cleared 100 and scored 5. Impact
+then carried no information, quadrants collapsed to an effort split, and Q3/Q4 could
+never be populated — the triage produced a ranking that could not rank.
+
+The boundaries are calibrated to the observed distribution on 3.4.2 (8 Sep 2026,
+7,104 release users): the top 25 issues spanned 118–506 affected users, i.e.
+REACH 1.7%–7.1%. These bands spread that range across 3, 4 and 5 instead of
+collapsing it onto 5. **Re-check the calibration if the install base changes by an
+order of magnitude** — if scores cluster on one value again, the bands are stale, and
+a scale that cannot discriminate is worse than no scale.
 
 **Modifiers** (cap total at 5):
 - +1 if the crash site is in the login flow (`org.dhis2.usescases.login`, `org.dhis2.mobile.login`)
-  or sync flow (`org.dhis2.mobile.sync`, `org.dhis2.usescases.sync`)
+  or sync flow (`org.dhis2.mobile.sync`, `org.dhis2.usescases.sync`,
+  `org.dhis2.utils.granularsync`) — granular sync belongs here: it is the sync flow by
+  any user-facing definition, and it has repeatedly supplied several of the top issues
+  at once
 - +1 if the crash site is in data-entry/enrollment/form flow (`org.dhis2.form`,
   `org.dhis2.usescases.eventsWithoutRegistration`, `org.dhis2.usescases.enrollment`)
 - +1 if `times_seen / users_seen` ratio > 5 (the same users are hitting it repeatedly)
@@ -214,6 +254,18 @@ Take the **highest** matching base score, then apply modifiers:
 | Q2 | Impact ≥ 4 AND Effort ≥ 3 | Plan carefully |
 | Q3 | Impact ≤ 3 AND Effort ≤ 2 | Quick wins |
 | Q4 | Impact ≤ 3 AND Effort ≥ 3 | Defer |
+
+**Sanity-check the spread before writing the report.** If every issue lands in one or
+two quadrants, or one axis takes a single value across all issues, the scale is not
+discriminating and the output is a list pretending to be a prioritisation. Say so at
+the top of the report and give the distribution, rather than presenting the quadrants
+as if they ranked anything.
+
+Also collapse duplicates before recommending work: issues sharing a crash site or a
+root cause (two ANRs in the same blocking call, several `!!` dereferences in the same
+dialog builder) are one fix. Score them individually, but say plainly which ones ride
+along with which — five tickets that are one change is the most common way this report
+misleads.
 
 ---
 
@@ -252,8 +304,9 @@ Generated: <today's date>
 - **Owner**: <repo> (thrown in <repo>; confidence high|medium|low — <one-clause reason>)
 - **Crash site**: `ClassName.kt:lineN`
 - **Flow**: <login | sync | data-entry | tracker | dashboard | settings | other>
-- **Users affected**: <count>
-- **Events**: <count> (ratio <times_seen/users_seen>)
+- **Users affected**: <release-scoped count> of <RELEASE_USERS> on this release (REACH <x.x>%)
+- **Events**: <release-scoped count> (ratio <events/users>)
+- **Lifetime users**: <all-release total, when it differs materially — it usually does>
 - **Root cause hint**: <one sentence from reading the crash-site file>
 - **Shipped lib version**: <only for library-owned issues, e.g. SDK 1.14.1>
 - **Ships via**: <only for library-owned issues: lib release → libs.versions.toml bump → app release; note if an app-side defensive guard is worth a companion fix>

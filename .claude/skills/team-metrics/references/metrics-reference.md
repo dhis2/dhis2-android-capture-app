@@ -94,7 +94,25 @@ quarter — so including them makes any roll-up unrealistic.
 
 Org `dhis2`, project `dhis2-android-capture`, region `https://us.sentry.io`.
 
-- Top issues: `search_issues` with `is:unresolved environment:production`, `sort=freq`, `period=90d`
+**The issue list comes from the `sentry-triage` skill, not from queries here.** It scores
+Impact and Effort and returns quadrants, which is what the stability section needs; copy its
+numbers verbatim so the page and the triage cannot drift apart. What follows is the
+supporting data triage does not produce, plus the traps.
+
+**Scope: triage is release-scoped, the report is window-scoped.** Triage covers the latest
+production release; every other figure in the report covers 90 days across all releases. Say
+so on the page. An issue can top one and be absent from the other, and that is not a
+contradiction — in Sep 2026, 89RF and 89RY led the 90-day view on volume accumulated under
+3.4.1 while being entirely absent from 3.4.2, which is what proved the rollout fixed them.
+
+**Impact was rescaled in Sep 2026 and the reason matters here too.** It was an absolute
+count (≥100 users = 5) on an app with 7,000–19,000 users per release, so every top issue
+scored 5 and the quadrants could not discriminate. It is now share-of-release-users
+(`REACH`). If a future edition shows every issue at one impact score, the bands are stale
+against the install base — fix the scale rather than publishing a ranking that does not rank.
+
+- Legacy top-issue query, still useful for the 90-day view: `search_issues` with
+  `is:unresolved environment:production`, `sort=freq`, `period=90d`
 - Per-release load: `search_events` dataset `errors`, fields `release`, `count()`,
   `count_unique(user)` — **report events per user, not raw counts**, because install bases differ
 - Confirm whether an issue is a regression: add `issue:[ID,...]` and group by `release`. An issue
@@ -107,6 +125,17 @@ Org `dhis2`, project `dhis2-android-capture`, region `https://us.sentry.io`.
 
 Aggregate events-per-user was flat across 3.4.x (3.17–3.22) while two new NPEs affecting ~7,000
 users appeared. Always check per-issue release scoping — the average hides regressions.
+
+**Never score from an issue page's `Users Impacted`.** That is a lifetime, all-release total;
+against a single release's denominator it overstates reach badly (79TN: 1,171 lifetime vs 353
+on 3.4.2, a 3.3× overstatement). Release-scoped counts come from `search_events` grouped by
+`issue` with a `release:` filter — the same call that gives the denominator.
+
+**Collapse duplicates before recommending work.** Triage scores issue-by-issue, so one
+architectural fault appears as several rows. Sep 2026: seven of the top ten were the same
+blocking SDK call on the main thread (`LocaleSelector`, `ThemeManager`, `SMSSyncProvider`,
+`D2.programs()`, `DashboardRepositoryImpl` — all `blockingGet`/`blockingFirst`), and three
+crashes were the same `!!`-on-null in the sync-dialog builders. Ten tickets, two fixes.
 
 ## Other sources
 
@@ -140,15 +169,22 @@ slower to read.
 | `01-journey` | stacked bar ×2 | intake + delivery + post-merge is a composition, and the two windows show whether the *shape* changed, not just the total |
 | `02-where-time-goes` | grouped bars | eight stages × two windows; the point is which stages dominate, which no table conveys at a glance |
 | `03-sonarcloud-trend` | small multiples | ~20 real monthly measurements, four metrics on four scales |
-| `04-sentry-issues` | ranked bars | magnitude plus a categorical split (regression vs pre-existing) |
+| `04-sentry-issues` | quadrant scatter | two continuous axes plus a categorical quadrant — a genuine 2D decision space |
 
 Rules the script already encodes — do not undo them by hand:
 
 - **Never two y-axes on one plot.** The four SonarCloud metrics get four panels. A shared axis
   invents a correlation that is not in the data.
-- **Colour is never the only channel.** Every bar carries a value label, every Sentry row
-  carries its release scope in words and a `▲` for regressions. Required: the palette's aqua
-  sits below 3:1 on the light surface.
+- **Colour is never the only channel.** Every bar carries a value label, and every point in
+  the quadrant scatter is labelled with its issue id, reach and quadrant in words. Required:
+  the palette's aqua sits below 3:1 on the light surface.
+- **Chart 4 plots reach against effort, not impact against effort.** Impact is derived from
+  reach and then capped at 5, so several issues share the top score and an Impact axis
+  collapses to a vertical line — a scatter that cannot separate its own points. Reach is the
+  continuous quantity underneath. The quadrant, which *is* computed from impact, is carried
+  by colour and written by every point.
+- **Never jitter the effort axis.** A nudged point drifts across the cheap/costly divider,
+  which is the one thing the divider exists to show. Nudge the label and draw a leader line.
 - **Palette is fixed** and validated for colour-blindness in both light and dark
   (`#2a78d6` / `#eb6834` / `#1baf7a`, status red `#d03b3b`). Colours are emitted as
   `var(--role, #fallback)` so the SVG can be re-themed without editing the shapes.
@@ -163,24 +199,92 @@ candidate.
 ### Attaching them to Confluence
 
 ```bash
-# upload / replace one chart on the page (JIRA_AUTH is email:api-token)
-curl -u "$JIRA_AUTH" -X PUT -H "X-Atlassian-Token: nocheck" \
-  -F "file=@scripts/metrics/charts/02-where-time-goes.png" \
-  -F "minorEdit=true" \
-  "https://dhis2.atlassian.net/wiki/rest/api/content/<pageId>/child/attachment"
-
-# list what is already attached, to replace rather than duplicate
-curl -u "$JIRA_AUTH" \
-  "https://dhis2.atlassian.net/wiki/rest/api/content/<pageId>/child/attachment?limit=50"
+python3 scripts/metrics/attach_charts.py <pageId>            # add or replace all four
+python3 scripts/metrics/attach_charts.py <pageId> --dry-run   # check auth without writing
 ```
 
-`PUT` on `/child/attachment` updates an attachment of the same filename in place; `POST`
-creates a second copy with a suffixed name. Use `PUT`. The page body then references it as
-`<ac:image><ri:attachment ri:filename="02-where-time-goes.png"/></ac:image>` — filename only,
-no path, no URL.
+Do not hand-roll the `curl`. The transport depends on which token type is configured, and
+getting it wrong produces a 401 that looks like a permissions problem and is not:
 
-If `JIRA_AUTH` is unavailable the charts cannot be attached at all. Say so and publish the
-tables instead; do not fall back to typing into the editor to place images.
+| Token type | Scheme | Host |
+|---|---|---|
+| Scoped (`Create API token with scopes`) | `Bearer <secret>` | `api.atlassian.com/ex/confluence/<cloudId>/wiki/rest/api` |
+| Classic (`Create API token`) | `Basic <email:token>` | `dhis2.atlassian.net/wiki/rest/api` |
+
+**Upload is API v1 only.** Verified 8 Sep 2026: the v2 attachment group
+(`/api/v2/pages/{id}/attachments`) offers GET and DELETE and **no create operation**, so the
+only upload route is v1 `POST /wiki/rest/api/content/{id}/child/attachment`. A v2-scoped
+token reads attachments happily and cannot write one, which produces a `401 scope does not
+match` on every write route and looks like a missing write scope when it is not.
+
+Both are ~192 chars and start `ATATT`, so **the two cannot be told apart by looking at the
+string** — only by what the auth schemes say about it. `metrics.py:classify_token` does that
+probe and caches it; `--preflight` prints the verdict, including the case that matters most:
+a valid scoped token whose grant is incomplete, which must be reported as "add a scope", not
+"bad token".
+
+Scopes for the scoped path — **no Jira scopes**:
+
+    read:content-details:confluence     write:attachment:confluence
+
+(the single classic equivalent is `write:confluence-file`)
+
+`read:attachment:confluence` is the trap: it is the obvious-sounding name, it grants the v2
+reads, and it cannot upload. A token holding only the two attachment scopes fails every
+write with `scope does not match` — which reads as "write scope missing" even when the
+consent screen plainly lists it. `read:content-details:confluence` is what the v1 create
+route actually requires, to resolve the page container.
+
+**Use `PUT` on the collection path.** Three neighbouring routes look interchangeable and are
+not — all three were tried against a correctly-scoped token on 8 Sep 2026:
+
+| Route | Result with `read:content-details` + `write:attachment` |
+|---|---|
+| `PUT /content/{id}/child/attachment` | **works** — creates, or versions a same-named file |
+| `POST /content/{id}/child/attachment` | creates, but **400** on a filename that already exists: *"Cannot add a new attachment with same file name"* — so re-runs break |
+| `PUT /content/{id}/child/attachment/{attachmentId}/data` | **401 scope does not match** — needs more than these two |
+| `POST /api/v2/pages/{id}/attachments` | **401** — v2 has no create operation at all |
+
+So a re-run for the same period versions the four files in place and the attachment count
+stays at four. Verified by running twice: v2 → v3, still four attachments.
+
+Other mechanics the script handles: `X-Atlassian-Token: nocheck` (the v1 attachment API
+applies an XSRF check that otherwise 403s with no explanation), and **attaching only to a
+published page** — the API refuses attachments on a draft, so publish to `current` first.
+Note the connector cannot publish an existing draft: `updateConfluencePage` sends the
+draft's version number and Confluence demands version 1 for a first publish, so create the
+page with `status: current` when it is going to carry charts.
+
+### Referencing an attachment from the body
+
+The connector's HTML+ADF format cannot reference an attachment by filename — it needs the
+**Media API fileId**, a UUID that appears only under `expand=extensions` on the v1
+attachment listing (the `att…` id from the upload response is *not* it).
+`attach_charts.py` prints ready-to-paste figure HTML for exactly this reason.
+
+```html
+<figure data-type="media-single" data-layout="center"
+        data-width="100" data-width-type="percentage">
+  <div data-type="media" data-media-type="file" data-id="<fileId>"
+       data-collection="contentId-<pageId>" data-alt="02-where-time-goes.png"></div>
+</figure>
+```
+
+**Replacing an attachment mints a new fileId.** After a re-attach, every `fileId` from the
+previous run is stale, so re-read them (`attach_charts.py` prints them) before authoring a
+new body. The already-published page is unaffected: Confluence stores the reference as
+`<ri:attachment ri:filename="…">`, which resolves by name to the current version. Only the
+authoring step needs fresh ids.
+
+`data-width-type="percentage"` is not optional. Omit it and Confluence reads `data-width` as
+**pixels** — the format guide's own `data-width="80"` example then renders an 80-pixel-wide
+chart. Confluence rewrites the whole thing to `<ac:image ac:width="680">` +
+`<ri:attachment ri:filename="…">` on save, and stamps the real intrinsic dimensions onto the
+media node, which is the cheapest confirmation that the reference actually bound to a file.
+
+If no token is configured the charts cannot be attached, and that is a supported outcome:
+publish the `expand` tables *expanded*, say so in the report, and do not fall back to typing
+into the editor to place images.
 
 ## Computation rules
 
@@ -208,13 +312,31 @@ header when no token is configured. Cross-checked against the recorded baseline:
 anonymous count for 13 May – 11 Aug is exactly 100, matching that edition's 81 Done plus
 19 closed-without-a-fix, so anonymous access sees the same issue set.
 
-Two consequences to hold on to:
+Three consequences to hold on to:
 
 - **Anonymous is a floor, not a certainty.** A permission-restricted issue is invisible and
-  drops out of every count silently. A token removes the doubt; without one, say "anonymous"
-  in the Method section.
-- **Confluence still needs the token** — for reading the previous edition in step 2 and for
-  creating the draft and attaching charts in step 6. There is no anonymous fallback.
+  drops out of every count silently. A classic token removes the doubt; without one, say
+  "anonymous" in the Method section.
+- **A scoped token does not authenticate Jira at all.** It is refused by Basic auth, so
+  sending it turns a 200 into a 401. `auth()` deliberately returns `None` for one, and
+  `metrics.json` still records `anonymous: true` — keyed off `auth()`, not off whether a
+  token exists, or the Method section would claim coverage the run did not have.
+- **Confluence needs no token.** Reading the previous edition (step 2) and creating or
+  updating the page (step 6) both go through the Atlassian connector's per-user OAuth. Only
+  chart attachment needs a credential, because the connector has no upload tool.
+
+### Why not native Confluence chart macros
+
+Tested 8 Sep 2026 by authoring them through the connector. The macros round-trip into
+storage cleanly, so this looks viable and is not: Confluence Cloud renders the native Chart
+macro as **"Chart (Deprecated)"**. Building a monthly report on a deprecated macro means it
+works until some Atlassian release where it silently does not, on a page nobody re-reads
+until the following month.
+
+The Jira Chart macro (`jirachart`) is worse for this report for a different reason: it
+re-queries JQL on every page view, so the picture drifts away from the prose around it as
+work moves. That breaks the single-snapshot rule outright. Both are dead ends — keep the
+PNG-or-table approach.
 
 ## Known data-quality limits — restate these in every report
 

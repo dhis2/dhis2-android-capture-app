@@ -1,15 +1,22 @@
 #!/usr/bin/env python3
 """ANDROAPP flow metrics: fetch from Jira REST, compute current vs previous window.
 
-Usage:  python3 metrics.py [--preflight | --census]
+Usage:  python3 metrics.py [--preflight | --census | --token-help]
 
-  --preflight  check every data source and say how to fix what is missing
-  --census     list issue types and statuses actually present, before trusting a window
+  --preflight   check every data source and say how to fix what is missing
+  --census      list issue types and statuses actually present, before trusting a window
+  --token-help  what a token is and is not needed for, and which kind to create
+
+No credential is needed to compute the report: Jira is world-readable and
+Confluence is reached through the Atlassian connector. A token is only for
+attaching the chart PNGs. See --token-help.
 """
 import base64
 import json
 import os
+import subprocess
 import sys
+import urllib.error
 import urllib.parse
 import urllib.request
 from collections import Counter, defaultdict
@@ -85,25 +92,85 @@ MISSING_TOKEN = """
 Jira could not be read even anonymously, so flow metrics cannot be computed.
 
 ANDROAPP is normally world-readable over the REST API, so this usually means the
-project's permissions changed or the network is blocking the request. Setting a
-token restores access in the first case:
+project's permissions changed or the network is blocking the request. A token
+restores access in the first case — see TOKEN_HELP below.
+"""
 
-Add this line to local.properties in the repo root (the file is gitignored, so the
-token is never committed):
+TOKEN_HELP = """
+No token is required to produce the report.
+
+  Jira        world-readable, including expand=changelog. Every flow metric
+              computes anonymously.
+  Confluence  read the previous edition and create/update the page through the
+              Atlassian connector in Claude Code (per-user OAuth, no token).
+  Charts      the ONLY step that needs a credential: attaching the four PNGs,
+              because the connector has no attachment-upload tool.
+
+So set a token only to attach charts, or to stop anonymous Jira reads from
+silently missing a permission-restricted issue. Add it to local.properties in
+the repo root — gitignored, so it is never committed. A worktree inherits the
+main checkout's file automatically:
 
     JIRA_AUTH=your.name@dhis2.org:<api-token>
 
-Create the token at https://id.atlassian.com/manage-profile/security/api-tokens
-Jira reads only need read scope; publishing the report to Confluence needs write.
+Two token types exist and they behave differently:
+
+  Scoped   "Create API token with scopes" — least privilege, preferred.
+           Works ONLY as Bearer against api.atlassian.com/ex/confluence/...
+           Grant exactly these two, and no Jira scopes:
+
+               read:content-details:confluence
+               write:attachment:confluence
+
+           (the single classic equivalent is write:confluence-file)
+
+           Upload is v1-only: the v2 attachment API has GET and DELETE but no
+           create operation, so read:attachment:confluence — the obvious guess —
+           cannot upload anything. It is not needed at all.
+           A scoped token CANNOT read Jira over Basic auth. That is expected.
+
+  Classic  "Create API token" — full impersonation of your account, read and
+           write, every project and space, no scope list. Works with Basic auth
+           against dhis2.atlassian.net. Simpler, and much broader than needed.
+
+https://id.atlassian.com/manage-profile/security/api-tokens
 """
+
+SITE = BASE                        # same host, named for the auth discussion above
+API = "https://api.atlassian.com"  # scoped tokens are only accepted here
+METRICS_PARENT = "1948057602"      # published "Android Metrics" page, used to probe access
+
+
+def main_checkout():
+    """The primary worktree's root, or None.
+
+    local.properties is gitignored, so a git worktree does not inherit it from
+    the clone it was made from — a token configured once in the main checkout is
+    invisible to every worktree. `git rev-parse --git-common-dir` points at the
+    shared .git directory, whose parent is that main checkout.
+    """
+    try:
+        out = subprocess.run(["git", "-C", REPO, "rev-parse", "--git-common-dir"],
+                             capture_output=True, text=True, timeout=10, check=True)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    common = os.path.abspath(os.path.join(REPO, out.stdout.strip()))
+    root = os.path.dirname(common)
+    return root if root != REPO else None
 
 
 def find_token():
     c = os.environ.get("JIRA_AUTH")
     if c:
         return c
-    lp = os.path.join(REPO, "local.properties")
-    if os.path.exists(lp):
+    roots = [REPO]
+    main = main_checkout()
+    if main:
+        roots.append(main)
+    for root in roots:
+        lp = os.path.join(root, "local.properties")
+        if not os.path.exists(lp):
+            continue
         for line in open(lp):
             if line.startswith("JIRA_AUTH="):
                 return line.split("=", 1)[1].strip()
@@ -111,57 +178,210 @@ def find_token():
 
 
 def auth():
-    """Basic header, or None. ANDROAPP is world-readable over the REST API — including
-    expand=changelog — so flow metrics work without a token. A token is still preferred:
-    it also sees any issue that has been permission-restricted, and anonymous access
-    would silently drop those from every count."""
+    """Basic header for Jira, or None.
+
+    ANDROAPP is world-readable over the REST API — including expand=changelog — so
+    flow metrics work without a token. A classic token is still slightly preferred:
+    it also sees any permission-restricted issue, which anonymous access would drop
+    from every count silently.
+
+    A scoped token returns None here on purpose. Scoped tokens are not accepted by
+    Basic auth at all, so sending one produces a 401 on endpoints that would have
+    answered anonymously — worse than not sending it.
+    """
     c = find_token()
-    return "Basic " + base64.b64encode(c.encode()).decode() if c else None
+    if not c or classify_token(c)[0] != "classic":
+        return None
+    return "Basic " + base64.b64encode(c.encode()).decode()
+
+
+_KIND = {}
+
+
+def classify_token(cred):
+    """('classic', display name) | ('scoped', None) | ('rejected', reason) | (None, None).
+
+    Both types are ~192 chars and start ATATT, so the string cannot be told apart by
+    inspection — only by what the two auth schemes say about it. Cached, because
+    preflight and the attachment upload both ask.
+    """
+    if not cred:
+        return (None, None)
+    if cred in _KIND:
+        return _KIND[cred]
+
+    secret = cred.partition(":")[2]
+
+    def probe(url, header):
+        req = urllib.request.Request(url, headers={"Accept": "application/json",
+                                                   "Authorization": header})
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                return r.status, json.load(r)
+        except urllib.error.HTTPError as e:
+            return e.code, e.read(300).decode(errors="replace")
+        except Exception as e:                                        # noqa: BLE001
+            return None, str(e)
+
+    basic = "Basic " + base64.b64encode(cred.encode()).decode()
+    bearer = "Bearer " + secret
+    code, body = probe(f"{SITE}/rest/api/3/myself", basic)
+    if code == 200 and isinstance(body, dict):
+        out = ("classic", body.get("displayName"))
+    else:
+        # Bearer against api.atlassian.com is the scoped-token path. A 200 means the
+        # scopes cover the call. "scope does not match" is the interesting case: it
+        # proves the credential IS a real scoped token that the grant simply does not
+        # cover — which must not be reported as a broken token, because the fix is to
+        # add a scope, not to reissue.
+        # "scope does not match" from ANY endpoint proves the credential is a real
+        # scoped token — the grant simply does not cover that call. Do not try to
+        # infer which scopes it has from an unrelated endpoint: the granular scopes
+        # are per-resource, so probing e.g. /space reports "insufficient" for a token
+        # that attaches files perfectly well. Whether the grant covers attachments is
+        # answered by charts_access(), against the attachment API itself.
+        code2, body2 = probe(f"{API}/oauth/token/accessible-resources", bearer)
+        if code2 == 200 or "scope does not match" in str(body2):
+            out = ("scoped", None)
+        else:
+            try:
+                code3, body3 = probe(
+                    f"{API}/ex/confluence/{cloud_id()}/wiki"
+                    f"/api/v2/pages/{METRICS_PARENT}/attachments?limit=1", bearer)
+            except Exception as e:                                   # noqa: BLE001
+                code3, body3 = None, str(e)
+            if code3 == 200 or "scope does not match" in str(body3):
+                out = ("scoped", None)
+            else:
+                out = ("rejected", f"Basic {code}, Bearer {code2}/{code3}")
+
+    _KIND[cred] = out
+    return out
+
+
+def cloud_id():
+    """The site's cloudId, needed to address it through api.atlassian.com. Public."""
+    with urllib.request.urlopen(f"{SITE}/_edge/tenant_info", timeout=30) as r:
+        return json.load(r)["cloudId"]
+
+
+def confluence_base(kind, cred):
+    """(base_url, auth_header) for the Confluence API the given token type can use.
+
+    The two token types do not merely differ in scheme — they land on different API
+    versions. The granular scopes (read:/write:attachment:confluence) are only
+    honoured on **v2**; v1 `/rest/api/content/...` answers 401 for them and wants the
+    legacy read:confluence-content.summary / write:confluence-file instead. A classic
+    token works on either, so it stays on v1 where upload is documented.
+    """
+    if kind == "scoped":
+        return (f"{API}/ex/confluence/{cloud_id()}/wiki",
+                "Bearer " + cred.partition(":")[2])
+    return (f"{SITE}/wiki", "Basic " + base64.b64encode(cred.encode()).decode())
+
+
+def charts_access(page_id=None):
+    """Can this token upload an attachment? ('ok'|'no'|'none', detail).
+
+    Probed against the route the uploader uses: v1 PUT /content/{id}/child/attachment
+    ("create or update attachment").
+    The v2 attachment API has no create operation, so there is nothing else to try —
+    and read:attachment:confluence, which sounds right, grants v2 reads that are
+    useless here.
+
+    An empty body cannot succeed, so a 4xx that is *not* 401/403 means auth passed
+    and only the payload was wrong. That is the signal we want; a real upload would
+    otherwise be needed just to test the credential.
+    """
+    cred = find_token()
+    kind = classify_token(cred)[0]
+    if kind in (None, "rejected"):
+        return ("none", "no usable token")
+
+    base, header = confluence_base(kind, cred)
+    pid = page_id or METRICS_PARENT
+    url = f"{base}/rest/api/content/{pid}/child/attachment"
+    req = urllib.request.Request(
+        # PUT, matching what attach_charts.py actually uses: POST on this path needs
+        # the same scopes but rejects existing filenames, so probing POST would pass
+        # while the real upload failed.
+        url, method="PUT", data=b"",
+        headers={"Accept": "application/json", "Authorization": header,
+                 "X-Atlassian-Token": "nocheck"})
+    try:
+        with urllib.request.urlopen(req, timeout=40) as r:
+            return ("ok", f"upload route returned {r.status}")
+    except urllib.error.HTTPError as e:
+        body = e.read(200).decode(errors="replace")
+        if e.code in (401, 403):
+            return ("no", f"{e.code} {body[:90]}")
+        if e.code == 404:
+            return ("no", "404 — page is probably still a draft; publish it first")
+        return ("ok", f"auth accepted ({e.code} on an empty body, as expected)")
+    except Exception as e:                                           # noqa: BLE001
+        return ("none", str(e))
 
 
 def preflight():
     """Report which data sources are reachable, and how to fix the ones that aren't."""
     ok = True
     tok = find_token()
+    kind, identity = classify_token(tok)
 
-    # A token that is present is not a token that works: ANDROAPP reads fine
-    # anonymously, so a bad credential still returns 200 from search. Verify it
-    # against an endpoint that actually requires auth, or publishing fails later
-    # with a 403 that looks like a permissions problem and isn't.
-    identity = None
-    if tok:
-        try:
-            identity = get("/rest/api/3/myself", {}).get("displayName")
-        except Exception as e:                                    # noqa: BLE001
-            print(f"FAIL  Jira      JIRA_AUTH is set but rejected ({e}).")
-            print("      Jira reads still work anonymously, so metrics will compute — but")
-            print("      Confluence will refuse to create the page. Check the value is")
-            print("      email:api-token with a full-length token, then re-run.")
-            ok = False
-            tok = None
+    # A token that is present is not a token that works, and a token that fails
+    # Basic auth is not necessarily broken — a scoped token is *expected* to. Report
+    # the three cases apart, or a correct least-privilege setup reads as an error.
+    if kind == "rejected":
+        print(f"FAIL  Token     JIRA_AUTH is set but neither auth scheme accepts it "
+              f"({identity}).")
+        print("      Likely revoked, mistyped, or from a different Atlassian account.")
+        print("      Metrics still compute anonymously; charts cannot be attached.")
+        ok = False
+        tok = None
 
-    mode = f"authenticated as {identity}" if identity else "anonymous"
+    mode = f"authenticated as {identity}" if kind == "classic" else "anonymous"
     try:
         d = get("/rest/api/3/search/jql",
                 {"jql": "project = ANDROAPP", "fields": "key", "maxResults": 1})
         print(f"OK    Jira      {mode}, search returns {len(d.get('issues', []))} row(s)")
-        if not tok:
-            print("      No JIRA_AUTH set. ANDROAPP is world-readable, so every flow metric")
-            print("      still computes — but any permission-restricted issue is invisible")
-            print("      and would be missing from the counts without warning. Set a token")
-            print("      to rule that out, and say 'anonymous' in the report's Method section.")
+        if kind != "classic":
+            print("      Reading anonymously — correct and expected. ANDROAPP is")
+            print("      world-readable, so every flow metric computes; but a")
+            print("      permission-restricted issue would be invisible and missing from")
+            print("      the counts without warning. Say 'anonymous' in the Method section.")
     except Exception as e:
         print(f"FAIL  Jira      {mode} request rejected: {e}")
-        if tok:
-            print("      Regenerate the token and update local.properties.")
-        else:
-            print(MISSING_TOKEN)
+        print(MISSING_TOKEN)
         ok = False
 
-    if not tok:
-        print("WARN  Confluence anonymous reads are refused (404), so a token is required to")
-        print("      read the previous edition and to create the draft and attach the charts.")
-        print("      Without one the report can be computed but not published.")
+    print("OK    Confluence via the Atlassian connector in Claude Code (no token).")
+    print("      Reading the previous edition and creating/updating the page both go")
+    print("      through the connector's per-user OAuth. Confirm the Atlassian tools are")
+    print("      available in-session; if not, authorize with /mcp.")
+
+    if kind in ("scoped", "classic"):
+        state, detail = charts_access()
+        label = "scoped" if kind == "scoped" else "classic"
+        if state == "ok":
+            print(f"OK    Charts    {label} token can upload attachments ({detail}).")
+            if kind == "classic":
+                print("      Note it is a full impersonation credential — every project and")
+                print("      space, read and write. read:content-details:confluence +")
+                print("      write:attachment:confluence would be enough.")
+        else:
+            print(f"WARN  Charts    token cannot upload attachments ({detail}).")
+            print("      Upload is v1-only — the v2 attachment API has no create")
+            print("      operation — so grant exactly these two, no Jira scopes:")
+            print("        read:content-details:confluence   write:attachment:confluence")
+            print("      read:attachment:confluence does NOT work: it grants v2 reads only.")
+    elif kind == "rejected":
+        print("NOTE  Charts    token unusable, so the PNGs cannot be attached. Publish the")
+        print("      collapsed tables instead and say so in the report.")
+    else:
+        print("NOTE  Charts    no token, so the four PNGs cannot be attached — the")
+        print("      connector has no attachment-upload tool. Publish the collapsed")
+        print("      tables instead and say so in the report. Everything else is")
+        print("      unaffected. See --token-help.")
 
     import shutil
     import subprocess
@@ -376,6 +596,10 @@ def main():
     fields = ("summary,status,created,resolutiondate,resolution,issuetype,priority,"
               "components,fixVersions,updated")
 
+    if "--token-help" in sys.argv:
+        print(TOKEN_HELP)
+        sys.exit(0)
+
     if "--preflight" in sys.argv:
         sys.exit(0 if preflight() else 1)
 
@@ -504,7 +728,7 @@ def main():
     print("  by status:", dict(Counter(e["fields"]["status"]["name"] for e in ep).most_common()))
 
     json.dump({"window": {"as_of": str(w2), "cur_from": str(w1), "prev_from": str(w0),
-                          "anonymous": find_token() is None},
+                          "anonymous": auth() is None},
                "cur": cur, "prev": prev, "live": live, "orphans": orph,
                "backlog": len(data["backlog"]), "bugs": len(data["bugs"]),
                "epics": {"open": len(ep), "age_p50": pct(ages, 50),
