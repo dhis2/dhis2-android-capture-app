@@ -15,13 +15,15 @@ Each chart is emitted three ways:
                         Confluence storage format, so no number is retyped
 
 Usage:
-    python3 scripts/metrics/charts.py --as-of 2026-08-11 \
-      --release 3.4.1 \
-      --issue "89RF|NullPointerException|ProgramFragment.showSyncDialog|4500|3.4.1 only|new" \
-      --issue "87NX|TooManyRequests|NetworkStatusProviderImpl|1971|since 3.4.0.1|old"
+    python3 scripts/metrics/charts.py --as-of 2026-09-08 \
+      --release 3.4.2 \
+      --issue "79TN|NPE, TEI dashboard|DashboardRepositoryImpl.kt:889|353|5.0|5|2|Q1" \
+      --issue "7F4F|ANR in LocaleSelector|LocaleSelector.kt:47|506|7.1|5|3|Q2"
 
---issue is ID|Title|EntryPoint|Users|Scope|new or old, repeated, highest first;
-"new" means the issue exists only in this release, i.e. a regression.
+--issue is ID|Title|CrashSite|Users|Reach%|Impact|Effort|Quadrant, repeated. The
+scores come from /sentry-triage — run it first and copy its numbers across rather
+than re-deriving them, so the chart and the triage report cannot disagree. Reach is
+the share of the release's users, which is also what triage scores Impact on.
 
 --as-of must be the report's window end, not today: the charts have to agree
 with the page they illustrate. See references/metrics-reference.md.
@@ -301,65 +303,117 @@ def chart_sonar(as_of):
 
 
 # --------------------------------------------------------------------------
-# 4. Sentry: users affected, split by whether the issue is a regression
+# 4. Sentry triage: reach against effort, quadrant-coloured
 # --------------------------------------------------------------------------
+# Plots REACH (share of the release's users) against Effort rather than the
+# triage's Impact score. Impact is derived from reach and then capped at 5, so on
+# an install base this size several issues share the top score and an Impact axis
+# collapses to a vertical line — a scatter that cannot separate its own points.
+# Reach is the continuous quantity underneath, so it separates them; the quadrant
+# each issue was assigned to is carried by colour and stated in the table.
+QUAD = {"Q1": ("crit", "Q1 Fix ASAP"), "Q2": ("s2", "Q2 Plan carefully"),
+        "Q3": ("s3", "Q3 Quick wins"), "Q4": ("long", "Q4 Defer")}
+
+
 def chart_sentry(issues, release):
     if not issues:
         print("  ! no --issue given — skipping chart 4", file=sys.stderr)
         return None, None
-    issues = issues[:6]
     W, IW = 900, 900 - 2 * M
-    top, row_h, bh = 104, 48, 18
-    H = top + len(issues) * row_h + 60
-    lab_w, plot_w = 250, IW - 250 - 200
-    scale = plot_w / max(i["users"] for i in issues)
-    n_reg = sum(1 for i in issues if i["regression"])
-    s = svg_open(W, H, "Production issues by users affected",
-                 f"Top {len(issues)} unresolved issues on {release}. Counts overlap between "
-                 "issues and must never be summed.")
-    for k, (col, lbl) in enumerate([(C["crit"], f"New in {release} — regression"),
-                                    (C["long"], "Pre-existing")]):
-        lx = k * 230
-        s.append(f'<rect x="{lx}" y="62" width="10" height="10" rx="2" fill="{col}"/>')
-        s.append(txt(lx + 16, 71, lbl, size=12, fill=C["ink2"]))
-    for i, it in enumerate(issues):
-        y = top + i * row_h
-        reg = it["regression"]
-        s.append(txt(lab_w - 12, y + 10, f"{it['id']}  {it['title']}", size=12, fill=C["ink"],
-                     anchor="end", weight=600))
-        s.append(txt(lab_w - 12, y + 25, it["where"], size=11, fill=C["muted"], anchor="end"))
-        s.append(bar(lab_w, y, it["users"] * scale, bh, C["crit"] if reg else C["long"]))
-        s.append(txt(lab_w + it["users"] * scale + 10, y + 14, f"{it['users']:,} users",
-                     size=12, fill=C["ink"], weight=600, tab=True))
-        # a status colour never carries meaning on its own: mark + written scope
-        s.append(txt(IW, y + 14, ("▲ " if reg else "") + it["scope"], size=11,
-                     fill=C["crit"] if reg else C["muted"], anchor="end",
-                     weight=600 if reg else 400))
-    s.append(f'<line x1="{lab_w}" y1="{top-14}" x2="{lab_w}" y2="{top+len(issues)*row_h-18}" '
-             f'stroke="{C["axis"]}" stroke-width="1"/>')
-    tail = (f"{n_reg} of the top {len(issues)} exist only in this release."
-            if n_reg else "No issue in the top list is confined to this release.")
-    s.append(txt(0, H - 26, tail + " Aggregate error rates hide that; per-release scoping is "
-                                   "what surfaces it.", size=12, fill=C["muted"]))
+    top, plot_h = 118, 330
+    left, plot_w = 58, IW - 58 - 30
+    H = top + plot_h + 96
+
+    max_reach = max(i["reach"] for i in issues)
+    y_max = max(8.0, (int(max_reach) + 2))
+    ex, ey = (lambda e: left + plot_w * (e - 0.5) / 5.0,
+              lambda r: top + plot_h - plot_h * (r / y_max))
+
+    s = svg_open(W, H, "Production issues: reach against fix effort",
+                 f"Top {len(issues)} unresolved issues on {release}, positioned by the share "
+                 "of that release's users they hit and by how much work the fix is. "
+                 "Left of the divider is cheap to fix.")
+
+    for k, q in enumerate(["Q1", "Q2", "Q3", "Q4"]):
+        col, lbl = QUAD[q]
+        lx = k * 200
+        s.append(f'<circle cx="{lx + 5}" cy="72" r="5" fill="{C[col]}"/>')
+        s.append(txt(lx + 16, 76, lbl, size=12, fill=C["ink2"]))
+
+    # gridlines and y axis: reach in percent
+    for g in range(0, int(y_max) + 1, 2):
+        gy = ey(g)
+        s.append(f'<line x1="{left}" y1="{gy}" x2="{left + plot_w}" y2="{gy}" '
+                 f'stroke="{C["grid"]}" stroke-width="1"/>')
+        s.append(txt(left - 10, gy + 4, f"{g}%", size=11, fill=C["muted"], anchor="end"))
+    s.append(txt(left - 10, top - 14, "share of release users", size=11, fill=C["ink2"],
+                 anchor="start"))
+
+    # the effort divider: <=2 is the low-effort half the quadrants split on
+    dx = ex(2.5)
+    s.append(f'<line x1="{dx}" y1="{top - 6}" x2="{dx}" y2="{top + plot_h}" '
+             f'stroke="{C["axis"]}" stroke-width="1" stroke-dasharray="4 3"/>')
+    s.append(txt(dx - 8, top - 12, "cheap to fix", size=11, fill=C["muted"], anchor="end"))
+    s.append(txt(dx + 8, top - 12, "costly", size=11, fill=C["muted"]))
+
+    for e in range(1, 6):
+        s.append(txt(ex(e), top + plot_h + 20, str(e), size=11, fill=C["muted"],
+                     anchor="middle"))
+    s.append(txt(left + plot_w / 2, top + plot_h + 40, "effort to fix (1 = single line)",
+                 size=11, fill=C["ink2"], anchor="middle"))
+    s.append(f'<line x1="{left}" y1="{top + plot_h}" x2="{left + plot_w}" '
+             f'y2="{top + plot_h}" stroke="{C["axis"]}" stroke-width="1"/>')
+
+    # x stays exactly on the effort value — jittering it would drift a point across
+    # the cheap/costly divider and misreport the one thing the divider is for.
+    # Labels are what collide, so those get nudged instead, per effort column.
+    placed = {}
+    for it in sorted(issues, key=lambda i: -i["reach"]):
+        col = C[QUAD[it["quadrant"]][0]]
+        cx, cy = ex(it["effort"]), ey(it["reach"])
+        ly = cy
+        for prev in placed.setdefault(it["effort"], []):
+            if abs(ly - prev) < 26:
+                ly = prev + 26
+        placed[it["effort"]].append(ly)
+        s.append(f'<circle cx="{cx}" cy="{cy}" r="7" fill="{col}" '
+                 f'stroke="{C["surface"]}" stroke-width="2"/>')
+        if abs(ly - cy) > 1:  # leader line, so a nudged label still reads as its point
+            s.append(f'<line x1="{cx + 8}" y1="{cy}" x2="{cx + 13}" y2="{ly - 4}" '
+                     f'stroke="{C["axis"]}" stroke-width="1"/>')
+        # colour is never the only channel: the quadrant is written by every point
+        s.append(txt(cx + 14, ly - 2, it["id"], size=11, fill=C["ink"], weight=600))
+        s.append(txt(cx + 14, ly + 10, f'{it["reach"]:.1f}% · {it["quadrant"]}', size=10,
+                     fill=C["muted"]))
+
+    q1 = [i["id"] for i in issues if i["quadrant"] == "Q1"]
+    tail = (f"Q1 — high reach, cheap to fix: {', '.join(q1)}." if q1
+            else "Nothing sits in Q1 this period.")
+    s.append(txt(0, H - 26, tail, size=12, fill=C["muted"]))
     s.append("</g></svg>")
 
-    rows_t = [[f"{i['id']} {i['title']}", f"{i['users']:,}", i["where"], i["scope"]]
-              for i in issues]
-    return "\n".join(s), table(["Issue", "Users affected", "Entry point", "Releases"], rows_t,
-                               "Users-affected counts overlap between issues and must never be "
-                               "added together.")
+    rows_t = [[f'{i["id"]} {i["title"]}', i["quadrant"], str(i["impact"]), str(i["effort"]),
+               f'{i["users"]:,}', f'{i["reach"]:.1f}%', i["where"]]
+              for i in sorted(issues, key=lambda i: (i["quadrant"], -i["reach"]))]
+    return "\n".join(s), table(
+        ["Issue", "Quadrant", "Impact", "Effort", "Users", "Reach", "Crash site"], rows_t,
+        "Reach is the share of this release's users, so counts are release-scoped and not "
+        "the lifetime totals shown on a Sentry issue page. Users-affected counts overlap "
+        "between issues and must never be added together.")
 
 
 def parse_issue(spec):
-    """ID|Title|EntryPoint|Users|Scope|new or old"""
+    """ID|Title|CrashSite|Users|Reach%|Impact|Effort|Quadrant"""
     p = [x.strip() for x in spec.split("|")]
-    if len(p) != 6:
+    if len(p) != 8:
         raise argparse.ArgumentTypeError(
-            f"--issue needs 6 fields separated by |, got {len(p)}: {spec}")
-    if p[5] not in ("new", "old"):
-        raise argparse.ArgumentTypeError("last field must be 'new' (regression) or 'old'")
-    return {"id": p[0], "title": p[1], "where": p[2], "users": int(p[3].replace(",", "")),
-            "scope": p[4], "regression": p[5] == "new"}
+            f"--issue needs 8 fields separated by |, got {len(p)}: {spec}\n"
+            "  ID|Title|CrashSite|Users|Reach%|Impact|Effort|Quadrant")
+    if p[7] not in QUAD:
+        raise argparse.ArgumentTypeError(f"quadrant must be one of {', '.join(QUAD)}")
+    return {"id": p[0], "title": p[1], "where": p[2],
+            "users": int(p[3].replace(",", "")), "reach": float(p[4].rstrip("%")),
+            "impact": int(p[5]), "effort": int(p[6]), "quadrant": p[7]}
 
 
 # --------------------------------------------------------------------------

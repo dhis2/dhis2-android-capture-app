@@ -94,7 +94,25 @@ quarter — so including them makes any roll-up unrealistic.
 
 Org `dhis2`, project `dhis2-android-capture`, region `https://us.sentry.io`.
 
-- Top issues: `search_issues` with `is:unresolved environment:production`, `sort=freq`, `period=90d`
+**The issue list comes from the `sentry-triage` skill, not from queries here.** It scores
+Impact and Effort and returns quadrants, which is what the stability section needs; copy its
+numbers verbatim so the page and the triage cannot drift apart. What follows is the
+supporting data triage does not produce, plus the traps.
+
+**Scope: triage is release-scoped, the report is window-scoped.** Triage covers the latest
+production release; every other figure in the report covers 90 days across all releases. Say
+so on the page. An issue can top one and be absent from the other, and that is not a
+contradiction — in Sep 2026, 89RF and 89RY led the 90-day view on volume accumulated under
+3.4.1 while being entirely absent from 3.4.2, which is what proved the rollout fixed them.
+
+**Impact was rescaled in Sep 2026 and the reason matters here too.** It was an absolute
+count (≥100 users = 5) on an app with 7,000–19,000 users per release, so every top issue
+scored 5 and the quadrants could not discriminate. It is now share-of-release-users
+(`REACH`). If a future edition shows every issue at one impact score, the bands are stale
+against the install base — fix the scale rather than publishing a ranking that does not rank.
+
+- Legacy top-issue query, still useful for the 90-day view: `search_issues` with
+  `is:unresolved environment:production`, `sort=freq`, `period=90d`
 - Per-release load: `search_events` dataset `errors`, fields `release`, `count()`,
   `count_unique(user)` — **report events per user, not raw counts**, because install bases differ
 - Confirm whether an issue is a regression: add `issue:[ID,...]` and group by `release`. An issue
@@ -107,6 +125,17 @@ Org `dhis2`, project `dhis2-android-capture`, region `https://us.sentry.io`.
 
 Aggregate events-per-user was flat across 3.4.x (3.17–3.22) while two new NPEs affecting ~7,000
 users appeared. Always check per-issue release scoping — the average hides regressions.
+
+**Never score from an issue page's `Users Impacted`.** That is a lifetime, all-release total;
+against a single release's denominator it overstates reach badly (79TN: 1,171 lifetime vs 353
+on 3.4.2, a 3.3× overstatement). Release-scoped counts come from `search_events` grouped by
+`issue` with a `release:` filter — the same call that gives the denominator.
+
+**Collapse duplicates before recommending work.** Triage scores issue-by-issue, so one
+architectural fault appears as several rows. Sep 2026: seven of the top ten were the same
+blocking SDK call on the main thread (`LocaleSelector`, `ThemeManager`, `SMSSyncProvider`,
+`D2.programs()`, `DashboardRepositoryImpl` — all `blockingGet`/`blockingFirst`), and three
+crashes were the same `!!`-on-null in the sync-dialog builders. Ten tickets, two fixes.
 
 ## Other sources
 
@@ -140,15 +169,22 @@ slower to read.
 | `01-journey` | stacked bar ×2 | intake + delivery + post-merge is a composition, and the two windows show whether the *shape* changed, not just the total |
 | `02-where-time-goes` | grouped bars | eight stages × two windows; the point is which stages dominate, which no table conveys at a glance |
 | `03-sonarcloud-trend` | small multiples | ~20 real monthly measurements, four metrics on four scales |
-| `04-sentry-issues` | ranked bars | magnitude plus a categorical split (regression vs pre-existing) |
+| `04-sentry-issues` | quadrant scatter | two continuous axes plus a categorical quadrant — a genuine 2D decision space |
 
 Rules the script already encodes — do not undo them by hand:
 
 - **Never two y-axes on one plot.** The four SonarCloud metrics get four panels. A shared axis
   invents a correlation that is not in the data.
-- **Colour is never the only channel.** Every bar carries a value label, every Sentry row
-  carries its release scope in words and a `▲` for regressions. Required: the palette's aqua
-  sits below 3:1 on the light surface.
+- **Colour is never the only channel.** Every bar carries a value label, and every point in
+  the quadrant scatter is labelled with its issue id, reach and quadrant in words. Required:
+  the palette's aqua sits below 3:1 on the light surface.
+- **Chart 4 plots reach against effort, not impact against effort.** Impact is derived from
+  reach and then capped at 5, so several issues share the top score and an Impact axis
+  collapses to a vertical line — a scatter that cannot separate its own points. Reach is the
+  continuous quantity underneath. The quadrant, which *is* computed from impact, is carried
+  by colour and written by every point.
+- **Never jitter the effort axis.** A nudged point drifts across the cheap/costly divider,
+  which is the one thing the divider exists to show. Nudge the label and draw a leader line.
 - **Palette is fixed** and validated for colour-blindness in both light and dark
   (`#2a78d6` / `#eb6834` / `#1baf7a`, status red `#d03b3b`). Colours are emitted as
   `var(--role, #fallback)` so the SVG can be re-themed without editing the shapes.
@@ -233,6 +269,12 @@ attachment listing (the `att…` id from the upload response is *not* it).
        data-collection="contentId-<pageId>" data-alt="02-where-time-goes.png"></div>
 </figure>
 ```
+
+**Replacing an attachment mints a new fileId.** After a re-attach, every `fileId` from the
+previous run is stale, so re-read them (`attach_charts.py` prints them) before authoring a
+new body. The already-published page is unaffected: Confluence stores the reference as
+`<ri:attachment ri:filename="…">`, which resolves by name to the current version. Only the
+authoring step needs fresh ids.
 
 `data-width-type="percentage"` is not optional. Omit it and Confluence reads `data-width` as
 **pixels** — the format guide's own `data-width="80"` example then renders an 80-pixel-wide

@@ -89,24 +89,38 @@ The script prints a correctness gate on ANDROAPP-7679. Expected: **42.8 d lead, 
 `In Review`, 15.0 d `Ready to Start` → merged**. If it does not match, the stage math is wrong —
 do not publish, investigate first.
 
-Then gather the non-Jira sources (commands in the reference): GitHub PRs and CI runs, SonarCloud
-measures and history pinned to `branch=develop`, and Sentry top issues plus per-release load.
+Then gather the non-Jira sources (commands in the reference): GitHub PRs and CI runs, and
+SonarCloud measures and history pinned to `branch=develop`.
 
-For Sentry, always check whether a top issue is confined to one release — that is what
-distinguishes a regression from a long-standing problem, and aggregate averages hide it.
+**For Sentry, run the `sentry-triage` skill rather than querying issues here.** It resolves
+the production release, attributes each issue to its owning repo, scores Impact and Effort,
+and returns the impact/effort quadrants — which is what makes the stability section
+actionable instead of a leaderboard. Take its scores verbatim into the report and the chart;
+do not re-derive them, or the page and the triage will disagree.
+
+Two things the triage does not cover, so still query them here:
+
+- **per-release load** (events per user across releases) — the 90-day trend, in the reference
+- **whether a top issue is confined to one release** — what separates a regression from a
+  long-standing problem, which aggregate averages hide
+
+Mind the scope difference and state it on the page: triage is scoped to the **latest
+production release**, the rest of the report to the **90-day window**. They answer different
+questions — "what should we fix now" versus "how did stability move" — and an issue can
+legitimately top one and be absent from the other.
 
 ## 4. Draw the four charts
 
 ```bash
-python3 scripts/metrics/charts.py --as-of <window-end YYYY-MM-DD> --release <e.g. 3.4.1> \
-  --issue "89RF|NullPointerException|ProgramFragment.showSyncDialog|4500|3.4.1 only|new" \
-  --issue "87NX|TooManyRequests|NetworkStatusProviderImpl|1971|since 3.4.0.1|old"
+python3 scripts/metrics/charts.py --as-of <window-end YYYY-MM-DD> --release <e.g. 3.4.2> \
+  --issue "79TN|NPE — TEI dashboard|DashboardRepositoryImpl.kt:889|353|5.0|5|2|Q1" \
+  --issue "7F4F|ANR in LocaleSelector|LocaleSelector.kt:47|506|7.1|5|3|Q2"
 ```
 
 Flow numbers come from `metrics.json`, SonarCloud history the script fetches itself, and the
-Sentry rows you pass on the command line from what the MCP tools just returned — one `--issue`
-per row, highest users first, `new` meaning the issue exists **only** in this release. Nothing
-is written to disk but the charts.
+Sentry rows from the triage report — one `--issue` per row as
+`ID|Title|CrashSite|Users|Reach%|Impact|Effort|Quadrant`, copied across rather than
+re-derived. Nothing is written to disk but the charts.
 
 It produces, in `scripts/metrics/charts/`:
 
@@ -115,7 +129,7 @@ It produces, in `scripts/metrics/charts/`:
 | `01-journey` | the paragraph explaining that intake + delivery + post-merge sum to lead time | `metrics.json` |
 | `02-where-time-goes` | the whole shaded stage-share table | `metrics.json` |
 | `03-sonarcloud-trend` | the SonarCloud prose line in **Quality** | SonarCloud API |
-| `04-sentry-issues` | the top-issues table in **Production stability** | `--issue` args |
+| `04-sentry-issues` | the top-issues table in **Production stability** | `--issue` args, from `sentry-triage` |
 
 plus `charts/tables.html` — the same numbers as a collapsed Confluence `expand` macro per
 chart. **Paste those, never retype the figures**; hand-transcribing is how a chart and its
@@ -144,9 +158,16 @@ Method section.
    then the collapsed table. No shaded stage table in the reading flow.
 5. **Work in progress** — active, committed queues, backlog, open bugs
 6. **Epics** — one row; they are excluded from flow and summarised separately
-7. **Production stability** — **chart `04-sentry-issues`**, then the collapsed table, then
-   per-release load. Regressions are already red-and-marked in the chart; still name them
-   in the sentence above it.
+7. **Production stability** — lead with the **quadrant counts and what Q1 contains**, since
+   that is the decision the section exists to support. Then **chart `04-sentry-issues`**, the
+   collapsed table (quadrant, impact, effort, reach per issue), and per-release load.
+   Name any regression in the sentence above the chart.
+
+   **Group by root cause before recommending anything.** Triage scores issues one at a
+   time, so a single architectural fault arrives as several separate rows — this period,
+   seven of the top ten were the same blocking-SDK-call-on-the-main-thread shape, and three
+   `!!`-on-null crashes shared one dialog builder. Reporting those as ten items overstates
+   the work and hides the actual fix. Say which issues ride along with which.
 8. **Quality** — type mix, closed-without-a-fix, then **chart `03-sonarcloud-trend`** in
    place of the prose trend line, then the collapsed table
 9. **Delivery** — PR metrics, CI state
