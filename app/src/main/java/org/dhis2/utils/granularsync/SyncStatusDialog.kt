@@ -98,19 +98,25 @@ class SyncStatusDialog :
                             viewModel.manageWorkInfo(it)
                         }
                     }
-                    syncState?.let { syncUiState ->
-                        when {
-                            syncUiState.shouldDismissOnUpdate -> dismiss()
-                            syncing && syncUiState.syncState == SyncStatus.SYNCED -> {
-                                dismiss()
+                    ObserveAsEvents(viewModel.granularSyncChannel) { action ->
+                        when (action) {
+                            GranularSyncAction.DisplaySyncSuccess ->
                                 Toast
                                     .makeText(
                                         requireContext(),
                                         getString(R.string.sync_successful),
                                         Toast.LENGTH_SHORT,
                                     ).show()
-                            }
                         }
+                    }
+                    syncState?.let { syncUiState ->
+                        if (
+                            syncUiState.shouldDismissOnUpdate ||
+                            (syncing && syncUiState.syncState == SyncStatus.SYNCED)
+                        ) {
+                            dismiss()
+                        }
+
                         BottomSheetDialogUi(
                             bottomSheetDialogUiModel =
                                 BottomSheetDialogUiModel(
