@@ -1,5 +1,6 @@
 package org.dhis2.form.data.metadata
 
+import org.dhis2.bindings.fileResourceNameOf
 import org.hisp.dhis.android.core.D2
 
 class FileResourceConfiguration(
@@ -21,4 +22,6 @@ class FileResourceConfiguration(
         } else {
             null
         }
+
+    fun getFileName(uidOrPath: String): String? = d2.fileResourceNameOf(uidOrPath)
 }

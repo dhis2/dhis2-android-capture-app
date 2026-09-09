@@ -9,10 +9,14 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class DisplayNameProviderImplTest {
@@ -143,6 +147,40 @@ class DisplayNameProviderImplTest {
                 optionSet = null,
             )
         assertEquals(filePath, result)
+    }
+
+    @Test
+    fun `Should return the original file name for valueType FILE_RESOURCE when value is the file uid`() {
+        val value = "fileUid"
+        whenever(fileResourceConfiguration.getFileName(value)) doReturn "report.pdf"
+
+        val result = displayNameProvider.provideFileName(ValueType.FILE_RESOURCE, value)
+
+        assertEquals("report.pdf", result)
+    }
+
+    @Test
+    fun `Should return the original file name for valueType FILE_RESOURCE when value is the file path`() {
+        val value = "/sdk_resources/db/fileUid.pdf"
+        whenever(fileResourceConfiguration.getFileName(value)) doReturn "report.pdf"
+
+        val result = displayNameProvider.provideFileName(ValueType.FILE_RESOURCE, value)
+
+        assertEquals("report.pdf", result)
+    }
+
+    @Test
+    fun `Should return null file name when value is null or empty`() {
+        assertNull(displayNameProvider.provideFileName(ValueType.FILE_RESOURCE, null))
+        assertNull(displayNameProvider.provideFileName(ValueType.FILE_RESOURCE, ""))
+        verify(fileResourceConfiguration, never()).getFileName(any())
+    }
+
+    @Test
+    fun `Should not look for a file name for non file value types`() {
+        assertNull(displayNameProvider.provideFileName(ValueType.TEXT, "value"))
+        assertNull(displayNameProvider.provideFileName(null, "value"))
+        verify(fileResourceConfiguration, never()).getFileName(any())
     }
 
     @Test
