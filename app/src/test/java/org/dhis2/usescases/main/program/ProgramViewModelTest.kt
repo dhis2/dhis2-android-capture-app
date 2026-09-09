@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.MatomoAnalyticsController
@@ -20,6 +21,7 @@ import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.dhis2.mobile.sync.model.SyncStatusData
+import org.dhis2.usescases.main.NavigateToSingleProgram
 import org.dhis2.utils.MainCoroutineScopeRule
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.ImageCardData
@@ -30,6 +32,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.Date
@@ -55,6 +58,7 @@ class ProgramViewModelTest {
         mock {
             on { isFeatureEnable(any()) } doReturn false
         }
+    private val navigateToSingleProgram: NavigateToSingleProgram = mock()
     private val dispatcherProvider =
         object : DispatcherProvider {
             override fun io(): CoroutineDispatcher = testingDispatcher
@@ -77,29 +81,55 @@ class ProgramViewModelTest {
                 filterManager,
                 syncStatusController,
                 schedulerProvider,
+                navigateToSingleProgram,
             )
     }
 
     @Test
-    fun `Should initialize program list`() {
-        val programs = listOf(programViewModel())
-        val programsFlowable = Flowable.just(programs)
-        val filterProcessor: FlowableProcessor<FilterManager> = PublishProcessor.create()
+    fun `Should initialize program list`() =
+        runTest {
+            val programs = listOf(programViewModel(), dataSetViewModel())
+            val programsFlowable = Flowable.just(programs)
+            val filterProcessor: FlowableProcessor<FilterManager> = PublishProcessor.create()
 
-        val syncStatusData = SyncStatusData(true)
-        val filterManagerFlowable = Flowable.just(filterManager).startWith(filterProcessor)
+            val syncStatusData = SyncStatusData(true)
+            val filterManagerFlowable = Flowable.just(filterManager).startWith(filterProcessor)
 
-        whenever(filterManager.asFlowable()) doReturn filterManagerFlowable
+            whenever(filterManager.asFlowable()) doReturn filterManagerFlowable
+            whenever(navigateToSingleProgram.invoke(2)) doReturn Result.success(false)
+            whenever(
+                syncStatusController.observeDownloadProcess(),
+            ) doReturn MutableStateFlow(syncStatusData)
+            whenever(programRepository.homeItems(any())) doReturn programsFlowable
 
-        whenever(
-            syncStatusController.observeDownloadProcess(),
-        ) doReturn MutableStateFlow(syncStatusData)
-        whenever(programRepository.homeItems(any())) doReturn programsFlowable
+            presenter.init()
+            verify(view, times(0)).navigateTo(programs[0])
+            verify(view, times(0)).navigateTo(programs[1])
+            verify(programRepository).clearCache()
+            assertTrue(presenter.programs.value?.isNotEmpty() == true)
+        }
 
-        presenter.init()
-        verify(programRepository).clearCache()
-        assertTrue(presenter.programs.value?.isNotEmpty() == true)
-    }
+    @Test
+    fun `Should navigate to single program`() =
+        runTest {
+            val programs = listOf(programViewModel())
+            val programsFlowable = Flowable.just(programs)
+            val filterProcessor: FlowableProcessor<FilterManager> = PublishProcessor.create()
+
+            val syncStatusData = SyncStatusData(true)
+            val filterManagerFlowable = Flowable.just(filterManager).startWith(filterProcessor)
+
+            whenever(filterManager.asFlowable()) doReturn filterManagerFlowable
+            whenever(navigateToSingleProgram.invoke(1)) doReturn Result.success(true)
+
+            whenever(
+                syncStatusController.observeDownloadProcess(),
+            ) doReturn MutableStateFlow(syncStatusData)
+            whenever(programRepository.homeItems(any())) doReturn programsFlowable
+
+            presenter.init()
+            verify(view).navigateTo(programs.first())
+        }
 
     @Test
     fun `Should show sync dialog when sync image is clicked`() {

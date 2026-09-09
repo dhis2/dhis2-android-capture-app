@@ -97,4 +97,13 @@ class SplashPresenter internal constructor(
             ?.accountManager()
             ?.getAccounts()
             ?.count() ?: 0
+
+    fun clearSingleProgramNavigation() {
+        userManager
+            ?.d2
+            ?.dataStoreModule()
+            ?.localDataStore()
+            ?.value(Preference.IS_SINGLE_NAVIGATION_DONE)
+            ?.blockingDelete()
+    }
 }
