@@ -31,9 +31,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dhis2.commons.Constants
@@ -46,6 +48,7 @@ import org.dhis2.commons.sync.ConflictType.PROGRAM
 import org.dhis2.commons.sync.ConflictType.TEI
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.model.GRANULAR_SYNC_DATASET_NAME
 import org.dhis2.mobile.sync.model.GRANULAR_SYNC_DATAVALUE_NAME
@@ -88,6 +91,8 @@ class GranularSyncPresenter(
 
     private val _serverAvailability = MutableLiveData<Boolean?>()
     val serverAvailability: LiveData<Boolean?> = _serverAvailability
+    private val _granularSyncChannel = Channel<GranularSyncAction>()
+    val granularSyncChannel = _granularSyncChannel.receiveAsFlow()
 
     private fun loadSyncInfo(forcedState: State? = null) {
         viewModelScope.launch(dispatcher.io()) {
@@ -429,9 +434,19 @@ class GranularSyncPresenter(
 
             org.dhis2.mobile.sync.model.SyncStatus.Cancelled,
             org.dhis2.mobile.sync.model.SyncStatus.Failed,
-            org.dhis2.mobile.sync.model.SyncStatus.Succeed,
             ->
                 loadSyncInfo()
+
+            org.dhis2.mobile.sync.model.SyncStatus.Succeed -> {
+                loadSyncInfo()
+                sendDisplaySuccessMessage()
+            }
+        }
+    }
+
+    private fun sendDisplaySuccessMessage() {
+        launchUseCase(dispatcher.io()) {
+            _granularSyncChannel.send(GranularSyncAction.DisplaySyncSuccess)
         }
     }
 
