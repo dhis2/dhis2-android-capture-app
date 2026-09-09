@@ -20,6 +20,7 @@ internal actual val trackerSearchRepositoryModule: Module =
                 d2 = get(),
                 filterPresenter = get(),
                 profilePictureProvider = get(),
+                domainErrorMapper = get(),
             )
         }
 
