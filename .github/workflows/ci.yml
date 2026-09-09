@@ -73,6 +73,16 @@ jobs:
         if: ${{ !contains(github.event.pull_request.title, '[skip unitTest]') && !contains(github.event.pull_request.body, '[skip unitTest]') }}
         run: ./gradlew testDebugUnitTest testDhis2DebugUnitTest testAndroidHostTest jacocoReport --stacktrace --no-daemon
 
+      # Raw execution data; code-quality merges it with the instrumented coverage.
+      - name: Upload JaCoCo execution data
+        if: ${{ !contains(github.event.pull_request.title, '[skip unitTest]') && !contains(github.event.pull_request.body, '[skip unitTest]') }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: jacoco-exec
+          path: '**/build/jacoco/*.exec'
+          if-no-files-found: warn
+          retention-days: 7
+
       - name: Upload JaCoCo Report
         if: ${{ !contains(github.event.pull_request.title, '[skip unitTest]') && !contains(github.event.pull_request.body, '[skip unitTest]') }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
@@ -144,6 +154,15 @@ jobs:
           chmod +x browserstackJenkins.sh
           ./browserstackJenkins.sh
 
+      - name: Upload BrowserStack coverage
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: browserstack-coverage-portrait
+          path: browserstack-coverage/**
+          if-no-files-found: warn
+          retention-days: 7
+
   run-ui-landscape:
     runs-on: ubuntu-latest
     permissions:
@@ -175,11 +194,21 @@ jobs:
           chmod +x browserstackJenkinsLandscape.sh
           ./browserstackJenkinsLandscape.sh
 
+      - name: Upload BrowserStack coverage
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: browserstack-coverage-landscape
+          path: browserstack-coverage/**
+          if-no-files-found: warn
+          retention-days: 7
+
   code-quality:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    needs: unit-tests
+    # Runs after the device jobs so their coverage is included in the analysis.
+    needs: [ unit-tests, run-ui-portrait, run-ui-landscape ]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -192,12 +221,38 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      - name: Download JaCoCo Report
+      - name: Download JaCoCo execution data
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: jacoco-report
+          name: jacoco-exec
           path: .
+
+      - name: Download BrowserStack coverage
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: browserstack-coverage-*
+          path: browserstack-coverage
+          merge-multiple: true
         continue-on-error: true
+
+      # One .ec covers the whole app process, so every reporting module gets a copy.
+      # jacocoReport ignores classes outside its own classDirectories.
+      - name: Stage instrumented coverage
+        run: |
+          ec_count=$(find browserstack-coverage -name '*.ec' 2>/dev/null | wc -l | tr -d ' ')
+          echo "instrumented coverage files retrieved: $ec_count"
+          if [ "$ec_count" -gt 0 ]; then
+            for module in app commons compose-table stock-usecase \
+                          dhis_android_analytics dhis2_android_maps dhis2-mobile-program-rules; do
+              mkdir -p "$module/build/outputs/code_coverage/browserstack"
+              find browserstack-coverage -name '*.ec' -exec cp {} "$module/build/outputs/code_coverage/browserstack/" \;
+            done
+          else
+            echo "No instrumented coverage retrieved; the report will cover unit tests only."
+          fi
+
+      - name: Merge coverage
+        run: ./gradlew jacocoReport -x testDebugUnitTest -x testDhis2DebugUnitTest --stacktrace --no-daemon
 
       - name: SonarQube
         env:

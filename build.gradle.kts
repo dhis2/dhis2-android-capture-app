@@ -68,10 +68,14 @@ allprojects {
         resolutionStrategy {
             cacheDynamicVersionsFor(10, TimeUnit.MINUTES)
             cacheChangingModulesFor(0, TimeUnit.SECONDS)
-            eachDependency {
-                if (requested.group == "org.jacoco")
-                    useVersion("0.8.10")
-            }
+        }
+    }
+
+    // toolVersion governs both the instrumenter and the report engine. libs.jacoco is
+    // only on the buildscript classpath, so without this Gradle's bundled version is used.
+    plugins.withType<org.gradle.testing.jacoco.plugins.JacocoPlugin> {
+        extensions.configure<org.gradle.testing.jacoco.plugins.JacocoPluginExtension> {
+            toolVersion = libs.versions.jacoco.get()
         }
     }
 

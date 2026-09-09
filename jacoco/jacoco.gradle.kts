@@ -17,60 +17,42 @@ tasks.register("jacocoReport", JacocoReport::class) {
 
     sourceDirectories.setFrom("${project.projectDir}/src/main/java")
 
+    // Generated code only. Anything hand-written, including Android UI classes, is
+    // measured.
     val excludes = mutableSetOf<String>(
-        "android/databinding/**/*.class",
-        "**/android/databinding/*Binding.class",
-        "**/android/databinding/*",
-        "**/androidx/databinding/*",
-        "**/BR.*",
+        // Android resource and build plumbing -- no source to cover.
         "**/R.class",
         "**/R\$*.class",
+        "**/BR.*",
         "**/BuildConfig.*",
         "**/Manifest*.*",
-        "**/*Test*.*",
-        "android/**/*.*",
-        "**/*MapperImpl*.*",
-        "**/*\$ViewInjector*.*",
-        "**/*\$ViewBinder*.*",
-        "**/BuildConfig.*",
-        "**/*Component*.*",
-        "**/*BR*.*",
-        "**/Manifest*.*",
-        "**/*\$Lambda\$*.*",
-        "**/*Companion*.*",
-        "**/*Module*.*",
-        "**/*Dagger*.*",
-        "**/*MembersInjector*.*",
-        "**/*_MembersInjector.class",
+
+        // Data Binding / View Binding generated classes.
+        "android/databinding/**/*.class",
+        "**/android/databinding/*",
+        "**/androidx/databinding/*",
+        "**/databinding/*.*",
+        "**/*Binding.class",
+
+        // Dagger / Hilt generated classes.
+        "**/Dagger*.*",
         "**/*_Factory*.*",
         "**/*_Provide*Factory*.*",
-        "**/*Extensions*.*",
-        "**/*\$Result.*",
-        "**/*\$Result\$*.*",
+        "**/*_MembersInjector.class",
+        "**/*_HiltModules*.*",
+
+        // Other annotation processors.
         "**/*JsonAdapter.*",
-        "**/databinding/*.*",
-        "**/customviews/*.*",
-        "**/ui/*.class",
-        "**/*Activity.*",
-        "**/Activity*.*",
-        "**/*Activity*.*",
-        "**/*Fragment.*",
-        "**/Fragment*.*",
-        "**/*View.*",
-        "**/*Adapter.*",
-        "**/*Contract*.*",
-        "**/*Bindings*.*",
         "**/AutoValue*.*",
-        "**/*\$*",
-        "**/*Navigator.*",
-        "**/*\$*\$*.*",
-        "**/animations/*.*",
-        "**/*Holder*.*",
-        "**/*Dialog*.*",
-        "**/*Service*.*",
-        "**/*Button*.*",
-        "**/SearchTEList.*",
-        "**/lambda\$*\$*.*"
+        "**/*_Impl*.*",
+
+        // Compiler output with no corresponding source lines.
+        "**/*\$WhenMappings.class",
+        "**/*\$\$serializer.class",
+        "**/ComposableSingletons*.*",
+
+        // Test code itself.
+        "**/*Test*.*",
     )
 
     val javaClassesApp = fileTree(
