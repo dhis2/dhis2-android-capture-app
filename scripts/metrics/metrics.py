@@ -14,6 +14,7 @@ attaching the chart PNGs. See --token-help.
 import base64
 import json
 import os
+import re
 import subprocess
 import sys
 import urllib.error
@@ -76,6 +77,24 @@ IN_FLIGHT = sorted(
     {"In Analysis", "In Progress", "In Review", "Testing", "In Integration Testing",
      "In Pixel Perfect", "Ready to Start", "Needs Update", "Waiting for Testing",
      "Waiting for Pixel Perfect", "Ready to Merge", "Ready for Integration Testing"})
+
+# `Needs info` parks an item that cannot proceed until someone answers a question.
+# It counts as WAITING in the flow numbers like any other queue, but it also gets its
+# own review, because the question it raises is different: not how long items sit
+# there, but whether the doubt ever gets resolved and what happens to the ones where
+# it does not. Exact Jira spelling - a rename would silently empty the section, so
+# the run warns about any case variant it sees in a changelog.
+NEEDS_INFO = "Needs info"
+
+# Reported in this order: resolved, abandoned, then the two kinds of still-open.
+ORDER_OUTCOME = ["moved forward and done", "moved forward, still open",
+                 "closed without a fix", "still in Needs info", "never moved on"]
+
+# A patch release is a bug-fix release: the third number moves (3.4.1) or a fourth
+# one is appended as a hotfix (3.4.0.1). `X.Y.0` is a feature release and is excluded -
+# its bug count measures what the team happened to be doing, not patch quality.
+PATCH_RE = re.compile(r"^(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?$")
+PATCHES_SHOWN = 3
 
 
 def classify(name):
@@ -591,6 +610,172 @@ def window(issues):
     return m
 
 
+def patch_releases(versions, n=PATCHES_SHOWN):
+    """The n most recent shipped patch releases, newest first, plus any unshipped one.
+
+    Ordered by release date, not by name: version names do not sort numerically and
+    the project ships out of order (3.4.0.1 came after 3.4.1 was opened).
+    """
+    pat = []
+    for v in versions:
+        m = PATCH_RE.match(v["name"].strip())
+        if not m or (m.group(3) == "0" and not m.group(4)):
+            continue
+        pat.append({"name": v["name"].strip(), "released": bool(v.get("released")),
+                    "date": v.get("releaseDate") or ""})
+    pat.sort(key=lambda v: (v["date"], v["name"]), reverse=True)
+    shipped = [v for v in pat if v["released"]][:n]
+    # The patch currently in flight is worth a flagged row: it is the one the team can
+    # still act on, and the Releases section already tracks whether it is overdue. That
+    # is the EARLIEST unshipped patch due after the last release - the next one out, not
+    # the furthest-out one on the roadmap.
+    ahead = sorted((v for v in pat if not v["released"] and v["date"]
+                    and (not shipped or v["date"] > shipped[0]["date"])),
+                   key=lambda v: v["date"])
+    return ahead[:1] + shipped
+
+
+def bugs_per_patch(vers, issues):
+    """Bug counts per patch release: fixed, closed without a fix, still open.
+
+    `fixVersion` is a TARGET on this project, not a shipped-in stamp - items are
+    tagged when they are planned for a release and are not retagged when they slip.
+    So `still open` on an already-released version is not work in that release; it is
+    a tag nobody cleaned up, and it is reported precisely because it says how far the
+    field can be trusted.
+    """
+    rows = []
+    for v in vers:
+        mine = [i for i in issues
+                if any(fv["name"].strip() == v["name"]
+                       for fv in (i["fields"].get("fixVersions") or []))]
+        res = Counter((i["fields"].get("resolution") or {}).get("name", "open")
+                      for i in mine)
+        rows.append(dict(v, fixed=res.get("Done", 0),
+                         not_fixed=sum(n for k, n in res.items()
+                                       if k not in ("Done", "open")),
+                         still_open=res.get("open", 0), total=len(mine),
+                         reasons=dict(Counter({k: n for k, n in res.items()
+                                               if k not in ("Done", "open")}).most_common())))
+    return rows
+
+
+def dt(d):
+    """Date -> UTC datetime, for comparing window bounds against changelog stamps."""
+    return datetime(d.year, d.month, d.day, tzinfo=timezone.utc)
+
+
+def visits(issue, status_name):
+    """Every stay in `status_name`: (entered, left or None, status it left for)."""
+    trs = transitions(issue)
+    if not trs:
+        return ([(ts(issue["fields"]["created"]), None, None)]
+                if issue["fields"]["status"]["name"] == status_name else [])
+    out, entered = [], None
+    for when, frm, to in trs:
+        if to == status_name and entered is None:
+            entered = when
+        elif frm == status_name and entered is not None:
+            out.append((entered, when, to))
+            entered = None
+    if entered is not None:
+        out.append((entered, None, None))
+    return out
+
+
+def progressed_after(issue, since):
+    """Did the issue move DOWNSTREAM after `since` - i.e. was the doubt resolved?
+
+    Downstream means commitment or beyond: first entry to `Ready to Start`, to a
+    merge marker, or to any active status. Leaving Needs info is not itself
+    progress - in practice every exit lands back in `To do`, so an exit alone says
+    only that someone cleared the flag, not that the question got answered.
+    """
+    for when, _f, to in transitions(issue):
+        if when <= since:
+            continue
+        if to == COMMIT_AT or to in MERGE_AT or classify(to) == "active":
+            return True
+    return False
+
+
+def needs_info(issues, lo, hi):
+    """What became of the issues that entered Needs info in [lo, hi).
+
+    The question the section exists to answer is narrow: of the items parked for
+    missing information, how many got the information and moved on, and how many
+    were quietly closed instead. Everything else about the status is texture.
+
+    Bucketing by entry date, not by exit, is what makes the two windows comparable:
+    an item still waiting has no exit date to bucket on, and dropping it would
+    flatter the resolution rate by counting only the ones that got out.
+    """
+    per_visit, per_issue = [], {}
+    for i in issues:
+        for entered, left, to in visits(i, NEEDS_INFO):
+            if not (lo <= entered < hi):
+                continue
+            per_visit.append({"key": i["key"],
+                              "days": ((left or NOW) - entered).total_seconds() / D})
+            r = per_issue.setdefault(i["key"], {"n": 0, "last": entered})
+            r["n"] += 1
+            r["last"] = max(r["last"], entered)
+
+    outcome, reasons = Counter(), Counter()
+    for i in issues:
+        r = per_issue.get(i["key"])
+        if not r:
+            continue
+        st = i["fields"]["status"]["name"]
+        rn = (i["fields"].get("resolution") or {}).get("name")
+        if rn == "Done":
+            k = "moved forward and done"
+        elif rn or st in TERMINAL:
+            k = "closed without a fix"
+            reasons[rn or "closed with no resolution"] += 1
+        elif st == NEEDS_INFO:
+            k = "still in Needs info"
+        elif progressed_after(i, r["last"]):
+            k = "moved forward, still open"
+        else:
+            k = "never moved on"
+        outcome[k] += 1
+        r["outcome"] = k
+
+    # A large share of stays last minutes: the status is flipped and flipped straight
+    # back, so the raw median is 0 and says nothing about how long a real question
+    # takes to answer. Percentiles are therefore reported twice - over every stay,
+    # and over stays that actually lasted a day. Quote the second one.
+    d = [v["days"] for v in per_visit]
+    real = [x for x in d if x >= 1]
+    fwd = outcome["moved forward and done"] + outcome["moved forward, still open"]
+    return {"visits": len(per_visit), "issues": len(per_issue),
+            "instant": len(d) - len(real),
+            "repeat": sum(1 for r in per_issue.values() if r["n"] > 1),
+            "dwell_real_p50": pct(real, 50), "dwell_real_p85": pct(real, 85),
+            "dwell_max": max(d) if d else None,
+            "outcome": {k: outcome[k] for k in ORDER_OUTCOME if outcome[k]},
+            "moved_forward": fwd,
+            "moved_forward_pct": fwd / len(per_issue) * 100 if per_issue else None,
+            "closed_without_fix": outcome["closed without a fix"],
+            "dropped_reasons": dict(reasons.most_common())}
+
+
+def needs_info_stock(issues):
+    """Everything sitting in Needs info right now, oldest first."""
+    out = []
+    for i in issues:
+        if i["fields"]["status"]["name"] != NEEDS_INFO:
+            continue
+        vs = visits(i, NEEDS_INFO)
+        entered = vs[-1][0] if vs else ts(i["fields"]["created"])
+        out.append({"key": i["key"], "type": i["fields"]["issuetype"]["name"],
+                    "days": (NOW - entered).total_seconds() / D, "n": len(vs),
+                    "since": entered.date().isoformat(),
+                    "summary": i["fields"]["summary"].strip()[:60]})
+    return sorted(out, key=lambda x: -x["days"])
+
+
 def main():
     base = f'project = ANDROAPP AND issuetype in ({q(TYPES)})'
     fields = ("summary,status,created,resolutiondate,resolution,issuetype,priority,"
@@ -640,9 +825,28 @@ def main():
         ("backlog", f'{base} AND status in ({q(BACKLOG)})', None),
         ("bugs", 'project = ANDROAPP AND issuetype = Bug AND statusCategory != Done', None),
         ("epics", 'project = ANDROAPP AND issuetype = Epic AND statusCategory != Done', None),
+        ("epics_closed",
+         f'project = ANDROAPP AND issuetype = Epic AND resolutiondate >= "{w1}" '
+         f'AND resolutiondate <= "{w2}"', None),
+        # Everything that touched Needs info since the start of the PREVIOUS window,
+        # plus whatever sits there now however long it has been there. `WAS ... AFTER`
+        # reads the changelog server-side and works anonymously.
+        ("needsinfo",
+         f'{base} AND (status WAS "{NEEDS_INFO}" AFTER "{w0}" '
+         f'OR status = "{NEEDS_INFO}")', "changelog"),
     ]:
         data[name] = search(jql, fields, exp)
         print(f"{name}: {len(data[name])}", file=sys.stderr)
+
+    # Bugs fixed per patch release. Release-scoped, not window-scoped: the question is
+    # what each shipped patch actually carried, which no 90-day window answers.
+    patches = patch_releases(get("/rest/api/3/project/ANDROAPP/versions", {}))
+    patch_bugs = (search('project = ANDROAPP AND issuetype = Bug AND fixVersion in (%s)'
+                         % q([v["name"] for v in patches]),
+                         "issuetype,resolution,status,fixVersions,resolutiondate")
+                  if patches else [])
+    prows = bugs_per_patch(patches, patch_bugs)
+    print(f"patch_bugs: {len(patch_bugs)}", file=sys.stderr)
 
     cur, prev = window(data["cur"]), window(data["prev"])
 
@@ -679,8 +883,26 @@ def main():
               f"{'GOOD' if ((d<0)==lower and abs(d)>=5) else ('BAD' if abs(d)>=5 else '~')}")
     print(f"  no-fix          {prev['no_fix']}/{prev['resolved']}   "
           f"{cur['no_fix']}/{cur['resolved']}")
-    print("  types  prev:", dict(prev["types"]), " cur:", dict(cur["types"]))
+    # Diagnostic only - the completed-work type mix is no longer a report section, since
+    # it moves with what the release was for rather than with quality. Bugs fixed per
+    # patch release, below, is what Quality opens with instead.
+    print("  types (diagnostic)  prev:", dict(prev["types"]), " cur:", dict(cur["types"]))
     print("  resolutions cur:", dict(cur["resolutions"]))
+
+    # Coverage: what share of bugs fixed in the window carry any fixVersion at all.
+    # Whatever is missing is missing from every row of the patch table below.
+    fixed_cur = [i for i in data["cur"] if i["fields"]["issuetype"]["name"] == "Bug"
+                 and (i["fields"].get("resolution") or {}).get("name") == "Done"]
+    tagged = sum(1 for i in fixed_cur if i["fields"].get("fixVersions"))
+    print("\n=== BUGS FIXED PER PATCH RELEASE ===")
+    print(f"  {'version':<12}{'released':<13}{'fixed':>6}{'not fixed':>11}"
+          f"{'still open':>12}   closed-without-a-fix reasons")
+    for r in prows:
+        when = r["date"] if r["released"] else f"due {r['date']} (unreleased)"
+        print(f"  {r['name']:<12}{when:<13}{r['fixed']:>6}{r['not_fixed']:>11}"
+              f"{r['still_open']:>12}   {r['reasons'] or ''}")
+    print(f"  fixVersion coverage: {tagged}/{len(fixed_cur)} bugs fixed in the window "
+          f"carry one - the table is a floor")
 
     print("\n=== STAGES (share of total; prev -> cur) ===")
     for s in ORDER:
@@ -698,7 +920,12 @@ def main():
             print(f"  {k:<32}{v['kind']:<7}{p:>6.1f}{v['share']:>7.1f}"
                   f"{v['p50']:>8.1f}{v['p85']:>8.1f}")
 
-    print("\n=== WIP ===")
+    # Diagnostics, not a report section: work in progress is a "now" number that the
+    # dailies already own, so it is printed for sanity-checking and kept in
+    # metrics.json, but the published report does not carry a WIP section. The two
+    # counts that are monthly rather than momentary - open bugs, backlog depth - go
+    # into Quality instead.
+    print("\n=== WIP (diagnostic - not a report section) ===")
     live, orph = [], []
     for i in data["flight"]:
         f = i["fields"]
@@ -723,17 +950,52 @@ def main():
 
     ep = data["epics"]
     ages = [(NOW - ts(e["fields"]["created"])).total_seconds() / D for e in ep]
-    print(f"\n=== EPICS: {len(ep)} open, age p50 {pct(ages,50):.0f}d "
-          f"p85 {pct(ages,85):.0f}d oldest {max(ages):.0f}d")
+    print(f"\n=== EPICS: {len(ep)} open, {len(data['epics_closed'])} closed in window, "
+          f"age p50 {pct(ages,50):.0f}d p85 {pct(ages,85):.0f}d oldest {max(ages):.0f}d")
     print("  by status:", dict(Counter(e["fields"]["status"]["name"] for e in ep).most_common()))
+
+    ni_cur = needs_info(data["needsinfo"], dt(w1), dt(w2) + timedelta(days=1))
+    ni_prev = needs_info(data["needsinfo"], dt(w0), dt(w1))
+    stock = needs_info_stock(data["needsinfo"])
+    sd = [x["days"] for x in stock]
+    variants = Counter(v for i in data["needsinfo"] for _w, f_, t_ in transitions(i)
+                       for v in (f_, t_)
+                       if v and v != NEEDS_INFO and v.lower() == NEEDS_INFO.lower())
+    print("\n=== NEEDS INFO (issues that ENTERED in each window) ===")
+    if variants:
+        print(f"  !! spelling variants in changelogs: {dict(variants)} - "
+              f"NEEDS_INFO matches only {NEEDS_INFO!r}, so those stays are invisible")
+    print(f"  {'outcome':<28}{'prev':>6}{'cur':>6}")
+    for k in ORDER_OUTCOME:
+        c, pv = ni_cur["outcome"].get(k, 0), ni_prev["outcome"].get(k, 0)
+        print(f"  {k:<28}{pv:>6}{c:>6}")
+    for label, key in [("issues entered", "issues"), ("moved forward", "moved_forward"),
+                       ("closed without a fix", "closed_without_fix")]:
+        print(f"  {label:<28}{ni_prev[key]:>6}{ni_cur[key]:>6}")
+    print(f"  {'moved forward %':<28}{ni_prev['moved_forward_pct'] or 0:>6.0f}"
+          f"{ni_cur['moved_forward_pct'] or 0:>6.0f}")
+    print("  why the closed ones went:", ni_cur["dropped_reasons"] or "none closed")
+    print(f"  texture: {ni_cur['visits']} stays, {ni_cur['repeat']} repeat visitors, "
+          f"{ni_cur['instant']} same-day flips; dwell >=1d p50 "
+          f"{ni_cur['dwell_real_p50'] or 0:.1f}d p85 {ni_cur['dwell_real_p85'] or 0:.1f}d")
+    print(f"  sitting there now: {len(stock)}  "
+          f"age p50 {pct(sd,50) or 0:.0f}d oldest {max(sd) if sd else 0:.0f}d"
+          + (f"  ({stock[0]['key']}, since {stock[0]['since']})" if stock else ""))
 
     json.dump({"window": {"as_of": str(w2), "cur_from": str(w1), "prev_from": str(w0),
                           "anonymous": auth() is None},
                "cur": cur, "prev": prev, "live": live, "orphans": orph,
                "backlog": len(data["backlog"]), "bugs": len(data["bugs"]),
-               "epics": {"open": len(ep), "age_p50": pct(ages, 50),
+               "patches": prows,
+               "fixversion_coverage": {"tagged": tagged, "fixed": len(fixed_cur)},
+               "epics": {"open": len(ep), "closed_in_window": len(data["epics_closed"]),
+                         "age_p50": pct(ages, 50),
                          "age_p85": pct(ages, 85), "oldest": max(ages),
-                         "by_status": dict(Counter(e["fields"]["status"]["name"] for e in ep))}},
+                         "by_status": dict(Counter(e["fields"]["status"]["name"] for e in ep))},
+               "needs_info": {"cur": ni_cur, "prev": ni_prev,
+                              "stock": len(stock), "stock_oldest": stock[:1],
+                              "stock_age_p50": pct(sd, 50), "stock_age_p85": pct(sd, 85),
+                              "spelling_variants": dict(variants)}},
               open(os.path.join(HERE, "metrics.json"), "w"), indent=1, default=str)
     print("\nwrote metrics.json")
 
