@@ -50,6 +50,22 @@ CHARTS = ["01-journey.png", "02-where-time-goes.png",
           "03-sonarcloud-trend.png", "04-sentry-issues.png"]
 
 
+def fresh(path, snapshot):
+    """A chart older than the snapshot it illustrates must not be uploaded.
+
+    charts.py deletes a chart it skips, so a leftover here means the file predates
+    this run - publishing it would put one snapshot in the text and another in the
+    picture. Missing is fine and reported; stale is refused.
+    """
+    if not os.path.exists(path):
+        return False
+    if os.path.exists(snapshot) and os.path.getmtime(path) < os.path.getmtime(snapshot):
+        print(f"REFUSED {os.path.basename(path)}: older than metrics.json - "
+              f"re-run charts.py for this snapshot before attaching")
+        return False
+    return True
+
+
 def transport():
     """(base_url, headers) for whichever token is configured, or exit with guidance."""
     cred = metrics.find_token()
@@ -163,7 +179,8 @@ def main():
         print(f"!  not generated, will be skipped: {', '.join(missing)}", file=sys.stderr)
         print("   run charts.py first; without Chrome it emits SVG only and no PNG.",
               file=sys.stderr)
-    files = [f for f in files if os.path.exists(f)]
+    snapshot = os.path.join(HERE, "metrics.json")
+    files = [f for f in files if fresh(f, snapshot)]
     if not files:
         sys.exit("No chart PNGs to attach.")
 

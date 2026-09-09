@@ -317,6 +317,17 @@ QUAD = {"Q1": ("crit", "Q1 Fix ASAP"), "Q2": ("s2", "Q2 Plan carefully"),
 
 def chart_sentry(issues, release):
     if not issues:
+        # Delete any chart 4 left by an earlier run. attach_charts.py uploads a fixed
+        # list of four filenames, so a stale PNG would be published alongside fresh
+        # text - one snapshot in the prose and another in the picture, which is the
+        # exact failure the "re-run charts.py after any re-fetch" guardrail exists to
+        # stop. A missing chart is recoverable; a wrong one is not.
+        for ext in ("png", "svg"):
+            stale = os.path.join(OUT, f"04-sentry-issues.{ext}")
+            if os.path.exists(stale):
+                os.unlink(stale)
+                print(f"  ! removed stale 04-sentry-issues.{ext} from an earlier run",
+                      file=sys.stderr)
         print("  ! no --issue given — skipping chart 4", file=sys.stderr)
         return None, None
     W, IW = 900, 900 - 2 * M

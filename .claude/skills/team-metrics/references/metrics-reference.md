@@ -86,9 +86,117 @@ project = ANDROAPP AND issuetype = Bug AND statusCategory != Done
 project = ANDROAPP AND issuetype = Epic AND statusCategory != Done
 ```
 
-Epics get their own block (open count, closed in period, age p50/p85, oldest, breakdown by status)
-because the team does not manage work at that level — 49 open, median age 20 months, 1 closed per
-quarter — so including them makes any roll-up unrealistic.
+## Epics
+
+Epics get their own one-row summary (open count, closed in period, age p50/p85, oldest, breakdown
+by status) because the team does not manage work at that level — 49 open, median age 21 months,
+1 closed per quarter — so mixing them into flow makes any roll-up unrealistic.
+
+**Do not list them on the page.** The pile needs cleaning up, but "which epics are stale" is a Jira
+query anyone can run, and a 27-row table buries a report whose whole value is being readable in a
+meeting. The count and its movement between editions are the signal; a cleanup drive belongs in
+**Recommendations**, not in a table. An epic's own status carries almost nothing anyway — 33 of the 49 sit
+in `Pending`.
+
+```
+project = ANDROAPP AND issuetype = Epic AND statusCategory != Done
+project = ANDROAPP AND issuetype = Epic AND resolutiondate >= "<w1>" AND resolutiondate <= "<w2>"
+```
+
+## Needs info
+
+`Needs info` parks an item that cannot proceed until someone answers a question. It is a
+`WAITING` status in the flow numbers like every other queue — the stage chart already carries
+its share of tracked time — and the review answers one narrower question: **do the items get
+the information and move on, or do they get quietly closed?**
+
+Measured over issues that **entered** in the window, not ones that left in it. Bucketing on
+entry is what keeps the two windows comparable: an item still waiting has no exit date, and
+bucketing on exit would flatter the resolution rate by counting only the ones that got out.
+
+```
+project = ANDROAPP AND issuetype in (Feature, Task, Bug)
+  AND (status WAS "Needs info" AFTER "<w0>" OR status = "Needs info")
+```
+
+`status WAS ... AFTER` reads the changelog server-side and works anonymously; the `OR` picks up
+long-parked items whose entry predates the window (one has been there since 2023).
+
+**Outcome buckets**, one per issue, in report order:
+
+| Bucket | Rule |
+|---|---|
+| `moved forward and done` | resolution is `Done` |
+| `moved forward, still open` | unresolved, but reached `Ready to Start`, a merge marker or an active status *after* its last stay |
+| `closed without a fix` | terminal on any resolution but `Done` |
+| `still in Needs info` | current status is still the parked one |
+| `never moved on` | left the status but never reached commitment or an active status |
+
+**Leaving the status is not progress.** Every observed exit lands in `To do` or `Closed` and
+nowhere else, so an exit means somebody cleared the flag — the item returns to the backlog to
+be re-prioritised and pays intake a second time, which lead time cannot see. `progressed_after`
+exists precisely so the forward buckets cannot be satisfied by an exit alone.
+
+Three traps:
+
+- **The current window is not settled.** Its issues have had less time to progress or to be
+  closed, so "still open" is inflated and both terminal buckets are deflated relative to the
+  previous window. A *rise* in the moved-forward share despite that bias is a safe claim; a
+  fall is not.
+- **Roughly 60% of stays last minutes** — the status is set and immediately reverted, which
+  drags the raw dwell median to 0.0 d. Report percentiles over stays of **≥ 1 day** plus the
+  `same-day flips` count, which is itself evidence the status doubles as a marker.
+- **Deleted issues are invisible.** Jira drops them from the API entirely, so an item purged
+  after a stay here leaves no trace and no gap to notice. The outcome mix covers what still
+  exists; say so rather than presenting it as exhaustive.
+
+`NEEDS_INFO` matches the exact string `"Needs info"`. A rename or second spelling would
+silently empty the section, so the run scans changelogs for case variants and warns. Related
+but **distinct** statuses that must not be folded in: `Needs Update` / `NEEDS_UPDATE` (rework
+after review), `Needs Product`, `NEEDS DESIGN`.
+
+## No work-in-progress section
+
+WIP is a "now" number the dailies already own, and a monthly report reprinting it invites decisions
+about today's board from data up to a month stale. `metrics.py` still prints it and keeps it in
+`metrics.json` — use it to reconcile the run, not to fill a section. Its two genuinely monthly
+counts, **open bugs** and **backlog depth**, belong in Quality.
+
+## Bugs fixed per patch release
+
+Replaces the completed-work type mix in **Quality**. The mix (Bug / Task / Feature in a window)
+moves with what the release was for, not with quality, so comparing it period over period invites
+a conclusion it cannot support. Patch releases exist to fix bugs, so their bug count means the
+same thing every time.
+
+**Patch = bug-fix release**: third number moves (`3.4.1`), or a fourth is appended as a hotfix
+(`3.4.0.1`). `X.Y.0` is a feature release, excluded. Selection is the last three **shipped**
+patches by release date plus the **next** unshipped one (earliest due after the last release),
+flagged. Order by `releaseDate`, never by name — names do not sort numerically and the project
+ships out of order.
+
+**Release-scoped, not window-scoped.** Like the Sentry triage and unlike everything else on the
+page. A patch in the table can predate the window entirely; say so rather than letting a reader
+assume the rows and the trend table cover the same period.
+
+```
+GET /rest/api/3/project/ANDROAPP/versions
+project = ANDROAPP AND issuetype = Bug AND fixVersion in (<selected patches>)
+```
+
+Two traps, both of which make the number read as something it is not:
+
+- **`fixVersion` is a target field, not a shipped-in stamp.** It is set when work is planned for a
+  release and is never cleared when the work slips. 3.2.1 shipped in Jul 2025 and still carries 48
+  open bugs; 3.3.1 shipped in Jan 2026 and carries 16. That is what the `still open` column is —
+  stale tags, not release content. Never fold it into the fixed count; report it as hygiene.
+- **The table is a floor.** Only bugs carrying a `fixVersion` appear at all, and coverage has run
+  as low as ~57% historically (24 of 24 in the Sep 2026 window). The script prints the ratio;
+  quote it, and treat a drop in it as under-counting rather than as fewer fixes.
+
+And one interpretation trap: **a low count on an older patch is usually throughput, not quality.**
+3.3.1 genuinely shipped with one tracked bug fix — bug throughput then was ~11 Done per half-year
+against ~67 in H1 2026. Check the era's throughput before calling a row a regression.
 
 ## Sentry
 
@@ -113,8 +221,15 @@ against the install base — fix the scale rather than publishing a ranking that
 
 - Legacy top-issue query, still useful for the 90-day view: `search_issues` with
   `is:unresolved environment:production`, `sort=freq`, `period=90d`
-- Per-release load: `search_events` dataset `errors`, fields `release`, `count()`,
-  `count_unique(user)` — **report events per user, not raw counts**, because install bases differ
+- **Crash load by release** = events ÷ users, per release, over the window. Query:
+  `search_events` dataset `errors`, fields `release`, `count()`, `count_unique(user)` —
+  **report the rate, not raw counts**, because install bases and time in the field differ, and
+  raw counts are not comparable across releases where the rate is. Three things it is not:
+  it is **not the crash-free-user rate** (one user stuck in a crash loop inflates it without
+  many people being affected — that is why the user column stays beside it); it is not a
+  per-issue figure; and a fresh release's rate is **unstable through its first week or two of
+  adoption**, so read the column vertically as a trend and treat a barely-adopted release as
+  provisional. Heading it "Load per release" confused readers and is not to be used again
 - Confirm whether an issue is a regression: add `issue:[ID,...]` and group by `release`. An issue
   present in exactly one release is a regression in that release; one spread across many is
   long-standing.
@@ -145,7 +260,7 @@ Versions: `GET /rest/api/3/project/ANDROAPP/versions`.
 
 ```bash
 # PRs merged to develop
-gh pr list --repo dhis2/dhis2-android-capture-app --state merged --limit 150 --base develop \
+gh pr list --repo dhis2/dhis2-android-capture-app --state merged --limit 400 --base develop \
   --json number,title,createdAt,mergedAt,additions,deletions,author,reviews
 
 # CI runs
@@ -191,10 +306,12 @@ Rules the script already encodes — do not undo them by hand:
 - Bars are rounded on the data end only, separated by a 2px surface gap, never a border.
 
 **Not charted, deliberately:** throughput, coverage, lead-time percentiles, flow efficiency,
-WIP, epics, releases. And **PR size against the 400-line gate** — the gate figure is computed
-over a different window from the rest of the report (see the `gh pr list` note above); charting
-it would put a visible contradiction on the page. Fix the query first, then it becomes a
-candidate.
+WIP, epics, releases, and the Needs info review — its outcome mix is a handful of counts that a
+table states more precisely than a stacked bar. **PR size against the 400-line gate** is no longer excluded for scope reasons — `--limit 150`
+truncated the previous window at 18 Mar and undercounted it (25 PRs against a true 35), and
+the limit is now 400, which covers both windows. It stays uncharted only because it is a
+two-point comparison like the rest. **Check the oldest PR returned against the window start
+every run**; if the limit ever truncates again, the comparison is silently wrong.
 
 ### Attaching them to Confluence
 
@@ -352,7 +469,20 @@ PNG-or-table approach.
    version. Observed live: 3.4.2 moved from 2026-08-05 to 2026-08-10 during the first report run.
    Each run must snapshot version dates so later runs can diff them.
 
-## Baseline — edition 1, 2026-08-11
+## Regression fixture — figures from a 2026-09 run
+
+**This is a test fixture, not a previous edition.** The pages it was recorded from have been
+deleted, and §2 of the skill is explicit that a page which is not a live child of `1948057602`
+does not exist for loop-closing purposes. **Never cite these numbers in a report, never treat
+them as a predecessor, and never close the loop against them.**
+
+What they are for: re-running the pipeline over the same window should still reproduce them.
+Several did so exactly across two independent runs — the epic counts, the whole patch table,
+the entire Needs info block — which makes them a cheap check that a refactor has not changed
+the arithmetic. If a figure here moves and the window has not, something in the computation
+changed and you should find out what before publishing.
+
+### Recorded figures
 
 Window 13 May – 11 Aug 2026 vs preceding 90 days. Feature/Task/Bug only.
 
@@ -368,6 +498,17 @@ Window 13 May – 11 Aug 2026 vs preceding 90 days. Feature/Task/Bug only.
 | Closed without a fix | 34 of 74 (46%) | 19 of 100 (19%) |
 | Type mix | Bug 28, Task 12 | Bug 45, Task 24, Feature 12 |
 
+Bugs fixed per patch release (release-scoped, Sep 2026 run):
+
+| Version | Released | Fixed | Closed, not fixed | Still tagged but open |
+|---|---|---|---|---|
+| 3.4.2 | due 10 Aug 2026, unreleased | 4 | 0 | 0 |
+| 3.4.1 | 29 Jun 2026 | 43 | 6 | 0 |
+| 3.4.0.1 | 26 May 2026 | 1 | 0 | 0 |
+| 3.3.1 | 19 Jan 2026 | 1 | 5 | 16 |
+
+`fixVersion` coverage in the window: 24 of 24 bugs fixed carry one.
+
 Point-in-time:
 
 | Metric | Value |
@@ -377,7 +518,13 @@ Point-in-time:
 | Open bugs | 132 |
 | In-flight by type | Feature 10, Bug 2, Task 2 |
 | Aging beyond delivery p85 | none |
-| Open epics / closed in 90d | 49 / 1 (age p50 609 d, oldest 3,214 d) |
+| Open epics / closed in 90d | 49 / 1 (age p50 638 d, oldest 3,243 d) |
+| Needs info, issues entered in window | 33 (prev 41), from 37 stays, 21 same-day flips, 4 repeat visitors |
+| Needs info outcomes (cur / prev) | moved forward and done 12/17 · moved forward still open 5/0 · closed without a fix 8/7 · still in Needs info 3/1 · never moved on 5/16 |
+| Needs info moved forward | 17 of 33 = **52%** (prev 17 of 41 = 41%) |
+| Needs info closed reasons | Obsolete 4, Cannot Reproduce 3, Invalid 1 |
+| Needs info dwell p50 / p85 (≥1 d) | 6.7 d / 37.8 d, max 60 d |
+| Sitting in Needs info now | 7 (age p50 135 d, oldest 1,146 d — ANDROAPP-2918, since Jul 2023) |
 | PR cycle p50 / p85 | 2.9 d / 10.0 d |
 | PR review latency p50 | 0.7 d |
 | PRs over the 400-line gate | 35 of 121 (29%) |
