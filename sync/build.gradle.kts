@@ -54,7 +54,6 @@ kotlin {
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.koin.test)
-            implementation(libs.koin.test.junit5)
             implementation(libs.test.kotlinCoroutines)
             implementation(libs.test.mockitoKotlin)
         }
@@ -71,7 +70,6 @@ kotlin {
         getByName("androidHostTest") {
             dependencies {
                 implementation(kotlin("test"))
-                implementation(libs.junit.jupiter)
                 implementation(libs.test.turbine)
                 implementation(libs.test.kotlinCoroutines)
                 implementation(libs.test.mockitoKotlin)

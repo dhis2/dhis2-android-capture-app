@@ -77,7 +77,6 @@ import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.junit.jupiter.api.assertThrows
 import org.koin.core.component.get
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -93,6 +92,7 @@ import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class DataSetTableViewModelTest : KoinTest {
@@ -769,7 +769,7 @@ internal class DataSetTableViewModelTest : KoinTest {
     @Test
     fun `should throw error if more than one data element is provided`() {
         val exception =
-            assertThrows<IllegalStateException> {
+            assertFailsWith<IllegalStateException> {
                 IdsProvider.getDataElementUid(
                     rowIds = listOf(TableId("dataElementId", TableIdType.DataElement)),
                     columnIds = listOf(TableId("dataElementId", TableIdType.DataElement)),
@@ -785,7 +785,7 @@ internal class DataSetTableViewModelTest : KoinTest {
     fun `should throw error if more than one category option combo is provided`() =
         runTest {
             val exception =
-                assertThrows<IllegalStateException> {
+                assertFailsWith<IllegalStateException> {
                     IdsProvider.getCategoryOptionCombo(
                         rowIds =
                             listOf(
@@ -805,7 +805,7 @@ internal class DataSetTableViewModelTest : KoinTest {
     fun `should throw error if category options and category option combos are provided`() =
         runTest {
             val exception =
-                assertThrows<IllegalStateException> {
+                assertFailsWith<IllegalStateException> {
                     IdsProvider.getCategoryOptionCombo(
                         rowIds =
                             listOf(
