@@ -141,8 +141,8 @@ jobs:
           export app_apk_path="${GITHUB_WORKSPACE}/${app_apk}"
           export test_apk_path="${GITHUB_WORKSPACE}/${test_apk}"
           cd scripts
-          chmod +x browserstackJenkins.sh
-          ./browserstackJenkins.sh
+          chmod +x browserstackPortrait.sh
+          ./browserstackPortrait.sh
 
   run-ui-landscape:
     runs-on: ubuntu-latest
@@ -172,8 +172,8 @@ jobs:
           export app_apk_path="${GITHUB_WORKSPACE}/${app_apk}"
           export test_apk_path="${GITHUB_WORKSPACE}/${test_apk}"
           cd scripts
-          chmod +x browserstackJenkinsLandscape.sh
-          ./browserstackJenkinsLandscape.sh
+          chmod +x browserstackLandscape.sh
+          ./browserstackLandscape.sh
 
   code-quality:
     runs-on: ubuntu-latest

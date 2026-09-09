@@ -1,6 +1,6 @@
 #!/bin/bash
 set -ex
-source config_jenkins.init
+source browserstack.init
 
 # Upload app and testing apk
 echo "Uploading app APK to Browserstack..."
