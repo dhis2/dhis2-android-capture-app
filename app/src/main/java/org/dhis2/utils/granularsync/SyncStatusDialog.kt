@@ -99,23 +99,20 @@ class SyncStatusDialog :
                         }
                     }
                     ObserveAsEvents(viewModel.granularSyncChannel) { action ->
-                        when (action) {
-                            GranularSyncAction.DisplaySyncSuccess ->
-                                Toast
-                                    .makeText(
-                                        requireContext(),
-                                        getString(R.string.sync_successful),
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
+                        action.takeIf { it is GranularSyncAction.DisplaySyncSuccess }?.let {
+                            Toast
+                                .makeText(
+                                    requireContext(),
+                                    getString(R.string.sync_successful),
+                                    Toast.LENGTH_SHORT,
+                                ).show()
                         }
                     }
                     syncState?.let { syncUiState ->
-                        if (
+                        shouldDismissDialog(
                             syncUiState.shouldDismissOnUpdate ||
-                            (syncing && syncUiState.syncState == SyncStatus.SYNCED)
-                        ) {
-                            dismiss()
-                        }
+                                (syncing && syncUiState.syncState == SyncStatus.SYNCED),
+                        )
 
                         BottomSheetDialogUi(
                             bottomSheetDialogUiModel =
@@ -178,6 +175,12 @@ class SyncStatusDialog :
     override fun onResume() {
         super.onResume()
         viewModel.refreshContent()
+    }
+
+    private fun shouldDismissDialog(shouldDismiss: Boolean) {
+        if (shouldDismiss) {
+            dismiss()
+        }
     }
 
     private fun onSyncClick() {
