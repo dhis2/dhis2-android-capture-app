@@ -55,6 +55,7 @@ import org.dhis2.mobile.sync.model.GRANULAR_SYNC_DATAVALUE_NAME
 import org.dhis2.mobile.sync.model.GRANULAR_SYNC_EVENT_NAME
 import org.dhis2.mobile.sync.model.GRANULAR_SYNC_PROGRAM_NAME
 import org.dhis2.mobile.sync.model.GRANULAR_SYNC_TEI_NAME
+import org.dhis2.mobile.sync.model.GranularSyncAction
 import org.dhis2.mobile.sync.model.GranularSyncType
 import org.dhis2.mobile.sync.model.SyncJobStatus
 import org.dhis2.usescases.sms.SmsSendingService
