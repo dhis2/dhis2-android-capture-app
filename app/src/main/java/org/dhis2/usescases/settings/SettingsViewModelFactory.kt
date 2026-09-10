@@ -33,7 +33,7 @@ class SettingsViewModelFactory(
     private val twoFaStatus: GetTwoFAStatus,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        SyncManagerPresenter(
+        SyncManagerViewModel(
             getSettingsState = getSettingsState,
             updateSyncSettings = updateSyncSettings,
             updateSmsResponse = updateSmsResponse,
