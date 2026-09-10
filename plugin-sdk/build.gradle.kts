@@ -19,6 +19,9 @@ kotlin {
         compileSdk = libs.versions.compileSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
         compilerOptions { jvmTarget.set(JvmTarget.JVM_17) }
+        // Opt in to a JVM test target. Without it the AGP KMP library plugin registers no test task
+        // and androidHostTest is silently never compiled or run.
+        withHostTestBuilder {}.configure {}
     }
 
     jvm("desktop")
@@ -44,5 +47,19 @@ kotlin {
             implementation(libs.kotlin.serialization.json)
             implementation(libs.test.kotlinCoroutines)
         }
+
+        getByName("androidHostTest").dependencies {
+            implementation(kotlin("test"))
+        }
     }
+}
+
+// Tests of androidMain code need the DHIS2 SDK *classes* at runtime: the label mapping takes real
+// TrackedEntityInstance values, built through the SDK's own builders rather than mocked. The SDK is
+// compileOnly here — the host supplies it through its class loader — so it is on the compile
+// classpath but not the runtime one, and such a test would die with NoClassDefFoundError.
+//
+// Extending rather than declaring keeps the version wherever it was already chosen.
+configurations.named("androidHostTestRuntimeOnly") {
+    extendsFrom(configurations.getByName("androidMainCompileOnly"))
 }
