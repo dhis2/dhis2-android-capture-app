@@ -20,6 +20,7 @@ import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
+import org.dhis2.mobile.sync.model.GranularSyncAction
 import org.dhis2.mobile.sync.model.GranularSyncType
 import org.dhis2.mobile.sync.model.SyncJobStatus
 import org.dhis2.usescases.sms.SmsSendingService

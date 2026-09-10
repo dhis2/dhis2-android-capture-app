@@ -37,6 +37,7 @@ import org.dhis2.commons.sync.OnSyncNavigationListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.ui.icons.SyncStateIcon
 import org.dhis2.mobile.commons.extensions.ObserveAsEvents
+import org.dhis2.mobile.sync.model.GranularSyncAction
 import org.dhis2.usescases.sms.SmsSendingService
 import org.dhis2.utils.customviews.MessageAmountDialog
 import org.dhis2.utils.granularsync.domain.SyncStatus
