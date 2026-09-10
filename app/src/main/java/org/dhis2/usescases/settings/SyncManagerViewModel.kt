@@ -35,7 +35,7 @@ import org.dhis2.usescases.settings.models.SyncStateInput
 import org.hisp.dhis.android.core.settings.LimitScope
 import java.io.File
 
-class SyncManagerPresenter(
+class SyncManagerViewModel(
     private val getSettingsState: GetSettingsState,
     private val updateSyncSettings: UpdateSyncSettings,
     private val updateSmsResponse: UpdateSmsResponse,
@@ -379,6 +379,12 @@ class SyncManagerPresenter(
     fun onSyncDataPeriodChanged(period: Int) {
         viewModelScope.launch(dispatcherProvider.io()) {
             launchSync(LaunchSync.SyncAction.UpdateSyncDataPeriod(period))
+            loadData()
+        }
+    }
+
+    fun refreshData() {
+        viewModelScope.launch(dispatcherProvider.io()) {
             loadData()
         }
     }

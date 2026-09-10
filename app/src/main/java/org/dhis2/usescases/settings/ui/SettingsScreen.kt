@@ -25,7 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.usescases.settings.SettingItem
-import org.dhis2.usescases.settings.SyncManagerPresenter
+import org.dhis2.usescases.settings.SyncManagerViewModel
 import org.dhis2.usescases.settings.models.AccountType
 import org.dhis2.usescases.settings.models.DeleteDataState
 import org.dhis2.usescases.settings.models.ErrorViewModel
@@ -43,7 +43,7 @@ const val TEST_TAG_SYNC_PARAMETERS_TEI_MAX_COUNT = "TestTag_SyncParameters_TeiMa
 
 @Composable
 fun SettingsScreen(
-    viewmodel: SyncManagerPresenter,
+    viewmodel: SyncManagerViewModel,
     checkProgramSpecificSettings: () -> Unit,
     manageReserveValues: () -> Unit,
     showErrorLogs: (List<ErrorViewModel>) -> Unit,
