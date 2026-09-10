@@ -34,7 +34,7 @@ class SyncManagerFragment : FragmentGlobalAbstract() {
     @Inject
     lateinit var settingsViewModelFactory: SettingsViewModelFactory
 
-    private val presenter: SyncManagerPresenter by viewModels { settingsViewModelFactory }
+    private val presenter: SyncManagerViewModel by viewModels { settingsViewModelFactory }
     private val syncBackgroundJobAction: SyncBackgroundJobAction by inject()
     private val versionRepository: VersionRepository by inject()
 
@@ -87,6 +87,11 @@ class SyncManagerFragment : FragmentGlobalAbstract() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        presenter.refreshData()
     }
 
     override fun onStop() {
