@@ -6,12 +6,12 @@ on:
   workflow_dispatch:
     inputs:
       release_version_name:
-        description: 'New release version name'
+        description: 'New release version name, without suffix (e.g. 3.2.0)'
         required: true
         type: string
 
       development_version_name:
-        description: 'Development version name'
+        description: 'Next development version name, without suffix (e.g. 3.7.0)'
         required: true
         type: string
 
@@ -29,7 +29,7 @@ jobs:
   create_branch:
     runs-on: ubuntu-latest
     env:
-      RELEASE_VERSION: ${{ inputs.release_version_name }}
+      RC_VERSION: '${{ inputs.release_version_name }}-RC'
       RELEASE_BRANCH: 'release/${{ inputs.release_version_name }}'
       TEMP_RELEASE_BRANCH: 'tmp_release/${{ inputs.release_version_name }}'
 
@@ -53,13 +53,13 @@ jobs:
         git push origin ${{ env.TEMP_RELEASE_BRANCH }}
 
     - name: Run Python script to update release branch version
-      run: python scripts/updateVersionName.py ${{ env.RELEASE_VERSION }}
+      run: python scripts/updateVersionName.py ${{ env.RC_VERSION }}
 
       # Uses the GH API to create the signed commit.
     - name: Commit and Push Changes to auxiliary branch
       uses: flex-development/gh-commit@177be4b5bca1b102400ca7220932d9ff7980fddb
       with:
-        message: 'Update version to ${{ env.RELEASE_VERSION }}'
+        message: 'Update version to ${{ env.RC_VERSION }}'
         ref: ${{ env.TEMP_RELEASE_BRANCH }}
         token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
 
@@ -76,7 +76,7 @@ jobs:
   update_version:
     runs-on: ubuntu-latest
     env:
-      DEVELOPMENT_VERSION: ${{ inputs.development_version_name }}
+      DEVELOPMENT_VERSION: '${{ inputs.development_version_name }}-Dev'
       DEVELOPMENT_SDK_VERSION: ${{ inputs.dev_sdk_version_name }}
       DEVELOPMENT_DESIGN_VERSION: ${{ inputs.dev_design_system_version_name }}
       DEVELOPMENT_BRANCH: 'update_version_to${{ inputs.development_version_name }}'
@@ -111,6 +111,6 @@ jobs:
           token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
 
       - name: Create pull request
-        run: gh pr create -B develop -H update_version_to${{ env.DEVELOPMENT_VERSION }} --title 'Merge ${{ env.DEVELOPMENT_BRANCH }} into develop' --body 'Created by Github action'
+        run: gh pr create -B develop -H ${{ env.DEVELOPMENT_BRANCH }} --title 'Merge ${{ env.DEVELOPMENT_BRANCH }} into develop' --body 'Created by Github action'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
