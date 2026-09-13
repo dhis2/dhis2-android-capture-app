@@ -215,6 +215,9 @@
     <plurals name="event">
         <item quantity="other">活动</item>
     </plurals>
+    <plurals name="relationship">
+        <item quantity="other">关系</item>
+    </plurals>
     <!--*******************
     Info bar labels
     **********************-->
