@@ -35,7 +35,7 @@ import org.dhis2.usescases.settings.models.SyncStateInput
 import org.hisp.dhis.android.core.settings.LimitScope
 import java.io.File
 
-class SyncManagerViewModel(
+class SyncManagerPresenter(
     private val getSettingsState: GetSettingsState,
     private val updateSyncSettings: UpdateSyncSettings,
     private val updateSmsResponse: UpdateSmsResponse,
