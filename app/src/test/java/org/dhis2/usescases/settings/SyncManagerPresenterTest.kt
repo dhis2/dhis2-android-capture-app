@@ -52,11 +52,11 @@ import org.mockito.kotlin.whenever
 import java.io.File
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class SyncManagerViewModelTest {
+class SyncManagerPresenterTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
-    private lateinit var presenter: SyncManagerViewModel
+    private lateinit var presenter: SyncManagerPresenter
     private val networkUtils: NetworkUtils = mock()
     private val testingDispatcher = UnconfinedTestDispatcher()
     private val dispatcherProvider: DispatcherProvider =
@@ -96,7 +96,7 @@ class SyncManagerViewModelTest {
         runTest { whenever(twoFAStatus.invoke()) doReturn TwoFAStatus.NoConnection }
 
         presenter =
-            SyncManagerViewModel(
+            SyncManagerPresenter(
                 getSettingsState = getSettingsState,
                 updateSyncSettings = updateSyncSettings,
                 updateSmsResponse = updateSmsResponse,

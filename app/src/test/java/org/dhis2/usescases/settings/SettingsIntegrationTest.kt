@@ -85,7 +85,7 @@ class SettingsIntegrationTest {
 
     private val testingDispatcher = StandardTestDispatcher()
 
-    private lateinit var syncManagerViewModel: SyncManagerViewModel
+    private lateinit var syncManagerPresenter: SyncManagerPresenter
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
@@ -110,8 +110,8 @@ class SettingsIntegrationTest {
     }
 
     private fun buildPresenter() {
-        syncManagerViewModel =
-            SyncManagerViewModel(
+        syncManagerPresenter =
+            SyncManagerPresenter(
                 getSettingsState = getSettingsState,
                 updateSyncSettings = updateSyncSettings,
                 updateSmsResponse = updateSmsResponse,
@@ -146,7 +146,7 @@ class SettingsIntegrationTest {
             buildPresenter()
 
             // Then TFA should be displayed
-            syncManagerViewModel.settingsState.test {
+            syncManagerPresenter.settingsState.test {
                 assert(awaitItem() == null)
                 assert(awaitItem()?.accountType == AccountType.OAUTH)
                 assert(awaitItem()?.twoFAStatus is TwoFAStatus.Enabled)
@@ -164,7 +164,7 @@ class SettingsIntegrationTest {
             buildPresenter()
 
             // Then TFA should be displayed
-            syncManagerViewModel.settingsState.test {
+            syncManagerPresenter.settingsState.test {
                 assert(awaitItem() == null)
                 assert(awaitItem()?.accountType == AccountType.OAUTH)
                 assert(awaitItem()?.twoFAStatus is TwoFAStatus.Disabled)
@@ -181,7 +181,7 @@ class SettingsIntegrationTest {
             buildPresenter()
 
             // Then TFA should not be displayed
-            syncManagerViewModel.settingsState.test {
+            syncManagerPresenter.settingsState.test {
                 assert(awaitItem() == null)
                 assert(awaitItem()?.accountType == AccountType.BASIC)
             }
