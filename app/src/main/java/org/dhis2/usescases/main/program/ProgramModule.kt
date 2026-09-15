@@ -15,6 +15,7 @@ import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.mobile.sync.domain.SyncStatusController
+import org.dhis2.usescases.main.NavigateToSingleProgram
 import org.hisp.dhis.android.core.D2
 
 @Module
@@ -41,6 +42,7 @@ class ProgramModule(
             filterManager,
             syncStatusController,
             schedulerProvider,
+            NavigateToSingleProgram(programRepository),
         )
 
     @Provides
