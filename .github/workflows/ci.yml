@@ -245,8 +245,10 @@ jobs:
           ec_count=$(find browserstack-coverage -name '*.ec' 2>/dev/null | wc -l | tr -d ' ')
           echo "instrumented coverage files retrieved: $ec_count"
           if [ "$ec_count" -gt 0 ]; then
-            for module in app commons compose-table stock-usecase \
-                          dhis_android_analytics dhis2_android_maps dhis2-mobile-program-rules; do
+            modules=$(grep -rl 'jacoco.gradle.kts' --include=build.gradle.kts . \
+                      | sed 's|/build.gradle.kts||; s|^\./||')
+            echo "staging into: $(echo $modules | tr '\n' ' ')"
+            for module in $modules; do
               mkdir -p "$module/build/outputs/code_coverage/browserstack"
               find browserstack-coverage -name '*.ec' -exec cp {} "$module/build/outputs/code_coverage/browserstack/" \;
             done
