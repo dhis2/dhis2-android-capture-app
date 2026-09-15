@@ -27,9 +27,11 @@ class PluginBundlePlugin : Plugin<Project> {
 
         target.pluginManager.withPlugin(ANDROID_KMP_LIBRARY_PLUGIN) {
             AndroidPluginWiring.addPluginSdkDependency(target)
+            AndroidPluginWiring.wireHostTestRuntime(target)
             val bundleTask = target.registerBundleTask(extension)
             AndroidPluginWiring.wireAar(target, bundleTask)
             target.wireComposeResources(bundleTask)
+            target.wireConventionsCheck(extension, bundleTask)
             target.afterEvaluate { project -> project.runPreflight(extension) }
         }
     }
@@ -37,6 +39,7 @@ class PluginBundlePlugin : Plugin<Project> {
     private fun Project.applyConventions(extension: PluginBundleExtension) {
         extension.minApi.convention(HostToolchain.MIN_SDK_FLOOR)
         extension.verifyToolchain.convention(true)
+        extension.verifyConventions.convention(true)
         extension.emitDataStoreSnippet.convention(true)
         extension.pluginId.convention(PLACEHOLDER_PLUGIN_ID)
         extension.entryPoint.convention(PLACEHOLDER_ENTRY_POINT)
@@ -88,6 +91,41 @@ class PluginBundlePlugin : Plugin<Project> {
         }
     }
 
+    /**
+     * Registers the conventions check, and makes both `check` and `buildPluginBundle` depend on it.
+     *
+     * Hung off packaging deliberately: `verify.sh`-style pipelines and CI run `buildPluginBundle`
+     * directly and never `check`, and a gate you can bypass by packaging is not a gate.
+     *
+     * `check` is matched rather than named because it only exists once the `base` plugin is applied,
+     * and the order a consumer applies plugins in is not ours to assume — the same live-collection
+     * trick as [wireComposeResources].
+     */
+    private fun Project.wireConventionsCheck(
+        extension: PluginBundleExtension,
+        bundleTask: TaskProvider<BuildPluginBundleTask>,
+    ) {
+        val conventionsTask =
+            tasks.register(CONVENTIONS_TASK_NAME, CheckPluginConventionsTask::class.java) { task ->
+                task.group = "verification"
+                task.description = "Checks this plugin against the conventions the Capture App relies on."
+                task.onlyIf { extension.verifyConventions.get() }
+                task.projectDirectory.set(projectDir.absolutePath)
+                // Captured as plain data at configuration time: a task may not hold a Configuration
+                // or a KotlinSourceSet and still be configuration-cacheable.
+                task.sourceRoots.set(provider { AndroidPluginWiring.sourceRoots(this) })
+                task.declaredDependencies.set(provider { AndroidPluginWiring.declaredDependencies(this) })
+                task.sources.from(
+                    provider {
+                        AndroidPluginWiring.sourceRoots(this).map { entry -> entry.substringAfter('|') }
+                    },
+                )
+            }
+
+        tasks.matching { it.name == CHECK_TASK_NAME }.configureEach { it.dependsOn(conventionsTask) }
+        bundleTask.configure { it.dependsOn(conventionsTask) }
+    }
+
     private fun Project.runPreflight(extension: PluginBundleExtension) {
         if (!extension.verifyToolchain.get()) return
 
@@ -116,6 +154,8 @@ class PluginBundlePlugin : Plugin<Project> {
         const val COMPOSE_PLUGIN = "org.jetbrains.compose"
         const val PREPARE_RESOURCES_TASK_PREFIX = "prepareComposeResourcesTaskFor"
         const val BUNDLE_TASK_NAME = "buildPluginBundle"
+        const val CONVENTIONS_TASK_NAME = "checkPluginConventions"
+        const val CHECK_TASK_NAME = "check"
 
         // Snippet defaults, kept plainly fake so an unedited plugin-config.json cannot be
         // mistaken for a real one — see PluginBundleExtension.pluginId.

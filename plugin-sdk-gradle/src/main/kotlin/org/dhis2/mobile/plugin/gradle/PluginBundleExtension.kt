@@ -51,6 +51,14 @@ abstract class PluginBundleExtension
         abstract val verifyToolchain: Property<Boolean>
 
         /**
+         * Whether to check this project against the conventions the host relies on — the SDK kept
+         * out of shared source, host-provided dependencies `compileOnly`, and rows capped before
+         * they are enriched. Defaults to `true`; each rule it checks fails on a device rather than
+         * at build time, so turning it off moves the discovery to the worst possible place.
+         */
+        abstract val verifyConventions: Property<Boolean>
+
+        /**
          * Whether to write a `plugin-config.json` next to the bundle: the dataStore entry the DHIS2
          * administrator needs, with `version` and `checksum` already filled in. Defaults to `true`.
          */

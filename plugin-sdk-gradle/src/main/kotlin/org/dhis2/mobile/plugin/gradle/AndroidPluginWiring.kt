@@ -47,6 +47,31 @@ internal object AndroidPluginWiring {
     }
 
     /**
+     * Puts the compile-only dependencies on the JVM test runtime classpath.
+     *
+     * `plugin-sdk` and `android-core` are `compileOnly` because the host supplies them through its
+     * class loader — so they are on the compile classpath and *not* the runtime one. A JVM test that
+     * builds a real `D2Error`, or a `TrackedEntityInstance`, or touches any plugin-sdk type, then
+     * dies with `NoClassDefFoundError` for a class that plainly compiled.
+     *
+     * No plugin author should have to work that out: this is the plugin system's own arrangement, so
+     * undoing it for tests is the plugin system's job. `commonMainCompileOnly` matters as much as
+     * `androidMainCompileOnly` — plugin-sdk is added to `commonMain`, which is what made this bite.
+     *
+     * Matched rather than named because the configuration only exists once the project opts into a
+     * host-test target, and whether it has is not ours to assume.
+     */
+    fun wireHostTestRuntime(project: Project) {
+        project.configurations
+            .matching { it.name == HOST_TEST_RUNTIME_ONLY }
+            .configureEach { hostTestRuntime ->
+                COMPILE_ONLY_SOURCES.forEach { name ->
+                    project.configurations.findByName(name)?.let(hostTestRuntime::extendsFrom)
+                }
+            }
+    }
+
+    /**
      * Points the bundle task at the AAR through AGP's artifacts API rather than at a guessed path
      * under `build/`, so the task dependency comes with it and it survives AGP moving its outputs.
      */
@@ -103,6 +128,52 @@ internal object AndroidPluginWiring {
     }
 
     /**
+     * Kotlin source roots as `<sourceSetName>|<absolutePath>`, for the conventions task.
+     *
+     * Taken from the Kotlin extension rather than guessed from `src/`, so a project that moves or
+     * adds a source set is still checked.
+     */
+    fun sourceRoots(project: Project): List<String> {
+        val kotlin = project.extensions.findByType(KotlinMultiplatformExtension::class.java)
+            ?: return emptyList()
+        // Generated roots are excluded: they are another task's output, so reading them would make
+        // this task depend on the Compose resource generator for no benefit — and generated code is
+        // not the author's to fix. Everything checked here is something a human wrote.
+        val buildDirectory = project.layout.buildDirectory.get().asFile.absolutePath
+        return kotlin.sourceSets.flatMap { sourceSet ->
+            sourceSet.kotlin.srcDirs
+                .map { dir -> dir.absolutePath }
+                .filterNot { path -> path.startsWith(buildDirectory) }
+                .map { path -> "${sourceSet.name}|$path" }
+        }
+    }
+
+    /**
+     * Every declared external dependency as `<sourceSet>|<bucket>|<group>:<name>`.
+     *
+     * Asking Gradle beats regexing the build script: it sees version-catalog aliases, multi-line
+     * declarations, `sourceSets { commonMain { … } }` as well as `val commonMain by getting`, and
+     * dependencies added by a convention plugin the author never wrote down.
+     *
+     * Project and file dependencies are skipped rather than guessed at.
+     */
+    fun declaredDependencies(project: Project): List<String> {
+        val kotlin = project.extensions.findByType(KotlinMultiplatformExtension::class.java)
+            ?: return emptyList()
+
+        return kotlin.sourceSets.flatMap { sourceSet ->
+            BUCKETS.flatMap { (bucket, configurationName) ->
+                val configuration = project.configurations.findByName(configurationName(sourceSet.name))
+                configuration
+                    ?.dependencies
+                    ?.filterIsInstance<ExternalModuleDependency>()
+                    ?.map { dependency -> "${sourceSet.name}|$bucket|${dependency.group}:${dependency.name}" }
+                    .orEmpty()
+            }
+        }.distinct()
+    }
+
+    /**
      * External dependencies declared on a source set's `api`/`implementation`. An AAR's `classes.jar`
      * holds only this module's own classes, so these are compiled against but never packaged.
      */
@@ -146,10 +217,25 @@ internal object AndroidPluginWiring {
      * warning. `compose.components.resources` in particular *must* be `implementation` — the Compose
      * Resources generator uses that declaration as its opt-in signal for the `Res` class.
      */
-    private val HOST_PROVIDED_GROUPS =
+    /**
+     * The buckets a dependency can land in, and how a Kotlin source set names each configuration.
+     *
+     * `runtimeOnly` is included because a host-provided artifact declared there is packaged just the
+     * same as one on `implementation`.
+     */
+    private const val HOST_TEST_RUNTIME_ONLY = "androidHostTestRuntimeOnly"
+
+    private val COMPILE_ONLY_SOURCES = listOf("commonMainCompileOnly", "androidMainCompileOnly")
+
+    private val BUCKETS: List<Pair<String, (String) -> String>> =
         listOf(
-            "org.jetbrains.compose",
-            "org.jetbrains.kotlin",
-            "org.dhis2.mobile:plugin-sdk",
+            "api" to { name: String -> "${name}Api" },
+            "implementation" to { name: String -> "${name}Implementation" },
+            "compileOnly" to { name: String -> "${name}CompileOnly" },
+            "runtimeOnly" to { name: String -> "${name}RuntimeOnly" },
         )
+
+    // One list, two consumers: the conventions check errors on a host-provided dependency that is
+    // not compileOnly, and notPackagedDependencies warns about its complement.
+    private val HOST_PROVIDED_GROUPS = PluginConventions.HOST_PROVIDED
 }
