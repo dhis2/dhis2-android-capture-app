@@ -164,10 +164,19 @@ def chart_journey(m):
 
 
 # --------------------------------------------------------------------------
-# 2. Where the time goes: stage shares, previous vs current
+# 2. Where the time goes inside delivery: stage shares, previous vs current
+#
+# Scoped to committed -> merged, not the whole lifecycle. The section exists to
+# find the delivery bottleneck, and full-lifecycle shares are dominated by
+# backlog dwell (`Open`, `Waiting for analysis`) that the delivery loop does not
+# contain. The lifecycle shares are still in metrics.json for context.
 # --------------------------------------------------------------------------
 def chart_stages(m, top_n=7):
-    cur, prev = m["cur"]["stages"], m["prev"]["stages"]
+    cur = m["cur"].get("stages_delivery") or m["cur"]["stages"]
+    prev = m["prev"].get("stages_delivery") or m["prev"]["stages"]
+    if not m["cur"].get("stages_delivery"):
+        print("  ! metrics.json predates delivery-scoped stages — chart 2 is falling back "
+              "to whole-lifecycle shares. Re-run metrics.py.", file=sys.stderr)
     # rank by the larger of the two shares, so a stage that collapsed still shows
     ranked = sorted(set(cur) | set(prev),
                     key=lambda k: -max(cur.get(k, {}).get("share", 0),
@@ -188,8 +197,8 @@ def chart_stages(m, top_n=7):
     axis_max = (int(max(max(p, c) for _, p, c, _, _ in data) / step) + 1) * step
     scale = plot_w / axis_max
     queue = sum(c for _, _, c, _, k in data if k == "wait")
-    s = svg_open(W, H, "Where the time goes",
-                 "Share of all tracked time, by status. "
+    s = svg_open(W, H, "Where the time goes inside delivery",
+                 "Share of time between commitment and merge, by status. "
                  f"Queues account for {queue:.0f}% of the current window.")
     for i, (name, col) in enumerate([("Previous 90 days", C["s1"]), ("Current 90 days", C["s2"])]):
         lx = i * 170
@@ -210,16 +219,22 @@ def chart_stages(m, top_n=7):
             s.append(bar(lab_w, by, v * scale, bh, col))
             s.append(txt(lab_w + v * scale + 7, by + 12, f"{v:.1f}", size=11,
                          fill=C["muted"], tab=True))
-    s.append(txt(0, H - 26, "A stage whose share collapses between windows is usually a cleanup "
-                            "of old items, not a speed-up — check its p85 before reading it as "
-                            "progress.", size=12, fill=C["muted"]))
+    top_q = max(((n, c) for n, _, c, _, k in data if k == "wait"),
+                key=lambda x: x[1], default=None)
+    s.append(txt(0, H - 26,
+                 (f"The largest queue inside delivery is {top_q[0]}, at {top_q[1]:.0f}% of the "
+                  "time between commitment and merge." if top_q else
+                  "Queue stages are waiting time; active stages are worked time."),
+                 size=12, fill=C["muted"]))
     s.append("</g></svg>")
 
     rows_t = [[n, f"{p:.1f}%", f"{c:.1f}%", f"{p85:.1f} d" if p85 is not None else "—"]
               for n, p, c, p85, _ in data]
     return "\n".join(s), table(["Status", "Previous", "Current", "p85 duration"], rows_t,
-                               "Queue stages are waiting time, active stages are worked time. "
-                               "A high share with a low p85 comes from a few extreme outliers.")
+                               "Share of time between commitment (Ready to Start) and merge, so "
+                               "backlog dwell is excluded. Queue stages are waiting time, active "
+                               "stages are worked time. A high share with a low p85 comes from a "
+                               "few extreme outliers.")
 
 
 # --------------------------------------------------------------------------
@@ -428,6 +443,81 @@ def parse_issue(spec):
 
 
 # --------------------------------------------------------------------------
+def chrome_candidates():
+    """(binary, headless flag) pairs to try, in order.
+
+    Two things this list has to get right:
+
+    * A cloud session has no `chrome` on PATH but does ship Playwright's Chromium
+      under PLAYWRIGHT_BROWSERS_PATH (default /opt/pw-browsers), so the charts
+      rasterize there too — without it the run silently degrades to SVG-only and
+      the page loses every figure. CHROME_BIN overrides everything.
+    * `--headless=old` renders the page at exactly --window-size; `--headless=new`
+      treats that as the *outer* window and gives the page a shorter viewport
+      (see viewport_delta). Old headless is therefore tried first and, on Chrome
+      132+ where it was removed, simply fails to launch and falls through.
+    """
+    out = []
+    if os.environ.get("CHROME_BIN"):
+        out.append(os.environ["CHROME_BIN"])
+    out += ["google-chrome", "google-chrome-stable", "chromium", "chromium-browser",
+            "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+            "/Applications/Chromium.app/Contents/MacOS/Chromium"]
+    root = os.environ.get("PLAYWRIGHT_BROWSERS_PATH") or "/opt/pw-browsers"
+    if os.path.isdir(root):
+        # headless_shell before full Chromium wherever both are installed: it is the
+        # old engine, so it needs no frame padding and the PNG is exactly the chart.
+        for rel in ("chrome-linux/headless_shell", "chrome-linux/chrome",
+                    "chrome-mac/Chromium.app/Contents/MacOS/Chromium"):
+            for name in sorted(os.listdir(root)):
+                cand = os.path.join(root, name, rel)
+                if os.path.exists(cand):
+                    out.append(cand)
+    pairs = []
+    for exe in out:
+        # headless_shell IS the old engine and rejects --headless=old.
+        flags = ["--headless"] if "headless_shell" in exe else ["--headless=old",
+                                                                "--headless=new"]
+        pairs += [(exe, f) for f in flags]
+    return pairs
+
+
+DELTA = {}
+
+
+def viewport_delta(exe, flag):
+    """CSS pixels --window-size loses to the window frame, measured not guessed.
+
+    Under `--headless=new` the window is sized outer-first, so a 300px window
+    lays out in a ~213px viewport while --screenshot still writes a full 300px
+    image: the chart's axis labels and its footnote render into nothing and the
+    bottom of the PNG comes out blank. It is silent — the file is there and looks
+    plausible — so the padding is measured per binary with a probe page rather
+    than assumed to be zero.
+    """
+    key = (exe, flag)
+    if key in DELTA:
+        return DELTA[key]
+    probe = os.path.join(OUT, ".probe.html")
+    open(probe, "w").write('<!doctype html><meta charset="utf-8"><body><script>'
+                           'document.body.textContent="VH="+window.innerHeight</script>')
+    d = 0
+    try:
+        r = subprocess.run([exe, flag, "--disable-gpu", "--no-sandbox", "--hide-scrollbars",
+                            "--virtual-time-budget=2000", "--window-size=900,600",
+                            "--dump-dom", f"file://{probe}"],
+                           capture_output=True, text=True, timeout=60)
+        seen = re.search(r"VH=(\d+)", r.stdout or "")
+        if seen:
+            d = max(0, 600 - int(seen.group(1)))
+    except (FileNotFoundError, subprocess.SubprocessError):
+        pass
+    finally:
+        os.path.exists(probe) and os.unlink(probe)
+    DELTA[key] = d
+    return d
+
+
 def render_png(svg_path):
     """2x PNG via headless Chrome, with the webfont loaded. Optional."""
     body = open(svg_path).read()
@@ -440,23 +530,27 @@ def render_png(svg_path):
     tmp, png = svg_path + ".html", svg_path[:-4] + ".png"
     open(tmp, "w").write(wrap)
     try:
-        for exe in ("google-chrome", "chromium", "chromium-browser",
-                    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-                    "/Applications/Chromium.app/Contents/MacOS/Chromium"):
+        for exe, flag in chrome_candidates():
+            # Pad the window by the frame so the whole chart lands in the viewport.
+            # The padding shows up as white below the chart, which is why an engine
+            # that needs none is tried first.
+            pad = viewport_delta(exe, flag)
             try:
-                subprocess.run([exe, "--headless=new", "--disable-gpu", "--no-sandbox",
+                subprocess.run([exe, flag, "--disable-gpu", "--no-sandbox",
                                 "--hide-scrollbars", "--force-device-scale-factor=2",
                                 "--default-background-color=FFFFFFFF",
-                                "--virtual-time-budget=5000", f"--window-size={w},{h}",
+                                "--virtual-time-budget=5000",
+                                f"--window-size={w},{int(h) + pad}",
                                 f"--screenshot={png}", f"file://{tmp}"],
                                capture_output=True, check=True, timeout=90)
-                return png
             except (FileNotFoundError, subprocess.SubprocessError):
                 continue
+            if os.path.exists(png) and os.path.getsize(png) > 1024:
+                return png
     finally:
         os.unlink(tmp)
-    print(f"  ! no Chrome found — {os.path.basename(svg_path)} has no PNG; attach the SVG "
-          "or install Chrome", file=sys.stderr)
+    print(f"  ! no Chrome found — {os.path.basename(svg_path)} has no PNG; attach the SVG, "
+          "install Chrome, or point CHROME_BIN at a binary", file=sys.stderr)
     return None
 
 
