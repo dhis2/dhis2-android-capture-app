@@ -271,6 +271,33 @@ curl "https://sonarcloud.io/api/measures/component?component=dhis2_dhis2-android
 curl "https://sonarcloud.io/api/qualitygates/project_status?projectKey=dhis2_dhis2-android-capture-app&branch=develop"
 ```
 
+## Stage shares: two scopes, one of them published
+
+`metrics.py` writes stage shares twice, and the report shows the second:
+
+| Key in `metrics.json` | Scope | Used for |
+|---|---|---|
+| `stages` | the whole lifecycle, every visit to every status summed | context only — printed to the console, kept in the snapshot, not charted |
+| `stages_delivery` | clipped to commitment → merge, per issue | **Where the time goes** in the report, and chart `02` |
+
+Both are computed from the same segments, so they cannot disagree; the difference is only
+where the clock starts and stops. The delivery-scoped one is what the section publishes
+because the question it answers — *where does our loop stall?* — is about the part the team
+controls. Lifecycle shares are dominated by pre-commitment dwell: in the September 2026
+edition `Open`, `Waiting for analysis` and `To do` held 65% of all tracked time between them,
+which pushed every delivery status below 10% and left the reader unable to see which of them
+was the bottleneck.
+
+Two consequences worth knowing:
+
+- **The shares are not comparable between the two blocks.** A status at 9% of the lifecycle
+  can be 28% of delivery. Never quote one figure as the other, and label which scope any
+  number came from.
+- **A status can appear in both.** `Ready to Start` and `Needs info` are entered before
+  commitment *and* re-entered mid-flight; the delivery block counts only the part that falls
+  inside the window, which is why its `n` (issues contributing) is smaller than the
+  lifecycle count.
+
 ## Charts
 
 `scripts/metrics/charts.py` draws four, and only four. The test for charting something is
@@ -282,7 +309,7 @@ slower to read.
 | File | Form | Why it earns a chart |
 |---|---|---|
 | `01-journey` | stacked bar ×2 | intake + delivery + post-merge is a composition, and the two windows show whether the *shape* changed, not just the total |
-| `02-where-time-goes` | grouped bars | eight stages × two windows; the point is which stages dominate, which no table conveys at a glance |
+| `02-where-time-goes` | grouped bars | eight delivery stages × two windows; the point is which stages dominate, which no table conveys at a glance |
 | `03-sonarcloud-trend` | small multiples | ~20 real monthly measurements, four metrics on four scales |
 | `04-sentry-issues` | quadrant scatter | two continuous axes plus a categorical quadrant — a genuine 2D decision space |
 

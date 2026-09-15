@@ -341,6 +341,45 @@ def charts_access(page_id=None):
         return ("none", str(e))
 
 
+def net_hint(e):
+    """Remediation for a host the sandbox's network policy refuses, or ''.
+
+    A cloud session reaches the internet through an egress proxy with an allow-list,
+    and a host that is not on it fails the CONNECT rather than the request - which
+    surfaces as a tunnel 403 and reads like an auth problem it is not. Nothing in
+    this script can work around it; the environment has to allow the host.
+    """
+    t = str(e)
+    if "Tunnel connection failed" in t or "ProxyError" in t or "407" in t:
+        return ("      Blocked by the sandbox network policy, not by credentials - no\n"
+                "      token or flag fixes this. Allow the host in the environment's\n"
+                "      network settings (Claude Code on the web: the environment's\n"
+                "      allowed-domains list), or run the report from a local checkout.")
+    return ""
+
+
+def chart_renderer():
+    """The binary charts.py would rasterize PNGs with, or None.
+
+    Checked here because the failure is silent otherwise: charts.py falls back to
+    SVG, there is nothing to attach, and the page loses its figures at publish time
+    rather than at preflight.
+    """
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    try:
+        import shutil
+        from charts import chrome_candidates
+        for exe, flag in chrome_candidates():
+            if os.path.isabs(exe):
+                if os.path.exists(exe):
+                    return exe, flag
+            elif shutil.which(exe):
+                return shutil.which(exe), flag
+    except Exception:
+        pass
+    return None, None
+
+
 def preflight():
     """Report which data sources are reachable, and how to fix the ones that aren't."""
     ok = True
@@ -370,7 +409,8 @@ def preflight():
             print("      the counts without warning. Say 'anonymous' in the Method section.")
     except Exception as e:
         print(f"FAIL  Jira      {mode} request rejected: {e}")
-        print(MISSING_TOKEN)
+        hint = net_hint(e)
+        print(hint if hint else MISSING_TOKEN)
         ok = False
 
     print("OK    Confluence via the Atlassian connector in Claude Code (no token).")
@@ -422,6 +462,20 @@ def preflight():
         print("OK    SonarCloud reachable (no token needed)")
     except Exception as e:
         print(f"WARN  SonarCloud unreachable: {e}")
+        hint = net_hint(e)
+        if hint:
+            print(hint)
+
+    exe, flag = chart_renderer()
+    if exe:
+        pad = " (needs frame padding)" if flag == "--headless=new" else ""
+        print(f"OK    Charts    PNGs render with {os.path.basename(exe)} {flag}{pad}")
+    else:
+        print("WARN  Charts    no Chrome-family binary found, so charts.py emits SVG only")
+        print("      and there is nothing to attach. Install Chrome or Chromium, or set")
+        print("      CHROME_BIN. A session with Playwright browsers under")
+        print("      PLAYWRIGHT_BROWSERS_PATH (default /opt/pw-browsers) is found")
+        print("      automatically.")
 
     print("\nNOTE  Sentry     cannot be checked from this script. In Claude Code, confirm the")
     print("      Sentry MCP tools are available; if not, authorize the server with /mcp.")
@@ -559,12 +613,28 @@ def window_split(segs, start, end):
     return a, w
 
 
+def stage_clip(segs, start, end):
+    """Per-status seconds falling inside [start, end].
+
+    Same segments as window_split, kept per status instead of collapsed to
+    active/wait, so stage shares can be reported for the delivery window alone.
+    The report's bottleneck question is about the part the team controls, and a
+    full-lifecycle share is dominated by backlog dwell that drowns it out.
+    """
+    out = defaultdict(float)
+    for status, s, e in segs:
+        lo, hi = max(s, start), min(e, end)
+        if hi > lo:
+            out[status] += (hi - lo).total_seconds()
+    return out
+
+
 def window(issues):
     done = [i for i in issues
             if (i["fields"].get("resolution") or {}).get("name") == "Done"]
     m = {"resolved": len(issues), "throughput": len(done)}
     leads, deliv, eff_d, eff_full, intake, post = [], [], [], [], [], []
-    stage = defaultdict(list)
+    stage, stage_d = defaultdict(list), defaultdict(list)
     for i in done:
         f = i["fields"]
         c, r = ts(f["created"]), ts(f["resolutiondate"])
@@ -580,6 +650,9 @@ def window(issues):
             a, w = window_split(segs, start, end)
             if a + w:
                 eff_d.append(a / (a + w) * 100)
+            for k, v in stage_clip(segs, start, end).items():
+                if classify(k) in ("active", "wait"):
+                    stage_d[k].append(v / D)
         if start and c:
             intake.append((start - c).total_seconds() / D)
         # time after merge until resolution (integration testing tail)
@@ -607,6 +680,14 @@ def window(issues):
     m["stages"] = {k: {"p50": pct(v, 50), "p85": pct(v, 85), "share": sum(v) / tot * 100,
                        "kind": classify(k)}
                    for k, v in stage.items()}
+    # Same shape, clipped to committed -> merged. This is the one the report shows:
+    # `Where the time goes` asks where the delivery loop stalls, and full-lifecycle
+    # shares answer a different question (how long the backlog is).
+    tot_d = sum(sum(v) for v in stage_d.values()) or 1
+    m["stages_delivery"] = {k: {"p50": pct(v, 50), "p85": pct(v, 85),
+                                "share": sum(v) / tot_d * 100, "kind": classify(k),
+                                "n": len(v)}
+                            for k, v in stage_d.items()}
     return m
 
 
@@ -904,7 +985,21 @@ def main():
     print(f"  fixVersion coverage: {tagged}/{len(fixed_cur)} bugs fixed in the window "
           f"carry one - the table is a floor")
 
-    print("\n=== STAGES (share of total; prev -> cur) ===")
+    print("\n=== STAGES INSIDE DELIVERY (committed -> merged; prev -> cur) ===")
+    print("  this is the one the report charts - the full-lifecycle block below is")
+    print("  context only, since backlog dwell swamps the delivery loop in it")
+    ranked = sorted(set(cur["stages_delivery"]) | set(prev["stages_delivery"]),
+                    key=lambda k: -max(cur["stages_delivery"].get(k, {}).get("share", 0),
+                                       prev["stages_delivery"].get(k, {}).get("share", 0)))
+    for k in ranked:
+        c = cur["stages_delivery"].get(k)
+        if not c:
+            continue
+        p = prev["stages_delivery"].get(k, {}).get("share", 0)
+        print(f"  {k:<32}{c['kind']:<7}{p:>6.1f}{c['share']:>7.1f}"
+              f"{c['p50']:>8.1f}{c['p85']:>8.1f}{c['n']:>6}")
+
+    print("\n=== STAGES, WHOLE LIFECYCLE (share of total; prev -> cur) ===")
     for s in ORDER:
         c = cur["stages"].get(s)
         if not c:
