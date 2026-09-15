@@ -208,7 +208,10 @@ jobs:
     permissions:
       contents: read
     # Runs after the device jobs so their coverage is included in the analysis.
+    # !cancelled() rather than success(): the device jobs upload whatever coverage they
+    # retrieved even when a test fails, so the analysis should still consume it.
     needs: [ unit-tests, run-ui-portrait, run-ui-landscape ]
+    if: ${{ !cancelled() }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
