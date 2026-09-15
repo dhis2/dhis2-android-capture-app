@@ -46,7 +46,7 @@ internal fun ProvideInputFileResource(
         supportingText = fieldUiModel.supportingText(),
         buttonText = stringResource(R.string.add_file),
         uploadFileState = uploadState,
-        fileName = file?.name,
+        fileName = fieldUiModel.fileName ?: file?.name,
         fileWeight = file?.length()?.let { fileSizeLabel(it) },
         onSelectFile = {
             uploadState = getFileUploadState(fieldUiModel.displayName, true)
