@@ -6,12 +6,12 @@ on:
   workflow_dispatch:
     inputs:
       release_version_name:
-        description: 'New release version name'
+        description: 'New release version name, without suffix (e.g. 3.2.0)'
         required: true
         type: string
 
       development_version_name:
-        description: 'Development version name'
+        description: 'Next development version name, without suffix (e.g. 3.7.0)'
         required: true
         type: string
 
@@ -29,54 +29,54 @@ jobs:
   create_branch:
     runs-on: ubuntu-latest
     env:
-      RELEASE_VERSION: ${{ inputs.release_version_name }}
+      RC_VERSION: '${{ inputs.release_version_name }}-RC'
       RELEASE_BRANCH: 'release/${{ inputs.release_version_name }}'
       TEMP_RELEASE_BRANCH: 'tmp_release/${{ inputs.release_version_name }}'
 
     steps:
-    - name: Check out code
-      uses: actions/checkout@v7.0.1
-      with:
-        token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
+      - name: Check out code
+        uses: actions/checkout@v7.0.1
+        with:
+          token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
 
-    - name: Set up Python
-      uses: actions/setup-python@v7
-      with:
-        python-version: 3.12.1
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: 3.12.1
 
-      # Creates an auxiliary branch. This branch will be used to create the signed commit using the GH API.
-      # It is required to use an auxiliary branch because the RELEASE_BRANCH is protected and the GH API
-      # rejects the commit even though the user identified by the token is included in the bypass list.
-    - name: Create auxiliary branch
-      run: |
-        git checkout -b ${{ env.TEMP_RELEASE_BRANCH }}
-        git push origin ${{ env.TEMP_RELEASE_BRANCH }}
+        # Creates an auxiliary branch. This branch will be used to create the signed commit using the GH API.
+        # It is required to use an auxiliary branch because the RELEASE_BRANCH is protected and the GH API
+        # rejects the commit even though the user identified by the token is included in the bypass list.
+      - name: Create auxiliary branch
+        run: |
+          git checkout -b $TEMP_RELEASE_BRANCH
+          git push origin $TEMP_RELEASE_BRANCH
 
-    - name: Run Python script to update release branch version
-      run: python scripts/updateVersionName.py ${{ env.RELEASE_VERSION }}
+      - name: Run Python script to update release branch version
+        run: python scripts/updateVersionName.py $RC_VERSION
 
-      # Uses the GH API to create the signed commit.
-    - name: Commit and Push Changes to auxiliary branch
-      uses: flex-development/gh-commit@177be4b5bca1b102400ca7220932d9ff7980fddb
-      with:
-        message: 'Update version to ${{ env.RELEASE_VERSION }}'
-        ref: ${{ env.TEMP_RELEASE_BRANCH }}
-        token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
+        # Uses the GH API to create the signed commit.
+      - name: Commit and Push Changes to auxiliary branch
+        uses: flex-development/gh-commit@177be4b5bca1b102400ca7220932d9ff7980fddb
+        with:
+          message: 'Update version to ${{ env.RC_VERSION }}'
+          ref: ${{ env.TEMP_RELEASE_BRANCH }}
+          token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
 
-      # Fetch the remote commit (signed commit) and create a new branch with the RELEASE_BRANCH name.
-      # This is required because the RELEASE_BRANCH is protected.
-    - name: Create and push release branch
-      run: |
-        git reset --hard
-        git pull origin ${{ env.TEMP_RELEASE_BRANCH }}
-        git checkout -b ${{ env.RELEASE_BRANCH }}
-        git push origin ${{ env.RELEASE_BRANCH }}
-        git push origin --delete ${{ env.TEMP_RELEASE_BRANCH }}
+        # Fetch the remote commit (signed commit) and create a new branch with the RELEASE_BRANCH name.
+        # This is required because the RELEASE_BRANCH is protected.
+      - name: Create and push release branch
+        run: |
+          git reset --hard
+          git pull origin $TEMP_RELEASE_BRANCH
+          git checkout -b $RELEASE_BRANCH
+          git push origin $RELEASE_BRANCH
+          git push origin --delete $TEMP_RELEASE_BRANCH
 
   update_version:
     runs-on: ubuntu-latest
     env:
-      DEVELOPMENT_VERSION: ${{ inputs.development_version_name }}
+      DEVELOPMENT_VERSION: '${{ inputs.development_version_name }}-Dev'
       DEVELOPMENT_SDK_VERSION: ${{ inputs.dev_sdk_version_name }}
       DEVELOPMENT_DESIGN_VERSION: ${{ inputs.dev_design_system_version_name }}
       DEVELOPMENT_BRANCH: 'update_version_to${{ inputs.development_version_name }}'
@@ -94,14 +94,14 @@ jobs:
 
       - name: Create development branch
         run: |
-          git checkout -b ${{ env.DEVELOPMENT_BRANCH }}
-          git push origin ${{ env.DEVELOPMENT_BRANCH }}
+          git checkout -b $DEVELOPMENT_BRANCH
+          git push origin $DEVELOPMENT_BRANCH
 
       - name: Run Python script to update base branch version
-        run: python scripts/updateVersionName.py ${{ env.DEVELOPMENT_VERSION }}
+        run: python scripts/updateVersionName.py $DEVELOPMENT_VERSION
 
       - name: Run Python script to update sdk and design system version name
-        run: python scripts/updateDependencyVersions.py ${{ env.DEVELOPMENT_SDK_VERSION }} ${{ env.DEVELOPMENT_DESIGN_VERSION }}
+        run: python scripts/updateDependencyVersions.py $DEVELOPMENT_SDK_VERSION $DEVELOPMENT_DESIGN_VERSION
 
       - name: Commit and Push Changes
         uses: flex-development/gh-commit@177be4b5bca1b102400ca7220932d9ff7980fddb
@@ -111,6 +111,6 @@ jobs:
           token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
 
       - name: Create pull request
-        run: gh pr create -B develop -H update_version_to${{ env.DEVELOPMENT_VERSION }} --title 'Merge ${{ env.DEVELOPMENT_BRANCH }} into develop' --body 'Created by Github action'
+        run: gh pr create -B develop -H "$DEVELOPMENT_BRANCH" --title "Merge $DEVELOPMENT_BRANCH into develop" --body 'Created by Github action'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
