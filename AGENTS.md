@@ -193,6 +193,71 @@ For patterns, examples, and common mistakes load the **android-testing** skill.
 
 ---
 
+## Contributing Conventions
+
+### Jira
+
+Work is tracked in the **ANDROAPP** project on `https://dhis2.atlassian.net`. Two fields are
+**required** when creating an issue — the API rejects the request without them:
+
+- **Components** — use `AndroidApp` for capture-app work (others: `datasets`, `LMIS`,
+  `login`, `Mobile-UI`, `UX`)
+- **Internal feature** — `General interest`, or `Internal to system` for refactors and
+  dependency work users won't notice
+
+### Branches
+
+- Ticketed work: `ANDROAPP-<key>` or `ANDROAPP-<key>-<short-description>`
+- Repo tooling, docs and dependency chores without a ticket: `<type>/<short-description>`,
+  e.g. `chore/upgrade-gradle-9.5.0-agp-9.3.0`
+
+**Name the branch correctly before opening the PR.** Renaming afterwards is not possible:
+the GitHub rename API returns 403 (`Must have organization admin access to rename branches
+protected by organization rulesets`), and GitHub cannot retarget an open PR's head branch —
+so the only fix is a new branch and a new PR.
+
+### Commits and PR titles
+
+`<type>: [ANDROAPP-<key>] <subject>` for ticketed work, otherwise `<type>: <subject>`.
+Types in use: `feat`, `fix`, `chore`, `test`, `build`, `deps`, `style`.
+
+### PR size
+
+`scripts/check_pr_size.sh` fails the `setup` job above **`MAX_LINES=400`** changed lines.
+To bypass it deliberately, include `[skip size]` in the PR **title or body**.
+
+---
+
+## Verification Beyond the Standard Tasks
+
+`./run_tests.sh` (ktlint + unit tests) does not cover everything CI does. Two gaps worth
+knowing:
+
+**compileSdk / AGP / SDK-surface changes** — also run what CI's `build-test-apks` job runs:
+
+```bash
+./gradlew :app:assembleDhis2Debug :app:assembleDhis2DebugAndroidTest :form:assembleAndroidTest
+```
+
+Raising `compileSdk` turns newly `@Nullable`-annotated platform APIs into hard Kotlin
+nullables, and the breakage often lands only in `androidTest`, which neither
+`assembleDhis2Debug` nor the unit tests compile. `app/build.gradle.kts` sets
+`lint { abortOnError = false }`, so Android lint will not catch these either — only
+compilation does. Takes ~17 min locally.
+
+**Release/R8 changes** — `:app:assembleDhis2Release` cannot complete locally, because
+`signingConfigs` reads `SIGNING_KEY_ALIAS`, `SIGNING_KEYSTORE_PATH` and friends from
+`System.getenv()` and those are CI-only secrets; the build dies at signing for reasons
+unrelated to your change. Use **`./gradlew :app:minifyDhis2ReleaseWithR8`** instead — R8 runs
+before signing, so it exercises minification and keep rules without a keystore. This matters
+because `.github/workflows/verify-dependency-metadata.yml` builds the three release variants.
+
+> That workflow also **regenerates and auto-commits** `gradle/verification-metadata.xml` for
+> same-repo PRs, so adding or bumping a dependency needs no manual checksum work. Locally the
+> equivalent is `./gradlew --write-verification-metadata sha256 help`.
+
+---
+
 ## Sentry Skills
 
 Two custom skills for Sentry error triage and remediation. They are **multi-repo**:
