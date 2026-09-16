@@ -496,6 +496,7 @@ internal class DataSetInstanceRepositoryImpl(
                 .dataSetModule()
                 .sections()
                 .withGreyedFields()
+                .withDataElements()
                 .withIndicators()
                 .uid(sectionUid)
                 .blockingGet()
@@ -525,14 +526,52 @@ internal class DataSetInstanceRepositoryImpl(
             d2
                 .dataSetModule()
                 .dataSetInstanceService()
-                .getEditableStatus(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
-                .blockingGet() == DataSetEditableStatus.Editable
+                .blockingGetEditableStatus(
+                    dataSetUid,
+                    periodId,
+                    orgUnitUid,
+                    attrOptionComboUid,
+                ) == DataSetEditableStatus.Editable
+
+        val blockedCategoryOptionCombo =
+            allDataSetElements
+                ?.distinctBy {
+                    it.categoryComboUid
+                }?.flatMap {
+                    val categoryOptionCombos =
+                        d2
+                            .categoryModule()
+                            .categoryOptionCombos()
+                            .withCategoryOptions()
+                            .byCategoryComboUid()
+                            .eq(it.categoryComboUid)
+                            .blockingGet()
+
+                    val categoryOptionCombosWithNoAccess =
+                        categoryOptionCombos.mapNotNull { categoryOptionCombo ->
+                            val options =
+                                d2
+                                    .categoryModule()
+                                    .categoryOptions()
+                                    .byUid()
+                                    .`in`(categoryOptionCombo.categoryOptions?.map { categoryOption -> categoryOption.uid })
+                                    .blockingGet()
+
+                            if (options.any { option -> !option.access.data.write }) {
+                                categoryOptionCombo.uid
+                            } else {
+                                null
+                            }
+                        }
+                    categoryOptionCombosWithNoAccess
+                }
 
         return DataSetInstanceConfiguration(
             hasDataElementDecoration = dataSet?.dataElementDecoration() == true,
             compulsoryDataElements = compulsoryDataElements ?: emptyList(),
             allDataSetElements = allDataSetElements ?: emptyList(),
             greyedOutFields = greyedOutFields ?: emptyList(),
+            blockedCategoryOptionCombos = blockedCategoryOptionCombo ?: emptyList(),
             editable = isEditable,
         )
     }
