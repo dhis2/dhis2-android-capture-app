@@ -20,17 +20,14 @@ class GetInitialScreen(
                     availableServers = accountRepository.availableServers(),
                     hasAccounts = false,
                 )
-
-            accounts.size == 1 -> handleSingleAccount(accounts.first(), renewSession)
-            sessionRepository.isSessionLocked() -> handleLockedSession(renewSession)
+            renewSession -> handleLockedSession(true)
+            accounts.size == 1 -> handleSingleAccount(accounts.first())
+            sessionRepository.isSessionLocked() -> handleLockedSession(false)
             else -> LoginScreenState.Accounts
         }
     }
 
-    private fun handleSingleAccount(
-        account: AccountModel,
-        renewSession: Boolean,
-    ): LoginScreenState =
+    private fun handleSingleAccount(account: AccountModel): LoginScreenState =
         LoginScreenState.LoginCredentials(
             selectedServer = account.serverUrl,
             selectedUsername = account.name,
@@ -39,7 +36,6 @@ class GetInitialScreen(
             allowRecovery = account.allowRecovery,
             entryMode = CredentialsEntryMode.existing(account.authorizationMethod),
             autoPromptLogin = false,
-            autoStartRenewal = renewSession,
         )
 
     private suspend fun handleLockedSession(renewSession: Boolean): LoginScreenState {
