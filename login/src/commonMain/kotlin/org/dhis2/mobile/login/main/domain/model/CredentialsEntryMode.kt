@@ -1,7 +1,9 @@
 package org.dhis2.mobile.login.main.domain.model
 
+import androidx.annotation.Keep
 import org.dhis2.mobile.login.accounts.domain.model.AuthorizationMethod
 
+@Keep
 enum class CredentialsEntryMode {
     NEW_ACCOUNT_BASIC,
     NEW_ACCOUNT_OAUTH,
