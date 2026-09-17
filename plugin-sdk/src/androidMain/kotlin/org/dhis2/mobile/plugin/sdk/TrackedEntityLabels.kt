@@ -41,7 +41,6 @@ public class TrackedEntityLabeller(
     // labelling of a tracked entity would only ever be checkable on a device. Injecting it is what
     // keeps the interesting half on the JVM.
 
-
     /**
      * [tei]'s values for the listed attributes, labelled and in the programme's order.
      *
@@ -58,8 +57,10 @@ public class TrackedEntityLabeller(
      * Use this when you want *Filona Ryder*; use [labelsFor] when you want the values under their
      * labels.
      */
-    public fun labelFor(tei: TrackedEntityInstance, separator: String = " "): String =
-        labelsFor(tei).joinToString(separator) { it.value }
+    public fun labelFor(
+        tei: TrackedEntityInstance,
+        separator: String = " ",
+    ): String = labelsFor(tei).joinToString(separator) { it.value }
 }
 
 /**
@@ -69,8 +70,9 @@ public class TrackedEntityLabeller(
  * lookup per distinct org unit only if the fallback is ever reached.
  */
 public fun D2.trackedEntityLabeller(programUid: String): TrackedEntityLabeller {
-    val uids = programDisplayAttributeUids(programUid)
-        .ifEmpty { typeDisplayAttributeUids(programUid) }
+    val uids =
+        programDisplayAttributeUids(programUid)
+            .ifEmpty { typeDisplayAttributeUids(programUid) }
 
     val labels = if (uids.isEmpty()) emptyMap() else labelsByUid(uids)
 
@@ -83,12 +85,14 @@ public fun D2.trackedEntityLabeller(programUid: String): TrackedEntityLabeller {
     val orgUnitNames = mutableMapOf<String, String?>()
     return TrackedEntityLabeller(attributes) { tei ->
         val orgUnitUid = tei.organisationUnit() ?: return@TrackedEntityLabeller null
-        val name = orgUnitNames.getOrPut(orgUnitUid) {
-            organisationUnitModule().organisationUnits()
-                .uid(orgUnitUid)
-                .blockingGet()
-                ?.let { it.displayName() ?: it.name() }
-        }
+        val name =
+            orgUnitNames.getOrPut(orgUnitUid) {
+                organisationUnitModule()
+                    .organisationUnits()
+                    .uid(orgUnitUid)
+                    .blockingGet()
+                    ?.let { it.displayName() ?: it.name() }
+            }
         name?.let { LabelledAttribute(label = "Organisation unit", value = it) }
     }
 }
@@ -104,14 +108,15 @@ internal fun labelled(
     tei: TrackedEntityInstance,
     attributes: List<DisplayAttribute>,
 ): List<LabelledAttribute> {
-    val values = tei.trackedEntityAttributeValues()
-        .orEmpty()
-        .mapNotNull { value ->
-            val uid = value.trackedEntityAttribute() ?: return@mapNotNull null
-            val text = value.value()?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
-            uid to text
-        }
-        .toMap()
+    val values =
+        tei
+            .trackedEntityAttributeValues()
+            .orEmpty()
+            .mapNotNull { value ->
+                val uid = value.trackedEntityAttribute() ?: return@mapNotNull null
+                val text = value.value()?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+                uid to text
+            }.toMap()
 
     return attributes.mapNotNull { attribute ->
         values[attribute.uid]?.let { LabelledAttribute(attribute.label, it) }
@@ -120,26 +125,34 @@ internal fun labelled(
 
 /** What the programme itself lists, in the order it lists it. */
 private fun D2.programDisplayAttributeUids(programUid: String): List<String> =
-    programModule().programTrackedEntityAttributes()
-        .byProgram().eq(programUid)
-        .byDisplayInList().isTrue
+    programModule()
+        .programTrackedEntityAttributes()
+        .byProgram()
+        .eq(programUid)
+        .byDisplayInList()
+        .isTrue
         .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
         .blockingGet()
         .mapNotNull { it.trackedEntityAttribute()?.uid() }
 
 /** The tracked entity type's list attributes, for a programme that declares none of its own. */
 private fun D2.typeDisplayAttributeUids(programUid: String): List<String> {
-    val trackedEntityType = programModule().programs()
-        .uid(programUid)
-        .blockingGet()
-        ?.trackedEntityType()
-        ?.uid()
-        ?: return emptyList()
+    val trackedEntityType =
+        programModule()
+            .programs()
+            .uid(programUid)
+            .blockingGet()
+            ?.trackedEntityType()
+            ?.uid()
+            ?: return emptyList()
 
     // This repository has no orderBySortOrder, unlike the programme one, so the sort happens here.
-    return trackedEntityModule().trackedEntityTypeAttributes()
-        .byTrackedEntityTypeUid().eq(trackedEntityType)
-        .byDisplayInList().isTrue
+    return trackedEntityModule()
+        .trackedEntityTypeAttributes()
+        .byTrackedEntityTypeUid()
+        .eq(trackedEntityType)
+        .byDisplayInList()
+        .isTrue
         .blockingGet()
         .sortedBy { it.sortOrder() ?: Int.MAX_VALUE }
         .map { it.trackedEntityAttribute().uid() }
@@ -147,13 +160,15 @@ private fun D2.typeDisplayAttributeUids(programUid: String): List<String> {
 
 /** Attribute uid to the label a human should read, preferring the form name the programme shows. */
 private fun D2.labelsByUid(uids: List<String>): Map<String, String> =
-    trackedEntityModule().trackedEntityAttributes()
-        .byUid().`in`(uids)
+    trackedEntityModule()
+        .trackedEntityAttributes()
+        .byUid()
+        .`in`(uids)
         .blockingGet()
         .associate { attribute ->
             attribute.uid() to (
                 attribute.displayFormName()
                     ?: attribute.displayName()
                     ?: attribute.uid()
-                )
+            )
         }
