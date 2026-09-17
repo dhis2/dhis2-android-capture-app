@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.form.R
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.EventCategory
 import org.dhis2.form.model.FieldUiModel
@@ -51,6 +53,10 @@ class FormRepositoryImplTest {
     private val fieldErrorMessageProvider: FieldErrorMessageProvider = mock()
     private val displayNameProvider: DisplayNameProvider = mock()
     private val legendValueProvider: LegendValueProvider = mock()
+    private val resourceManager: ResourceManager =
+        mock {
+            on { getString(R.string.unique_warning) } doReturn "Not unique"
+        }
     private lateinit var repository: FormRepositoryImpl
 
     @Before
@@ -97,6 +103,7 @@ class FormRepositoryImplTest {
                     legendValueProvider,
                     false,
                     preferenceProvider,
+                    resourceManager,
                 )
             repository.fetchFormItems()
         }
@@ -129,7 +136,9 @@ class FormRepositoryImplTest {
     fun `Should process user action ON_TEXT_CHANGE`() =
         runBlocking {
             repository.updateValueOnList("uid001", "valueChanged", ValueType.TEXT)
-            assertTrue(repository.composeList().find { it.uid == "uid001" }?.value == "valueChanged")
+            assertTrue(
+                repository.composeList().find { it.uid == "uid001" }?.value == "valueChanged",
+            )
         }
 
     @Test
@@ -176,7 +185,9 @@ class FormRepositoryImplTest {
             ) doReturn "errorMessage"
 
             // Then item should not be saved
-            assertTrue(repository.composeList().find { it.uid == "uid001" }?.error == "errorMessage")
+            assertTrue(
+                repository.composeList().find { it.uid == "uid001" }?.error == "errorMessage",
+            )
         }
 
     @Test

@@ -32,7 +32,6 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.dialogs.AlertBottomDialog
-import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle
@@ -48,7 +47,6 @@ import org.dhis2.form.data.toMessage
 import org.dhis2.form.di.Injector
 import org.dhis2.form.model.FormRepositoryRecords
 import org.dhis2.form.model.FormSection
-import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.exception.RepositoryRecordsException
@@ -288,29 +286,11 @@ class FormView : Fragment() {
             viewLifecycleOwner,
         ) { onFocused?.invoke() }
 
-        viewModel.showInfo.observe(
-            viewLifecycleOwner,
-        ) { infoUiModel ->
-            showInfoDialog(infoUiModel)
-        }
-
         viewModel.completionPercentage.observe(
             viewLifecycleOwner,
         ) { percentage ->
             completionListener?.invoke(percentage)
         }
-    }
-
-    private fun showInfoDialog(infoUiModel: InfoUiModel) {
-        CustomDialog(
-            requireContext(),
-            requireContext().getString(infoUiModel.title),
-            requireContext().getString(infoUiModel.description),
-            requireContext().getString(R.string.action_close),
-            null,
-            Constants.DESCRIPTION_DIALOG,
-            null,
-        ).show()
     }
 
     private fun uiEventHandler(uiEvent: RecyclerViewUiEvents) {
