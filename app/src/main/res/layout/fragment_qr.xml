@@ -14,7 +14,8 @@
         <com.journeyapps.barcodescanner.DecoratedBarcodeView
             android:id="@+id/scannerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            app:zxing_use_texture_view="true" />
 
         <RelativeLayout
             android:id="@+id/progress"

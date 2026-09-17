@@ -161,6 +161,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements BarcodeC
             ((MainActivity) getContext()).goToHome();
             Toast.makeText(getContext(), getString(R.string.camera_permission_denied), Toast.LENGTH_LONG).show();
         }
+        mScannerView.resume();
     }
 
     @Override
