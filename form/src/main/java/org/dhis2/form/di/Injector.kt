@@ -122,6 +122,7 @@ object Injector {
             legendValueProvider = provideLegendValueProvider(context),
             useCompose = useCompose,
             preferenceProvider = providePreferenceProvider(context),
+            resourceManager = provideResourcesManager(context),
         )
 
     private fun provideDataEntryRepository(
