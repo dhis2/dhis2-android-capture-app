@@ -90,6 +90,19 @@ internal class DataSetTableViewModel(
     private val uiActionHandler: UiActionHandler,
     private val inputDataUiStateMapper: InputDataUiStateMapper,
     private val fieldErrorMessageProvider: FieldErrorMessageProvider,
+    /**
+     * Whether the screen renders this view model's tables.
+     *
+     * `false` when the host replaces the screen's body — see `DataSetInstanceScreen`'s
+     * `dataSetBody`. Building a table nothing renders is the most expensive thing this view model
+     * does (one section query plus a data value query per table group), so it is skipped, and the
+     * section tabs that would rebuild it are inert.
+     *
+     * Everything else stays: the title, completion status, editability, validation and the save
+     * flow are all read from the SDK rather than from the table, so they remain correct over data
+     * the replacement wrote itself.
+     */
+    private val loadDefaultBody: Boolean = true,
 ) : ViewModel() {
     private var sectionChangeJob: Job? = null
 
@@ -139,12 +152,16 @@ internal class DataSetTableViewModel(
                                 sectionToLoad,
                                 emptyList(),
                                 overridingDimensions = initialDimensions,
-                                loading = true,
+                                // Nothing will render a table, so there is nothing to wait for.
+                                // The save button's visibility reads this flag.
+                                loading = loadDefaultBody,
                             ),
                         initialSection = dataSetInstanceData.initialSectionToLoad,
                         selectedCellInfo = CellSelectionState.Default(TableSelection.Unselected()),
                     )
             }
+
+            if (!loadDefaultBody) return@launchUseCase
 
             val tableModels = sectionData(sectionToLoad)
 
@@ -172,6 +189,9 @@ internal class DataSetTableViewModel(
     }
 
     fun onSectionSelected(sectionUid: String) {
+        // The tabs that call this are part of the body the host replaced, so there is no selection
+        // to honour and no table to rebuild.
+        if (!loadDefaultBody) return
         if (_dataSetScreenState.value.currentSection() == sectionUid) return
         sectionChangeJob?.takeIf { it.isActive }?.cancel()
         sectionChangeJob =

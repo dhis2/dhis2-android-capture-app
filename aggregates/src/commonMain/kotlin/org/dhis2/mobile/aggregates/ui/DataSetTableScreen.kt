@@ -11,6 +11,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -130,6 +131,8 @@ private val FabContainerHeight = 56.dp + 16.dp + 16.dp
  * @param useTwoPane: Whether to use a two pane layout
  * @param onBackClicked: Callback function to be invoked when the back button is clicked
  * @param onSyncClicked: Callback function to be invoked when the sync button is clicked
+ * @param dataSetBody: Replaces the screen's body - the panes, tabs and table. `null`, the default,
+ * renders the host's own.
  * */
 @Composable
 fun DataSetInstanceScreen(
@@ -139,6 +142,20 @@ fun DataSetInstanceScreen(
     onBackClicked: () -> Unit,
     onSyncClicked: (onUpdateData: () -> Unit) -> Unit,
     uiActionHandler: UiActionHandler,
+    /**
+     * Replaces the screen's body - the panes, tabs and table. Everything framing it stays: the top
+     * bar, the save button, the bottom bar and the snackbar are still this screen's.
+     *
+     * When it is non-null the view model also skips building the tables, since nothing would render
+     * them. That is one decision with two consequences, which is why this is a single nullable
+     * parameter rather than a decorator plus a flag - the two cannot disagree.
+     *
+     * `contentPadding` carries the space the floating save button occupies; the default body folds
+     * it into the table's own padding and a replacement must respect it. `onHostRefresh` re-reads
+     * the details, completion status and editability this screen shows - a replacement calls it
+     * after a write that changes any of them, because the host does not observe those writes.
+     */
+    dataSetBody: (@Composable (contentPadding: PaddingValues, onHostRefresh: () -> Unit) -> Unit)? = null,
 ) {
     val dataSetTableViewModel: DataSetTableViewModel =
         koinViewModel<DataSetTableViewModel>(parameters = {
@@ -148,6 +165,7 @@ fun DataSetInstanceScreen(
                 parameters.organisationUnitUid,
                 parameters.attributeOptionComboUid,
                 parameters.openErrorLocation,
+                dataSetBody == null,
                 onBackClicked,
                 uiActionHandler,
             )
@@ -305,154 +323,166 @@ fun DataSetInstanceScreen(
                     .padding(paddingValues),
             propagateMinConstraints = true,
         ) {
-            if (allowTwoPane) {
-                TwoPaneLayout(
-                    modifier =
-                        Modifier
-                            .fillMaxSize()
-                            .background(
-                                color = Color.Transparent,
-                                shape = RoundedCornerShape(topStart = Radius.L, topEnd = Radius.L),
-                            ),
-                    paneConfig = TwoPaneConfig.SecondaryPaneFixedSize(283.dp),
-                    primaryPane = {
-                        when (dataSetScreenState) {
-                            is DataSetScreenState.Loaded ->
-                                DataSetTableContent(
-                                    modifier =
-                                        Modifier.background(
-                                            color = MaterialTheme.colorScheme.background,
-                                            shape = RoundedCornerShape(topEnd = Radius.L),
-                                        ),
-                                    dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
-                                    dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
-                                    inputDialogSize = inputDialogSize,
-                                    fabSize = fabSizeDp,
-                                    onCellClick = { cellId, cellValue, cellError ->
-                                        scope.launch {
-                                            dataSetTableViewModel.updateSelectedCell(
-                                                cellId = cellId,
-                                                newValue = cellValue,
-                                                validationError = cellError,
-                                            )
-                                        }
-                                    },
-                                    currentSection = dataSetScreenState.currentSection(),
-                                    dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
-                                    onCellSelected = { cellSelection ->
-                                        dataSetTableViewModel.onResizingStatusChanged(cellSelection)
-                                    },
-                                    currentSelection = tableCellSelection,
-                                    onTableResize = dataSetTableViewModel::onTableResize,
-                                    emptySectionMessage = stringResource(Res.string.empty_section_message),
-                                    emptyDatasetMessage = stringResource(Res.string.empty_dataset_message),
-                                    onCheckedCellChanged = { cellId, isChecked ->
-                                        dataSetTableViewModel.onUiAction(
-                                            UiAction.OnValueChanged(
-                                                id = cellId,
-                                                newValue =
-                                                    when {
-                                                        isChecked -> "true"
-                                                        else -> null
-                                                    },
-                                                showInputDialog = false,
-                                            ),
-                                        )
-                                    },
-                                )
-
-                            DataSetScreenState.Loading ->
-                                ContentLoading(
-                                    modifier = Modifier.fillMaxSize(),
-                                    MaterialTheme.colorScheme.background,
-                                )
-                        }
-                    },
-                    secondaryPane = {
-                        if (dataSetScreenState is DataSetScreenState.Loaded) {
-                            val tabs by remember {
-                                derivedStateOf {
-                                    (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections.map { dataSetSection ->
-                                        Tab(
-                                            id = dataSetSection.uid,
-                                            label = dataSetSection.title,
-                                        )
-                                    }
-                                }
-                            }
-                            VerticalTabs(
-                                modifier =
-                                    Modifier
-                                        .fillMaxSize()
-                                        .background(
-                                            color = MaterialTheme.colorScheme.background,
-                                            shape = RoundedCornerShape(topStart = Radius.L),
-                                        ).padding(all = Spacing.Spacing16)
-                                        .background(
-                                            color = MaterialTheme.colorScheme.surfaceBright,
-                                            shape = RoundedCornerShape(Radius.L),
-                                        ).padding(all = Spacing.Spacing0),
-                                tabs = tabs,
-                                onSectionSelected = { sectionUid ->
-                                    dataSetTableViewModel.onSectionSelected(sectionUid)
-                                },
-                                initialSelectedTabIndex = (dataSetScreenState as DataSetScreenState.Loaded).initialSection,
-                            )
-                        } else {
-                            ContentLoading(
-                                modifier = Modifier.fillMaxSize(),
-                            )
-                        }
-                    },
+            // Read into a local so the null check smart-casts: dataSetBody is a parameter, but an
+            // invocable one, and Kotlin will not call it through a nullable reference.
+            val replacementBody = dataSetBody
+            if (replacementBody != null) {
+                replacementBody(
+                    // The floating save button hangs over this region; the default body folds the
+                    // same value into the table's own padding.
+                    PaddingValues(bottom = fabSizeDp),
+                    dataSetTableViewModel::loadDataSet,
                 )
             } else {
-                if (dataSetScreenState is DataSetScreenState.Loaded) {
-                    DataSetSinglePane(
-                        modifier = Modifier.fillMaxSize(),
-                        inputDialogSize = inputDialogSize,
-                        fabSize = fabSizeDp,
-                        dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
-                        dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
-                        initialTab = (dataSetScreenState as DataSetScreenState.Loaded).initialSection,
-                        onSectionSelected = { sectionUid ->
-                            dataSetTableViewModel.onSectionSelected(sectionUid)
-                        },
-                        dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
-                        onCellClick = { cellId, cellValue, cellError ->
-                            scope.launch {
-                                dataSetTableViewModel.updateSelectedCell(
-                                    cellId = cellId,
-                                    newValue = cellValue,
-                                    validationError = cellError,
-                                )
+                if (allowTwoPane) {
+                    TwoPaneLayout(
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .background(
+                                    color = Color.Transparent,
+                                    shape = RoundedCornerShape(topStart = Radius.L, topEnd = Radius.L),
+                                ),
+                        paneConfig = TwoPaneConfig.SecondaryPaneFixedSize(283.dp),
+                        primaryPane = {
+                            when (dataSetScreenState) {
+                                is DataSetScreenState.Loaded ->
+                                    DataSetTableContent(
+                                        modifier =
+                                            Modifier.background(
+                                                color = MaterialTheme.colorScheme.background,
+                                                shape = RoundedCornerShape(topEnd = Radius.L),
+                                            ),
+                                        dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
+                                        dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
+                                        inputDialogSize = inputDialogSize,
+                                        fabSize = fabSizeDp,
+                                        onCellClick = { cellId, cellValue, cellError ->
+                                            scope.launch {
+                                                dataSetTableViewModel.updateSelectedCell(
+                                                    cellId = cellId,
+                                                    newValue = cellValue,
+                                                    validationError = cellError,
+                                                )
+                                            }
+                                        },
+                                        currentSection = dataSetScreenState.currentSection(),
+                                        dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
+                                        onCellSelected = { cellSelection ->
+                                            dataSetTableViewModel.onResizingStatusChanged(cellSelection)
+                                        },
+                                        currentSelection = tableCellSelection,
+                                        onTableResize = dataSetTableViewModel::onTableResize,
+                                        emptySectionMessage = stringResource(Res.string.empty_section_message),
+                                        emptyDatasetMessage = stringResource(Res.string.empty_dataset_message),
+                                        onCheckedCellChanged = { cellId, isChecked ->
+                                            dataSetTableViewModel.onUiAction(
+                                                UiAction.OnValueChanged(
+                                                    id = cellId,
+                                                    newValue =
+                                                        when {
+                                                            isChecked -> "true"
+                                                            else -> null
+                                                        },
+                                                    showInputDialog = false,
+                                                ),
+                                            )
+                                        },
+                                    )
+
+                                DataSetScreenState.Loading ->
+                                    ContentLoading(
+                                        modifier = Modifier.fillMaxSize(),
+                                        MaterialTheme.colorScheme.background,
+                                    )
                             }
                         },
-                        currentSection = dataSetScreenState.currentSection(),
-                        currentSelection = tableCellSelection,
-                        onCellSelected = { cellSelection ->
-                            dataSetTableViewModel.onResizingStatusChanged(cellSelection)
-                        },
-                        onTableResize = dataSetTableViewModel::onTableResize,
-                        emptySectionMessage = stringResource(Res.string.empty_section_message),
-                        emptyDatasetMessage = stringResource(Res.string.empty_dataset_message),
-                        onCheckedCellChanged = { cellId, isChecked ->
-                            dataSetTableViewModel.onUiAction(
-                                UiAction.OnValueChanged(
-                                    id = cellId,
-                                    newValue =
-                                        when {
-                                            isChecked -> "true"
-                                            else -> null
-                                        },
-                                    showInputDialog = false,
-                                ),
-                            )
+                        secondaryPane = {
+                            if (dataSetScreenState is DataSetScreenState.Loaded) {
+                                val tabs by remember {
+                                    derivedStateOf {
+                                        (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections.map { dataSetSection ->
+                                            Tab(
+                                                id = dataSetSection.uid,
+                                                label = dataSetSection.title,
+                                            )
+                                        }
+                                    }
+                                }
+                                VerticalTabs(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxSize()
+                                            .background(
+                                                color = MaterialTheme.colorScheme.background,
+                                                shape = RoundedCornerShape(topStart = Radius.L),
+                                            ).padding(all = Spacing.Spacing16)
+                                            .background(
+                                                color = MaterialTheme.colorScheme.surfaceBright,
+                                                shape = RoundedCornerShape(Radius.L),
+                                            ).padding(all = Spacing.Spacing0),
+                                    tabs = tabs,
+                                    onSectionSelected = { sectionUid ->
+                                        dataSetTableViewModel.onSectionSelected(sectionUid)
+                                    },
+                                    initialSelectedTabIndex = (dataSetScreenState as DataSetScreenState.Loaded).initialSection,
+                                )
+                            } else {
+                                ContentLoading(
+                                    modifier = Modifier.fillMaxSize(),
+                                )
+                            }
                         },
                     )
                 } else {
-                    ContentLoading(
-                        modifier = Modifier.fillMaxSize().padding(paddingValues),
-                    )
+                    if (dataSetScreenState is DataSetScreenState.Loaded) {
+                        DataSetSinglePane(
+                            modifier = Modifier.fillMaxSize(),
+                            inputDialogSize = inputDialogSize,
+                            fabSize = fabSizeDp,
+                            dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
+                            dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
+                            initialTab = (dataSetScreenState as DataSetScreenState.Loaded).initialSection,
+                            onSectionSelected = { sectionUid ->
+                                dataSetTableViewModel.onSectionSelected(sectionUid)
+                            },
+                            dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
+                            onCellClick = { cellId, cellValue, cellError ->
+                                scope.launch {
+                                    dataSetTableViewModel.updateSelectedCell(
+                                        cellId = cellId,
+                                        newValue = cellValue,
+                                        validationError = cellError,
+                                    )
+                                }
+                            },
+                            currentSection = dataSetScreenState.currentSection(),
+                            currentSelection = tableCellSelection,
+                            onCellSelected = { cellSelection ->
+                                dataSetTableViewModel.onResizingStatusChanged(cellSelection)
+                            },
+                            onTableResize = dataSetTableViewModel::onTableResize,
+                            emptySectionMessage = stringResource(Res.string.empty_section_message),
+                            emptyDatasetMessage = stringResource(Res.string.empty_dataset_message),
+                            onCheckedCellChanged = { cellId, isChecked ->
+                                dataSetTableViewModel.onUiAction(
+                                    UiAction.OnValueChanged(
+                                        id = cellId,
+                                        newValue =
+                                            when {
+                                                isChecked -> "true"
+                                                else -> null
+                                            },
+                                        showInputDialog = false,
+                                    ),
+                                )
+                            },
+                        )
+                    } else {
+                        ContentLoading(
+                            modifier = Modifier.fillMaxSize().padding(paddingValues),
+                        )
+                    }
                 }
             }
 
@@ -612,109 +642,125 @@ private fun DataSetSinglePane(
     onTableResize: (ResizeAction) -> Unit,
     onCheckedCellChanged: (cellId: String, Boolean) -> Unit,
 ) {
-    Box(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.primary),
-    ) {
-        Column(
-            Modifier
-                .fillMaxSize()
-                .clip(
-                    shape =
-                        RoundedCornerShape(
-                            topStart = Radius.L,
-                            topEnd = Radius.L,
-                        ),
-                ).background(
-                    color = MaterialTheme.colorScheme.surfaceBright,
-                ),
-        ) {
-            DataSetTable(
-                dataSetSectionTable = dataSetSectionTable,
-                onCellClick = onCellClick,
-                inputDialogSize = inputDialogSize,
-                fabSize = fabSize,
-                topContent = {
-                    Column(
+    DataSetBodySurface {
+        DataSetTable(
+            dataSetSectionTable = dataSetSectionTable,
+            onCellClick = onCellClick,
+            inputDialogSize = inputDialogSize,
+            fabSize = fabSize,
+            topContent = {
+                Column(
+                    modifier =
+                        modifier
+                            .fillMaxWidth()
+                            .padding(bottom = Spacing.Spacing24),
+                ) {
+                    SectionTabs(
+                        modifier = Modifier,
+                        dataSetSections = dataSetSections,
+                        onSectionSelected = onSectionSelected,
+                        selectedTab = initialTab,
+                    )
+                    DataSetDetails(
                         modifier =
-                            modifier
-                                .fillMaxWidth()
-                                .padding(bottom = Spacing.Spacing24),
-                    ) {
-                        SectionTabs(
-                            modifier = Modifier,
-                            dataSetSections = dataSetSections,
-                            onSectionSelected = onSectionSelected,
-                            selectedTab = initialTab,
-                        )
-                        DataSetDetails(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth(),
-                            dataSetDetails = dataSetDetails,
-                        )
+                            Modifier
+                                .fillMaxWidth(),
+                        dataSetDetails = dataSetDetails,
+                    )
 
-                        if (!dataSetSectionTable.loading && dataSetSectionTable.tableModels.isEmpty()) {
-                            val message =
-                                if (dataSetSections.isEmpty()) {
-                                    emptyDatasetMessage
-                                } else {
-                                    emptySectionMessage
-                                }
-                            WarningInfoBar(message)
-                        }
-
-                        with(
-                            dataSetSections.firstOrNull { it.uid == currentSection }?.misconfiguredRows,
-                        ) {
-                            val message =
-                                "Some fields couldn't be displayed due to a configuration issue: %s.\nPlease contact your administrator."
-                            val info =
-                                when {
-                                    this != null && size > 4 -> "${joinToString(", ")} and ${size - 4} more"
-                                    this != null -> joinToString(", ")
-                                    else -> null
-                                }
-                            if (!this.isNullOrEmpty()) {
-                                WarningInfoBar(message.format(info))
+                    if (!dataSetSectionTable.loading && dataSetSectionTable.tableModels.isEmpty()) {
+                        val message =
+                            if (dataSetSections.isEmpty()) {
+                                emptyDatasetMessage
+                            } else {
+                                emptySectionMessage
                             }
-                        }
-                        dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
-                            HtmlContentBox(
-                                text = it,
-                                modifier =
-                                    Modifier.padding(
-                                        top = Spacing.Spacing8,
-                                        bottom = Spacing.Spacing0,
-                                        start = Spacing.Spacing16,
-                                        end = Spacing.Spacing16,
-                                    ),
-                            )
+                        WarningInfoBar(message)
+                    }
+
+                    with(
+                        dataSetSections.firstOrNull { it.uid == currentSection }?.misconfiguredRows,
+                    ) {
+                        val message =
+                            "Some fields couldn't be displayed due to a configuration issue: %s.\nPlease contact your administrator."
+                        val info =
+                            when {
+                                this != null && size > 4 -> "${joinToString(", ")} and ${size - 4} more"
+                                this != null -> joinToString(", ")
+                                else -> null
+                            }
+                        if (!this.isNullOrEmpty()) {
+                            WarningInfoBar(message.format(info))
                         }
                     }
-                },
-                bottomContent = {
-                    dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
+                    dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
                         HtmlContentBox(
                             text = it,
                             modifier =
                                 Modifier.padding(
-                                    top = Spacing.Spacing24,
+                                    top = Spacing.Spacing8,
+                                    bottom = Spacing.Spacing0,
                                     start = Spacing.Spacing16,
                                     end = Spacing.Spacing16,
                                 ),
                         )
                     }
-                },
-                onCellSelected = onCellSelected,
-                currentSelection = currentSelection,
-                onTableResize = onTableResize,
-                loading = dataSetSectionTable.loading,
-                onCheckedCellChanged = onCheckedCellChanged,
-            )
-        }
+                }
+            },
+            bottomContent = {
+                dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
+                    HtmlContentBox(
+                        text = it,
+                        modifier =
+                            Modifier.padding(
+                                top = Spacing.Spacing24,
+                                start = Spacing.Spacing16,
+                                end = Spacing.Spacing16,
+                            ),
+                    )
+                }
+            },
+            onCellSelected = onCellSelected,
+            currentSelection = currentSelection,
+            onTableResize = onTableResize,
+            loading = dataSetSectionTable.loading,
+            onCheckedCellChanged = onCheckedCellChanged,
+        )
+    }
+}
+
+/**
+ * The frame the data set body sits in: the top bar's colour behind a rounded, raised surface.
+ *
+ * Public because a host that replaces the body (see [DataSetInstanceScreen]'s `dataSetBody`) has to
+ * paint the same frame; re-implementing it there is how the two drift apart.
+ */
+@Composable
+fun DataSetBodySurface(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Box(
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.primary),
+    ) {
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .clip(
+                        shape =
+                            RoundedCornerShape(
+                                topStart = Radius.L,
+                                topEnd = Radius.L,
+                            ),
+                    ).background(
+                        color = MaterialTheme.colorScheme.surfaceBright,
+                    ),
+            content = content,
+        )
     }
 }
 

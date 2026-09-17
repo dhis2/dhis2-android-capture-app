@@ -178,6 +178,8 @@ internal val featureModule =
             val orgUnitUid = params.get<String>()
             val attrOptionComboUid = params.get<String>()
             val openErrorLocation = params.getOrNull<Boolean>() ?: false
+            // Positional, so it must stay immediately after openErrorLocation at the call site.
+            val loadDefaultBody = params.getOrNull<Boolean>() ?: true
             val onClose = params.get<() -> Unit>()
             val uiActionHandler = params.get<UiActionHandler>()
 
@@ -244,6 +246,7 @@ internal val featureModule =
                     get {
                         parametersOf(dataSetUid)
                     },
+                loadDefaultBody = loadDefaultBody,
             )
         }
     }

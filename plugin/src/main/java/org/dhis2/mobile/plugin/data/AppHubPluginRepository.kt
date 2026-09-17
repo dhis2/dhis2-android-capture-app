@@ -2,13 +2,20 @@ package org.dhis2.mobile.plugin.data
 
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonPrimitive
 import org.dhis2.mobile.commons.coroutine.Dispatcher
+import org.dhis2.mobile.plugin.sdk.InjectionPoint
 import org.dhis2.mobile.plugin.sdk.PluginMetadata
 import org.hisp.dhis.android.core.D2
 import timber.log.Timber
 
 private const val PLUGIN_NAMESPACE = "dhis2AndroidPlugins"
 private const val PLUGIN_CONFIG_KEY = "config"
+private const val INJECTION_POINTS_KEY = "injectionPoints"
 
 /**
  * Fetches the list of plugins configured for this DHIS2 server instance.
@@ -93,13 +100,61 @@ class AppHubPluginRepository(
                 }
 
                 val config = json.decodeFromString<PluginConfig>(configJson)
-                Timber.d("Found ${config.plugins.size} plugin(s) in server configuration")
-                config.plugins
+                val plugins = config.plugins.mapNotNull(::decodeEntry)
+                Timber.d("Found ${plugins.size} plugin(s) in server configuration")
+                plugins
             }
         }
+
+    /**
+     * Decodes one entry, or returns null having said why.
+     *
+     * Per entry rather than for the whole array, so one administrator's typo costs only their own
+     * plugin. `LoadPluginsUseCase` already isolates every later step per plugin; parsing was the
+     * one place where a single bad entry took every other plugin down with it.
+     */
+    private fun decodeEntry(entry: JsonObject): PluginMetadata? =
+        runCatching {
+            json.decodeFromJsonElement(PluginMetadata.serializer(), entry.withKnownInjectionPoints())
+        }.getOrElse { error ->
+            Timber.w(error, "Skipping unreadable plugin entry %s", entry.pluginId())
+            null
+        }
+
+    /**
+     * The same entry with injection points this app build does not know about removed.
+     *
+     * Slots are added over time, so a config written for a newer app names slots an older one has
+     * never heard of. Dropping the whole entry there would mean a plugin that also renders somewhere
+     * this build *does* support disappears, and with it an administrator's working home-screen
+     * plugin — for a slot that could not have rendered here anyway.
+     *
+     * A genuine typo still costs the plugin its slot, and says so in the log. A plugin left with no
+     * slot at all simply renders nowhere.
+     */
+    private fun JsonObject.withKnownInjectionPoints(): JsonObject {
+        val declared = this[INJECTION_POINTS_KEY] as? JsonArray ?: return this
+        val known = InjectionPoint.entries.mapTo(mutableSetOf()) { it.name }
+        val (supported, unsupported) =
+            declared.partition { (it as? JsonPrimitive)?.contentOrNull in known }
+
+        if (unsupported.isEmpty()) return this
+
+        Timber.w(
+            "Plugin %s declares injection point(s) this app does not support: %s",
+            pluginId(),
+            unsupported.joinToString { it.toString() },
+        )
+        return JsonObject(this + (INJECTION_POINTS_KEY to JsonArray(supported)))
+    }
+
+    private fun JsonObject.pluginId(): String = runCatching { this["id"]?.jsonPrimitive?.contentOrNull }.getOrNull() ?: "<unnamed>"
 }
 
 @kotlinx.serialization.Serializable
 private data class PluginConfig(
-    val plugins: List<PluginMetadata> = emptyList(),
+    /**
+     * Left as raw objects so each entry can be decoded, and fail, on its own.
+     */
+    val plugins: List<JsonObject> = emptyList(),
 )

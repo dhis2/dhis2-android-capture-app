@@ -8,7 +8,9 @@ import org.dhis2.mobile.plugin.sdk.Dhis2Plugin
 import org.dhis2.mobile.plugin.sdk.Dhis2PluginContext
 import org.dhis2.mobile.plugin.sdk.InjectionPoint
 import org.dhis2.mobile.plugin.sdk.PluginMetadata
+import org.dhis2.mobile.plugin.sdk.SlotArguments
 import org.koin.core.KoinApplication
+import timber.log.Timber
 import java.io.File
 
 /**
@@ -100,3 +102,43 @@ class PluginRegistry {
  */
 fun List<RegisteredPlugin>.forSlot(injectionPoint: InjectionPoint): List<RegisteredPlugin> =
     filter { injectionPoint in it.metadata.injectionPoints }
+
+/**
+ * The plugins in this list that render for [arguments] — configured for its slot *and* claiming
+ * this particular occurrence.
+ *
+ * A slot that declares `requiresConfiguration` renders nowhere until an administrator configures
+ * it: a replacement slot defaulting to "replace everything" is a footgun with no upside. An
+ * additive slot with no configuration keeps applying everywhere, which is what
+ * `HOME_ABOVE_PROGRAM_LIST` has always done.
+ */
+fun List<RegisteredPlugin>.forSlotArguments(arguments: SlotArguments): List<RegisteredPlugin> =
+    forSlot(arguments.injectionPoint).filter { registered ->
+        val config = registered.metadata.slotConfig[arguments.injectionPoint]
+        when {
+            config != null -> arguments.appliesTo(config)
+            else -> !arguments.injectionPoint.requiresConfiguration
+        }
+    }
+
+/**
+ * The single plugin that replaces the host's own UI for [arguments], or null to keep it.
+ *
+ * Replacement is exclusive, so when more than one plugin is configured for the same occurrence the
+ * first in configuration order wins and the rest are logged. Taking them all would stack full-screen
+ * layouts on top of each other; falling back to the host would make one admin's typo silently
+ * disable another team's plugin.
+ */
+fun List<RegisteredPlugin>.selectReplacement(arguments: SlotArguments): RegisteredPlugin? {
+    val candidates = forSlotArguments(arguments)
+    if (candidates.size > 1) {
+        Timber.w(
+            "%d plugins claim %s; rendering '%s' and ignoring %s",
+            candidates.size,
+            arguments.injectionPoint.name,
+            candidates.first().metadata.id,
+            candidates.drop(1).joinToString { it.metadata.id },
+        )
+    }
+    return candidates.firstOrNull()
+}

@@ -18,6 +18,7 @@ import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.mobile.aggregates.di.mappers.toDataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
+import org.dhis2.mobile.aggregates.ui.DataSetBodySurface
 import org.dhis2.mobile.aggregates.ui.DataSetInstanceScreen
 import org.dhis2.mobile.aggregates.ui.UiActionHandlerImpl
 import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_ATTRIBUTE_OPTION_COMBO_UID
@@ -26,6 +27,9 @@ import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_ORGANISATION_UNIT_U
 import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_PERIOD_ID
 import org.dhis2.mobile.aggregates.ui.constants.OPEN_ERROR_LOCATION
 import org.dhis2.mobile.commons.files.FileHandlerImpl
+import org.dhis2.mobile.plugin.sdk.DataSetInstanceSlotArguments
+import org.dhis2.mobile.plugin.ui.PluginReplacementSlot
+import org.dhis2.mobile.plugin.ui.rememberReplacementPlugin
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
@@ -56,8 +60,14 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
                     }
                 val dataSetParams = intent.toDataSetInstanceParameters()
                 val snackbarHostState = remember { SnackbarHostState() }
+
+                val slotArguments = remember(dataSetParams) { dataSetParams.toSlotArguments() }
+                // Also decides whether the view model builds tables at all - nothing renders them
+                // once a plugin owns the body.
+                val replacement = rememberReplacementPlugin(slotArguments)
+
                 DataSetInstanceScreen(
-                    parameters = intent.toDataSetInstanceParameters(),
+                    parameters = dataSetParams,
                     useTwoPane = useTwoPane,
                     onBackClicked = onBackPressedDispatcher::onBackPressed,
                     snackbarHostState = snackbarHostState,
@@ -69,6 +79,21 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
                         )
                     },
                     uiActionHandler = uiActionHandler,
+                    dataSetBody =
+                        replacement?.let { plugin ->
+                            { contentPadding, onHostRefresh ->
+                                // The host paints the frame, so every plugin sits in the same
+                                // rounded surface the default table does.
+                                DataSetBodySurface {
+                                    PluginReplacementSlot(
+                                        plugin = plugin,
+                                        arguments = slotArguments,
+                                        contentPadding = contentPadding,
+                                        onHostRefresh = onHostRefresh,
+                                    )
+                                }
+                            }
+                        },
                 )
             }
             supportFragmentManager
@@ -105,6 +130,14 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
                 }
             }.show(DATA_VALUE_SYNC)
     }
+
+    private fun DataSetInstanceParameters.toSlotArguments() =
+        DataSetInstanceSlotArguments(
+            dataSetUid = dataSetUid,
+            periodId = periodId,
+            organisationUnitUid = organisationUnitUid,
+            attributeOptionComboUid = attributeOptionComboUid,
+        )
 
     companion object {
         private const val DATA_VALUE_SYNC = "DATA_VALUE_SYNC"
