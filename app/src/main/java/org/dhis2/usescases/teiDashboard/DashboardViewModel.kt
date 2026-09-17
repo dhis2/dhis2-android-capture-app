@@ -293,6 +293,7 @@ class DashboardViewModel(
                 } else {
                     _noEnrollmentSelected.postValue(true)
                 }
+                loadNavigationBarItems()
             } catch (e: Exception) {
                 Timber.e(e)
             } finally {
