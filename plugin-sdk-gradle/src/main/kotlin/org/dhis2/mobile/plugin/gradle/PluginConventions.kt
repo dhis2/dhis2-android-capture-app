@@ -16,7 +16,6 @@ package org.dhis2.mobile.plugin.gradle
  * is the plugin's business, and this plugin has no business inventing types for it to implement.
  */
 internal object PluginConventions {
-
     /** One thing a project got wrong, in a form a build error can print verbatim. */
     data class Violation(
         val rule: String,
@@ -61,17 +60,18 @@ internal object PluginConventions {
      * a dependency that is *not* host-provided and *not* `compileOnly` is a `NoClassDefFoundError`
      * waiting to happen.
      */
-    val HOST_PROVIDED: List<String> = listOf(
-        "org.jetbrains.compose",
-        "org.jetbrains.kotlin",
-        "org.jetbrains.kotlinx:kotlinx-coroutines",
-        "org.dhis2.mobile:plugin-sdk",
-        "org.hisp.dhis",
-        "org.hisp.dhis.mobile",
-        "io.insert-koin",
-        "androidx.compose",
-        "androidx.lifecycle",
-    )
+    val HOST_PROVIDED: List<String> =
+        listOf(
+            "org.jetbrains.compose",
+            "org.jetbrains.kotlin",
+            "org.jetbrains.kotlinx:kotlinx-coroutines",
+            "org.dhis2.mobile:plugin-sdk",
+            "org.hisp.dhis",
+            "org.hisp.dhis.mobile",
+            "io.insert-koin",
+            "androidx.compose",
+            "androidx.lifecycle",
+        )
 
     /**
      * The one host-provided artifact that must NOT be `compileOnly`.
@@ -91,10 +91,11 @@ internal object PluginConventions {
      * project on earth. Found by running this check against the sample on its first real build,
      * which is the only reason it is not a bug shipped to plugin authors.
      */
-    private val PLUGIN_MANAGED = listOf(
-        "org.jetbrains.kotlin:kotlin-stdlib",
-        "org.jetbrains.kotlin:kotlin-test",
-    )
+    private val PLUGIN_MANAGED =
+        listOf(
+            "org.jetbrains.kotlin:kotlin-stdlib",
+            "org.jetbrains.kotlin:kotlin-test",
+        )
 
     /**
      * Suppression marker, honoured per file. Read before comments are stripped, so it works written
@@ -167,9 +168,10 @@ internal object PluginConventions {
                             Violation(
                                 rule = SDK_IN_SHARED_SOURCE,
                                 where = "${file.path}:$line",
-                                detail = "the DHIS2 SDK belongs in androidMain — `D2` is the " +
-                                    "Android SDK and has no common-source equivalent — but this " +
-                                    "is ${file.sourceSet}: $text",
+                                detail =
+                                    "the DHIS2 SDK belongs in androidMain — `D2` is the " +
+                                        "Android SDK and has no common-source equivalent — but this " +
+                                        "is ${file.sourceSet}: $text",
                             ),
                         )
                     }
@@ -178,9 +180,10 @@ internal object PluginConventions {
                             Violation(
                                 rule = CONTEXT_IN_SHARED_SOURCE,
                                 where = "${file.path}:$line",
-                                detail = "shared source must not reference Dhis2PluginContext; " +
-                                    "pass plain data and callbacks so a @Preview can render it " +
-                                    "without a server: $text",
+                                detail =
+                                    "shared source must not reference Dhis2PluginContext; " +
+                                        "pass plain data and callbacks so a @Preview can render it " +
+                                        "without a server: $text",
                             ),
                         )
                     }
@@ -191,19 +194,20 @@ internal object PluginConventions {
                         .findAll(code)
                         .firstOrNull { match -> !STATEMENT_BREAK.containsMatchIn(match.value) }
                         ?.let { match ->
-                        add(
-                            Violation(
-                                rule = CAP_BEFORE_ENRICHMENT,
-                                where = "${file.path}:${code.lineOf(match.range.first)}",
-                                detail = "this enriches every row with `.with…()` and caps " +
-                                    "afterwards with `take(`, so resolving rows nobody sees. " +
-                                    "Order and cap first, then re-query only those uids with " +
-                                    "the children you need. If this really is intentional, put " +
-                                    "`$IGNORE_MARKER $CAP_BEFORE_ENRICHMENT` in a comment in " +
-                                    "this file",
-                            ),
-                        )
-                    }
+                            add(
+                                Violation(
+                                    rule = CAP_BEFORE_ENRICHMENT,
+                                    where = "${file.path}:${code.lineOf(match.range.first)}",
+                                    detail =
+                                        "this enriches every row with `.with…()` and caps " +
+                                            "afterwards with `take(`, so resolving rows nobody sees. " +
+                                            "Order and cap first, then re-query only those uids with " +
+                                            "the children you need. If this really is intentional, put " +
+                                            "`$IGNORE_MARKER $CAP_BEFORE_ENRICHMENT` in a comment in " +
+                                            "this file",
+                                ),
+                            )
+                        }
                 }
             }
         }
@@ -221,26 +225,30 @@ internal object PluginConventions {
             val isCompileOnly = dependency.bucket == "compileOnly"
 
             when {
-                isResources && isCompileOnly -> Violation(
-                    rule = RESOURCES_MUST_BE_IMPLEMENTATION,
-                    where = "${dependency.sourceSet} ${dependency.bucket}",
-                    detail = "$COMPOSE_RESOURCES must be `implementation`: the Compose Resources " +
-                        "generator treats the declaration as its opt-in signal, and compileOnly " +
-                        "silently generates no Res class, so every Res.string.* stops resolving",
-                )
+                isResources && isCompileOnly ->
+                    Violation(
+                        rule = RESOURCES_MUST_BE_IMPLEMENTATION,
+                        where = "${dependency.sourceSet} ${dependency.bucket}",
+                        detail =
+                            "$COMPOSE_RESOURCES must be `implementation`: the Compose Resources " +
+                                "generator treats the declaration as its opt-in signal, and compileOnly " +
+                                "silently generates no Res class, so every Res.string.* stops resolving",
+                    )
 
                 isResources -> null
 
                 isCompileOnly -> null
 
-                HOST_PROVIDED.any { dependency.coordinates.startsWith(it) } -> Violation(
-                    rule = HOST_DEP_NOT_COMPILE_ONLY,
-                    where = "${dependency.sourceSet} ${dependency.bucket}",
-                    detail = "${dependency.coordinates} is provided by the Capture App at runtime, " +
-                        "so declare it `compileOnly`. Bundling a class the host already owns is " +
-                        "what produces ClassCastException at composition, and no build error " +
-                        "precedes it",
-                )
+                HOST_PROVIDED.any { dependency.coordinates.startsWith(it) } ->
+                    Violation(
+                        rule = HOST_DEP_NOT_COMPILE_ONLY,
+                        where = "${dependency.sourceSet} ${dependency.bucket}",
+                        detail =
+                            "${dependency.coordinates} is provided by the Capture App at runtime, " +
+                                "so declare it `compileOnly`. Bundling a class the host already owns is " +
+                                "what produces ClassCastException at composition, and no build error " +
+                                "precedes it",
+                    )
 
                 else -> null
             }

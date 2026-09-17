@@ -13,14 +13,11 @@ import org.junit.Test
  * these is worth failing a build over.
  */
 class PluginConventionsTest {
-
     private fun shared(text: String) = SourceFile("src/commonMain/Thing.kt", "commonMain", text)
 
-    private fun android(text: String) =
-        SourceFile("src/androidMain/Repo.kt", "androidMain", text)
+    private fun android(text: String) = SourceFile("src/androidMain/Repo.kt", "androidMain", text)
 
-    private fun rulesOf(vararg sources: SourceFile) =
-        PluginConventions.violations(sources.toList(), emptyList()).map { it.rule }
+    private fun rulesOf(vararg sources: SourceFile) = PluginConventions.violations(sources.toList(), emptyList()).map { it.rule }
 
     private fun rulesOf(vararg dependencies: DeclaredDependency) =
         PluginConventions.violations(emptyList(), dependencies.toList()).map { it.rule }
@@ -46,25 +43,27 @@ class PluginConventionsTest {
         // is to be used from a plugin's shared UI — a plugin should look like the app it renders
         // inside. A pattern of `org.hisp.dhis` flagged every plugin importing a token or the theme,
         // which told authors that following the guidance broke a rule.
-        val violations = rulesOf(
-            shared(
-                """
-                import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
-                import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
-                import org.hisp.dhis.mobile.ui.designsystem.component.Button
-                """.trimIndent(),
-            ),
-        )
+        val violations =
+            rulesOf(
+                shared(
+                    """
+                    import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+                    import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+                    import org.hisp.dhis.mobile.ui.designsystem.component.Button
+                    """.trimIndent(),
+                ),
+            )
 
         assertEquals(emptyList<String>(), violations)
     }
 
     @Test
     fun `flags the SDK in shared test source too, so a test cannot smuggle it in`() {
-        val violations = PluginConventions.violations(
-            listOf(SourceFile("src/commonTest/T.kt", "commonTest", "org.hisp.dhis.android.core.D2")),
-            emptyList(),
-        )
+        val violations =
+            PluginConventions.violations(
+                listOf(SourceFile("src/commonTest/T.kt", "commonTest", "org.hisp.dhis.android.core.D2")),
+                emptyList(),
+            )
 
         assertEquals(listOf(PluginConventions.SDK_IN_SHARED_SOURCE), violations.map { it.rule })
     }
@@ -73,14 +72,15 @@ class PluginConventionsTest {
     fun `does not flag a rule quoted in a comment`() {
         // The sample learned this one the hard way: its own architecture rules are cited in the
         // KDoc of the file that enforces them, and a naive grep called that a violation.
-        val kdoc = shared(
-            """
-            /**
-             * No `org.hisp.dhis` here, and never a Dhis2PluginContext.
-             */
-            class Thing
-            """.trimIndent(),
-        )
+        val kdoc =
+            shared(
+                """
+                /**
+                 * No `org.hisp.dhis` here, and never a Dhis2PluginContext.
+                 */
+                class Thing
+                """.trimIndent(),
+            )
 
         assertEquals(emptyList<String>(), rulesOf(kdoc))
     }
@@ -110,18 +110,20 @@ class PluginConventionsTest {
 
     @Test
     fun `flags a host-provided dependency that is not compileOnly`() {
-        val violations = rulesOf(
-            DeclaredDependency("commonMain", "implementation", "androidx.compose.material3:material3"),
-        )
+        val violations =
+            rulesOf(
+                DeclaredDependency("commonMain", "implementation", "androidx.compose.material3:material3"),
+            )
 
         assertEquals(listOf(PluginConventions.HOST_DEP_NOT_COMPILE_ONLY), violations)
     }
 
     @Test
     fun `flags a host-provided dependency on runtimeOnly, which packages it just the same`() {
-        val violations = rulesOf(
-            DeclaredDependency("androidMain", "runtimeOnly", "io.insert-koin:koin-core"),
-        )
+        val violations =
+            rulesOf(
+                DeclaredDependency("androidMain", "runtimeOnly", "io.insert-koin:koin-core"),
+            )
 
         assertEquals(listOf(PluginConventions.HOST_DEP_NOT_COMPILE_ONLY), violations)
     }
@@ -165,9 +167,10 @@ class PluginConventionsTest {
 
     @Test
     fun `requires compose resources to be implementation, or no Res class is generated`() {
-        val violations = rulesOf(
-            DeclaredDependency("commonMain", "compileOnly", PluginConventions.COMPOSE_RESOURCES),
-        )
+        val violations =
+            rulesOf(
+                DeclaredDependency("commonMain", "compileOnly", PluginConventions.COMPOSE_RESOURCES),
+            )
 
         assertEquals(listOf(PluginConventions.RESOURCES_MUST_BE_IMPLEMENTATION), violations)
     }
@@ -187,15 +190,16 @@ class PluginConventionsTest {
     @Test
     fun `flags enriching every row and capping afterwards`() {
         // The sample's own expression, before it was fixed.
-        val repository = android(
-            """
-            val recent = enrolled
-                .withTrackedEntityAttributeValues()
-                .orderByCreated(RepositoryScope.OrderByDirection.DESC)
-                .blockingGet()
-                .take(LISTED_LIMIT)
-            """.trimIndent(),
-        )
+        val repository =
+            android(
+                """
+                val recent = enrolled
+                    .withTrackedEntityAttributeValues()
+                    .orderByCreated(RepositoryScope.OrderByDirection.DESC)
+                    .blockingGet()
+                    .take(LISTED_LIMIT)
+                """.trimIndent(),
+            )
 
         assertEquals(listOf(PluginConventions.CAP_BEFORE_ENRICHMENT), rulesOf(repository))
     }
@@ -210,54 +214,61 @@ class PluginConventionsTest {
 
     @Test
     fun `does not flag a cap with no enrichment, which is the fix`() {
-        val fixed = android(
-            """
-            val uids = enrolled.orderByCreated(DESC).blockingGet().take(3).map { it.uid() }
-            val recent = enrolled.byUid().`in`(uids).withTrackedEntityAttributeValues().blockingGet()
-            """.trimIndent(),
-        )
+        val fixed =
+            android(
+                """
+                val uids = enrolled.orderByCreated(DESC).blockingGet().take(3).map { it.uid() }
+                val recent = enrolled.byUid().`in`(uids).withTrackedEntityAttributeValues().blockingGet()
+                """.trimIndent(),
+            )
 
         assertEquals(emptyList<String>(), rulesOf(fixed))
     }
 
     @Test
     fun `does not chain the match across unrelated statements`() {
-        val unrelated = android(
-            "val a = x.withChildren().blockingGet()\n" + "// ...\n".repeat(80) +
-                "val b = y.blockingGet().take(3)",
-        )
+        val unrelated =
+            android(
+                "val a = x.withChildren().blockingGet()\n" + "// ...\n".repeat(80) +
+                    "val b = y.blockingGet().take(3)",
+            )
 
         assertEquals(emptyList<String>(), rulesOf(unrelated))
     }
 
     @Test
     fun `honours the ignore marker, since the rule is a heuristic`() {
-        val suppressed = android(
-            """
-            // ${PluginConventions.IGNORE_MARKER} ${PluginConventions.CAP_BEFORE_ENRICHMENT}
-            val recent = enrolled.withTrackedEntityAttributeValues().blockingGet().take(3)
-            """.trimIndent(),
-        )
+        val suppressed =
+            android(
+                """
+                // ${PluginConventions.IGNORE_MARKER} ${PluginConventions.CAP_BEFORE_ENRICHMENT}
+                val recent = enrolled.withTrackedEntityAttributeValues().blockingGet().take(3)
+                """.trimIndent(),
+            )
 
         assertEquals(emptyList<String>(), rulesOf(suppressed))
     }
 
     @Test
     fun `names the ignore marker in the message, so the escape is discoverable`() {
-        val violation = PluginConventions.violations(
-            listOf(android("enrolled.withTrackedEntityAttributeValues().blockingGet().take(3)")),
-            emptyList(),
-        ).single()
+        val violation =
+            PluginConventions
+                .violations(
+                    listOf(android("enrolled.withTrackedEntityAttributeValues().blockingGet().take(3)")),
+                    emptyList(),
+                ).single()
 
         assertTrue(PluginConventions.IGNORE_MARKER in violation.detail)
     }
 
     @Test
     fun `renders a violation as something a build error can print`() {
-        val violation = PluginConventions.violations(
-            listOf(shared("import org.hisp.dhis.android.core.D2")),
-            emptyList(),
-        ).single()
+        val violation =
+            PluginConventions
+                .violations(
+                    listOf(shared("import org.hisp.dhis.android.core.D2")),
+                    emptyList(),
+                ).single()
 
         assertTrue(violation.toString().startsWith("[${PluginConventions.SDK_IN_SHARED_SOURCE}] "))
         assertTrue("src/commonMain/Thing.kt:1" in violation.toString())
