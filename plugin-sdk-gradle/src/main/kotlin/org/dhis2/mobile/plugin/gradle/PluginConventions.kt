@@ -102,7 +102,21 @@ internal object PluginConventions {
      */
     const val IGNORE_MARKER = "plugin-conventions:ignore"
 
-    private val SDK_PACKAGE = Regex("""\borg\.hisp\.dhis\b""")
+    /**
+     * The DHIS2 **SDK**'s package, not every DHIS2 package.
+     *
+     * `org.hisp.dhis.android` rather than `org.hisp.dhis`, because the DHIS2 design system is
+     * `org.hisp.dhis.mobile.ui.designsystem` — also host-provided, also `compileOnly`, and
+     * deliberately a Compose Multiplatform library so that a plugin's `commonMain` UI can use it.
+     * The broader pattern flagged every plugin importing `SurfaceColor` or `DHIS2Theme` into a
+     * Composable, which is precisely what plugin authors are told to do: a plugin should look like
+     * the app it renders inside. Note `HOST_PROVIDED` already lists `org.hisp.dhis.mobile`
+     * separately, so the dependency side of this was right and only the source side was not.
+     *
+     * What this rule is really about stays intact: `D2` is the Android SDK, needs an Android
+     * `Context`, a database and an HTTP stack, and so has no common-source equivalent.
+     */
+    private val SDK_PACKAGE = Regex("""\borg\.hisp\.dhis\.android\b""")
     private val PLUGIN_CONTEXT = Regex("""\bDhis2PluginContext\b""")
 
     /**

@@ -40,6 +40,26 @@ class PluginConventionsTest {
     }
 
     @Test
+    fun `allows the DHIS2 design system in shared source, because it is UI and not the SDK`() {
+        // org.hisp.dhis.mobile, not org.hisp.dhis.android. The design system is host-provided and
+        // compileOnly like the SDK, but it is a Compose Multiplatform library whose entire purpose
+        // is to be used from a plugin's shared UI — a plugin should look like the app it renders
+        // inside. A pattern of `org.hisp.dhis` flagged every plugin importing a token or the theme,
+        // which told authors that following the guidance broke a rule.
+        val violations = rulesOf(
+            shared(
+                """
+                import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+                import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+                import org.hisp.dhis.mobile.ui.designsystem.component.Button
+                """.trimIndent(),
+            ),
+        )
+
+        assertEquals(emptyList<String>(), violations)
+    }
+
+    @Test
     fun `flags the SDK in shared test source too, so a test cannot smuggle it in`() {
         val violations = PluginConventions.violations(
             listOf(SourceFile("src/commonTest/T.kt", "commonTest", "org.hisp.dhis.android.core.D2")),
