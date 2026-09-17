@@ -7,6 +7,8 @@ import org.dhis2.commons.dialogs.bottomsheet.IssueType
 import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.form.R
 import org.dhis2.form.data.EnrollmentRepository.Companion.ENROLLMENT_DATE_UID
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
@@ -35,6 +37,7 @@ class FormRepositoryImpl(
     private val legendValueProvider: LegendValueProvider,
     private val useCompose: Boolean,
     private val preferenceProvider: PreferenceProvider,
+    private val resourceManager: ResourceManager,
 ) : FormRepository {
     private var completionPercentage: Float = 0f
     private val itemsWithError: MutableList<RowAction> = mutableListOf()
@@ -897,4 +900,32 @@ class FormRepositoryImpl(
     override fun isEvent(): Boolean = dataEntryRepository.isEvent()
 
     override fun isEventEditable(): Boolean? = dataEntryRepository.isEventEditable()
+
+    override fun updateFieldIsUnique(fieldUid: String) {
+        itemList
+            .find { item ->
+                item.uid == fieldUid
+            }?.let { item ->
+                if (item.error == resourceManager.getString(R.string.unique_warning)) {
+                    itemList =
+                        itemList.updated(
+                            itemList.indexOf(item),
+                            item.setError(null),
+                        )
+                }
+            }
+    }
+
+    override fun updateFieldIsNotUnique(fieldUid: String) {
+        itemList
+            .find { item ->
+                item.uid == fieldUid
+            }?.let { item ->
+                itemList =
+                    itemList.updated(
+                        itemList.indexOf(item),
+                        item.setError(resourceManager.getString(R.string.unique_warning)),
+                    )
+            }
+    }
 }
