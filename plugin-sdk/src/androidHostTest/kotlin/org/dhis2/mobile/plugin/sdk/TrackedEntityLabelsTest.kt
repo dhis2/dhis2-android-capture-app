@@ -14,7 +14,6 @@ import kotlin.test.assertFalse
  * but the ordering and the skipping are where every label defect has actually been.
  */
 class TrackedEntityLabelsTest {
-
     private companion object {
         const val TEI_UID = "tei-uid"
 
@@ -25,15 +24,19 @@ class TrackedEntityLabelsTest {
 
     // trackedEntityInstance is lateinit on the SDK's builder, so it has to be set even though the
     // mapping never reads it.
-    private fun value(attribute: String, value: String?) =
-        TrackedEntityAttributeValue.builder()
-            .trackedEntityAttribute(attribute)
-            .trackedEntityInstance(TEI_UID)
-            .value(value)
-            .build()
+    private fun value(
+        attribute: String,
+        value: String?,
+    ) = TrackedEntityAttributeValue
+        .builder()
+        .trackedEntityAttribute(attribute)
+        .trackedEntityInstance(TEI_UID)
+        .value(value)
+        .build()
 
     private fun tei(vararg values: TrackedEntityAttributeValue) =
-        TrackedEntityInstance.builder()
+        TrackedEntityInstance
+            .builder()
             .uid(TEI_UID)
             .trackedEntityAttributeValues(values.toList())
             .build()
@@ -41,10 +44,11 @@ class TrackedEntityLabelsTest {
     @Test
     fun `labels the values the programme lists, in the programme's order`() {
         // The values arrive last-name-first, as the SDK is free to.
-        val tei = tei(
-            value("attr-last", "Ryder"),
-            value("attr-first", "Filona"),
-        )
+        val tei =
+            tei(
+                value("attr-last", "Ryder"),
+                value("attr-first", "Filona"),
+            )
 
         val labelled = labelled(tei, listOf(FIRST_NAME, LAST_NAME))
 
@@ -61,10 +65,11 @@ class TrackedEntityLabelsTest {
 
     @Test
     fun `ignores attributes the programme does not list`() {
-        val tei = tei(
-            value("attr-first", "Filona"),
-            value("attr-gender", "Female"),
-        )
+        val tei =
+            tei(
+                value("attr-first", "Filona"),
+                value("attr-gender", "Female"),
+            )
 
         val labelled = labelled(tei, listOf(FIRST_NAME))
 
@@ -83,11 +88,12 @@ class TrackedEntityLabelsTest {
 
     @Test
     fun `treats a null or blank value as absent rather than rendering an empty row`() {
-        val tei = tei(
-            value("attr-first", null),
-            value("attr-last", "   "),
-            value("attr-gender", "Female"),
-        )
+        val tei =
+            tei(
+                value("attr-first", null),
+                value("attr-last", "   "),
+                value("attr-gender", "Female"),
+            )
 
         val labelled = labelled(tei, listOf(FIRST_NAME, LAST_NAME, GENDER))
 
@@ -114,8 +120,7 @@ class TrackedEntityLabelsTest {
 
     private val orgUnit = LabelledAttribute("Organisation unit", "Ngelehun CHC")
 
-    private fun labeller(attributes: List<DisplayAttribute>) =
-        TrackedEntityLabeller(attributes) { orgUnit }
+    private fun labeller(attributes: List<DisplayAttribute>) = TrackedEntityLabeller(attributes) { orgUnit }
 
     @Test
     fun `falls back to something a human recognises when the programme lists nothing`() {
@@ -145,10 +150,11 @@ class TrackedEntityLabelsTest {
 
     @Test
     fun `renders a name when the caller wants one string`() {
-        val tei = tei(
-            value("attr-last", "Ryder"),
-            value("attr-first", "Filona"),
-        )
+        val tei =
+            tei(
+                value("attr-last", "Ryder"),
+                value("attr-first", "Filona"),
+            )
 
         // Given name before family name, because that is the order the programme configured.
         assertEquals("Filona Ryder", labeller(listOf(FIRST_NAME, LAST_NAME)).labelFor(tei))

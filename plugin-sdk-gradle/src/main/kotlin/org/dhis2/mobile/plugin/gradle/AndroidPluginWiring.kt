@@ -134,12 +134,16 @@ internal object AndroidPluginWiring {
      * adds a source set is still checked.
      */
     fun sourceRoots(project: Project): List<String> {
-        val kotlin = project.extensions.findByType(KotlinMultiplatformExtension::class.java)
-            ?: return emptyList()
+        val kotlin =
+            project.extensions.findByType(KotlinMultiplatformExtension::class.java)
+                ?: return emptyList()
         // Generated roots are excluded: they are another task's output, so reading them would make
         // this task depend on the Compose resource generator for no benefit — and generated code is
         // not the author's to fix. Everything checked here is something a human wrote.
-        val buildDirectory = project.layout.buildDirectory.get().asFile.absolutePath
+        val buildDirectory =
+            project.layout.buildDirectory
+                .get()
+                .asFile.absolutePath
         return kotlin.sourceSets.flatMap { sourceSet ->
             sourceSet.kotlin.srcDirs
                 .map { dir -> dir.absolutePath }
@@ -158,19 +162,21 @@ internal object AndroidPluginWiring {
      * Project and file dependencies are skipped rather than guessed at.
      */
     fun declaredDependencies(project: Project): List<String> {
-        val kotlin = project.extensions.findByType(KotlinMultiplatformExtension::class.java)
-            ?: return emptyList()
+        val kotlin =
+            project.extensions.findByType(KotlinMultiplatformExtension::class.java)
+                ?: return emptyList()
 
-        return kotlin.sourceSets.flatMap { sourceSet ->
-            BUCKETS.flatMap { (bucket, configurationName) ->
-                val configuration = project.configurations.findByName(configurationName(sourceSet.name))
-                configuration
-                    ?.dependencies
-                    ?.filterIsInstance<ExternalModuleDependency>()
-                    ?.map { dependency -> "${sourceSet.name}|$bucket|${dependency.group}:${dependency.name}" }
-                    .orEmpty()
-            }
-        }.distinct()
+        return kotlin.sourceSets
+            .flatMap { sourceSet ->
+                BUCKETS.flatMap { (bucket, configurationName) ->
+                    val configuration = project.configurations.findByName(configurationName(sourceSet.name))
+                    configuration
+                        ?.dependencies
+                        ?.filterIsInstance<ExternalModuleDependency>()
+                        ?.map { dependency -> "${sourceSet.name}|$bucket|${dependency.group}:${dependency.name}" }
+                        .orEmpty()
+                }
+            }.distinct()
     }
 
     /**
@@ -212,21 +218,16 @@ internal object AndroidPluginWiring {
     private const val LEGACY_ANDROID_LIBRARY_PLUGIN = "com.android.library"
     private const val COMPOSE_PLUGIN = "org.jetbrains.compose"
 
-    /**
-     * Groups the host is known to provide, so declaring them non-`compileOnly` is not worth a
-     * warning. `compose.components.resources` in particular *must* be `implementation` — the Compose
-     * Resources generator uses that declaration as its opt-in signal for the `Res` class.
-     */
+    private const val HOST_TEST_RUNTIME_ONLY = "androidHostTestRuntimeOnly"
+
+    private val COMPILE_ONLY_SOURCES = listOf("commonMainCompileOnly", "androidMainCompileOnly")
+
     /**
      * The buckets a dependency can land in, and how a Kotlin source set names each configuration.
      *
      * `runtimeOnly` is included because a host-provided artifact declared there is packaged just the
      * same as one on `implementation`.
      */
-    private const val HOST_TEST_RUNTIME_ONLY = "androidHostTestRuntimeOnly"
-
-    private val COMPILE_ONLY_SOURCES = listOf("commonMainCompileOnly", "androidMainCompileOnly")
-
     private val BUCKETS: List<Pair<String, (String) -> String>> =
         listOf(
             "api" to { name: String -> "${name}Api" },
@@ -235,7 +236,13 @@ internal object AndroidPluginWiring {
             "runtimeOnly" to { name: String -> "${name}RuntimeOnly" },
         )
 
-    // One list, two consumers: the conventions check errors on a host-provided dependency that is
-    // not compileOnly, and notPackagedDependencies warns about its complement.
+    /**
+     * Groups the host is known to provide, so declaring them non-`compileOnly` is not worth a
+     * warning. `compose.components.resources` in particular *must* be `implementation` — the Compose
+     * Resources generator uses that declaration as its opt-in signal for the `Res` class.
+     *
+     * One list, two consumers: the conventions check errors on a host-provided dependency that is
+     * not compileOnly, and notPackagedDependencies warns about its complement.
+     */
     private val HOST_PROVIDED_GROUPS = PluginConventions.HOST_PROVIDED
 }

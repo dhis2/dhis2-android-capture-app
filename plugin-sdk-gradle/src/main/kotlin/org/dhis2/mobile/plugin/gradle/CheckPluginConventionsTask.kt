@@ -21,7 +21,6 @@ import java.io.File
  * same reason — a `Configuration` is not something a task may hold and still be cacheable.
  */
 abstract class CheckPluginConventionsTask : DefaultTask() {
-
     /** Kotlin source roots, tagged with their source-set name as `<name>|<absolute path>`. */
     @get:Input
     abstract val sourceRoots: ListProperty<String>
@@ -47,30 +46,31 @@ abstract class CheckPluginConventionsTask : DefaultTask() {
     @TaskAction
     fun check() {
         val root = File(projectDirectory.get())
-        val files = sourceRoots.get().flatMap { entry ->
-            val (sourceSet, path) = entry.split('|', limit = 2)
-            File(path)
-                .walkTopDown()
-                .filter { it.isFile && it.extension == "kt" }
-                .map { file ->
-                    PluginConventions.SourceFile(
-                        path = file.relativeToOrSelf(root).path,
-                        sourceSet = sourceSet,
-                        text = file.readText(),
-                    )
-                }
-                .toList()
-        }
+        val files =
+            sourceRoots.get().flatMap { entry ->
+                val (sourceSet, path) = entry.split('|', limit = 2)
+                File(path)
+                    .walkTopDown()
+                    .filter { it.isFile && it.extension == "kt" }
+                    .map { file ->
+                        PluginConventions.SourceFile(
+                            path = file.relativeToOrSelf(root).path,
+                            sourceSet = sourceSet,
+                            text = file.readText(),
+                        )
+                    }.toList()
+            }
 
-        val dependencies = declaredDependencies.get().mapNotNull { entry ->
-            val parts = entry.split('|', limit = 3)
-            if (parts.size < 3) return@mapNotNull null
-            PluginConventions.DeclaredDependency(
-                sourceSet = parts[0],
-                bucket = parts[1],
-                coordinates = parts[2],
-            )
-        }
+        val dependencies =
+            declaredDependencies.get().mapNotNull { entry ->
+                val parts = entry.split('|', limit = 3)
+                if (parts.size < 3) return@mapNotNull null
+                PluginConventions.DeclaredDependency(
+                    sourceSet = parts[0],
+                    bucket = parts[1],
+                    coordinates = parts[2],
+                )
+            }
 
         val violations = PluginConventions.violations(files, dependencies)
         if (violations.isEmpty()) {
