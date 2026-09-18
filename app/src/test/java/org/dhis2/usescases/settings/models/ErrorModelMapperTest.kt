@@ -22,33 +22,35 @@ class ErrorModelMapperTest {
     private val mapper = ErrorModelMapper("Missing %s %s from %s %s", httpErrorMessageProvider)
 
     @Before
-    fun setUp() = runTest {
-        whenever(httpErrorMessageProvider.httpStatusMessage(any()))doReturn "Error label"
-    }
+    fun setUp() =
+        runTest {
+            whenever(httpErrorMessageProvider.httpStatusMessage(any())) doReturn "Error label"
+        }
 
     @Test
-    fun `Should map d2Error to errorViewModel`() = runTest {
-        val createDate = Date()
-        val result =
-            mapper.mapD2Error(
-                listOf(
-                    D2Error
-                        .builder()
-                        .httpErrorCode(1)
-                        .errorCode(D2ErrorCode.API_RESPONSE_PROCESS_ERROR)
-                        .created(createDate)
-                        .errorDescription("Description")
-                        .errorComponent(D2ErrorComponent.Database)
-                        .build()
+    fun `Should map d2Error to errorViewModel`() =
+        runTest {
+            val createDate = Date()
+            val result =
+                mapper.mapD2Error(
+                    listOf(
+                        D2Error
+                            .builder()
+                            .httpErrorCode(1)
+                            .errorCode(D2ErrorCode.API_RESPONSE_PROCESS_ERROR)
+                            .created(createDate)
+                            .errorDescription("Description")
+                            .errorComponent(D2ErrorComponent.Database)
+                            .build(),
+                    ),
                 )
-            )
-        result.first().apply {
-            assertTrue(this.errorCode == "1 Error label")
-            assertTrue(this.creationDate == createDate)
-            assertTrue(this.errorComponent == D2ErrorComponent.Database.name)
-            assertTrue(this.errorDescription == "Description")
+            result.first().apply {
+                assertTrue(this.errorCode == "1 Error label")
+                assertTrue(this.creationDate == createDate)
+                assertTrue(this.errorComponent == D2ErrorComponent.Database.name)
+                assertTrue(this.errorDescription == "Description")
+            }
         }
-    }
 
     @Test
     fun `Should map description to errorViewModel`() {
