@@ -53,9 +53,10 @@ fun PluginSlot(
     }
 }
 
+/** Renders one plugin inside its own resource reader and Koin container. */
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-private fun PluginContent(registered: RegisteredPlugin) {
+internal fun PluginContent(registered: RegisteredPlugin) {
     val reader =
         remember(registered.resourceRoot) {
             FileSystemResourceReader(registered.resourceRoot)

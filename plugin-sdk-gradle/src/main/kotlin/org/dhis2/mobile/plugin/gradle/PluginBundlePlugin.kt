@@ -43,6 +43,7 @@ class PluginBundlePlugin : Plugin<Project> {
         extension.emitDataStoreSnippet.convention(true)
         extension.pluginId.convention(PLACEHOLDER_PLUGIN_ID)
         extension.entryPoint.convention(PLACEHOLDER_ENTRY_POINT)
+        extension.injectionPoints.convention(listOf(DEFAULT_INJECTION_POINT))
         extension.bundleFileName.convention(provider { "$name-$version.zip" })
         extension.outputDirectory.convention(layout.buildDirectory.dir("outputs/plugin-bundle"))
         extension.signing.alias.convention(DEBUG_KEY_ALIAS)
@@ -66,6 +67,8 @@ class PluginBundlePlugin : Plugin<Project> {
             task.emitDataStoreSnippet.set(extension.emitDataStoreSnippet)
             task.pluginId.set(extension.pluginId)
             task.entryPoint.set(extension.entryPoint)
+            task.injectionPoints.set(extension.injectionPoints)
+            task.slotConfig.set(extension.slotConfig)
             task.outputDirectory.set(extension.outputDirectory)
             task.signing.keystore.set(extension.signing.keystore)
             task.signing.alias.set(extension.signing.alias)
@@ -161,6 +164,9 @@ class PluginBundlePlugin : Plugin<Project> {
         // mistaken for a real one — see PluginBundleExtension.pluginId.
         const val PLACEHOLDER_PLUGIN_ID = "org.myorg.my-plugin"
         const val PLACEHOLDER_ENTRY_POINT = "org.myorg.myplugin.MyPlugin"
+
+        /** The one additive slot, and the only one that needs no configuration to render. */
+        const val DEFAULT_INJECTION_POINT = "HOME_ABOVE_PROGRAM_LIST"
         const val DEBUG_KEYSTORE = ".android/debug.keystore"
         const val DEBUG_KEY_ALIAS = "androiddebugkey"
         const val DEBUG_KEY_PASSWORD = "android"

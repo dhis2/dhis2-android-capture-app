@@ -109,24 +109,108 @@ data class PluginMetadata(
     val version: String,                            // "1.0.0"
     val entryPoint: String,                         // "org.myorg.plugin.MyPlugin"
     val injectionPoints: List<InjectionPoint> = emptyList(),
+    val slotConfig: Map<InjectionPoint, JsonObject> = emptyMap(),
     val downloadUrl: String = "",
     val checksum: String = "",                      // "sha256:<hex>"
 )
 ```
 
+`slotConfig` is not an exception to any of that. It says *where* the host asks a plugin to draw —
+which data sets it replaces, for instance — and narrows nothing about what it may read or write. A
+plugin listed for one data set can still query every other one.
+
+Its values are kept unparsed on purpose. Each slot owns its own schema: a list of data set UIDs for
+`DATA_SET_INSTANCE_CONTENT`, something else for the next slot. Storing them opaquely and letting the
+slot decode its own entry is what makes a new slot additive — it brings a configuration type and an
+arguments type and changes nothing else.
+
 ### Injection points
 Named slots in the host app where a plugin's Composable UI can be rendered.
 
-A plugin declares the slots it targets in [PluginMetadata.injectionPoints], and the host renders
-them at each slot via `PluginSlot`. There is one slot today (§7); more can be added as they are
-needed.
+A plugin declares the slots it targets in `PluginMetadata.injectionPoints`. Slots come in two kinds:
+
+- **Additive** — the host renders *every* registered plugin at the slot, via `PluginSlot`, and the
+  host's own UI stays where it is.
+- **Replacement** — a plugin takes over a region of a host screen and exactly one may win. It
+  renders nowhere until an administrator says which objects it applies to, which is what
+  `requiresConfiguration` records; the targets come from `PluginMetadata.slotConfig`.
 
 ```kotlin
-enum class InjectionPoint {
-    /** Rendered on the home screen, immediately above the program list. */
-    HOME_ABOVE_PROGRAM_LIST,
+@Serializable
+enum class InjectionPoint(val requiresConfiguration: Boolean) {
+    /** Rendered on the home screen, immediately above the program list. Additive. */
+    HOME_ABOVE_PROGRAM_LIST(requiresConfiguration = false),
+
+    /** Replaces the body of the data set instance screen. */
+    DATA_SET_INSTANCE_CONTENT(requiresConfiguration = true),
 }
 ```
+
+#### `DATA_SET_INSTANCE_CONTENT`
+
+Replaces the body of the data set instance screen — the panes, section tabs and table — so an
+implementation can ship its own aggregate data entry layout.
+
+**The host keeps the chrome**: the top bar with its title, back and sync actions, the save button,
+the bottom bar with validation, completion and the non-editable reason, and the snackbar. A data set
+no plugin claims keeps the default table.
+
+Configure it with the data set UIDs it applies to:
+
+```kotlin
+@Serializable
+data class DataSetInstanceSlotConfig(val dataSetUids: List<String> = emptyList())
+```
+
+and read which instance is open from the slot arguments:
+
+```kotlin
+@Composable
+override fun content(context: Dhis2PluginContext) {
+    val args = LocalSlotArguments.current as? DataSetInstanceSlotArguments ?: return
+    // args.dataSetUid, args.periodId, args.organisationUnitUid, args.attributeOptionComboUid
+}
+```
+
+Three composition locals are available inside any slot:
+
+| Local | What it is |
+|---|---|
+| `LocalSlotArguments` | What the host is rendering — the data set instance here. Cast it with `as?`; `null` outside a slot, or at one providing another type. |
+| `LocalSlotContentPadding` | Space the host's chrome occupies over your content; today, the floating save button. Add it to the bottom padding of anything scrolling, or the last row is unreachable. |
+| `LocalHostRefresh` | Asks the host to re-read the state it renders *around* you. |
+
+Things that bite:
+
+- **Persistence is yours; validation is the host's; they meet in the SDK's database.** You write
+  data values through `context.sdk`; the save button then validates and completes against those same
+  stored values — `RunValidationRules`, `CheckCompletionStatus` and `CompleteDataSet` all query the
+  SDK and never look at the host's table. Nothing is passed between you in memory, which is exactly
+  why it works.
+- **The host does not observe your writes.** Call `LocalHostRefresh.current()` after a write that
+  changes what the chrome shows — completing, reopening, or anything affecting editability.
+- **This replaces the renderer, not the loader.** The host's view model still reads the data set's
+  details, completion status, editability and validation; what it skips is building the tables
+  nothing would render.
+- **You own your own adaptive layout.** The host does not tell you whether it would have used a
+  two-pane layout — that flag is about *its* tab rendering. Use `BoxWithConstraints` or
+  `currentWindowAdaptiveInfo()`.
+- The region is laid out with `propagateMinConstraints = true`, so your root fills it; a
+  wrap-content `Column` will be stretched.
+- The host screen already applies `imePadding()` with `WindowInsets.safeDrawing`. Adding your own
+  double-insets.
+- **Two plugins configured for the same data set**: the first in configuration order wins, and the
+  rest are named in the log. Replacement is exclusive.
+- An empty `dataSetUids` list replaces nothing, so it doubles as a kill switch that does not require
+  deleting the plugin's entry.
+
+**How the host wires it.** `:aggregates` knows nothing about plugins. It declares
+`DataSetInstanceBodyProvider`, resolved optionally from Koin, and `:app` binds a plugin-backed
+implementation (`PluginDataSetInstanceBodyProvider`) that asks the registry with
+`selectReplacement(...)` and renders the winner through `PluginReplacementSlot`. The same provider
+answer also tells the view model not to build tables nothing will render, so the two cannot disagree.
+A future replacement slot follows the same shape: an arguments type, a configuration type, and one
+provider bound in `:app`.
 
 ### Plugin context
 
@@ -216,6 +300,39 @@ The admin writes a JSON object into the DHIS2 server dataStore at:
   ]
 }
 ```
+
+A plugin at a *replacement* slot also needs to say which objects it applies to, in `slotConfig`,
+keyed by the slot being configured. Until it does, it renders nowhere:
+
+```json
+{
+  "plugins": [
+    {
+      "id": "org.myorg.nutrition-form",
+      "version": "1.0.0",
+      "entryPoint": "org.myorg.nutrition.NutritionPlugin",
+      "downloadUrl": "https://example.com/nutrition-1.0.0.zip",
+      "checksum": "sha256:abc…",
+      "injectionPoints": [
+        "DATA_SET_INSTANCE_CONTENT"
+      ],
+      "slotConfig": {
+        "DATA_SET_INSTANCE_CONTENT": {
+          "dataSetUids": ["lyLU2wR22tC", "BfMAe6Itzgt"]
+        }
+      }
+    }
+  ]
+}
+```
+
+One plugin may declare both kinds of slot; `slotConfig` only has to mention the ones that need it.
+
+**Entries are read one at a time.** A malformed entry is skipped, with its id logged, and the other
+plugins still load. An injection point the installed app has never heard of is dropped from that
+plugin's list rather than failing its entry, so rolling out a new slot does not disable an
+administrator's existing plugins on devices that have not been updated yet. A plugin left with no
+slot the app supports simply renders nowhere.
 
 Removing a plugin is deleting its entry from this array (and see §7 for the device-side cache).
 
@@ -547,7 +664,10 @@ enforcement.
   (`/data/data/com.dhis2.debug/files/plugins/{id}-{version}.zip` — the cache is named from
   the config's id/version, not the served filename). There is no way to disable a
   misbehaving plugin remotely — which matters more than it looks, given the bullet above.
-- One injection point: `HOME_ABOVE_PROGRAM_LIST`. More can be added as consumers need them.
+- Two injection points: `HOME_ABOVE_PROGRAM_LIST` and `DATA_SET_INSTANCE_CONTENT`. More can be
+  added as consumers need them.
+- **The host does not observe a plugin's writes** — `LocalHostRefresh` is a pull, not a push, so a
+  plugin that forgets to call it leaves the chrome showing a stale completion status.
 - The plugin-bundle Gradle plugin is published to Maven Local only — not yet to Maven Central or
   the Gradle Plugin Portal, so plugin authors need `mavenLocal()` in `pluginManagement`.
 - **A plugin cannot stub its own context for previews**, and there is no `plugin-sdk-test`
@@ -725,4 +845,4 @@ context in it. Two things that trip this up:
   `data/PluginDownloader.kt`, `data/PluginVerifier.kt`, `data/PluginLoader.kt`,
   `domain/LoadPluginsUseCase.kt`, `registry/PluginRegistry.kt`,
   `security/HostDhis2PluginContext.kt`, `di/PluginContainer.kt`, `di/PluginModule.kt`,
-  `ui/PluginSlot.kt`, `ui/FileSystemResourceReader.kt`
+  `ui/PluginSlot.kt`, `ui/PluginReplacementSlot.kt`, `ui/FileSystemResourceReader.kt`

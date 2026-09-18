@@ -4,6 +4,8 @@ import org.gradle.api.Action
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import javax.inject.Inject
 
@@ -81,6 +83,26 @@ abstract class PluginBundleExtension
          * `plugin-config.json`. Defaults to an obvious placeholder. See [pluginId].
          */
         abstract val entryPoint: Property<String>
+
+        /**
+         * `injectionPoints` written into the emitted `plugin-config.json`. Defaults to
+         * `HOME_ABOVE_PROGRAM_LIST`.
+         *
+         * Like [pluginId], it reaches the snippet and nothing else — the host reads the slots a
+         * plugin renders at from the server dataStore, never from anything the plugin shipped.
+         */
+        abstract val injectionPoints: ListProperty<String>
+
+        /**
+         * `slotConfig` written into the emitted `plugin-config.json`, keyed by injection point and
+         * then by that slot's own field — for example
+         * `mapOf("DATA_SET_INSTANCE_CONTENT" to mapOf("dataSetUids" to listOf("lyLU2wR22tC")))`.
+         *
+         * Empty by default, and then the block is left out of the snippet altogether. A replacement
+         * slot renders nowhere until an administrator configures it, so the placeholder to fill in
+         * should be visibly absent rather than present and empty.
+         */
+        abstract val slotConfig: MapProperty<String, Map<String, List<String>>>
 
         /** Signing configuration. See [SigningSpec]. */
         val signing: SigningSpec = objects.newInstance(SigningSpec::class.java)

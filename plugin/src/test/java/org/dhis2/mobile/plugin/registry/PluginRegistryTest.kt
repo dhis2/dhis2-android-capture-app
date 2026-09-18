@@ -2,12 +2,18 @@ package org.dhis2.mobile.plugin.registry
 
 import app.cash.turbine.test
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.add
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.putJsonArray
+import org.dhis2.mobile.plugin.sdk.DataSetInstanceSlotArguments
 import org.dhis2.mobile.plugin.sdk.Dhis2Plugin
 import org.dhis2.mobile.plugin.sdk.Dhis2PluginContext
 import org.dhis2.mobile.plugin.sdk.InjectionPoint
 import org.dhis2.mobile.plugin.sdk.PluginMetadata
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -29,11 +35,13 @@ class PluginRegistryTest {
         id: String,
         version: String = "1.0.0",
         slots: List<InjectionPoint> = listOf(InjectionPoint.HOME_ABOVE_PROGRAM_LIST),
+        slotConfig: Map<InjectionPoint, JsonObject> = emptyMap(),
     ) = PluginMetadata(
         id = id,
         version = version,
         entryPoint = "$id.Entry",
         injectionPoints = slots,
+        slotConfig = slotConfig,
     )
 
     private fun root(name: String) = File("/tmp/$name")
@@ -233,5 +241,107 @@ class PluginRegistryTest {
 
         assertFalse(a.stillUsable())
         assertFalse(b.stillUsable())
+    }
+
+    // ── Choosing a replacement ────────────────────────────────────────────────
+
+    private val dataSetArguments =
+        DataSetInstanceSlotArguments(
+            dataSetUid = "lyLU2wR22tC",
+            periodId = "202401",
+            organisationUnitUid = "DiszpKrYNg8",
+            attributeOptionComboUid = "HllvX50cXC0",
+        )
+
+    private fun dataSetSlotConfig(vararg uids: String) =
+        mapOf(
+            InjectionPoint.DATA_SET_INSTANCE_CONTENT to
+                buildJsonObject {
+                    putJsonArray("dataSetUids") { uids.forEach { add(it) } }
+                },
+        )
+
+    private fun dataSetPlugin(
+        id: String,
+        vararg uids: String,
+    ) = metadata(
+        id = id,
+        slots = listOf(InjectionPoint.DATA_SET_INSTANCE_CONTENT),
+        slotConfig = dataSetSlotConfig(*uids),
+    )
+
+    @Test
+    fun `a plugin configured for this data set replaces it`() {
+        registry.register(FakePlugin(), dataSetPlugin("a", "lyLU2wR22tC"), root("a"))
+
+        assertEquals(
+            "a",
+            registry.plugins.value
+                .selectReplacement(dataSetArguments)
+                ?.metadata
+                ?.id,
+        )
+    }
+
+    @Test
+    fun `a plugin configured for another data set leaves this one alone`() {
+        registry.register(FakePlugin(), dataSetPlugin("a", "BfMAe6Itzgt"), root("a"))
+
+        assertNull(registry.plugins.value.selectReplacement(dataSetArguments))
+    }
+
+    @Test
+    fun `a replacement slot with no configuration replaces nothing`() {
+        // requiresConfiguration is what makes this the default. A replacement slot that applied
+        // everywhere until told otherwise would take over every data set on the server the moment
+        // an admin pasted the plugin's entry.
+        registry.register(
+            FakePlugin(),
+            metadata("a", slots = listOf(InjectionPoint.DATA_SET_INSTANCE_CONTENT)),
+            root("a"),
+        )
+
+        assertNull(registry.plugins.value.selectReplacement(dataSetArguments))
+    }
+
+    @Test
+    fun `a plugin registered for another slot is never chosen`() {
+        registry.register(
+            FakePlugin(),
+            metadata("a", slotConfig = dataSetSlotConfig("lyLU2wR22tC")),
+            root("a"),
+        )
+
+        assertNull(registry.plugins.value.selectReplacement(dataSetArguments))
+    }
+
+    @Test
+    fun `only the plugins claiming this data set are candidates`() {
+        registry.register(FakePlugin(), dataSetPlugin("a", "BfMAe6Itzgt"), root("a"))
+        registry.register(FakePlugin(), dataSetPlugin("b", "lyLU2wR22tC"), root("b"))
+
+        assertEquals(
+            listOf("b"),
+            registry.plugins.value
+                .forSlotArguments(dataSetArguments)
+                .map { it.metadata.id },
+        )
+    }
+
+    @Test
+    fun `when two plugins claim the same data set the first one wins`() {
+        // Replacement is exclusive, so one has to win; stacking two full-screen layouts is not an
+        // option and falling back to the host would let one admin's typo disable another team's
+        // plugin. The losers are named in the log.
+        registry.register(FakePlugin(), dataSetPlugin("a", "lyLU2wR22tC"), root("a"))
+        registry.register(FakePlugin(), dataSetPlugin("b", "lyLU2wR22tC"), root("b"))
+
+        assertEquals(
+            "a",
+            registry.plugins.value
+                .selectReplacement(dataSetArguments)
+                ?.metadata
+                ?.id,
+        )
     }
 }

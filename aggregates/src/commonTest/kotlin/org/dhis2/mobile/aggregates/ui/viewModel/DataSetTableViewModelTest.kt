@@ -90,6 +90,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
@@ -267,30 +268,37 @@ internal class DataSetTableViewModelTest : KoinTest {
             )
             whenever(getIndicators(any())).thenReturn(null)
 
-            viewModel =
-                DataSetTableViewModel(
-                    onClose = onCloseCallback,
-                    getDataSetInstanceData = get(),
-                    getDataSetSectionData = get(),
-                    getDataValueData = get(),
-                    getDataSetSectionIndicators = get(),
-                    getDataValueInput = get(),
-                    setDataValue = get(),
-                    uploadFile = get(),
-                    resourceManager = get(),
-                    checkValidationRulesConfiguration = get(),
-                    checkCompletionStatus = get(),
-                    dispatcher = get(),
-                    datasetModalDialogProvider = get(),
-                    completeDataSet = get(),
-                    reopenDataSet = get(),
-                    runValidationRules = get(),
-                    uiActionHandler = get(),
-                    inputDataUiStateMapper = get(),
-                    fieldErrorMessageProvider = get(),
-                    computeResizeAction = get(),
-                )
+            viewModel = buildViewModel()
         }
+
+    /**
+     * @param loadDefaultBody false when a host plugin replaces the screen's body, which is what the
+     *   tables would otherwise be built for.
+     */
+    private fun buildViewModel(loadDefaultBody: Boolean = true) =
+        DataSetTableViewModel(
+            onClose = onCloseCallback,
+            getDataSetInstanceData = get(),
+            getDataSetSectionData = get(),
+            getDataValueData = get(),
+            getDataSetSectionIndicators = get(),
+            getDataValueInput = get(),
+            setDataValue = get(),
+            uploadFile = get(),
+            resourceManager = get(),
+            checkValidationRulesConfiguration = get(),
+            checkCompletionStatus = get(),
+            dispatcher = get(),
+            datasetModalDialogProvider = get(),
+            completeDataSet = get(),
+            reopenDataSet = get(),
+            runValidationRules = get(),
+            uiActionHandler = get(),
+            inputDataUiStateMapper = get(),
+            fieldErrorMessageProvider = get(),
+            computeResizeAction = get(),
+            loadDefaultBody = loadDefaultBody,
+        )
 
     @After
     fun tearDown() {
@@ -312,6 +320,65 @@ internal class DataSetTableViewModelTest : KoinTest {
                     assertTrue(!(this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
                 }
             }
+        }
+
+    // ── When a host plugin replaces the body ──────────────────────────────────
+
+    @Test
+    fun `does not build a table the host will not render`() =
+        runTest {
+            // Building it is the most expensive thing this view model does - one section query plus
+            // a data value query per table group - and with the body replaced nothing draws it.
+            val viewModel = buildViewModel(loadDefaultBody = false)
+
+            viewModel.dataSetScreenState.test {
+                assertTrue(awaitItem() is DataSetScreenState.Loading)
+                with(awaitItem()) {
+                    assertTrue(this is DataSetScreenState.Loaded)
+                    assertEquals(
+                        emptyList(),
+                        (this as DataSetScreenState.Loaded).dataSetSectionTable.tableModels,
+                    )
+                }
+                expectNoEvents()
+            }
+
+            verify(getDataSetSectionData, never())(any())
+            verify(getDataValue, never())(any(), anyOrNull())
+        }
+
+    @Test
+    fun `still reports the details the chrome shows`() =
+        runTest {
+            // The title, completion status and editability are what the top and bottom bars render
+            // around the plugin, so skipping the table must not skip these.
+            val viewModel = buildViewModel(loadDefaultBody = false)
+
+            viewModel.dataSetScreenState.test {
+                awaitItem()
+                with(awaitItem() as DataSetScreenState.Loaded) {
+                    assertEquals("dataSetUid", dataSetDetails.dataSetUid)
+                    assertEquals(2, dataSetSections.size)
+                    // false, not "still loading": the save button's visibility reads this, and a
+                    // table that is never coming would hide it forever.
+                    assertTrue(!dataSetSectionTable.loading)
+                }
+            }
+        }
+
+    @Test
+    fun `ignores section selection, since nothing renders the tabs`() =
+        runTest {
+            val viewModel = buildViewModel(loadDefaultBody = false)
+
+            viewModel.dataSetScreenState.test {
+                awaitItem()
+                awaitItem()
+                viewModel.onSectionSelected("section_uid2")
+                expectNoEvents()
+            }
+
+            verify(getDataSetSectionData, never())(any())
         }
 
     @Test

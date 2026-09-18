@@ -11,6 +11,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -117,6 +118,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableTheme
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.getKoin
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -152,6 +154,11 @@ fun DataSetInstanceScreen(
                 uiActionHandler,
             )
         })
+    val koin = getKoin()
+    val replacementBody =
+        remember(parameters) {
+            koin.getOrNull<DataSetInstanceBodyProvider>()?.bodyFor(parameters)
+        }
     val dataSetScreenState by dataSetTableViewModel.dataSetScreenState.collectAsState()
 
     val allowTwoPane by remember(useTwoPane, dataSetScreenState) {
@@ -305,6 +312,15 @@ fun DataSetInstanceScreen(
                     .padding(paddingValues),
             propagateMinConstraints = true,
         ) {
+            replacementBody?.let { body ->
+                body.Content(
+                    // The save button floats over the body.
+                    PaddingValues(bottom = fabSizeDp),
+                    dataSetTableViewModel::loadDataSet,
+                )
+                return@Box
+            }
+
             if (allowTwoPane) {
                 TwoPaneLayout(
                     modifier =
@@ -612,6 +628,96 @@ private fun DataSetSinglePane(
     onTableResize: (ResizeAction) -> Unit,
     onCheckedCellChanged: (cellId: String, Boolean) -> Unit,
 ) {
+    DataSetBodySurface {
+        DataSetTable(
+            dataSetSectionTable = dataSetSectionTable,
+            onCellClick = onCellClick,
+            inputDialogSize = inputDialogSize,
+            fabSize = fabSize,
+            topContent = {
+                Column(
+                    modifier =
+                        modifier
+                            .fillMaxWidth()
+                            .padding(bottom = Spacing.Spacing24),
+                ) {
+                    SectionTabs(
+                        modifier = Modifier,
+                        dataSetSections = dataSetSections,
+                        onSectionSelected = onSectionSelected,
+                        selectedTab = initialTab,
+                    )
+                    DataSetDetails(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(),
+                        dataSetDetails = dataSetDetails,
+                    )
+
+                    if (!dataSetSectionTable.loading && dataSetSectionTable.tableModels.isEmpty()) {
+                        val message =
+                            if (dataSetSections.isEmpty()) {
+                                emptyDatasetMessage
+                            } else {
+                                emptySectionMessage
+                            }
+                        WarningInfoBar(message)
+                    }
+
+                    with(
+                        dataSetSections.firstOrNull { it.uid == currentSection }?.misconfiguredRows,
+                    ) {
+                        val message =
+                            "Some fields couldn't be displayed due to a configuration issue: %s.\nPlease contact your administrator."
+                        val info =
+                            when {
+                                this != null && size > 4 -> "${joinToString(", ")} and ${size - 4} more"
+                                this != null -> joinToString(", ")
+                                else -> null
+                            }
+                        if (!this.isNullOrEmpty()) {
+                            WarningInfoBar(message.format(info))
+                        }
+                    }
+                    dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
+                        HtmlContentBox(
+                            text = it,
+                            modifier =
+                                Modifier.padding(
+                                    top = Spacing.Spacing8,
+                                    bottom = Spacing.Spacing0,
+                                    start = Spacing.Spacing16,
+                                    end = Spacing.Spacing16,
+                                ),
+                        )
+                    }
+                }
+            },
+            bottomContent = {
+                dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
+                    HtmlContentBox(
+                        text = it,
+                        modifier =
+                            Modifier.padding(
+                                top = Spacing.Spacing24,
+                                start = Spacing.Spacing16,
+                                end = Spacing.Spacing16,
+                            ),
+                    )
+                }
+            },
+            onCellSelected = onCellSelected,
+            currentSelection = currentSelection,
+            onTableResize = onTableResize,
+            loading = dataSetSectionTable.loading,
+            onCheckedCellChanged = onCheckedCellChanged,
+        )
+    }
+}
+
+/** The frame the data set body sits in, whoever draws it. */
+@Composable
+private fun DataSetBodySurface(content: @Composable ColumnScope.() -> Unit) {
     Box(
         modifier =
             Modifier
@@ -619,102 +725,20 @@ private fun DataSetSinglePane(
                 .background(MaterialTheme.colorScheme.primary),
     ) {
         Column(
-            Modifier
-                .fillMaxSize()
-                .clip(
-                    shape =
-                        RoundedCornerShape(
-                            topStart = Radius.L,
-                            topEnd = Radius.L,
-                        ),
-                ).background(
-                    color = MaterialTheme.colorScheme.surfaceBright,
-                ),
-        ) {
-            DataSetTable(
-                dataSetSectionTable = dataSetSectionTable,
-                onCellClick = onCellClick,
-                inputDialogSize = inputDialogSize,
-                fabSize = fabSize,
-                topContent = {
-                    Column(
-                        modifier =
-                            modifier
-                                .fillMaxWidth()
-                                .padding(bottom = Spacing.Spacing24),
-                    ) {
-                        SectionTabs(
-                            modifier = Modifier,
-                            dataSetSections = dataSetSections,
-                            onSectionSelected = onSectionSelected,
-                            selectedTab = initialTab,
-                        )
-                        DataSetDetails(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth(),
-                            dataSetDetails = dataSetDetails,
-                        )
-
-                        if (!dataSetSectionTable.loading && dataSetSectionTable.tableModels.isEmpty()) {
-                            val message =
-                                if (dataSetSections.isEmpty()) {
-                                    emptyDatasetMessage
-                                } else {
-                                    emptySectionMessage
-                                }
-                            WarningInfoBar(message)
-                        }
-
-                        with(
-                            dataSetSections.firstOrNull { it.uid == currentSection }?.misconfiguredRows,
-                        ) {
-                            val message =
-                                "Some fields couldn't be displayed due to a configuration issue: %s.\nPlease contact your administrator."
-                            val info =
-                                when {
-                                    this != null && size > 4 -> "${joinToString(", ")} and ${size - 4} more"
-                                    this != null -> joinToString(", ")
-                                    else -> null
-                                }
-                            if (!this.isNullOrEmpty()) {
-                                WarningInfoBar(message.format(info))
-                            }
-                        }
-                        dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
-                            HtmlContentBox(
-                                text = it,
-                                modifier =
-                                    Modifier.padding(
-                                        top = Spacing.Spacing8,
-                                        bottom = Spacing.Spacing0,
-                                        start = Spacing.Spacing16,
-                                        end = Spacing.Spacing16,
-                                    ),
-                            )
-                        }
-                    }
-                },
-                bottomContent = {
-                    dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
-                        HtmlContentBox(
-                            text = it,
-                            modifier =
-                                Modifier.padding(
-                                    top = Spacing.Spacing24,
-                                    start = Spacing.Spacing16,
-                                    end = Spacing.Spacing16,
-                                ),
-                        )
-                    }
-                },
-                onCellSelected = onCellSelected,
-                currentSelection = currentSelection,
-                onTableResize = onTableResize,
-                loading = dataSetSectionTable.loading,
-                onCheckedCellChanged = onCheckedCellChanged,
-            )
-        }
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .clip(
+                        shape =
+                            RoundedCornerShape(
+                                topStart = Radius.L,
+                                topEnd = Radius.L,
+                            ),
+                    ).background(
+                        color = MaterialTheme.colorScheme.surfaceBright,
+                    ),
+            content = content,
+        )
     }
 }
 

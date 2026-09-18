@@ -8,7 +8,9 @@ import org.dhis2.mobile.plugin.sdk.Dhis2Plugin
 import org.dhis2.mobile.plugin.sdk.Dhis2PluginContext
 import org.dhis2.mobile.plugin.sdk.InjectionPoint
 import org.dhis2.mobile.plugin.sdk.PluginMetadata
+import org.dhis2.mobile.plugin.sdk.SlotArguments
 import org.koin.core.KoinApplication
+import timber.log.Timber
 import java.io.File
 
 /**
@@ -100,3 +102,39 @@ class PluginRegistry {
  */
 fun List<RegisteredPlugin>.forSlot(injectionPoint: InjectionPoint): List<RegisteredPlugin> =
     filter { injectionPoint in it.metadata.injectionPoints }
+
+/**
+ * The plugins in this list that render for [arguments].
+ *
+ * A slot that declares `requiresConfiguration` renders nowhere until an administrator configures it;
+ * an unconfigured additive slot keeps applying everywhere.
+ */
+fun List<RegisteredPlugin>.forSlotArguments(arguments: SlotArguments): List<RegisteredPlugin> =
+    forSlot(arguments.injectionPoint).filter { registered ->
+        val config = registered.metadata.slotConfig[arguments.injectionPoint]
+        when {
+            config != null -> arguments.appliesTo(config)
+            else -> !arguments.injectionPoint.requiresConfiguration
+        }
+    }
+
+/**
+ * The single plugin that replaces the host's own UI for [arguments], or null to keep it.
+ *
+ * Exclusive: when several claim the same occurrence the first in configuration order wins and the
+ * rest are logged. Stacking full-screen layouts is not an option, and falling back to the host would
+ * let one admin's typo disable another team's plugin.
+ */
+fun List<RegisteredPlugin>.selectReplacement(arguments: SlotArguments): RegisteredPlugin? {
+    val candidates = forSlotArguments(arguments)
+    if (candidates.size > 1) {
+        Timber.w(
+            "%d plugins claim %s; rendering '%s' and ignoring %s",
+            candidates.size,
+            arguments.injectionPoint.name,
+            candidates.first().metadata.id,
+            candidates.drop(1).joinToString { it.metadata.id },
+        )
+    }
+    return candidates.firstOrNull()
+}

@@ -28,7 +28,10 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(compose.runtime)
+            // api, not implementation: CompositionLocals and PaddingValues are part of the public
+            // slot contract a plugin compiles against (see SlotArguments.kt).
+            api(compose.runtime)
+            api(compose.foundation)
             api(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.composeVM)

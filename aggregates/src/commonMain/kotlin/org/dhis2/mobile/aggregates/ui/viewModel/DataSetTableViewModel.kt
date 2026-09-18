@@ -90,6 +90,13 @@ internal class DataSetTableViewModel(
     private val uiActionHandler: UiActionHandler,
     private val inputDataUiStateMapper: InputDataUiStateMapper,
     private val fieldErrorMessageProvider: FieldErrorMessageProvider,
+    /**
+     * `false` when a [org.dhis2.mobile.aggregates.ui.DataSetInstanceBodyProvider] draws the body
+     * instead. Building tables nothing renders is the most expensive thing this view model does, so
+     * it is skipped. Everything else — title, completion, editability, validation, save — is read
+     * from the SDK, so it stays correct over data the replacement wrote itself.
+     */
+    private val loadDefaultBody: Boolean = true,
 ) : ViewModel() {
     private var sectionChangeJob: Job? = null
 
@@ -139,12 +146,15 @@ internal class DataSetTableViewModel(
                                 sectionToLoad,
                                 emptyList(),
                                 overridingDimensions = initialDimensions,
-                                loading = true,
+                                // Nothing renders a table, so there is nothing to wait for.
+                                loading = loadDefaultBody,
                             ),
                         initialSection = dataSetInstanceData.initialSectionToLoad,
                         selectedCellInfo = CellSelectionState.Default(TableSelection.Unselected()),
                     )
             }
+
+            if (!loadDefaultBody) return@launchUseCase
 
             val tableModels = sectionData(sectionToLoad)
 
@@ -172,6 +182,7 @@ internal class DataSetTableViewModel(
     }
 
     fun onSectionSelected(sectionUid: String) {
+        if (!loadDefaultBody) return
         if (_dataSetScreenState.value.currentSection() == sectionUid) return
         sectionChangeJob?.takeIf { it.isActive }?.cancel()
         sectionChangeJob =
