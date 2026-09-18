@@ -17,7 +17,7 @@ import org.dhis2.mobile.commons.resources.http_error_unknown
 import org.dhis2.mobile.commons.resources.http_error_unprocessable_entity
 import org.jetbrains.compose.resources.getString
 
-class HttpStatusMessageProvider() {
+class HttpStatusMessageProvider {
     suspend fun httpStatusMessage(errorCode: Int): String =
         when (errorCode) {
             400 -> getString(Res.string.http_error_bad_request)
