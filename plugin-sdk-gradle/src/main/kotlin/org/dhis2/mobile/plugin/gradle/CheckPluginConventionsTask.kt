@@ -9,6 +9,7 @@ import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 import java.io.File
 
 /**
@@ -20,6 +21,7 @@ import java.io.File
  * cache exists to stop. Dependencies are captured as plain strings at configuration time for the
  * same reason — a `Configuration` is not something a task may hold and still be cacheable.
  */
+@DisableCachingByDefault(because = "No output worth sharing; its value is the up-to-date check")
 abstract class CheckPluginConventionsTask : DefaultTask() {
     /** Kotlin source roots, tagged with their source-set name as `<name>|<absolute path>`. */
     @get:Input

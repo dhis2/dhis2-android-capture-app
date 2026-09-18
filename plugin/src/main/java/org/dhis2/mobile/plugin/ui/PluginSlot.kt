@@ -1,11 +1,17 @@
 package org.dhis2.mobile.plugin.ui
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.plugin.registry.PluginRegistry
 import org.dhis2.mobile.plugin.registry.RegisteredPlugin
 import org.dhis2.mobile.plugin.registry.forSlot
@@ -21,6 +27,14 @@ import org.koin.compose.koinInject
  * Place this Composable at any injection point in the host UI to make it extensible.
  * Plugins render in declaration order with no extra spacing — plugins are responsible
  * for their own padding.
+ *
+ * **The host decides how much room a plugin gets, not the plugin.** Each one is measured inside a
+ * region bounded by [maxHeightFor], so a plugin that renders more than it was given cannot push the
+ * host's own content off screen. A plugin author should not have to know this screen's layout to be
+ * a good citizen on it — and asking every plugin to cap itself is a rule nothing could enforce,
+ * since the plugins that matter are the ones the host never sees. Within that region the plugin is
+ * free: filling it and scrolling inside it is correct, and because the bound is finite a plugin
+ * calling `verticalScroll` does not meet an infinite height constraint.
  *
  * CMP Resources: each plugin's composition is wrapped with a
  * [CompositionLocalProvider] that installs a filesystem-backed [FileSystemResourceReader]
@@ -48,10 +62,35 @@ fun PluginSlot(
         // loader's class while the new code cast it to the new loader's, giving
         // `ClassCastException: Foo cannot be cast to Foo`.
         key(registered.metadata.id, registered.classLoader) {
-            PluginContent(registered = registered)
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = maxHeightFor(injectionPoint)),
+            ) {
+                PluginContent(registered = registered)
+            }
         }
     }
 }
+
+/**
+ * How much vertical room the host gives one plugin at [injectionPoint].
+ *
+ * A host layout fact, so it lives here rather than on [InjectionPoint] in the SDK — a plugin does
+ * not need to know it, and the number is free to change with this screen without republishing the
+ * plugin API.
+ *
+ * `HOME_ABOVE_PROGRAM_LIST` sits above the programme list on a screen the user opens to reach that
+ * list, so the budget is generous enough for a card with a few rows and no more.
+ * `DATA_SET_INSTANCE_CONTENT` never reaches here — it is a replacement slot, rendered by
+ * [PluginReplacementSlot] inside the region its own host screen gives it.
+ */
+private fun maxHeightFor(injectionPoint: InjectionPoint): Dp =
+    when (injectionPoint) {
+        InjectionPoint.HOME_ABOVE_PROGRAM_LIST -> 240.dp
+        InjectionPoint.DATA_SET_INSTANCE_CONTENT -> Dp.Unspecified
+    }
 
 /** Renders one plugin inside its own resource reader and Koin container. */
 @OptIn(ExperimentalResourceApi::class)
