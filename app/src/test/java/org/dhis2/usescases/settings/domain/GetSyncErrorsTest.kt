@@ -33,7 +33,6 @@ class GetSyncErrorsTest {
         runTest {
             whenever(settingsRepository.d2Errors()) doReturn org.mockito.kotlin.mock()
             whenever(settingsRepository.trackerImportConflicts()) doReturn org.mockito.kotlin.mock()
-            whenever(settingsRepository.foreignKeyViolations()) doReturn org.mockito.kotlin.mock()
             whenever(errorMapper.mapD2Error(any())) doReturn
                 listOf(
                     ErrorViewModel(
@@ -54,21 +53,10 @@ class GetSyncErrorsTest {
                         errorComponent = null,
                     ),
                 )
-            whenever(errorMapper.mapFKViolation(any())) doReturn
-                listOf(
-                    ErrorViewModel(
-                        creationDate = "2025-03-01T00:00:00.00Z".toDate(),
-                        creationDateLabel = "2025-03-01T00:00:00.00Z",
-                        errorCode = "3",
-                        errorDescription = "fk",
-                        errorComponent = null,
-                    ),
-                )
             val errorList = getSyncErrors()
             assertTrue(errorList.isSuccess)
-            assertTrue(errorList.getOrNull()?.size == 3)
-            assertTrue(errorList.getOrNull()?.get(0)?.errorCode == "3")
+            assertTrue(errorList.getOrNull()?.size == 2)
+            assertTrue(errorList.getOrNull()?.get(0)?.errorCode == "2")
             assertTrue(errorList.getOrNull()?.get(1)?.errorCode == "1")
-            assertTrue(errorList.getOrNull()?.get(2)?.errorCode == "2")
         }
 }
