@@ -6,7 +6,7 @@ import java.util.Date
 @Stable
 data class ErrorViewModel(
     val creationDate: Date?,
-    val creationDateLabel: String? = null,
+    val creationDateLabel: String?,
     val errorCode: String?,
     val errorDescription: String?,
     val errorComponent: String?,
