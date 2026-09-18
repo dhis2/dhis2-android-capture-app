@@ -5,6 +5,8 @@ import org.gradle.api.GradleException
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
@@ -84,6 +86,14 @@ abstract class BuildPluginBundleTask
         /** `entryPoint` written into the dataStore snippet, likewise configured on the extension. */
         @get:Input
         abstract val entryPoint: Property<String>
+
+        /** `injectionPoints` written into the dataStore snippet. Configured on the extension. */
+        @get:Input
+        abstract val injectionPoints: ListProperty<String>
+
+        /** `slotConfig` written into the dataStore snippet. Configured on the extension. */
+        @get:Input
+        abstract val slotConfig: MapProperty<String, Map<String, List<String>>>
 
         @get:Nested
         abstract val signing: SigningSpec
@@ -286,6 +296,8 @@ abstract class BuildPluginBundleTask
                 entryPoint = entryPoint.get(),
                 bundleFileName = bundleFileName.get(),
                 checksum = checksum,
+                injectionPoints = injectionPoints.get(),
+                slotConfig = slotConfig.get(),
             )
 
         private fun execute(

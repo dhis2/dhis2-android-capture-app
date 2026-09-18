@@ -5,8 +5,12 @@ package org.dhis2.mobile.plugin.gradle
  * fields the build knows for certain — `version` and `checksum` — already filled in.
  *
  * A convenience, not part of the bundle. The server dataStore stays the single source of truth for
- * a plugin's identity and data scope; this only saves the administrator from assembling the JSON by
- * hand, and saves the plugin author from re-pasting a checksum after every build.
+ * a plugin's identity and slot configuration; this only saves the administrator from assembling the
+ * JSON by hand, and saves the plugin author from re-pasting a checksum after every build.
+ *
+ * Built line by line rather than from one indented template: the injection point list and the slot
+ * configuration are themselves multi-line, and interpolating those into a `trimIndent()` literal
+ * makes the rendered indentation depend on their contents.
  */
 internal object DataStoreSnippet {
     fun render(
@@ -15,22 +19,45 @@ internal object DataStoreSnippet {
         entryPoint: String,
         bundleFileName: String,
         checksum: String,
+        injectionPoints: List<String>,
+        slotConfig: Map<String, Map<String, List<String>>>,
     ): String =
-        """
-        {
-          "plugins": [
-            {
-              "id": "$pluginId",
-              "version": "$version",
-              "entryPoint": "$entryPoint",
-              "downloadUrl": "http://10.0.2.2:8081/$bundleFileName",
-              "checksum": "$checksum",
-              "injectionPoints": [
-                "HOME_ABOVE_PROGRAM_LIST"
-              ]
+        buildString {
+            appendLine("{")
+            appendLine("""  "plugins": [""")
+            appendLine("    {")
+            appendLine("""      "id": "$pluginId",""")
+            appendLine("""      "version": "$version",""")
+            appendLine("""      "entryPoint": "$entryPoint",""")
+            appendLine("""      "downloadUrl": "http://10.0.2.2:8081/$bundleFileName",""")
+            appendLine("""      "checksum": "$checksum",""")
+            appendLine("""      "injectionPoints": [""")
+            injectionPoints.forEachIndexed { index, slot ->
+                val comma = if (index == injectionPoints.lastIndex) "" else ","
+                appendLine("""        "$slot"$comma""")
             }
-          ]
+            // Omitted entirely when nothing is configured, rather than emitted empty: a replacement
+            // slot renders nowhere until it is configured, and an empty block reads like a working
+            // configuration that happens to do nothing.
+            if (slotConfig.isEmpty()) {
+                appendLine("      ]")
+            } else {
+                appendLine("      ],")
+                appendLine("""      "slotConfig": {""")
+                slotConfig.entries.forEachIndexed { slotIndex, (slot, fields) ->
+                    val slotComma = if (slotIndex == slotConfig.size - 1) "" else ","
+                    appendLine("""        "$slot": {""")
+                    fields.entries.forEachIndexed { fieldIndex, (field, values) ->
+                        val fieldComma = if (fieldIndex == fields.size - 1) "" else ","
+                        val rendered = values.joinToString(", ") { """"$it"""" }
+                        appendLine("""          "$field": [$rendered]$fieldComma""")
+                    }
+                    appendLine("        }$slotComma")
+                }
+                appendLine("      }")
+            }
+            appendLine("    }")
+            appendLine("  ]")
+            appendLine("}")
         }
-
-        """.trimIndent()
 }

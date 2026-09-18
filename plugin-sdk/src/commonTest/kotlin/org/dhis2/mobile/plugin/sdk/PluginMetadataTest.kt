@@ -2,6 +2,9 @@ package org.dhis2.mobile.plugin.sdk
 
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.add
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.putJsonArray
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -49,6 +52,7 @@ class PluginMetadataTest {
             )
 
         assertEquals(emptyList(), decoded.injectionPoints)
+        assertEquals(emptyMap(), decoded.slotConfig)
         assertEquals("", decoded.downloadUrl)
         assertEquals("", decoded.checksum)
     }
@@ -119,7 +123,18 @@ class PluginMetadataTest {
                 id = "org.dhis2.myplugin",
                 version = "1.5.0",
                 entryPoint = "org.myorg.myplugin.MyPlugin",
-                injectionPoints = listOf(InjectionPoint.HOME_ABOVE_PROGRAM_LIST),
+                injectionPoints =
+                    listOf(
+                        InjectionPoint.HOME_ABOVE_PROGRAM_LIST,
+                        InjectionPoint.DATA_SET_INSTANCE_CONTENT,
+                    ),
+                slotConfig =
+                    mapOf(
+                        InjectionPoint.DATA_SET_INSTANCE_CONTENT to
+                            buildJsonObject {
+                                putJsonArray("dataSetUids") { add("lyLU2wR22tC") }
+                            },
+                    ),
                 downloadUrl = "http://10.0.2.2:8081/plugin-1.5.0.zip",
                 checksum = "sha256:deadbeef",
             )
@@ -128,11 +143,58 @@ class PluginMetadataTest {
     }
 
     @Test
+    fun `decodes the per-slot configuration an administrator writes`() {
+        val decoded =
+            json.decodeFromString<PluginMetadata>(
+                """
+                {
+                  "id": "org.myorg.nutrition-form",
+                  "version": "1.0.0",
+                  "entryPoint": "org.myorg.nutrition.NutritionPlugin",
+                  "injectionPoints": ["DATA_SET_INSTANCE_CONTENT"],
+                  "slotConfig": {
+                    "DATA_SET_INSTANCE_CONTENT": {
+                      "dataSetUids": ["lyLU2wR22tC", "BfMAe6Itzgt"]
+                    }
+                  }
+                }
+                """.trimIndent(),
+            )
+
+        assertEquals(
+            listOf(InjectionPoint.DATA_SET_INSTANCE_CONTENT),
+            decoded.injectionPoints,
+        )
+        val slotConfig =
+            json.decodeFromJsonElement(
+                DataSetInstanceSlotConfig.serializer(),
+                decoded.slotConfig.getValue(InjectionPoint.DATA_SET_INSTANCE_CONTENT),
+            )
+
+        assertEquals(listOf("lyLU2wR22tC", "BfMAe6Itzgt"), slotConfig.dataSetUids)
+    }
+
+    @Test
+    fun `a slot key the app does not know fails loudly`() {
+        // Same reasoning as an unknown injection point: silently dropping a whole slot's
+        // configuration would render the plugin nowhere with no explanation. Tolerating a *newer*
+        // config on an older app is the repository's job, not the wire format's.
+        assertFailsWith<SerializationException> {
+            json.decodeFromString<PluginMetadata>(
+                """
+                {"id":"a","version":"1","entryPoint":"E",
+                 "slotConfig":{"DATA_SET_INSTANE_CONTENT":{"dataSetUids":[]}}}
+                """.trimIndent(),
+            )
+        }
+    }
+
+    @Test
     fun `injection point names are part of the server contract`() {
         // Renaming or reordering these breaks every deployed dataStore config, so the
         // serialized names are pinned here deliberately.
         assertEquals(
-            listOf("HOME_ABOVE_PROGRAM_LIST"),
+            listOf("HOME_ABOVE_PROGRAM_LIST", "DATA_SET_INSTANCE_CONTENT"),
             InjectionPoint.entries.map { it.name },
         )
     }

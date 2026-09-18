@@ -3,6 +3,7 @@ package org.dhis2.mobile.plugin.data
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.dhis2.mobile.commons.coroutine.Dispatcher
+import org.dhis2.mobile.plugin.sdk.DataSetInstanceSlotArguments
 import org.dhis2.mobile.plugin.sdk.InjectionPoint
 import org.dhis2.mobile.plugin.sdk.PluginMetadata
 import org.hisp.dhis.android.core.D2
@@ -214,12 +215,117 @@ class AppHubPluginRepositoryTest {
         }
 
     @Test
-    fun `a plugin entry missing a required field is reported as a failure`() =
+    fun `a plugin entry missing a required field is skipped, not fatal`() =
         runTest {
-            // Better to surface the admin's mistake than to skip the plugin silently.
+            // It used to fail the whole read. That punished every *other* plugin for one admin's
+            // mistake — a single bad entry meant the device loaded nothing at all — while the load
+            // pipeline downstream already isolates failures per plugin. The mistake is still
+            // surfaced, in the log, naming the entry.
             givenDataStoreReturns(listOf(entry("""{"plugins":[{"version":"1","entryPoint":"A"}]}""")))
 
-            assertTrue(repository.getConfiguredPlugins().isFailure)
+            val result = repository.getConfiguredPlugins()
+
+            assertTrue(result.isSuccess)
+            assertEquals(emptyList<PluginMetadata>(), result.getOrThrow())
+        }
+
+    @Test
+    fun `one unreadable entry does not cost the others`() =
+        runTest {
+            givenDataStoreReturns(
+                listOf(
+                    entry(
+                        """
+                        {"plugins":[
+                          {"id":"a","version":"1","entryPoint":"A"},
+                          {"version":"2","entryPoint":"B"},
+                          {"id":"c","version":"3","entryPoint":"C"}
+                        ]}
+                        """.trimIndent(),
+                    ),
+                ),
+            )
+
+            val plugins = repository.getConfiguredPlugins().getOrThrow()
+
+            assertEquals(listOf("a", "c"), plugins.map { it.id })
+        }
+
+    // ── Configuration written for a newer app ─────────────────────────────────
+
+    @Test
+    fun `an injection point this app does not know is dropped, keeping the plugin`() =
+        runTest {
+            // Slots are added over time. A config naming one this build has never heard of used to
+            // fail the entire parse, so an admin rolling out a new slot silently disabled the
+            // home-screen plugin on every device not yet updated — for a slot that could not have
+            // rendered here anyway.
+            givenDataStoreReturns(
+                listOf(
+                    entry(
+                        """
+                        {"plugins":[{"id":"a","version":"1","entryPoint":"A",
+                         "injectionPoints":["HOME_ABOVE_PROGRAM_LIST","SLOT_FROM_A_NEWER_APP"]}]}
+                        """.trimIndent(),
+                    ),
+                ),
+            )
+
+            val plugins = repository.getConfiguredPlugins().getOrThrow()
+
+            assertEquals(1, plugins.size)
+            assertEquals(
+                listOf(InjectionPoint.HOME_ABOVE_PROGRAM_LIST),
+                plugins.single().injectionPoints,
+            )
+        }
+
+    @Test
+    fun `a plugin left with no known injection point still loads, rendering nowhere`() =
+        runTest {
+            givenDataStoreReturns(
+                listOf(
+                    entry(
+                        """
+                        {"plugins":[{"id":"a","version":"1","entryPoint":"A",
+                         "injectionPoints":["SLOT_FROM_A_NEWER_APP"]}]}
+                        """.trimIndent(),
+                    ),
+                ),
+            )
+
+            val plugins = repository.getConfiguredPlugins().getOrThrow()
+
+            assertEquals(emptyList<InjectionPoint>(), plugins.single().injectionPoints)
+        }
+
+    @Test
+    fun `per-slot configuration is read as written`() =
+        runTest {
+            givenDataStoreReturns(
+                listOf(
+                    entry(
+                        """
+                        {"plugins":[{"id":"a","version":"1","entryPoint":"A",
+                         "injectionPoints":["DATA_SET_INSTANCE_CONTENT"],
+                         "slotConfig":{"DATA_SET_INSTANCE_CONTENT":{"dataSetUids":["lyLU2wR22tC"]}}}]}
+                        """.trimIndent(),
+                    ),
+                ),
+            )
+
+            val metadata = repository.getConfiguredPlugins().getOrThrow().single()
+            val arguments =
+                DataSetInstanceSlotArguments(
+                    dataSetUid = "lyLU2wR22tC",
+                    periodId = "202401",
+                    organisationUnitUid = "ou",
+                    attributeOptionComboUid = "aoc",
+                )
+
+            assertTrue(
+                arguments.appliesTo(metadata.slotConfig[InjectionPoint.DATA_SET_INSTANCE_CONTENT]),
+            )
         }
 
     @Test
