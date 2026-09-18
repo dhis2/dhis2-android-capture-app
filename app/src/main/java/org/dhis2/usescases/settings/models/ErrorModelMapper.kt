@@ -28,10 +28,11 @@ class ErrorModelMapper(
         ErrorViewModel(
             creationDate = error.created(),
             creationDateLabel = dateLabel(error.created),
-            errorCode = error.httpErrorCode?.let {errorCode->
-                val message = httpStatusMessageProvider.httpStatusMessage(errorCode)
-                "$errorCode $message"
-            },
+            errorCode =
+                error.httpErrorCode?.let { errorCode ->
+                    val message = httpStatusMessageProvider.httpStatusMessage(errorCode)
+                    "$errorCode $message"
+                },
             errorDescription = error.errorDescription(),
             errorComponent = error.errorComponent()?.name ?: "",
         )
