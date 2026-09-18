@@ -160,6 +160,14 @@
                     android:layout_height="wrap_content"
                     android:text="Spoils the next call to the server so its session expires, as it does after 30 days of inactivity. The account keeps working offline and stays expired until the session is renewed." />
 
+                <TextView
+                    style="@style/TextSecondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/red_060"
+                    android:textStyle="bold"
+                    android:text="IMPORTANT: To prevent instabilities, try to sync something after using the button" />
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/expireSessionButton"
                     style="@style/Widget.MaterialComponents.Button"
