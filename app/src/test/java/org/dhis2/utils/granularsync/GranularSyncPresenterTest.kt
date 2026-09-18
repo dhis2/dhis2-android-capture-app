@@ -20,7 +20,9 @@ import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
+import org.dhis2.mobile.sync.model.GranularSyncAction
 import org.dhis2.mobile.sync.model.GranularSyncType
+import org.dhis2.mobile.sync.model.SyncJobStatus
 import org.dhis2.usescases.sms.SmsSendingService
 import org.dhis2.utils.granularsync.data.GranularSyncRepository
 import org.dhis2.utils.granularsync.domain.MissingSyncTargetException
@@ -675,5 +677,35 @@ class GranularSyncPresenterTest {
             presenter.checkServerAvailability()
 
             assertFalse(presenter.serverAvailability.value!!)
+        }
+
+    @Test
+    fun shouldDisplaySuccessMessageIfSyncSuccessful() =
+        runTest {
+            val mockedSyncJobStatus =
+                SyncJobStatus(
+                    tags = emptyList(),
+                    status = org.dhis2.mobile.sync.model.SyncStatus.Enqueue,
+                    message = null,
+                )
+
+            val presenter =
+                GranularSyncPresenter(
+                    d2,
+                    view,
+                    repository,
+                    trampolineSchedulerProvider,
+                    testDispatcher,
+                    SyncContext.Global(),
+                    smsSyncProvider,
+                    mapper,
+                )
+            presenter.granularSyncChannel.test {
+                presenter.manageWorkInfo(
+                    mockedSyncJobStatus.copy(status = org.dhis2.mobile.sync.model.SyncStatus.Succeed),
+                )
+                val result = awaitItem()
+                assertTrue(result is GranularSyncAction.DisplaySyncSuccess)
+            }
         }
 }
