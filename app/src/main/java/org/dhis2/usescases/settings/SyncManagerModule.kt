@@ -11,7 +11,6 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.mobile.commons.error.DomainErrorMapper
-import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.mobile.commons.files.FileHandlerImpl
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.commons.network.NetworkStatusProviderImpl
@@ -34,6 +33,7 @@ import org.dhis2.usescases.settings.domain.UpdateSyncSettings
 import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
+import org.dhis2.mobile.commons.providers.PreferenceProvider as MobilePreferenceProvider
 
 @Module
 class SyncManagerModule(
@@ -175,13 +175,11 @@ class SyncManagerModule(
     @PerFragment
     fun provideRepository(
         d2: D2,
-        preferenceProvider: PreferenceProvider,
-        featureConfigRepository: FeatureConfigRepository,
+        preferenceProvider: MobilePreferenceProvider,
     ): SettingsRepository =
         SettingsRepository(
             d2,
             preferenceProvider,
-            featureConfigRepository,
             syncBackgroundJobAction,
         )
 

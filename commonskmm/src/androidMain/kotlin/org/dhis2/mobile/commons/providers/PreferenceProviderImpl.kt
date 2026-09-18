@@ -12,7 +12,7 @@ import timber.log.Timber
 
 const val PREF_URLS = "PREF_URLS"
 
-internal class PreferenceProviderImpl(
+class PreferenceProviderImpl(
     context: Context,
 ) : PreferenceProvider {
     private val sharedPreferences: SharedPreferences =

@@ -12,9 +12,8 @@ import org.dhis2.commons.prefs.Preference.Companion.LIMIT_BY_PROGRAM
 import org.dhis2.commons.prefs.Preference.Companion.NUMBER_RV
 import org.dhis2.commons.prefs.Preference.Companion.TIME_DAILY
 import org.dhis2.commons.prefs.Preference.Companion.TIME_WEEKLY
-import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.service.SyncResult
-import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.mobile.commons.providers.PreferenceProvider
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.settings.models.DataSettingsViewModel
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
@@ -36,7 +35,6 @@ private const val DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm"
 class SettingsRepository(
     val d2: D2,
     val prefs: PreferenceProvider,
-    val featureConfigRepository: FeatureConfigRepository,
     private val syncBackgroundJobAction: SyncBackgroundJobAction,
 ) {
     private val syncSettings: SynchronizationSettings?
