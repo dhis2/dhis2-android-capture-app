@@ -107,11 +107,8 @@ class AppHubPluginRepository(
         }
 
     /**
-     * Decodes one entry, or returns null having said why.
-     *
-     * Per entry rather than for the whole array, so one administrator's typo costs only their own
-     * plugin. `LoadPluginsUseCase` already isolates every later step per plugin; parsing was the
-     * one place where a single bad entry took every other plugin down with it.
+     * Decodes one entry, or returns null having said why. Per entry rather than for the whole array,
+     * so one administrator's typo costs only their own plugin.
      */
     private fun decodeEntry(entry: JsonObject): PluginMetadata? =
         runCatching {
@@ -124,13 +121,8 @@ class AppHubPluginRepository(
     /**
      * The same entry with injection points this app build does not know about removed.
      *
-     * Slots are added over time, so a config written for a newer app names slots an older one has
-     * never heard of. Dropping the whole entry there would mean a plugin that also renders somewhere
-     * this build *does* support disappears, and with it an administrator's working home-screen
-     * plugin — for a slot that could not have rendered here anyway.
-     *
-     * A genuine typo still costs the plugin its slot, and says so in the log. A plugin left with no
-     * slot at all simply renders nowhere.
+     * A config written for a newer app names slots an older one has never heard of; dropping the
+     * whole entry there would also disable the slots this build does support.
      */
     private fun JsonObject.withKnownInjectionPoints(): JsonObject {
         val declared = this[INJECTION_POINTS_KEY] as? JsonArray ?: return this
@@ -153,8 +145,6 @@ class AppHubPluginRepository(
 
 @kotlinx.serialization.Serializable
 private data class PluginConfig(
-    /**
-     * Left as raw objects so each entry can be decoded, and fail, on its own.
-     */
+    /** Raw objects so each entry can be decoded, and fail, on its own. */
     val plugins: List<JsonObject> = emptyList(),
 )

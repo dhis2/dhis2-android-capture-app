@@ -53,13 +53,7 @@ fun PluginSlot(
     }
 }
 
-/**
- * Renders one plugin inside its own resource reader and Koin container.
- *
- * Internal rather than private because both slot kinds — additive [PluginSlot] and
- * [PluginReplacementSlot] — need exactly this wrapper, and a second copy of it is a second place
- * for the class-loader keying and container isolation to go wrong.
- */
+/** Renders one plugin inside its own resource reader and Koin container. */
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 internal fun PluginContent(registered: RegisteredPlugin) {

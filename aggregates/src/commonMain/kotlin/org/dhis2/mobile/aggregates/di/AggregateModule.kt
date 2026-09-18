@@ -14,6 +14,8 @@ import org.dhis2.mobile.aggregates.domain.ReopenDataSet
 import org.dhis2.mobile.aggregates.domain.RunValidationRules
 import org.dhis2.mobile.aggregates.domain.SetDataValue
 import org.dhis2.mobile.aggregates.domain.UploadFile
+import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
+import org.dhis2.mobile.aggregates.ui.DataSetInstanceBodyProvider
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
@@ -178,10 +180,20 @@ internal val featureModule =
             val orgUnitUid = params.get<String>()
             val attrOptionComboUid = params.get<String>()
             val openErrorLocation = params.getOrNull<Boolean>() ?: false
-            // Positional, so it must stay immediately after openErrorLocation at the call site.
-            val loadDefaultBody = params.getOrNull<Boolean>() ?: true
             val onClose = params.get<() -> Unit>()
             val uiActionHandler = params.get<UiActionHandler>()
+
+            // Same question the screen asks, so the two cannot disagree on whether tables are used.
+            val loadDefaultBody =
+                getOrNull<DataSetInstanceBodyProvider>()?.bodyFor(
+                    DataSetInstanceParameters(
+                        dataSetUid = dataSetUid,
+                        periodId = periodId,
+                        organisationUnitUid = orgUnitUid,
+                        attributeOptionComboUid = attrOptionComboUid,
+                        openErrorLocation = openErrorLocation,
+                    ),
+                ) == null
 
             DataSetTableViewModel(
                 onClose = onClose,

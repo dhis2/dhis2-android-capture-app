@@ -104,13 +104,10 @@ fun List<RegisteredPlugin>.forSlot(injectionPoint: InjectionPoint): List<Registe
     filter { injectionPoint in it.metadata.injectionPoints }
 
 /**
- * The plugins in this list that render for [arguments] — configured for its slot *and* claiming
- * this particular occurrence.
+ * The plugins in this list that render for [arguments].
  *
- * A slot that declares `requiresConfiguration` renders nowhere until an administrator configures
- * it: a replacement slot defaulting to "replace everything" is a footgun with no upside. An
- * additive slot with no configuration keeps applying everywhere, which is what
- * `HOME_ABOVE_PROGRAM_LIST` has always done.
+ * A slot that declares `requiresConfiguration` renders nowhere until an administrator configures it;
+ * an unconfigured additive slot keeps applying everywhere.
  */
 fun List<RegisteredPlugin>.forSlotArguments(arguments: SlotArguments): List<RegisteredPlugin> =
     forSlot(arguments.injectionPoint).filter { registered ->
@@ -124,10 +121,9 @@ fun List<RegisteredPlugin>.forSlotArguments(arguments: SlotArguments): List<Regi
 /**
  * The single plugin that replaces the host's own UI for [arguments], or null to keep it.
  *
- * Replacement is exclusive, so when more than one plugin is configured for the same occurrence the
- * first in configuration order wins and the rest are logged. Taking them all would stack full-screen
- * layouts on top of each other; falling back to the host would make one admin's typo silently
- * disable another team's plugin.
+ * Exclusive: when several claim the same occurrence the first in configuration order wins and the
+ * rest are logged. Stacking full-screen layouts is not an option, and falling back to the host would
+ * let one admin's typo disable another team's plugin.
  */
 fun List<RegisteredPlugin>.selectReplacement(arguments: SlotArguments): RegisteredPlugin? {
     val candidates = forSlotArguments(arguments)

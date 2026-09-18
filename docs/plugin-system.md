@@ -204,6 +204,14 @@ Things that bite:
 - An empty `dataSetUids` list replaces nothing, so it doubles as a kill switch that does not require
   deleting the plugin's entry.
 
+**How the host wires it.** `:aggregates` knows nothing about plugins. It declares
+`DataSetInstanceBodyProvider`, resolved optionally from Koin, and `:app` binds a plugin-backed
+implementation (`PluginDataSetInstanceBodyProvider`) that asks the registry with
+`selectReplacement(...)` and renders the winner through `PluginReplacementSlot`. The same provider
+answer also tells the view model not to build tables nothing will render, so the two cannot disagree.
+A future replacement slot follows the same shape: an arguments type, a configuration type, and one
+provider bound in `:app`.
+
 ### Plugin context
 
 The gateway through which a plugin reaches DHIS2 data. A plugin receives one as the parameter to
@@ -837,4 +845,4 @@ context in it. Two things that trip this up:
   `data/PluginDownloader.kt`, `data/PluginVerifier.kt`, `data/PluginLoader.kt`,
   `domain/LoadPluginsUseCase.kt`, `registry/PluginRegistry.kt`,
   `security/HostDhis2PluginContext.kt`, `di/PluginContainer.kt`, `di/PluginModule.kt`,
-  `ui/PluginSlot.kt`, `ui/FileSystemResourceReader.kt`
+  `ui/PluginSlot.kt`, `ui/PluginReplacementSlot.kt`, `ui/FileSystemResourceReader.kt`

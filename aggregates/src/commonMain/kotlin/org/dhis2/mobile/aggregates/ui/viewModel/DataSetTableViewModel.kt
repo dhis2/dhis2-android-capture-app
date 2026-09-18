@@ -91,16 +91,10 @@ internal class DataSetTableViewModel(
     private val inputDataUiStateMapper: InputDataUiStateMapper,
     private val fieldErrorMessageProvider: FieldErrorMessageProvider,
     /**
-     * Whether the screen renders this view model's tables.
-     *
-     * `false` when the host replaces the screen's body — see `DataSetInstanceScreen`'s
-     * `dataSetBody`. Building a table nothing renders is the most expensive thing this view model
-     * does (one section query plus a data value query per table group), so it is skipped, and the
-     * section tabs that would rebuild it are inert.
-     *
-     * Everything else stays: the title, completion status, editability, validation and the save
-     * flow are all read from the SDK rather than from the table, so they remain correct over data
-     * the replacement wrote itself.
+     * `false` when a [org.dhis2.mobile.aggregates.ui.DataSetInstanceBodyProvider] draws the body
+     * instead. Building tables nothing renders is the most expensive thing this view model does, so
+     * it is skipped. Everything else — title, completion, editability, validation, save — is read
+     * from the SDK, so it stays correct over data the replacement wrote itself.
      */
     private val loadDefaultBody: Boolean = true,
 ) : ViewModel() {
@@ -152,8 +146,7 @@ internal class DataSetTableViewModel(
                                 sectionToLoad,
                                 emptyList(),
                                 overridingDimensions = initialDimensions,
-                                // Nothing will render a table, so there is nothing to wait for.
-                                // The save button's visibility reads this flag.
+                                // Nothing renders a table, so there is nothing to wait for.
                                 loading = loadDefaultBody,
                             ),
                         initialSection = dataSetInstanceData.initialSectionToLoad,
@@ -189,8 +182,6 @@ internal class DataSetTableViewModel(
     }
 
     fun onSectionSelected(sectionUid: String) {
-        // The tabs that call this are part of the body the host replaced, so there is no selection
-        // to honour and no table to rebuild.
         if (!loadDefaultBody) return
         if (_dataSetScreenState.value.currentSection() == sectionUid) return
         sectionChangeJob?.takeIf { it.isActive }?.cancel()
