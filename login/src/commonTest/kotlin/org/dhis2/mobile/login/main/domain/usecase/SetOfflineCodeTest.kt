@@ -8,32 +8,32 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.assertTrue
 
-class SetOfflinePinTest {
+class SetOfflineCodeTest {
     private val repository: LoginRepository = mock()
-    private val setOfflinePin = SetOfflinePin(repository)
+    private val setOfflineCode = SetOfflineCode(repository)
 
-    private val pin = "1234"
+    private val code = "1234"
 
     @kotlin.test.Test
-    fun `GIVEN a pin WHEN invoked THEN it is stored through the repository`() =
+    fun `GIVEN a code WHEN invoked THEN it is stored through the repository`() =
         runTest {
-            whenever(repository.setOfflinePin(pin)) doReturn Result.success(Unit)
+            whenever(repository.setOfflineCode(code)) doReturn Result.success(Unit)
 
-            val result = setOfflinePin(pin)
+            val result = setOfflineCode(code)
 
             assertTrue(result.isSuccess)
-            verify(repository).setOfflinePin(pin)
+            verify(repository).setOfflineCode(code)
         }
 
     @kotlin.test.Test
     fun `GIVEN the repository fails WHEN invoked THEN the failure is propagated`() =
         runTest {
-            val error = Exception("cannot set pin")
-            whenever(repository.setOfflinePin(pin)) doReturn Result.failure(error)
+            val error = Exception("cannot set code")
+            whenever(repository.setOfflineCode(code)) doReturn Result.failure(error)
 
-            val result = setOfflinePin(pin)
+            val result = setOfflineCode(code)
 
             assertTrue(result.isFailure)
-            verify(repository).setOfflinePin(pin)
+            verify(repository).setOfflineCode(code)
         }
 }
