@@ -74,8 +74,9 @@ the evidence disagrees — and says so explicitly when that happens.
 - Conventions: `AGENTS.md` (launchUseCase, DomainErrorMapper, KMP placement,
   ktlint, testing rules).
 - Lint/tests: `./gradlew ktlintFormat ktlintCheck` + per-module test task
-  (`testDebugUnitTest` legacy modules · `testAndroidHostTest` KMP commonTest ·
-  `testAndroidDebugUnitTest` KMP androidUnitTest).
+  (`testDebugUnitTest` AGP modules · `testDhis2DebugUnitTest` for `app` ·
+  `testAndroidHostTest` for KMP modules, covering both their `commonTest` and
+  `androidHostTest` source sets).
 - Module mapping for `org.dhis2.*` frames:
 
 | Package prefix | Source root |
@@ -123,8 +124,8 @@ the evidence disagrees — and says so explicitly when that happens.
   merge to `develop`; `main` only receives release PRs.
 - Module `:designsystem`, package root `org.hisp.dhis.mobile.ui.designsystem`;
   KMP source sets `commonMain`/`androidMain`/`desktopMain`/`iosMain`; Kotlin
-  tests run on the desktop target; Paparazzi snapshot tests live in
-  `androidUnitTest`.
+  tests run on the desktop target; Paparazzi snapshot tests live in that repo's
+  Android unit-test source set (a layout this app does not share).
 - Verify:
   ```bash
   ./gradlew ktlintFormat ktlintCheck

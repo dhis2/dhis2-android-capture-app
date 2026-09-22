@@ -82,7 +82,6 @@ material3WindowSize = "1.4.0"
 material3WindowSizeCompose = "1.8.2"
 material3AdaptiveAndroid = "1.1.0"
 koin = "4.1.1"
-junitJupiter = "6.0.3"
 ktxml = "1.0.0"
 atomicfu = "0.29.0"
 playservicesauth = "21.4.0"
@@ -210,9 +209,7 @@ koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 koin-composeVM = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 koin-work = { module = "io.insert-koin:koin-androidx-workmanager", version.ref = "koin" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
-koin-test-junit5 = { module = "io.insert-koin:koin-test-junit5", version.ref = "koin" }
 koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4", version.ref = "koin" }
-junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 ktxml = { module = "org.kobjects.ktxml:core", version.ref = "ktxml" }
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "commonsText" }
