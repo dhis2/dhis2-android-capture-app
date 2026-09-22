@@ -15,7 +15,9 @@ import java.util.jar.JarFile
  *    A blank checksum is accepted with a warning (useful during local iteration; not
  *    recommended in production).
  *
- * 2. **JAR signature** — the bundle is a zip signed with `jarsigner`. Every entry
+ * 2. **JAR signature** — the bundle is a zip signed with `apksigner` using the v1 (JAR) scheme.
+ *    `apksigner` rather than `jarsigner` because the latter embeds a signed `signingTime`, so
+ *    identical content would never produce identical bytes. Every entry
  *    inside must be covered by a valid signature in `META-INF/`. We enforce this by
  *    opening the zip with `JarFile(file, verify = true)` and reading every entry
  *    end-to-end, which forces the runtime to compute and verify signatures.
@@ -79,7 +81,7 @@ class PluginVerifier {
         }
 
     private companion object {
-        /** Signature block extensions produced by `jarsigner`, all under `META-INF/`. */
+        /** Signature block extensions produced by a v1 JAR signer, all under `META-INF/`. */
         val SIGNATURE_BLOCK_EXTENSIONS = listOf(".RSA", ".DSA", ".EC")
     }
 }

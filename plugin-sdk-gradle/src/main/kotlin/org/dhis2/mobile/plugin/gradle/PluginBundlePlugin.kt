@@ -44,6 +44,7 @@ class PluginBundlePlugin : Plugin<Project> {
         extension.pluginId.convention(PLACEHOLDER_PLUGIN_ID)
         extension.entryPoint.convention(PLACEHOLDER_ENTRY_POINT)
         extension.injectionPoints.convention(listOf(DEFAULT_INJECTION_POINT))
+        extension.downloadUrlBase.convention(DEFAULT_DOWNLOAD_URL_BASE)
         extension.bundleFileName.convention(provider { "$name-$version.zip" })
         extension.outputDirectory.convention(layout.buildDirectory.dir("outputs/plugin-bundle"))
         extension.signing.alias.convention(DEBUG_KEY_ALIAS)
@@ -68,6 +69,7 @@ class PluginBundlePlugin : Plugin<Project> {
             task.pluginId.set(extension.pluginId)
             task.entryPoint.set(extension.entryPoint)
             task.injectionPoints.set(extension.injectionPoints)
+            task.downloadUrlBase.set(extension.downloadUrlBase)
             task.slotConfig.set(extension.slotConfig)
             task.outputDirectory.set(extension.outputDirectory)
             task.signing.keystore.set(extension.signing.keystore)
@@ -167,6 +169,11 @@ class PluginBundlePlugin : Plugin<Project> {
 
         /** The one additive slot, and the only one that needs no configuration to render. */
         const val DEFAULT_INJECTION_POINT = "HOME_ABOVE_PROGRAM_LIST"
+
+        // The emulator's route to the host machine, and the port the documentation
+        // recommends serving from. A development convenience — see
+        // PluginBundleExtension.downloadUrlBase.
+        const val DEFAULT_DOWNLOAD_URL_BASE = "http://10.0.2.2:8081"
         const val DEBUG_KEYSTORE = ".android/debug.keystore"
         const val DEBUG_KEY_ALIAS = "androiddebugkey"
         const val DEBUG_KEY_PASSWORD = "android"

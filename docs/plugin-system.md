@@ -1,6 +1,6 @@
 # DHIS2 Android Plugin System
 
-> Status: preview (`plugin-sdk 0.1.2-SNAPSHOT`). API, bundle format, and
+> Status: preview (`plugin-sdk 0.1.3-SNAPSHOT`). API, bundle format, and
 > injection points may still change.
 
 ## 1. What it is
@@ -107,7 +107,7 @@ unknown keys are ignored.
 data class PluginMetadata(
     val id: String,                                 // "org.myorg.my-plugin"
     val version: String,                            // "1.0.0"
-    val entryPoint: String,                         // "org.myorg.plugin.MyPlugin"
+    val entryPoint: String,                         // "org.myorg.myplugin.MyPlugin"
     val injectionPoints: List<InjectionPoint> = emptyList(),
     val slotConfig: Map<InjectionPoint, JsonObject> = emptyMap(),
     val downloadUrl: String = "",
@@ -130,7 +130,9 @@ Named slots in the host app where a plugin's Composable UI can be rendered.
 A plugin declares the slots it targets in `PluginMetadata.injectionPoints`. Slots come in two kinds:
 
 - **Additive** — the host renders *every* registered plugin at the slot, via `PluginSlot`, and the
-  host's own UI stays where it is.
+  host's own UI stays where it is. The host caps each one — `HOME_ABOVE_PROGRAM_LIST` gets at most
+  **240 dp** — and content beyond that is clipped, so bound and scroll your own content rather than
+  relying on the cap.
 - **Replacement** — a plugin takes over a region of a host screen and exactly one may win. It
   renders nowhere until an administrator says which objects it applies to, which is what
   `requiresConfiguration` records; the targets come from `PluginMetadata.slotConfig`.
@@ -172,7 +174,7 @@ override fun content(context: Dhis2PluginContext) {
 }
 ```
 
-Three composition locals are available inside any slot:
+Three composition locals are available at a **replacement** slot:
 
 | Local | What it is |
 |---|---|
@@ -198,7 +200,7 @@ Things that bite:
 - The region is laid out with `propagateMinConstraints = true`, so your root fills it; a
   wrap-content `Column` will be stretched.
 - The host screen already applies `imePadding()` with `WindowInsets.safeDrawing`. Adding your own
-  double-insets.
+  double-insets the content.
 - **Two plugins configured for the same data set**: the first in configuration order wins, and the
   rest are named in the log. Replacement is exclusive.
 - An empty `dataSetUids` list replaces nothing, so it doubles as a kill switch that does not require
@@ -265,9 +267,10 @@ Contract:
   anything past the viewport is unreachable rather than scrollable. Keep the resting state short, put
   detail behind a toggle, and if a section can grow, bound it (`heightIn(max = …)` plus
   `verticalScroll`) so it scrolls inside the plugin instead of pushing the host's content off screen.
-- **Composition state does not survive a plugin reload.** The load pipeline runs more than once per
-  process — a metadata sync is enough — and each run builds a fresh class loader, so the plugin's
-  classes are replaced wholesale. `PluginSlot` keys the composition on that loader and discards the
+- **Composition state does not survive a plugin reload.** Each run of the load pipeline builds a
+  fresh class loader, so the plugin's classes are replaced wholesale. Today the pipeline runs once
+  per process, from `MainViewModel`'s `init`, so a reload means a new process — but the keying below
+  is what makes re-running it safe, and re-running it is the intended direction (§7). `PluginSlot` keys the composition on that loader and discards the
   previous one, because state remembered across the swap would be an instance of the *old* loader's
   class and any cast to the new one fails. Keep anything that must outlive a reload out of the
   composition.
@@ -290,7 +293,7 @@ The admin writes a JSON object into the DHIS2 server dataStore at:
     {
       "id": "org.myorg.my-plugin",
       "version": "1.0.0",
-      "entryPoint": "org.myorg.plugin.MyPlugin",
+      "entryPoint": "org.myorg.myplugin.MyPlugin",
       "downloadUrl": "https://example.com/my-plugin-1.0.0.zip",
       "checksum": "sha256:abc…",
       "injectionPoints": [
@@ -318,7 +321,7 @@ keyed by the slot being configured. Until it does, it renders nowhere:
       ],
       "slotConfig": {
         "DATA_SET_INSTANCE_CONTENT": {
-          "dataSetUids": ["lyLU2wR22tC", "BfMAe6Itzgt"]
+          "dataSetUids": ["YourDataSet", "SecondDtSet"]
         }
       }
     }
@@ -330,9 +333,15 @@ One plugin may declare both kinds of slot; `slotConfig` only has to mention the 
 
 **Entries are read one at a time.** A malformed entry is skipped, with its id logged, and the other
 plugins still load. An injection point the installed app has never heard of is dropped from that
-plugin's list rather than failing its entry, so rolling out a new slot does not disable an
-administrator's existing plugins on devices that have not been updated yet. A plugin left with no
+plugin's list rather than failing its entry, so rolling out a new *additive* slot does not disable
+an administrator's existing plugins on devices that have not been updated yet. A plugin left with no
 slot the app supports simply renders nowhere.
+
+**The same is not yet true of `slotConfig`.** Only `injectionPoints` is sanitised against the slots
+this build knows; an unknown key under `slotConfig` fails to deserialise and drops the whole entry.
+Since every replacement slot requires a `slotConfig` entry, rolling out a new *replacement* slot
+does disable existing plugins on older devices. Configure a new replacement slot only once the
+fleet has the build that understands it.
 
 Removing a plugin is deleting its entry from this array (and see §7 for the device-side cache).
 
@@ -353,15 +362,17 @@ for the version you run rather than assuming the default is safe.
 ## 5. Writing a plugin
 
 A plugin is **its own Gradle project**, not a module of the Capture App: one Kotlin Multiplatform
-library module, no application module, nothing added to this repo. Everything below is complete —
-create these files in an empty directory with a Gradle 9.5+ wrapper and you have a working plugin.
+library module, no application module, nothing added to this repo. The files below are the whole
+shape of a plugin project — create them in an empty directory with a Gradle 9.5+ wrapper and you
+have a working plugin. The Kotlin in §5.2 is abbreviated to the parts that matter and omits its
+imports.
 
 ```
 my-plugin/
 ├── settings.gradle.kts
 ├── gradle/
 │   ├── libs.versions.toml
-│   └── wrapper/…                                   Gradle 9.5+ (AGP 9.3.1 requires it)
+│   └── wrapper/…                                   Gradle 9.5+ (AGP 9.3.2 requires it)
 └── plugin/
     ├── build.gradle.kts
     └── src/
@@ -412,10 +423,10 @@ DHIS2 artifacts:
 
 ```toml
 [versions]
-agp = "9.3.1"
+agp = "9.3.2"
 kotlin = "2.4.10"                 # must equal the host's
 composeMultiplatform = "1.10.3"   # must equal the host's
-pluginSdk = "0.1.2-SNAPSHOT"
+pluginSdk = "0.1.3-SNAPSHOT"
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -479,7 +490,7 @@ compose.resources {
 ```
 
 Without a version catalog, the plugin line is
-`id("org.dhis2.mobile.plugin-bundle") version "0.1.2-SNAPSHOT"`.
+`id("org.dhis2.mobile.plugin-bundle") version "0.1.3-SNAPSHOT"`.
 
 `plugin-sdk` is **not** declared as a dependency: the plugin-bundle plugin adds it as `compileOnly`
 at its own version, so it can never be pinned to the wrong one.
@@ -496,16 +507,22 @@ constraint differs per row — some must match the host exactly, others are boun
 | `compileSdk`   | `37`                              | **>=** host                      | `checkAarMetadata` fails on `plugin-sdk-android`                                                                |
 | `minSdk`       | `23`                              | **>= 26** (not the host's)       | `InMemoryDexClassLoader` needs API 26; the host itself supports 23, but a plugin cannot load below 26           |
 | JVM target     | `17`                              | **<=** host                      | `Unsupported class file major version` when the DEX is loaded. Lower is safe, higher is not                     |
-| AGP            | `9.3.1`                           | new enough for that `compileSdk` | build fails on an unknown `compileSdk`                                                                          |
-| Gradle wrapper | `9.5.1`                           | **>= 9.5.0** for AGP 9.3.1       | AGP refuses to run                                                                                              |
+| AGP            | `9.3.2`                           | new enough for that `compileSdk` | build fails on an unknown `compileSdk`                                                                          |
+| Gradle wrapper | `9.5.1`                           | **>= 9.5.0** for AGP 9.3.2       | AGP refuses to run                                                                                              |
 
 The first five rows are **checked at configuration time** by the plugin-bundle plugin, which fails
 the build listing every mismatch and what it would have caused. `--info` logs what it detected; a
 value it cannot read is skipped rather than guessed at. `pluginBundle { verifyToolchain = false }`
 opts out and trades these build errors for runtime failures on device.
 
-Values above are generated into the Gradle plugin from `gradle/libs.versions.toml`, so the checks
-move with each host release; treat that file as the source of truth.
+The Kotlin, Compose, `compileSdk` and `plugin-sdk` values above are generated into the Gradle
+plugin from `gradle/libs.versions.toml`, so those checks move with each host release; treat that
+file as the source of truth. The JVM target and the minSdk floor are constants in
+`plugin-sdk-gradle/build.gradle.kts`, and AGP and the Gradle wrapper are not in `HostToolchain` at
+all — those three rows are documentation, not checks.
+
+A sixth check is not in the table: applying `com.android.library` alongside the KMP plugin fails the
+build, because AGP 9 refuses the combination.
 
 A Kotlin mismatch is usually followed by a cascade of `Unresolved reference 'lazy'` in the
 generated resource accessors — that cascade is a symptom, not the cause; fix the version.
@@ -557,22 +574,24 @@ build. It writes three files to `plugin/build/outputs/plugin-bundle/`:
 ```
 {module}-{version}.zip           the bundle, named from the Gradle module and its `version`
 {module}-{version}.zip.sha256    its checksum, in the `sha256:<hex>` form the config wants
-plugin-config.json              the §4 dataStore entry, checksum and version already filled in
+plugin-config.json              the §4 dataStore entry, everything the build knows filled in
 ```
 
 The zip's file name is only a convenience for whoever hosts it; the host locates the bundle by the
 config's `downloadUrl` and identifies it by the config's `id`/`version`, so it can be called
 anything.
 
-`plugin-config.json` is rewritten on every build, so editing it in place does not survive. Its
-`id` and `entryPoint` are the only fields the build cannot work out for itself, and they default to
-obvious placeholders (`org.myorg.my-plugin`, `org.myorg.myplugin.MyPlugin`) — declare them once and
-the file is postable as it is:
+`plugin-config.json` is rewritten on every build, so editing it in place does not survive.
+`version` and `checksum` the build knows for certain; `id`, `entryPoint`, `downloadUrl`,
+`injectionPoints` and `slotConfig` come from whatever `pluginBundle { }` declared, and default to
+obvious placeholders (`org.myorg.my-plugin`, `org.myorg.myplugin.MyPlugin`, the home slot, and an
+emulator download URL). Declare them once and the file is postable as it is:
 
 ```kotlin
 pluginBundle {
     pluginId = "org.myorg.my-plugin"
-    entryPoint = "org.myorg.plugin.MyPlugin"
+    entryPoint = "org.myorg.myplugin.MyPlugin"
+    downloadUrlBase = "https://plugins.example.org/bundles"
 }
 ```
 
@@ -612,15 +631,38 @@ pluginBundle {
 }
 ```
 
-Everything else in `pluginBundle { }` is optional: `pluginId` / `entryPoint` (above),
-`resourcePackage` (read back from the compiled `Res` class by default), `minApi` (26),
-`bundleFileName`, `outputDirectory`, `d8Executable` / `apksignerExecutable` (found in the SDK's
-newest build-tools), `verifyToolchain` (§5.1) and `emitDataStoreSnippet`.
+Everything else in `pluginBundle { }` is optional: `pluginId` / `entryPoint` / `injectionPoints` /
+`slotConfig` / `downloadUrlBase` (all snippet-only — see above), `resourcePackage` (read back from
+the compiled `Res` class by default), `minApi` (26), `bundleFileName`, `outputDirectory`,
+`d8Executable` / `apksignerExecutable` (found in the SDK's newest build-tools), `verifyToolchain`
+(§5.1), `verifyConventions` (§5.5) and `emitDataStoreSnippet`.
 
 ### 5.4 Ship it
 
 Upload the zip to a URL the device can reach, and add an entry to the
 dataStore JSON (§4). Done.
+
+### 5.5 Conventions the build enforces
+
+`buildPluginBundle` depends on `checkPluginConventions`, which reads your Kotlin sources and your
+declared dependencies and fails the build on five rules. They are here rather than in your own repo
+because each one is a property of the plugin *system*, not a matter of taste — every one of them
+otherwise surfaces as a crash on a device rather than an error at your desk.
+
+| Rule | What it rejects | Why |
+|---|---|---|
+| `sdk-in-shared-source` | `org.hisp.dhis.android` referenced from a `common*` source set | `D2` is Android-only; shared code that names it cannot compile for another target. The design system (`org.hisp.dhis.mobile.ui`) is deliberately *not* matched. |
+| `context-in-shared-source` | `Dhis2PluginContext` in a `common*` source set | Composables that take plain data and callbacks can be rendered by `@Preview` without a server. |
+| `host-dep-not-compile-only` | a host-provided dependency declared anything but `compileOnly` | Bundling a class the host owns means two copies of it: `ClassCastException` or `NoSuchMethodError` at composition. The groups are listed in `PluginConventions.HOST_PROVIDED`. |
+| `resources-must-be-implementation` | `components-resources` declared `compileOnly` | It is the Compose Resources generator's opt-in signal. Declared `compileOnly`, no `Res` class is generated and every `Res.string.*` stops resolving. |
+| `cap-before-enrichment` | `.with…()` … `.blockingGet()` … `.take(n)` in one expression | Enriching every row and then keeping `n` of them does the expensive work `n` times over. Cap first. |
+
+A violation names the rule, the file and the line. Two escape hatches, both deliberate: put the
+marker `plugin-conventions:ignore` anywhere in a file to exempt that file, or set
+`pluginBundle { verifyConventions = false }` to turn the whole gate off.
+
+`checkPluginConventions` is wired to both `check` and `buildPluginBundle`, because pipelines that
+package without running `check` are common and a gate you can skip by packaging is not a gate.
 
 ## 6. Security model
 
@@ -740,8 +782,9 @@ you can write a dataStore namespace on, and a local static file server.
 4. **Point the Capture App at the bundle.**
 
    Write the JSON (§4) to the DHIS2 server dataStore. `plugin-config.json` next to the bundle is
-   that JSON with `version` and `checksum` already filled in, plus `id` and `entryPoint` if you
-   declared them (§5.3) — fill in what is left, which is `downloadUrl`, then post it:
+   that JSON with `version` and `checksum` already filled in, plus whatever `pluginBundle { }`
+   declared (§5.3). Check that `downloadUrl` points at wherever you actually served the zip — it
+   defaults to the emulator's route to your own machine — then post it:
 
    ```bash
    # first time — POST creates the key; use PUT to update it afterwards
@@ -818,13 +861,13 @@ context in it. Two things that trip this up:
 | `HTTP 4xx/5xx when downloading plugin from …`                                               | Wrong filename, wrong port, or the static server isn't running. The served filename just has to match `downloadUrl` exactly — it is not required to encode the id or version.                                                                                                                                                                                                                            |                                                                                                                                                                                    |
 | `Plugin checksum mismatch!`                                                                 | The served zip doesn't match `checksum` in the config. Confirm what is actually served — `curl -s <downloadUrl> \                                                                                                                                                                                                                                                                                        | shasum -a 256` from the host — then update the JSON (with the `sha256:` prefix). If the served bytes aren't a zip at all you'll get the `is not a zip bundle` error above instead. |
 | `Plugin bundle signature verification failed` / `Unsigned entry in plugin bundle`           | The zip was edited after signing. Re-run `:plugin:buildPluginBundle`; never hand-edit the zip.                                                                                                                                                                                                                                                                                                           |                                                                                                                                                                                    |
-| `ClassCastException: … not assignable to Dhis2Plugin`                                       | Plugin DEX bundles its own SDK copy. Keep `plugin-sdk` + all `compose.*` deps (except `compose.components.resources`) as `compileOnly`.                                                                                                                                                                                                                                                                  |                                                                                                                                                                                    |
+| `ClassCastException` on an SDK or Compose type at composition, or `NoSuchMethodError`        | Plugin DEX bundles its own SDK copy. Keep `plugin-sdk` + all `compose.*` deps (except `compose.components.resources`) as `compileOnly`.                                                                                                                                                                                                                                                                  |                                                                                                                                                                                    |
 | `NoSuchMethodError` for mangled `Text`/`Card` signatures                                    | Compose ABI mismatch. Plugin is compiled against CMP 1.10.3; consumer is on a different version. A preview app and the Capture App must both use CMP (`compose.runtime` etc.), not `androidx.compose.bom`.                                                                                                                                                                                               |                                                                                                                                                                                    |
 | `MissingResourceException` for `composeResources/…`                                         | Capture App: `PluginSlot` should provide `LocalResourceReader` per-plugin. Preview app: the plugin's `composeResources` must be staged into its assets.                                                                                                                                                                                                                                                  |                                                                                                                                                                                    |
 | Plugin code changes aren't visible                                                          | Cached bundle. Bump the plugin's `version` (and the `version` in the dataStore JSON) or `adb shell run-as com.dhis2.debug rm -rf files/plugins`.                                                                                                                                                                                                                                                         |                                                                                                                                                                                    |
 | `Plugin system requires API 26+`                                                            | Device/emulator is API < 26. Use an API 26+ image.                                                                                                                                                                                                                                                                                                                                                       |                                                                                                                                                                                    |
 | `This plugin project is not compatible with the DHIS2 Capture App host` (at configure time) | A §5.1 check failed. The message lists every mismatch and what each would have caused; fix the versions rather than setting `verifyToolchain = false`. `--info` prints what was detected.                                                                                                                                                                                                                |                                                                                                                                                                                    |
-| `Plugin 'org.dhis2.mobile.plugin-bundle' not found` (at configure time)                     | The Gradle plugin isn't in Maven Local, or `mavenLocal()` is missing from the plugin project's `pluginManagement.repositories`. See §8 step 1.                                                                                                                                                                                                                                                           |                                                                                                                                                                                    |
+| `Plugin [id: 'org.dhis2.mobile.plugin-bundle', version: '…'] was not found` (configure time) | The Gradle plugin isn't in Maven Local, or `mavenLocal()` is missing from the plugin project's `pluginManagement.repositories`. See §8 step 1.                                                                                                                                                                                                                                                           |                                                                                                                                                                                    |
 | `This module packages classes the host already owns`                                        | Build-time form of the `ClassCastException` above, caught by inspecting the AAR before dexing. Move the listed dependency to `compileOnly`.                                                                                                                                                                                                                                                              |                                                                                                                                                                                    |
 | `No Android build-tools installed under …` / `d8 not found` / `apksigner not found`         | Install build-tools through the SDK Manager, or set `pluginBundle.d8Executable` / `pluginBundle.apksignerExecutable`.                                                                                                                                                                                                                                                                                    |                                                                                                                                                                                    |
 | `Signing keystore not found at …`                                                           | No `~/.android/debug.keystore` on this machine (install Android Studio, or create one with `keytool`), or configure `pluginBundle.signing`.                                                                                                                                                                                                                                                              |                                                                                                                                                                                    |
