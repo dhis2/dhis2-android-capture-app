@@ -1,5 +1,6 @@
 package org.dhis2.mobile.login.main.domain.usecase
 
+import org.dhis2.mobile.commons.domain.UseCase
 import org.dhis2.mobile.login.main.data.LoginRepository
 
 /**
@@ -9,6 +10,6 @@ import org.dhis2.mobile.login.main.data.LoginRepository
  */
 class SetOfflineCode(
     private val repository: LoginRepository,
-) {
-    suspend operator fun invoke(code: String): Result<Unit> = repository.setOfflineCode(code)
+) : UseCase<String, Unit> {
+    override suspend operator fun invoke(input: String): Result<Unit> = repository.setOfflineCode(input)
 }
