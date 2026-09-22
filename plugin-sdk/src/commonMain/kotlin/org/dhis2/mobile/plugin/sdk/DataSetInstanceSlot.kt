@@ -8,7 +8,7 @@ import kotlinx.serialization.json.JsonObject
  *
  * ```json
  * "slotConfig": {
- *   "DATA_SET_INSTANCE_CONTENT": { "dataSetUids": ["lyLU2wR22tC", "BfMAe6Itzgt"] }
+ *   "DATA_SET_INSTANCE_CONTENT": { "dataSetUids": ["YourDataSet", "SecondDtSet"] }
  * }
  * ```
  *

@@ -15,8 +15,8 @@ import java.net.URL
  * Cached files are stored at `{filesDir}/plugins/{pluginId}-{version}.zip` and reused
  * across app restarts to avoid redundant downloads. A new version always overwrites the cache.
  *
- * Note: The download is performed by the host app (not the plugin) so it is not subject to the
- * plugin's network restriction (which only allows communication with the DHIS2 server).
+ * The download is performed by the host app rather than the plugin, so it happens before any
+ * plugin code is loaded — the bundle is verified before anything inside it runs.
  *
  * A response is only cached if it is an `HTTP 200` **and** begins with the zip magic bytes, so a
  * URL that answers with HTML (a login page, an SPA fallback, a 404 page) fails here with a clear

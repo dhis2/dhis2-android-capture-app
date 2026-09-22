@@ -6,7 +6,7 @@ package org.dhis2.mobile.plugin.gradle
  * Pure on purpose — plain strings in, findings out, no Gradle types — so the rules are unit-tested
  * directly, the way [ToolchainPreflight] and [ClassesJarInspector] already are.
  *
- * These four are here rather than in a plugin author's own repo because they are properties of the
+ * These five are here rather than in a plugin author's own repo because they are properties of the
  * *plugin system*, not of any one plugin: each names a way a bundle loads and then fails on a
  * device, which is the worst place to find out. A rule that lives in a paragraph in every fork is a
  * rule that rots in every fork independently.

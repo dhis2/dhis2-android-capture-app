@@ -1,6 +1,5 @@
 package org.dhis2.mobile.plugin.data
 
-import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import dalvik.system.InMemoryDexClassLoader
@@ -24,7 +23,7 @@ import java.util.zip.ZipFile
  *     └── composeResources/…     (compose multiplatform resources)
  * ```
  *
- * The bundle carries no manifest of its own: identity, entry point and data scope all come from
+ * The bundle carries no manifest of its own: identity, entry point and slot configuration all come from
  * the server config ([PluginMetadata]), so the filename is immaterial to loading.
  *
  * On load, the bundle is unzipped into `{bundleZip.parentFile}/{id}-{version}/`.
@@ -38,12 +37,7 @@ import java.util.zip.ZipFile
  * so the plugin's CMP Resources (`Res.string.foo`, `painterResource(Res.drawable.foo)`)
  * resolve from the extracted files without going through Android's AssetManager.
  */
-class PluginLoader(
-    private val context: Context,
-) {
-    @Suppress("UnusedPrivateProperty")
-    private val hostContext = context
-
+class PluginLoader {
     @RequiresApi(Build.VERSION_CODES.O)
     fun load(
         bundleZip: File,

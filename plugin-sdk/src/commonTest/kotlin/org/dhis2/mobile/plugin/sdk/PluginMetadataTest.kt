@@ -183,7 +183,7 @@ class PluginMetadataTest {
             json.decodeFromString<PluginMetadata>(
                 """
                 {"id":"a","version":"1","entryPoint":"E",
-                 "slotConfig":{"DATA_SET_INSTANE_CONTENT":{"dataSetUids":[]}}}
+                 "slotConfig":{"A_SLOT_THIS_APP_HAS_NEVER_HEARD_OF":{"dataSetUids":[]}}}
                 """.trimIndent(),
             )
         }

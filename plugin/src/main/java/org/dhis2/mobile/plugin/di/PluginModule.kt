@@ -15,7 +15,7 @@ val pluginModule =
     module {
         // Infrastructure
         single { PluginRegistry() }
-        single { PluginLoader(androidContext()) }
+        singleOf(::PluginLoader)
         singleOf(::PluginVerifier)
         single { PluginDownloader(androidContext()) }
 
