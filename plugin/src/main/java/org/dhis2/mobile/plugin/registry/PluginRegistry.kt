@@ -18,7 +18,8 @@ import java.io.File
  * extracted resources.
  *
  * [metadata] is the server dataStore configuration, not anything the plugin declared about
- * itself — it is the authority for the plugin's identity, injection points and data scope.
+ * itself — it is the authority for the plugin's identity, injection points and slot
+ * configuration.
  */
 data class RegisteredPlugin(
     val plugin: Dhis2Plugin,
@@ -81,9 +82,6 @@ class PluginRegistry {
         }
     }
 
-    /** Returns all plugins the server configured for [injectionPoint], as of now. */
-    fun getPluginsForSlot(injectionPoint: InjectionPoint): List<RegisteredPlugin> = _plugins.value.forSlot(injectionPoint)
-
     /** Removes all registered plugins (e.g. on user logout). */
     fun clear() {
         _plugins.update { current ->
@@ -96,9 +94,9 @@ class PluginRegistry {
 /**
  * The plugins in this list that target [injectionPoint].
  *
- * Shared by [PluginRegistry.getPluginsForSlot] and the render path, which needs to filter the
- * collected state rather than take a snapshot. One definition means the slot rule is covered by
- * `PluginRegistryTest` for both callers.
+ * An extension on the list rather than a method on the registry, because the render path filters
+ * collected state rather than taking a snapshot of it. One definition, so the slot rule cannot
+ * differ between a snapshot read and a collected one.
  */
 fun List<RegisteredPlugin>.forSlot(injectionPoint: InjectionPoint): List<RegisteredPlugin> =
     filter { injectionPoint in it.metadata.injectionPoints }
@@ -109,7 +107,7 @@ fun List<RegisteredPlugin>.forSlot(injectionPoint: InjectionPoint): List<Registe
  * A slot that declares `requiresConfiguration` renders nowhere until an administrator configures it;
  * an unconfigured additive slot keeps applying everywhere.
  */
-fun List<RegisteredPlugin>.forSlotArguments(arguments: SlotArguments): List<RegisteredPlugin> =
+internal fun List<RegisteredPlugin>.forSlotArguments(arguments: SlotArguments): List<RegisteredPlugin> =
     forSlot(arguments.injectionPoint).filter { registered ->
         val config = registered.metadata.slotConfig[arguments.injectionPoint]
         when {

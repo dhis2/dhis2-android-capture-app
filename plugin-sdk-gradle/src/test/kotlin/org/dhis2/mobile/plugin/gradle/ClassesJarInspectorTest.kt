@@ -43,6 +43,34 @@ class ClassesJarInspectorTest {
     }
 
     @Test
+    fun `the DHIS2 SDK, the design system, Koin, coroutines and lifecycle are host-owned too`() {
+        // Each of these is in PluginConventions.HOST_PROVIDED. A plugin that bundles one used to
+        // pass this check and then ClassCastException on a device.
+        val forbidden =
+            ClassesJarInspector.forbiddenEntries(
+                listOf(
+                    "org/myorg/plugin/MyPlugin.class",
+                    "org/hisp/dhis/android/core/D2.class",
+                    "org/hisp/dhis/mobile/ui/designsystem/theme/SurfaceColor.class",
+                    "org/koin/core/module/Module.class",
+                    "kotlinx/coroutines/Dispatchers.class",
+                    "androidx/lifecycle/ViewModel.class",
+                ),
+            )
+
+        assertEquals(
+            listOf(
+                "org/hisp/dhis/android/core/D2.class",
+                "org/hisp/dhis/mobile/ui/designsystem/theme/SurfaceColor.class",
+                "org/koin/core/module/Module.class",
+                "kotlinx/coroutines/Dispatchers.class",
+                "androidx/lifecycle/ViewModel.class",
+            ),
+            forbidden,
+        )
+    }
+
+    @Test
     fun `resource package is read from the generated Res class`() {
         val resourcePackage =
             ClassesJarInspector.resourcePackage(

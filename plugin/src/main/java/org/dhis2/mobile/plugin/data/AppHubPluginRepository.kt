@@ -29,8 +29,8 @@ private const val INJECTION_POINTS_KEY = "injectionPoints"
  *     {
  *       "id": "org.myorg.my-plugin",
  *       "version": "1.0.0",
- *       "entryPoint": "org.myorg.plugin.MyPlugin",
- *       "downloadUrl": "https://apps.dhis2.org/api/apps/my-plugin/1.0.0/plugin.dex",
+ *       "entryPoint": "org.myorg.myplugin.MyPlugin",
+ *       "downloadUrl": "https://apps.dhis2.org/api/apps/my-plugin/1.0.0/my-plugin-1.0.0.zip",
  *       "checksum": "sha256:abc123...",
  *       "injectionPoints": ["HOME_ABOVE_PROGRAM_LIST"]
  *     }

@@ -85,6 +85,18 @@ abstract class PluginBundleExtension
         abstract val entryPoint: Property<String>
 
         /**
+         * Base URL the emitted `plugin-config.json`'s `downloadUrl` is built from, with the bundle
+         * file name appended. Defaults to `http://10.0.2.2:8081` — the Android emulator's route to
+         * a static server on the developer's own machine, which is the local workflow the
+         * documentation describes.
+         *
+         * That default is plaintext HTTP and reachable only from an emulator, so it is a
+         * development convenience and never a deployment value. Set it to wherever the bundle is
+         * actually served before handing the snippet to an administrator.
+         */
+        abstract val downloadUrlBase: Property<String>
+
+        /**
          * `injectionPoints` written into the emitted `plugin-config.json`. Defaults to
          * `HOME_ABOVE_PROGRAM_LIST`.
          *
@@ -96,7 +108,7 @@ abstract class PluginBundleExtension
         /**
          * `slotConfig` written into the emitted `plugin-config.json`, keyed by injection point and
          * then by that slot's own field — for example
-         * `mapOf("DATA_SET_INSTANCE_CONTENT" to mapOf("dataSetUids" to listOf("lyLU2wR22tC")))`.
+         * `mapOf("DATA_SET_INSTANCE_CONTENT" to mapOf("dataSetUids" to listOf("YourDataSet")))`.
          *
          * Empty by default, and then the block is left out of the snippet altogether. A replacement
          * slot renders nowhere until an administrator configures it, so the placeholder to fill in

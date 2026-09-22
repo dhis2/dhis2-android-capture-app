@@ -16,13 +16,18 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 import java.io.File
 
 class PluginRegistryTest {
+    @get:Rule
+    val tempFolder = TemporaryFolder()
+
     private val registry = PluginRegistry()
 
     /** Minimal stand-in: [Dhis2Plugin.content] is a Composable and never invoked here. */
@@ -44,7 +49,7 @@ class PluginRegistryTest {
         slotConfig = slotConfig,
     )
 
-    private fun root(name: String) = File("/tmp/$name")
+    private fun root(name: String) = File(tempFolder.root, name)
 
     /**
      * Registration also carries the plugin's context, class loader and private container. None is
@@ -67,7 +72,11 @@ class PluginRegistryTest {
     @Test
     fun `starts empty`() {
         assertTrue(registry.plugins.value.isEmpty())
-        assertTrue(registry.getPluginsForSlot(InjectionPoint.HOME_ABOVE_PROGRAM_LIST).isEmpty())
+        assertTrue(
+            registry.plugins.value
+                .forSlot(InjectionPoint.HOME_ABOVE_PROGRAM_LIST)
+                .isEmpty(),
+        )
     }
 
     @Test
@@ -120,11 +129,11 @@ class PluginRegistryTest {
     }
 
     @Test
-    fun `getPluginsForSlot returns only plugins configured for that slot`() {
+    fun `forSlot returns only plugins configured for that slot`() {
         registry.register(FakePlugin(), metadata("org.in-slot"), root("a"))
         registry.register(FakePlugin(), metadata("org.no-slot", slots = emptyList()), root("b"))
 
-        val forSlot = registry.getPluginsForSlot(InjectionPoint.HOME_ABOVE_PROGRAM_LIST)
+        val forSlot = registry.plugins.value.forSlot(InjectionPoint.HOME_ABOVE_PROGRAM_LIST)
 
         assertEquals(listOf("org.in-slot"), forSlot.map { it.metadata.id })
     }
@@ -134,7 +143,11 @@ class PluginRegistryTest {
         registry.register(FakePlugin(), metadata("org.a", slots = emptyList()), root("a"))
 
         assertEquals(1, registry.plugins.value.size)
-        assertTrue(registry.getPluginsForSlot(InjectionPoint.HOME_ABOVE_PROGRAM_LIST).isEmpty())
+        assertTrue(
+            registry.plugins.value
+                .forSlot(InjectionPoint.HOME_ABOVE_PROGRAM_LIST)
+                .isEmpty(),
+        )
     }
 
     @Test

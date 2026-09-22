@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
 }
+apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
 android {
     namespace = "org.dhis2.mobile.plugin"

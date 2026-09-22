@@ -52,7 +52,6 @@ import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
-import kotlin.getValue
 
 private const val FRAGMENT = "Fragment"
 private const val INIT_DATA_SYNC = "INIT_DATA_SYNC"
@@ -243,7 +242,6 @@ class MainActivity : ActivityGlobalAbstract() {
                 .findItem(R.id.menu_dev)
                 .isVisible = true
         }
-
         checkNotificationPermission()
     }
 

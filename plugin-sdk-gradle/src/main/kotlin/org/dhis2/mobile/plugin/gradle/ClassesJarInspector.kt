@@ -18,14 +18,25 @@ import java.util.zip.ZipFile
 internal object ClassesJarInspector {
     /**
      * Class prefixes the host owns. A plugin compiles against them but must never ship them:
-     * `plugin-sdk` and Compose belong to the host process, and the Kotlin runtime comes with it.
+     * `plugin-sdk`, Compose, Koin, the DHIS2 SDK and design system all belong to the host process,
+     * and the Kotlin runtime comes with it.
+     *
+     * This is [PluginConventions.HOST_PROVIDED] expressed as class paths rather than Maven
+     * coordinates. The two must stay in step: that list stops a host-provided dependency being
+     * declared `implementation`, and this one catches the classes if one slips through anyway.
+     * Anything present there and absent here passes the build and then `ClassCastException`s on a
+     * device, which is the failure both checks exist to prevent.
      */
     private val HOST_OWNED_PREFIXES =
         listOf(
             "org/dhis2/mobile/plugin/sdk/",
             "androidx/compose/",
+            "androidx/lifecycle/",
             "org/jetbrains/compose/",
+            "org/hisp/dhis/",
+            "org/koin/",
             "kotlin/",
+            "kotlinx/coroutines/",
         )
 
     private val RES_CLASS = Regex("""^(.+)/Res\.class$""")

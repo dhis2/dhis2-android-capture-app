@@ -30,8 +30,6 @@ kotlin {
             api(compose.runtime)
             api(compose.foundation)
             api(libs.koin.core)
-            implementation(libs.koin.compose)
-            implementation(libs.koin.composeVM)
             implementation(libs.kotlin.serialization.json)
         }
 
@@ -46,7 +44,6 @@ kotlin {
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlin.serialization.json)
-            implementation(libs.test.kotlinCoroutines)
         }
     }
 }

@@ -86,7 +86,6 @@ class LoadPluginsUseCase(
                         return@runCatching
                     }
 
-                    @Suppress("DEPRECATION")
                     val loaded = pluginLoader.load(bundle, metadata)
 
                     // Built here, from the server metadata, and carried on the registry entry — so

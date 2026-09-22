@@ -15,7 +15,7 @@ import java.io.File
 /**
  * Fails the build when a plugin project breaks one of [PluginConventions].
  *
- * A task rather than a configuration-time check like [ToolchainPreflight], because three of the four
+ * A task rather than a configuration-time check like [ToolchainPreflight], because three of the five
  * rules read Kotlin source: doing that in `afterEvaluate` would run on every `./gradlew tasks`, get
  * no up-to-date checking, and do file I/O at configuration time, which is what the configuration
  * cache exists to stop. Dependencies are captured as plain strings at configuration time for the

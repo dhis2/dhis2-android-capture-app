@@ -101,8 +101,25 @@ class DataStoreSnippetTest {
         assertFalse(render().contains("slotConfig"))
     }
 
+    @Test
+    fun `download url follows the configured base`() {
+        val snippet = render(downloadUrlBase = "https://plugins.example.org/bundles")
+
+        assertTrue(
+            snippet.contains(""""downloadUrl": "https://plugins.example.org/bundles/plugin-1.5.0.zip""""),
+        )
+    }
+
+    @Test
+    fun `a trailing slash on the base does not double up`() {
+        val snippet = render(downloadUrlBase = "https://plugins.example.org/")
+
+        assertTrue(snippet.contains(""""downloadUrl": "https://plugins.example.org/plugin-1.5.0.zip""""))
+    }
+
     private fun render(
         bundleFileName: String = "plugin-1.5.0.zip",
+        downloadUrlBase: String = "http://10.0.2.2:8081",
         injectionPoints: List<String> = listOf("HOME_ABOVE_PROGRAM_LIST"),
         slotConfig: Map<String, Map<String, List<String>>> = emptyMap(),
     ) = DataStoreSnippet.render(
@@ -110,6 +127,7 @@ class DataStoreSnippetTest {
         version = "1.5.0",
         entryPoint = "org.dhis2.pluginimplementationtest.MyPlugin",
         bundleFileName = bundleFileName,
+        downloadUrlBase = downloadUrlBase,
         checksum = "sha256:abc123",
         injectionPoints = injectionPoints,
         slotConfig = slotConfig,

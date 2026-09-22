@@ -38,7 +38,7 @@ import javax.inject.Inject
  * ```
  *
  * The bundle carries no manifest of its own: the host reads a plugin's id, version, entry point and
- * data scope from the DHIS2 server dataStore, which is the single source of truth. The file name is
+ * slot configuration from the DHIS2 server dataStore, which is the single source of truth. The file name is
  * a convenience for whoever hosts the zip.
  *
  * The `android/` prefix leaves room for a future Desktop host: that means adding `desktop/plugin.jar`
@@ -86,6 +86,10 @@ abstract class BuildPluginBundleTask
         /** `entryPoint` written into the dataStore snippet, likewise configured on the extension. */
         @get:Input
         abstract val entryPoint: Property<String>
+
+        /** Base URL the snippet's `downloadUrl` is built from. Configured on the extension. */
+        @get:Input
+        abstract val downloadUrlBase: Property<String>
 
         /** `injectionPoints` written into the dataStore snippet. Configured on the extension. */
         @get:Input
@@ -295,6 +299,7 @@ abstract class BuildPluginBundleTask
                 version = pluginVersion.get(),
                 entryPoint = entryPoint.get(),
                 bundleFileName = bundleFileName.get(),
+                downloadUrlBase = downloadUrlBase.get(),
                 checksum = checksum,
                 injectionPoints = injectionPoints.get(),
                 slotConfig = slotConfig.get(),
