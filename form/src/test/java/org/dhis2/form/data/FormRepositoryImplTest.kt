@@ -155,7 +155,44 @@ class FormRepositoryImplTest {
         runBlocking {
             repository.removeAllValues()
             val list = repository.composeList()
-            assertTrue(list.all { it.value == null && it.displayName == null })
+            assertTrue(list.all { it.value == null && it.displayName == null && it.fileName == null })
+        }
+
+    @Test
+    fun `Should set the original file name when a file resource value is saved`() =
+        runBlocking {
+            whenever(
+                displayNameProvider.provideDisplayName(
+                    ValueType.FILE_RESOURCE,
+                    "fileUid",
+                    null,
+                    null,
+                ),
+            ) doReturn "/sdk_resources/db/fileUid.pdf"
+            whenever(
+                displayNameProvider.provideFileName(ValueType.FILE_RESOURCE, "fileUid"),
+            ) doReturn "report.pdf"
+
+            repository.updateValueOnList("uid001", "fileUid", ValueType.FILE_RESOURCE)
+
+            val field = repository.composeList().first { it.uid == "uid001" }
+            assertEquals("/sdk_resources/db/fileUid.pdf", field.displayName)
+            assertEquals("report.pdf", field.fileName)
+        }
+
+    @Test
+    fun `Should clear the file name when a file resource value is removed`() =
+        runBlocking {
+            whenever(
+                displayNameProvider.provideFileName(ValueType.FILE_RESOURCE, "fileUid"),
+            ) doReturn "report.pdf"
+            repository.updateValueOnList("uid001", "fileUid", ValueType.FILE_RESOURCE)
+
+            repository.updateValueOnList("uid001", null, ValueType.FILE_RESOURCE)
+
+            val field = repository.composeList().first { it.uid == "uid001" }
+            assertEquals(null, field.displayName)
+            assertEquals(null, field.fileName)
         }
 
     @Test

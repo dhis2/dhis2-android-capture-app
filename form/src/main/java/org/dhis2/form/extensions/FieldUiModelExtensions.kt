@@ -3,6 +3,8 @@ package org.dhis2.form.extensions
 import androidx.compose.ui.graphics.Color
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiRenderType
+import org.dhis2.form.ui.provider.DisplayNameProvider
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
 import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
@@ -72,3 +74,17 @@ fun FieldUiModel.autocompleteList() =
         }
         else -> null
     }
+
+fun FieldUiModel.withDisplayValues(
+    displayNameProvider: DisplayNameProvider,
+    value: String?,
+    valueType: ValueType?,
+): FieldUiModel =
+    setDisplayName(
+        displayNameProvider.provideDisplayName(
+            valueType,
+            value,
+            optionSet,
+            periodSelector?.type,
+        ),
+    ).setFileName(displayNameProvider.provideFileName(valueType, value))

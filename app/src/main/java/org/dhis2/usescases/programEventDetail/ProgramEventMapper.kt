@@ -1,5 +1,6 @@
 package org.dhis2.usescases.programEventDetail
 
+import org.dhis2.bindings.fileResourceNameOf
 import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.data.EventModel
 import org.dhis2.commons.data.EventViewModelType
@@ -212,7 +213,13 @@ class ProgramEventMapper(
                             } else {
                                 dataElement.uid()
                             }
-                        val value = it.userFriendlyValue(d2) ?: ""
+                        val friendlyValue = it.userFriendlyValue(d2) ?: ""
+                        val value =
+                            if (dataElement.valueType()?.isFile == true) {
+                                d2.fileResourceNameOf(friendlyValue) ?: friendlyValue
+                            } else {
+                                friendlyValue
+                            }
                         if (displayName != null) {
                             data.add(Pair(displayName, value))
                         }
