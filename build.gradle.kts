@@ -49,6 +49,14 @@ sonar {
         // .java sources. Remove once the upstream fix is released.
         property("sonar.exclusions", "**/*.java")
 
+        // Relative to each module. Unit and instrumented coverage are separate reports
+        // because each is read against different class files; Sonar merges them.
+        property(
+            "sonar.coverage.jacoco.xmlReportPaths",
+            "build/coverage-report/jacocoTestReport.xml," +
+                "build/coverage-report-androidTest/jacocoAndroidTestReport.xml",
+        )
+
         // GitHub Actions always defines PULL_REQUEST, resolving it to an empty
         // string on push events, so a null check alone sends push builds down the
         // pull-request path with a blank sonar.pullrequest.key. Since scanner
