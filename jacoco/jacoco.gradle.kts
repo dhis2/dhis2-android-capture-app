@@ -57,7 +57,7 @@ fun reportClasses() = provider {
             )
         }
         dirs.map { fileTree(it) { exclude(excludes) } }
-    }
+    } + fileTree("${buildDir}/classes/kotlin/android/main") { exclude(excludes) } // KMP
 }
 
 tasks.register("jacocoReport", JacocoReport::class) {
@@ -71,8 +71,10 @@ tasks.register("jacocoReport", JacocoReport::class) {
         "compileDebugKotlin",
         "testDhis2DebugUnitTest",
         "testDebugUnitTest",
-    ).forEach { taskName ->
-        tasks.findByName(taskName)?.let { dependsOn(it) }
+        "testAndroidHostTest",
+    ).let { names ->
+        // Lazy: this script is applied before AGP registers these tasks.
+        dependsOn(tasks.matching { it.name in names })
     }
 
     sourceDirectories.setFrom("${project.projectDir}/src/main/java")
@@ -81,7 +83,8 @@ tasks.register("jacocoReport", JacocoReport::class) {
 
     executionData.setFrom(
         fileTree("${buildDir}/jacoco") {
-            include("*.exec")
+            // Not desktopTest: it runs the desktop classes, not the Android ones reported.
+            include("testDhis2DebugUnitTest.exec", "testDebugUnitTest.exec", "testAndroidHostTest.exec")
         },
     )
 
