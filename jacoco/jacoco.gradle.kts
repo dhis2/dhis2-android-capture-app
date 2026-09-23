@@ -1,8 +1,68 @@
 apply(plugin = "jacoco")
 
+// Generated code only. Anything hand-written, including Android UI classes, is
+// measured.
+val excludes = setOf(
+    // Android resource and build plumbing -- no source to cover.
+    "**/R.class",
+    "**/R\$*.class",
+    "**/BR.*",
+    "**/BuildConfig.*",
+    "**/Manifest*.*",
+
+    // Data Binding / View Binding generated classes.
+    "android/databinding/**/*.class",
+    "**/android/databinding/*",
+    "**/androidx/databinding/*",
+    "**/databinding/*.*",
+    "**/*Binding.class",
+
+    // Dagger / Hilt generated classes.
+    "**/Dagger*.*",
+    "**/*_Factory*.*",
+    "**/*_Provide*Factory*.*",
+    "**/*_MembersInjector.class",
+    "**/*_HiltModules*.*",
+
+    // Other annotation processors.
+    "**/*JsonAdapter.*",
+    "**/AutoValue*.*",
+    "**/*_Impl*.*",
+
+    // Compiler output with no corresponding source lines.
+    "**/*\$WhenMappings.class",
+    "**/*\$\$serializer.class",
+    "**/ComposableSingletons*.*",
+
+    // Test code itself.
+    "**/*Test*.*",
+)
+
+// The Sentry plugin rewrites app classes through AGP's ASM pipeline, and tests run
+// against the rewritten bytes. JaCoCo only credits classes whose checksum matches, so the
+// report reads the rewritten classes when they exist. Resolved lazily: the directory is
+// only there once the transform has run.
+fun reportClasses() = provider {
+    listOf("dhis2Debug", "debug").flatMap { variant ->
+        val capitalized = variant.replaceFirstChar { it.uppercase() }
+        val asmClasses = file(
+            "${buildDir}/intermediates/classes/$variant/transform${capitalized}ClassesWithAsm/dirs",
+        )
+        val dirs = if (asmClasses.exists()) {
+            listOf(asmClasses)
+        } else {
+            listOf(
+                file("${buildDir}/intermediates/javac/$variant/compile${capitalized}JavaWithJavac/classes"),
+                file("${buildDir}/intermediates/built_in_kotlinc/$variant/compile${capitalized}Kotlin/classes"),
+            )
+        }
+        dirs.map { fileTree(it) { exclude(excludes) } }
+    }
+}
+
 tasks.register("jacocoReport", JacocoReport::class) {
     group = "Coverage"
-    description = "Generate XML/HTML code coverage reports for coverage.ec"
+    description = "Generate XML/HTML unit test coverage reports"
 
     listOf(
         "compileDhis2DebugJavaWithJavac",
@@ -17,90 +77,12 @@ tasks.register("jacocoReport", JacocoReport::class) {
 
     sourceDirectories.setFrom("${project.projectDir}/src/main/java")
 
-    // Generated code only. Anything hand-written, including Android UI classes, is
-    // measured.
-    val excludes = mutableSetOf<String>(
-        // Android resource and build plumbing -- no source to cover.
-        "**/R.class",
-        "**/R\$*.class",
-        "**/BR.*",
-        "**/BuildConfig.*",
-        "**/Manifest*.*",
-
-        // Data Binding / View Binding generated classes.
-        "android/databinding/**/*.class",
-        "**/android/databinding/*",
-        "**/androidx/databinding/*",
-        "**/databinding/*.*",
-        "**/*Binding.class",
-
-        // Dagger / Hilt generated classes.
-        "**/Dagger*.*",
-        "**/*_Factory*.*",
-        "**/*_Provide*Factory*.*",
-        "**/*_MembersInjector.class",
-        "**/*_HiltModules*.*",
-
-        // Other annotation processors.
-        "**/*JsonAdapter.*",
-        "**/AutoValue*.*",
-        "**/*_Impl*.*",
-
-        // Compiler output with no corresponding source lines.
-        "**/*\$WhenMappings.class",
-        "**/*\$\$serializer.class",
-        "**/ComposableSingletons*.*",
-
-        // Test code itself.
-        "**/*Test*.*",
-    )
-
-    val javaClassesApp = fileTree(
-        "${buildDir}/intermediates/javac/dhis2Debug/compileDhis2DebugJavaWithJavac/classes",
-    ) {
-        exclude(excludes)
-    }
-    val kotlinClassesApp = fileTree(
-        "${buildDir}/intermediates/built_in_kotlinc/dhis2Debug/compileDhis2DebugKotlin/classes",
-    ) {
-        exclude(excludes)
-    }
-    val javaClasses = fileTree(
-        "${buildDir}/intermediates/javac/debug/compileDebugJavaWithJavac/classes",
-    ) {
-        exclude(excludes)
-    }
-    val kotlinClasses = fileTree(
-        "${buildDir}/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes",
-    ) {
-        exclude(excludes)
-    }
-
-    classDirectories.setFrom(
-        files(
-            listOf(
-                javaClassesApp,
-                kotlinClassesApp,
-                javaClasses,
-                kotlinClasses
-            )
-        )
-    )
-
-    val unitTestsData = fileTree("${buildDir}/jacoco") {
-        include("*.exec")
-    }
-    val androidTestsData = fileTree("${buildDir}/outputs/code_coverage") {
-        include(listOf("**/*.ec"))
-    }
+    classDirectories.setFrom(reportClasses())
 
     executionData.setFrom(
-        files(
-            listOf(
-                unitTestsData,
-                androidTestsData
-            )
-        )
+        fileTree("${buildDir}/jacoco") {
+            include("*.exec")
+        },
     )
 
     fun JacocoReportsContainer.reports() {
@@ -113,6 +95,32 @@ tasks.register("jacocoReport", JacocoReport::class) {
 
     reports {
         reports()
+    }
+}
+
+// Instrumented coverage, reported separately from the unit tests because each set of
+// execution data must be read against the classes that produced it. No compile
+// dependencies: on CI the classes come from the job that built the APK.
+tasks.register("jacocoAndroidTestReport", JacocoReport::class) {
+    group = "Coverage"
+    description = "Generate XML/HTML instrumented test coverage reports from .ec files"
+
+    sourceDirectories.setFrom("${project.projectDir}/src/main/java")
+
+    classDirectories.setFrom(reportClasses())
+
+    executionData.setFrom(
+        fileTree("${buildDir}/outputs/code_coverage") {
+            include("**/*.ec")
+        },
+    )
+
+    reports {
+        xml.required.set(true)
+        xml.outputLocation.set(file("${buildDir}/coverage-report-androidTest/jacocoAndroidTestReport.xml"))
+
+        html.required.set(true)
+        html.outputLocation.set(file("${buildDir}/coverage-report-androidTest"))
     }
 }
 

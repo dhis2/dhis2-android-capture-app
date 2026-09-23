@@ -73,16 +73,6 @@ jobs:
         if: ${{ !contains(github.event.pull_request.title, '[skip unitTest]') && !contains(github.event.pull_request.body, '[skip unitTest]') }}
         run: ./gradlew testDebugUnitTest testDhis2DebugUnitTest testAndroidHostTest jacocoReport --stacktrace --no-daemon
 
-      # Raw execution data; code-quality merges it with the instrumented coverage.
-      - name: Upload JaCoCo execution data
-        if: ${{ !contains(github.event.pull_request.title, '[skip unitTest]') && !contains(github.event.pull_request.body, '[skip unitTest]') }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        with:
-          name: jacoco-exec
-          path: '**/build/jacoco/*.exec'
-          if-no-files-found: warn
-          retention-days: 7
-
       - name: Upload JaCoCo Report
         if: ${{ !contains(github.event.pull_request.title, '[skip unitTest]') && !contains(github.event.pull_request.body, '[skip unitTest]') }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
@@ -121,6 +111,15 @@ jobs:
           name: test-apks
           path: |
             app/build/outputs/apk/**/*.apk
+          retention-days: 1
+
+      # The exact classes packaged in the APK, so code-quality reports instrumented
+      # coverage against them instead of a recompilation.
+      - name: Upload app classes
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: app-classes
+          path: app/build/intermediates/classes/dhis2Debug/transformDhis2DebugClassesWithAsm/dirs/
           retention-days: 1
 
   run-ui-portrait:
@@ -224,11 +223,21 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      - name: Download JaCoCo execution data
+      # Unit test coverage is reported by unit-tests against the classes it compiled.
+      # Missing when unit tests failed or were skipped; the analysis still runs.
+      - name: Download JaCoCo Report
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: jacoco-exec
+          name: jacoco-report
           path: .
+        continue-on-error: true
+
+      - name: Download app classes
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: app-classes
+          path: app/build/intermediates/classes/dhis2Debug/transformDhis2DebugClassesWithAsm/dirs
+        continue-on-error: true
 
       - name: Download BrowserStack coverage
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
@@ -238,26 +247,22 @@ jobs:
           merge-multiple: true
         continue-on-error: true
 
-      # One .ec covers the whole app process, so every reporting module gets a copy.
-      # jacocoReport ignores classes outside its own classDirectories.
-      - name: Stage instrumented coverage
+      # Only app is instrumented, so the .ec data only concerns app's classes.
+      - name: Report instrumented coverage
         run: |
           ec_count=$(find browserstack-coverage -name '*.ec' 2>/dev/null | wc -l | tr -d ' ')
           echo "instrumented coverage files retrieved: $ec_count"
-          if [ "$ec_count" -gt 0 ]; then
-            modules=$(grep -rl 'jacoco.gradle.kts' --include=build.gradle.kts . \
-                      | sed 's|/build.gradle.kts||; s|^\./||')
-            echo "staging into: $(echo $modules | tr '\n' ' ')"
-            for module in $modules; do
-              mkdir -p "$module/build/outputs/code_coverage/browserstack"
-              find browserstack-coverage -name '*.ec' -exec cp {} "$module/build/outputs/code_coverage/browserstack/" \;
-            done
-          else
+          if [ "$ec_count" -eq 0 ]; then
             echo "No instrumented coverage retrieved; the report will cover unit tests only."
+            exit 0
           fi
-
-      - name: Merge coverage
-        run: ./gradlew jacocoReport -x testDebugUnitTest -x testDhis2DebugUnitTest --stacktrace --no-daemon
+          if [ ! -d app/build/intermediates/classes/dhis2Debug/transformDhis2DebugClassesWithAsm/dirs ]; then
+            echo "::warning::App classes missing; instrumented coverage cannot be reported."
+            exit 0
+          fi
+          mkdir -p app/build/outputs/code_coverage/browserstack
+          find browserstack-coverage -name '*.ec' -exec cp {} app/build/outputs/code_coverage/browserstack/ \;
+          ./gradlew :app:jacocoAndroidTestReport --stacktrace --no-daemon
 
       - name: SonarQube
         env:
