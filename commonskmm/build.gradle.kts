@@ -8,7 +8,6 @@ plugins {
     alias(libs.plugins.kotlin.atomicfu)
     alias(libs.plugins.kotlin.serialization)
 }
-apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
 kotlin {
     compilerOptions {

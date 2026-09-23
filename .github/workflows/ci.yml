@@ -244,31 +244,22 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           pattern: browserstack-coverage-*
-          path: browserstack-coverage
+          path: app/build/outputs/code_coverage/browserstack
           merge-multiple: true
         continue-on-error: true
 
-      # One .ec covers the whole app process, so every reporting module gets a copy and
-      # reports the part that concerns its own classes.
+      # Every module reads the app's .ec for the part that concerns its own classes.
       - name: Report instrumented coverage
         run: |
-          ec_count=$(find browserstack-coverage -name '*.ec' 2>/dev/null | wc -l | tr -d ' ')
+          ec_count=$(find app/build/outputs/code_coverage -name '*.ec' 2>/dev/null | wc -l | tr -d ' ')
           echo "instrumented coverage files retrieved: $ec_count"
           if [ "$ec_count" -eq 0 ]; then
             echo "No instrumented coverage retrieved; the report will cover unit tests only."
-            exit 0
-          fi
-          if [ ! -d app/build/coverage-classes ]; then
+          elif [ ! -d app/build/coverage-classes ]; then
             echo "::warning::Instrumented classes missing; instrumented coverage cannot be reported."
-            exit 0
+          else
+            ./gradlew jacocoAndroidTestReport --stacktrace --no-daemon
           fi
-          modules=$(grep -rl 'jacoco.gradle.kts' --include=build.gradle.kts . \
-                    | sed 's|/build.gradle.kts||; s|^\./||')
-          for module in $modules; do
-            mkdir -p "$module/build/outputs/code_coverage/browserstack"
-            find browserstack-coverage -name '*.ec' -exec cp {} "$module/build/outputs/code_coverage/browserstack/" \;
-          done
-          ./gradlew jacocoAndroidTestReport --stacktrace --no-daemon
 
       - name: SonarQube
         env:

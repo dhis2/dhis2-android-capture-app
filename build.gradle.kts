@@ -87,6 +87,15 @@ allprojects {
         }
     }
 
+    // Every Android and KMP module reports coverage; new modules need no setup.
+    listOf(
+        "com.android.application",
+        "com.android.library",
+        "com.android.kotlin.multiplatform.library",
+    ).forEach { id ->
+        pluginManager.withPlugin(id) { apply(from = "$rootDir/jacoco/jacoco.gradle.kts") }
+    }
+
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
     gradle.projectsEvaluated {

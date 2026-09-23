@@ -60,51 +60,49 @@ fun reportClasses() = provider {
     } + fileTree("${buildDir}/classes/kotlin/android/main") { exclude(excludes) } // KMP
 }
 
-tasks.register("jacocoReport", JacocoReport::class) {
+// Source sets whose classes are reported: main code, the dhis2 flavor and debug build
+// type the reports use, and KMP's Android side.
+val reportedSourceDirs = listOf("main", "debug", "dhis2", "commonMain", "androidMain")
+    .flatMap { listOf("src/$it/java", "src/$it/kotlin") }
+
+fun JacocoReport.reportInto(outputDir: String, xmlFile: String) {
     group = "Coverage"
-    description = "Generate XML/HTML unit test coverage reports"
-
-    listOf(
-        "compileDhis2DebugJavaWithJavac",
-        "compileDhis2DebugKotlin",
-        "compileDebugJavaWithJavac",
-        "compileDebugKotlin",
-        "testDhis2DebugUnitTest",
-        "testDebugUnitTest",
-        "testAndroidHostTest",
-    ).let { names ->
-        // Lazy: this script is applied before AGP registers these tasks.
-        dependsOn(tasks.matching { it.name in names })
+    sourceDirectories.setFrom(reportedSourceDirs)
+    reports {
+        xml.required.set(true)
+        xml.outputLocation.set(file("${buildDir}/$outputDir/$xmlFile"))
+        html.required.set(true)
+        html.outputLocation.set(file("${buildDir}/$outputDir"))
     }
+}
 
-    sourceDirectories.setFrom("${project.projectDir}/src/main/java")
+tasks.register("jacocoReport", JacocoReport::class) {
+    description = "Generate XML/HTML unit test coverage reports"
+    reportInto("coverage-report", "jacocoTestReport.xml")
+
+    val testTasks = listOf("testDhis2DebugUnitTest", "testDebugUnitTest", "testAndroidHostTest")
+    // Lazy: this script is applied before AGP registers these tasks.
+    dependsOn(tasks.matching { it.name in testTasks })
 
     classDirectories.setFrom(reportClasses())
 
     executionData.setFrom(
         fileTree("${buildDir}/jacoco") {
             // Not desktopTest: it runs the desktop classes, not the Android ones reported.
-            include("testDhis2DebugUnitTest.exec", "testDebugUnitTest.exec", "testAndroidHostTest.exec")
+            include(testTasks.map { "$it.exec" })
         },
     )
-
-    fun JacocoReportsContainer.reports() {
-        xml.required.set(true)
-        xml.outputLocation.set(file("${buildDir}/coverage-report/jacocoTestReport.xml"))
-
-        html.required.set(true)
-        html.outputLocation.set(file("${buildDir}/coverage-report"))
-    }
-
-    reports {
-        reports()
-    }
 }
 
 // Instrumented runs execute every module's classes as the app's ASM pipeline rewrote them,
 // not as each module compiled them. The app stages those rewritten classes here, one
 // directory per module, for jacocoAndroidTestReport.
 val instrumentedClassesDir = file("${rootDir}/app/build/coverage-classes")
+
+// Only the app has an instrumented suite, and one .ec covers its whole process, so every
+// module reads the app's execution data: from connected runs locally, from BrowserStack
+// on CI.
+val instrumentedExecutionData = file("${rootDir}/app/build/outputs/code_coverage")
 
 pluginManager.withPlugin("com.android.application") {
     tasks.register("stageInstrumentedClasses") {
@@ -148,47 +146,20 @@ pluginManager.withPlugin("com.android.application") {
     }
 }
 
-// Instrumented coverage, reported separately from the unit tests because each set of
-// execution data must be read against the classes that produced it. No compile
-// dependencies: on CI the classes come from the job that built the APK.
+// Reported separately from the unit tests because each set of execution data must be read
+// against the classes that produced it. Never compiles: it reads only staged classes, so
+// run :app:stageInstrumentedClasses first when reporting locally.
 tasks.register("jacocoAndroidTestReport", JacocoReport::class) {
-    group = "Coverage"
     description = "Generate XML/HTML instrumented test coverage reports from .ec files"
+    reportInto("coverage-report-androidTest", "jacocoAndroidTestReport.xml")
 
-    sourceDirectories.setFrom("${project.projectDir}/src/main/java")
-
-    val stagedClasses = instrumentedClassesDir.resolve(project.name)
     classDirectories.setFrom(
-        provider {
-            if (stagedClasses.exists()) {
-                listOf(fileTree(stagedClasses) { exclude(excludes) })
-            } else {
-                reportClasses().get()
-            }
-        },
+        fileTree(instrumentedClassesDir.resolve(project.name)) { exclude(excludes) },
     )
 
     executionData.setFrom(
-        fileTree("${buildDir}/outputs/code_coverage") {
+        fileTree(instrumentedExecutionData) {
             include("**/*.ec")
         },
     )
-
-    reports {
-        xml.required.set(true)
-        xml.outputLocation.set(file("${buildDir}/coverage-report-androidTest/jacocoAndroidTestReport.xml"))
-
-        html.required.set(true)
-        html.outputLocation.set(file("${buildDir}/coverage-report-androidTest"))
-    }
 }
-
-/*android {
-    buildTypes {
-        getByName("debug") {
-            // jacoco test coverage reports both for
-            // androidTest and test source sets
-            testCoverageEnabled = false
-        }
-    }
-}*/

@@ -6,7 +6,6 @@ plugins {
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.kotlin.compose.compiler)
 }
-apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
 kotlin {
     android {
