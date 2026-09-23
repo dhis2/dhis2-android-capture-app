@@ -98,6 +98,53 @@ tasks.register("jacocoReport", JacocoReport::class) {
     }
 }
 
+// Instrumented runs execute every module's classes as the app's ASM pipeline rewrote them,
+// not as each module compiled them. The app stages those rewritten classes here, one
+// directory per module, for jacocoAndroidTestReport.
+val instrumentedClassesDir = file("${rootDir}/app/build/coverage-classes")
+
+pluginManager.withPlugin("com.android.application") {
+    tasks.register("stageInstrumentedClasses") {
+        group = "Coverage"
+        description = "Stage the classes packaged in the dhis2Debug APK, per module"
+
+        val projectJars = configurations.named("dhis2DebugRuntimeClasspath").map { config ->
+            config.incoming.artifactView {
+                attributes {
+                    attribute(
+                        ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE,
+                        "android-asm-instrumented-jars",
+                    )
+                    attribute(Attribute.of("asm-transformed-variant", String::class.java), "dhis2Debug")
+                }
+                componentFilter { it is ProjectComponentIdentifier }
+            }.artifacts
+        }
+        val appClasses = file(
+            "${buildDir}/intermediates/classes/dhis2Debug/transformDhis2DebugClassesWithAsm/dirs",
+        )
+
+        dependsOn("transformDhis2DebugClassesWithAsm")
+        inputs.files(projectJars.map { it.artifactFiles })
+        outputs.dir(instrumentedClassesDir)
+
+        doLast {
+            delete(instrumentedClassesDir)
+            copy {
+                from(appClasses)
+                into(instrumentedClassesDir.resolve(project.name))
+            }
+            projectJars.get().forEach { artifact ->
+                val id = artifact.id.componentIdentifier as ProjectComponentIdentifier
+                copy {
+                    from(zipTree(artifact.file))
+                    into(instrumentedClassesDir.resolve(id.projectName))
+                }
+            }
+        }
+    }
+}
+
 // Instrumented coverage, reported separately from the unit tests because each set of
 // execution data must be read against the classes that produced it. No compile
 // dependencies: on CI the classes come from the job that built the APK.
@@ -107,7 +154,16 @@ tasks.register("jacocoAndroidTestReport", JacocoReport::class) {
 
     sourceDirectories.setFrom("${project.projectDir}/src/main/java")
 
-    classDirectories.setFrom(reportClasses())
+    val stagedClasses = instrumentedClassesDir.resolve(project.name)
+    classDirectories.setFrom(
+        provider {
+            if (stagedClasses.exists()) {
+                listOf(fileTree(stagedClasses) { exclude(excludes) })
+            } else {
+                reportClasses().get()
+            }
+        },
+    )
 
     executionData.setFrom(
         fileTree("${buildDir}/outputs/code_coverage") {

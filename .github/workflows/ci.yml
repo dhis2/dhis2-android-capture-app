@@ -103,6 +103,7 @@ jobs:
             :app:assembleDhis2DebugAndroidTest \
             :app:compileDhis2PlayServicesDebugKotlin \
             :app:compileDhis2TrainingDebugKotlin \
+            :app:stageInstrumentedClasses \
             --no-daemon
 
       - name: Upload APKs
@@ -113,13 +114,13 @@ jobs:
             app/build/outputs/apk/**/*.apk
           retention-days: 1
 
-      # The exact classes packaged in the APK, so code-quality reports instrumented
-      # coverage against them instead of a recompilation.
-      - name: Upload app classes
+      # The exact classes packaged in the APK, per module, so code-quality reports
+      # instrumented coverage against them instead of a recompilation.
+      - name: Upload instrumented classes
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: app-classes
-          path: app/build/intermediates/classes/dhis2Debug/transformDhis2DebugClassesWithAsm/dirs/
+          name: instrumented-classes
+          path: app/build/coverage-classes/
           retention-days: 1
 
   run-ui-portrait:
@@ -232,11 +233,11 @@ jobs:
           path: .
         continue-on-error: true
 
-      - name: Download app classes
+      - name: Download instrumented classes
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: app-classes
-          path: app/build/intermediates/classes/dhis2Debug/transformDhis2DebugClassesWithAsm/dirs
+          name: instrumented-classes
+          path: app/build/coverage-classes
         continue-on-error: true
 
       - name: Download BrowserStack coverage
@@ -247,7 +248,8 @@ jobs:
           merge-multiple: true
         continue-on-error: true
 
-      # Only app is instrumented, so the .ec data only concerns app's classes.
+      # One .ec covers the whole app process, so every reporting module gets a copy and
+      # reports the part that concerns its own classes.
       - name: Report instrumented coverage
         run: |
           ec_count=$(find browserstack-coverage -name '*.ec' 2>/dev/null | wc -l | tr -d ' ')
@@ -256,13 +258,17 @@ jobs:
             echo "No instrumented coverage retrieved; the report will cover unit tests only."
             exit 0
           fi
-          if [ ! -d app/build/intermediates/classes/dhis2Debug/transformDhis2DebugClassesWithAsm/dirs ]; then
-            echo "::warning::App classes missing; instrumented coverage cannot be reported."
+          if [ ! -d app/build/coverage-classes ]; then
+            echo "::warning::Instrumented classes missing; instrumented coverage cannot be reported."
             exit 0
           fi
-          mkdir -p app/build/outputs/code_coverage/browserstack
-          find browserstack-coverage -name '*.ec' -exec cp {} app/build/outputs/code_coverage/browserstack/ \;
-          ./gradlew :app:jacocoAndroidTestReport --stacktrace --no-daemon
+          modules=$(grep -rl 'jacoco.gradle.kts' --include=build.gradle.kts . \
+                    | sed 's|/build.gradle.kts||; s|^\./||')
+          for module in $modules; do
+            mkdir -p "$module/build/outputs/code_coverage/browserstack"
+            find browserstack-coverage -name '*.ec' -exec cp {} "$module/build/outputs/code_coverage/browserstack/" \;
+          done
+          ./gradlew jacocoAndroidTestReport --stacktrace --no-daemon
 
       - name: SonarQube
         env:
