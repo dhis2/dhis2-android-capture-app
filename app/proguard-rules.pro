@@ -98,18 +98,8 @@
 -dontwarn org.openjsse.net.ssl.OpenJSSE
 -dontwarn org.slf4j.impl.StaticLoggerBinder
 
-#AndroidX
--dontwarn com.google.android.material.**
--keep class com.google.android.material.** { *; }
-
--dontwarn androidx.**
--keep class androidx.** { *; }
--keep interface androidx.* { *; }
-
 #Data binding
 -keep class * extends androidx.databinding.DataBinderMapper { *; }
--dontwarn androidx.databinding.**
--keep class androidx.databinding.** { *; }
 -keep class * extends androidx.databinding.DataBinderMapper
 
 ##---------------Begin: proguard configuration for Gson  ----------
@@ -240,14 +230,10 @@
 
 #-keep class org.dhis2.usescases.login.auth.AuthServiceModel
 -dontwarn org.hisp.dhis.**
--keep class org.hisp.dhis.** {*;}
+-keepnames class org.hisp.dhis.** { *; }
 -dontwarn org.cache2k.**
--keep class org.cache2k.** {*;}
+-keepnames class org.cache2k.** { *; }
 
 # Please add these rules to your existing keep rules in order to suppress warnings.
 # This is generated automatically by the Android Gradle plugin.
 -dontwarn javax.management.InstanceNotFoundException
-
--keep class org.dhis2.maps.** { *; }
--keep interface org.dhis2.maps.** { *; }
--keep enum org.dhis2.maps.** { *; }
