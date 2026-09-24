@@ -90,4 +90,8 @@ interface LoginRepository {
     suspend fun setOfflineCode(code: String): Result<Unit>
 
     suspend fun isUserLoggedIn(): Result<Boolean>
+
+    suspend fun isPinStored(): Boolean
+
+    suspend fun needsOfflinePin(): Boolean
 }

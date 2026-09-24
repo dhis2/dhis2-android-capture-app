@@ -553,4 +553,24 @@ class LoginRepositoryImpl(
                 )
             }
         }
+
+    override suspend fun needsOfflinePin() =
+        withContext(dispatcher.io) {
+            val authType =
+                d2
+                    .userModule()
+                    .accountManager()
+                    .getCurrentAccount()
+                    ?.authorizationType
+            authType == AuthorizationType.OAUTH2 || authType == AuthorizationType.OPEN_ID_CONNECT
+        }
+
+    override suspend fun isPinStored() =
+        withContext(dispatcher.io) {
+            d2
+                .dataStoreModule()
+                .localDataStore()
+                .value(PIN)
+                .blockingExists()
+        }
 }

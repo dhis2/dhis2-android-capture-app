@@ -141,6 +141,7 @@ class SplashActivity :
         sessionLocked: Boolean,
         initialSyncDone: Boolean,
         initialDataSyncDone: Boolean,
+        needsOfflineCredentials: Boolean,
     ) {
         when {
             isUserLogged && initialSyncDone && !sessionLocked -> {
