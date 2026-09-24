@@ -230,7 +230,6 @@
 
 #-keep class org.dhis2.usescases.login.auth.AuthServiceModel
 -dontwarn org.hisp.dhis.**
--keepnames class org.hisp.dhis.** { *; }
 -dontwarn org.cache2k.**
 -keepnames class org.cache2k.** { *; }
 
