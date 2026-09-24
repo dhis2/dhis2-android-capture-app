@@ -37,6 +37,7 @@ import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
 import org.dhis2.mobile.login.main.domain.usecase.SetOfflinePin
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
+import org.dhis2.mobile.login.main.domain.usecase.VerifyNeedOfflinePin
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
 import org.dhis2.mobile.login.main.ui.provider.CredentialsResourceProvider
@@ -77,6 +78,7 @@ class CredentialsViewModel(
     private val entryMode: CredentialsEntryMode,
     private val autoPromptLogin: Boolean,
     private val setOfflinePin: SetOfflinePin,
+    private val verifyNeedOfflinePin: VerifyNeedOfflinePin,
     private val loginUserOfflineWithCode: LoginUserOffline,
     private val credentialsResourceProvider: CredentialsResourceProvider,
     private val getSessionRenewalUrl: GetSessionRenewalUrl,
@@ -184,6 +186,20 @@ class CredentialsViewModel(
             val biometricInfo = getBiometricInfo(serverUrl)
             val shouldPromptBiometrics = biometricInfo.canUseBiometrics && autoPromptLogin
 
+            val needToAddOfflinePin = verifyNeedOfflinePin()
+            val afterLoginActions =
+                if (needToAddOfflinePin) {
+                    buildList {
+                        add(AfterLoginAction.CreateOfflineCredential)
+                        add(AfterLoginAction.DisplayTrackingMessage)
+                        if (getBiometricInfo(serverUrl).displayBiometricsMessageAfterLogin) {
+                            add(AfterLoginAction.DisplayBiometricsMessage)
+                        }
+                        add(AfterLoginAction.NavigateToNextScreen(false))
+                    }
+                } else {
+                    emptyList()
+                }
             _credentialsScreenState.update { current ->
                 current.copy(
                     loginState = LoginState.Enabled,
@@ -191,11 +207,12 @@ class CredentialsViewModel(
                     allowRecovery = allowRecovery,
                     canUseBiometrics = biometricInfo.canUseBiometrics,
                     oidcInfo = null,
-                    afterLoginActions = emptyList(),
+                    afterLoginActions = afterLoginActions,
                     hasOtherAccounts = getHasOtherAccounts(),
                     isSessionLocked =
                         getIsSessionLockedUseCase(requireOfflineCredentials = true) &&
                             autoPromptLogin &&
+                            !needToAddOfflinePin &&
                             !shouldPromptBiometrics,
                     displayBiometricsDialog = shouldPromptBiometrics,
                 )

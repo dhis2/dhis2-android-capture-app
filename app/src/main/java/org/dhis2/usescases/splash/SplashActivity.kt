@@ -140,8 +140,20 @@ class SplashActivity :
         sessionLocked: Boolean,
         initialSyncDone: Boolean,
         initialDataSyncDone: Boolean,
+        needsOfflineCredentials: Boolean,
     ) {
-        if (isUserLogged && initialSyncDone && !sessionLocked) {
+        if (needsOfflineCredentials) {
+            startActivity(
+                LoginActivity::class.java,
+                LoginActivity.bundle(
+                    accountsCount = presenter.getAccounts(),
+                    fromSplash = true,
+                ),
+                true,
+                true,
+                null,
+            )
+        } else if (isUserLogged && initialSyncDone && !sessionLocked) {
             startActivity(
                 MainActivity::class.java,
                 MainActivity.bundle(launchDataSync = initialDataSyncDone),
