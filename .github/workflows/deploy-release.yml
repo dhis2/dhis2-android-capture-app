@@ -49,7 +49,7 @@ jobs:
         encodedString: ${{ secrets.KEYSTORE }}
 
     - name: Build Release APKs
-      run: ./gradlew --dependency-verification strict app:assembleDhis2Release app:assembleDhis2PlayServicesRelease
+      run: ./gradlew --dependency-verification strict app:assembleDhis2Release app:assembleDhis2PlayServicesRelease app:bundleDhis2PlayServicesRelease
       env:
         SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -80,13 +80,17 @@ jobs:
       id: read-version
       run: echo "vName=$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')" >> $GITHUB_OUTPUT
 
+    - name: Locate Play Store AAB
+      id: locate-aab
+      run: echo "aabPath=$(find ${{ env.main_project_module }}/build/outputs/bundle/dhis2PlayServicesRelease -name '*.aab' | head -1)" >> $GITHUB_OUTPUT
+
     - name: Upload to Play Store
       if: ${{ inputs.google_play_release }}
       uses: r0adkll/upload-google-play@935ef9c68bb393a8e6116b1575626a7f5be3a7fb
       with:
         serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
         packageName: com.dhis2
-        releaseFiles: ${{ env.main_project_module }}/build/outputs/apk/dhis2PlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk
+        releaseFiles: ${{ steps.locate-aab.outputs.aabPath }}
         track: production
         status: inProgress
         whatsNewDirectory: whatsnew
