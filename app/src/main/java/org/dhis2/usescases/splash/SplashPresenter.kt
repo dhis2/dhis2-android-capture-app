@@ -1,5 +1,6 @@
 package org.dhis2.usescases.splash
 
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -30,15 +31,20 @@ class SplashPresenter internal constructor(
     private fun isUserLoggedIn() {
         userManager?.let { userManager ->
             compositeDisposable.add(
-                userManager.isUserLoggedIn
+                Observable
+                    .zip(
+                        userManager.isUserLoggedIn(),
+                        userManager.needsOfflinePin(),
+                    ) { userLogged: Boolean, needsOfflinePin: Boolean -> Pair(userLogged, needsOfflinePin) }
                     .delay(2000, TimeUnit.MILLISECONDS, schedulerProvider.io())
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
-                        { userLogged ->
+                        { (userLogged, needsOfflinePin) ->
                             if (userLogged && trackingPermissionGranted()) {
                                 val systemInfo =
-                                    userManager.d2
+                                    userManager
+                                        .d2
                                         .systemInfoModule()
                                         .systemInfo()
                                         .blockingGet()
@@ -61,6 +67,7 @@ class SplashPresenter internal constructor(
                                     Preference.INITIAL_DATA_SYNC_DONE,
                                     false,
                                 ),
+                                needsOfflinePin,
                             )
                         },
                         { Timber.d(it) },
@@ -71,6 +78,7 @@ class SplashPresenter internal constructor(
             sessionLocked = false,
             initialSyncDone = false,
             initialDataSyncDone = false,
+            needsOfflineCredentials = false,
         )
     }
 

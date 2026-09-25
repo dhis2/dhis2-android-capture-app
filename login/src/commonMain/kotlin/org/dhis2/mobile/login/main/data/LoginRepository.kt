@@ -88,4 +88,10 @@ interface LoginRepository {
     suspend fun buildLogoutUrl(serverUrl: String): String
 
     suspend fun setOfflinePin(pin: String): Result<Unit>
+
+    suspend fun isPinStored(): Boolean
+
+    suspend fun needsOfflinePin(): Boolean
+
+    suspend fun isUserLogged(): Boolean
 }

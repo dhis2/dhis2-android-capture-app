@@ -23,6 +23,7 @@ import org.dhis2.mobile.login.main.domain.usecase.SetOfflinePin
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
+import org.dhis2.mobile.login.main.domain.usecase.VerifyNeedOfflinePin
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.DefaultNavigator
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
@@ -107,6 +108,10 @@ internal val mainLoginModule =
         }
 
         factory { params ->
+            VerifyNeedOfflinePin(get { parametersOf(params.get()) })
+        }
+
+        factory { params ->
             LoginUserOffline(get { parametersOf(params.get()) })
         }
 
@@ -163,6 +168,7 @@ internal val mainLoginModule =
                 entryMode = entryMode,
                 autoPromptLogin = autoPromptLogin,
                 setOfflinePin = get { parametersOf(context) },
+                verifyNeedOfflinePin = get { parametersOf(context) },
                 loginUserOfflineWithCode = get { parametersOf(context) },
                 credentialsResourceProvider = get(),
                 getSessionRenewalUrl = get { parametersOf(context) },
