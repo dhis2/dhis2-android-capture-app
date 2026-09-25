@@ -478,7 +478,9 @@ internal class DataSetInstanceRepositoryImpl(
                         ?.let { dataElement ->
                             CellElement(
                                 uid = dataElement.uid(),
-                                categoryComboUid = dataSetElement.categoryCombo()?.uid(),
+                                categoryComboUid =
+                                    dataSetElement.categoryCombo()?.uid()
+                                        ?: dataElement.categoryCombo()?.uid(),
                                 label = dataElement.displayFormName() ?: dataElement.uid(),
                                 description = dataElement.displayDescription(),
                                 isMultiText = dataElement.valueType() == ValueType.MULTI_TEXT,
