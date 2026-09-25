@@ -144,10 +144,10 @@ class SplashActivity :
         needsOfflineCredentials: Boolean,
     ) {
         when {
-            isUserLogged && initialSyncDone && !sessionLocked -> {
+            isUserLogged && initialSyncDone && !sessionLocked && !needsOfflineCredentials-> {
                 goToMain(initialDataSyncDone)
             }
-            isUserLogged && initialSyncDone -> {
+            isUserLogged && initialSyncDone && !needsOfflineCredentials -> {
                 showPinBottomSheet(
                     onSuccess = {
                         app().disableBackGroundFlag()
@@ -156,7 +156,7 @@ class SplashActivity :
                     onDismiss = ::goToLogin,
                 )
             }
-            isUserLogged && !initialSyncDone -> {
+            isUserLogged && !initialSyncDone && !needsOfflineCredentials-> {
                 startActivity(
                     SyncActivity::class.java,
                     null,
