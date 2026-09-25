@@ -3,6 +3,7 @@ package org.dhis2.form.data
 import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.model.EnrollmentMode
 import org.dhis2.form.model.SectionUiModelImpl
@@ -51,7 +52,7 @@ class FormRepositoryIntegrationTest {
         }
     private val metadataIconProvider: MetadataIconProvider = mock()
     private val customIntentRepository: CustomIntentRepository = Mockito.mock()
-
+    private val resourceManager: ResourceManager = mock()
     private val program: Program =
         mock {
             on { uid() } doReturn "programUid"
@@ -208,6 +209,7 @@ class FormRepositoryIntegrationTest {
             legendValueProvider,
             false,
             preferenceProvider = preferenceProvider,
+            resourceManager = resourceManager,
         )
     }
 }

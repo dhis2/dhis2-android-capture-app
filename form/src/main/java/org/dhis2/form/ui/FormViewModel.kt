@@ -45,7 +45,6 @@ import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldListConfiguration
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.UiRenderType
@@ -84,7 +83,6 @@ class FormViewModel(
     val loading = MutableLiveData(true)
     val showToast = MutableLiveData<Int>()
     val focused = MutableLiveData<Boolean>()
-    val showInfo = MutableLiveData<InfoUiModel>()
     val confError = MutableLiveData<List<RulesUtilsProviderConfigurationError>>()
     var dateFormatConfig: String = "ddMMyyyy"
 
@@ -178,6 +176,7 @@ class FormViewModel(
                     result.first.let {
                         _savedValue.postValue(it)
                     }
+                    repository.updateFieldIsUnique(result.first.id)
                     processCalculatedItems()
                 }
 
@@ -195,12 +194,7 @@ class FormViewModel(
                 }
 
                 ValueStoreResult.VALUE_NOT_UNIQUE -> {
-                    showInfo.postValue(
-                        InfoUiModel(
-                            R.string.error,
-                            R.string.unique_warning,
-                        ),
-                    )
+                    repository.updateFieldIsNotUnique(result.first.id)
                     processCalculatedItems()
                 }
 

@@ -14,6 +14,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.DataEntryRepository
 import org.dhis2.form.data.FormRepository
@@ -85,7 +86,7 @@ class DataEntryIntegrationTest {
         mock {
             on { list() } doReturn Flowable.just(provideMalariaCaseRegistrationEventItems())
         }
-
+    private val resourceManager: ResourceManager = mock()
     private val legendValueItem: LegendValue =
         LegendValue(
             color = 0,
@@ -107,6 +108,7 @@ class DataEntryIntegrationTest {
             legendValueProvider = legendValueProvider,
             useCompose = true,
             preferenceProvider = preferenceProvider,
+            resourceManager = resourceManager,
         )
 
     private val resultDialogUiProvider: FormResultDialogProvider = mock()
