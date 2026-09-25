@@ -1198,8 +1198,6 @@ class CredentialsViewModelTest {
             // GIVEN
             val serverUrl = "https://test.server.org"
             val username = "testUser"
-            val pin = "1234"
-            whenever(getAvailableUsernames()) doReturn emptyList()
             whenever(getBiometricInfo(any())) doReturn
                 BiometricsInfo(
                     canUseBiometrics = false,
@@ -1208,9 +1206,6 @@ class CredentialsViewModelTest {
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(true)) doReturn false
             whenever(verifyNeedOfflinePin()) doReturn true
-            whenever(loginUserOfflineWithCode.invoke(serverUrl, username, pin)) doReturn
-                LoginResult.Success(displayTrackingMessage = false, initialSyncDone = true)
-
             initViewModel(
                 serverUrl = serverUrl,
                 username = username,
