@@ -142,18 +142,7 @@ class SplashActivity :
         initialDataSyncDone: Boolean,
         needsOfflineCredentials: Boolean,
     ) {
-        if (needsOfflineCredentials) {
-            startActivity(
-                LoginActivity::class.java,
-                LoginActivity.bundle(
-                    accountsCount = presenter.getAccounts(),
-                    fromSplash = true,
-                ),
-                true,
-                true,
-                null,
-            )
-        } else if (isUserLogged && initialSyncDone && !sessionLocked) {
+        if (isUserLogged && initialSyncDone && !sessionLocked && !needsOfflineCredentials) {
             startActivity(
                 MainActivity::class.java,
                 MainActivity.bundle(launchDataSync = initialDataSyncDone),
@@ -161,7 +150,7 @@ class SplashActivity :
                 true,
                 null,
             )
-        } else if (isUserLogged && !initialSyncDone) {
+        } else if (isUserLogged && !initialSyncDone && !needsOfflineCredentials) {
             startActivity(
                 SyncActivity::class.java,
                 null,
