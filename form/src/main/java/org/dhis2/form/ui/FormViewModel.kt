@@ -844,7 +844,10 @@ class FormViewModel(
         confError.value = repository.getConfigurationErrors() ?: emptyList()
     }
 
-    fun runDataIntegrityCheck(backButtonPressed: Boolean? = null) {
+    fun runDataIntegrityCheck(
+        backButtonPressed: Boolean? = null,
+        forNavigationAway: Boolean = false,
+    ) {
         viewModelScope.launch {
             FormCountingIdlingResource.increment()
             val result =
@@ -852,7 +855,7 @@ class FormViewModel(
                     repository.runDataIntegrityCheck(backPressed = backButtonPressed ?: false)
                 }
             try {
-                handleDataIntegrityResult(result.await())
+                handleDataIntegrityResult(result.await(), forNavigationAway)
             } catch (e: Exception) {
                 Timber.e(e)
             } finally {
@@ -863,11 +866,16 @@ class FormViewModel(
         }
     }
 
-    private suspend fun handleDataIntegrityResult(result: DataIntegrityCheckResult) {
+    private suspend fun handleDataIntegrityResult(
+        result: DataIntegrityCheckResult,
+        forNavigationAway: Boolean = false,
+    ) {
         val isEvent = repository.isEvent()
+        val hasBlockingIssues = result is FieldsWithErrorResult || result is MissingMandatoryResult
         val action =
             when {
                 isEvent && repository.isEventEditable() == false -> FormActions.OnFinish
+                forNavigationAway && !hasBlockingIssues -> FormActions.OnFinish
                 (result is SuccessfulResult) and (result.eventResultDetails.eventStatus == null) -> FormActions.OnFinish
                 result is NotSavedResult -> FormActions.OnFinish
                 else -> showDataEntryResultDialogDeprecated(result)

@@ -74,6 +74,7 @@ class FormView : Fragment() {
     private var onLoadingListener: ((loading: Boolean) -> Unit)? = null
     private var onFocused: (() -> Unit)? = null
     private var onFinishDataEntry: (() -> Unit)? = null
+    private var pendingLeaveCallback: (() -> Unit)? = null
     private var onActivityForResult: (() -> Unit)? = null
     private var completionListener: ((percentage: Float) -> Unit)? = null
     private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
@@ -200,7 +201,7 @@ class FormView : Fragment() {
                     viewModel.actionsChannel.collect { action ->
                         when (action) {
                             FormViewModel.FormActions.OnFinish ->
-                                onFinishDataEntry?.invoke()
+                                leaveForm()
 
                             is FormViewModel.FormActions.ShowResultDialog ->
                                 resultDialogData = action
@@ -226,20 +227,22 @@ class FormView : Fragment() {
                             when (it.model.mainButton) {
                                 DialogButtonStyle.CompleteButton -> {
                                     viewModel.completeEvent()
-                                    onFinishDataEntry?.invoke()
+                                    leaveForm()
                                 }
 
                                 else -> {
-                                    // Do nothing
+                                    // Do nothing, user must review: pending navigation is cancelled
+                                    pendingLeaveCallback = null
                                 }
                             }
                         },
                         onSecondaryButtonClick = {
-                            onFinishDataEntry?.invoke()
+                            leaveForm()
                         },
                         onDiscardChanges = viewModel::discardChanges,
                         onDismiss = {
                             resultDialogData = null
+                            pendingLeaveCallback = null
                         },
                     )
                 }
@@ -541,8 +544,15 @@ class FormView : Fragment() {
         }
     }
 
-    fun onBackPressed() {
-        viewModel.runDataIntegrityCheck(backButtonPressed = true)
+    fun onBackPressed(onReadyToLeave: (() -> Unit)? = null) {
+        pendingLeaveCallback = onReadyToLeave
+        viewModel.runDataIntegrityCheck(backButtonPressed = true, forNavigationAway = onReadyToLeave != null)
+    }
+
+    private fun leaveForm() {
+        val callback = pendingLeaveCallback
+        pendingLeaveCallback = null
+        (callback ?: onFinishDataEntry)?.invoke()
     }
 
     fun onSaveClick() {

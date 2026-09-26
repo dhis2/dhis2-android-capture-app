@@ -244,7 +244,7 @@ class EventCapturePresenterImpl(
 
     override fun isEnrollmentOpen(): Boolean = eventCaptureRepository.isEnrollmentOpen
 
-    override fun deleteEvent() {
+    override fun deleteEvent(onDeleted: (() -> kotlin.Unit)?) {
         val programStage = programStage()
         EventIdlingResourceSingleton.increment()
         compositeDisposable.add(
@@ -264,7 +264,7 @@ class EventCapturePresenterImpl(
                     },
                     onComplete = {
                         EventIdlingResourceSingleton.decrement()
-                        view.finishDataEntry()
+                        if (onDeleted != null) onDeleted() else view.finishDataEntry()
                     },
                 ),
         )
