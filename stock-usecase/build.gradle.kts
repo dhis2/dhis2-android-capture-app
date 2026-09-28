@@ -6,7 +6,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.compose.compiler)
 }
-apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
 base {
     archivesName.set("psm-v" + libs.versions.vName.get())

@@ -49,6 +49,14 @@ sonar {
         // .java sources. Remove once the upstream fix is released.
         property("sonar.exclusions", "**/*.java")
 
+        // Relative to each module. Unit and instrumented coverage are separate reports
+        // because each is read against different class files; Sonar merges them.
+        property(
+            "sonar.coverage.jacoco.xmlReportPaths",
+            "build/coverage-report/jacocoTestReport.xml," +
+                "build/coverage-report-androidTest/jacocoAndroidTestReport.xml",
+        )
+
         // GitHub Actions always defines PULL_REQUEST, resolving it to an empty
         // string on push events, so a null check alone sends push builds down the
         // pull-request path with a blank sonar.pullrequest.key. Since scanner
@@ -68,11 +76,24 @@ allprojects {
         resolutionStrategy {
             cacheDynamicVersionsFor(10, TimeUnit.MINUTES)
             cacheChangingModulesFor(0, TimeUnit.SECONDS)
-            eachDependency {
-                if (requested.group == "org.jacoco")
-                    useVersion("0.8.10")
-            }
         }
+    }
+
+    // toolVersion governs both the instrumenter and the report engine. libs.jacoco is
+    // only on the buildscript classpath, so without this Gradle's bundled version is used.
+    plugins.withType<org.gradle.testing.jacoco.plugins.JacocoPlugin> {
+        extensions.configure<org.gradle.testing.jacoco.plugins.JacocoPluginExtension> {
+            toolVersion = libs.versions.jacoco.get()
+        }
+    }
+
+    // Every Android and KMP module reports coverage; new modules need no setup.
+    listOf(
+        "com.android.application",
+        "com.android.library",
+        "com.android.kotlin.multiplatform.library",
+    ).forEach { id ->
+        pluginManager.withPlugin(id) { apply(from = "$rootDir/jacoco/jacoco.gradle.kts") }
     }
 
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
