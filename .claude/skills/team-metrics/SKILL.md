@@ -42,7 +42,7 @@ user rather than working around it — a silently skipped source produces a misl
 | Confluence | reading the previous edition, creating and updating the page | **the Atlassian connector** (per-user OAuth, no token) | Confirm the Atlassian tools are in-session; if not, authorize with `/mcp`. **You cannot run OAuth yourself.** Without it, hand the report over as text |
 | Charts | attaching the four PNGs — and *only* this | scoped `JIRA_AUTH`, optional: `read:content-details:confluence` + `write:attachment:confluence` | Publish the collapsed tables instead and say so. Nothing else is affected |
 | GitHub | PR cycle time, review latency, PR size, CI | `gh` login, or the GitHub MCP tools where `gh` is absent (cloud sessions have no `gh`) | Skip the **Pull requests & CI** section and say so |
-| SonarCloud | code quality trend | none | Skip; no token needed, so failure means network |
+| SonarCloud | code quality trend, security (vulnerabilities + hotspots) | none | Skip; no token needed, so failure means network |
 | Sentry MCP | production stability | per-user OAuth | Check the Sentry tools are available in-session. If not, tell the user to authorize with `/mcp` — **you cannot run OAuth yourself.** Mark the section unavailable |
 
 **Running in a cloud session.** Everything works there except what the environment's network
@@ -306,8 +306,12 @@ Structure, in order.
      sentence. Add "and the current window is younger, so this is a floor" only when the
      comparison is close.
    - **What happened to the rest?** The closed-without-a-fix count and the resolutions they
-     carry (`Obsolete`, `Cannot Reproduce`, `Invalid`). This is the finding: those are
-     questions that were asked and never answered, and the item aged out.
+     carry (`Obsolete`, `Cannot Reproduce`, `Invalid`). **Don't call all of them unanswered
+     questions that aged out** — check dwell before the resolution, not just the count: a
+     `Cannot Reproduce`/`Invalid` closed in a few days is a genuine attempt that came up
+     empty, a healthy outcome, not a triage failure; an `Obsolete` closed after weeks or
+     months is the one that actually aged out. The two read as the same number and are not
+     the same finding — see the reference for the dwell-based split.
    - **Where to look.** The current stock and its oldest item, or the repeat-visit count, or
      the same-day-flip count — **whichever one is actually unusual this window**, with a
      hint at what it might mean. One of them, not all three.
@@ -384,14 +388,29 @@ Structure, in order.
    do with quality and invites a conclusion the number cannot support.
 
    `### Closed without a fix, open bugs and backlog` — the window's closed-without-a-fix count
-   with its top resolutions, open bug count, backlog depth. Two lines.
+   with its top resolutions, open bug count, backlog depth. Two lines — **unless the type
+   split (Bug/Task/Feature created vs. closed, see the reference) shows growth concentrated in
+   one type**, which an aggregate backlog number hides entirely. When it is concentrated, that
+   is the finding and the aggregate is the supporting number, not the other way round.
 
    `### Code quality trend` — **this heading is required.** The SonarCloud block used to open
    with a bare sentence ("Over the year on `develop`, code smells and technical debt are down
    by roughly half…") that read as a stray paragraph inside Quality; it is a distinct finding
    over a distinct window (12 months, not 90 days) and needs its own title to be found and
-   skimmed. Under it: that one line, **chart `03-sonarcloud-trend`**, the collapsed table, and
-   the security-rating line.
+   skimmed. Under it: that one line, **chart `03-sonarcloud-trend`**, the collapsed table.
+
+   `### Security` — **its own heading, by the same rule as the trend above:** one heading,
+   one finding, and the rating letter and the finding pool are two different things bundled
+   under one bare line before. Say the mechanism in one clause whenever the letter doesn't
+   match the direction the count moved: the rating (A–E) is set by the single worst open
+   finding's severity, not the count, so it can sit unchanged for editions while real fixes
+   land underneath it. SonarCloud tracks **two pools** and both must be pulled — confirmed
+   vulnerabilities, and security hotspots (candidates pending review, usually the larger
+   pool; query in the reference). State both counts, then a **top 3, ranked by severity
+   tier** (Blocker vulnerability → High-probability hotspot → next tier down), grouping
+   findings that share a file and pattern into one entry rather than listing every row. Name
+   what's left outside the top 3 in one clause instead of dropping it silently — it's next
+   edition's candidate batch.
 9. **Pull requests & CI** — **renamed from "Delivery", which was the problem with it.** The
    word already means `Ready to Start` → merged in §3, so a second section called Delivery
    measuring something else (PR open → merged, a different clock over a different population)
