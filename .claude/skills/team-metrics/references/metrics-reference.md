@@ -86,6 +86,34 @@ project = ANDROAPP AND issuetype = Bug AND statusCategory != Done
 project = ANDROAPP AND issuetype = Epic AND statusCategory != Done
 ```
 
+## Backlog — check the type split before reporting an aggregate
+
+A single "backlog grew from X to Y" hides which type is actually driving it. Run
+created-vs-closed separately per type over the 90-day window before writing the Quality
+section's backlog line:
+
+```
+# repeat per type: Bug, Task, Feature
+project = ANDROAPP AND issuetype = Bug AND created >= -90d          # created
+project = ANDROAPP AND issuetype = Bug AND resolutiondate >= -90d    # closed (any resolution)
+```
+
+Confirmed on the 2026-09 fixture: Bug was net +1 (39 created / 38 closed), Feature was net
+−21 (shrinking), and **Task alone was net +24** — the entire "backlog is growing" story was
+one issue type, not a general trend. If the split shows growth concentrated like that, lead
+the backlog line with the type, not the total; if it's spread evenly across types, the
+aggregate is fine as-is and the split doesn't need to be shown.
+
+Also worth a glance: the 30-day intake trend (three most-recent 30-day buckets of `created`)
+shows whether intake is accelerating rather than merely exceeding closures — a step change
+(e.g. 26 → 30 → 73) is a materially different finding from steady linear growth.
+
+**Caution on `Prioritization` specifically**, since it's one of the backlog statuses: a jump
+in its delivery time-share can look like a process regression but instead be a one-time
+sweep — check the `created` dates of the issues that transitioned into it before reading it
+as a trend. A wide spread of old `created` dates among the issues driving the jump is the
+signature of a backlog-clearing sweep, not a new bottleneck; see **Parked theories** below.
+
 ## Epics
 
 Epics get their own one-row summary (open count, closed in period, age p50/p85, oldest, breakdown
@@ -149,6 +177,14 @@ Three traps:
 - **Deleted issues are invisible.** Jira drops them from the API entirely, so an item purged
   after a stay here leaves no trace and no gap to notice. The outcome mix covers what still
   exists; say so rather than presenting it as exhaustive.
+- **`closed without a fix` is not one population.** It blends two different outcomes that
+  happen to land on the same resolution category, and only dwell time before the resolution
+  tells them apart: a `Cannot Reproduce`/`Invalid` closed within a few days is a genuine
+  attempt that came up empty — healthy, not a triage failure. An `Obsolete` closed after
+  weeks or months is the one that actually aged out unanswered. Confirmed on the 2026-09
+  fixture: the three fast closures (3–6 days) were Cannot Reproduce/Invalid; the four slow
+  ones (41–605 days) were all Obsolete. Report the split, not just the bucket total, when
+  writing "What happened to the rest?" in the report.
 
 `NEEDS_INFO` matches the exact string `"Needs info"`. A rename or second spelling would
 silently empty the section, so the run scans changelogs for case variants and warns. Related
@@ -197,6 +233,40 @@ Two traps, both of which make the number read as something it is not:
 And one interpretation trap: **a low count on an older patch is usually throughput, not quality.**
 3.3.1 genuinely shipped with one tracked bug fix — bug throughput then was ~11 Done per half-year
 against ~67 in H1 2026. Check the era's throughput before calling a row a regression.
+
+## Security
+
+SonarCloud tracks **two separate pools** for `dhis2_dhis2-android-capture-app`, and both must
+be pulled — a vulnerabilities-only pull is a large undercount of the real security backlog.
+
+```bash
+# Confirmed vulnerabilities (small pool, usually single digits)
+curl "https://sonarcloud.io/api/issues/search?componentKeys=dhis2_dhis2-android-capture-app&types=VULNERABILITY&branch=develop&resolved=false&ps=100"
+
+# Security hotspots — code patterns needing manual review; usually the larger pool
+curl "https://sonarcloud.io/api/hotspots/search?projectKey=dhis2_dhis2-android-capture-app&branch=develop&status=TO_REVIEW&ps=100"
+```
+
+**Security Rating mechanism** — say this in the report whenever the letter and the count
+disagree, not just the first time it's noticed: SonarCloud's Security Rating (A–E) is set by
+the **single worst open vulnerability's severity**, not the count. A = none, B = worst is
+Minor, C = Major, D = Critical, E = Blocker. A count falling sharply (e.g. 17 → 4) can leave
+the letter completely unmoved if even one Blocker survives — that's the metric's definition,
+not a stalled report. Treat **open findings by severity** as the actual number to track; the
+letter is a derived, secondary fact — it's a step function that can sit flat for editions and
+then jump several grades in one PR, so never chart it as if it moved continuously.
+
+**Top 3, by severity tier**: Blocker vulnerability → High-probability hotspot → next tier
+down (a Minor vulnerability ties with a Low-probability hotspot; break the tie toward
+whichever has more concrete evidence of real-world exposure — a confirmed-issue Vulnerability
+over an unconfirmed-pending-review Hotspot is a reasonable default). Group findings sharing a
+file and pattern into one entry rather than listing every SonarCloud row — e.g. three `S7630`
+hits across two GitHub Actions workflows are one root cause (untrusted workflow input
+interpolated into a `run:` block), not three.
+
+List the remaining pool size and composition rather than silently dropping it — e.g. "10
+Low-probability hotspots remaining, 8 of them the same cleartext-traffic manifest default" —
+so the next edition can pick them up as a batch.
 
 ## Sentry
 
@@ -267,7 +337,9 @@ gh pr list --repo dhis2/dhis2-android-capture-app --state merged --limit 400 --b
 gh api "/repos/dhis2/dhis2-android-capture-app/actions/runs?branch=develop&per_page=100"
 
 # SonarCloud — branch=develop is REQUIRED, the default (main) reports coverage 0
-curl "https://sonarcloud.io/api/measures/component?component=dhis2_dhis2-android-capture-app&branch=develop&metricKeys=coverage,tests,ncloc,vulnerabilities,code_smells,sqale_index,duplicated_lines_density"
+# for Code quality trend (coverage/smells/duplication/tech-debt) — the vulnerabilities count
+# metric is superseded by the Security section's severity-broken-down issue-search pull above
+curl "https://sonarcloud.io/api/measures/component?component=dhis2_dhis2-android-capture-app&branch=develop&metricKeys=coverage,tests,ncloc,code_smells,sqale_index,duplicated_lines_density"
 curl "https://sonarcloud.io/api/qualitygates/project_status?projectKey=dhis2_dhis2-android-capture-app&branch=develop"
 ```
 
@@ -481,6 +553,25 @@ The Jira Chart macro (`jirachart`) is worse for this report for a different reas
 re-queries JQL on every page view, so the picture drifts away from the prose around it as
 work moves. That breaks the single-snapshot rule outright. Both are dead ends — keep the
 PNG-or-table approach.
+
+## Parked theories — check before proposing, promote only on new evidence
+
+A causal theory rejected once for lack of evidence tends to sound plausible again next
+edition unless it's written down. Check this list before pairing a new architectural cause
+with an operational metric; don't re-propose a similar theory without something concrete —
+a named crash site with a user count, a specific ticket, a specific commit — not general
+reasoning about the codebase.
+
+| Theory | Metric it was proposed for | Why it was parked |
+|---|---|---|
+| KMP-migration completeness (share of business logic in `commonMain` vs. Android-only) | Delivery p85 / flow efficiency | Reasoned from general principle ("shared code should reduce duplicate work"), not verified against this repo's PR data. Would need PR cycle time segmented by legacy-vs-KMP modules touched to promote out of this list. |
+| SonarCloud new-code coverage gate | Crash/ANR exposure, backlog/needs-info churn | Plausible ("better-tested code ships fewer regressions") but not checked against which specific crashes or backlog items trace to recently-changed, under-covered code. |
+
+Also parked as **not a tracked metric at all** (not a causal theory, but rejected as a KPI):
+the `Prioritization` status time-share — see the caution note in **Backlog**, above. It moved
+sharply in one edition but the movement was explained by a one-time backlog sweep, not a
+recurring signal; re-evaluate only if a future edition sees it move again *without* a similar
+sweep explaining it.
 
 ## Known data-quality limits — restate these in every report
 
