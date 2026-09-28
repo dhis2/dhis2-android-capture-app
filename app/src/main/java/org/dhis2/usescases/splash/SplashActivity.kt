@@ -142,26 +142,31 @@ class SplashActivity :
         initialSyncDone: Boolean,
         initialDataSyncDone: Boolean,
     ) {
-        if (isUserLogged && initialSyncDone && !sessionLocked) {
-            goToMain(initialDataSyncDone)
-        } else if (isUserLogged && initialSyncDone) {
-            showPinBottomSheet(
-                onSuccess = {
-                    app().disableBackGroundFlag()
-                    goToMain(initialDataSyncDone)
-                },
-                onDismiss = ::goToLogin,
-            )
-        } else if (isUserLogged && !initialSyncDone) {
-            startActivity(
-                SyncActivity::class.java,
-                null,
-                true,
-                true,
-                null,
-            )
-        } else {
-            goToLogin()
+        when {
+            isUserLogged && initialSyncDone && !sessionLocked -> {
+                goToMain(initialDataSyncDone)
+            }
+            isUserLogged && initialSyncDone -> {
+                showPinBottomSheet(
+                    onSuccess = {
+                        app().disableBackGroundFlag()
+                        goToMain(initialDataSyncDone)
+                    },
+                    onDismiss = ::goToLogin,
+                )
+            }
+            isUserLogged && !initialSyncDone -> {
+                startActivity(
+                    SyncActivity::class.java,
+                    null,
+                    true,
+                    true,
+                    null,
+                )
+            }
+            else -> {
+                goToLogin()
+            }
         }
     }
 
