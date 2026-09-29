@@ -112,6 +112,15 @@ class SplashPresenter internal constructor(
             ?.getAccounts()
             ?.count() ?: 0
 
+    fun clearSingleProgramNavigation() {
+        userManager
+            ?.d2
+            ?.dataStoreModule()
+            ?.localDataStore()
+            ?.value(Preference.IS_SINGLE_NAVIGATION_DONE)
+            ?.blockingDelete()
+    }
+
     private data class TrackingInfo(
         val serverUrl: String,
         val serverVersion: String,

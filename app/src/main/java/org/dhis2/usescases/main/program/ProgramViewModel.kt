@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.Actions.Companion.SYNC_BTN
@@ -15,10 +14,12 @@ import org.dhis2.commons.matomo.Labels.Companion.CLICK_ON
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.mobile.commons.featureconfig.model.Feature
 import org.dhis2.mobile.commons.featureconfig.model.FeatureOptions
 import org.dhis2.mobile.sync.domain.SyncStatusController
+import org.dhis2.usescases.main.NavigateToSingleProgram
 import org.koin.core.component.KoinComponent
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -32,6 +33,7 @@ class ProgramViewModel internal constructor(
     private val filterManager: FilterManager,
     private val syncStatusController: SyncStatusController,
     private val schedulerProvider: SchedulerProvider,
+    private val navigateToSingleProgram: NavigateToSingleProgram,
 ) : ViewModel(),
     KoinComponent {
     private val _programs = MutableLiveData<List<ProgramUiModel>>()
@@ -88,32 +90,30 @@ class ProgramViewModel internal constructor(
     }
 
     private fun fetchPrograms() {
-        viewModelScope.launch {
+        launchUseCase(dispatchers.io()) {
+            val programs =
+                programRepository
+                    .homeItems(
+                        syncStatusController.observeDownloadProcess().value,
+                    ).blockingLast()
             val result =
-                async(dispatchers.io()) {
-                    val programs =
-                        programRepository
-                            .homeItems(
-                                syncStatusController.observeDownloadProcess().value,
-                            ).blockingLast()
-                    if (featureConfigRepository.isFeatureEnable(Feature.RESPONSIVE_HOME)) {
-                        val feature = featureConfigRepository.featuresList.find { it.feature == Feature.RESPONSIVE_HOME }
-                        val totalItems =
-                            feature?.extras?.takeIf { it is FeatureOptions.ResponsiveHome }?.let {
-                                it as FeatureOptions.ResponsiveHome
-                                it.totalItems
-                            }
-                        programs.take(
-                            totalItems ?: programs.size,
-                        )
-                    } else {
-                        programs
-                    }
+                if (featureConfigRepository.isFeatureEnable(Feature.RESPONSIVE_HOME)) {
+                    val feature =
+                        featureConfigRepository.featuresList.find { it.feature == Feature.RESPONSIVE_HOME }
+                    val totalItems =
+                        feature?.extras?.takeIf { it is FeatureOptions.ResponsiveHome }?.let {
+                            it as FeatureOptions.ResponsiveHome
+                            it.totalItems
+                        }
+                    programs.take(
+                        totalItems ?: programs.size,
+                    )
+                } else {
+                    programs
                 }
-            try {
-                _programs.postValue(result.await())
-            } catch (e: Exception) {
-                Timber.d(e)
+            _programs.postValue(result)
+            if (navigateToSingleProgram(result.size).getOrElse { false }) {
+                view.navigateTo(result.first())
             }
         }
     }
