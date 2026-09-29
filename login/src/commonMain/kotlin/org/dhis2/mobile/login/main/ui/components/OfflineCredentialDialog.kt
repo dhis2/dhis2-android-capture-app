@@ -41,8 +41,6 @@ import org.dhis2.mobile.commons.extensions.deviceIsInLandscapeMode
 import org.dhis2.mobile.commons.extensions.getWindowSizeClass
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.cancel
-import org.dhis2.mobile.login.resources.forgot_pin_button
-import org.dhis2.mobile.login.resources.forgot_pin_description
 import org.dhis2.mobile.login.resources.login_online
 import org.dhis2.mobile.login.resources.offline_credential_create_button
 import org.dhis2.mobile.login.resources.offline_credential_create_description
@@ -51,6 +49,7 @@ import org.dhis2.mobile.login.resources.offline_credential_enter_button
 import org.dhis2.mobile.login.resources.offline_credential_enter_description
 import org.dhis2.mobile.login.resources.offline_credential_enter_title
 import org.dhis2.mobile.login.resources.offline_credential_forgot_button
+import org.dhis2.mobile.login.resources.offline_credential_forgot_code_description
 import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
@@ -76,7 +75,7 @@ enum class OfflineCredentialMode {
 }
 
 /**
- * Captures the offline-login credential (a numeric PIN in this first iteration) for a token-based
+ * Captures the offline-login credential (a numeric CODE in this first iteration) for a token-based
  * account and hands the entered value straight back to the caller via [onSubmit].
  *
  * Unlike the session-lock PIN component, this holds no business logic: it neither saves nor
@@ -107,7 +106,7 @@ fun OfflineCredentialDialog(
     var value by remember { mutableStateOf("") }
     val isComplete = value.length == length
     val isCreate = mode == OfflineCredentialMode.CREATE
-    var displayResetPinAlert by remember { mutableStateOf(false) }
+    var displayResetCodeAlert by remember { mutableStateOf(false) }
 
     OfflineCredentialContent(
         title = stringResource(if (isCreate) Res.string.offline_credential_create_title else Res.string.offline_credential_enter_title),
@@ -127,17 +126,17 @@ fun OfflineCredentialDialog(
         windowSizeClass = windowSizeClass,
         onValueChanged = { value = it.replace("-", "") },
         onPrimaryClick = { if (isComplete) onSubmit(value) },
-        onSecondaryClick = { displayResetPinAlert = true },
+        onSecondaryClick = { displayResetCodeAlert = true },
         // CREATE is mandatory and non-dismissable: swallow dismiss so the caller's gate keeps it shown.
         onDismiss = if (isCreate) ({}) else onDismiss,
         modifier = modifier,
     )
-    if (displayResetPinAlert) {
+    if (displayResetCodeAlert) {
         BottomSheetShell(
             uiState =
                 BottomSheetShellUIState(
-                    title = stringResource(Res.string.forgot_pin_button),
-                    description = stringResource(Res.string.forgot_pin_description),
+                    title = stringResource(Res.string.offline_credential_forgot_button),
+                    description = stringResource(Res.string.offline_credential_forgot_code_description),
                     headerTextAlignment = TextAlign.Start,
                     showBottomSectionDivider = false,
                 ),
@@ -149,7 +148,7 @@ fun OfflineCredentialDialog(
                             modifier = Modifier.fillMaxWidth(),
                             style = ButtonStyle.OUTLINED,
                             text = stringResource(Res.string.cancel),
-                            onClick = { displayResetPinAlert = false },
+                            onClick = { displayResetCodeAlert = false },
                         )
                     },
                     secondaryButton = {
@@ -163,7 +162,7 @@ fun OfflineCredentialDialog(
                 )
             },
             content = null,
-            onDismiss = { displayResetPinAlert = false },
+            onDismiss = { displayResetCodeAlert = false },
         )
     }
 }
@@ -477,10 +476,10 @@ private fun OfflineCredentialEnterPreview() {
     val windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(360.dp, 800.dp))
     DHIS2Theme {
         OfflineCredentialContent(
-            title = "Enter your offline PIN",
-            subtitle = "Enter your 4-digit PIN to log in offline.",
+            title = "Enter your offline CODE",
+            subtitle = "Enter your 4-digit CODE to log in offline.",
             primaryButtonText = "Log in",
-            secondaryButtonText = "Forgot your PIN?",
+            secondaryButtonText = "Forgot your CODE?",
             primaryButtonEnabled = true,
             showPrimaryButtonIcon = false,
             length = 4,

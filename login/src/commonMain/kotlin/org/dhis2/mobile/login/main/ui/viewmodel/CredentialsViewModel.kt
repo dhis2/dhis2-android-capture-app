@@ -28,13 +28,14 @@ import org.dhis2.mobile.login.main.domain.usecase.GetDeviceEnrollmentUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
 import org.dhis2.mobile.login.main.domain.usecase.GetOAuthLogoutUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetSessionRenewalUrl
+import org.dhis2.mobile.login.main.domain.usecase.IsUserLoggedIn
 import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUserOffline
 import org.dhis2.mobile.login.main.domain.usecase.LoginUserWithOAuth
 import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
 import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
-import org.dhis2.mobile.login.main.domain.usecase.SetOfflinePin
+import org.dhis2.mobile.login.main.domain.usecase.SetOfflineCode
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
@@ -76,11 +77,12 @@ class CredentialsViewModel(
     private val oidcInfo: OidcInfo?,
     private val entryMode: CredentialsEntryMode,
     private val autoPromptLogin: Boolean,
-    private val setOfflinePin: SetOfflinePin,
+    private val setOfflineCode: SetOfflineCode,
     private val loginUserOfflineWithCode: LoginUserOffline,
     private val credentialsResourceProvider: CredentialsResourceProvider,
     private val getSessionRenewalUrl: GetSessionRenewalUrl,
     private val autoStartRenewal: Boolean,
+    private val isUserLoggedIn: IsUserLoggedIn,
 ) : ViewModel() {
     companion object {
         private val COUNTDOWN_TICK_INTERVAL = 1.seconds
@@ -112,6 +114,7 @@ class CredentialsViewModel(
             hasOtherAccounts = false,
             isSessionLocked = false,
             displayBiometricsDialog = false,
+            isUserLoggedIn = false,
         )
 
     private var loginJob: Job? = null
@@ -127,7 +130,7 @@ class CredentialsViewModel(
 
     private var appLinkJob: Job? = null
 
-    private var offlinePin: String = ""
+    private var offlineCode: String = ""
 
     private val _credentialsScreenState = MutableStateFlow(initialState)
     val credentialsScreenState =
@@ -198,6 +201,7 @@ class CredentialsViewModel(
                             autoPromptLogin &&
                             !shouldPromptBiometrics,
                     displayBiometricsDialog = shouldPromptBiometrics,
+                    isUserLoggedIn = isUserLoggedIn().getOrDefault(false),
                 )
             }
         }
@@ -746,7 +750,7 @@ class CredentialsViewModel(
     context(platformContext: PlatformContext)
     fun onEnableBiometrics(granted: Boolean) {
         val credential =
-            offlinePin.takeIf { it.isNotEmpty() }
+            offlineCode.takeIf { it.isNotEmpty() }
                 ?: credentialsScreenState.value.credentialsInfo?.password
                 ?: ""
         launchUseCase {
@@ -817,7 +821,7 @@ class CredentialsViewModel(
 
     fun onOfflineCredentialCreated(credential: String) {
         launchUseCase {
-            setOfflinePin(credential).fold(
+            setOfflineCode(credential).fold(
                 onSuccess = {
                     _credentialsScreenState
                         .update {
@@ -827,7 +831,7 @@ class CredentialsViewModel(
                                         remove(AfterLoginAction.CreateOfflineCredential)
                                     },
                             )
-                        }.also { offlinePin = credential }
+                        }.also { offlineCode = credential }
                 },
                 onFailure = { error ->
                     logOutUser.invoke()

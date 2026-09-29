@@ -64,11 +64,11 @@
     <string name="pin_error_reset_failed">重置密码失败</string>
     <string name="pin_error_remaining_attempts">%1$s 剩余尝试次数</string>
     <string name="pin_error_locked_countdown">尝试次数过多。请在%1$s 秒后重试</string>
-    <string name="offline_credential_create_title">创建离线PIN码</string>
-    <string name="offline_credential_create_description">设置一个 PIN 码，以便在离线状态下登录此账户。</string>
-    <string name="offline_credential_create_button">创建PIN码</string>
+    <string name="offline_credential_create_title">创建离线CODE码</string>
+    <string name="offline_credential_create_description">设置一个 CODE 码，以便在离线状态下登录此账户。</string>
+    <string name="offline_credential_create_button">创建CODE码</string>
     <string name="offline_credential_enter_title">请输入您的离线密码</string>
-    <string name="offline_credential_enter_description">请输入您的4位数字PIN码以进行离线登录。</string>
+    <string name="offline_credential_enter_description">请输入您的4位数字CODE码以进行离线登录。</string>
     <string name="offline_credential_enter_button">登录</string>
     <string name="offline_credential_forgot_button">忘记密码了吗？</string>
     <string name="import_database">导入数据库</string>
@@ -80,7 +80,7 @@
     <string name="openid_login_cancelled">认证已取消</string>
     <string name="error_device_not_registered">设备未注册</string>
     <string name="missing_username_from_oauth_login_response">OAuth 登录响应中缺少用户名</string>
-    <string name="forgot_pin_description">要设置新的PIN码，您需要使用用户名和密码登录。此操作需要联网。</string>
+    <string name="offline_credential_forgot_code_description">要设置新的CODE码，您需要使用用户名和密码登录。此操作需要联网。</string>
     <string name="login_online">在线登录</string>
     <string name="cancel">取消</string>
 </resources>
