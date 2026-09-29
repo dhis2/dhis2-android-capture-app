@@ -142,6 +142,7 @@ class SplashActivity :
         initialDataSyncDone: Boolean,
     ) {
         if (isUserLogged && initialSyncDone && !sessionLocked) {
+            presenter.clearSingleProgramNavigation()
             startActivity(
                 MainActivity::class.java,
                 MainActivity.bundle(launchDataSync = initialDataSyncDone),
@@ -150,6 +151,7 @@ class SplashActivity :
                 null,
             )
         } else if (isUserLogged && !initialSyncDone) {
+            presenter.clearSingleProgramNavigation()
             startActivity(
                 SyncActivity::class.java,
                 null,

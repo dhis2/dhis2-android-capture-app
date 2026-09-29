@@ -19,6 +19,8 @@ import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
 import org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
+private const val IS_SINGLE_NAVIGATION_DONE = "IS_SINGLE_NAVIGATION_DONE"
+
 internal class ProgramRepositoryImpl(
     private val d2: D2,
     private val filterPresenter: FilterPresenter,
@@ -55,6 +57,22 @@ internal class ProgramRepositoryImpl(
 
     override fun clearCache() {
         baseProgramCache = emptyList()
+    }
+
+    override suspend fun isSingleNavigationDone(): Boolean =
+        d2
+            .dataStoreModule()
+            .localDataStore()
+            .value(IS_SINGLE_NAVIGATION_DONE)
+            .suspendGet()
+            ?.value == true.toString()
+
+    override suspend fun setSingleNavigationDone() {
+        d2
+            .dataStoreModule()
+            .localDataStore()
+            .value(IS_SINGLE_NAVIGATION_DONE)
+            .suspendSet(true.toString())
     }
 
     private fun aggregatesModels(): Flowable<List<ProgramUiModel>> =
