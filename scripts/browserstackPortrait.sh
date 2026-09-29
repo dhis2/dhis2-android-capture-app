@@ -34,7 +34,8 @@ json=$(jq -n \
                 --argjson shards "$shards" \
                 --arg singleRunnerInvocation "$browserstack_singleRunnerInvocation" \
                 --arg buildTag "$buildTag" \
-                '{devices: $devices, app: $app_url, testSuite: $test_url, class: $class, logs: $logs, video: $video, local: $loc, localIdentifier: $locId, gpsLocation: $gpsLocation, language: $language, locale: $locale, deviceLogs: $deviceLogs, allowDeviceMockServer: $allowDeviceMockServer, shards: $shards,singleRunnerInvocation: $singleRunnerInvocation, buildTag: $buildTag}')
+                --argjson coverage "$browserstack_coverage" \
+                '{devices: $devices, app: $app_url, testSuite: $test_url, class: $class, logs: $logs, video: $video, local: $loc, localIdentifier: $locId, gpsLocation: $gpsLocation, language: $language, locale: $locale, deviceLogs: $deviceLogs, allowDeviceMockServer: $allowDeviceMockServer, shards: $shards,singleRunnerInvocation: $singleRunnerInvocation, buildTag: $buildTag, coverage: $coverage}')
 
 test_execution_response="$(curl -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/build -d \ "$json" -H "Content-Type: application/json" -u "$BROWSERSTACK_USR:$BROWSERSTACK_PSW")"
 
@@ -57,6 +58,9 @@ do
   # Sleep until next poll
   sleep $polling_interval
 done
+
+# Fetch coverage before the exit paths below, so a failed suite still contributes.
+./fetchBrowserstackCoverage.sh "$build_id" "portrait"
 
 # Export test reports to bitrise
 test_reports_url="https://app-automate.browserstack.com/dashboard/v2/builds/$build_id"

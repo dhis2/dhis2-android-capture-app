@@ -103,6 +103,7 @@ jobs:
             :app:assembleDhis2DebugAndroidTest \
             :app:compileDhis2PlayServicesDebugKotlin \
             :app:compileDhis2TrainingDebugKotlin \
+            :app:stageInstrumentedClasses \
             --no-daemon
 
       - name: Upload APKs
@@ -111,6 +112,15 @@ jobs:
           name: test-apks
           path: |
             app/build/outputs/apk/**/*.apk
+          retention-days: 1
+
+      # The exact classes packaged in the APK, per module, so code-quality reports
+      # instrumented coverage against them instead of a recompilation.
+      - name: Upload instrumented classes
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: instrumented-classes
+          path: app/build/coverage-classes/
           retention-days: 1
 
   run-ui-portrait:
@@ -144,6 +154,15 @@ jobs:
           chmod +x browserstackPortrait.sh
           ./browserstackPortrait.sh
 
+      - name: Upload BrowserStack coverage
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: browserstack-coverage-portrait
+          path: browserstack-coverage/**
+          if-no-files-found: warn
+          retention-days: 7
+
   run-ui-landscape:
     runs-on: ubuntu-latest
     permissions:
@@ -175,11 +194,24 @@ jobs:
           chmod +x browserstackLandscape.sh
           ./browserstackLandscape.sh
 
+      - name: Upload BrowserStack coverage
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: browserstack-coverage-landscape
+          path: browserstack-coverage/**
+          if-no-files-found: warn
+          retention-days: 7
+
   code-quality:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    needs: unit-tests
+    # Runs after the device jobs so their coverage is included in the analysis.
+    # !cancelled() rather than success(): the device jobs upload whatever coverage they
+    # retrieved even when a test fails, so the analysis should still consume it.
+    needs: [ unit-tests, run-ui-portrait, run-ui-landscape ]
+    if: ${{ !cancelled() }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -192,12 +224,42 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
+      # Unit test coverage is reported by unit-tests against the classes it compiled.
+      # Missing when unit tests failed or were skipped; the analysis still runs.
       - name: Download JaCoCo Report
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: jacoco-report
           path: .
         continue-on-error: true
+
+      - name: Download instrumented classes
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: instrumented-classes
+          path: app/build/coverage-classes
+        continue-on-error: true
+
+      - name: Download BrowserStack coverage
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: browserstack-coverage-*
+          path: app/build/outputs/code_coverage/browserstack
+          merge-multiple: true
+        continue-on-error: true
+
+      # Every module reads the app's .ec for the part that concerns its own classes.
+      - name: Report instrumented coverage
+        run: |
+          ec_count=$(find app/build/outputs/code_coverage -name '*.ec' 2>/dev/null | wc -l | tr -d ' ')
+          echo "instrumented coverage files retrieved: $ec_count"
+          if [ "$ec_count" -eq 0 ]; then
+            echo "No instrumented coverage retrieved; the report will cover unit tests only."
+          elif [ ! -d app/build/coverage-classes ]; then
+            echo "::warning::Instrumented classes missing; instrumented coverage cannot be reported."
+          else
+            ./gradlew jacocoAndroidTestReport --stacktrace --no-daemon
+          fi
 
       - name: SonarQube
         env:
