@@ -38,7 +38,7 @@ actual val commonsModule: Module
                 CustomIntentRepositoryImpl(get())
             }
             single<FileHandler> {
-                FileHandlerImpl()
+                FileHandlerImpl(get())
             }
             single<CrashReportController> {
                 CrashReportControllerImpl(get(), getProperty("sentryDsn", ""))

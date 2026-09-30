@@ -13,10 +13,12 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.io.File
+import java.io.IOException
 
 class ExportDatabaseTest {
     private lateinit var exportDatabase: ExportDatabase
@@ -77,5 +79,23 @@ class ExportDatabaseTest {
             whenever(settingsRepository.exportDatabase()) doReturn mockedFile
             val result = exportDatabase(ExportDatabase.ExportType.Share)
             assertTrue((result as? ExportDatabase.ExportResult.Share)?.db == mockedFile)
+            verify(fileHandler, never()).copyAndOpen(any(), any())
+        }
+
+    @Test
+    fun `Should display error when copy to downloads fails`() =
+        runTest {
+            val mockedFile: File = org.mockito.kotlin.mock()
+            val errorMessage = "Could not create file in Downloads"
+            val exceptionToThrow = IOException(errorMessage)
+            whenever(settingsRepository.exportDatabase()) doReturn mockedFile
+            whenever(fileHandler.copyAndOpen(any(), any())) doAnswer { throw exceptionToThrow }
+            whenever(resourceManager.parseD2Error(exceptionToThrow)) doReturn errorMessage
+
+            val result = exportDatabase()
+
+            assertTrue(result == ExportDatabase.ExportResult.Error)
+            verify(settingsMessages, times(1)).sendMessage(errorMessage)
+            verify(resourceManager, never()).getString(R.string.database_export_downloaded)
         }
 }

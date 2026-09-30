@@ -11,7 +11,11 @@ import android.os.Build
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.maps.model.MapScope
 import org.dhis2.maps.views.MapSelectorActivity
@@ -160,7 +164,7 @@ class UiActionHandlerImpl(
     ) {
         val phoneCallIntent =
             Intent(Intent.ACTION_DIAL).apply {
-                data = Uri.parse("tel:$phoneNumber")
+                data = "tel:$phoneNumber".toUri()
             }
         launchIntentChooser(phoneCallIntent, onActivityNotFound)
     }
@@ -171,7 +175,7 @@ class UiActionHandlerImpl(
     ) {
         val phoneCallIntent =
             Intent(Intent.ACTION_SENDTO).apply {
-                data = Uri.parse("mailto:$email")
+                data = "mailto:$email".toUri()
             }
         launchIntentChooser(phoneCallIntent, onActivityNotFound)
     }
@@ -184,9 +188,9 @@ class UiActionHandlerImpl(
             Intent(Intent.ACTION_VIEW).apply {
                 data =
                     if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                        Uri.parse("http://$url")
+                        "http://$url".toUri()
                     } else {
-                        Uri.parse(url)
+                        url.toUri()
                     }
             }
         launchIntentChooser(phoneCallIntent, onActivityNotFound)
@@ -208,11 +212,11 @@ class UiActionHandlerImpl(
         callback: (result: String?) -> Unit,
     ) {
         this.callback = callback
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             filepath?.let { downloadFile(it) } ?: callback(null)
         } else {
             this.filepath = filepath
-            requestStoragePermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            requestStoragePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
     }
 
@@ -280,8 +284,16 @@ class UiActionHandlerImpl(
     }
 
     private fun downloadFile(filepath: String) {
-        fileHandler.copyAndOpen(File(filepath)) {
-            callback?.invoke(CallbackStatus.OK.name)
+        context.lifecycleScope.launch {
+            try {
+                fileHandler.copyAndOpen(File(filepath)) {
+                    callback?.invoke(CallbackStatus.OK.name)
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                callback?.invoke(CallbackStatus.ERROR.name)
+            }
         }
     }
 
@@ -294,7 +306,7 @@ class UiActionHandlerImpl(
 
         try {
             context.startActivity(chooser)
-        } catch (e: ActivityNotFoundException) {
+        } catch (_: ActivityNotFoundException) {
             onActivityNotFound()
         }
     }
