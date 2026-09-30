@@ -2420,6 +2420,7 @@ class CredentialsViewModelTest {
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(any())) doReturn false
             whenever(isUserLoggedIn()) doReturn Result.success(true)
+            whenever(verifyNeedOfflinePin()) doReturn Result.success(false)
 
             initViewModel(
                 username = "testuser",
@@ -2448,6 +2449,7 @@ class CredentialsViewModelTest {
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(any())) doReturn false
             whenever(isUserLoggedIn()) doReturn Result.success(false)
+            whenever(verifyNeedOfflinePin()) doReturn Result.success(false)
 
             initViewModel(
                 username = "testuser",
@@ -2476,6 +2478,7 @@ class CredentialsViewModelTest {
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(verifyNeedOfflinePin()) doReturn Result.success(false)
             whenever(isUserLoggedIn()) doReturn Result.failure(Exception("cannot check session"))
 
             initViewModel(
