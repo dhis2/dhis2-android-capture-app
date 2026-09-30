@@ -22,6 +22,10 @@ sealed interface HomeEffect {
 
     data object BlockSession : HomeEffect
 
+    data object PinCreated : HomeEffect
+
+    data object PinAlreadyCreated : HomeEffect
+
     data object ShowPinDialog : HomeEffect
 
     data class PeriodFilterRequest(

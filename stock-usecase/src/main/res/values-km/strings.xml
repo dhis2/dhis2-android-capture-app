@@ -8,6 +8,7 @@
     <string name="ok">យល់ព្រម</string>
     <string name="cancel">បោះបង់</string>
 
+    <string name="from">ពី</string>
     <!-- Content descriptions for accessibility -->
 
     <string name="confirm_transaction_label">បញ្ជាក់</string>

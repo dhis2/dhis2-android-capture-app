@@ -24,6 +24,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Lifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import org.dhis2.BuildConfig
@@ -145,6 +146,10 @@ class MainActivity : ActivityGlobalAbstract() {
                     onEffect = { effect ->
                         when (effect) {
                             HomeEffect.BlockSession -> finish()
+                            HomeEffect.PinAlreadyCreated,
+                            HomeEffect.PinCreated,
+                            -> { // handled in composable
+                            }
                             is HomeEffect.GoToLogin ->
                                 goToLogin(
                                     accountsCount = effect.accountsCount,
@@ -314,10 +319,9 @@ class MainActivity : ActivityGlobalAbstract() {
                     }
                 },
             ).onNoConnectionListener {
-                val contextView = findViewById<View>(R.id.navigationBar)
                 Snackbar
                     .make(
-                        contextView,
+                        binding.root,
                         R.string.sync_offline_check_connection,
                         Snackbar.LENGTH_SHORT,
                     ).show()
@@ -325,6 +329,7 @@ class MainActivity : ActivityGlobalAbstract() {
     }
 
     private fun showPeriodRequest(periodRequest: FilterManager.PeriodRequest) {
+        if (!lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) return
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
             FilterPeriodsDialog
                 .newPeriodsFilter(filterType = Filters.PERIOD, isFromToFilter = true)
@@ -337,6 +342,7 @@ class MainActivity : ActivityGlobalAbstract() {
     }
 
     private fun openOrgUnitTreeSelector() {
+        if (!lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) return
         OUTreeFragment
             .Builder()
             .withPreselectedOrgUnits(
@@ -359,7 +365,6 @@ class MainActivity : ActivityGlobalAbstract() {
             LoginActivity.bundle(
                 accountsCount = accountsCount,
                 isDeletion = isDeletion,
-                fromMainActivity = true,
             ),
             finishCurrent = true,
             finishAll = true,

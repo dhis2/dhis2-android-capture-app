@@ -1,9 +1,9 @@
 package org.dhis2.usescases.teidashboard.robot
 
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
+import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.intent.Intents
@@ -39,13 +39,19 @@ class NoteRobot : BaseRobot() {
         Intents.intended(allOf(hasComponent(NoteDetailActivity::class.java.name)))
     }
 
+    /**
+     * Sets the note text. Uses `replaceText` rather than typing, which in landscape would go
+     * to the keyboard's own editor instead of the field.
+     */
     fun typeNote(text: String) {
-        waitForView(withId(R.id.noteText)).perform(TypeTextAction(text))
+        waitForView(withId(R.id.noteText)).perform(replaceText(text))
         closeKeyboard()
     }
 
     fun clickOnSaveButton() {
-        waitForView(allOf(withId(R.id.saveButton), withText(R.string.save)),5000)
+        val saveButton = allOf(withId(R.id.saveButton), withText(R.string.save))
+        waitUntilViewIsStable(saveButton)
+        waitForView(saveButton, NOTES_WAIT_TIMEOUT_MS)
             .check(matches(allOf(isDisplayed(), isEnabled())))
             .perform(click())
     }
@@ -88,7 +94,12 @@ class NoteRobot : BaseRobot() {
     fun clickOnClearButton() {
         waitForView(withText(R.string.clear))
             .check(matches(allOf(isDisplayed(), isEnabled())))
-            .perform(closeSoftKeyboard(), click())
+            .perform(closeSoftKeyboard())
+        // The button moves while the keyboard closes; wait for it to settle before clicking.
+        waitUntilViewIsStable(withText(R.string.clear))
+        waitForView(withText(R.string.clear))
+            .check(matches(allOf(isDisplayed(), isEnabled())))
+            .perform(click())
     }
 
     fun waitUntilBackOnNotesList() {

@@ -3,28 +3,15 @@ package org.dhis2.commons.resources
 import androidx.annotation.StringRes
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
-import org.dhis2.commons.R
+import org.dhis2.mobile.commons.providers.CustomLabelContext
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.hisp.dhis.android.core.D2
 
 class EventResourcesProvider(
     val d2: D2,
     val resourceManager: ResourceManager,
+    val customLabelProvider: CustomLabelProvider,
 ) {
-    private fun programStageEventLabel(
-        programStageUid: String? = null,
-        programUid: String? = null,
-        quantity: Int = 1,
-    ) = try {
-        d2
-            .programModule()
-            .programStages()
-            .uid(programStageUid)
-            .blockingGet()
-            ?.displayEventLabel()
-    } catch (e: Exception) {
-        null
-    } ?: programEventLabel(programUid, quantity)
-
     fun formatWithProgramStageEventLabel(
         @StringRes stringResource: Int,
         programStageUid: String? = null,
@@ -32,25 +19,31 @@ class EventResourcesProvider(
         quantity: Int = 1,
         formatWithQuantity: Boolean = false,
     ): String =
-        programStageEventLabel(programStageUid, programUid, quantity).formatLabel(
+        programEventLabel(
+            customLabelContext =
+                when {
+                    programStageUid != null && programUid != null ->
+                        CustomLabelContext.ProgramStage(programStageUid, programUid)
+
+                    programUid != null ->
+                        CustomLabelContext.Program(programUid)
+
+                    else -> null
+                },
+            quantity = quantity,
+        ).formatLabel(
             stringResource,
             quantity,
             formatWithQuantity,
         )
 
     fun programEventLabel(
-        programUid: String? = null,
+        customLabelContext: CustomLabelContext? = null,
         quantity: Int = 1,
-    ) = try {
-        d2
-            .programModule()
-            .programs()
-            .uid(programUid)
-            .blockingGet()
-            ?.displayEventLabel()
-    } catch (e: Exception) {
-        null
-    } ?: resourceManager.getPlural(R.plurals.event_label, quantity)
+    ) = customLabelProvider.blockingCustomEventLabel(
+        customLabelContext,
+        quantity,
+    )
 
     fun formatWithProgramEventLabel(
         @StringRes stringResource: Int,
@@ -58,7 +51,7 @@ class EventResourcesProvider(
         quantity: Int = 1,
         formatWithQuantity: Boolean = false,
     ): String =
-        programEventLabel(programUid, quantity).formatLabel(
+        programEventLabel(programUid?.let { CustomLabelContext.Program(it) }, quantity).formatLabel(
             stringResource,
             quantity,
             formatWithQuantity,

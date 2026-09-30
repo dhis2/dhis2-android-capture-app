@@ -42,6 +42,7 @@
     <string name="not_now">Hozir emas</string>
     <string name="keep_editing">Таҳрирни давом этинг</string>
     <string name="share">Улашиш</string>
+    <string name="camera_permission_denied">Камерада фойдаланишга рухсат берилмаган. Ушбу функциядан фойдаланиш учун уни ёқишингиз керак.</string>
     <string name="action_close">Ёпмоқ</string>
     <string name="copied_text">Нусха олинди</string>
     <string name="take_photo">Суратга олиш</string>
@@ -82,4 +83,9 @@
     <string name="cancel">Рад этиш</string>
     <string name="ok">ЯХШИ</string>
 
-</resources>
+    <string name="sync">Синх</string>
+    <string name="sync_error">Синхронлашда хатолик</string>
+    <string name="marked_follow_up">Кузатув учун белгиланган</string>
+    <string name="remove_follow_up">Олиб ташлаш</string>
+    <string name="program_stage">Дастур босқичи</string>
+    </resources>

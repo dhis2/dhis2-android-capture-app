@@ -41,7 +41,6 @@
     <string name="next">داهاتوو</string>
     <string name="button_ok">تةواو</string>
     <string name="qr_events">ڕووداوەکان</string>
-    <string name="qr_relationships">پەیوەندیەکان</string>
     <string name="about">دةربارةي</string>
     <string name="save">خةزن كردن</string>
     <string name="menu_home">ماڵةوة</string>
@@ -64,5 +63,4 @@
     <string name="sync_dialog_title_syncing">هاوتاکردن</string>
     <string name="programs">بةرنامةكان</string>
     <string name="sync_error">هەڵە لە هاوکاتگەری</string>
-    <string name="program_stage">قؤناغي بةرنامة</string>
     </resources>

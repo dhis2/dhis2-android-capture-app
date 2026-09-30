@@ -21,6 +21,7 @@ import org.dhis2.maps.geometry.point.MapPointToFeature;
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.maps.model.MapScope;
 import org.dhis2.maps.usecases.MapStyleConfiguration;
+import org.dhis2.mobile.commons.providers.CustomLabelProvider;
 import org.dhis2.tracker.data.ProfilePictureProvider;
 import org.dhis2.tracker.relationships.data.EventRelationshipsRepository;
 import org.dhis2.tracker.relationships.data.RelationshipsRepository;
@@ -203,7 +204,8 @@ public class RelationshipModule {
             DispatcherProvider dispatcherProvider,
             AddRelationship addRelationship,
             D2ErrorUtils d2ErrorUtils,
-            RelationshipsUiStateMapper relationshipsUiStateMapper
+            RelationshipsUiStateMapper relationshipsUiStateMapper,
+            CustomLabelProvider customLabelProvider
     ) {
         return new RelationshipsViewModel(
                 dispatcherProvider,
@@ -211,7 +213,9 @@ public class RelationshipModule {
                 deleteRelationships,
                 addRelationship,
                 d2ErrorUtils,
-                relationshipsUiStateMapper
+                relationshipsUiStateMapper,
+                customLabelProvider,
+                programUid
         );
     }
 
@@ -251,7 +255,8 @@ public class RelationshipModule {
     RelationshipsRepository provideRelationshipsRepository(
             D2 d2,
             ResourceManager resourceManager,
-            ProfilePictureProvider profilePictureProvider
+            ProfilePictureProvider profilePictureProvider,
+            CustomLabelProvider customLabelProvider
     ) {
         if (teiUid != null) {
             return new TrackerRelationshipsRepository(
@@ -259,14 +264,18 @@ public class RelationshipModule {
                     resourceManager,
                     teiUid,
                     enrollmentUid,
-                    profilePictureProvider
+                    profilePictureProvider,
+                    customLabelProvider,
+                    programUid
             );
         } else {
             return new EventRelationshipsRepository(
                     d2,
                     resourceManager,
                     eventUid,
-                    profilePictureProvider
+                    profilePictureProvider,
+                    customLabelProvider,
+                    programUid
             );
         }
 

@@ -90,6 +90,7 @@ class SchedulingViewModelTest {
                         ownerOrgUnitUid = OWNER_ORG_UNIT_UID,
                     ),
                 getEventPeriods = mock(),
+                customLabelProvider = mock(),
             )
     }
 

@@ -12,6 +12,7 @@ import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.tracker.input.model.TrackerInputType
 import org.dhis2.tracker.input.ui.action.FieldUid
 import org.dhis2.tracker.search.model.TrackedEntitySearchItemResult
@@ -37,6 +38,7 @@ class SearchRepositoryImplKt(
     private val trackedEntityInstanceInfoProvider: TrackedEntityInstanceInfoProvider,
     private val eventInfoProvider: EventInfoProvider,
     private val customIntentRepository: CustomIntentRepository,
+    private val customLabelProvider: CustomLabelProvider,
 ) : SearchRepositoryKt {
     private lateinit var savedSearchParameters: SearchParametersModel
 
@@ -74,6 +76,11 @@ class SearchRepositoryImplKt(
         fetchedTeiUids.ifEmpty {
             null
         }
+
+    override suspend fun getTeTypeCustomLabel(
+        teTypeUid: String,
+        isPlural: Boolean,
+    ): String = customLabelProvider.getTeTypeCustomLabel(teTypeUid, isPlural)
 
     override fun searchTeiForMap(
         searchParametersModel: SearchParametersModel,

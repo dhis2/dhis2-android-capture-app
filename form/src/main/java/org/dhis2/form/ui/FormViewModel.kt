@@ -136,7 +136,7 @@ class FormViewModel(
 
         pendingIntents
             .distinctUntilChanged { old, new ->
-                if (old is FormIntent.OnFinish && new is FormIntent.OnFinish) {
+                if (isRepeatableIntent(old) || isRepeatableIntent(new)) {
                     false
                 } else {
                     old == new
@@ -168,6 +168,8 @@ class FormViewModel(
         textChangeDebounceRunnable?.let { handler.removeCallbacks(it) }
         super.onCleared()
     }
+
+    private fun isRepeatableIntent(intent: FormIntent): Boolean = intent is FormIntent.OnFinish || intent is FormIntent.OnSection
 
     private fun displayResult(result: Pair<RowAction, StoreResult>) {
         result.second.valueStoreResult?.let {

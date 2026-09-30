@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="add_account">Añadir una cuenta nueva</string>
     <string name="two_fa_screen_title">Autenticación de dos factores</string>
@@ -17,6 +17,8 @@
     <string name="action_no_now">Ahora no</string>
     <string name="action_yes">Sí</string>
     <string name="enter_pin_button">Desbloquear</string>
+    <string name="offline_credential_enter_button">Iniciar sesión</string>
     <string name="import_database">Importar base de datos</string>
     <string name="importing_successful">Importado con éxito</string>
-    </resources>
+    <string name="cancel">Cancelar</string>
+</resources>

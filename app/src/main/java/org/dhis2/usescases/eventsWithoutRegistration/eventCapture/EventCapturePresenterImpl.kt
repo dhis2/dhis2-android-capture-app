@@ -23,6 +23,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.tracker.NavigationBarUIState
 import org.dhis2.ui.icons.DHIS2Icons
 import org.dhis2.ui.icons.DataEntryFilled
@@ -46,6 +47,7 @@ class EventCapturePresenterImpl(
     private val preferences: PreferenceProvider,
     private val pageConfigurator: NavigationPageConfigurator,
     private val resourceManager: ResourceManager,
+    private val customLabelProvider: CustomLabelProvider,
 ) : ViewModel(),
     EventCaptureContract.Presenter {
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -97,62 +99,66 @@ class EventCapturePresenterImpl(
         )
         checkExpiration()
 
-        viewModelScope.launch {
-            loadBottomBarItems()
-        }
+        loadBottomBarItems()
     }
 
     private fun loadBottomBarItems() {
-        val navItems = mutableListOf<NavigationBarItem<NavigationPage>>()
+        viewModelScope.launch {
+            val navItems = mutableListOf<NavigationBarItem<NavigationPage>>()
 
-        if (pageConfigurator.displayDataEntry()) {
-            navItems.add(
-                NavigationBarItem(
-                    id = NavigationPage.DATA_ENTRY,
-                    icon = DHIS2Icons.DataEntryOutline,
-                    selectedIcon = DHIS2Icons.DataEntryFilled,
-                    label = resourceManager.getString(R.string.navigation_form),
-                ),
-            )
+            if (pageConfigurator.displayDataEntry()) {
+                navItems.add(
+                    NavigationBarItem(
+                        id = NavigationPage.DATA_ENTRY,
+                        icon = DHIS2Icons.DataEntryOutline,
+                        selectedIcon = DHIS2Icons.DataEntryFilled,
+                        label = resourceManager.getString(R.string.navigation_form),
+                    ),
+                )
+            }
+
+            if (pageConfigurator.displayAnalytics()) {
+                navItems.add(
+                    NavigationBarItem(
+                        id = NavigationPage.ANALYTICS,
+                        icon = Icons.Outlined.BarChart,
+                        selectedIcon = Icons.Filled.BarChart,
+                        label = resourceManager.getString(R.string.navigation_charts),
+                    ),
+                )
+            }
+
+            if (pageConfigurator.displayRelationships()) {
+                navItems.add(
+                    NavigationBarItem(
+                        id = NavigationPage.RELATIONSHIPS,
+                        icon = Icons.Outlined.Hub,
+                        selectedIcon = Icons.Filled.Hub,
+                        label =
+                            customLabelProvider.getCustomRelationshipLabel(
+                                programUid = eventCaptureRepository.getEventProgram(eventUid),
+                                quantity = 2,
+                            ),
+                    ),
+                )
+            }
+
+            if (pageConfigurator.displayNotes()) {
+                navItems.add(
+                    NavigationBarItem(
+                        id = NavigationPage.NOTES,
+                        icon = Icons.AutoMirrored.Outlined.StickyNote2,
+                        selectedIcon = Icons.AutoMirrored.Filled.StickyNote2,
+                        label = resourceManager.getString(R.string.navigation_notes),
+                    ),
+                )
+            }
+
+            navigationBarUIState.value =
+                navigationBarUIState.value.copy(
+                    items = navItems.takeIf { it.size > 1 }.orEmpty(),
+                )
         }
-
-        if (pageConfigurator.displayAnalytics()) {
-            navItems.add(
-                NavigationBarItem(
-                    id = NavigationPage.ANALYTICS,
-                    icon = Icons.Outlined.BarChart,
-                    selectedIcon = Icons.Filled.BarChart,
-                    label = resourceManager.getString(R.string.navigation_charts),
-                ),
-            )
-        }
-
-        if (pageConfigurator.displayRelationships()) {
-            navItems.add(
-                NavigationBarItem(
-                    id = NavigationPage.RELATIONSHIPS,
-                    icon = Icons.Outlined.Hub,
-                    selectedIcon = Icons.Filled.Hub,
-                    label = resourceManager.getString(R.string.navigation_relations),
-                ),
-            )
-        }
-
-        if (pageConfigurator.displayNotes()) {
-            navItems.add(
-                NavigationBarItem(
-                    id = NavigationPage.NOTES,
-                    icon = Icons.AutoMirrored.Outlined.StickyNote2,
-                    selectedIcon = Icons.AutoMirrored.Filled.StickyNote2,
-                    label = resourceManager.getString(R.string.navigation_notes),
-                ),
-            )
-        }
-
-        navigationBarUIState.value =
-            navigationBarUIState.value.copy(
-                items = navItems.takeIf { it.size > 1 }.orEmpty(),
-            )
     }
 
     override fun onNavigationPageChanged(page: NavigationPage) {

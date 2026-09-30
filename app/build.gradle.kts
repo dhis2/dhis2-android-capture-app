@@ -19,7 +19,6 @@ plugins {
     alias(libs.plugins.kotlin.compose.compiler)
     alias(libs.plugins.sentry)
 }
-apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
 val getBuildDate by extra {
     fun(): String {
@@ -112,13 +111,13 @@ android {
         }
     }
 
-    compileSdk = libs.versions.sdk.get().toInt()
+    compileSdk = libs.versions.compileSdk.get().toInt()
     namespace = "org.dhis2"
     testNamespace = "org.dhis2.test"
 
     defaultConfig {
         applicationId = "com.dhis2"
-        targetSdk = libs.versions.sdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
         versionCode = libs.versions.vCode.get().toInt()
         versionName = libs.versions.vName.get()
@@ -200,6 +199,10 @@ android {
             // install debug and release builds at the same time
             applicationIdSuffix = ".debug"
 
+            // Emits .ec execution data from androidTest runs, for jacocoReport.
+            // Debug only; release builds are unaffected.
+            enableAndroidTestCoverage = true
+
             buildConfigField("int", "MATOMO_ID", "2")
             buildConfigField("String", "BUILD_DATE", "\"" + getBuildDate() + "\"")
             buildConfigField("String", "GIT_SHA", "\"" + getCommitHash() + "\"")
@@ -228,6 +231,12 @@ android {
         }
         create("dhis2Training") {
             signingConfig = signingConfigs.getByName("training")
+        }
+    }
+
+    sourceSets {
+        getByName("dhis2Training") {
+            kotlin.srcDir("src/dhis2/java")
         }
     }
 

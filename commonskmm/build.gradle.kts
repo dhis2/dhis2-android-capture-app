@@ -15,9 +15,9 @@ kotlin {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
-    androidLibrary {
+    android {
         namespace = "org.dhis2.mobile.commons"
-        compileSdk = libs.versions.sdk.get().toInt()
+        compileSdk = libs.versions.compileSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
         compilerOptions { jvmTarget.set(JvmTarget.JVM_17) }
         androidResources { enable = true }
@@ -69,6 +69,7 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.dhis2.android.sdk)
+            implementation(libs.androidx.exifinterface)
             implementation(libs.test.espresso.idlingresource)
             api(libs.analytics.timber)
             implementation(libs.androidx.browser)

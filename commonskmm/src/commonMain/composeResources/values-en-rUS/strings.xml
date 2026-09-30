@@ -103,7 +103,6 @@
     <string name="login_error_bad_credentials">The username or password are incorrect</string>
     <string name="login_error_unknown_host">Unknown server</string>
     <string name="online_search_parsing_error">Error while parsing results</string>
-    <string name="error_unexpected">Something unexpected went worng.</string>
     <string name="error_too_manu_org_units">Your user has more than one root organisation units. Review your configuration or contact your admin.</string>
     <string name="error_max_tei_count_reached">Online results exceed the maximum number of tracker instances that can be shown. Please refine your search.</string>
     <string name="error_many_requests">The server is a bit busy at this moment. Please try a bit later.</string>

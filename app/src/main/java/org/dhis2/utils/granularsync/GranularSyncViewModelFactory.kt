@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.utils.granularsync.data.GranularSyncRepository
 import org.dhis2.utils.granularsync.ui.SyncUiStateMapper
 import org.hisp.dhis.android.core.D2
@@ -18,7 +17,6 @@ class GranularSyncViewModelFactory(
     private val schedulerProvider: SchedulerProvider,
     private val dispatcher: DispatcherProvider,
     private val syncContext: SyncContext,
-    private val workManagerController: WorkManagerController,
     private val smsSyncProvider: SMSSyncProvider,
     private val mapper: SyncUiStateMapper,
 ) : ViewModelProvider.Factory {
@@ -30,7 +28,6 @@ class GranularSyncViewModelFactory(
             schedulerProvider,
             dispatcher,
             syncContext,
-            workManagerController,
             smsSyncProvider,
             mapper,
         ) as T

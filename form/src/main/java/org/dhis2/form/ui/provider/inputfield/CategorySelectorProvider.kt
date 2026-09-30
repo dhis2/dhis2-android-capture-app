@@ -163,7 +163,7 @@ fun ProvideEmptyCategorySelector(
     )
 }
 
-private fun getInputState(
+internal fun getInputState(
     inputState: InputShellState,
     isEmpty: Boolean,
 ): InputShellState =

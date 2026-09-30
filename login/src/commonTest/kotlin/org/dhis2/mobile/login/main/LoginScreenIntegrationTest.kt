@@ -18,6 +18,7 @@ import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
 import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
+import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
 import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
 import org.dhis2.mobile.login.pin.data.SessionRepository
@@ -128,7 +129,8 @@ class LoginScreenIntegrationTest {
                         serverName = singleAccount.serverName,
                         selectedServerFlag = singleAccount.serverFlag,
                         allowRecovery = singleAccount.allowRecovery,
-                        entryMode = CredentialsEntryMode.EXISTING_BASIC,
+                        entryMode = CredentialsEntryMode.EXISTING_PASSWORD,
+                        autoPromptLogin = false,
                     ),
                 ),
                 any(),
@@ -161,6 +163,8 @@ class LoginScreenIntegrationTest {
                         selectedServerFlag = oauthAccount.serverFlag,
                         allowRecovery = false,
                         entryMode = CredentialsEntryMode.EXISTING_OAUTH,
+                        // Initial landing: the offline-credential dialog is not auto-presented.
+                        autoPromptLogin = false,
                     ),
                 ),
                 any(),
@@ -229,6 +233,7 @@ class LoginScreenIntegrationTest {
                 importDatabase = importDatabase,
                 validateServer = validateServer,
                 networkStatusProvider = networkStatusProvider,
+                appLinkNavigation = AppLinkNavigation(),
             )
     }
 

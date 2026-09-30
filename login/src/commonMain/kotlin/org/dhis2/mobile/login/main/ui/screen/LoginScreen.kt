@@ -78,18 +78,26 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+/**
+ * The scheme the DHIS2 OAuth2 flow redirects back to.
+ *
+ * Must stay in sync with `OAuth2Config.DEFAULT_REDIRECT_URI` in the DHIS2 Android SDK and with the
+ * `LoginActivity` intent filter that receives it in the app manifest.
+ */
+private const val OAUTH_REDIRECT_SCHEME = "dhis2oauth"
+
 @Composable
 fun LoginScreen(
     navController: NavHostController = rememberNavController(),
     versionName: String,
-    fromHome: Boolean,
     onNavigateToSync: () -> Unit,
     onNavigateToHome: () -> Unit,
     onNavigateToPrivacyPolicy: () -> Unit,
     onFinish: () -> Unit,
+    renewSession: Boolean = false,
 ) {
     val context = LocalPlatformContext.current
-    val viewModel = koinViewModel<LoginViewModel> { parametersOf(context) }
+    val viewModel = koinViewModel<LoginViewModel> { parametersOf(context, renewSession) }
     val fixedOidcInfo = koinInject<OidcInfo>()
     var displayMoreActions by remember { mutableStateOf(false) }
     var displayBackArrow by remember { mutableStateOf(false) }
@@ -211,14 +219,19 @@ fun LoginScreen(
                             fixedOpenIdProvider(fixedOidcInfo).takeIf { info ->
                                 info.serverUrl == arg.selectedServer
                             },
-                        fromHome = fromHome,
                         entryMode = arg.entryMode,
+                        autoPromptLogin = arg.autoPromptLogin,
+                        autoStartRenewal = arg.autoStartRenewal,
                     )
                 }
                 composable<LoginScreenState.OauthAuthentication> {
                     val args = it.toRoute<LoginScreenState.OauthAuthentication>()
                     WebAuthenticator(
                         url = args.selectedServer,
+                        redirectScheme = OAUTH_REDIRECT_SCHEME,
+                        onAuthCallback = { redirectUri ->
+                            viewModel.onOauthRedirect(redirectUri)
+                        },
                         onDismiss = {
                             viewModel.onOauthLoginCancelled()
                         },

@@ -43,6 +43,7 @@ import org.dhis2.form.ui.provider.LegendValueProviderImpl
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.customintents.CustomIntentRepositoryImpl
+import org.dhis2.mobile.commons.providers.CustomLabelProviderImpl
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.dhis2.mobile.commons.reporting.CrashReportControllerImpl
 import org.dhis2.mobileProgramRules.EvaluationType
@@ -177,10 +178,16 @@ object Injector {
                 EventResourcesProvider(
                     provideD2(),
                     provideResourcesManager(context),
+                    provideCustomLabel(),
                 ),
             eventMode = eventRecords.eventMode,
             dispatcherProvider = provideDispatchers(),
             customIntentRepository = provideCustomIntentProvider(),
+        )
+
+    private fun provideCustomLabel() =
+        CustomLabelProviderImpl(
+            d2 = provideD2(),
         )
 
     private fun provideEnrollmentFormLabelsProvider(context: Context) = EnrollmentFormLabelsProvider(provideResourcesManager(context))

@@ -41,10 +41,7 @@
     <string name="keep_editing">Seguir editando</string>
     <string name="event_can_be_completed">¿Desea marcar este formulario como completo?</string>
     <string name="discard_go_back">Si sale toda la información del formulario será descartada.</string>
-    <string name="field_errors_not_saved">Algunos campos tienen errores y no serán guardados.</string>
-    <string name="fields_mandatory_missing">Algunos campos obligatorios faltan llenarse, el formulario no puede ser guardado</string>
-    <string name="fields_mandatory_missing_discard">Faltan algunos campos obligatorios y el formulario no puede guardarse.\nSi sales ahora, los cambios se descartarán.</string>
-    <string name="field_errors_not_saved_discard">Algunos campos tienen errores y no serán guardados. \nSi sale, los cambios serán descartados.</string>
+    <string name="field_errors_not_saved_discard">Algunos campos presentan errores y no se han guardado.\nSi sales ahora, los cambios se descartarán.</string>
     <string name="share">Compartir</string>
     <string name="camera_permission_denied">El permiso de cámara está denegado.\nDebes activarlo para usar esta función.</string>
     <string name="action_close">Cerrar</string>

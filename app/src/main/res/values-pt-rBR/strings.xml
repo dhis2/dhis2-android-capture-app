@@ -64,7 +64,6 @@
     <string name="next">Próximo</string>
     <string name="button_ok">Aprovado</string>
     <string name="qr_attributes">Atributos</string>
-    <string name="qr_relationships">Relacionamentos</string>
     <string name="about">Acerca</string>
     <string name="share">Partilhar</string>
     <string name="save">Salvar</string>
@@ -121,9 +120,7 @@
     <string name="sync_dialog_action_refresh">Actualizar</string>
     <string name="skipped">Ignorado</string>
     <string name="programs">Programas</string>
-    <string name="mark_follow_up">Marcar para acompanhamento</string>
     <string name="coordinates">Coordenadas</string>
     <string name="schedule">Programar</string>
     <string name="scheduled_enter_event">Agendado</string>
-    <string name="program_stage">Estágio do programa</string>
     </resources>

@@ -13,11 +13,12 @@ import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.form.R
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.mobile.commons.files.deleteStagedFile
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
+import org.hisp.dhis.android.core.arch.helpers.ResourceContext
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.datavalue.LegacyDataValueApi
@@ -147,7 +148,7 @@ class ValueStoreImpl(
         var newValue = value.withValueTypeCheck(valueType) ?: ""
         if (optionSet == null && isFile(valueType) && value != null) {
             try {
-                newValue = saveFileResource(value, valueType == ValueType.IMAGE)
+                newValue = saveFileResource(value, uid, valueType == ValueType.IMAGE)
             } catch (e: Exception) {
                 return Flowable.just(
                     StoreResult(
@@ -203,7 +204,7 @@ class ValueStoreImpl(
         var newValue = value.withValueTypeCheck(valueType) ?: ""
         if (optionSet == null && isFile(valueType) && value != null) {
             try {
-                newValue = saveFileResource(value, valueType == ValueType.IMAGE)
+                newValue = saveFileResource(value, uid, valueType == ValueType.IMAGE)
             } catch (e: Exception) {
                 return Flowable.just(
                     StoreResult(
@@ -252,16 +253,30 @@ class ValueStoreImpl(
 
     private fun saveFileResource(
         path: String,
-        resize: Boolean,
+        uid: String,
+        isImage: Boolean,
     ): String {
-        val file =
-            if (resize) {
-                FileResizerHelper.resizeFile(File(path), FileResizerHelper.Dimension.MEDIUM)
+        val fileContext =
+            if (isImage) {
+                ResourceContext.ImageContext.ProgramImageContext(
+                    programUid = resolveProgramUid().orEmpty(),
+                    resourceUid = uid,
+                )
             } else {
-                File(path)
+                ResourceContext.FileContext
             }
-        return d2.fileResourceModule().fileResources().blockingAdd(file)
+
+        val fileResourceUid =
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(File(path), fileContext)
+
+        deleteStagedFile(path)
+
+        return fileResourceUid
     }
+
+    private fun resolveProgramUid(): String? =
+        overrideProgramUid
+            ?: enrollmentRepository?.blockingGet()?.program()
 
     override fun deleteOptionValueIfSelected(
         field: String,

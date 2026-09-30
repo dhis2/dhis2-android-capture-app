@@ -2,9 +2,11 @@
 name: test-flow-planner
 description: >
   Group Zephyr cases into automation flows, identify shared setup, propose
-  Robots and fixtures, and surface gaps in the source cases. Produces a
-  flow-plan.md artifact the user reviews before any test code is written.
-  Plan-mode only — never generates Kotlin.
+  Robots and fixtures, and surface gaps in the source cases — including cases
+  whose intent had to be inferred because they carry no explicit
+  Given/When/Then, which is most of them. Produces a flow-plan.md artifact the
+  user reviews before any test code is written. Plan-mode only — never
+  generates Kotlin.
 ---
 
 # Test Flow Planner
@@ -15,7 +17,13 @@ only after the user approves.
 
 ## Inputs
 
-- Normalized Zephyr cases (from `zephyr-test-fetcher`).
+- Normalized Zephyr cases (from `zephyr-test-fetcher`). **Most ANDROAPP Test
+  cases carry no explicit Given/When/Then** — only a small minority do. Each
+  record tells you how its intent was established: quoted from an explicit GWT
+  (`inferred: false`), read off the summary and description (`inferred: true`),
+  or not determinable at all (`needsClarification: true`, with a
+  `clarifyingQuestion`). Plan differently for each — see "Handling cases with
+  no stated Given/When/Then" below.
 - Existing Robots and tests in the capture-app repo. Grep paths:
   - `app/src/androidTest/java/org/dhis2/usescases/<feature>/robot/`
   - `app/src/androidTest/java/org/dhis2/common/`
@@ -83,10 +91,12 @@ State the verdict for every case in the plan: either
    and look for ones whose `description` is empty (or does not start with
    `"Reserved for Android Capture App automated tests"`). Example for event
    programs:
+
    ```bash
    curl -s -u system:System123 \
      "<BASE_URL>/api/programs.json?fields=id,name,description&filter=programType:eq:WITHOUT_REGISTRATION&paging=false"
    ```
+
 2. **Cross-check with the codebase.** Grep `app/src/androidTest` for each
    candidate UID — drop any UID already referenced in tests *unless* the
    matching flow is one the new cases are intended to extend (see
@@ -99,12 +109,14 @@ State the verdict for every case in the plan: either
    section (schema below). Get explicit user approval before mutating
    anything on the server.
 5. **After approval, claim each program** by PATCHing its `description`:
+
    ```bash
    curl -s -u system:System123 -X PATCH \
      -H 'Content-Type: application/json-patch+json' \
      "<BASE_URL>/api/programs/<UID>" \
      -d '[{"op":"add","path":"/description","value":"Reserved for Android Capture App automated tests — Flow X (<Title>). Owned by ANDROAPP-<TICKET>. Do not modify form structure or seeded events without coordinating with the Android team."}]'
    ```
+
 6. **Apply any config tweaks** the flow needs (mandatory DEs, formName
    diffs, validation/program rules, seeded events). Document each change
    in the plan so future agents understand why the program looks the way
@@ -132,16 +144,42 @@ State the verdict for every case in the plan: either
 - **Always seed data via the tracker import API**, not by tapping through
   the app, so the seed is reproducible from CI.
 
+## Handling cases with no stated Given/When/Then
+
+Assume a case has **no** Given/When/Then unless the fetcher says otherwise.
+Absence of a GWT is the normal state of an ANDROAPP Test case — it is not by
+itself a gap, and it is not a reason to skip the case. What matters is whether
+the case's *intent* is established, and how:
+
+| Fetcher flags | What you have | How to plan it |
+| --- | --- | --- |
+| `inferred: false` | Intent quoted verbatim from an explicit GWT | Plan directly against the quoted text. |
+| `inferred: true` | Intent read off the summary + description | Plan against it, but **mark it inferred in the plan** and state the assumption in one line so the user can correct it at review. |
+| `needsClarification: true` | Nothing safe to work from | Do **not** plan steps for it. List it under Gaps with the fetcher's `clarifyingQuestion`, and put the question in "Decisions needed before implementation". |
+
+Never convert a bare summary into concrete steps and present them as though
+they came from the case. If the flow's shape depends on a case whose intent is
+unclear, say so and stop short of that part of the plan rather than filling the
+hole.
+
 ## Heuristics for grouping cases into flows
 
-- **Shared setup ⇒ same flow.** Cases that share three or more Given/setup
-  steps fold into one flow.
+- **Shared preconditions ⇒ same flow.** Cases that need the same program, the
+  same screen, and the same app state fold into one flow. Few cases state
+  their preconditions, so derive them from the summary plus the program/stage
+  metadata the architect resolved before planning — do not look for a `Given`
+  clause that usually isn't there.
 - **Same screen, same Robot.** Each screen the flow touches gets one Robot.
   Reuse an existing Robot if 70%+ of its methods already cover the
   interactions needed.
-- **Each Then is one verification *method*.** Every distinct "Then"
-  assertion becomes one verification method on the appropriate Robot —
-  not one whole `@Test`. See "One workflow `@Test` per flow" below.
+- **Each expected outcome is one verification *method*.** Every distinct
+  outcome a case expects becomes one verification method on the appropriate
+  Robot — not one whole `@Test`. Where the case has an explicit "Then", use
+  it verbatim; where it doesn't, use the outcome established per the table
+  above. See "One workflow `@Test` per flow" below.
+- **Don't group on an unclear case.** A case flagged
+  `needsClarification` must not be used to justify grouping, splitting, or a
+  program claim. Park it in Gaps until answered.
 - **Independence preferred over speed.** When in doubt, split flows rather
   than coupling unrelated cases.
 
@@ -243,10 +281,11 @@ order:
 <3–5 line summary of what's being automated and why>
 
 ## Source cases
-| Key | Title | Automation status | Coverage |
-|-----|-------|-------------------|----------|
-| ANDROAPP-1234 | ... | Not Automated | Covered by Flow A |
-| ANDROAPP-1456 | ... | Pending | Covered by Flow A |
+| Key | Title | Automation status | Intent | Coverage |
+|-----|-------|-------------------|--------|----------|
+| ANDROAPP-1234 | ... | Not Automated | stated (explicit GWT) | Covered by Flow A |
+| ANDROAPP-1456 | ... | Pending | **inferred** from summary | Covered by Flow A |
+| ANDROAPP-1502 | ... | Not Automated | **unclear — question asked** | Not planned (see Gaps) |
 
 ## Flows
 
@@ -262,8 +301,10 @@ order:
   reason (e.g., "needs a separate launch — completed event").
 - **Workflow steps (ordered)**:
   1. <step description> — checkpoints: [ANDROAPP-####], [ANDROAPP-####]
-  2. <step description> — checkpoints: [ANDROAPP-####]
+  2. <step description> — checkpoints: [ANDROAPP-####] *(intent inferred)*
   3. (deferred) <description> — [ANDROAPP-####] *(blocked by …)*
+
+  Mark any checkpoint whose case intent was inferred rather than stated.
 - **Standalone tests to add / delete**: <existing `@Test`s this workflow
   makes redundant and proposes to delete, plus any new standalone `@Test`s
   proposed — or "none". Requires explicit user confirmation before any are
@@ -288,7 +329,11 @@ order:
 ## Gaps in source cases
 - ANDROAPP-1457: "Then enrollment date is displayed" — date format not
   specified. **Decision needed.**
-- ANDROAPP-1502: Missing Given (no precondition stated).
+- ANDROAPP-1456: no stated Given/When/Then. Intent **inferred** from the
+  summary as "<one-line reading>". Confirm this is what the case means.
+- ANDROAPP-1502: summary "<summary>" with no description — intent could not be
+  established. **Question:** "<the fetcher's clarifyingQuestion>" Not planned
+  until answered.
 
 ## Improve existing vs create new
 - **Improve**: <list of existing tests/Robots to extend, with what changes>
@@ -307,11 +352,20 @@ order:
 - **Always end with the literal line `## Approve to implement?`** so the
   parent agent knows where to stop.
 - **Name every flow** with a concrete TestClass-style name. No "TBD".
-- **Be explicit about gaps.** If a case is missing Given/When/Then or has an
-  ambiguous Then, list it under Gaps with the exact case key. Do not paper
-  over gaps by inventing steps.
+- **Be explicit about gaps — but don't call a missing GWT a gap.** Most cases
+  have no Given/When/Then; that alone is not worth listing. The gaps that
+  matter are: a case whose intent could not be established
+  (`needsClarification`), an inferred reading that needs the user's
+  confirmation, and an outcome that's stated but ambiguous. List each under
+  Gaps with the exact case key. Never paper over one by inventing steps.
+- **Mark every inferred intent as inferred.** If the plan's steps for a case
+  rest on your reading of its summary rather than on stated text, the Source
+  cases table and the flow's step list must both say so. An inferred reading
+  presented as fact is the failure mode this rule exists to prevent.
 - **Quote source content verbatim** when surfacing ambiguity, so the user can
-  cross-check with the Zephyr case.
+  cross-check with the Zephyr case. When there is nothing to quote — a bare
+  summary and an empty description — say exactly that rather than paraphrasing
+  in a way that implies more source detail than exists.
 - **Distinguish reuse from new work.** Every flow row says "new" or
   "reused (+ delta)".
 - **Confirm before adding or deleting any standalone `@Test`.** Adding a

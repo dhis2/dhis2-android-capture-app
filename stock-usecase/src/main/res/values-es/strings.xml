@@ -74,7 +74,9 @@ android.permission.RECORD_AUDIO
     <string name="speech_timeout_error">No se detectó entrada de voz</string>
     <string name="unknown_speech_error">Se ha producido un error desconocido.</string>
     <string name="non_numeric_speech_input_error">No se permiten entradas no numéricas: \"%s\"</string>
-    <string name="negative_number_speech_input_error">\n        No se permite la entrada de números negativos: \"%s\"\n    </string>
+    <string name="negative_number_speech_input_error">
+        No se permite la entrada de números negativos: \"%s\"
+    </string>
 
     <string name="unable_to_sync_data_no_network_available">
         No se puede sincronizar los datos porque no hay conexión de red disponible

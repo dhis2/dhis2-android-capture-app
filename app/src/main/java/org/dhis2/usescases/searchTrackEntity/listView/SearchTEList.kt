@@ -226,9 +226,9 @@ class SearchTEList : FragmentGlobalAbstract() {
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
             )
             setContent {
-                val teTypeName by viewModel.teTypeName.observeAsState()
+                val teTypeLabel by viewModel.teTypeLabel.observeAsState()
 
-                if (!teTypeName.isNullOrBlank()) {
+                if (!teTypeLabel.isNullOrBlank()) {
                     val isFilterOpened by viewModel.filtersOpened.observeAsState(false)
                     val createButtonVisibility by viewModel
                         .createButtonScrollVisibility
@@ -239,7 +239,7 @@ class SearchTEList : FragmentGlobalAbstract() {
                         }
 
                     FullSearchButtonAndWorkingList(
-                        teTypeName = teTypeName!!,
+                        teTypeName = teTypeLabel ?: "",
                         modifier = Modifier,
                         createButtonVisible = createButtonVisibility,
                         closeFilterVisibility = isFilterOpened,
@@ -271,7 +271,7 @@ class SearchTEList : FragmentGlobalAbstract() {
                     .createButtonScrollVisibility
                     .observeAsState(true)
                 val filtersOpened by viewModel.filtersOpened.observeAsState(false)
-                val teTypeName by viewModel.teTypeName.observeAsState()
+                val teTypeLabel by viewModel.teTypeLabel.observeAsState()
                 val hasQueryData =
                     remember(viewModel.searchParametersUiState) {
                         viewModel.queryDataList.isNotEmpty()
@@ -291,13 +291,13 @@ class SearchTEList : FragmentGlobalAbstract() {
                 if ((hasQueryData || orientation == Configuration.ORIENTATION_LANDSCAPE) &&
                     createButtonVisibility &&
                     !filtersOpened &&
-                    !teTypeName.isNullOrBlank()
+                    !teTypeLabel.isNullOrBlank()
                 ) {
                     CreateNewButton(
                         modifier = Modifier,
                         extended = !isScrollingDown,
                         onClick = viewModel::onEnrollClick,
-                        teTypeName = teTypeName!!,
+                        teTypeName = teTypeLabel ?: "",
                     )
                 }
             }

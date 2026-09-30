@@ -29,9 +29,8 @@ import javax.inject.Inject
 import kotlin.getValue
 
 const val EXTRA_SKIP_SYNC = "SKIP_SYNC"
-const val FROM_MAIN_ACTIVITY = "FROM_MAIN_ACTIVITY"
-const val EXTRA_SESSION_EXPIRED = "EXTRA_SESSION_EXPIRED"
 const val EXTRA_ACCOUNT_DISABLED = "EXTRA_ACCOUNT_DISABLED"
+const val EXTRA_RENEW_SESSION = "EXTRA_RENEW_SESSION"
 const val IS_DELETION = "IS_DELETION"
 const val ACCOUNTS_COUNT = "ACCOUNTS_COUNT"
 const val FROM_SPLASH = "FROM_SPLASH"
@@ -48,7 +47,6 @@ class LoginActivity : ActivityGlobalAbstract() {
     private var isPinScreenVisible = false
 
     private var skipSync = false
-    private var fromHome = false
 
     companion object {
         fun bundle(
@@ -57,16 +55,15 @@ class LoginActivity : ActivityGlobalAbstract() {
             isDeletion: Boolean = false,
             logOutReason: OpenIdSession.LogOutReason? = null,
             fromSplash: Boolean = false,
-            fromMainActivity: Boolean = false,
+            renewSession: Boolean = false,
         ): Bundle =
             Bundle().apply {
                 putBoolean(EXTRA_SKIP_SYNC, skipSync)
-                putBoolean(FROM_MAIN_ACTIVITY, fromMainActivity)
                 putBoolean(IS_DELETION, isDeletion)
                 putInt(ACCOUNTS_COUNT, accountsCount)
                 putBoolean(FROM_SPLASH, fromSplash)
+                putBoolean(EXTRA_RENEW_SESSION, renewSession)
                 when (logOutReason) {
-                    OpenIdSession.LogOutReason.OPEN_ID -> putBoolean(EXTRA_SESSION_EXPIRED, true)
                     OpenIdSession.LogOutReason.DISABLED_ACCOUNT ->
                         putBoolean(
                             EXTRA_ACCOUNT_DISABLED,
@@ -92,13 +89,11 @@ class LoginActivity : ActivityGlobalAbstract() {
         checkMessage()
 
         skipSync = intent.getBooleanExtra(EXTRA_SKIP_SYNC, false)
-        fromHome = intent.getBooleanExtra(FROM_MAIN_ACTIVITY, false)
 
         setContent {
             DHIS2Theme {
                 LoginScreen(
                     versionName = buildInfo(),
-                    fromHome = fromHome,
                     onNavigateToHome = {
                         app().createUserComponent()
                         startActivity(MainActivity::class.java, null, true, true, null)
@@ -115,6 +110,7 @@ class LoginActivity : ActivityGlobalAbstract() {
                     onFinish = {
                         finish()
                     },
+                    renewSession = intent.getBooleanExtra(EXTRA_RENEW_SESSION, false),
                 )
             }
         }
@@ -151,26 +147,9 @@ class LoginActivity : ActivityGlobalAbstract() {
     }
 
     private fun checkMessage() {
-        if (intent.getBooleanExtra(EXTRA_SESSION_EXPIRED, false)) {
-            showSessionExpired()
-        } else if (intent.getBooleanExtra(EXTRA_ACCOUNT_DISABLED, false)) {
+        if (intent.getBooleanExtra(EXTRA_ACCOUNT_DISABLED, false)) {
             showAccountDisabled()
         }
-    }
-
-    private fun showSessionExpired() {
-        val sessionDialog =
-            CustomDialog(
-                this,
-                getString(R.string.openid_session_expired),
-                getString(R.string.openid_session_expired_message),
-                getString(R.string.action_accept),
-                null,
-                SESSION_DIALOG_RQ,
-                null,
-            )
-        sessionDialog.setCancelable(false)
-        sessionDialog.show()
     }
 
     private fun showAccountDisabled() {

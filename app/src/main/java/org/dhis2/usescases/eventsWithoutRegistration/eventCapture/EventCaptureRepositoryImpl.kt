@@ -100,6 +100,14 @@ class EventCaptureRepositoryImpl(
             },
         )
 
+    override suspend fun getEventProgram(eventUid: String): String? =
+        d2
+            .eventModule()
+            .events()
+            .uid(eventUid)
+            .blockingGet()
+            ?.program
+
     override fun rescheduleEvent(newDate: Date): Observable<Boolean> =
         Observable.fromCallable(
             Callable {

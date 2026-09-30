@@ -2,18 +2,18 @@ name: Fix KMP Translations
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened]
 
 jobs:
   fix-kmp-translations:
-    if: startsWith(github.head_ref, 'develop-transifex-')
+    if: startsWith(github.head_ref, 'develop-transifex-') || startsWith(github.head_ref, 'main-transifex-')
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
         with:
           token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
           ref: ${{ github.head_ref }}
@@ -42,11 +42,12 @@ jobs:
             echo "has_changes=true" >> "$GITHUB_OUTPUT"
           fi
 
+      # Uses the GH API to create the signed commit — the repo ruleset requires verified signatures.
       - name: Commit and push fix
         if: steps.check.outputs.has_changes == 'true'
         uses: flex-development/gh-commit@177be4b5bca1b102400ca7220932d9ff7980fddb
         with:
-          message: 'fix(translations): remove KMP-incompatible escaped question marks [skip ci]'
+          message: 'fix(translations): remove KMP-incompatible escaped question marks'
           ref: ${{ github.head_ref }}
           token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
 

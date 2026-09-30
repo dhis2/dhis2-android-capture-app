@@ -10,6 +10,6 @@ import org.koin.dsl.module
 actual val platformModule: Module
     get() =
         module {
-            single<DataSetInstanceRepository> { DataSetInstanceRepositoryImpl(get(), get(), get()) }
+            single<DataSetInstanceRepository> { DataSetInstanceRepositoryImpl(get(), get()) }
             single<OptionRepository> { OptionRepositoryImpl(get()) }
         }

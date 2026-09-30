@@ -355,10 +355,10 @@ class SettingsRepository(
 
     fun getVersionName(): String = BuildConfig.VERSION_NAME
 
-    suspend fun isTwoFAConfigured(): Boolean =
+    suspend fun authType(): AuthorizationType? =
         d2
             .userModule()
             .accountManager()
             .getCurrentAccount()
-            ?.authorizationType == AuthorizationType.OAUTH2
+            ?.authorizationType
 }

@@ -9,7 +9,7 @@ echo "Target branch: $GIT_BRANCH_DEST"
 echo "Fetching branches..."
 git fetch --no-tags origin "$GIT_BRANCH" "$GIT_BRANCH_DEST"
 
-# Get the target branch dynamically from Jenkins
+# Get the target branch dynamically from CI
 TARGET_BRANCH="${GIT_BRANCH_DEST}"
 
 # If there's no target branch, assume it's a CI build on a long-lived branch

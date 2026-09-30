@@ -39,11 +39,9 @@
     <string name="keep_editing">استمر في التعديل</string>
     <string name="event_can_be_completed">هل تريد وضع علامة على هذا النموذج كمكتمل؟</string>
     <string name="discard_go_back">إذا قمت بالخروج الآن ، فسيتم تجاهل جميع المعلومات الموجودة في النموذج.</string>
-    <string name="field_errors_not_saved">بعض الحقول بها أخطاء ولم يتم حفظها.</string>
-    <string name="fields_mandatory_missing">بعض الحقول الإلزامية غير مدخله ولا يمكن حفظ النموذج.</string>
-    <string name="fields_mandatory_missing_discard">بعض الحقول الإلزامية مفقودة ولا يمكن حفظ النموذج. \nإذا قمت بالخروج الآن سيتم تجاهل التغييرات.</string>
-    <string name="field_errors_not_saved_discard">بعض الحقول بها أخطاء ولم يتم حفظها. \n إذا قمت بالخروج الآن ، فسيتم تجاهل التغييرات.</string>
+    <string name="field_errors_not_saved_discard">تحتوي بعض الحقول على أخطاء ولا يتم حفظها. \nإذا قمت بالخروج الآن سيتم تجاهل التغييرات.</string>
     <string name="share">مشاركة</string>
+    <string name="camera_permission_denied">تم رفض إذن الكاميرا.\n تحتاج إلى تمكينها لاستخدام هذه الميزة.</string>
     <string name="action_close">إغلاق</string>
     <string name="copied_text">تم النسخ</string>
     <string name="take_photo">التقط صورة</string>

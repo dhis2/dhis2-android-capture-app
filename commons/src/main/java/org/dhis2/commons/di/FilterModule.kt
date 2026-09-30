@@ -38,6 +38,7 @@ val mainFilterModule =
             EventResourcesProvider(
                 d2 = get(),
                 resourceManager = get(),
+                customLabelProvider = get(),
             )
         }
 
@@ -69,6 +70,7 @@ val mainFilterModule =
                 eventFilterToWorkingListItemMapper = get(),
                 teiFilterToWorkingListItemMapper = get(),
                 programStageToWorkingListItemMapper = get(),
+                customLabelProvider = get(),
             )
         }
 

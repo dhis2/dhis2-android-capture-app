@@ -75,16 +75,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public Boolean checkIfTEICanBeDeleted() {
-        return dashboardRepository.checkIfDeleteTeiIsPossible();
-    }
-
-    @Override
-    public Boolean checkIfEnrollmentCanBeDeleted(String enrollmentUid) {
-        return dashboardRepository.checkIfDeleteEnrollmentIsPossible(enrollmentUid);
-    }
-
-    @Override
     public void onEnrollmentSelectorClick() {
         view.goToEnrollmentList();
     }

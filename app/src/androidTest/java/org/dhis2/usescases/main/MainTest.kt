@@ -82,10 +82,23 @@ class MainTest : BaseTest() {
             checkChartName(0, "Android: Malaria case count pie")
             checkChartTypeRendered(0, ChartType.PIE_CHART)
             checkNoErrorIcon(0)
+
+            // [ANDROAPP-7714] PI disaggregation - Rendering: open the "PI disaggregation" group
+            checkChartGroupTabDisplayed("PI disaggregation")
+            clickChartGroup("PI disaggregation")
+            for (position in 0 until PI_DISAGGREGATION_VISUALIZATION_COUNT) {
+                scrollToChart(position)
+                checkChartTypeRendered(position, ChartType.TABLE)
+                checkNoErrorIcon(position)
+            }
         }
     }
 
     private fun startActivity(intent: Intent) {
         rule.launch(intent)
+    }
+
+    private companion object {
+        const val PI_DISAGGREGATION_VISUALIZATION_COUNT = 13
     }
 }

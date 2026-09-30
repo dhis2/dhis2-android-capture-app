@@ -41,10 +41,7 @@
     <string name="keep_editing">Tiếp tục chỉnh sửa</string>
     <string name="event_can_be_completed">Bạn có muốn đánh dấu biểu nhập này là hoàn tất không?</string>
     <string name="discard_go_back">Nếu bạn tắt bây giờ, tất cả thông tin trong biểu nhập sẽ bị hủy bỏ.</string>
-    <string name="field_errors_not_saved">Một số trường dữ liệu bị lỗi và chưa được lưu</string>
-    <string name="fields_mandatory_missing">Thiếu một số trường dữ liệu bắt buộc và Không thể lưu biểu nhập.</string>
-    <string name="fields_mandatory_missing_discard">hiếu một số trường dữ liệu bắt buộc và không thể lưu biểu nhập.  \nNếu bạn tắt bây giờ, tất cả thay đổi sẽ bị hủy bỏ..</string>
-    <string name="field_errors_not_saved_discard">Một số trường dữ liệu có lỗi và chưa được lưu.\n Nếu bạn tắt bây giờ, tất cả thay đổi sẽ bị hủy bỏ.</string>
+    <string name="field_errors_not_saved_discard">Một số trường dữ liệu có lỗi và chưa được lưu.. \nNếu bạn tắt bây giờ, tất cả thay đổi sẽ bị hủy bỏ.</string>
     <string name="share">Chia sẻ</string>
     <string name="camera_permission_denied">Quyền mở máy ảnh bị từ chối..\nBạn cần bật tính năng máy ảnh để sử dụng chức năng này.</string>
     <string name="action_close">Đóng</string>

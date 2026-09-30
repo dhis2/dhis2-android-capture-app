@@ -36,6 +36,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.time.LocalDate
@@ -219,6 +220,36 @@ class FormViewModelTest {
 
             val action = viewModel.actionsChannel.first()
             assertEquals(FormViewModel.FormActions.OnFinish, action)
+        }
+
+    @Test
+    fun `Should reopen the same section again after a form reload collapsed it`() =
+        runTest {
+            viewModel.submitIntent(FormIntent.OnSection("sectionX"))
+            advanceUntilIdle()
+
+            viewModel.loadData()
+            advanceUntilIdle()
+
+            viewModel.submitIntent(FormIntent.OnSection("sectionX"))
+            advanceUntilIdle()
+
+            verify(repository, times(2)).updateSectionOpened(
+                RowAction(id = "sectionX", type = ActionType.ON_SECTION_CHANGE),
+            )
+        }
+
+    @Test
+    fun `Should process two consecutive identical OnFinish intents`() =
+        runTest {
+            givenACompletedEventWithNoIssues()
+
+            viewModel.submitIntent(FormIntent.OnFinish())
+            advanceUntilIdle()
+            viewModel.submitIntent(FormIntent.OnFinish())
+            advanceUntilIdle()
+
+            verify(repository, times(2)).runDataIntegrityCheck(backPressed = false)
         }
 
     private suspend fun givenACompletedEventWithNoIssues() {

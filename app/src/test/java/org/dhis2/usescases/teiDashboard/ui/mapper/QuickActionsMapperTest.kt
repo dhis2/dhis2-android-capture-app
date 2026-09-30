@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard.ui.mapper
 
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.usescases.teiDashboard.DashboardEnrollmentModel
 import org.dhis2.usescases.teiDashboard.ui.model.QuickActionType
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -9,29 +10,38 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class QuickActionsMapperTest {
     private val resourceManager: ResourceManager = mock()
+    private val customLabelProvider: CustomLabelProvider = mock()
     private lateinit var mapper: QuickActionsMapper
 
     @Before
     fun setUp() {
-        mapper = QuickActionsMapper("programUid", resourceManager)
-        whenever(resourceManager.getString(R.string.more_enrollments)) doReturn "More enrollments"
-        whenever(resourceManager.getString(R.string.mark_follow_up)) doReturn "Mark follow up"
+        mapper = QuickActionsMapper("programUid", resourceManager, customLabelProvider)
         whenever(resourceManager.getString(R.string.transfer)) doReturn "Transfer"
+        whenever(resourceManager.getString(R.string.complete_enrollment_label)) doReturn "complete_format"
+        whenever(resourceManager.getString(R.string.deactivate_enrollment_label)) doReturn "deactivate_format"
+        whenever(resourceManager.getString(R.string.reopen_enrollment_label)) doReturn "reopen_format"
+        whenever(resourceManager.getString(R.string.more_enrollments_format)) doReturn "more_format"
+        whenever(customLabelProvider.blockingCustomMarkForFollowUpLabel(anyOrNull())) doReturn "Mark follow up"
         whenever(
-            resourceManager.formatWithEnrollmentLabel(mapper.programUid, R.string.complete_enrollment_label, 1),
+            customLabelProvider.formatStringWithCustomLabel(eq("complete_format"), anyOrNull(), anyOrNull()),
         ) doReturn "Complete enrollment"
         whenever(
-            resourceManager.formatWithEnrollmentLabel(mapper.programUid, R.string.reopen_enrollment_label, 1),
+            customLabelProvider.formatStringWithCustomLabel(eq("deactivate_format"), anyOrNull(), anyOrNull()),
+        ) doReturn "Deactivate enrollment"
+        whenever(
+            customLabelProvider.formatStringWithCustomLabel(eq("reopen_format"), anyOrNull(), anyOrNull()),
         ) doReturn "Re-open enrollment"
         whenever(
-            resourceManager.formatWithEnrollmentLabel(mapper.programUid, R.string.deactivate_enrollment_label, 1),
-        ) doReturn "Deactivate enrollment"
+            customLabelProvider.formatStringWithCustomLabel(eq("more_format"), anyOrNull(), anyOrNull()),
+        ) doReturn "More enrollments"
     }
 
     @Test
@@ -138,6 +148,7 @@ class QuickActionsMapperTest {
                 null,
                 null,
                 quickActions,
+                markedForFollowUpLabel = "marked for follow up",
             )
         return model
     }

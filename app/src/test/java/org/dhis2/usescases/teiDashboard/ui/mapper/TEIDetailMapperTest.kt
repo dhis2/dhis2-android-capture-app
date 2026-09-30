@@ -89,6 +89,7 @@ class TEIDetailMapperTest {
                 "avatarFilepath",
                 ownerOrgUnit,
                 emptyList(),
+                "Marked for follow-up",
             )
 
         return model

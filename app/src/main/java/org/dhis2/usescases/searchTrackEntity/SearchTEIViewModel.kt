@@ -149,8 +149,11 @@ class SearchTEIViewModel(
     private val _backdropActive = MutableLiveData<Boolean>()
     val backdropActive: LiveData<Boolean> get() = _backdropActive
 
-    private val _teTypeName = MutableLiveData("")
-    val teTypeName: LiveData<String> = _teTypeName
+    private val _teTypeLabel = MutableLiveData("")
+    val teTypeLabel: LiveData<String> = _teTypeLabel
+
+    private val _teTypePluralLabel = MutableLiveData("")
+    val teTypePluralLabel: LiveData<String> = _teTypePluralLabel
 
     var searchParametersUiState by mutableStateOf(SearchParametersUiState())
 
@@ -195,8 +198,11 @@ class SearchTEIViewModel(
             )
             loadNavigationBarItems()
 
-            _teTypeName.postValue(
-                searchRepository.trackedEntityType.displayName(),
+            _teTypeLabel.postValue(
+                searchRepositoryKt.getTeTypeCustomLabel(searchRepository.trackedEntityType.uid, isPlural = false),
+            )
+            _teTypePluralLabel.postValue(
+                searchRepositoryKt.getTeTypeCustomLabel(searchRepository.trackedEntityType.uid, isPlural = true),
             )
         }
     }

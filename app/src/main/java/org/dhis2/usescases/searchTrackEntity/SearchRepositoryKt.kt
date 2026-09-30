@@ -40,6 +40,11 @@ interface SearchRepositoryKt {
 
     fun getExcludeValues(): HashSet<String>?
 
+    suspend fun getTeTypeCustomLabel(
+        teTypeUid: String,
+        isPlural: Boolean,
+    ): String
+
     fun trackerValueTypeToSDKValueType(trackerInputType: TrackerInputType): ValueType?
 
     fun mapTrackedEntitySearchItemResultToSearchTeiModel(

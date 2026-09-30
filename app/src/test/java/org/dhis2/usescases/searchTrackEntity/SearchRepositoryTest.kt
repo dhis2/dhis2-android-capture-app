@@ -16,6 +16,7 @@ import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.extensions.getTodayAsInstant
 import org.dhis2.mobile.commons.extensions.toKtxInstant
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.tracker.data.ProfilePictureProvider
 import org.dhis2.tracker.search.model.GeometryFeatureType
@@ -103,6 +104,7 @@ class SearchRepositoryTest {
     private val searchTEIRepository: SearchTEIRepository = mock()
     private val themeManager: ThemeManager = mock()
     private val profilePictureProvider: ProfilePictureProvider = mock()
+    private val customLabelProvider: CustomLabelProvider = mock()
     private val dateUtils: DateUtils = DateUtils()
 
     @Before
@@ -132,6 +134,7 @@ class SearchRepositoryTest {
                 trackedEntityInstanceInfoProvider = mock(),
                 eventInfoProvider = mock(),
                 customIntentRepository = customIntentRepository,
+                customLabelProvider = customLabelProvider,
             )
 
         searchRepositoryJava =

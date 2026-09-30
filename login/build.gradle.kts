@@ -12,9 +12,9 @@ kotlin {
         freeCompilerArgs.add("-Xcontext-parameters")
     }
 
-    androidLibrary {
+    android {
         namespace = "org.dhis2.mobile.login"
-        compileSdk = libs.versions.sdk.get().toInt()
+        compileSdk = libs.versions.compileSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
         enableCoreLibraryDesugaring = true
         compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) }
@@ -25,7 +25,7 @@ kotlin {
             }
         }
         withHostTestBuilder {}.configure {}
-        withDeviceTestBuilder { sourceSetTreeName = "test" }.configure {
+        withDeviceTestBuilder {}.configure {
             instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
     }
@@ -88,7 +88,10 @@ kotlin {
 
         getByName("androidHostTest") {
             dependencies {
+                implementation(kotlin("test"))
                 implementation(libs.junit.jupiter)
+                implementation(libs.test.kotlinCoroutines)
+                implementation(libs.test.mockitoKotlin)
             }
         }
 

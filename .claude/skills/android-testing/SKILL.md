@@ -82,6 +82,7 @@ import org.mockito.kotlin.whenever
 ## Unit Test Patterns
 
 ### Use Case test
+
 ```kotlin
 class SavePinUseCaseTest {
     private val repository: SessionRepository = mock()
@@ -100,6 +101,7 @@ class SavePinUseCaseTest {
 ```
 
 ### ViewModel test
+
 ```kotlin
 class ExampleViewModelTest {
     private val useCase: GetDataUseCase = mock()
@@ -130,6 +132,7 @@ class ExampleViewModelTest {
 ```
 
 ### Repository test
+
 ```kotlin
 class ExampleRepositoryTest {
     // D2 chains calls across multiple intermediate objects — RETURNS_DEEP_STUBS is required
@@ -195,6 +198,19 @@ class ExampleTest : BaseTest() {
 }
 ```
 
+### What belongs in a robot, and which robot
+
+- **One robot per screen or dialog.** A dialog reached from several screens gets its
+  own robot rather than duplicated methods in each caller's robot —
+  `OrgUnitSelectorRobot` is the existing example.
+- **Waiting for a screen belongs to that screen's robot**, not the test. If a step
+  navigates to a new Activity, expose e.g. `waitForFormToOpen()` on the destination's
+  robot; the test then reads as intent, and the reason for the wait is documented once
+  instead of repeated at every call site.
+- **Keep framework plumbing out of the test class.** Reaching into
+  `supportFragmentManager` / `ActivityLifecycleMonitorRegistry` from a `@Test` bypasses
+  the pattern; assert on what the dialog renders through its robot instead.
+
 ## Test Tags
 
 Export constants from the screen file. Format: `{SCREEN}_{COMPONENT}_TAG`.
@@ -206,7 +222,12 @@ const val USERNAME_INPUT_TAG = "USERNAME_INPUT_TAG"
 @Composable
 fun LoginScreen() {
     InputField(modifier = Modifier.testTag(USERNAME_INPUT_TAG))
-    Button(modifier = Modifier.testTag(LOGIN_BUTTON_TAG)) { ... }
+    Button(
+        onClick = { /* submit */ },
+        modifier = Modifier.testTag(LOGIN_BUTTON_TAG),
+    ) {
+        Text("Log in")
+    }
 }
 ```
 
@@ -222,6 +243,44 @@ This bites hardest with tags that come from the design-system library rather
 than app code (e.g. a list-card item tag). If you can't confirm a tag is
 emitted, match on **confirmable text or semantics** instead — text you can see
 on screen is always safer than a tag you're guessing at.
+
+### Prefix matchers: check no longer tag shares the prefix
+
+When matching on a tag *prefix* rather than an exact tag, verify that no longer tag
+starts with the same string. `OrgBottomSheet` declares both `ORG_TREE_ITEM_` and
+`ORG_TREE_ITEM_CHECKBOX_`, so a `startsWith("ORG_TREE_ITEM_")` matcher also selects
+every checkbox. Harmless for an existence check, wrong if you meant "a tree row".
+
+### Merged vs unmerged semantics tree
+
+Any node with `mergeDescendants = true` collapses its whole subtree in the **merged**
+tree — the default for every query. `Modifier.clickable` sets it, so a clickable
+`LazyColumn` or a design-system list card merges everything inside it.
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| `onAllNodesWithTag(X)` → 0 nodes, but X is on screen | tag absorbed by a merging ancestor | add `useUnmergedTree = true` |
+| `performScrollTo()` → "no parent layout with a Scroll SemanticsAction" | matched the scroller, not the child | query unmerged, or scroll the container with `performScrollToNode` |
+| a child-counting assertion passes suspiciously | nodes inside a merged subtree report `children == []` — a vacuous pass | read the merged node's aggregated text instead |
+
+**What makes this look self-contradictory:** *clickable* descendants (radio buttons,
+icon buttons) set their own `mergeDescendants` and survive merging, so some merged
+lookups work on the same screen where others return nothing.
+
+**`waitUntilAtLeastOneExists` always searches the merged tree** — it has no unmerged
+option. For a tag that exists only unmerged, spell the wait out:
+
+```kotlin
+composeTestRule.waitUntil(TIMEOUT) {
+    composeTestRule.onAllNodesWithTag(TAG, useUnmergedTree = true)
+        .fetchSemanticsNodes().isNotEmpty()
+}
+```
+
+An unmerged node carries only its **own** text, so to find a field by its label you
+must recurse the subtree — the label often sits several levels below the tagged node.
+`BaseRobot` provides `texts()` (own text, merged nodes) and `subtreeTexts()`
+(recursive, unmerged) for exactly this split.
 
 ## DHIS2 Design System Inputs
 
@@ -339,6 +398,16 @@ Make assertions orientation-independent:
   composeTestRule.onNodeWithText(orgUnit).assertIsDisplayed()
   ```
 
+- **`performScrollTo()` only works if the node has a Compose scroll ancestor**
+  (`verticalScroll`, `LazyColumn`, …). It is not a free safety net: with no such
+  ancestor it throws *"no parent layout with a Scroll SemanticsAction"* on **every**
+  device, portrait included. `BottomSheetDialogContent` has no scroll container — the
+  sheet's drag is View-level `BottomSheetBehavior`, invisible to Compose semantics — so
+  nothing inside a bottom sheet can be scrolled to. Check the component before
+  applying the rule above; where there is no scroller, use `assertExists()`.
+- **Match the assertion to the claim.** "Did this screen/dialog open" is an
+  *existence* claim → `assertExists()`. "Can the user see or act on this" is a
+  *visibility* claim → `assertIsDisplayed()`, scrolled into view first.
 - **When you only need to prove a node is in the tree** (not that it's
   visible right now), use `assertExists()` instead of `assertIsDisplayed()`.
 - **Don't assume layout positions.** Toolbars, FABs, and bottom sheets reflow
@@ -361,6 +430,11 @@ Make assertions orientation-independent:
   test instead of checking what's on screen
 - Building a matcher on a test tag you haven't confirmed is emitted (especially
   design-system tags) — verify or match on text instead
+- Matching a tag *prefix* without checking whether a longer tag shares it
+- Querying the merged tree for a tag inside a merging container (returns 0 nodes),
+  or using `waitUntilAtLeastOneExists` for an unmerged-only tag
+- Adding `performScrollTo()` to a node with no Compose scroll ancestor — it throws
+  rather than hardening the assertion
 - Hardcoding demo fixture UIDs instead of seeding the fixture at runtime via
   the SDK
 - Asserting `assertIsDisplayed()` / clicking without `performScrollTo()` first —

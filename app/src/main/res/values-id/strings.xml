@@ -94,8 +94,6 @@
     <string name="every_12_hours">12 Jam</string>
     <string name="Manual">Manual</string>
     <string name="a_week">1 Minggu</string>
-    <string name="sync_max_parameters">Parameter sinkronisasi saat ini:</string>
-    <string name="sync_default_parameters">Kembalikan ke default</string>
     <string name="wipe_data_meesage">Database akan dihapus. Anda akan diminta masuk lagi</string>
     <string name="wipe_data_ok">Terima</string>
     <string name="wipe_data_no">batal</string>
@@ -138,9 +136,6 @@
     <string name="clear">Kosongkan</string>
     <string name="add_note">Tambah catatan</string>
     <string name="title_delete_go_back">Data Anda tidak disimpan</string>
-    <string name="delete_go_back">Jika Anda kembali sekarang, semua informasi yang dimasukkan akan dihapus.</string>
-    <string name="missing_mandatory_fields_go_back">Hapus dan kembali</string>
-    <string name="missing_mandatory_fields_finish">Beberapa bidang wajib tidak ada. Anda dapat menyelesaikan entri data dan keluar, tetapi even tidak dapat diselesaikan.</string>
     <string name="tei_coordinates">Koordinat untuk</string>
 
     <!--EVENT SUMMARY-->
@@ -171,7 +166,6 @@
     <string name="qr_attributes">Atribut</string>
     <string name="qr_enrollment">Pendaftaran</string>
     <string name="qr_events">Event</string>
-    <string name="qr_relationships">Hubungan</string>
     <string name="read_more_qr">Baca QR berikutnya untuk mendapatkan info lebih lanjut.</string>
     <string name="save_qr">Berhenti membaca dan simpan data</string>
     <string name="qr_no_data">tidak ada data</string>
@@ -219,7 +213,6 @@
     <string name="tuto_event_initial_new_1">Masukkan semua data untuk membuat even</string>
     <string name="tuto_event_initial_1">Klik untuk memeriksa status penyelesaian even.</string>
     <string name="relationships">hubungan</string>
-    <string name="empty_tei_add">Tidak ada acara yang terdaftar, klik \"+\" untuk menambahkan yang baru.</string>
     <string name="qr_data_values">Nilai data</string>
     <string name="info">Info</string>
     <string name="qr_no_id_error">Tidak dapat membaca ID ini</string>
@@ -432,8 +425,6 @@
     <string name="take_photo">Ambil gambar</string>
     <string name="break_glass_dialog_title">Program ini dilindungi</string>
     <string name="break_glass_hint">Jelaskan alasannya di sini</string>
-    <string name="openid_session_expired">Sesi telah berakhir</string>
-    <string name="openid_session_expired_message">Sesi Anda saat ini telah kedaluwarsa. Untuk alasan keamanan, Anda harus memberikan kredensial Anda lagi</string>
     <string name="week_period_span_default_label">Minggu %d %s hingga %s</string>
     <string name="action_do_not_show_again">Jangan perlihatkan lagi</string>
     <string name="troubleshooting_language_title">Bahasa</string>
@@ -443,12 +434,10 @@
     <string name="skipped">Dilewati</string>
     <string name="programs">Program-program</string>
     <string name="sync_error">Kesalahan sinkronisasi</string>
-    <string name="mark_follow_up">Tandai untuk follow up</string>
     <string name="coordinates">Koordinat</string>
     <string name="schedule">Jadwal</string>
     <string name="refer">Merujuk</string>
     <string name="scheduled_enter_event">Terjadwal</string>
-    <string name="program_stage">Tahapan program</string>
     <string name="event">acara/peristiwa</string>
     <string name="show_more">Tampilkan lebih</string>
     <string name="show_less">Tampilkan kurang</string>

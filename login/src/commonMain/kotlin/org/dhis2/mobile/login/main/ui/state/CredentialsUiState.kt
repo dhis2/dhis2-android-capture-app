@@ -92,6 +92,8 @@ sealed class OidcInfo(
 }
 
 sealed interface AfterLoginAction {
+    data object CreateOfflineCredential : AfterLoginAction
+
     data object DisplayTrackingMessage : AfterLoginAction
 
     data object DisplayBiometricsMessage : AfterLoginAction

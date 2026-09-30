@@ -480,17 +480,27 @@ internal class DataSetTableViewModel(
                 }
 
                 is UiAction.OnAddImage -> {
+                    val dataElementUid =
+                        withContext(dispatcher.io()) {
+                            val (rowIds, columnIds) = CellIdGenerator.getIdInfo(uiAction.id)
+                            getDataElementUid(rowIds, columnIds)
+                        }
                     uiActionHandler.onAddImage(uiAction.id) { result ->
                         result?.let {
-                            uploadFile(uiAction.id, result)
+                            uploadFile(uiAction.id, result, dataElementUid, true)
                         }
                     }
                 }
 
                 is UiAction.OnTakePhoto -> {
+                    val dataElementUid =
+                        withContext(dispatcher.io()) {
+                            val (rowIds, columnIds) = CellIdGenerator.getIdInfo(uiAction.id)
+                            getDataElementUid(rowIds, columnIds)
+                        }
                     uiActionHandler.onTakePicture { result ->
                         result?.let {
-                            uploadFile(uiAction.id, it)
+                            uploadFile(uiAction.id, it, dataElementUid, true)
                         }
                     }
                 }
@@ -528,10 +538,15 @@ internal class DataSetTableViewModel(
 
                 is UiAction.OnSelectFile -> {
                     updateFileLoadingState(UploadFileState.UPLOADING)
+                    val dataElementUid =
+                        withContext(dispatcher.io()) {
+                            val (rowIds, columnIds) = CellIdGenerator.getIdInfo(uiAction.id)
+                            getDataElementUid(rowIds, columnIds)
+                        }
                     uiActionHandler.onSelectFile(
                         uiAction.id,
                         { result ->
-                            result?.let { uploadFile(uiAction.id, result) }
+                            result?.let { uploadFile(uiAction.id, result, dataElementUid, false) }
                         },
                         {
                             updateFileLoadingState(UploadFileState.ADD)
@@ -683,17 +698,25 @@ internal class DataSetTableViewModel(
     private fun uploadFile(
         cellId: String,
         path: String,
+        dataElementUid: String,
+        isAnImage: Boolean,
     ) {
         viewModelScope.launch {
             val result =
                 withContext(dispatcher.io()) {
-                    uploadFile(path)
+                    uploadFile(
+                        path = path,
+                        dataElementUid = dataElementUid,
+                        dataSetUid = (dataSetScreenState.value as DataSetScreenState.Loaded).dataSetDetails.dataSetUid,
+                        isImage = isAnImage,
+                    )
                 }
             result.fold(
                 onSuccess = {
                     onUiAction(UiAction.OnValueChanged(cellId, it))
                 },
                 onFailure = {
+                    showSnackbar(resourceManager.provideFileUploadError())
                 },
             )
         }

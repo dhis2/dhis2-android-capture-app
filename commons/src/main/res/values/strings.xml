@@ -40,7 +40,6 @@
     <string name="filters_title_event_label_date">%s date</string>
     <string name="filters_title_event_label_status">%s status</string>
     <string name="filters_title_enrollment_status">@string/enrollment_status</string>
-    <string name="filter_follow_up_label">Followed up %s</string>
     <string name="select_period">Select period type</string>
     <string name="weekly">Weekly</string>
     <string name="bi_weekly">Bi-weekly</string>
@@ -282,16 +281,14 @@
     <string name="new_enrollment">New %s</string>
     <string name="enrolling_ou">Enrolled in:</string>
     <string name="more_enrollments">More enrollments</string>
+    <string name="more_enrollments_format">More %s</string>
+
     <string name="remove_from">Remove from</string>
     <string name="refresh_this_record">Refresh this record</string>
     <string name="view_timeline">View timeline</string>
-    <string name="group_by_stage">Group by stage</string>
+
 
     <!-- Event -->
-    <plurals name="event_label">
-        <item quantity="one">event</item>
-        <item quantity="other">events</item>
-    </plurals>
     <string name="event_label_completed">%s completed</string>
     <string name="event_label_created">%s created</string>
     <string name="new_event_label">New %s</string>

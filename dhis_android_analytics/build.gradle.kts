@@ -6,15 +6,14 @@ plugins {
     id("com.google.devtools.ksp")
     alias(libs.plugins.kotlin.compose.compiler)
 }
-apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
 android {
-    compileSdk = libs.versions.sdk.get().toInt()
+    compileSdk = libs.versions.compileSdk.get().toInt()
     namespace = "dhis2.org"
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
-        testOptions.targetSdk = libs.versions.sdk.get().toInt()
+        testOptions.targetSdk = libs.versions.targetSdk.get().toInt()
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

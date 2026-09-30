@@ -161,10 +161,9 @@ class ProgramFragment :
                     }
                 },
             ).onNoConnectionListener {
-                val contextView = activity?.findViewById<View>(R.id.navigationBar)
                 Snackbar
                     .make(
-                        contextView!!,
+                        requireView(),
                         R.string.sync_offline_check_connection,
                         Snackbar.LENGTH_SHORT,
                     ).show()

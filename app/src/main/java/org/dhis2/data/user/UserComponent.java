@@ -8,8 +8,6 @@ import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerModule;
 import org.dhis2.commons.featureconfig.di.FeatureConfigActivityComponent;
 import org.dhis2.commons.featureconfig.di.FeatureConfigActivityModule;
 import org.dhis2.commons.filters.data.FilterPresenter;
-import org.dhis2.data.service.SyncGranularRxComponent;
-import org.dhis2.data.service.SyncGranularRxModule;
 import org.dhis2.usescases.about.AboutComponent;
 import org.dhis2.usescases.about.AboutModule;
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailComponent;
@@ -124,9 +122,6 @@ public interface UserComponent {
 
     @NonNull
     SmsComponent plus(SmsModule smsModule);
-
-    @NonNull
-    SyncGranularRxComponent plus(SyncGranularRxModule syncGranularRxModule);
 
     @NonNull
     SyncComponent plus(SyncModule syncModule);

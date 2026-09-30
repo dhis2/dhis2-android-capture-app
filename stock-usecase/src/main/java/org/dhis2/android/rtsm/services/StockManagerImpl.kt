@@ -18,9 +18,12 @@ import org.dhis2.android.rtsm.utils.AttributeHelper
 import org.dhis2.android.rtsm.utils.ConfigUtils.getTransactionDataElement
 import org.dhis2.commons.bindings.distributedTo
 import org.dhis2.commons.bindings.stockUseCase
+import org.dhis2.mobile.commons.providers.InfoBarType
+import org.dhis2.mobile.commons.providers.InfoBarUiModel
 import org.dhis2.mobileProgramRules.sortForRuleEngine
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventCreateProjection
@@ -45,8 +48,8 @@ class StockManagerImpl(
         query: SearchParametersModel,
         ou: String?,
         config: StockUseCase,
-    ): SearchResult {
-        val list =
+    ): Pair<SearchResult, InfoBarUiModel?> {
+        val returnResult =
             withContext(dispatcher.io()) {
                 var teiRepository = d2.trackedEntityModule().trackedEntityInstanceQuery()
 
@@ -87,13 +90,34 @@ class StockManagerImpl(
                     teiRepository
                         .blockingGet()
                         .filter { it.deleted() == null || !it.deleted()!! }
-                        .map { transform(it, config) }
+                val syncStatus = checkSyncStatus(teiList)
 
-                teiList
+                val transformedList = teiList.map { transform(it, config) }
+
+                Pair(transformedList, syncStatus)
             }
 
-        return SearchResult(liveData { emit(list) })
+        return Pair(SearchResult(liveData { emit(returnResult.first) }), returnResult.second)
     }
+
+    private fun checkSyncStatus(teiList: List<TrackedEntityInstance>): InfoBarUiModel? =
+        when {
+            teiList.any { it.aggregatedSyncState == State.ERROR } -> {
+                InfoBarUiModel(InfoBarType.SYNC_ERROR)
+            }
+
+            teiList.any { it.aggregatedSyncState == State.WARNING } -> {
+                InfoBarUiModel(InfoBarType.SYNC_WARNING)
+            }
+
+            teiList.any { it.aggregatedSyncState == State.TO_UPDATE || it.aggregatedSyncState == State.TO_POST } -> {
+                InfoBarUiModel(InfoBarType.PENDING_SYNC)
+            }
+
+            else -> {
+                null
+            }
+        }
 
     private fun transform(
         tei: TrackedEntityInstance,

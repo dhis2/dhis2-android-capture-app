@@ -10,8 +10,6 @@ import org.dhis2.mobile.commons.data.ValueParserImpl
 import org.dhis2.mobile.commons.error.DomainErrorMapper
 import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepositoryImpl
-import org.dhis2.mobile.commons.files.FileController
-import org.dhis2.mobile.commons.files.FileControllerImpl
 import org.dhis2.mobile.commons.files.FileHandler
 import org.dhis2.mobile.commons.files.FileHandlerImpl
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
@@ -26,6 +24,7 @@ import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.mobile.commons.reporting.CrashReportControllerImpl
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProviderImpl
+import org.dhis2.mobile.commons.session.SessionRenewalNotifier
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -38,9 +37,6 @@ actual val commonsModule: Module
             single<CustomIntentRepository> {
                 CustomIntentRepositoryImpl(get())
             }
-            single<FileController> {
-                FileControllerImpl()
-            }
             single<FileHandler> {
                 FileHandlerImpl()
             }
@@ -51,6 +47,8 @@ actual val commonsModule: Module
             single<NetworkStatusProvider> {
                 NetworkStatusProviderImpl(get())
             }
+
+            single { SessionRenewalNotifier() }
 
             single<PreferenceProvider> {
                 PreferenceProviderImpl(get())

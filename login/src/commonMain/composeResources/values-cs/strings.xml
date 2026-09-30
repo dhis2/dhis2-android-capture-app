@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="add_account">Přidat nový účet</string>
     <string name="two_fa_screen_title">Dvoufaktorové ověřování</string>
@@ -62,8 +62,13 @@
     <string name="pin_error_save_failed">Nepodařilo se uložit kód PIN</string>
     <string name="pin_error_reset_failed">Nepodařilo se resetovat kód PIN</string>
     <string name="pin_error_remaining_attempts">%1$s zbývající pokusy</string>
+    <string name="offline_credential_create_button">Vytvořit kód PIN</string>
+    <string name="offline_credential_enter_button">Přihlášení</string>
+    <string name="offline_credential_forgot_button">Zapomněli jste kód PIN?</string>
     <string name="import_database">Importovat databázi</string>
     <string name="importing_successful">Import byl úspěšný</string>
     <string name="openid_process_cancelled">Přihlášení bylo zrušeno</string>
     <string name="openid_invalid_auth_result">Neplatný výsledek autorizace</string>
+    <string name="openid_login_cancelled">Ověřování zrušeno</string>
+    <string name="cancel">Zrušit</string>
 </resources>

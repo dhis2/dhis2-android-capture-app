@@ -35,7 +35,6 @@
     <string name="filters_title_state">Sincronizado</string>
     <string name="filters_title_assigned">Asignado a mí</string>
     <string name="filters_title_date">Fecha</string>
-    <string name="filter_follow_up_label">Seguido %s</string>
     <string name="weekly">Semanal</string>
     <string name="monthly">Mensual</string>
     <string name="yearly">Anual</string>

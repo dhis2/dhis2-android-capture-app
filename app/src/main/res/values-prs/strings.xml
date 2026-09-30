@@ -70,7 +70,6 @@
     <string name="button_ok">تأیید</string>
     <string name="qr_attributes">مشخصات</string>
     <string name="qr_events">پېښې</string>
-    <string name="qr_relationships">وابستگی ها</string>
     <string name="about">درباره</string>
     <string name="share">اشتراک</string>
     <string name="save">ذخیره</string>
@@ -130,11 +129,9 @@
     <string name="sync_dialog_action_refresh">تازه کردن</string>
     <string name="skipped">اسکیپ شده</string>
     <string name="programs">برنامه ها</string>
-    <string name="mark_follow_up">نشانی برای پیگیری</string>
     <string name="coordinates">ځانګړتیاوې</string>
     <string name="schedule">تقسیم اوقات</string>
     <string name="scheduled_enter_event">زمان بندی شده</string>
-    <string name="program_stage">مراحل برنامه</string>
     <string name="show_more">نمایش دادن بیشتر</string>
     <string name="show_less">نمایش دادن کم</string>
     </resources>

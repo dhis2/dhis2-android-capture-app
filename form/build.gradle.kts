@@ -5,15 +5,14 @@ plugins {
     id("com.google.devtools.ksp")
     alias(libs.plugins.kotlin.compose.compiler)
 }
-apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
 android {
-    compileSdk = libs.versions.sdk.get().toInt()
+    compileSdk = libs.versions.compileSdk.get().toInt()
     namespace = "org.dhis2.form"
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
-        testOptions.targetSdk = libs.versions.sdk.get().toInt()
+        testOptions.targetSdk = libs.versions.targetSdk.get().toInt()
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -68,12 +67,7 @@ dependencies {
     testImplementation(libs.bundles.form.test)
     testImplementation(libs.test.junit)
     testImplementation(libs.test.turbine)
-    androidTestImplementation(libs.test.compose.ui.test)
-    androidTestImplementation(libs.test.mockitoCore)
-    androidTestImplementation(libs.test.mockitoKotlin)
-    androidTestImplementation(libs.test.dexmaker.mockitoInline)
     debugImplementation(libs.androidx.compose.uitooling)
-    debugImplementation(libs.test.ui.test.manifest)
 
     coreLibraryDesugaring(libs.desugar)
 }

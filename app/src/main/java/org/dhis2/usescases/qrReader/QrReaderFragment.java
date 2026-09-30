@@ -1,6 +1,10 @@
 package org.dhis2.usescases.qrReader;
 
 
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static org.dhis2.commons.Constants.ORG_UNIT;
+import static org.dhis2.commons.Constants.PROGRAM_UID;
+
 import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
@@ -29,13 +33,13 @@ import com.journeyapps.barcodescanner.DefaultDecoderFactory;
 
 import org.dhis2.Components;
 import org.dhis2.R;
+import org.dhis2.commons.Constants;
 import org.dhis2.data.qr.QRjson;
 import org.dhis2.databinding.FragmentQrBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
-import org.dhis2.commons.Constants;
 import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 import org.json.JSONArray;
@@ -50,10 +54,6 @@ import javax.inject.Inject;
 import kotlin.Pair;
 import kotlin.Triple;
 import timber.log.Timber;
-
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-import static org.dhis2.commons.Constants.ORG_UNIT;
-import static org.dhis2.commons.Constants.PROGRAM_UID;
 
 
 /**
@@ -393,7 +393,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements BarcodeC
 
 
         // RELATIONSHIPS
-        message = message + getString(R.string.qr_relationships) + ":\n";
+        message = message + getString(R.string.relationships).toUpperCase() + ":\n";
 
         if (relationships != null && !relationships.isEmpty()) {
             int count = 0;

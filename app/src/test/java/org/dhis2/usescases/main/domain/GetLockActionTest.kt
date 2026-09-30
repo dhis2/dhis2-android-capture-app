@@ -29,7 +29,7 @@ class GetLockActionTest {
             whenever(homeRepository.isPinStored()) doReturn true
             val result = getLockAction()
             assertTrue(result.isSuccess)
-            assertTrue(result.getOrNull() is LockAction.BlockSession)
+            assertTrue(result.getOrNull() is LockAction.PinAlreadyCreated)
         }
 
     @Test

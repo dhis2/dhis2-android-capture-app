@@ -16,7 +16,6 @@ interface LoginRepository {
         serverUrl: String,
         username: String,
         password: String,
-        isNetworkAvailable: Boolean,
     ): Result<Unit>
 
     suspend fun getAvailableLoginUsernames(): List<String>
@@ -61,13 +60,32 @@ interface LoginRepository {
 
     suspend fun getDeviceEnrollmentUrl(serverUrl: String): String
 
+    suspend fun isDeviceRegistered(): Boolean
+
+    /**
+     * Url that opens the authorization process for an already registered device. The server must
+     * have been checked first, otherwise there is no stored authorization endpoint to build it.
+     */
+    suspend fun getAuthorizationUrl(serverUrl: String): String
+
     suspend fun enrollDevice(
         iat: String,
         serverURL: String,
+        state: String,
     ): String
 
+    /**
+     * @param expectedUsername the account being restored, so the SDK can refuse a session that was
+     * authorized by a different user. Null when the account does not exist yet.
+     */
     suspend fun loginUserWithOAuth(
         serverUrl: String,
         code: String,
+        state: String,
+        expectedUsername: String?,
     ): Result<String?>
+
+    suspend fun buildLogoutUrl(serverUrl: String): String
+
+    suspend fun setOfflinePin(pin: String): Result<Unit>
 }

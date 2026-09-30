@@ -7,6 +7,8 @@ internal class UploadFile(
 ) {
     suspend operator fun invoke(
         path: String,
+        dataElementUid: String,
+        dataSetUid: String,
         isImage: Boolean = false,
-    ): Result<String?> = repository.uploadFile(path, isImage)
+    ): Result<String?> = repository.uploadFile(path, dataElementUid, dataSetUid, isImage)
 }

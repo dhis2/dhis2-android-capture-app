@@ -5,6 +5,7 @@ import org.dhis2.android.rtsm.data.models.SearchParametersModel
 import org.dhis2.android.rtsm.data.models.SearchResult
 import org.dhis2.android.rtsm.data.models.StockEntry
 import org.dhis2.android.rtsm.data.models.Transaction
+import org.dhis2.mobile.commons.providers.InfoBarUiModel
 import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 
 interface StockManager {
@@ -22,7 +23,7 @@ interface StockManager {
         query: SearchParametersModel,
         ou: String?,
         config: StockUseCase,
-    ): SearchResult
+    ): Pair<SearchResult, InfoBarUiModel?>
 
     fun saveTransaction(
         items: List<StockEntry>,

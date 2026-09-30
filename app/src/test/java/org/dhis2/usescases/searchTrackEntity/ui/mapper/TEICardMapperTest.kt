@@ -8,6 +8,7 @@ import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobile.commons.extensions.toJavaDate
 import org.dhis2.mobile.commons.extensions.toKtxInstant
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.tracker.input.model.TrackerInputType
 import org.dhis2.tracker.search.model.DomainEnrollment
 import org.dhis2.tracker.search.model.DomainObjectStyle
@@ -24,6 +25,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -34,6 +36,7 @@ import kotlin.time.Instant
 class TEICardMapperTest {
     private val context: Context = mock()
     private val resourceManager: ResourceManager = mock()
+    private val customLabelProvider: CustomLabelProvider = mock()
 
     private lateinit var mapper: TEICardMapper
 
@@ -71,9 +74,9 @@ class TEICardMapperTest {
         whenever(
             resourceManager.getString(R.string.overdue_today),
         ) doReturn "Today"
-        whenever(resourceManager.getString(R.string.marked_follow_up)) doReturn "Marked for follow-up"
+        whenever(customLabelProvider.blockingCustomMarkedForFollowUpLabel(anyOrNull())) doReturn "Marked for follow-up"
 
-        mapper = TEICardMapper(context, resourceManager)
+        mapper = TEICardMapper(context, resourceManager, customLabelProvider)
     }
 
     @Test
@@ -115,7 +118,7 @@ class TEICardMapperTest {
         )
         assertEquals(
             result.additionalInfo[6].value,
-            resourceManager.getString(R.string.marked_follow_up),
+            "Marked for follow-up",
         )
     }
 

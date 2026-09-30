@@ -31,8 +31,8 @@ import org.dhis2.form.data.UniqueAttributeController
 import org.dhis2.metadata.usecases.DataSetConfiguration
 import org.dhis2.metadata.usecases.ProgramConfiguration
 import org.dhis2.metadata.usecases.TrackedEntityTypeConfiguration
-import org.dhis2.mobile.commons.files.FileController
-import org.dhis2.mobile.commons.files.FileControllerImpl
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
+import org.dhis2.mobile.commons.providers.CustomLabelProviderImpl
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.ui.ThemeManager
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -145,10 +145,6 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun providesFileController(): FileController = FileControllerImpl()
-
-    @Provides
-    @PerServer
     fun providesUniqueAttributeController(
         d2: D2,
         crashReportController: CrashReportController,
@@ -199,10 +195,23 @@ class ServerModule {
                 .connectTimeoutInSeconds(10 * 60)
                 .readTimeoutInSeconds(10 * 60)
                 .networkInterceptors(interceptors)
+                .interceptors(developmentInterceptors())
                 .writeTimeoutInSeconds(10 * 60)
                 .context(context)
                 .build()
         }
+
+        private fun developmentInterceptors(): List<Interceptor> =
+            if (BuildConfig.DEBUG) {
+                listOf(
+                    ForceSessionExpiryInterceptor(
+                        isArmed = { ForcedSessionExpiry.isArmed },
+                        disarm = ForcedSessionExpiry::disarm,
+                    ),
+                )
+            } else {
+                emptyList()
+            }
     }
 
     @Provides
@@ -214,5 +223,10 @@ class ServerModule {
     fun provideEventResourceProvider(
         d2: D2,
         resourceManager: ResourceManager,
-    ): EventResourcesProvider = EventResourcesProvider(d2, resourceManager)
+        customLabelProvider: CustomLabelProvider,
+    ): EventResourcesProvider = EventResourcesProvider(d2, resourceManager, customLabelProvider)
+
+    @Provides
+    @PerServer
+    fun provideCustomLabelProvider(d2: D2): CustomLabelProvider = CustomLabelProviderImpl(d2)
 }

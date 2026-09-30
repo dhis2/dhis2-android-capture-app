@@ -20,6 +20,7 @@ import org.dhis2.data.forms.dataentry.SearchTEIRepository
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.tracker.events.CreateEventUseCase
@@ -144,7 +145,15 @@ class TEIDataModule(
     fun provideInfoBarMapper(resourceManager: ResourceManager): InfoBarMapper = InfoBarMapper(resourceManager)
 
     @Provides
-    fun provideQuickActionMapper(resourceManager: ResourceManager): QuickActionsMapper = QuickActionsMapper(programUid, resourceManager)
+    fun provideQuickActionMapper(
+        resourceManager: ResourceManager,
+        customLabelProvider: CustomLabelProvider,
+    ): QuickActionsMapper =
+        QuickActionsMapper(
+            programUid,
+            resourceManager,
+            customLabelProvider,
+        )
 
     @Provides
     fun provideContractHandler() = TeiDataContractHandler(registry)

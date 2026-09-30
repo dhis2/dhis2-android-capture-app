@@ -64,6 +64,7 @@ import org.dhis2.mobile.commons.customintents.CustomIntentRepositoryImpl;
 import org.dhis2.mobile.commons.error.DomainErrorMapper;
 import org.dhis2.mobile.commons.network.NetworkStatusProvider;
 import org.dhis2.mobile.commons.network.NetworkStatusProviderImpl;
+import org.dhis2.mobile.commons.providers.CustomLabelProvider;
 import org.dhis2.mobile.commons.reporting.CrashReportController;
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider;
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProviderImpl;
@@ -200,7 +201,8 @@ public class SearchTEModule {
             ColorUtils colorUtils,
             DateUtils dateUtils,
             CustomIntentRepository customIntentRepository,
-            SearchSortingValueSetter sortingValueSetter
+            SearchSortingValueSetter sortingValueSetter,
+            CustomLabelProvider customLabelProvider
     ) {
         ResourceManager resourceManager = new ResourceManager(moduleContext, colorUtils);
         DateLabelProvider dateLabelProvider = new DateLabelProvider(moduleContext, new ResourceManager(moduleContext, colorUtils));
@@ -225,7 +227,8 @@ public class SearchTEModule {
                         profilePictureProvider,
                         dateUtils
                 ),
-                customIntentRepository
+                customIntentRepository,
+                customLabelProvider
         );
     }
 
@@ -505,9 +508,10 @@ public class SearchTEModule {
     @PerActivity
     TEICardMapper provideListCardMapper(
             Context context,
-            ResourceManager resourceManager
+            ResourceManager resourceManager,
+            CustomLabelProvider customLabelProvider
     ) {
-        return new TEICardMapper(context, resourceManager);
+        return new TEICardMapper(context, resourceManager, customLabelProvider);
     }
 
     @Provides

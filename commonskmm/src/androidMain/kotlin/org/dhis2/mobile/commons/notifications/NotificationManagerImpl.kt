@@ -22,6 +22,9 @@ private const val SYNC_DATA_CHANNEL_NAME = "sync_data"
 private const val SYNC_SETTINGS_NOTIFICATION_ID = 28042023
 private const val SYNC_SETTINGS_CHANNEL_ID = "sync_settings_notification"
 private const val SYNC_SETTINGS_CHANNEL_NAME = "sync_settings"
+private const val SYNC_GRANULAR_NOTIFICATION_ID = 85043681
+private const val SYNC_GRANULAR_CHANNEL_ID = "sync_granular_notification"
+private const val SYNC_GRANULAR_CHANNEL_NAME = "sync_granular"
 
 class NotificationManagerImpl(
     private val context: Context,
@@ -83,6 +86,22 @@ class NotificationManagerImpl(
         ),
     )
 
+    override fun getGranularSyncNotification(
+        smallIcon: Int,
+        contentTitle: String,
+        contentText: String,
+    ) = WorkerNotificationInfo(
+        createForegroundInfo(
+            notificationId = SYNC_METADATA_NOTIFICATION_ID,
+            channelId = SYNC_GRANULAR_CHANNEL_ID,
+            channelName = SYNC_GRANULAR_CHANNEL_NAME,
+            smallIcon = smallIcon,
+            contentTitle = contentTitle,
+            contentText = contentText,
+            progress = -1,
+        ),
+    )
+
     override fun displayMetadataSyncNotification(
         smallIcon: Int,
         contentTitle: String,
@@ -137,6 +156,24 @@ class NotificationManagerImpl(
         notify(foregroundInfo)
     }
 
+    override fun displayGranularSyncNotification(
+        smallIcon: Int,
+        contentTitle: String,
+        contentText: String,
+    ) {
+        val foregroundInfo =
+            createForegroundInfo(
+                notificationId = SYNC_GRANULAR_NOTIFICATION_ID,
+                channelId = SYNC_GRANULAR_CHANNEL_ID,
+                channelName = SYNC_GRANULAR_CHANNEL_NAME,
+                smallIcon = smallIcon,
+                contentTitle = contentTitle,
+                contentText = contentText,
+                progress = -1,
+            )
+        notify(foregroundInfo)
+    }
+
     override fun cancelMetadataSyncNotification() {
         notificationManager.cancel(SYNC_METADATA_NOTIFICATION_ID)
     }
@@ -147,6 +184,10 @@ class NotificationManagerImpl(
 
     override fun cancelDataSyncNotification() {
         notificationManager.cancel(SYNC_DATA_NOTIFICATION_ID)
+    }
+
+    override fun cancelGranularSyncNotification() {
+        notificationManager.cancel(SYNC_GRANULAR_NOTIFICATION_ID)
     }
 
     private fun createForegroundInfo(

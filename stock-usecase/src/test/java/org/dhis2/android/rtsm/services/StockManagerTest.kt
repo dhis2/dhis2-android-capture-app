@@ -108,7 +108,7 @@ class StockManagerTest {
                         ),
                 )
 
-            stockItem.items.observeForever {
+            stockItem.first.items.observeForever {
                 assertTrue(it?.isNotEmpty() == true)
                 assertTrue(it?.first()?.name == "optionName")
             }

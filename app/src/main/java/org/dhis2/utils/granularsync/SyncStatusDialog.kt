@@ -36,6 +36,7 @@ import org.dhis2.commons.sync.OnNoConnectionListener
 import org.dhis2.commons.sync.OnSyncNavigationListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.ui.icons.SyncStateIcon
+import org.dhis2.mobile.commons.extensions.ObserveAsEvents
 import org.dhis2.usescases.sms.SmsSendingService
 import org.dhis2.utils.customviews.MessageAmountDialog
 import org.dhis2.utils.granularsync.domain.SyncStatus
@@ -86,18 +87,17 @@ class SyncStatusDialog :
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        viewModel.observeWorkInfo().observe(this) { workInfoList ->
-            workInfoList.firstOrNull()?.let {
-                viewModel.manageWorkInfo(it)
-            }
-        }
-
-        return ComposeView(requireContext()).apply {
+    ): View =
+        ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 DHIS2Theme {
                     val syncState by viewModel.currentState.collectAsState()
+                    ObserveAsEvents(viewModel.observeWorkInfo()) { jobStatus ->
+                        jobStatus.firstOrNull()?.let {
+                            viewModel.manageWorkInfo(it)
+                        }
+                    }
                     syncState?.let { syncUiState ->
                         when {
                             syncUiState.shouldDismissOnUpdate -> dismiss()
@@ -168,7 +168,6 @@ class SyncStatusDialog :
                 }
             }
         }
-    }
 
     override fun onResume() {
         super.onResume()

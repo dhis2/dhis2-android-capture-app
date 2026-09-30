@@ -707,7 +707,7 @@ private fun testingProgramModel() =
             ),
         count = 12,
         type = "type",
-        typeName = "Persons",
+        typeName = "Person",
         programType = "WITH_REGISTRATION",
         description = null,
         onlyEnrollOnce = false,

@@ -16,6 +16,8 @@ import org.dhis2.commons.filters.sorting.SortingItem
 import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper
 import org.dhis2.commons.filters.workingLists.ProgramStageToWorkingListItemMapper
 import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
+import org.dhis2.mobile.commons.providers.getCustomOrgUnitLabelBlocking
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.common.ObjectWithUid
@@ -29,6 +31,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -56,6 +59,7 @@ class FilterRepositoryTest {
     private val teiFilterToWorkingListItemMapper: TeiFilterToWorkingListItemMapper =
         TeiFilterToWorkingListItemMapper("defaultLabel")
     private val programStageToWorkingListItemMapper: ProgramStageToWorkingListItemMapper = mock()
+    private val customLabelProvider: CustomLabelProvider = mock()
     private lateinit var filterRepository: FilterRepository
 
     @Before
@@ -69,6 +73,7 @@ class FilterRepositoryTest {
                 eventFilterToWorkingListItemMapper,
                 teiFilterToWorkingListItemMapper,
                 programStageToWorkingListItemMapper,
+                customLabelProvider,
             )
     }
 
@@ -83,7 +88,7 @@ class FilterRepositoryTest {
             ENROLLMENT_DATE
         whenever(filterResources.filterAssignedToMeLabel()) doReturn ASSIGN_TO_ME
         whenever(filterResources.filterEventDateLabel("random")) doReturn EVENT_DATE
-        whenever(filterResources.filterFollowUpLabel("Name")) doReturn FOLLOW_UP
+        whenever(customLabelProvider.blockingCustomFollowUpLabel(anyOrNull())) doReturn FOLLOW_UP
     }
 
     @Test
@@ -686,6 +691,10 @@ class FilterRepositoryTest {
                 .withTrackedEntityInstanceEventFilters()
                 .blockingGet(),
         ) doReturn emptyList()
+        whenever(
+            customLabelProvider
+                .getCustomOrgUnitLabelBlocking(program.uid()),
+        ) doReturn "Org. Unit"
         whenever(
             d2.settingModule().appearanceSettings().getProgramFiltersByUid(program.uid()),
         ) doReturn emptyMap()

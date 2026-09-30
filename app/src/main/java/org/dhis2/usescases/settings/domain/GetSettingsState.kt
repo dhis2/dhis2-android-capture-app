@@ -5,6 +5,7 @@ import org.dhis2.usescases.settings.GatewayValidator
 import org.dhis2.usescases.settings.SettingsRepository
 import org.dhis2.usescases.settings.models.SettingsState
 import org.dhis2.usescases.settings.models.SyncStateInput
+import org.dhis2.usescases.settings.models.toAccountType
 
 class GetSettingsState(
     private val settingsRepository: SettingsRepository,
@@ -32,7 +33,7 @@ class GetSettingsState(
                                 gatewayValidationResult = gatewayValidator(this.gatewayNumber),
                             )
                         },
-                    isTwoFAConfigured = settingsRepository.isTwoFAConfigured(),
+                    accountType = settingsRepository.authType().toAccountType(),
                     versionName = settingsRepository.getVersionName(),
                 )
             Result.success(state)

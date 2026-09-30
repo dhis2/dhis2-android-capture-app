@@ -14,6 +14,7 @@ class ProcessDeviceEnrollment(
                 repository.enrollDevice(
                     iat = input.iat,
                     serverURL = input.serverURL,
+                    state = input.state,
                 ),
             )
         } catch (e: DomainError) {

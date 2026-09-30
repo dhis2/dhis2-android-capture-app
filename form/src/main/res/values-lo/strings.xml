@@ -32,11 +32,13 @@
     <string name="complete">ສຳເລັດແລ້ວ</string>
     <string name="discard_changes">ລຶບການປ່ຽນແປງ</string>
     <string name="saved">ບັນທຶກແລ້ວ!</string>
+    <string name="event_error_on_complete">ທ່ານມີຂໍ້ຜິດພາດໃນບາງຂໍ້ຄວາມ.\nທ່ານຕ້ອງການກວດເບິ່ງຄືນບໍ\?</string>
     <string name="not_now">ບໍ່​ແມ່ນ​ຕອນ​ນີ້</string>
     <string name="keep_editing">ສຶບຕໍ່ແກ້ໄຂ</string>
     <string name="event_can_be_completed">ທ່ານຕ້ອງການໝາຍແບບຟອມນີ້ວ່າສຳເລັດແລ້ວຫຼືບໍ?</string>
     <string name="discard_go_back">ຖ້າທ່ານອອກດຽວນີ້ ຂໍ້ມູນທັງໝົດໃນແບບຟອມຈະຖືກຍົກເລີກ.</string>
     <string name="share">ເຜີຍແຜ່</string>
+    <string name="camera_permission_denied">ການ​ອະ​ນຸ​ຍາດ​ໃຊ້ກ້ອງ​ຖ່າຍ​ຮູບ​ຖືກ​ປະ​ຕິ​ເສດ. ທ່ານ​​ຕ້ອງ​ເປີດ​ໃຊ້​ງານເພື່ອ​ໃຊ້​ຄຸນ​ສົມ​ບັດ​ນີ້​.</string>
     <string name="action_close">ປິດ</string>
     <string name="copied_text">ສຳເນົາແລ້ວ</string>
     <string name="take_photo">ຖ່າຍຮູບ</string>

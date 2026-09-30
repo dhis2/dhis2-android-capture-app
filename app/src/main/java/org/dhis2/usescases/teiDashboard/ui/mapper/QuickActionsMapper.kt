@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.usescases.teiDashboard.DashboardEnrollmentModel
 import org.dhis2.usescases.teiDashboard.ui.model.QuickActionType
 import org.dhis2.usescases.teiDashboard.ui.model.QuickActionUiModel
@@ -21,6 +22,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 class QuickActionsMapper(
     val programUid: String?,
     val resourceManager: ResourceManager,
+    val customLabelProvider: CustomLabelProvider,
 ) {
     fun map(
         dashboardEnrollmentModel: DashboardEnrollmentModel,
@@ -81,30 +83,33 @@ class QuickActionsMapper(
         programUid: String?,
     ): String =
         when (quickActionType) {
-            QuickActionType.MARK_FOLLOW_UP -> resourceManager.getString(R.string.mark_follow_up)
+            QuickActionType.MARK_FOLLOW_UP ->
+                customLabelProvider.blockingCustomMarkForFollowUpLabel(programUid)
+
             QuickActionType.TRANSFER -> resourceManager.getString(R.string.transfer)
             QuickActionType.COMPLETE_ENROLLMENT ->
-                resourceManager.formatWithEnrollmentLabel(
-                    programUid,
-                    R.string.complete_enrollment_label,
-                    1,
+                customLabelProvider.formatStringWithCustomLabel(
+                    stringResource = resourceManager.getString(R.string.complete_enrollment_label),
+                    customLabel = customLabelProvider.blockingCustomEnrollmentLabel(programUid, 1),
                 )
 
             QuickActionType.CANCEL_ENROLLMENT ->
-                resourceManager.formatWithEnrollmentLabel(
-                    programUid,
-                    R.string.deactivate_enrollment_label,
-                    1,
+                customLabelProvider.formatStringWithCustomLabel(
+                    stringResource = resourceManager.getString(R.string.deactivate_enrollment_label),
+                    customLabel = customLabelProvider.blockingCustomEnrollmentLabel(programUid, 1),
                 )
 
             QuickActionType.REOPEN_ENROLLMENT ->
-                resourceManager.formatWithEnrollmentLabel(
-                    programUid,
-                    R.string.reopen_enrollment_label,
-                    1,
+                customLabelProvider.formatStringWithCustomLabel(
+                    stringResource = resourceManager.getString(R.string.reopen_enrollment_label),
+                    customLabel = customLabelProvider.blockingCustomEnrollmentLabel(programUid, 1),
                 )
 
-            QuickActionType.MORE_ENROLLMENTS -> resourceManager.getString(R.string.more_enrollments)
+            QuickActionType.MORE_ENROLLMENTS ->
+                customLabelProvider.formatStringWithCustomLabel(
+                    stringResource = resourceManager.getString(R.string.more_enrollments_format),
+                    customLabel = customLabelProvider.blockingCustomEnrollmentLabel(programUid, 2),
+                )
         }
 
     private fun getIcon(quickActionType: QuickActionType) =

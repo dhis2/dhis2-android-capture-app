@@ -12,7 +12,7 @@ class GetLockAction(
         try {
             val isPinSet = repository.isPinStored()
             if (isPinSet) {
-                Result.success(LockAction.BlockSession)
+                Result.success(LockAction.PinAlreadyCreated)
             } else {
                 Result.success(LockAction.CreatePin)
             }
