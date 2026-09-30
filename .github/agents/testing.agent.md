@@ -32,8 +32,9 @@ targeting Android, iOS, and Desktop platforms. The app uses:
 - **UI Tests**: Compose Testing + Espresso with Robot pattern
 - **Test locations**:
   - `commonTest/` — platform-agnostic unit tests (use `kotlin.test` annotations)
-  - `androidUnitTest/` — Android-specific unit tests (use `@Test` from JUnit)
-  - `androidInstrumentedTest/` / `androidTest/` — UI/instrumented tests
+  - `androidHostTest/` — KMP unit tests that need `androidMain`, e.g. a mocked `D2` (JUnit4 / `kotlin.test`)
+  - `src/test/` — unit tests in AGP modules (`app`, `form`, `commons`, …)
+  - `src/androidTest/` — UI/instrumented tests (`app`, `commons`, `compose-table`)
 
 ## Run Commands
 
@@ -41,14 +42,14 @@ targeting Android, iOS, and Desktop platforms. The app uses:
 # All unit tests
 ./gradlew testDebugUnitTest testDhis2DebugUnitTest testAndroidHostTest
 
-# Single KMP module test class
-./gradlew :login:testAndroidDebugUnitTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest"
+# Single KMP module test class (commonTest + androidHostTest source sets)
+./gradlew :login:testAndroidHostTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest"
 
-# Single legacy Android module test class
+# Single AGP module test class (app uses testDhis2DebugUnitTest)
 ./gradlew :form:testDebugUnitTest --tests "org.dhis2.form.ui.FormViewModelTest"
 
 # Single test method
-./gradlew :login:testAndroidDebugUnitTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest.initial screen is set correctly when starting"
+./gradlew :login:testAndroidHostTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest.initial screen is set correctly when starting"
 ```
 
 ## Critical Testing Rules
@@ -90,7 +91,7 @@ fun shouldLoadData() {
 
 ## UI Testing Guidelines — Robot Pattern
 
-All UI tests go in `androidInstrumentedTest/`. Always use the Robot pattern.
+All UI tests go in `app/src/androidTest/`. Always use the Robot pattern.
 
 ```kotlin
 // Robot function wrapper
@@ -288,12 +289,11 @@ modulekmm/src/
 ├── commonTest/kotlin/           # Shared unit tests (kotlin.test + mockito-kotlin + turbine)
 │   ├── domain/                  # Use case tests
 │   └── data/                    # Repository interface tests
-├── androidUnitTest/kotlin/      # Android-specific unit tests
-│   ├── data/                    # Repository implementation tests
-│   └── ui/                      # ViewModel tests
-└── androidInstrumentedTest/     # UI tests with Robot pattern
-    ├── robots/                  # Robot classes
-    └── tests/                   # Test classes
+└── androidHostTest/kotlin/      # Unit tests that need androidMain
+    ├── data/                    # Repository implementation tests
+    └── ui/                      # ViewModel tests
+
+app/src/androidTest/             # UI tests with Robot pattern (KMP modules have none)
 ```
 
 ## Best Practices Checklist
@@ -323,7 +323,7 @@ modulekmm/src/
 When asked to create or fix tests:
 
 1. Identify test type: unit (use case / repository / ViewModel) or UI (instrumented)
-2. Place tests in the correct source set (`commonTest`, `androidUnitTest`, or `androidInstrumentedTest`)
+2. Place tests in the correct source set (`commonTest`, `androidHostTest`, or `app/src/androidTest`)
 3. Use `mockito-kotlin` for all mocking — never MockK
 4. For UI tests: apply the Robot pattern, export test tags, rely on `CoroutineTracker`
 5. Ensure proper cleanup (database, preferences, mock server)
