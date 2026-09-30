@@ -211,6 +211,14 @@ class LoginRepositoryImpl(
             }
         }
 
+    override suspend fun getServerApiVersion(serverUrl: String): String? =
+        withContext(dispatcher.io) {
+            when (val result = d2.serverModule().blockingCheckServerUrl(serverUrl)) {
+                is Result.Success -> result.value.apiVersion
+                is Result.Failure -> null
+            }
+        }
+
     override suspend fun setOfflinePin(pin: String): kotlin.Result<Unit> =
         withContext(dispatcher.io) {
             val result =

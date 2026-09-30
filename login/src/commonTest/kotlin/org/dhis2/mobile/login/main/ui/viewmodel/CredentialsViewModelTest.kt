@@ -25,6 +25,7 @@ import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
 import org.dhis2.mobile.login.main.domain.usecase.GetDeviceEnrollmentUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
 import org.dhis2.mobile.login.main.domain.usecase.GetOAuthLogoutUrl
+import org.dhis2.mobile.login.main.domain.usecase.GetRecoveryUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetSessionRenewalUrl
 import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
@@ -79,6 +80,7 @@ class CredentialsViewModelTest {
     private val loginUserWithOAuth: LoginUserWithOAuth = mock()
     private val getDeviceEnrollmentUrl: GetDeviceEnrollmentUrl = mock()
     private val getOAuthLogoutUrl: GetOAuthLogoutUrl = mock()
+    private val getRecoveryUrl: GetRecoveryUrl = mock()
     private val getSessionRenewalUrl: GetSessionRenewalUrl = mock()
     private val processDeviceEnrollment: ProcessDeviceEnrollment = mock()
     private val updateTrackingPermission: UpdateTrackingPermission = mock()
@@ -301,6 +303,29 @@ class CredentialsViewModelTest {
 
             // THEN
             verify(navigator).navigate(eq(LoginScreenState.Accounts), any())
+        }
+
+    @Test
+    fun `GIVEN method call WHEN recover account is clicked THEN navigates to server recovery url`() =
+        runTest {
+            // GIVEN
+            val serverUrl = "https://test.server.org"
+            val recoveryUrl = "$serverUrl/login/#/reset-password"
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn true
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(getRecoveryUrl(serverUrl)) doReturn Result.success(recoveryUrl)
+
+            initViewModel(serverUrl = serverUrl)
+
+            // WHEN
+            viewModel.onRecoverAccountClicked()
+
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // THEN
+            verify(navigator).navigate(eq(LoginScreenState.RecoverAccount(recoveryUrl)), any())
         }
 
     @Test
@@ -2558,6 +2583,7 @@ class CredentialsViewModelTest {
                 credentialsResourceProvider = credentialsResourceProvider,
                 getSessionRenewalUrl = getSessionRenewalUrl,
                 autoStartRenewal = autoStartRenewal,
+                getRecoveryUrl = getRecoveryUrl,
             )
         return viewModel
     }
