@@ -38,7 +38,7 @@ import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
 import org.dhis2.mobile.login.main.domain.usecase.SetOfflineCode
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
-import org.dhis2.mobile.login.main.domain.usecase.VerifyNeedOfflinePin
+import org.dhis2.mobile.login.main.domain.usecase.VerifyNeedOfflineCode
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
 import org.dhis2.mobile.login.main.ui.provider.CredentialsResourceProvider
@@ -79,7 +79,7 @@ class CredentialsViewModel(
     private val entryMode: CredentialsEntryMode,
     private val autoPromptLogin: Boolean,
     private val setOfflineCode: SetOfflineCode,
-    private val verifyNeedOfflinePin: VerifyNeedOfflinePin,
+    private val verifyNeedOfflineCode: VerifyNeedOfflineCode,
     private val loginUserOfflineWithCode: LoginUserOffline,
     private val credentialsResourceProvider: CredentialsResourceProvider,
     private val getSessionRenewalUrl: GetSessionRenewalUrl,
@@ -189,7 +189,7 @@ class CredentialsViewModel(
             val biometricInfo = getBiometricInfo(serverUrl)
             val shouldPromptBiometrics = biometricInfo.canUseBiometrics && autoPromptLogin
 
-            val needToAddOfflinePin = verifyNeedOfflinePin().getOrDefault(false)
+            val needToAddOfflinePin = verifyNeedOfflineCode().getOrDefault(false)
             val afterLoginActions =
                 if (needToAddOfflinePin) {
                     buildList {

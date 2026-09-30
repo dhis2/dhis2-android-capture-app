@@ -554,7 +554,7 @@ class LoginRepositoryImpl(
             }
         }
 
-    override suspend fun needsOfflinePin() =
+    override suspend fun needsOfflineCode() =
         withContext(dispatcher.io) {
             try {
                 val authType =
