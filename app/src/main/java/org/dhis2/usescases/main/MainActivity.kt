@@ -279,6 +279,8 @@ class MainActivity : ActivityGlobalAbstract() {
     }
 
     private fun showHideFilter() {
+        throw IllegalArgumentException("KA BOOOOOM!")
+
         val transition = ChangeBounds()
         transition.duration = 200
         TransitionManager.beginDelayedTransition(binding.backdropLayout, transition)

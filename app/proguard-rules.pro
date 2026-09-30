@@ -107,6 +107,15 @@
 # removes such information by default, so configure it to keep all of it.
 -keepattributes Signature
 
+# BaseMapManager builds the MapLibre style JSON at runtime via Gson.toJson() on these
+# plain data classes (no @SerializedName), so their field names ARE the style JSON keys
+# (version, sources, layers, glyphs...). Full -keep (not -keepclassmembers): these classes
+# are only ever touched via Gson reflection, so R8's class-level optimizations (merging,
+# class inlining) need to be off the table too, not just member renaming/removal.
+-keep class org.dhis2.maps.layer.basemaps.BaseMapStyle { *; }
+-keep class org.dhis2.maps.layer.basemaps.RasterTiles { *; }
+-keep class org.dhis2.maps.layer.basemaps.StyleLayers { *; }
+
 # For using GSON @Expose annotation
 -keepattributes *Annotation*
 
