@@ -189,7 +189,7 @@ class CredentialsViewModel(
             val biometricInfo = getBiometricInfo(serverUrl)
             val shouldPromptBiometrics = biometricInfo.canUseBiometrics && autoPromptLogin
 
-            val needToAddOfflinePin = verifyNeedOfflinePin()
+            val needToAddOfflinePin = verifyNeedOfflinePin().getOrDefault(false)
             val afterLoginActions =
                 if (needToAddOfflinePin) {
                     buildList {

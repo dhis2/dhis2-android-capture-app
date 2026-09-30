@@ -144,7 +144,7 @@ class SplashActivity :
         needsOfflineCredentials: Boolean,
     ) {
         when {
-            isUserLogged && initialSyncDone && !sessionLocked && !needsOfflineCredentials-> {
+            isUserLogged && initialSyncDone && !sessionLocked && !needsOfflineCredentials -> {
                 goToMain(initialDataSyncDone)
             }
             isUserLogged && initialSyncDone && !needsOfflineCredentials -> {
@@ -156,7 +156,7 @@ class SplashActivity :
                     onDismiss = ::goToLogin,
                 )
             }
-            isUserLogged && !initialSyncDone && !needsOfflineCredentials-> {
+            isUserLogged && !initialSyncDone && !needsOfflineCredentials -> {
                 startActivity(
                     SyncActivity::class.java,
                     null,

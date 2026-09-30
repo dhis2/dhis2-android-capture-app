@@ -91,7 +91,5 @@ interface LoginRepository {
 
     suspend fun isUserLoggedIn(): Result<Boolean>
 
-    suspend fun isPinStored(): Boolean
-
-    suspend fun needsOfflinePin(): Boolean
+    suspend fun needsOfflinePin(): Result<Boolean>
 }

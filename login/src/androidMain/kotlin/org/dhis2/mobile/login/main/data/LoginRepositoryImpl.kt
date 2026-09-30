@@ -556,21 +556,34 @@ class LoginRepositoryImpl(
 
     override suspend fun needsOfflinePin() =
         withContext(dispatcher.io) {
-            val authType =
-                d2
-                    .userModule()
-                    .accountManager()
-                    .getCurrentAccount()
-                    ?.authorizationType
-            authType == AuthorizationType.OAUTH2 || authType == AuthorizationType.OPEN_ID_CONNECT
-        }
+            try {
+                val authType =
+                    d2
+                        .userModule()
+                        .accountManager()
+                        .getCurrentAccount()
+                        ?.authorizationType
+                val isPinStored =
+                    d2
+                        .dataStoreModule()
+                        .localDataStore()
+                        .value(PIN)
+                        .blockingExists()
 
-    override suspend fun isPinStored() =
-        withContext(dispatcher.io) {
-            d2
-                .dataStoreModule()
-                .localDataStore()
-                .value(PIN)
-                .blockingExists()
+                kotlin.Result.success(
+                    (authType == AuthorizationType.OAUTH2 || authType == AuthorizationType.OPEN_ID_CONNECT) &&
+                        isUserLoggedIn().getOrDefault(false) &&
+                        !isPinStored,
+                )
+            } catch (e: Exception) {
+                kotlin.Result.failure(
+                    Exception(
+                        d2ErrorMessageProvider.getErrorMessage(
+                            e,
+                            isNetworkAvailable = true,
+                        ),
+                    ),
+                )
+            }
         }
 }
