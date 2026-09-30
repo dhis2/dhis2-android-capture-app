@@ -240,7 +240,12 @@
 #-keep class org.dhis2.usescases.login.auth.AuthServiceModel
 -dontwarn org.hisp.dhis.**
 -dontwarn org.cache2k.**
--keepnames class org.cache2k.** { *; }
+# cache2k resolves several internal providers (e.g. CacheConfigurationProvider) via its own
+# SingleProviderResolver, which instantiates a class looked up by name from a resource file --
+# invisible to R8's reachability analysis. -keepnames (allowshrinking) let R8 strip the
+# provider impl entirely, causing a runtime LinkageError. Full -keep: cache2k ships no
+# consumer rules of its own and is a negligible share of the app's kept surface anyway.
+-keep class org.cache2k.** { *; }
 
 # Please add these rules to your existing keep rules in order to suppress warnings.
 # This is generated automatically by the Android Gradle plugin.
