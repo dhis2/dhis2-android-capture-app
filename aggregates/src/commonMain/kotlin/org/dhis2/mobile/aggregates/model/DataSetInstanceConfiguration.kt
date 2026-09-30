@@ -5,6 +5,7 @@ internal data class DataSetInstanceConfiguration(
     val compulsoryDataElements: List<MandatoryCellElements>,
     val allDataSetElements: List<CellElement>,
     val greyedOutFields: List<GreyedOutField>,
+    val blockedCategoryOptionCombos: List<String>,
     val editable: Boolean,
 ) {
     fun isCellEditable(
@@ -21,7 +22,10 @@ internal data class DataSetInstanceConfiguration(
                 }
             }
 
-        return editable && isGreyedOut.not()
+        val categoryOptionEditable =
+            !blockedCategoryOptionCombos.contains(categoryOptionComboUid)
+
+        return editable && isGreyedOut.not() && categoryOptionEditable
     }
 
     fun isMandatory(
