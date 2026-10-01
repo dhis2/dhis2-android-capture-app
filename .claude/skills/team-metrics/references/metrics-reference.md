@@ -329,12 +329,19 @@ page, so a full run is ~3 requests. Do **not** fetch changelogs one issue at a t
 Versions: `GET /rest/api/3/project/ANDROAPP/versions`.
 
 ```bash
-# PRs merged to develop
+# PRs merged to develop — the `reviews` field is expensive at this limit and routinely
+# 502s/504s on the default gh timeout; wrap it in `timeout 240` (or similar) and retry once
+# on a gateway error rather than dropping the --limit or the field
 gh pr list --repo dhis2/dhis2-android-capture-app --state merged --limit 400 --base develop \
   --json number,title,createdAt,mergedAt,additions,deletions,author,reviews
 
-# CI runs
-gh api "/repos/dhis2/dhis2-android-capture-app/actions/runs?branch=develop&per_page=100"
+# CI runs — use the workflow-scoped endpoint, not the generic /actions/runs one. The generic
+# endpoint returns every workflow interleaved (dependency-bot update runs dominate it), so a
+# single per_page=100 page can come back with only 1-2 actual CI runs in it. Scoping to the
+# workflow file avoids the noise and needs far fewer pages for the same window:
+gh api "/repos/dhis2/dhis2-android-capture-app/actions/workflows/ci.yml/runs?branch=develop&event=push&per_page=100"
+# paginate with &page=2, &page=3... (check the response's total_count) until the oldest
+# run returned is before the window start; a 180-day window has needed 2 pages in practice
 
 # SonarCloud — branch=develop is REQUIRED, the default (main) reports coverage 0
 # for Code quality trend (coverage/smells/duplication/tech-debt) — the vulnerabilities count
@@ -583,6 +590,14 @@ sweep explaining it.
    velocity, burndown and sprint reports are unavailable for this project.
 6. Coverage is a **trend only**: `jacoco/jacoco.gradle.kts` excludes broad class categories
    (`*Activity*`, `*Fragment*`, `*View*`, `*Adapter*`…), so the absolute number is not comparable.
+   **If it jumps sharply between editions with no matching commit to the jacoco config, don't
+   report it as organic improvement before checking SonarCloud's own project settings** —
+   coverage exclusions can be changed directly in the SonarCloud UI (Administration → Analysis
+   Scope), which leaves no trace in this repo's git history. Confirmed case: coverage read
+   10.6% on 15 Sep 2026 and 46.2% roughly two weeks later with git showing no jacoco-related
+   commit in between, while every other SonarCloud measure (code smells, duplication, tech
+   debt) matched almost exactly — a pattern pointing at a config change outside the repo, not
+   a trend, though it wasn't tracked down to a specific setting change before publishing.
 7. **Release slip is not recoverable retrospectively** — Jira keeps one mutable `releaseDate` per
    version. Observed live: 3.4.2 moved from 2026-08-05 to 2026-08-10 during the first report run.
    Each run must snapshot version dates so later runs can diff them.

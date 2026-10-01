@@ -107,8 +107,17 @@ unclassified, stop and classify it before reading a single number** — unclassi
 dropped silently and inflates flow efficiency. This has already caused two wrong numbers
 historically (see the reference).
 
-Pass no other flags: unrecognised arguments are not rejected, they fall through to a full
-run that overwrites `metrics.json`.
+The one other recognised flag is **`--as-of YYYY-MM-DD`**, which pins the window end to a
+past date instead of today — `w0/w1/w2` become `as_of-180d / as_of-90d / as_of`, matching
+exactly how `charts.py --as-of` is already pinned. Use it to reproduce a specific prior
+edition's numbers (e.g. when reconciling a draft built on live data against a published
+report's frozen window) rather than re-deriving that window by hand. `--as-of` cannot move
+forward of today, and it only pins the **flow** numbers — WIP, backlog and epic counts stay
+current-state regardless, which the script says explicitly when the flag is used.
+
+There is no `--help`: an unrecognised flag (including `--help`) is not rejected, it falls
+through to a full run against today that overwrites `metrics.json` — don't pass anything
+other than `--preflight`, `--census`, `--token-help`, or `--as-of` plus its date.
 
 The full run also prints the Needs info review. Its stock list is current-state, so under
 `--as-of` it describes today rather than the window end. If it
