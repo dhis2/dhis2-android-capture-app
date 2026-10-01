@@ -701,11 +701,66 @@ class GranularSyncPresenterTest {
                     mapper,
                 )
             presenter.granularSyncChannel.test {
+                presenter.initGranularSync()
+                presenter.manageWorkInfo(mockedSyncJobStatus)
                 presenter.manageWorkInfo(
                     mockedSyncJobStatus.copy(status = org.dhis2.mobile.sync.model.SyncStatus.Succeed),
                 )
                 val result = awaitItem()
                 assertTrue(result is GranularSyncAction.DisplaySyncSuccess)
+            }
+        }
+
+    @Test
+    fun shouldIgnoreStaleSucceededStatusIfSyncWasNotLaunched() =
+        runTest {
+            val presenter =
+                GranularSyncPresenter(
+                    d2,
+                    view,
+                    repository,
+                    trampolineSchedulerProvider,
+                    testDispatcher,
+                    SyncContext.Global(),
+                    smsSyncProvider,
+                    mapper,
+                )
+            presenter.granularSyncChannel.test {
+                presenter.manageWorkInfo(
+                    SyncJobStatus(
+                        tags = emptyList(),
+                        status = org.dhis2.mobile.sync.model.SyncStatus.Succeed,
+                        message = null,
+                    ),
+                )
+                expectNoEvents()
+            }
+        }
+
+    @Test
+    fun shouldIgnoreStaleSucceededStatusBeforeLaunchedSyncStarts() =
+        runTest {
+            val presenter =
+                GranularSyncPresenter(
+                    d2,
+                    view,
+                    repository,
+                    trampolineSchedulerProvider,
+                    testDispatcher,
+                    SyncContext.Global(),
+                    smsSyncProvider,
+                    mapper,
+                )
+            presenter.granularSyncChannel.test {
+                presenter.initGranularSync()
+                presenter.manageWorkInfo(
+                    SyncJobStatus(
+                        tags = emptyList(),
+                        status = org.dhis2.mobile.sync.model.SyncStatus.Succeed,
+                        message = null,
+                    ),
+                )
+                expectNoEvents()
             }
         }
 }
