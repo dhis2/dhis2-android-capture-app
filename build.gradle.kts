@@ -79,6 +79,13 @@ allprojects {
         }
     }
 
+    // JUnit Jupiter must never reach a test configuration. useJUnitPlatform() is set
+    // nowhere in this build, so a Jupiter @Test would compile but never run, and the
+    // build would still pass. Excluding it turns that into a compile error.
+    configurations.matching { it.name.contains("test", ignoreCase = true) }.configureEach {
+        exclude(group = "org.junit.jupiter")
+    }
+
     // toolVersion governs both the instrumenter and the report engine. libs.jacoco is
     // only on the buildscript classpath, so without this Gradle's bundled version is used.
     plugins.withType<org.gradle.testing.jacoco.plugins.JacocoPlugin> {
