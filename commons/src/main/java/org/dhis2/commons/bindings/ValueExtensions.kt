@@ -147,7 +147,28 @@ fun checkValueTypeValue(
             }
         }
 
+        ValueType.BOOLEAN -> {
+            value.toYesNo()
+        }
+
+        ValueType.TRUE_ONLY -> {
+            value.toYesOnly()
+        }
+
         else -> value
+    }
+
+private fun String.toYesOnly(): String =
+    when (this) {
+        "true" -> "yes"
+        else -> ""
+    }
+
+private fun String.toYesNo(): String =
+    when (this) {
+        "true" -> "yes"
+        "false" -> "no"
+        else -> "no"
     }
 
 fun TrackedEntityAttributeValueObjectRepository.blockingSetCheck(
