@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import app.cash.turbine.test
 import io.reactivex.Completable
 import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +18,7 @@ import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.mobile.sync.data.DATA_SYNC_NOW
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.model.GranularSyncAction
 import org.dhis2.mobile.sync.model.GranularSyncType
@@ -436,15 +436,12 @@ class GranularSyncPresenterTest {
                 syncBackgroundJobAction.observeGranularJob(any()),
             ) doReturn flowOf(emptyList())
 
-            presenter.initGranularSync().test {
-                val result = awaitItem()
-                verify(syncBackgroundJobAction).launchGranularSync(
-                    "programUid",
-                    GranularSyncType.Program,
-                )
-                assertTrue(result.isEmpty())
-                cancelAndIgnoreRemainingEvents()
-            }
+            presenter.initGranularSync()
+
+            verify(syncBackgroundJobAction).launchGranularSync(
+                "programUid",
+                GranularSyncType.Program,
+            )
         }
 
     @Test
@@ -464,15 +461,13 @@ class GranularSyncPresenterTest {
             whenever(
                 syncBackgroundJobAction.observeGranularJob(any()),
             ) doReturn flowOf(emptyList())
-            presenter.initGranularSync().test {
-                val result = awaitItem()
-                verify(syncBackgroundJobAction).launchGranularSync(
-                    "enrollmentUid",
-                    GranularSyncType.Tei,
-                )
-                assertTrue(result.isEmpty())
-                cancelAndIgnoreRemainingEvents()
-            }
+
+            presenter.initGranularSync()
+
+            verify(syncBackgroundJobAction).launchGranularSync(
+                "enrollmentUid",
+                GranularSyncType.Tei,
+            )
         }
 
     @Test
@@ -493,15 +488,13 @@ class GranularSyncPresenterTest {
             whenever(
                 syncBackgroundJobAction.observeGranularJob(any()),
             ) doReturn flowOf(emptyList())
-            presenter.initGranularSync().test {
-                val result = awaitItem()
-                verify(syncBackgroundJobAction).launchGranularSync(
-                    "eventUid",
-                    GranularSyncType.Event,
-                )
-                assertTrue(result.isEmpty())
-                cancelAndIgnoreRemainingEvents()
-            }
+
+            presenter.initGranularSync()
+
+            verify(syncBackgroundJobAction).launchGranularSync(
+                "eventUid",
+                GranularSyncType.Event,
+            )
         }
 
     @Test
@@ -522,15 +515,13 @@ class GranularSyncPresenterTest {
             whenever(
                 syncBackgroundJobAction.observeGranularJob(any()),
             ) doReturn flowOf(emptyList())
-            presenter.initGranularSync().test {
-                val result = awaitItem()
-                verify(syncBackgroundJobAction).launchGranularSync(
-                    "dataSetUid",
-                    GranularSyncType.DataSet,
-                )
-                assertTrue(result.isEmpty())
-                cancelAndIgnoreRemainingEvents()
-            }
+
+            presenter.initGranularSync()
+
+            verify(syncBackgroundJobAction).launchGranularSync(
+                "dataSetUid",
+                GranularSyncType.DataSet,
+            )
         }
 
     @Test
@@ -595,18 +586,16 @@ class GranularSyncPresenterTest {
             whenever(
                 syncBackgroundJobAction.observeGranularJob(any()),
             ) doReturn flowOf(emptyList())
-            presenter.initGranularSync().test {
-                val result = awaitItem()
-                verify(syncBackgroundJobAction).launchDataValueGranularSync(
-                    "dataSetUid",
-                    "orgUnitUid",
-                    "periodId",
-                    "attrOptionComboUid",
-                    catOptionCombo = listOf("catComboUid"),
-                )
-                assertTrue(result.isEmpty())
-                cancelAndIgnoreRemainingEvents()
-            }
+
+            presenter.initGranularSync()
+
+            verify(syncBackgroundJobAction).launchDataValueGranularSync(
+                "dataSetUid",
+                "orgUnitUid",
+                "periodId",
+                "attrOptionComboUid",
+                catOptionCombo = listOf("catComboUid"),
+            )
         }
 
     @Test
@@ -627,12 +616,14 @@ class GranularSyncPresenterTest {
             whenever(
                 syncBackgroundJobAction.observeGranularJob(any()),
             ) doReturn flowOf(emptyList())
-            presenter.initGranularSync().test {
-                val result = awaitItem()
-                verify(syncBackgroundJobAction).launchDataSync(0)
-                assertTrue(result.isEmpty())
-                cancelAndIgnoreRemainingEvents()
-            }
+
+            presenter.initGranularSync()
+
+            verify(syncBackgroundJobAction).launchDataSync(0)
+
+            // The unique work name observed must match the one launchDataSync(0) enqueues under
+            presenter.observeWorkInfo()
+            verify(syncBackgroundJobAction).observeGranularJob(DATA_SYNC_NOW)
         }
 
     @Test
