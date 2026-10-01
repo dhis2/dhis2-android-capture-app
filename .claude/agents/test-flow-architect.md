@@ -145,7 +145,7 @@ Steps:
    can audit.
 2. Invoke the `android-testing` skill and pass it the approved plan.
 3. Generate Robot additions and Test classes in the correct source set
-   (`androidInstrumentedTest` for UI flows, `commonTest` for integration
+   (`src/androidTest` for UI flows, `commonTest` for integration
    tests). Reference the claimed program UID(s) as constants in the test
    intents (e.g. in `EventIntents.kt`).
 4. Run lint and the targeted tests:
