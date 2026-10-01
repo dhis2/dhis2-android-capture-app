@@ -150,6 +150,22 @@ fun checkValueTypeValue(
         else -> value
     }
 
+fun D2.fileResourceNameOf(uidOrPath: String): String? =
+    fileResourceModule()
+        .fileResources()
+        .byUid()
+        .eq(uidOrPath)
+        .one()
+        .blockingGet()
+        ?.name()
+        ?: fileResourceModule()
+            .fileResources()
+            .byPath()
+            .eq(uidOrPath)
+            .one()
+            .blockingGet()
+            ?.name()
+
 fun TrackedEntityAttributeValueObjectRepository.blockingSetCheck(
     d2: D2,
     attrUid: String,

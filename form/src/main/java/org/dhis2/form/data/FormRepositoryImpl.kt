@@ -8,6 +8,7 @@ import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.form.data.EnrollmentRepository.Companion.ENROLLMENT_DATE_UID
+import org.dhis2.form.extensions.withDisplayValues
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
@@ -671,14 +672,8 @@ class FormRepositoryImpl(
                             list.indexOf(item),
                             item
                                 .setValue(value)
-                                .setDisplayName(
-                                    displayNameProvider.provideDisplayName(
-                                        valueType,
-                                        value,
-                                        item.optionSet,
-                                        item.periodSelector?.type,
-                                    ),
-                                ).setLegend(
+                                .withDisplayValues(displayNameProvider, value, valueType)
+                                .setLegend(
                                     legendValueProvider.provideLegendValue(
                                         item.uid,
                                         value,
@@ -709,7 +704,7 @@ class FormRepositoryImpl(
     override fun removeAllValues() {
         itemList =
             itemList.map { fieldUiModel ->
-                fieldUiModel.setValue(null).setDisplayName(null)
+                fieldUiModel.setValue(null).setDisplayName(null).setFileName(null)
             }
     }
 
@@ -764,14 +759,7 @@ class FormRepositoryImpl(
                     item
                         .setValue(action.value)
                         .setError(error)
-                        .setDisplayName(
-                            displayNameProvider.provideDisplayName(
-                                action.valueType,
-                                action.value,
-                                item.optionSet,
-                                item.periodSelector?.type,
-                            ),
-                        )
+                        .withDisplayValues(displayNameProvider, action.value, action.valueType)
                 } ?: item
             }
         return mergedList

@@ -11,12 +11,14 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.program.SectionRenderingType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 class FieldViewModelFactoryImplTest {
     private val valueTypeHintMap = HashMap<ValueType, String>()
@@ -73,5 +75,37 @@ class FieldViewModelFactoryImplTest {
         )
         verify(trackedEntityAttribute).displayFormName()
         verify(programTrackedEntityAttribute, never()).displayName()
+    }
+
+    @Test
+    fun `should populate the original file name for file resource fields`() {
+        val filePath = "/sdk_resources/db/fileUid.pdf"
+        whenever(
+            displayNameProvider.provideFileName(ValueType.FILE_RESOURCE, filePath),
+        ) doReturn "report.pdf"
+
+        val field =
+            fieldViewModelFactoryImpl.create(
+                id = "fileDataElement",
+                label = "File",
+                valueType = ValueType.FILE_RESOURCE,
+                mandatory = false,
+                optionSet = null,
+                value = filePath,
+                programStageSection = null,
+                allowFutureDates = true,
+                editable = true,
+                renderingType = SectionRenderingType.LISTING,
+                description = null,
+                fieldRendering = null,
+                objectStyle = ObjectStyle.builder().build(),
+                fieldMask = null,
+                optionSetConfiguration = null,
+                featureType = null,
+                autoCompleteList = null,
+                orgUnitSelectorScope = null,
+            )
+
+        assertEquals("report.pdf", field.fileName)
     }
 }

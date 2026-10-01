@@ -362,7 +362,8 @@ class RulesUtilsProviderImpl(
                                 field.valueType,
                                 field.optionSet,
                             ),
-                        )?.setEditable(false)
+                        )?.setFileName(null)
+                        ?.setEditable(false)
 
                 updatedField?.let {
                     fieldViewModels[fieldUid] = it

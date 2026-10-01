@@ -91,6 +91,7 @@ class FieldViewModelFactoryImpl(
                     optionSet,
                     periodSelector?.type,
                 ),
+            fileName = displayNameProvider.provideFileName(valueType, value),
             renderingType =
                 uiEventTypesProvider.provideUiRenderType(
                     featureType,
