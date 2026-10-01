@@ -16,8 +16,9 @@ description: >
 - **UI Tests**: Compose Testing + Espresso with Robot pattern
 - **Test locations**:
   - `commonTest/` — platform-agnostic unit tests (`kotlin.test` annotations: `@Test`, `@BeforeTest`)
-  - `androidUnitTest/` — Android-specific unit tests (JUnit `@Test`)
-  - `androidInstrumentedTest/` / `androidTest/` — UI/instrumented tests
+  - `androidHostTest/` — KMP unit tests that need `androidMain`, e.g. a mocked `D2` (JUnit4 / `kotlin.test`)
+  - `src/test/` — unit tests in AGP modules (`app`, `form`, `commons`, …)
+  - `src/androidTest/` — UI/instrumented tests (`app`, `commons`, `compose-table`)
 
 ## Run Commands
 
@@ -25,22 +26,16 @@ description: >
 # Shortcut: lint + all unit tests (mirrors CI)
 ./run_tests.sh
 
-# All unit tests (legacy + KMP host + KMP debug)
+# All unit tests (app + other AGP modules + KMP modules)
 ./gradlew testDebugUnitTest testDhis2DebugUnitTest testAndroidHostTest
 
-# Desktop targets in KMP modules
-./gradlew desktopTest
-
-# Single KMP module test class (commonTest + androidUnitTest source sets)
+# Single KMP module test class (commonTest + androidHostTest source sets)
 ./gradlew :login:testAndroidHostTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest"
 
-# Single KMP module test class (androidUnitTest source set only)
-./gradlew :login:testAndroidDebugUnitTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest"
-
-# Single legacy Android module test class
+# Single AGP module test class (app uses testDhis2DebugUnitTest)
 ./gradlew :form:testDebugUnitTest --tests "org.dhis2.form.ui.FormViewModelTest"
 
-# Single test method (commonTest + androidUnitTest source sets)
+# Single test method (commonTest + androidHostTest source sets)
 ./gradlew :login:testAndroidHostTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest.initial screen is set correctly when starting"
 ```
 
@@ -157,7 +152,7 @@ class ExampleRepositoryTest {
 
 ## UI Tests: Robot Pattern
 
-All UI tests go in `androidInstrumentedTest/`. Always use the Robot pattern. Tests extend
+All UI tests go in `app/src/androidTest/`. Always use the Robot pattern. Tests extend
 `BaseTest`, which provides `mockWebServerRobot` — a helper that stubs HTTP responses from the
 DHIS2 server so tests run fully offline against a local `MockWebServer`. Register stubs
 **before** launching the robot body.
