@@ -2,6 +2,16 @@
 
 MAX_LINES=400
 
+# Resolve the PR's current base branch: github.base_ref is frozen at event time
+# and goes stale when a PR is retargeted or added to a stack (re-runs reuse it too).
+if [[ -n "$PR_NUMBER" ]]; then
+    CURRENT_BASE=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json baseRefName --jq .baseRefName 2>/dev/null)
+    if [[ -n "$CURRENT_BASE" && "$CURRENT_BASE" != "$GIT_BRANCH_DEST" ]]; then
+        echo "Base branch changed since the event: $GIT_BRANCH_DEST -> $CURRENT_BASE"
+        GIT_BRANCH_DEST="$CURRENT_BASE"
+    fi
+fi
+
 echo "Current branch: $GIT_BRANCH"
 echo "Target branch: $GIT_BRANCH_DEST"
 
