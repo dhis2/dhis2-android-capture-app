@@ -663,9 +663,12 @@ class TEIDataFragment :
                 presenter.fetchEvents()
             }
         }
-        if (dashboardActivity is EventCaptureActivity) {
+        val activity = dashboardActivity
+        if (activity is EventCaptureActivity) {
             val selectedEventUid = intent.getStringExtra(Constants.EVENT_UID)
-            dashboardViewModel.updateSelectedEventUid(selectedEventUid)
+            activity.attemptNavigationAwayFromCurrentEvent {
+                dashboardViewModel.updateSelectedEventUid(selectedEventUid)
+            }
         }
     }
 
@@ -714,7 +717,14 @@ class TEIDataFragment :
                 programUid = programUid,
                 eventMode = eventMode,
             )
-        startActivity(intent)
+        val activity = dashboardActivity
+        if (activity is EventCaptureActivity) {
+            activity.attemptNavigationAwayFromCurrentEvent {
+                startActivity(intent)
+            }
+        } else {
+            startActivity(intent)
+        }
     }
 
     override fun displayOrgUnitSelectorForNewEvent(
