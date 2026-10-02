@@ -10,4 +10,10 @@ open class PreferenceModule {
     @Provides
     @Singleton
     open fun preferenceProvider(context: Context): PreferenceProvider = PreferenceProviderImpl(context)
+
+    @Provides
+    @Singleton
+    open fun mobilePreferenceProvider(context: Context): org.dhis2.mobile.commons.providers.PreferenceProvider =
+        org.dhis2.mobile.commons.providers
+            .PreferenceProviderImpl(context)
 }
