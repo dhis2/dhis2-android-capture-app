@@ -47,24 +47,27 @@ class AccountRepositoryImpl(
         }
 
     private fun mapDatabaseAccountToAccountModel(databaseAccount: DatabaseAccount): AccountModel {
-        val oidcProviders = databaseAccount.loginConfig()?.oidcProviders?.firstOrNull()
+        val oidcProviders = databaseAccount.loginConfig?.oidcProviders?.firstOrNull()
         val serverName =
-            databaseAccount.loginConfig()?.applicationTitle ?: try {
-                databaseAccount.serverUrl().substringAfter("://").substringBefore("/")
+            databaseAccount.loginConfig?.applicationTitle ?: try {
+                databaseAccount.serverUrl.substringAfter("://").substringBefore("/")
             } catch (_: Exception) {
-                databaseAccount.serverUrl()
+                databaseAccount.serverUrl
             }
         return AccountModel(
-            name = databaseAccount.username(),
+            name = databaseAccount.username,
             serverName = serverName,
-            serverUrl = databaseAccount.serverUrl(),
-            serverDescription = databaseAccount.loginConfig()?.applicationDescription,
-            serverFlag = databaseAccount.loginConfig()?.countryFlag,
-            allowRecovery = databaseAccount.loginConfig()?.allowAccountRecovery == true,
+            serverUrl = databaseAccount.serverUrl,
+            serverDescription = databaseAccount.loginConfig?.applicationDescription,
+            serverFlag = databaseAccount.loginConfig?.countryFlag,
+            allowRecovery =
+                databaseAccount.loginConfig?.let {
+                    it.allowAccountRecovery && it.emailConfigured
+                } ?: false,
             oidcIcon = oidcProviders?.icon,
             oidcLoginText = oidcProviders?.loginText,
             oidcUrl = oidcProviders?.url,
-            isOauthEnabled = databaseAccount.loginConfig()?.isOauthEnabled == true,
+            isOauthEnabled = databaseAccount.loginConfig?.isOauthEnabled == true,
             authorizationMethod = databaseAccount.authorizationType.toAuthorization(),
         )
     }

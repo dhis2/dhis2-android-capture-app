@@ -247,7 +247,7 @@ fun LoginScreen(
                 }
                 composable<LoginScreenState.RecoverAccount> {
                     val arg = it.toRoute<LoginScreenState.RecoverAccount>()
-                    WebRecovery(arg.selectedServer) {
+                    WebRecovery(arg.recoveryUrl) {
                         viewModel.onRecoveryCancelled()
                     }
                 }

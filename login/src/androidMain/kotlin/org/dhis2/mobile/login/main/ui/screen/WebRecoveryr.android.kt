@@ -9,14 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.core.net.toUri
 
-private const val RECOVERY_PATH = "/dhis-web-commons/security/recovery.action"
-
 @Composable
 actual fun WebRecovery(
     url: String,
     onDismiss: () -> Unit,
 ) {
-    val recoveryUrl = "$url$RECOVERY_PATH"
     // Custom Tab launcher will handle the result of the Custom Tab to detect if the user closed it
     val customTabLauncher =
         rememberLauncherForActivityResult(
@@ -38,7 +35,7 @@ actual fun WebRecovery(
 
         val intent =
             customTabsIntent.intent.apply {
-                data = recoveryUrl.toUri()
+                data = url.toUri()
             }
 
         customTabLauncher.launch(intent)
