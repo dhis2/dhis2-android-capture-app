@@ -40,18 +40,18 @@ jobs:
       # rejects the commit even though the user identified by the token is included in the bypass list.
     - name: Create auxiliary branch
       run: |
-        git checkout -b ${{ env.TEMP_BRANCH }}
-        git push origin ${{ env.TEMP_BRANCH }}
+        git checkout -b "$TEMP_BRANCH"
+        git push origin "$TEMP_BRANCH"
 
     - name: Run Python script to update release branch version
-      run: python scripts/updateDependencyVersions.py ${{ env.RELEASE_SDK_VERSION }} ${{ env.RELEASE_DESIGN_SYSTEM_VERSION }}
+      run: python scripts/updateDependencyVersions.py "$RELEASE_SDK_VERSION" "$RELEASE_DESIGN_SYSTEM_VERSION"
 
     - name: Run Python script to update release branch version
       run: python scripts/updateVersionCode.py
 
       # ${RELEASE_BRANCH_NAME#release/} removes the "release/" from the release branch name.
     - name: Run Python script to update release name
-      run: python scripts/updateVersionName.py ${RELEASE_BRANCH_NAME#release/}
+      run: python scripts/updateVersionName.py "${RELEASE_BRANCH_NAME#release/}"
 
       # Uses the GH API to create the signed commit.
     - name: Commit and Push Changes to auxiliary branch
@@ -62,7 +62,7 @@ jobs:
         token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
 
     - name: Create pull request
-      run: gh pr create -B ${{ env.RELEASE_BRANCH_NAME }} -H ${{ env.TEMP_BRANCH }} --title 'Update Sdk, Design System, and Version Code' --body 'Created by Github action'
+      run: gh pr create -B "$RELEASE_BRANCH_NAME" -H "$TEMP_BRANCH" --title 'Update Sdk, Design System, and Version Code' --body 'Created by Github action'
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
