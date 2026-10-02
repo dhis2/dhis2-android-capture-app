@@ -14,6 +14,7 @@ data class ValueInfo(
     val valueIsAValidFile: Boolean,
     val isCoordinate: Boolean,
     val isBooleanType: Boolean,
+    val isTrueOnlyType: Boolean = false,
 ) {
     fun parseToOptionName() = !isMultiText and valueIsValidOption
 

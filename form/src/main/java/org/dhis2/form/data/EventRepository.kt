@@ -7,7 +7,7 @@ import io.reactivex.Single
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.dhis2.bindings.blockingGetValueCheck
-import org.dhis2.bindings.userFriendlyValue
+import org.dhis2.bindings.toFormDisplayValue
 import org.dhis2.commons.bindings.program
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.inDateRange
@@ -663,7 +663,7 @@ class EventRepository(
             dataValue?.let {
                 valueRepository
                     .blockingGetValueCheck(d2, uid)
-                    .userFriendlyValue(d2, addPercentageSymbol = false)
+                    .toFormDisplayValue(d2)
             }
         val allowFutureDates = programStageDataElement.allowFutureDate() ?: false
         val formName = de?.displayFormName()

@@ -1,6 +1,6 @@
 package org.dhis2.usescases.programEventDetail
 
-import org.dhis2.bindings.userFriendlyValue
+import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.data.EventModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.ProgramEventViewModel
@@ -8,6 +8,7 @@ import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.mobile.commons.extensions.toColor
+import org.dhis2.mobile.commons.extensions.userFriendlyValue
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -192,32 +193,34 @@ class ProgramEventMapper(
                 }
             }
 
-            dataValues
-                .sortedWith(
-                    Comparator { de1, de2 ->
-                        val pos1 = dataElementsOrder.indexOf(de1.dataElement())
-                        val pos2 = dataElementsOrder.indexOf(de2.dataElement())
-                        pos1.compareTo(pos2)
-                    },
-                ).forEach {
-                    val dataElement = getDataElement(it.dataElement())
-                    if (dataElement != null && showInReportsDataElements.contains(dataElement.uid())) {
-                        val displayName =
-                            if (!dataElement.displayFormName().isNullOrEmpty()) {
-                                dataElement.displayFormName()
-                            } else if (!dataElement.displayName().isNullOrEmpty()) {
-                                dataElement.displayName()
-                            } else if (!dataElement.name().isNullOrEmpty()) {
-                                dataElement.name()
-                            } else {
-                                dataElement.uid()
+            runBlocking {
+                dataValues
+                    .sortedWith(
+                        Comparator { de1, de2 ->
+                            val pos1 = dataElementsOrder.indexOf(de1.dataElement())
+                            val pos2 = dataElementsOrder.indexOf(de2.dataElement())
+                            pos1.compareTo(pos2)
+                        },
+                    ).forEach {
+                        val dataElement = getDataElement(it.dataElement())
+                        if (dataElement != null && showInReportsDataElements.contains(dataElement.uid())) {
+                            val displayName =
+                                if (!dataElement.displayFormName().isNullOrEmpty()) {
+                                    dataElement.displayFormName()
+                                } else if (!dataElement.displayName().isNullOrEmpty()) {
+                                    dataElement.displayName()
+                                } else if (!dataElement.name().isNullOrEmpty()) {
+                                    dataElement.name()
+                                } else {
+                                    dataElement.uid()
+                                }
+                            val value = it.userFriendlyValue() ?: ""
+                            if (displayName != null) {
+                                data.add(Pair(displayName, value))
                             }
-                        val value = it.userFriendlyValue(d2) ?: ""
-                        if (displayName != null) {
-                            data.add(Pair(displayName, value))
                         }
                     }
-                }
+            }
         }
 
         return data
@@ -302,29 +305,31 @@ class ProgramEventMapper(
                     it.dataElement()?.uid()!!
                 }
         return if (displayInListDataElements.isNotEmpty()) {
-            displayInListDataElements.mapNotNull {
-                val valueRepo =
-                    d2
-                        .trackedEntityModule()
-                        .trackedEntityDataValues()
-                        .value(eventUid, it)
-                val de =
-                    d2
-                        .dataElementModule()
-                        .dataElements()
-                        .uid(it)
-                        .blockingGet()
-                if (isAcceptedValueType(de?.valueType())) {
-                    Pair(
-                        de?.displayFormName() ?: de?.displayName() ?: "",
-                        if (valueRepo.blockingExists()) {
-                            valueRepo.blockingGet().userFriendlyValue(d2)
-                        } else {
-                            null
-                        },
-                    )
-                } else {
-                    null
+            runBlocking {
+                displayInListDataElements.mapNotNull {
+                    val valueRepo =
+                        d2
+                            .trackedEntityModule()
+                            .trackedEntityDataValues()
+                            .value(eventUid, it)
+                    val de =
+                        d2
+                            .dataElementModule()
+                            .dataElements()
+                            .uid(it)
+                            .blockingGet()
+                    if (isAcceptedValueType(de?.valueType())) {
+                        Pair(
+                            de?.displayFormName() ?: de?.displayName() ?: "",
+                            if (valueRepo.blockingExists()) {
+                                valueRepo.blockingGet().userFriendlyValue()
+                            } else {
+                                null
+                            },
+                        )
+                    } else {
+                        null
+                    }
                 }
             }
         } else {

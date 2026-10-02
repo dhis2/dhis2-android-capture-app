@@ -61,6 +61,8 @@ actual val commonsModule: Module
                     override suspend fun valueFromCoordinateAsLatLong(value: String) = value
 
                     override suspend fun valueFromBooleanType(value: String) = value
+
+                    override suspend fun valueFromTrueOnlyType(value: String) = value
                 }
             }
         }
