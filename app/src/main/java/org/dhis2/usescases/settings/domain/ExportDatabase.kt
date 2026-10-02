@@ -37,9 +37,9 @@ class ExportDatabase(
         _exporting.postValue(true)
         return try {
             val db = settingsRepository.exportDatabase()
-            fileHandler.copyAndOpen(db) {}
             when (exportType) {
                 ExportType.Download -> {
+                    fileHandler.copyAndOpen(db) {}
                     settingsMessages.sendMessage(resourceManager.getString(R.string.database_export_downloaded))
                     ExportResult.Success
                 }

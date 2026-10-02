@@ -25,9 +25,12 @@ import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.journeyapps.barcodescanner.ScanOptions
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 import org.dhis2.commons.Constants
 import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.commons.date.DateUtils
@@ -174,7 +177,7 @@ class FormView : Fragment() {
     var scrollCallback: ((Boolean) -> Unit)? = null
     private var displayConfErrors = true
 
-    private val fileHandler = FileHandlerImpl()
+    private val fileHandler by lazy { FileHandlerImpl(requireContext()) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -464,7 +467,7 @@ class FormView : Fragment() {
     }
 
     private fun openFile(event: RecyclerViewUiEvents.OpenFile) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             downloadFile(event.field.displayName)
         } else {
             viewModel.filePath = event.field.displayName
@@ -474,13 +477,27 @@ class FormView : Fragment() {
 
     private fun downloadFile(fileName: String?) {
         fileName?.let { filePath ->
-            fileHandler.copyAndOpen(File(filePath)) {
-                Toast
-                    .makeText(
-                        requireContext(),
-                        getString(R.string.file_downloaded),
-                        Toast.LENGTH_SHORT,
-                    ).show()
+            // Fragment scope: this can also run from the permission result, before the view exists
+            lifecycleScope.launch {
+                try {
+                    fileHandler.copyAndOpen(File(filePath)) {
+                        Toast
+                            .makeText(
+                                requireContext(),
+                                getString(R.string.file_downloaded),
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    Toast
+                        .makeText(
+                            requireContext(),
+                            getString(R.string.file_download_error),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                }
             }
         }
     }
