@@ -21,7 +21,6 @@ import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.ExportDatabase
 import org.dhis2.usescases.settings.domain.GetSettingsState
-import org.dhis2.usescases.settings.domain.GetSyncErrors
 import org.dhis2.usescases.settings.domain.LaunchSync
 import org.dhis2.usescases.settings.domain.SettingsMessages
 import org.dhis2.usescases.settings.domain.UpdateSmsModule
@@ -29,7 +28,6 @@ import org.dhis2.usescases.settings.domain.UpdateSmsResponse
 import org.dhis2.usescases.settings.domain.UpdateSyncSettings
 import org.dhis2.usescases.settings.models.AccountType
 import org.dhis2.usescases.settings.models.DeleteDataState
-import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.settings.models.SettingsState
 import org.dhis2.usescases.settings.models.SyncStateInput
 import org.hisp.dhis.android.core.settings.LimitScope
@@ -39,7 +37,6 @@ class SyncManagerPresenter(
     private val getSettingsState: GetSettingsState,
     private val updateSyncSettings: UpdateSyncSettings,
     private val updateSmsResponse: UpdateSmsResponse,
-    private val getSyncErrors: GetSyncErrors,
     private val updateSmsModule: UpdateSmsModule,
     private val deleteLocalData: DeleteLocalData,
     private val exportDatabase: ExportDatabase,
@@ -66,9 +63,6 @@ class SyncManagerPresenter(
             )
 
     val messageChannel = settingsMessages.messageChannel
-
-    private val _errorLogChannel = Channel<List<ErrorViewModel>>(Channel.RENDEZVOUS)
-    val errorLogChannel = _errorLogChannel.receiveAsFlow()
 
     private val _fileToShareChannel = Channel<File>()
     val fileToShareChannel = _fileToShareChannel.receiveAsFlow()
@@ -350,13 +344,6 @@ class SyncManagerPresenter(
         }
     }
 
-    fun checkSyncErrors() {
-        onItemClick(SettingItem.ERROR_LOG)
-        viewModelScope.launch(dispatcherProvider.io()) {
-            _errorLogChannel.send(getSyncErrors.invokeLegacy())
-        }
-    }
-
     fun onExportAndShareDB() {
         exportDB(ExportDatabase.ExportType.Share)
     }
@@ -392,7 +379,6 @@ class SyncManagerPresenter(
 
     fun closeChannel() {
         settingsMessages.close()
-        _errorLogChannel.close()
     }
 
     private fun getTwoFAStatus() {
