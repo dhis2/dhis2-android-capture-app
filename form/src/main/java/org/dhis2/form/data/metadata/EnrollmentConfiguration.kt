@@ -1,6 +1,6 @@
 package org.dhis2.form.data.metadata
 
-import org.dhis2.bindings.userFriendlyValue
+import org.dhis2.bindings.toFormDisplayValue
 import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.bindings.enrollmentImportConflicts
 import org.dhis2.commons.bindings.program
@@ -88,7 +88,7 @@ class EnrollmentConfiguration(
                 trackedEntityAttributeUid,
                 enrollment()?.trackedEntityInstance()!!,
             ).blockingGet()
-            ?.userFriendlyValue(d2, addPercentageSymbol = false)
+            ?.toFormDisplayValue(d2)
 
     fun conflicts() = d2.enrollmentImportConflicts(enrollmentUid)
 

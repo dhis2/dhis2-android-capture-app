@@ -62,6 +62,12 @@ suspend fun String.userFriendlyValue(
                     .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             }
 
+            valueInfo.isTrueOnlyType -> {
+                valueParser
+                    .valueFromTrueOnlyType(this)
+                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            }
+
             valueInfo.isCoordinate ->
                 valueParser.valueFromCoordinateAsLatLong(this)
 
