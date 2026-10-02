@@ -32,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import org.dhis2.R
+import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.settings.models.SyncErrorLogUiState
 import org.dhis2.usescases.settings.ui.actions.ShareDataChooser
 import org.dhis2.usescases.settings.ui.viewmodels.SyncErrorLogViewModel
@@ -77,37 +78,11 @@ fun SyncErrorLogDialog(onDismiss: () -> Unit) {
                             containerColor = MaterialTheme.colorScheme.primary,
                         ),
                     navigationIcon = {
-                        when (uiState) {
-                            SyncErrorLogUiState.Loading,
-                            is SyncErrorLogUiState.Log,
-                            -> {
-                                IconButton(
-                                    onClick = onDismiss,
-                                    modifier = Modifier.testTag("ERROR_LOG_BACK_BUTTON"),
-                                    icon = {
-                                        Icon(
-                                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                                            contentDescription = "Back Button",
-                                            tint = MaterialTheme.colorScheme.onPrimary,
-                                        )
-                                    },
-                                )
-                            }
-
-                            is SyncErrorLogUiState.Selection -> {
-                                IconButton(
-                                    onClick = viewModel::exitSelectionMode,
-                                    modifier = Modifier.testTag("ERROR_LOG_CLEAR_SELECTION_BUTTON"),
-                                    icon = {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Clear,
-                                            contentDescription = "clear Button",
-                                            tint = MaterialTheme.colorScheme.onPrimary,
-                                        )
-                                    },
-                                )
-                            }
-                        }
+                        NavigationIcon(
+                            uiState = uiState,
+                            onDismiss = onDismiss,
+                            onClearSelection = viewModel::exitSelectionMode,
+                        )
                     },
                     title = {
                         Text(
@@ -117,27 +92,10 @@ fun SyncErrorLogDialog(onDismiss: () -> Unit) {
                         )
                     },
                     actions = {
-                        when (uiState) {
-                            SyncErrorLogUiState.Loading,
-                            is SyncErrorLogUiState.Selection,
-                            -> {
-                                // Nothing to do here
-                            }
-
-                            is SyncErrorLogUiState.Log -> {
-                                IconButton(
-                                    onClick = viewModel::initSelectionMode,
-                                    modifier = Modifier.testTag("ERROR_LOG_SHARE_BUTTON"),
-                                    icon = {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Share,
-                                            contentDescription = "Share Button",
-                                            tint = MaterialTheme.colorScheme.onPrimary,
-                                        )
-                                    },
-                                )
-                            }
-                        }
+                        Actions(
+                            uiState = uiState,
+                            onInitSelectionMode = viewModel::initSelectionMode,
+                        )
                     },
                 )
             },
@@ -161,89 +119,192 @@ fun SyncErrorLogDialog(onDismiss: () -> Unit) {
                         contentPadding = PaddingValues(bottom = Spacing.Spacing104),
                     ) {
                         itemsIndexed(
-                            items =
-                                when (uiState) {
-                                    SyncErrorLogUiState.Loading -> emptyList()
-                                    is SyncErrorLogUiState.Log -> (uiState as SyncErrorLogUiState.Log).errorList
-                                    is SyncErrorLogUiState.Selection -> (uiState as SyncErrorLogUiState.Selection).errorList
-                                },
+                            items = itemsToDisplay(uiState),
                             key = { _, errorItem -> errorItem.hashCode() },
                         ) { index, errorItem ->
-                            ListCard(
-                                modifier = Modifier.fillMaxWidth(),
-                                listCardState =
-                                    rememberListCardState(
-                                        title =
-                                            ListCardTitleModel(
-                                                text = errorItem.errorCode ?: "",
-                                            ),
-                                        description =
-                                            ListCardDescriptionModel(
-                                                text = errorItem.errorComponent ?: "",
-                                            ),
-                                        lastUpdated = errorItem.creationDateLabel,
-                                        additionalInfoColumnState =
-                                            rememberAdditionalInfoColumnState(
-                                                additionalInfoList =
-                                                    listOf(
-                                                        AdditionalInfoItem(
-                                                            value = errorItem.errorDescription ?: "",
-                                                        ),
-                                                    ),
-                                                syncProgressItem =
-                                                    AdditionalInfoItem(
-                                                        key = "",
-                                                        value = "",
-                                                    ),
-                                            ),
-                                        selectionState =
-                                            when (uiState) {
-                                                SyncErrorLogUiState.Loading,
-                                                is SyncErrorLogUiState.Log,
-                                                -> SelectionState.NONE
-
-                                                is SyncErrorLogUiState.Selection -> {
-                                                    if (errorItem.isSelected) {
-                                                        SelectionState.SELECTED
-                                                    } else {
-                                                        SelectionState.SELECTABLE
-                                                    }
-                                                }
-                                            },
-                                    ),
-                                onCardClick = {},
-                                onCardSelected = { _ ->
+                            ErrorListItem(
+                                errorItem = errorItem,
+                                uiState = uiState,
+                                onCardSelected = {
                                     viewModel.setSelected(index)
                                 },
                             )
                         }
                     }
 
-                    AnimatedVisibility(
+                    ShareButton(
                         modifier = Modifier.align(Alignment.BottomCenter),
-                        visible = uiState is SyncErrorLogUiState.Selection,
-                        enter = scaleIn(),
-                        exit = scaleOut(),
-                    ) {
-                        Box(
-                            modifier =
-                                Modifier
-                                    .padding(
-                                        start = Spacing.Spacing16,
-                                        end = Spacing.Spacing16,
-                                        bottom = Spacing.Spacing4,
-                                    ),
-                        ) {
-                            Button(
-                                modifier = Modifier.fillMaxWidth(),
-                                style = ButtonStyle.FILLED,
-                                text = stringResource(R.string.share),
-                                onClick = viewModel::onShareLog,
-                            )
-                        }
-                    }
+                        uiState = uiState,
+                        onClick = viewModel::onShareLog,
+                    )
                 }
             },
         )
+    }
+}
+
+@Composable
+private fun NavigationIcon(
+    uiState: SyncErrorLogUiState,
+    onDismiss: () -> Unit,
+    onClearSelection: () -> Unit,
+) {
+    when (uiState) {
+        SyncErrorLogUiState.Loading,
+        is SyncErrorLogUiState.Log,
+        -> {
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier.testTag("ERROR_LOG_BACK_BUTTON"),
+                icon = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                        contentDescription = "Back Button",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                    )
+                },
+            )
+        }
+
+        is SyncErrorLogUiState.Selection -> {
+            IconButton(
+                onClick = onClearSelection,
+                modifier = Modifier.testTag("ERROR_LOG_CLEAR_SELECTION_BUTTON"),
+                icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Clear,
+                        contentDescription = "clear Button",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                    )
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun Actions(
+    uiState: SyncErrorLogUiState,
+    onInitSelectionMode: () -> Unit,
+) {
+    when (uiState) {
+        SyncErrorLogUiState.Loading,
+        is SyncErrorLogUiState.Selection,
+        -> {
+            // Nothing to do here
+        }
+
+        is SyncErrorLogUiState.Log -> {
+            IconButton(
+                onClick = onInitSelectionMode,
+                modifier = Modifier.testTag("ERROR_LOG_SHARE_BUTTON"),
+                icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Share,
+                        contentDescription = "Share Button",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                    )
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun ErrorListItem(
+    errorItem: ErrorViewModel,
+    uiState: SyncErrorLogUiState,
+    onCardSelected: () -> Unit,
+) {
+    ListCard(
+        modifier = Modifier.fillMaxWidth(),
+        listCardState =
+            rememberListCardState(
+                title =
+                    ListCardTitleModel(
+                        text = errorItem.errorCode ?: "",
+                    ),
+                description =
+                    ListCardDescriptionModel(
+                        text = errorItem.errorComponent ?: "",
+                    ),
+                lastUpdated = errorItem.creationDateLabel,
+                additionalInfoColumnState =
+                    rememberAdditionalInfoColumnState(
+                        additionalInfoList =
+                            listOf(
+                                AdditionalInfoItem(
+                                    value =
+                                        errorItem.errorDescription
+                                            ?: "",
+                                ),
+                            ),
+                        syncProgressItem =
+                            AdditionalInfoItem(
+                                key = "",
+                                value = "",
+                            ),
+                    ),
+                selectionState = selectionState(uiState, errorItem),
+            ),
+        onCardClick = {},
+        onCardSelected = { _ ->
+            onCardSelected()
+        },
+    )
+}
+
+@Composable
+private fun ShareButton(
+    modifier: Modifier,
+    uiState: SyncErrorLogUiState,
+    onClick: () -> Unit,
+) {
+    AnimatedVisibility(
+        modifier = modifier,
+        visible = uiState is SyncErrorLogUiState.Selection,
+        enter = scaleIn(),
+        exit = scaleOut(),
+    ) {
+        Box(
+            modifier =
+                Modifier
+                    .padding(
+                        start = Spacing.Spacing16,
+                        end = Spacing.Spacing16,
+                        bottom = Spacing.Spacing4,
+                    ),
+        ) {
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                style = ButtonStyle.FILLED,
+                text = stringResource(R.string.share),
+                onClick = onClick,
+            )
+        }
+    }
+}
+
+private fun itemsToDisplay(uiState: SyncErrorLogUiState) =
+    when (uiState) {
+        SyncErrorLogUiState.Loading -> emptyList()
+        is SyncErrorLogUiState.Log -> uiState.errorList
+        is SyncErrorLogUiState.Selection -> uiState.errorList
+    }
+
+private fun selectionState(
+    uiState: SyncErrorLogUiState,
+    errorItem: ErrorViewModel,
+) = when (uiState) {
+    SyncErrorLogUiState.Loading,
+    is SyncErrorLogUiState.Log,
+    -> SelectionState.NONE
+
+    is SyncErrorLogUiState.Selection -> {
+        if (errorItem.isSelected) {
+            SelectionState.SELECTED
+        } else {
+            SelectionState.SELECTABLE
+        }
     }
 }
