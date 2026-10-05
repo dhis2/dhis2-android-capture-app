@@ -32,7 +32,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -47,8 +46,8 @@ import org.dhis2.commons.sync.ConflictType.PROGRAM
 import org.dhis2.commons.sync.ConflictType.TEI
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.mobile.sync.data.DATA_SYNC_NOW
 import org.dhis2.mobile.commons.extensions.launchUseCase
+import org.dhis2.mobile.sync.data.DATA_SYNC_NOW
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.model.GRANULAR_SYNC_DATASET_NAME
 import org.dhis2.mobile.sync.model.GRANULAR_SYNC_DATAVALUE_NAME
