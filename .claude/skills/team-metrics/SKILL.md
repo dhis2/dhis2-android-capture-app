@@ -215,7 +215,9 @@ Three italic lines directly under the title, before **Since last time** — or b
 
 The middots inside the Sources line separate items and stay. Lines 1 and 2 end with **no
 trailing separator** — earlier editions carried one from when this was a single line, and it
-renders as a dangling `·`.
+renders as a dangling `·`. Each source name in that line is a link to its home (the Jira
+project, the GitHub repo, the SonarCloud dashboard — see **Source links** in the reference);
+the wording is unchanged.
 
 The date is a Confluence `<time>` node, not plain text, and it is the **window end** — the
 same `--as-of` the charts were drawn with, never today's date. The Sources line lists only
@@ -497,6 +499,12 @@ Writing rules:
 - **Only these four get charted.** Everything else in the report is a two-point comparison,
   where a two-bar chart carries nothing the sentence does not. Adding a fifth chart needs a
   reason written into the reference, not a spare afternoon.
+- **Link the source.** Wherever a figure comes from a query, link the number to it — a Jira
+  count to its JQL, a SonarCloud finding to its page, PR and CI figures to GitHub, a Sentry
+  issue ID to the issue — so the reader can check it in one click. Link at the place that
+  owns the figure, not at every repeat. **Verify each link returns the number printed beside
+  it before publishing**; patterns, encoding and traps are under **Source links** in the
+  reference.
 
 ## 6. Publish
 

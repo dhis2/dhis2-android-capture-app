@@ -564,6 +564,39 @@ re-queries JQL on every page view, so the picture drifts away from the prose aro
 work moves. That breaks the single-snapshot rule outright. Both are dead ends — keep the
 PNG-or-table approach.
 
+## Source links — link every figure to the query behind it
+
+A number nobody can check is a number nobody trusts. Link it where it is stated; the Method
+section lists the flow populations once. URL patterns:
+
+- **Jira** — `https://dhis2.atlassian.net/issues/?jql=<JQL>`, encoded with
+  `urllib.parse.quote_plus(jql, safe='(),')`. Put the **window dates inside the JQL**
+  (`created >= "<w1>" AND created < "<w2 + 1 day>"`) so the link reproduces the figure rather
+  than describing today. **Verify every link** by running its JQL through the anonymous REST
+  search (`/rest/api/3/search/jql`, paginate and count) and comparing with the printed number.
+  Backlog, open bugs, Needs-info stock and epics are current-state: they link to today's state,
+  so say so in Method. Never create a saved Jira filter to shorten a link — that is a write.
+- **Jira version** — `https://dhis2.atlassian.net/projects/ANDROAPP/versions/<id>`, id from
+  `GET /rest/api/3/project/ANDROAPP/versions`.
+- **SonarCloud** (project `dhis2_dhis2-android-capture-app`, always `&branch=develop`):
+  vulnerabilities `/project/issues?id=<key>&branch=develop&resolved=false&types=VULNERABILITY`;
+  one rule `&rules=githubactions%3AS7630`; one finding `&issues=<key>&open=<key>`;
+  hotspots `/project/security_hotspots?id=<key>&branch=develop`, one hotspot `&hotspots=<key>`;
+  history `/project/activity?id=<key>&branch=develop&graph=custom&custom_metrics=coverage,code_smells,sqale_index,duplicated_lines_density`.
+  Issue and hotspot keys come from the search APIs in **Security**.
+- **GitHub** — merged PRs:
+  `/pulls?q=is:pr is:merged base:develop merged:<w1>..<w2> -author:app/dependabot -author:app/github-actions -author:app/copilot-swe-agent -author:dhis2-bot`
+  (URL-encoded) — check its count with `gh api -X GET search/issues -f q=… --jq .total_count`
+  and match the human-PR figure. CI: `/actions/workflows/ci.yml?query=branch:develop event:push`
+  (encoded). The Actions UI cannot filter by date, so state the 11-August-style split in text.
+- **Sentry** — `https://dhis2.sentry.io/issues/DHIS2-ANDROID-CAPTURE-<ID>`; needs a login.
+
+**Anonymous and authenticated Jira disagree by a few issues.** The anonymous flow script cannot
+see permission-restricted issues, while counts taken through the Atlassian connector can. On the
+2026-10 edition the connector counted 39 closed Bugs and 36 closed Features where an anonymous
+query returns 38 and 35 — which is the whole of the "126 vs 124 resolved" gap. When a table
+comes from the connector, say so in its caption and note what an anonymous reader will see.
+
 ## Parked theories — check before proposing, promote only on new evidence
 
 A causal theory rejected once for lack of evidence tends to sound plausible again next
