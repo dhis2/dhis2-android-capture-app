@@ -41,7 +41,7 @@ user rather than working around it — a silently skipped source produces a misl
 | Jira | all flow metrics | **none** — ANDROAPP is world-readable over REST, `expand=changelog` included | Only fails if project permissions or the network changed. Blocking; investigate rather than working around |
 | Confluence | reading the previous edition, creating and updating the page | **the Atlassian connector** (per-user OAuth, no token) | Confirm the Atlassian tools are in-session; if not, authorize with `/mcp`. **You cannot run OAuth yourself.** Without it, hand the report over as text |
 | Charts | attaching the four PNGs — and *only* this | scoped `JIRA_AUTH`, optional: `read:content-details:confluence` + `write:attachment:confluence` | Publish the collapsed tables instead and say so. Nothing else is affected |
-| GitHub | PR cycle time, review latency, PR size, CI | `gh` login, or the GitHub MCP tools where `gh` is absent (cloud sessions have no `gh`) | Skip the **Pull requests & CI** section and say so |
+| GitHub | PR cycle time, review latency, PR size, CI | `gh` login, or the GitHub MCP tools where `gh` is absent (cloud sessions have no `gh`) | Skip the **PR/CI** line and say so |
 | SonarCloud | code quality trend, security (vulnerabilities + hotspots) | none | Skip; no token needed, so failure means network |
 | Sentry MCP | production stability | per-user OAuth | Check the Sentry tools are available in-session. If not, tell the user to authorize with `/mcp` — **you cannot run OAuth yourself.** Mark the section unavailable |
 
@@ -271,8 +271,8 @@ Structure, in order.
    themselves, and in a meeting nobody does.
 
    **Delivery is the report's name for the downstream loop** — commitment to merge. Use that
-   word for it everywhere, and never for the PR/CI section (see §9), which is why that
-   section is no longer called Delivery.
+   word for it everywhere, and never for PR/CI figures (see item 9) — PR open → merged is a
+   different clock over a different population, which is why they are not called Delivery.
 4. **Where the time goes** — **scoped to delivery, not the whole lifecycle.** The question is
    where the team's own loop stalls, and lifecycle shares answer a different one: they are
    dominated by backlog dwell (`Open`, `Waiting for analysis`) that sits before commitment
@@ -287,15 +287,17 @@ Structure, in order.
    **Whole lifecycle, for context** heading. A large move there (a status going from 7% to
    32% of all tracked time in one window) is worth a single line in **Recommendations**, but
    it is not a delivery finding and does not belong in the reading flow.
-5. **Epics** — one row: open count, closed in the window, age p50/p85, oldest, split by
-   status. They are excluded from flow and summarised separately.
+5. **Epics** — **no section and no table: one line**, in the closing **Carried forward,
+   unchanged** block (see item 10). They are excluded from flow and summarised separately.
 
-   Keep it to that row and one line of trend. Epics matter because the pile needs cleaning
-   up, but the pile itself is a Jira query anyone can run — listing 27 stale epics buries the
-   report without telling the reader anything the count did not. What earns its place is
-   whether open count and median age moved since last edition, and whether any were closed.
-   If they have not moved for several editions, say so in that one line and put it in
-   **Recommendations** — do not paste the list.
+   The line gives the open count with last edition's in brackets, the median age, and says
+   whether the pile moved — e.g. "**Epics:** 49 open (48 on 15 Sep), median age 656 days — a
+   stable pile, excluded from flow." Epics matter because the pile needs cleaning up, but the
+   pile itself is a Jira query anyone can run, and even a one-row table spends a meeting's
+   attention on a number that rarely moves. The rest — closed in the window, age p85, oldest,
+   split by status — goes into **Method**, never off the page. If the pile has not moved for
+   several editions, say so in that one line and put it in **Recommendations** — do not paste
+   the list.
 6. **Needs info review** — **a table and three bullets. Nothing else.** The section answers
    whether the gate is worth having, and the numbers that answer it are few.
 
@@ -420,26 +422,27 @@ Structure, in order.
    findings that share a file and pattern into one entry rather than listing every row. Name
    what's left outside the top 3 in one clause instead of dropping it silently — it's next
    edition's candidate batch.
-9. **Pull requests & CI** — **renamed from "Delivery", which was the problem with it.** The
-   word already means `Ready to Start` → merged in §3, so a second section called Delivery
-   measuring something else (PR open → merged, a different clock over a different population)
-   read as a contradiction of the flow numbers rather than a different view.
+9. **PR/CI** — **no section and no table: one or two lines**, in the closing **Carried
+   forward, unchanged** block (see item 10).
 
-   Keep it to **three bullets and the small table** — PR cycle time, review latency, PR size
-   at p50/p85 against the previous window, then CI pass rate on `develop`. It earns its place
-   for two reasons and only two: it is the only view of the *review* queue, which is usually
-   the largest active stage inside delivery, and it is the only place CI health is measured
-   at all. Both are things the team can act on the same week.
+   The line carries only what the team can act on the same week: review coverage, the CI
+   pass rate on `develop` — **split at a fix rather than averaged**, since a window average
+   can describe neither period — and PR size against the 400-line gate when it is breached.
+   E.g. "**PR/CI:** all 75 human PRs reviewed; CI on `develop` passes 93% of push runs since
+   11 Aug (51 of 55), 0 of 37 before; PR size p85 is 506 lines against the 400-line gate."
+   A metric that did not move or breach a gate gets no words.
 
-   Report a number here **only when it moved or breached a gate** — the PR size gate at 400
-   lines, review coverage, a CI pass rate that splits at a fix rather than averaging. A
-   stable metric gets no line; it stays in the table.
-
-   If the section ever has nothing that moved, say that in one line and keep the table. Do
-   not delete it — GitHub has no retrospective view, so an edition that omits it leaves a
-   permanent hole in the series.
+   The rest — PR cycle time, review latency and PR size at p50/p85 against the previous
+   window, the share of PRs over the gate — goes into **Method**, every run, never off the
+   page: GitHub has no retrospective view, so an edition that drops those figures leaves a
+   permanent hole in the series. Name it **PR/CI**, never Delivery (see item 3).
 10. **Releases** — overdue or upcoming, cadence. Two or three lines: what shipped, what is
     next, and any version whose bookkeeping makes the other numbers wrong.
+
+    Directly after it, and before **Recommendations**, a closing **Carried forward,
+    unchanged** block: a bulleted list of **one line per item**, no tables. It currently holds
+    two items — **PR/CI** (item 9) and **Epics** (item 5) — and is where any other figure that
+    rarely moves belongs when it does not earn a section of its own.
 11. **Recommendations** — checkboxes, each naming a hot spot and why it stands out
 
     **Suggest, do not instruct.** The report's job is to point at where the numbers are

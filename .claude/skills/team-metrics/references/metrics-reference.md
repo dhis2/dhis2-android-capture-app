@@ -116,9 +116,12 @@ signature of a backlog-clearing sweep, not a new bottleneck; see **Parked theori
 
 ## Epics
 
-Epics get their own one-row summary (open count, closed in period, age p50/p85, oldest, breakdown
-by status) because the team does not manage work at that level — 49 open, median age 21 months,
-1 closed per quarter — so mixing them into flow makes any roll-up unrealistic.
+Epics are summarised separately, as **one line** in the report's closing *Carried forward,
+unchanged* block (open count, median age, whether the pile moved) — **not a table**, not even a
+one-row one — because the team does not manage work at that level: 49 open, median age 21
+months, 1 closed per quarter, so mixing them into flow makes any roll-up unrealistic. The fuller
+figures (closed in period, age p50/p85, oldest, breakdown by status) are still computed and go
+into Method, so nothing is lost.
 
 **Do not list them on the page.** The pile needs cleaning up, but "which epics are stale" is a Jira
 query anyone can run, and a 27-row table buries a report whose whole value is being readable in a
