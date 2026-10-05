@@ -6,8 +6,8 @@ description: >
   delivery, post-merge, throughput, where time queues), production stability from
   Sentry, code quality from SonarCloud, and PR/CI health from GitHub; compares the
   rolling 90-day window against the preceding one; reviews how the Needs info gate is
-  performing; draws the four charts that carry the report's main
-  findings; and reports back on what moved since last edition's recommendations. Use when
+  performing; composes the concise report layout with its three charts; and reports back on what
+  moved since last edition's recommendations. Use when
   asked to produce, refresh or publish the team metrics report, or for a mid-month check
   on flow and bottlenecks.
 ---
@@ -40,14 +40,12 @@ user rather than working around it — a silently skipped source produces a misl
 |---|---|---|---|
 | Jira | all flow metrics | **none** — ANDROAPP is world-readable over REST, `expand=changelog` included | Only fails if project permissions or the network changed. Blocking; investigate rather than working around |
 | Confluence | reading the previous edition, creating and updating the page | **the Atlassian connector** (per-user OAuth, no token) | Confirm the Atlassian tools are in-session; if not, authorize with `/mcp`. **You cannot run OAuth yourself.** Without it, hand the report over as text |
-| Charts | attaching the four PNGs — and *only* this | scoped `JIRA_AUTH`, optional: `read:content-details:confluence` + `write:attachment:confluence` | Publish the collapsed tables instead and say so. Nothing else is affected |
 | GitHub | PR cycle time, review latency, PR size, CI | `gh` login, or the GitHub MCP tools where `gh` is absent (cloud sessions have no `gh`) | Skip the **PR/CI** line and say so |
 | SonarCloud | code quality trend, security (vulnerabilities + hotspots) | none | Skip; no token needed, so failure means network |
 | Sentry MCP | production stability | per-user OAuth | Check the Sentry tools are available in-session. If not, tell the user to authorize with `/mcp` — **you cannot run OAuth yourself.** Mark the section unavailable |
 
 **Running in a cloud session.** Everything works there except what the environment's network
-policy blocks. Confluence (the connector), Sentry (MCP) and chart rendering are fine — cloud
-containers ship Playwright's Chromium, which the renderer finds on its own. What they do not
+policy blocks. Confluence (the connector) and Sentry (MCP) are fine. What cloud containers do not
 ship is `gh`, so take PR and CI figures from the GitHub MCP tools instead of the CLI. And the
 egress proxy allow-lists hosts: if `--preflight` reports Jira or SonarCloud as a *tunnel 403*,
 that is the allow-list refusing the CONNECT, not an auth failure — no token changes it. The
@@ -55,9 +53,10 @@ environment needs `dhis2.atlassian.net` and `sonarcloud.io` added to its allowed
 until then, run the report from a local checkout rather than publishing one with the flow
 metrics missing.
 
-**No credential is needed to produce or publish the report.** Jira is world-readable,
-and Confluence read/write goes through the Atlassian connector. A token buys exactly two
-things: attaching the chart PNGs, and covering permission-restricted Jira issues.
+**No credential is needed to produce the report or a draft.** Jira is world-readable, and
+Confluence read/write goes through the Atlassian connector. A scoped token buys two things:
+attaching charts 01–03 — **required to publish** — and covering permission-restricted Jira
+issues.
 
 Anonymous Jira sees only public issues, so a restricted issue would drop out of every
 count with no error. Say "anonymous" in the Method section when the run was — the numbers
@@ -135,7 +134,7 @@ SonarCloud measures and history pinned to `branch=develop`.
 **For Sentry, run the `sentry-triage` skill rather than querying issues here.** It resolves
 the production release, attributes each issue to its owning repo, scores Impact and Effort,
 and returns the impact/effort quadrants — which is what makes the stability section
-actionable instead of a leaderboard. Take its scores verbatim into the report and the chart;
+actionable instead of a leaderboard. Take its scores verbatim into the report;
 do not re-derive them, or the page and the triage will disagree.
 
 Two things the triage does not cover, so still query them here:
@@ -149,63 +148,41 @@ production release**, the rest of the report to the **90-day window**. They answ
 questions — "what should we fix now" versus "how did stability move" — and an issue can
 legitimately top one and be absent from the other.
 
-## 4. Draw the four charts
+## 4. Charts (mandatory for a published report)
+
+Charts 01–03 are part of the report. **Every published (`current`) report must carry all
+three.** The only exception is a **draft**, which may go without them when Sentry or Confluence
+is not accessible (no Sentry means no fresh triage; no Confluence access or working token means
+no attachments) — say so at the top of the draft and in Method. The tables beneath each chart
+still carry every number, so a draft without images loses no data, but it is not publishable
+until the charts are attached.
 
 ```bash
-python3 scripts/metrics/charts.py --as-of <window-end YYYY-MM-DD> --release <e.g. 3.4.2> \
-  --issue "79TN|NPE — TEI dashboard|DashboardRepositoryImpl.kt:889|353|5.0|5|2|Q1" \
-  --issue "7F4F|ANR in LocaleSelector|LocaleSelector.kt:47|506|7.1|5|3|Q2"
+python3 scripts/metrics/charts.py --as-of <window-end YYYY-MM-DD> --release <e.g. 3.4.2>
 ```
 
-Flow numbers come from `metrics.json`, SonarCloud history the script fetches itself, and the
-Sentry rows from the triage report — one `--issue` per row as
-`ID|Title|CrashSite|Users|Reach%|Impact|Effort|Quadrant`, copied across rather than
-re-derived. Nothing is written to disk but the charts.
-
-It produces, in `scripts/metrics/charts/`:
-
-| Chart | Replaces | Source |
+| Chart | Sits under | Source |
 |---|---|---|
-| `01-journey` | the paragraph explaining that intake + delivery + post-merge sum to lead time — and, since §5.3 now shows only four metrics, the intake and post-merge figures themselves | `metrics.json` |
-| `02-where-time-goes` | the whole shaded stage-share table | `metrics.json` (`stages_delivery`) |
-| `03-sonarcloud-trend` | the SonarCloud prose line in **Quality** | SonarCloud API |
-| `04-sentry-issues` | the top-issues table in **Production stability** | `--issue` args, from `sentry-triage` |
+| `01-journey` | **Trend at a glance** | `metrics.json` |
+| `02-where-time-goes` | **Where the time goes** | `metrics.json` (`stages_delivery`) |
+| `03-sonarcloud-trend` | **Code quality trend** | SonarCloud API |
 
-plus `charts/tables.html` — the same numbers as a collapsed Confluence `expand` macro per
-chart. **Paste those, never retype the figures**; hand-transcribing is how a chart and its
-table drift apart.
+`04-sentry-issues` is **not used**: Crash / ANR is a root-cause list, not a plot. Use `--as-of`
+with the window end, never today. `charts/tables.html` holds each chart's collapsed table —
+paste it, never retype figures.
 
-**Pass chart 4 at most ten issues.** Triage now returns sixteen, and effort is a 1–5
-integer, so the extra rows pile into one or two vertical columns and the label ladder runs
-off the bottom of the plot. Ten is the most that stays legible. Send the ten highest by
-reach — they are the decision-relevant ones and they still cover every quadrant — and name
-the remainder in a sentence with their quadrants, so nothing scored is silently dropped.
-
-`--as-of` is the window end, not today. Passing today's date silently produces charts that
-disagree with the page they sit on. If a chart is skipped (SonarCloud unreachable, no
-`--issue` given) the script says so — say it in the report too, and keep that section's
-existing table rather than leaving a hole.
-
-PNG rasterization needs a Chrome-family binary. The script looks under `CHROME_BIN`, the
-Linux binary names, the macOS `/Applications` paths, and Playwright's browsers directory
-(`PLAYWRIGHT_BROWSERS_PATH`, default `/opt/pw-browsers`) — which is what makes charts work in
-a cloud session, where nothing is on `PATH`. Without any of them the script emits SVG only,
-and there is nothing to attach; fall back to the tables as above.
-
-It prefers `headless_shell` and `--headless=old` over `--headless=new`, and that ordering is
-load-bearing rather than cosmetic: new headless treats `--window-size` as the *outer* window,
-so the page lays out ~88px shorter than the screenshot it writes, and the bottom of every
-chart — axis labels and the footnote line — comes out blank with no error. Where only new
-headless is available the script measures that frame with a probe page and pads the window,
-which leaves a white strip below the chart. A PNG noticeably taller than its SVG `viewBox`
-is that padding, not a bug.
+Attaching needs a working scoped token **and a page with status `current`** (Confluence
+refuses attachments on a draft); see §6. If the token is missing or rejected, stop and ask the
+user to fix it rather than publishing without charts. The connector cannot copy another page's
+images, so charts already on a published edition have to be pasted across in the Confluence
+editor.
 
 ## 5. Compose
 
 ### The header
 
 Three italic lines directly under the title, before **Since last time** — or before
-**Headline**, on a first edition that has no such section — in this order and this wording. It is a hand-tuned format — reproduce it, do not re-invent it per edition:
+**Crash / ANR exposure**, on a first edition that has no such section — in this order and this wording. It is a hand-tuned format — reproduce it, do not re-invent it per edition:
 
 ```html
 <p><em>Rolling 90 days to </em><time datetime="2026-09-08">September 8, 2026</time><em>, compared with the preceding 90 days</em></p>
@@ -220,263 +197,128 @@ project, the GitHub repo, the SonarCloud dashboard — see **Source links** in t
 the wording is unchanged.
 
 The date is a Confluence `<time>` node, not plain text, and it is the **window end** — the
-same `--as-of` the charts were drawn with, never today's date. The Sources line lists only
+same `--as-of` the numbers were pinned with, never today's date. The Sources line lists only
 the sources that actually contributed: drop any that was skipped, and the Method section
 says why.
 
 ### Body
 
-**This report is read aloud in a monthly team meeting, not studied at a desk.** That is the
-constraint every rule below serves: a section the team cannot absorb in the ~30 seconds it
-gets on screen has failed, however correct its numbers are.
+**This report is read aloud in a monthly team meeting, not studied at a desk.** A section the
+team cannot absorb in the ~30 seconds it gets on screen has failed, however correct its
+numbers are. The layout is the concise one approved in the reference draft
+([Android Metrics — Concise Draft](https://dhis2.atlassian.net/wiki/spaces/MOB/pages/2043543554));
+reproduce its sections, order and shape, and fill them with the current window's data.
 
-So, for every section outside **Method**:
+For every section outside **Method**: at most three sentences of prose; the takeaway first,
+in bold; a bullet over a sentence and a table over a bullet list of numbers. **Nothing is
+deleted, only moved** — a figure that no longer earns a line goes into **Method**, never off
+the page, because Sentry, GitHub and SonarCloud have no retrospective view.
 
-- **At most three sentences of prose.** A finding that needs a fourth is two findings, or it
-  belongs in Method. Paragraphs of four or five lines — the shape earlier editions used
-  everywhere — do not survive the meeting; they get skipped and the finding inside them is
-  lost.
-- **Lead with the takeaway, in bold, on its own line.** If the reader stops after that line
-  they should still have the point. Everything after it is support.
-- **Prefer a bullet to a sentence and a table to a bullet list of numbers.** Tables and charts
-  are read at a glance; prose is not.
-- **Nothing is deleted, only moved.** Detail that no longer fits goes into the collapsed
-  `<details>` under the section, or into Method — never off the page. The guardrails still
-  hold: next edition reads this page, and Sentry, GitHub and SonarCloud have no retrospective
-  view, so a number dropped here is a number gone.
+**There is no Headline section.** The numbers it carried live in the sections below or in
+Method. **Trend at a glance**, **Where the time goes** and **Code quality trend** are sections
+of their own, each with its chart (§4) above a collapsed table.
 
-Structure, in order.
+**Say a figure once.** If a number is already in a table or a section, do not repeat it in
+another section or in Method; Method holds only what appears nowhere else. Link back
+("see Trend at a glance") instead of restating.
 
-1. **Since last time** — what moved on ticked recommendations, carried-forward ones. Omitted
-   entirely on a first edition (see §2), replaced by a single line saying so. One line per
-   ticked item: what was picked up, what the number did.
-2. **Headline** — two bullet lists: *Going well* / *Needs attention*, ~5 each, no tables.
-   One line each, no sub-clauses.
-3. **Trend at a glance** — **four metrics, not ten.** The team reads this section to answer one
-   question: is the part we control getting faster? So it carries, in this order:
+Structure, in order. Only the five core sections — Crash / ANR, Security, Backlog growth, Needs-info triage,
+Delivery predictability — carry heading numbers 1–5, in that relative order. **Since last
+time**, **Trend at a glance**, **Where the time goes**, **Code quality trend**, **Carried
+forward, unchanged**, **Recommendations**, **Parked** and **Method** are unnumbered. The page
+order is: Since last time → Trend at a glance → Where the time goes → 1 Crash / ANR → Code
+quality trend → 2 Security → 3 Backlog growth → 4 Needs-info triage → 5 Delivery
+predictability → Carried forward → Recommendations → Parked → Method. The list below
+describes each section; take the order from this paragraph.
 
-   | Metric | One-line definition |
-   |---|---|
-   | Delivery p50 | `Ready to Start` → merged. The loop the team owns, median |
-   | Delivery p85 | Same, slowest 15% — where the bottleneck shows up first |
-   | Flow efficiency | Active ÷ total *inside* delivery. 15–40% is typical |
-   | Throughput | Items completed in the window (resolution = Done) |
+1. **Since last time** — one bullet per recommendation of the previous edition, prefixed
+   `DONE` or `PARTIAL` (unticked and untouched ones are carried forward or dropped per §2).
+   Say what was picked up and what the number did, e.g. "PARTIAL Vulnerabilities 17→4 —
+   rating stayed E; mechanism explained in Security below." Omitted on a first edition (see §2).
+   **Trend at a glance** — the four-metric table (Delivery p50, Delivery p85, Flow
+   efficiency, Throughput; columns metric, what it measures, prev, now, change as a status
+   lozenge), one line ("Intake and the post-merge tail …; Delivery stayed the same"), then
+   **chart `01-journey`**, then two collapsed blocks: **Data table** (stage medians: intake,
+   delivery, post-merge, sum) and **All flow metrics** (intake p50/p85, lead time p50/p85,
+   post-merge p50, closed without a fix, with the lead-time-p85 and clean-up note). Throughput
+   links to its JQL.
 
-   Prev, now and a change lozenge for each, and nothing else in the reading flow. Then
-   **chart `01-journey`**, which carries intake and post-merge visually, with one line
-   above it.
+   **Where the time goes** — **scoped to delivery, not the lifecycle.** One bold line naming
+   the largest queue inside delivery and whether it grew, one line on the runner-up if it is an
+   outlier, **chart `02-where-time-goes`**, then collapsed **Data table** (status, previous,
+   current, p85 duration; remaining stages grouped) and **Whole lifecycle, for context** (a
+   different scope, not comparable).
 
-   The other six metrics — intake p50/p85, lead time p50/p85, post-merge p50, closed without
-   a fix — move into a collapsed **All flow metrics** table directly beneath, same columns.
-   They are still measured, still published, still readable by next edition; they are just
-   not what the meeting opens on. A ten-row table asks the reader to find the important row
-   themselves, and in a meeting nobody does.
+   **Code quality trend** — placed after Crash / ANR, before Security. One bold line (the
+   12-month direction of smells and debt; flag a coverage jump that is a measurement change,
+   with the PR), **chart `03-sonarcloud-trend`**, then collapsed **Data table** (coverage,
+   smells, debt, duplication, LOC: first month → report date, direction).
 
-   **Delivery is the report's name for the downstream loop** — commitment to merge. Use that
-   word for it everywhere, and never for PR/CI figures (see item 9) — PR open → merged is a
-   different clock over a different population, which is why they are not called Delivery.
-4. **Where the time goes** — **scoped to delivery, not the whole lifecycle.** The question is
-   where the team's own loop stalls, and lifecycle shares answer a different one: they are
-   dominated by backlog dwell (`Open`, `Waiting for analysis`) that sits before commitment
-   and drowns the delivery statuses out. `metrics.py` prints both; the section shows the
-   delivery block, and `charts.py` draws it.
+2. **Crash / ANR exposure** — from the `sentry-triage` run. Open with one bold line: events
+   per affected user on the newest production release against the previous one, with the
+   change in percent. Then the issues **split by root cause, in priority order, only causes
+   with direct evidence**, under two sub-headings carrying the combined reach:
+   - `ANR rate — ~X% combined reach, N confirmed causes`
+   - `NPE / crash rate — ~X% combined reach, N confirmed causes`
 
-   One bold line naming **the largest queue inside delivery and whether it grew or shrank**,
-   then **chart `02-where-time-goes`**, then the collapsed table. That queue is the bottleneck
-   candidate — it is the one thing this section exists to hand the team.
-
-   Keep the whole-lifecycle shares in the same collapsed block, as a second table under a
-   **Whole lifecycle, for context** heading. A large move there (a status going from 7% to
-   32% of all tracked time in one window) is worth a single line in **Recommendations**, but
-   it is not a delivery finding and does not belong in the reading flow.
-5. **Epics** — **no section and no table: one line**, in the closing **Carried forward,
-   unchanged** block (see item 10). They are excluded from flow and summarised separately.
-
-   The line gives the open count with last edition's in brackets, the median age, and says
-   whether the pile moved — e.g. "**Epics:** 49 open (48 on 15 Sep), median age 656 days — a
-   stable pile, excluded from flow." Epics matter because the pile needs cleaning up, but the
-   pile itself is a Jira query anyone can run, and even a one-row table spends a meeting's
-   attention on a number that rarely moves. The rest — closed in the window, age p85, oldest,
-   split by status — goes into **Method**, never off the page. If the pile has not moved for
-   several editions, say so in that one line and put it in **Recommendations** — do not paste
-   the list.
-6. **Needs info review** — **a table and three bullets. Nothing else.** The section answers
-   whether the gate is worth having, and the numbers that answer it are few.
-
-   The outcome table first, one row per bucket, current window against previous:
-
-   | Bucket | Means |
-   |---|---|
-   | moved forward and done | reached commitment or beyond afterwards, resolved `Done` |
-   | moved forward, still open | progressed downstream, not yet resolved |
-   | closed without a fix | terminal on any resolution but `Done` |
-   | still in Needs info | never left |
-   | never moved on | left the status but never reached commitment or an active status |
-
-   Then exactly three bullets:
-
-   - **Is it working?** The share that moved forward, against the previous window, in one
-     sentence. Add "and the current window is younger, so this is a floor" only when the
-     comparison is close.
-   - **What happened to the rest?** The closed-without-a-fix count and the resolutions they
-     carry (`Obsolete`, `Cannot Reproduce`, `Invalid`). **Don't call all of them unanswered
-     questions that aged out** — check dwell before the resolution, not just the count: a
-     `Cannot Reproduce`/`Invalid` closed in a few days is a genuine attempt that came up
-     empty, a healthy outcome, not a triage failure; an `Obsolete` closed after weeks or
-     months is the one that actually aged out. The two read as the same number and are not
-     the same finding — see the reference for the dwell-based split.
-   - **Where to look.** The current stock and its oldest item, or the repeat-visit count, or
-     the same-day-flip count — **whichever one is actually unusual this window**, with a
-     hint at what it might mean. One of them, not all three.
-
-   Everything else the script prints — dwell percentiles, stay counts, type mix, exit
-   targets — goes into Method if it goes anywhere. It is texture, and texture is what made
-   this section too long to read.
-
-   Four things to still get right, because they change what the numbers mean:
-
-   - **Moving forward is not the same as leaving the status.** Every exit lands in `To do`,
-     so an exit alone means somebody cleared the flag, not that the question was answered.
-     `progressed_after` therefore looks for a later entry to `Ready to Start`, a merge
-     marker, or an active status. Never describe an exit as progress.
-   - **The closed bucket is the finding.** Read it against the moved-forward share and say
-     which way the gate is working.
-   - **The current window is younger, so it is not settled.** Its items have had less time to
-     progress or to be closed, which inflates "still open" and deflates both terminal
-     buckets. A rise in the moved-forward share despite that bias is a safe claim; a fall is
-     not.
-   - **Quote the `>=1d` dwell percentiles** if you quote dwell at all. Most stays are same-day
-     flips, which drags the raw median to zero.
-
-   Deleted issues cannot appear here at all — Jira drops them from the API entirely. That
-   belongs in Method, in one clause.
-7. **Production stability** — **the tables and the charts carry this section; the prose is a
-   verdict, not an analysis.** Earlier editions ran six paragraphs here and the team read the
-   tables anyway.
-
-   In order:
-
-   - **Two bold lines: what is good, what needs improving.** "3.4.2 improved on 3.4.1 by 19%
-     on matched windows" is the first; "one line of code reaches 11.5% of users" is the
-     second. That pair is the section's whole argument.
-   - The quadrant counts and **what Q1 contains**, in one line — that is the decision the
-     section exists to support.
-   - **Chart `04-sentry-issues`**, with a sentence above naming any regression, then the
-     collapsed table (quadrant, impact, effort, reach, crash site per issue).
-   - **Root causes, as a short bullet list, not prose.** This is the one piece of analysis
-     that earns its space: triage scores issues one at a time, so a single architectural
-     fault arrives as several rows. One bullet per group — "7F4F + 7DKH + 83T7 = one line in
-     `LocaleSelector`, 908 users" — says in a line what a paragraph said in ten. Reporting
-     them as separate items overstates the work and hides the fix.
-   - **Crash load by release**, closing the section: the definition inline on the heading
-     line (events per user per release over the window — a rate, so releases with different
-     install bases are comparable), the table, and **one sentence on the newest release**
-     saying whether it regressed, held or improved. Never titled "Load per release" —
-     readers could not tell what that meant. Keep the user column beside the rate and note
-     in the table's caption that a barely-adopted release has a noisy rate; that caveat does
-     not need its own paragraph.
-
-   Ownership findings, crash mechanisms and the SDK-versus-app argument go into **Method**.
-   They are correct and they matter to whoever picks the work up — they are not what the
-   meeting decides.
-8. **Quality** — three blocks, in this order, each under its own heading:
-
-   `### Bugs fixed per patch release` — **the table is the section.** One row per version:
-   version, release date, bugs fixed, closed without a fix, still tagged but open. Cover the
-   last three shipped patches plus the one in flight, flagged as unreleased. Add prose only
-   when a row needs a warning the table cannot carry — at most one line. Everything the
-   earlier editions explained here (that `fixVersion` is a target and not a shipped-in stamp,
-   that the last column is hygiene rather than release content, that the table is a floor and
-   what the coverage ratio was, that a low count on an old patch is throughput and not a
-   regression) goes into **Method**, and the *still tagged but open* column carries a
-   four-word caption saying it is stale tags.
-
-   A patch is a bug-fix release — the third number moves (`3.4.1`), or a fourth is appended
-   as a hotfix (`3.4.0.1`). `X.Y.0` is a feature release and is excluded. The table is
-   **release-scoped, not window-scoped**; say that in the caption, since a patch can predate
-   the window entirely.
-
-   **No completed-work type mix.** Whether a window delivered more features or more bugs is a
-   function of what the release was for, so the split moves for reasons that have nothing to
-   do with quality and invites a conclusion the number cannot support.
-
-   `### Closed without a fix, open bugs and backlog` — the window's closed-without-a-fix count
-   with its top resolutions, open bug count, backlog depth. Two lines — **unless the type
-   split (Bug/Task/Feature created vs. closed, see the reference) shows growth concentrated in
-   one type**, which an aggregate backlog number hides entirely. When it is concentrated, that
-   is the finding and the aggregate is the supporting number, not the other way round.
-
-   `### Code quality trend` — **this heading is required.** The SonarCloud block used to open
-   with a bare sentence ("Over the year on `develop`, code smells and technical debt are down
-   by roughly half…") that read as a stray paragraph inside Quality; it is a distinct finding
-   over a distinct window (12 months, not 90 days) and needs its own title to be found and
-   skimmed. Under it: that one line, **chart `03-sonarcloud-trend`**, the collapsed table.
-
-   `### Security` — **its own heading, by the same rule as the trend above:** one heading,
-   one finding, and the rating letter and the finding pool are two different things bundled
-   under one bare line before. Say the mechanism in one clause whenever the letter doesn't
-   match the direction the count moved: the rating (A–E) is set by the single worst open
-   finding's severity, not the count, so it can sit unchanged for editions while real fixes
-   land underneath it. SonarCloud tracks **two pools** and both must be pulled — confirmed
-   vulnerabilities, and security hotspots (candidates pending review, usually the larger
-   pool; query in the reference). State both counts, then a **top 3, ranked by severity
-   tier** (Blocker vulnerability → High-probability hotspot → next tier down), grouping
-   findings that share a file and pattern into one entry rather than listing every row. Name
-   what's left outside the top 3 in one clause instead of dropping it silently — it's next
-   edition's candidate batch.
-9. **PR/CI** — **no section and no table: one or two lines**, in the closing **Carried
-   forward, unchanged** block (see item 10).
-
-   The line carries only what the team can act on the same week: review coverage, the CI
-   pass rate on `develop` — **split at a fix rather than averaged**, since a window average
-   can describe neither period — and PR size against the 400-line gate when it is breached.
-   E.g. "**PR/CI:** all 75 human PRs reviewed; CI on `develop` passes 93% of push runs since
-   11 Aug (51 of 55), 0 of 37 before; PR size p85 is 506 lines against the 400-line gate."
-   A metric that did not move or breach a gate gets no words.
-
-   The rest — PR cycle time, review latency and PR size at p50/p85 against the previous
-   window, the share of PRs over the gate — goes into **Method**, every run, never off the
-   page: GitHub has no retrospective view, so an edition that drops those figures leaves a
-   permanent hole in the series. Name it **PR/CI**, never Delivery (see item 3).
-10. **Releases** — overdue or upcoming, cadence. Two or three lines: what shipped, what is
-    next, and any version whose bookkeeping makes the other numbers wrong.
-
-    Directly after it, and before **Recommendations**, a closing **Carried forward,
-    unchanged** block: a bulleted list of **one line per item**, no tables. It currently holds
-    two items — **PR/CI** (item 9) and **Epics** (item 5) — and is where any other figure that
-    rarely moves belongs when it does not earn a section of its own.
-11. **Recommendations** — checkboxes, each naming a hot spot and why it stands out
-
-    **Suggest, do not instruct.** The report's job is to point at where the numbers are
-    unusual and hand the judgement back; the team decides what is worth doing, and an
-    imperative list pre-empts exactly the conversation the report exists to start. Write
-    each one as *what the data shows* → *where it might be worth looking*, not as a task
-    to be executed.
-
-    - Say what moved and why it caught attention, then suggest the place to look. "16
-      bugs still carry `fixVersion` 3.3.1, which shipped in January — worth checking
-      whether those tags are stale" reads as a recommendation; "Clear the 16 bugs" reads
-      as an order.
-    - **Never assume the cause.** A number is unusual; the reason for it usually lives
-      outside the data. Offer the reading as a possibility and leave room for the team to
-      know better — they generally do.
-    - **No priority ordering, no deadlines, no owners.** Those are the team's to assign.
-      Roughly most-surprising first is enough.
-    - Keep each one **specific enough to check next edition**, since that is what makes
-      ticking useful — a hot spot with no observable number attached cannot be followed up.
-    - **Two lines each at most**, and five to eight of them. A list of fourteen is a backlog,
-      not a recommendation, and it buries the two that matter.
-
-    Keep the checkboxes. Ticking one is the team saying "we picked this up", which is what
-    the next edition reads — see §2.
-12. **Method and caveats** — inside `<details>`
+   Each cause is a numbered bold line naming the mechanism, then one line of crash sites with
+   users and reach (`LocaleSelector.kt:52` — 1,019 users, 9.3%). Issues that share a
+   mechanism are one cause, not several rows: triage scores them one at a time, so a single
+   fault arrives as many. Reach is **per issue**; a "combined" figure is allowed only where the
+   issues are named and the sum is labelled approximate, and user counts are never summed.
+   Close with an italic pointer: the sync-path clustering and the full quadrant table are in
+   the earlier edition. Triage is scoped to the latest production release, the rest of the
+   report to the 90-day window — state it. **If Sentry is unavailable**, carry the section
+   forward from the previous edition inside a warning panel that says so and gives the date.
+3. **Security** — `Rating: **E**` and the mechanism in one sentence: SonarCloud sets the
+   letter from the single worst open finding's severity, not the count, so it can sit flat
+   while real fixes land. Then the **Top 3, ranked by severity tier** (Blocker vulnerability →
+   High-probability hotspot → next tier down), grouping findings that share a file and
+   pattern into one entry. Each: bold title, then one line of `file:line`, what is wrong, and
+   the fix; add the ticket where one exists. Then one line naming the **full pool** (confirmed
+   vulnerabilities + hotspots by probability) and what is left outside the top 3. Close with
+   the tracked KPI: **open vulnerabilities by severity**, not the letter.
+4. **Backlog growth** — bold: not a general trend, it is the type that grew. The
+   created / closed / net table for **Bug, Feature, Task** (90 days), the growing row in bold,
+   then one line on intake per 30-day bucket, most recent first, noting whether a driver is
+   confirmed. If part of the growth is a known batch (an epic's children), say so here.
+5. **Needs-info triage** — **three bullets, no table.** N closed without a fix, then:
+   one bullet per distinct pattern, split by resolution **and dwell** (see the reference):
+   `Cannot Reproduce` closed in days is a genuine attempt and healthy; `Obsolete` aged weeks
+   or months is a stale item, not an unanswered question. A third bullet for the one thing
+   unusual this window (a concrete intake-quality gap with the issue linked, the oldest
+   stock, or repeat visits) — one of them, not all. Outcome counts, dwell percentiles and
+   type mix go to Method. Deleted issues cannot appear (Jira drops them); say so in Method.
+6. **Delivery predictability** — **one sentence**: whether a driver for the movement in delivery
+   p85 and flow efficiency is confirmed, and any theory considered and parked (named in
+   Parked). Do not restate the p85, flow-efficiency or queue figures — they are in Trend at a
+   glance and Where the time goes. **Delivery** is the downstream loop — commitment to merge;
+   never use the word for PR/CI.
+7. **Carried forward, unchanged** — an italic line ("Full detail in the <previous> edition")
+   and a bullet list, **one line per item, no tables**, each labelled with its date. Holds, in
+   this order, whichever have something to say:
+   - **PR/CI** — review coverage, CI pass rate on `develop` **split at a fix rather than
+     averaged**, PR size p85 against the 400-line gate when breached. A metric that did not
+     move or breach a gate gets no words.
+   - **Epics** — open count with last edition's in brackets, median age, whether it moved.
+   - **Releases** — nothing overdue / what is due, and any version whose bookkeeping skews
+     the other numbers.
+8. **Recommendations** — checkboxes, five to eight, ordered roughly most-surprising first.
+   Each names the hot spot, the number that makes it checkable next edition, and where it
+   might be worth looking. **Suggest, do not instruct;** never assume a cause; no deadlines
+   or owners; two lines at most. Security Top 3 entries get one recommendation each. Ticking
+   one is the team saying "we picked this up", which is what the next edition reads (§2).
+9. **Parked / not included this edition** — theories considered and left unproven (with the
+   reason), and anything gathered but not published. Keep the heading even when empty.
+10. **Method** — inside `<details>`. Window and sources; every figure not already shown above
+    (whole-life flow efficiency, the closed-without-a-fix resolution breakdown, PR cycle time / review latency / PR size, Needs-info outcome counts,
+    epic age and status split, released-patch bug counts); which queries were live rather than
+    pinned to the window end and how far they drift; whether Jira was read anonymously (the
+    numbers are then a floor); and a link to the earlier edition for definitions, the status
+    taxonomy and full caveats.
 
 **There is no work-in-progress section.** WIP is a "now" number that the dailies already
-own, and a monthly report reprinting it invites decisions about today's board from data
-that is up to a month stale. The script still prints WIP and keeps it in `metrics.json` as
-a sanity check — use it to reconcile, do not publish it. The two counts in that block that
-are genuinely monthly rather than momentary, open bugs and backlog depth, go into
-**Quality** instead.
+own. The script still prints it as a sanity check — reconcile with it, do not publish it.
 
 Writing rules:
 
@@ -485,20 +327,9 @@ Writing rules:
 - State every caveat that would change a decision. Never quietly drop a source.
 - Give each metric a one-line definition inline — readers should not have to guess whether
   "throughput" means completed items or a status range.
-- No unicode bar glyphs in tables; the cell shading carries the emphasis.
-- **A chart never stands alone.** Each one gets a sentence above saying what it shows, and
-  its collapsed table below. The sentence carries the finding; the chart shows the shape;
-  the table holds the numbers.
-- **Don't narrate the chart.** If the sentence above it just reads out the bars, cut it.
 - **Cut the apparatus, keep the caveat.** A caveat that would change a decision stays in the
-  section, in a clause. A caveat that explains how something was measured goes to Method.
-  "8 of 33 were closed unanswered" is a finding; how `progressed_after` detects progress is
-  apparatus.
-- **One heading, one finding.** If a section has two, it needs two headings — that is what
-  went wrong with the SonarCloud trend, which hid under Quality with no title of its own.
-- **Only these four get charted.** Everything else in the report is a two-point comparison,
-  where a two-bar chart carries nothing the sentence does not. Adding a fifth chart needs a
-  reason written into the reference, not a spare afternoon.
+  section, in a clause. How something was measured goes to Method.
+- **One heading, one finding.**
 - **Link the source.** Wherever a figure comes from a query, link the number to it — a Jira
   count to its JQL, a SonarCloud finding to its page, PR and CI figures to GitHub, a Sentry
   issue ID to the issue — so the reader can check it in one click. Link at the place that
@@ -515,78 +346,47 @@ the repo. The connector uses **HTML+ADF**, not storage format: `<div data-type="
 `<span data-type="status">`, `<details>`, `<ul data-type="task-list">`. Do not emit
 `<ac:structured-macro>`; it renders as literal text.
 
-**Create the page with `status: current`.** Not as a draft: Confluence refuses attachments on
-a draft, and the connector cannot publish an existing draft either — it demands version 1 for
-a first publish and the update call sends the draft's own version. Every edition carries
-charts, so draft-first is not an available workflow; attempting it costs a page you then have
-to abandon. Hand the user the link as soon as it exists and iterate on the live page.
+**Draft or current.** Only a `draft` may omit the charts, and only when Sentry or Confluence is
+not accessible (§4). A page that is going to be **published** must carry charts 01–03, so it is
+created `status: current` (Confluence refuses attachments on a draft, and the connector cannot
+publish an existing draft). A chart-less draft cannot simply be promoted: the user publishes it
+from the Confluence UI, and the charts are then attached with `attach_charts.py <pageId>` and
+spliced in before it counts as published. Create `current` only when asked to publish directly. Put the real body in the first write — a placeholder leaves the cached
+page excerpt showing placeholder text in listings.
 
-Because figure `fileId`s only exist after upload, the page is written in **two passes**:
-create with the body minus the figures, run `attach_charts.py`, then update with the figures
-spliced in. Put the real body in the first pass — a placeholder leaves Confluence's cached
-page excerpt showing the placeholder text in every page listing, even after the update lands.
+**Charts.** With a working token, attach after the page is `current`:
+`python3 scripts/metrics/attach_charts.py <pageId>`, then update the body with the figure HTML
+it prints (paste verbatim; the Media API fileId is not the upload id). Without one, the report stays a
+draft. A figure element referencing another page's media is silently dropped by the
+connector — copy images across in the editor instead.
+
+**Verify every write.** An update can return success and still not save. Re-read the page
+afterwards (HTML format) and check the change is there before reporting it done.
+
+**Never overwrite a page someone else published.** Before writing, list the children of the
+parent: if a published edition for the same period already exists and is not yours, create a
+separately titled draft instead of updating it.
 
 Confluence HTML notes:
 
 - Panels: `<div data-type="panel-info|panel-warning|panel-note">`
 - Status lozenges: `<span data-type="status" data-color="green|red|yellow|neutral">`
-- Heatmap cells: `data-background="#hex"` on `<td>` (becomes `data-highlight-colour`)
 - Tasks: `<ul data-type="task-list"><li data-type="task-item"><input type="checkbox"> …`
 - Jira links become live issue macros automatically
 - Tables cannot nest inside table cells; panels cannot contain tables
+- Updates replace the whole body: re-read the page before overwriting it
+- The markdown export shows panel contents as empty; verify panels with the HTML format
 
-**Attaching the charts — the one step a token is for.** The connector has no
-attachment-upload tool, so run:
-
-```bash
-python3 scripts/metrics/attach_charts.py <pageId>
-```
-
-It handles either token type (scoped → Bearer via `api.atlassian.com`; classic → Basic via
-the site host) and prints the exact missing scope if the grant is short. Re-running does not
-duplicate: v1 `POST /child/attachment` versions a same-named file in place. **Attach only
-after the page is `current`** — the API refuses attachments on a draft.
-
-Upload is **v1 only**. The v2 attachment API has GET and DELETE but no create operation, so
-`read:attachment:confluence` cannot upload anything despite its name — see the reference.
-
-The script prints ready-to-paste figure HTML for each file, with the Media API fileId already
-resolved — **paste that verbatim**. The body cannot reference an attachment by filename, the
-fileId is not the id the upload returns, and `data-width` is read as pixels unless
-`data-width-type="percentage"` is present. The reference has the details.
-
-A page that will carry charts must be **created** with `status: current`: the connector
-cannot publish an existing draft, because Confluence demands version 1 for a first publish
-and the update call sends the draft's own version.
-
-**With no token, there are no images — and that is a supported outcome, not a failure.**
-Publish each chart's `expand` block from `charts/tables.html` *expanded* rather than
-collapsed, note in the report that the charts could not be attached, and move on. No number
-is lost: the tables carry all of them, which is exactly what they are for.
-
-Do **not** drive the Confluence editor by simulated typing to place charts: the caret moves
-between an upload and the next keystroke, so images and text land in the wrong blocks, and an
-editor click can select and replace an image with whatever is typed next. Both have happened.
-
-Every chart that *is* attached needs, in this order: a sentence above it, the figure, then
-that chart's `expand` block copied verbatim from `charts/tables.html`.
-
-Re-running for the same period should **update** the existing page, not create a duplicate
-title, and should **replace** the attachments rather than adding a second copy.
+Re-running for the same period should **update your own** draft, not create a duplicate title.
 
 ## Guardrails
 
-- Read-only against Jira, GitHub, Sentry and SonarCloud. The only writes are the Confluence
-  page and its chart attachments. Never write to Jira — not a comment, not a transition.
-- **Do not treat a missing token as a blocker.** Every step except chart attachment works
-  without one. A run that stops short because `JIRA_AUTH` is unset has failed for no reason.
+- Read-only against Jira, GitHub, Sentry and SonarCloud. The only write is the Confluence
+  page. Never write to Jira — not a comment, not a transition.
+- A missing token does not block the analysis or a draft, but it **does block publishing**:
+  a published report needs charts 01–03, and attaching them needs a working token (§4, §6).
 - Take every figure in one report from a **single snapshot** — Jira counts drift between runs.
-  Re-run all compute steps after any re-fetch rather than mixing. **Charts count**: re-run
-  `charts.py` after any re-fetch, or the page shows one snapshot in text and another in
-  pictures, which is the hardest kind of error to spot.
-- **Never let a number exist only inside a chart.** The PNG is invisible to Confluence search
-  and to screen readers, and next month's edition reads this page to close the loop — Sentry
-  and GitHub have no retrospective view, so a figure that is only pixels is a figure that is
-  gone. That is what the collapsed tables are for; they are not optional.
+  Re-run all compute steps after any re-fetch rather than mixing. Anything carried forward
+  from an earlier edition is labelled with its date.
 - Do not report per-person throughput. `assignee` is cleared when work completes, so the data
   cannot support it, and it is the wrong instrument for a flow review.
