@@ -21,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.core.view.isGone
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -151,7 +152,9 @@ class EventCaptureActivity :
         showProgress()
         presenter.initNoteCounter()
         presenter.init()
-        binding.syncButton.setOnClickListener { showSyncDialog(EVENT_SYNC) }
+        binding.syncButton.setOnClickListener {
+            runIfCurrentEventCanBeSynced { showSyncDialog(EVENT_SYNC) }
+        }
 
         if (intent.shouldLaunchSyncDialog()) {
             showSyncDialog(EVENT_SYNC)
@@ -304,6 +307,15 @@ class EventCaptureActivity :
         }
     }
 
+    private fun runIfCurrentEventCanBeSynced(onAllowed: () -> Unit) {
+        // The form fragment lives in R.id.event_form (landscape) or in the view pager (portrait)
+        supportFragmentManager.fragments
+            .filterIsInstance<EventCaptureFormFragment>()
+            .firstOrNull()
+            ?.checkFormCanBeClosed(onAllowed, allowDiscard = false)
+            ?: onAllowed()
+    }
+
     fun openDetails() {
         presenter.onNavigationPageChanged(NavigationPage.DETAILS)
     }
@@ -343,11 +355,10 @@ class EventCaptureActivity :
     }
 
     private fun finishEditMode() {
-        if (binding.navigationBar.visibility == View.GONE) {
-            showNavigationBar()
-        } else {
-            attemptFinish()
-        }
+        val navigationBarHidden = binding.navigationBar.isGone
+        if (navigationBarHidden) showNavigationBar()
+        // In landscape the navigation bar is not part of the form, so back must not stop at showing it
+        if (!navigationBarHidden || isLandscape()) attemptFinish()
     }
 
     private fun attemptFinish() {

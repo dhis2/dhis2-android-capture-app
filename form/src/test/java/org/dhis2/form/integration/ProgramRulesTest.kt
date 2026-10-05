@@ -184,6 +184,8 @@ class ProgramRulesTest {
                 )
 
             formViewModel.items.test {
+                // Skip the form list replayed from the initial load
+                skipItems(1)
                 formViewModel.submitIntent(intent)
                 val items = awaitItem()
 
@@ -218,6 +220,8 @@ class ProgramRulesTest {
                 )
 
             formViewModel.items.test {
+                // Skip the form list replayed from the initial load
+                skipItems(1)
                 formViewModel.submitIntent(intent)
                 val sections = awaitItem()
 
@@ -258,6 +262,8 @@ class ProgramRulesTest {
                 )
 
             formViewModel.items.test {
+                // Skip the form list replayed from the initial load
+                skipItems(1)
                 formViewModel.submitIntent(intent)
                 val sections = awaitItem()
 
@@ -310,6 +316,8 @@ class ProgramRulesTest {
                 )
 
             formViewModel.items.test {
+                // Skip the form list replayed from the initial load
+                skipItems(1)
                 formViewModel.submitIntent(intent)
 
                 val sections = awaitItem()
@@ -356,6 +364,8 @@ class ProgramRulesTest {
                 )
 
             formViewModel.items.test {
+                // Skip the form list replayed from the initial load
+                skipItems(1)
                 formViewModel.submitIntent(intent)
                 val sections = awaitItem()
                 assertTrue(sections.size == 1)

@@ -252,6 +252,24 @@ class FormViewModelTest {
             verify(repository, times(2)).runDataIntegrityCheck(backPressed = false)
         }
 
+    @Test
+    fun `Should restore changed values before leaving the form when discarding`() =
+        runTest {
+            val changedField: FieldUiModel =
+                mock {
+                    on { uid } doReturn "field-uid"
+                    on { value } doReturn "original"
+                    on { valueType } doReturn ValueType.TEXT
+                }
+            whenever(repository.backupOfChangedItems()) doReturn listOf(changedField)
+
+            viewModel.discardChanges()
+            advanceUntilIdle()
+
+            verify(repository).save("field-uid", "original", null)
+            assertEquals(FormViewModel.FormActions.OnFinish, viewModel.actionsChannel.first())
+        }
+
     private suspend fun givenACompletedEventWithNoIssues() {
         val result =
             SuccessfulResult(

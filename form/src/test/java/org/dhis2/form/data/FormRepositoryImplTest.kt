@@ -41,6 +41,7 @@ import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -470,6 +471,75 @@ class FormRepositoryImplTest {
         listOf(
             "section1",
         )
+
+    @Test
+    fun `Should keep an emptied mandatory value in memory only for ON_UPDATE_AND_INSERT events`(): Unit =
+        runBlocking {
+            givenAFormWithAMandatoryField()
+            whenever(dataEntryRepository.isEvent()) doReturn true
+            whenever(dataEntryRepository.validationStrategy()) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
+
+            val result = repository.save("mandatoryUid", null, null)
+
+            assertEquals(ValueStoreResult.VALUE_HAS_NOT_CHANGED, result.valueStoreResult)
+            verify(formValueStore, never()).save("mandatoryUid", null, null)
+        }
+
+    @Test
+    fun `Should store values of mandatory fields and emptied optional fields`(): Unit =
+        runBlocking {
+            givenAFormWithAMandatoryField()
+            whenever(dataEntryRepository.isEvent()) doReturn true
+            whenever(dataEntryRepository.validationStrategy()) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
+
+            repository.save("mandatoryUid", "value", null)
+            repository.save("uid001", null, null)
+
+            verify(formValueStore).save("mandatoryUid", "value", null)
+            verify(formValueStore).save("uid001", null, null)
+        }
+
+    @Test
+    fun `Should store an emptied mandatory value when validation strategy is ON_COMPLETE`(): Unit =
+        runBlocking {
+            givenAFormWithAMandatoryField()
+            whenever(dataEntryRepository.isEvent()) doReturn true
+            whenever(dataEntryRepository.validationStrategy()) doReturn ValidationStrategy.ON_COMPLETE
+
+            repository.save("mandatoryUid", null, null)
+
+            verify(formValueStore).save("mandatoryUid", null, null)
+        }
+
+    @Test
+    fun `Should store an emptied mandatory value in enrollment forms`(): Unit =
+        runBlocking {
+            givenAFormWithAMandatoryField()
+            whenever(dataEntryRepository.isEvent()) doReturn false
+
+            repository.save("mandatoryUid", null, null)
+
+            verify(formValueStore).save("mandatoryUid", null, null)
+        }
+
+    private suspend fun givenAFormWithAMandatoryField() {
+        val mandatoryField =
+            FieldUiModelImpl(
+                uid = "mandatoryUid",
+                value = "value",
+                label = "mandatory",
+                valueType = ValueType.TEXT,
+                mandatory = true,
+                programStageSection = "section1",
+                uiEventFactory = null,
+                optionSetConfiguration = null,
+                autocompleteList = null,
+            )
+        whenever(dataEntryRepository.list()) doReturn Flowable.just(provideItemList() + mandatoryField)
+        whenever(formValueStore.save(any(), anyOrNull(), anyOrNull())) doReturn
+            StoreResult("uid", ValueStoreResult.VALUE_CHANGED)
+        repository.fetchFormItems()
+    }
 
     private fun provideItemList() =
         listOf<FieldUiModel>(
