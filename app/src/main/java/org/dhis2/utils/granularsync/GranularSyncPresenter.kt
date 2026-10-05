@@ -85,6 +85,11 @@ class GranularSyncPresenter(
     private lateinit var states: MutableLiveData<List<SmsSendingService.SendingStatus>>
     private lateinit var statesList: ArrayList<SmsSendingService.SendingStatus>
     private var refreshing = false
+
+    // WorkManager replays the last stored WorkInfo for a unique work name, which can be a
+    // finished job from a previous sync. Only react once a sync launched from here is seen running.
+    private var awaitingSyncResult = false
+    private var syncStarted = false
     private val _currentState = MutableStateFlow<SyncUiState?>(null)
     val currentState: StateFlow<SyncUiState?> = _currentState
 
@@ -134,6 +139,8 @@ class GranularSyncPresenter(
         }
 
     fun initGranularSync(): Flow<List<SyncJobStatus>> {
+        awaitingSyncResult = true
+        syncStarted = false
         viewModelScope.launch(dispatcher.io()) {
             when (syncContext.conflictType()) {
                 PROGRAM,
@@ -426,22 +433,30 @@ class GranularSyncPresenter(
     }
 
     fun manageWorkInfo(jobStatus: SyncJobStatus) {
+        if (!awaitingSyncResult) return
         when (jobStatus.status) {
             org.dhis2.mobile.sync.model.SyncStatus.Enqueue,
             org.dhis2.mobile.sync.model.SyncStatus.Blocked,
             org.dhis2.mobile.sync.model.SyncStatus.Running,
-            ->
+            -> {
+                syncStarted = true
                 loadSyncInfo(State.UPLOADING)
+            }
 
             org.dhis2.mobile.sync.model.SyncStatus.Cancelled,
             org.dhis2.mobile.sync.model.SyncStatus.Failed,
             ->
-                loadSyncInfo()
+                if (syncStarted) {
+                    awaitingSyncResult = false
+                    loadSyncInfo()
+                }
 
-            org.dhis2.mobile.sync.model.SyncStatus.Succeed -> {
-                loadSyncInfo()
-                sendDisplaySuccessMessage()
-            }
+            org.dhis2.mobile.sync.model.SyncStatus.Succeed ->
+                if (syncStarted) {
+                    awaitingSyncResult = false
+                    loadSyncInfo()
+                    sendDisplaySuccessMessage()
+                }
         }
     }
 
