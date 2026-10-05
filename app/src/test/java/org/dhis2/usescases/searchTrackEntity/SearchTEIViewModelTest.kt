@@ -43,6 +43,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem
 import org.junit.After
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -96,9 +97,13 @@ class SearchTEIViewModelTest {
         whenever(repository.filtersApplyOnGlobalSearch()) doReturn true
         whenever(repositoryKt.getExcludeValues()) doReturn HashSet<String>()
         whenever(repositoryKt.saveSearchValuesAndGetAllowCache(any(), any())) doReturn true
-        viewModel =
+        viewModel = createViewModel(initialProgram)
+    }
+
+    private fun createViewModel(programUid: String?): SearchTEIViewModel {
+        val searchViewModel =
             SearchTEIViewModel(
-                initialProgram,
+                programUid,
                 initialQuery,
                 repository,
                 repositoryKt,
@@ -121,6 +126,7 @@ class SearchTEIViewModelTest {
                 fetchOptionSetOptions = fetchOptionSetOptions,
             )
         testingDispatcher.scheduler.advanceUntilIdle()
+        return searchViewModel
     }
 
     @ExperimentalCoroutinesApi
@@ -189,6 +195,32 @@ class SearchTEIViewModelTest {
 
         val screenState = viewModel.screenState.value
         assertTrue(screenState is SearchList)
+    }
+
+    @Test
+    fun `Should allow sync when a program is selected`() {
+        viewModel.setListScreen()
+        assertTrue((viewModel.screenState.value as SearchList).canSync)
+
+        viewModel.setMapScreen()
+        assertTrue((viewModel.screenState.value as SearchList).canSync)
+
+        viewModel.setSearchScreen()
+        assertTrue((viewModel.screenState.value as SearchList).canSync)
+    }
+
+    @Test
+    fun `Should not allow sync when no program is selected`() {
+        val viewModelWithoutProgram = createViewModel(null)
+
+        viewModelWithoutProgram.setListScreen()
+        assertFalse((viewModelWithoutProgram.screenState.value as SearchList).canSync)
+
+        viewModelWithoutProgram.setMapScreen()
+        assertFalse((viewModelWithoutProgram.screenState.value as SearchList).canSync)
+
+        viewModelWithoutProgram.setSearchScreen()
+        assertFalse((viewModelWithoutProgram.screenState.value as SearchList).canSync)
     }
 
     @Test
