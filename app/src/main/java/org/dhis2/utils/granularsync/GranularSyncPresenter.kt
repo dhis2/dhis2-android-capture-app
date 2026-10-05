@@ -32,13 +32,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.dhis2.commons.Constants
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.sync.ConflictType.ALL
 import org.dhis2.commons.sync.ConflictType.DATA_SET
@@ -49,6 +47,7 @@ import org.dhis2.commons.sync.ConflictType.TEI
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobile.commons.extensions.launchUseCase
+import org.dhis2.mobile.sync.data.DATA_SYNC_NOW
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.model.GRANULAR_SYNC_DATASET_NAME
 import org.dhis2.mobile.sync.model.GRANULAR_SYNC_DATAVALUE_NAME
@@ -138,7 +137,7 @@ class GranularSyncPresenter(
             -> true
         }
 
-    fun initGranularSync(): Flow<List<SyncJobStatus>> {
+    fun initGranularSync() {
         awaitingSyncResult = true
         syncStarted = false
         viewModelScope.launch(dispatcher.io()) {
@@ -177,13 +176,13 @@ class GranularSyncPresenter(
                 }
             }
         }
-        return observeWorkInfo()
     }
 
     fun observeWorkInfo() =
         syncBackgroundJobAction.observeGranularJob(
             when (syncContext.conflictType()) {
-                ALL -> Constants.INITIAL_SYNC
+                // Matches the unique work name enqueued by launchDataSync(0) in initGranularSync
+                ALL -> DATA_SYNC_NOW
                 PROGRAM -> GRANULAR_SYNC_PROGRAM_NAME
                 TEI -> GRANULAR_SYNC_TEI_NAME
                 EVENT -> GRANULAR_SYNC_EVENT_NAME
