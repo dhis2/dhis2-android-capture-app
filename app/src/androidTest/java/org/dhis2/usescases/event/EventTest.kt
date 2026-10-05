@@ -84,6 +84,10 @@ class EventTest : BaseTest() {
         eventRegistrationRobot(composeTestRule) {
             clickSyncButton()
         }
+        // [ANDROAPP-7676] Syncing runs the save validation: ON_COMPLETE + ACTIVE allows "Not now".
+        eventRobot(composeTestRule) {
+            clickOnNotNow()
+        }
         // [ANDROAPP-4837] The form's sync button opens the same granular-sync sheet.
         syncDialogRobot(composeTestRule) {
             checkNotSyncedDialogIsDisplayed()
@@ -210,7 +214,48 @@ class EventTest : BaseTest() {
         eventRegistrationRobot(composeTestRule) {
             waitForSaveBottomSheet()
         }
-        // Complete (not "Not now") — creates the event as COMPLETED.
+        // "Not now" stores the event as ACTIVE so it can be edited again.
+        eventRobot(composeTestRule) {
+            clickOnNotNow()
+        }
+        composeTestRule.waitForIdle()
+
+        programEventsRobot(composeTestRule) {
+            waitForEventDisplayed(todayDisplayDate())
+            clickOnEvent(todayDisplayDate())
+        }
+        eventRegistrationRobot(composeTestRule) {
+            waitForFormToOpen()
+            // [ANDROAPP-7676] Emptying a mandatory field is not stored under ON_UPDATE_AND_INSERT.
+            clearDropdown(FLOW_D_GENDER_LABEL)
+            // [ANDROAPP-7676] Sync runs the save validation: only "Review", nothing is synced.
+            clickSyncButton()
+            checkImmediateMandatoryBlock()
+            dismissMandatoryBlockSheet()
+        }
+        syncDialogRobot(composeTestRule) {
+            checkNotSyncedDialogIsNotDisplayed()
+        }
+        // [ANDROAPP-7676] Back → Discard leaves the event with its stored values.
+        eventRegistrationRobot(composeTestRule) {
+            pressBackAndDiscardChanges()
+        }
+        programEventsRobot(composeTestRule) {
+            waitForEventDisplayed(todayDisplayDate())
+            clickOnEvent(todayDisplayDate())
+        }
+        eventRegistrationRobot(composeTestRule) {
+            waitForFormToOpen()
+            checkDropdownHasValue(FLOW_D_GENDER_LABEL)
+        }
+
+        eventRobot(composeTestRule) {
+            clickOnFormFabButton()
+        }
+        eventRegistrationRobot(composeTestRule) {
+            waitForSaveBottomSheet()
+        }
+        // Complete — the event ends COMPLETED.
         eventRobot(composeTestRule) {
             clickOnCompleteButton()
         }

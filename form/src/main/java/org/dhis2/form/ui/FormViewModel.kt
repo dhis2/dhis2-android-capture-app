@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.commons.dialogs.bottomsheet.FieldWithIssue
@@ -1008,19 +1009,21 @@ class FormViewModel(
         textChangeDebounceRunnable?.let { handler.removeCallbacks(it) }
         textChangeDebounceRunnable = null
         // The form is left once the original values are stored again
-        viewModelScope.launch(dispatcher.io()) {
-            repository.backupOfChangedItems().forEach {
-                val result =
-                    createRowActionStore(
-                        FormIntent.OnSave(
-                            it.uid,
-                            it.value,
-                            it.valueType,
-                            it.fieldMask,
-                            it.allowFutureDates,
-                        ),
-                    )
-                displayResult(result)
+        viewModelScope.launch {
+            withContext(dispatcher.io()) {
+                repository.backupOfChangedItems().forEach {
+                    val result =
+                        createRowActionStore(
+                            FormIntent.OnSave(
+                                it.uid,
+                                it.value,
+                                it.valueType,
+                                it.fieldMask,
+                                it.allowFutureDates,
+                            ),
+                        )
+                    displayResult(result)
+                }
             }
             _actionsChannel.send(FormActions.OnFinish)
         }
