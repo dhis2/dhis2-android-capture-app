@@ -63,18 +63,22 @@ the evidence disagrees — and says so explicitly when that happens.
 
 - PR base: the branch the skill was triggered from — never `main`/`develop`
   unless explicitly told.
-- PRs: **draft**, title `fix: <desc>` (or `fix: [ANDROAPP-XXXX] <desc>` when
-  `/sentry-fix` linked a Jira ticket — see its Step 9a), `## Sentry issue`
-  section, and the harness-provided `Co-Authored-By` trailer (never hardcode a
-  model name).
-- Jira: optional, app-repo fixes don't require a ticket. When the Atlassian
-  MCP is connected, `/sentry-fix` searches `ANDROAPP` for an existing issue
-  covering the crash and creates one if none exists (repo-map doesn't need
-  updating when this changes — see the skill for current field requirements).
+- Branch: `ANDROAPP-<key>` or `ANDROAPP-<key>-<short-desc>`; `fix/sentry-<id>`
+  only when there is no ticket. Name it before opening the PR — a pushed
+  branch cannot be renamed (org rulesets) and an open PR cannot change its head.
+- PRs: **draft**, title `fix: [ANDROAPP-XXXX] <desc>` (`fix: <desc>` only when
+  there is no ticket), `## Sentry issue` section, and the harness-provided
+  `Co-Authored-By` trailer (never hardcode a model name). More than 400 changed
+  lines is rejected unless the title ends with `[skip size]`.
+- Jira: `/sentry-fix` reuses an open `ANDROAPP` issue covering the crash or
+  creates a `Bug` (see its Step 9a for the search and field rules). Creation
+  needs component `AndroidApp` (`10415`) and `customfield_10131` (Internal
+  feature) or Jira returns 400.
 - Conventions: `AGENTS.md` (launchUseCase, DomainErrorMapper, KMP placement,
   ktlint, testing rules).
 - Lint/tests: `./gradlew ktlintFormat ktlintCheck` + per-module test task
-  (`testDebugUnitTest` legacy modules · `testAndroidHostTest` KMP commonTest ·
+  (`testDebugUnitTest` legacy modules · `:app:testDhis2DebugUnitTest` for
+  `:app`, which has flavors · `testAndroidHostTest` KMP commonTest ·
   `testAndroidDebugUnitTest` KMP androidUnitTest).
 - Module mapping for `org.dhis2.*` frames:
 
