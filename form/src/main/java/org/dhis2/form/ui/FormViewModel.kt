@@ -92,7 +92,7 @@ class FormViewModel(
         _items
             .map { items ->
                 formSectionMapper.mapFromFieldUiModelList(items)
-            }.shareIn(viewModelScope, SharingStarted.Eagerly, 0)
+            }.shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
 
     var previousActionItem: RowAction? = null
 
@@ -1005,16 +1005,24 @@ class FormViewModel(
     }
 
     fun discardChanges() {
-        repository.backupOfChangedItems().forEach {
-            submitIntent(
-                FormIntent.OnSave(
-                    it.uid,
-                    it.value,
-                    it.valueType,
-                    it.fieldMask,
-                    it.allowFutureDates,
-                ),
-            )
+        textChangeDebounceRunnable?.let { handler.removeCallbacks(it) }
+        textChangeDebounceRunnable = null
+        // The form is left once the original values are stored again
+        viewModelScope.launch(dispatcher.io()) {
+            repository.backupOfChangedItems().forEach {
+                val result =
+                    createRowActionStore(
+                        FormIntent.OnSave(
+                            it.uid,
+                            it.value,
+                            it.valueType,
+                            it.fieldMask,
+                            it.allowFutureDates,
+                        ),
+                    )
+                displayResult(result)
+            }
+            _actionsChannel.send(FormActions.OnFinish)
         }
     }
 

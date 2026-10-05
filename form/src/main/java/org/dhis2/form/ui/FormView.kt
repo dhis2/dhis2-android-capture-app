@@ -78,6 +78,7 @@ class FormView : Fragment() {
     private var onFocused: (() -> Unit)? = null
     private var onFinishDataEntry: (() -> Unit)? = null
     private var pendingLeaveCallback: (() -> Unit)? = null
+    private var discardingChanges = false
     private var onActivityForResult: (() -> Unit)? = null
     private var completionListener: ((percentage: Float) -> Unit)? = null
     private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
@@ -240,12 +241,16 @@ class FormView : Fragment() {
                             }
                         },
                         onSecondaryButtonClick = {
-                            leaveForm()
+                            // When discarding, the form is left once the changes are reverted
+                            if (!discardingChanges) leaveForm()
                         },
-                        onDiscardChanges = viewModel::discardChanges,
+                        onDiscardChanges = {
+                            discardingChanges = true
+                            viewModel.discardChanges()
+                        },
                         onDismiss = {
                             resultDialogData = null
-                            pendingLeaveCallback = null
+                            if (!discardingChanges) pendingLeaveCallback = null
                         },
                     )
                 }
@@ -561,14 +566,22 @@ class FormView : Fragment() {
         }
     }
 
-    fun onBackPressed(onReadyToLeave: (() -> Unit)? = null) {
+    /**
+     * Runs the form validation flow before [onReadyToLeave]. With [allowDiscard] set to false the
+     * flow behaves as saving: the user can only continue when the validation strategy allows it.
+     */
+    fun onBackPressed(
+        onReadyToLeave: (() -> Unit)? = null,
+        allowDiscard: Boolean = true,
+    ) {
         pendingLeaveCallback = onReadyToLeave
-        viewModel.runDataIntegrityCheck(backButtonPressed = true, forNavigationAway = onReadyToLeave != null)
+        viewModel.runDataIntegrityCheck(backButtonPressed = allowDiscard, forNavigationAway = onReadyToLeave != null)
     }
 
     private fun leaveForm() {
         val callback = pendingLeaveCallback
         pendingLeaveCallback = null
+        discardingChanges = false
         (callback ?: onFinishDataEntry)?.invoke()
     }
 

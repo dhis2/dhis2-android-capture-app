@@ -175,6 +175,8 @@ class DataEntryIntegrationTest {
     fun shouldAllowDataEntryCorrectly() =
         runTest {
             formViewModel.items.test {
+                // Skip the form list replayed from the initial load
+                skipItems(1)
                 val focusOnReportDateIntent =
                     FormIntent.OnFocus(
                         uid = "EVENT_REPORT_DATE_UID",

@@ -138,8 +138,11 @@ class EventCaptureFormFragment :
         formView?.onSaveClick()
     }
 
-    fun checkFormCanBeClosed(onReady: () -> Unit) {
-        formView?.onBackPressed(onReady) ?: onReady()
+    fun checkFormCanBeClosed(
+        onReady: () -> Unit,
+        allowDiscard: Boolean = true,
+    ) {
+        formView?.onBackPressed(onReady, allowDiscard) ?: onReady()
     }
 
     override fun hideSaveButton() {
