@@ -227,30 +227,12 @@ class FormView : Fragment() {
                         model = it.model,
                         allowDiscard = it.allowDiscard,
                         fieldsWithIssues = it.fieldsWithIssues,
-                        onPrimaryButtonClick = {
-                            when (it.model.mainButton) {
-                                DialogButtonStyle.CompleteButton -> {
-                                    viewModel.completeEvent()
-                                    leaveForm()
-                                }
-
-                                else -> {
-                                    // Do nothing, user must review: pending navigation is cancelled
-                                    pendingLeaveCallback = null
-                                }
-                            }
-                        },
-                        onSecondaryButtonClick = {
-                            // When discarding, the form is left once the changes are reverted
-                            if (!discardingChanges) leaveForm()
-                        },
-                        onDiscardChanges = {
-                            discardingChanges = true
-                            viewModel.discardChanges()
-                        },
+                        onPrimaryButtonClick = { onResultDialogMainButtonClick(it.model.mainButton) },
+                        onSecondaryButtonClick = ::onResultDialogSecondaryButtonClick,
+                        onDiscardChanges = ::onDiscardChanges,
                         onDismiss = {
                             resultDialogData = null
-                            if (!discardingChanges) pendingLeaveCallback = null
+                            onResultDialogDismissed()
                         },
                     )
                 }
@@ -576,6 +558,34 @@ class FormView : Fragment() {
     ) {
         pendingLeaveCallback = onReadyToLeave
         viewModel.runDataIntegrityCheck(backButtonPressed = allowDiscard, forNavigationAway = onReadyToLeave != null)
+    }
+
+    private fun onResultDialogMainButtonClick(mainButton: DialogButtonStyle?) {
+        when (mainButton) {
+            DialogButtonStyle.CompleteButton -> {
+                viewModel.completeEvent()
+                leaveForm()
+            }
+
+            else -> {
+                // Do nothing, user must review: pending navigation is cancelled
+                pendingLeaveCallback = null
+            }
+        }
+    }
+
+    private fun onResultDialogSecondaryButtonClick() {
+        // When discarding, the form is left once the changes are reverted
+        if (!discardingChanges) leaveForm()
+    }
+
+    private fun onDiscardChanges() {
+        discardingChanges = true
+        viewModel.discardChanges()
+    }
+
+    private fun onResultDialogDismissed() {
+        if (!discardingChanges) pendingLeaveCallback = null
     }
 
     private fun leaveForm() {
