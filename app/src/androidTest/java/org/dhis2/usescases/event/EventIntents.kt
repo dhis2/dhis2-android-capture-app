@@ -18,8 +18,7 @@ const val FLOW_A_STAGE_UID = "dBwrot7S420"                 // Antenatal care vis
 const val FLOW_A_ORG_UNIT_UID = "DiszpKrYNg8"              // Ngelehun CHC
 const val FLOW_A_DEFAULT_COC_UID = "HllvX50cXC0"           // default categoryOptionCombo
 
-// Event cards render BOOLEAN values as raw "false"/"true", not Yes/No . To be fixed as part of ANDROAPP-7723
-const val FLOW_A_SMOKING_NO_CARD_VALUE = "false"
+const val FLOW_A_SMOKING_NO_CARD_VALUE = "No"
 
 const val FLOW_A_HEMOGLOBIN_LABEL = "WHOMCH Hemoglobin value"
 const val FLOW_A_HEMOGLOBIN_VALUE = "11"
