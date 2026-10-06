@@ -153,37 +153,23 @@ State the root cause in one sentence before writing any code.
 
 ## Step 4 — Plan the fix
 
-Before touching any file, state:
-- Which files will change and why
-- KMP placement decision:
-  - `commonMain` — if the fix is pure Kotlin logic with no Android API dependency
-  - `androidMain` — if it requires Android `Context`, DHIS2 `D2` object,
-    `CrashReportController`, or Android SDK APIs
-- If the crash site uses RxJava (`Observable`, `Single`, `Completable`): **do not add more
-  RxJava**. Wrap the existing RxJava call at the nearest boundary using a coroutine adapter
-  (`suspendCancellableCoroutine` or an existing wrapper in the codebase).
-- If new business logic is needed: create a new `UseCase<in R, out T>` from
-  `commonskmm/src/commonMain/kotlin/org/dhis2/mobile/commons/domain/UseCase.kt`
+Before touching any file, state which files will change and why.
 
-**Fit the current architecture** (app-owned):
-- Fix at the layer that owns the decision: put state and logic in the
-  ViewModel / UseCase / UiState, where Step 5 can unit-test it, and keep
-  Activities, Fragments and bindings as thin consumers of that state. `:app`
-  has no Robolectric, so logic left in a View cannot be tested.
-- In legacy code (Java presenters, LiveData, Dagger), make the smallest fix in
-  the existing style — don't migrate the screen as part of a crash fix. Any
-  *new* logic still follows `AGENTS.md` (UseCase, `launchUseCase`, no new RxJava).
-- Pair the root-cause fix with a defensive guard at the crash site (e.g. an
-  early return instead of `!!`) so other paths into the same code cannot crash.
-
-The KMP/UseCase bullets above apply to **app-owned** fixes. For **library-owned**
-fixes state the equivalent per target repo:
+- **App-owned**: the architecture and code conventions are in `AGENTS.md` —
+  follow it and don't restate it here. On top of it, for a crash fix:
+  - Make the smallest fix in the existing style of the touched code; don't
+    migrate a legacy screen as part of a crash fix.
+  - Put the decision in a layer Step 5 can unit-test (ViewModel / UseCase /
+    UiState), not in an Activity, Fragment or binding — `:app` has no
+    Robolectric.
+  - Add a defensive guard at the crash site (e.g. an early return instead of
+    `!!`) so other paths into the same code cannot crash.
 - **SDK**: which `core/` classes change, and whether the public API surface
-  changes (`:core:apiCheck` will fail → plan `:core:apiDump` + commit the dump)
+  changes (`:core:apiCheck` will fail → plan `:core:apiDump` + commit the dump).
 - **Design system**: which source set (`commonMain` vs platform actuals), and
   whether any Paparazzi golden image could be affected — if so, plan for the
   "Generate Paparazzi Golden Images" CI workflow (repo-map §3); never regenerate
-  goldens locally
+  goldens locally.
 
 ---
 
@@ -191,82 +177,35 @@ fixes state the equivalent per target repo:
 
 Write the test that reproduces the crash condition **before** touching
 production code, and confirm it fails — on an assertion, or because the API the
-fix introduces does not compile yet. Only then move to Step 6. If the crash
-genuinely cannot be reproduced in a unit test (e.g. the only reachable code is a
-View/Activity), say so explicitly and move the decision into a testable layer as
-Step 4 requires.
+fix introduces does not compile yet. If the crash cannot be reproduced in a unit
+test, say so and move the decision into a testable layer (Step 4).
 
-- Add the test to the **existing test class** of the touched class and reuse its
-  setup; if the crash case needs different constructor inputs (e.g. a `null`
-  program UID), extract a small `createX(...)` factory helper in that class
-  rather than duplicating the setup.
-- Assert the observable state that was wrong (e.g. a UiState flag), not
-  implementation details.
-
-Load the `android-testing` skill for full patterns. At minimum write:
-
-**UseCase test** (if the UseCase was created or modified):
-- Success path
-- Failure path (wraps exception in `Result.failure`)
-- The specific edge case that caused the crash (e.g. empty list, null return from D2)
-
-**ViewModel test** (if the ViewModel was modified):
-- The state transition that was failing (use `app.cash.turbine` to assert `StateFlow` emissions)
-- Use `launchUseCase` / `CoroutineTracker` idiom — never `Thread.sleep()`
-
-**Repository test** (if the repository was modified):
-- Mock D2 with `mock(defaultAnswer = RETURNS_DEEP_STUBS)`
-- The `D2Error` → domain error mapping path
-
-**Placement**:
-- `commonTest/` — for classes in `commonMain`
-- `androidUnitTest/` — for classes in `androidMain`
-- Existing module test source set — for legacy Android modules (`form`, `commons`, `tracker`, `app`)
-- **SDK** — `core/src/test/java/`, class named `<Class>Should`, mirroring the
-  neighboring tests of the touched class
-- **Design system** — put pure-Kotlin tests next to the existing tests of the
-  same component (they run via `desktopTest`); add a Paparazzi snapshot test only
-  if a visual contract changed, and let CI generate the goldens
+- **App-owned**: load the `android-testing` skill and follow it. Add the test to
+  the existing test class of the touched class and assert the state that was
+  wrong.
+- **SDK**: `core/src/test/java/`, class named `<Class>Should`, mirroring the
+  neighboring tests of the touched class.
+- **Design system**: pure-Kotlin tests next to the existing tests of the same
+  component (they run via `desktopTest`); a Paparazzi snapshot test only if a
+  visual contract changed, and let CI generate the goldens.
 
 ---
 
 ## Step 6 — Implement the fix
 
-With the failing test from Step 5 in place, make the smallest change that turns it
-green without breaking the neighboring tests.
+Make the smallest change that turns the Step 5 test green without breaking
+neighboring tests.
 
-For **app-owned** fixes follow all rules from `AGENTS.md`:
-
-- **ViewModels**: use `launchUseCase { }`, never `viewModelScope.launch` directly —
-  `launchUseCase` wraps `CoroutineTracker` for Espresso `IdlingResource` integration
-- **Repositories**: translate `D2Error` → domain errors via `DomainErrorMapper`
-  ```kotlin
-  import org.dhis2.mobile.commons.error.DomainErrorMapper
-  import org.hisp.dhis.android.core.maintenance.D2Error
-  ```
-- **Models**: `data class` for new data models; `sealed interface` for new UiState variants
-- **Style** (`ktlint_official`):
-  - No wildcard imports
-  - Trailing commas on every multi-line parameter/argument list
-  - Expression bodies for single-expression functions
-- **No comments** unless the WHY is non-obvious (hidden constraint, workaround for a
-  specific upstream bug). Specifically, **never narrate the fix in the source** —
-  no "moved this here because it caused an ANR", no Sentry issue IDs, no
-  before/after explanation, no multi-line block justifying the change. That
-  history belongs in the PR body and the Jira ticket, which is where a reader
-  goes looking for it. The diff already shows what changed.
-  When a comment *is* warranted, make it one concise line describing what the
-  code does or the constraint it satisfies — stated in the present tense, as if
-  the code had always looked this way.
-
-For **library-owned** fixes the app's conventions do NOT apply (no
-`launchUseCase`, no `DomainErrorMapper`). Follow the target repo's own guidance:
-- **SDK**: its committed `CLAUDE.md`
-- **Design system**: its `CLAUDE.md` if present (it is untracked and may be
-  absent), else `README.md` + `docs/`
-- Plus the hard constraints in repo-map §3 (SDK: `apiCheck`/`apiDump`; design
-  system: no local golden regeneration, `allWarningsAsErrors`)
-- Match the naming, idiom, and comment density of the surrounding code in that repo
+- **App-owned**: follow `AGENTS.md`.
+- **Library-owned**: the app's conventions do NOT apply. Follow the target
+  repo's own guidance — SDK: its committed `CLAUDE.md`; design system: its
+  `CLAUDE.md` if present (untracked, may be absent), else `README.md` + `docs/`
+  — plus the hard constraints in repo-map §3. Match the naming, idiom, and
+  comment density of the surrounding code.
+- **Never narrate the fix in the source** (any repo): no Sentry IDs, no
+  before/after explanation, no "moved this because it crashed". That history
+  belongs in the PR and Jira ticket. A comment, if warranted, is one line in
+  the present tense describing what the code does.
 
 ---
 
@@ -426,12 +365,21 @@ review point.
      - Include: the Sentry issue link(s) with user/event counts, the
        one-sentence root cause from Step 3, the affected release, and (once
        known) the PR link.
-     - Close with a `## How to test manually` section — steps a field tester can
-       run on a release APK, with no adb and no debug build. Derive it from the
-       code you read in Steps 2-6 and follow
-       `.claude/skills/sentry-fix/references/manual-test.md`, including its
-       self-check. A test that a correct build would fail, or a broken build
-       would pass, is worse than no test at all.
+     - Close with a `## How to test manually` section for a field tester on a
+       **release APK** (no adb, no debug build, no logcat), derived from the
+       code read in Steps 2-6:
+       1. Preconditions — user and metadata needed (never a hardcoded UID).
+       2. Numbered steps using the labels visible on screen, including any
+          state the crash needs (search form closed, offline, rotated…).
+       3. **Expected** — one observable outcome on the fixed build, plus what
+          the shipped build did instead.
+       4. Variants where the code branches (landscape, offline), then a
+          regression step showing the normal path still works.
+
+       Self-check before writing it: walk the steps against the fixed code
+       (Expected holds) and against the shipped release (it reproduces the
+       bug). If either fails, rewrite the steps — a test a correct build would
+       fail, or a broken build would pass, is worse than none.
      - Nothing else — no stack traces, no tool transcripts, no fix history.
   4. If the search in 1 (or a `/sentry-triage` report) surfaced a clearly
      related prior ticket — a closed issue with the same symptom, the same
