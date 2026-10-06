@@ -22,7 +22,7 @@ const val AZURE_AERIAL_LABELS = "Azure Aerial Labels"
 const val DEFAULT_TILE_URL =
     "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}@2x.png"
 const val DEFAULT_GLYPH_URL =
-    "http://fonts.openmaptiles.org/{fontstack}/{range}.pbf"
+    "https://fonts.openmaptiles.org/{fontstack}/{range}.pbf"
 const val DEFAULT_FONT =
     "Klokantech Noto Sans Regular"
 const val DEFAULT_ATTRIBUTION = "© OpenStreetMap contributors, © Carto"
