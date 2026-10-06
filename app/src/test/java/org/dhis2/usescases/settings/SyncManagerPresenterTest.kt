@@ -11,7 +11,6 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.dhis2.bindings.toDate
 import org.dhis2.commons.Constants
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -22,7 +21,6 @@ import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.ExportDatabase
 import org.dhis2.usescases.settings.domain.GetSettingsState
-import org.dhis2.usescases.settings.domain.GetSyncErrors
 import org.dhis2.usescases.settings.domain.LaunchSync
 import org.dhis2.usescases.settings.domain.SettingsMessages
 import org.dhis2.usescases.settings.domain.UpdateSmsModule
@@ -30,7 +28,6 @@ import org.dhis2.usescases.settings.domain.UpdateSmsResponse
 import org.dhis2.usescases.settings.domain.UpdateSyncSettings
 import org.dhis2.usescases.settings.models.AccountType
 import org.dhis2.usescases.settings.models.DataSettingsViewModel
-import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
 import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel
@@ -68,7 +65,6 @@ class SyncManagerPresenterTest {
     private val getSettingsState: GetSettingsState = mock()
     private val updateSyncSettings: UpdateSyncSettings = mock()
     private val updateSmsResponse: UpdateSmsResponse = mock()
-    private val getSyncErrors: GetSyncErrors = mock()
     private val settingMessages: SettingsMessages =
         mock {
             on { messageChannel } doReturn Channel<String>().receiveAsFlow()
@@ -100,7 +96,6 @@ class SyncManagerPresenterTest {
                 getSettingsState = getSettingsState,
                 updateSyncSettings = updateSyncSettings,
                 updateSmsResponse = updateSmsResponse,
-                getSyncErrors = getSyncErrors,
                 updateSmsModule = updateSmsModule,
                 deleteLocalData = deleteLocalData,
                 exportDatabase = exportDatabase,
@@ -433,40 +428,6 @@ class SyncManagerPresenterTest {
         runTest {
             presenter.onExportAndDownloadDB()
             verify(exportDatabase, times(1)).invoke()
-        }
-
-    @Test
-    fun `Should load sync errors`() =
-        runTest {
-            val testingList =
-                listOf(
-                    ErrorViewModel(
-                        creationDate = "2025-03-02T00:00:00.00Z".toDate(),
-                        errorCode = "1",
-                        errorDescription = "d2 error",
-                        errorComponent = null,
-                    ),
-                    ErrorViewModel(
-                        creationDate = "2025-03-05T00:00:00.00Z".toDate(),
-                        errorCode = "2",
-                        errorDescription = "conflict",
-                        errorComponent = null,
-                    ),
-                    ErrorViewModel(
-                        creationDate = "2025-03-01T00:00:00.00Z".toDate(),
-                        errorCode = "3",
-                        errorDescription = "fk",
-                        errorComponent = null,
-                    ),
-                )
-            whenever(getSyncErrors.invokeLegacy()) doReturn testingList
-
-            presenter.errorLogChannel.test {
-                presenter.checkSyncErrors()
-                val item = awaitItem()
-                assertTrue(item == testingList)
-                cancelAndIgnoreRemainingEvents()
-            }
         }
 
     @Test

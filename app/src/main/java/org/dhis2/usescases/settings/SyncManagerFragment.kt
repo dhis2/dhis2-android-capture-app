@@ -21,7 +21,6 @@ import org.dhis2.mobile.login.authentication.TwoFASettingsActivity
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.reservedValue.ReservedValueActivity
-import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.settings.ui.SettingsScreen
 import org.dhis2.usescases.settingsprogram.SettingsProgramActivity
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
@@ -80,7 +79,6 @@ class SyncManagerFragment : FragmentGlobalAbstract() {
                                 null,
                             )
                         },
-                        showErrorLogs = ::showSyncErrors,
                         showShareActions = ::shareDB,
                         display2FASettingsScreen = ::display2FASettingsScreen,
                     )
@@ -99,12 +97,6 @@ class SyncManagerFragment : FragmentGlobalAbstract() {
     override fun onDestroy() {
         super.onDestroy()
         presenter.closeChannel()
-    }
-
-    private fun showSyncErrors(data: List<ErrorViewModel>) {
-        ErrorDialog()
-            .setData(data)
-            .show(getChildFragmentManager().beginTransaction(), ErrorDialog.TAG)
     }
 
     private fun shareDB(fileToShare: File) {
