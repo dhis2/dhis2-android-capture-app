@@ -5,13 +5,12 @@ description: >
   the crash to its owning repo (capture app, DHIS2 Android SDK, or mobile
   design system), reads the relevant sources at the shipped version, diagnoses
   the root cause, implements a fix in the owning repo following that repo's
-  conventions, writes unit tests, runs its lint/test tasks, and opens a draft
-  PR there — linking a Jira ticket for app-owned fixes when Jira access is
-  available. Then watches the PR for the rest of the session, answering
-  questions and pushing follow-up fixes for review comments until it is merged
-  or closed, and schedules a check to auto-resolve the Sentry issue once that
-  Jira ticket reaches Done. Invoke as /sentry-fix <issue-id> [--repo <slug>]
-  or follow a /sentry-triage report.
+  conventions, writes the failing unit test first, runs its lint/test tasks,
+  and opens a draft PR there. For app-owned fixes it creates or reuses an
+  ANDROAPP Jira Bug and opens the draft PR from an `ANDROAPP-<key>` branch
+  against the branch it was triggered from, then schedules a check to
+  auto-resolve the Sentry issue once that Jira ticket reaches Done. Invoke as
+  /sentry-fix <issue-id> [--repo <slug>] or follow a /sentry-triage report.
 ---
 
 # Sentry Fix Skill
@@ -66,6 +65,12 @@ the current repo (run `gh repo view --json owner -q .owner.login` to get it).
 Store the result as `ORG_SLUG` and the org's `regionUrl` as `REGION_URL`. These are used
 for all subsequent Sentry tool calls and to construct the Sentry issue URL:
 `https://<ORG_SLUG>.sentry.io/issues/<ISSUE-SHORT-ID>/`
+
+If the input is a bare suffix with no project prefix (e.g. `83NS`), the issue
+lookup rejects it. Resolve the project with the `find_projects` catalog tool
+(via `execute_sentry_tool`, `query: "android"`) and retry as
+`<PROJECT-SLUG-UPPERCASE>-<suffix>`, e.g. `DHIS2-ANDROID-CAPTURE-83NS`. Use that
+full short ID everywhere below.
 
 ---
 
@@ -148,92 +153,59 @@ State the root cause in one sentence before writing any code.
 
 ## Step 4 — Plan the fix
 
-Before touching any file, state:
-- Which files will change and why
-- KMP placement decision:
-  - `commonMain` — if the fix is pure Kotlin logic with no Android API dependency
-  - `androidMain` — if it requires Android `Context`, DHIS2 `D2` object,
-    `CrashReportController`, or Android SDK APIs
-- If the crash site uses RxJava (`Observable`, `Single`, `Completable`): **do not add more
-  RxJava**. Wrap the existing RxJava call at the nearest boundary using a coroutine adapter
-  (`suspendCancellableCoroutine` or an existing wrapper in the codebase).
-- If new business logic is needed: create a new `UseCase<in R, out T>` from
-  `commonskmm/src/commonMain/kotlin/org/dhis2/mobile/commons/domain/UseCase.kt`
+Before touching any file, state which files will change and why.
 
-The KMP/UseCase bullets above apply to **app-owned** fixes. For **library-owned**
-fixes state the equivalent per target repo:
+- **App-owned**: the architecture and code conventions are in `AGENTS.md` —
+  follow it and don't restate it here. On top of it, for a crash fix:
+  - Make the smallest fix in the existing style of the touched code; don't
+    migrate a legacy screen as part of a crash fix.
+  - Put the decision in a layer Step 5 can unit-test (ViewModel / UseCase /
+    UiState), not in an Activity, Fragment or binding — `:app` has no
+    Robolectric.
+  - Add a defensive guard at the crash site (e.g. an early return instead of
+    `!!`) so other paths into the same code cannot crash.
 - **SDK**: which `core/` classes change, and whether the public API surface
-  changes (`:core:apiCheck` will fail → plan `:core:apiDump` + commit the dump)
+  changes (`:core:apiCheck` will fail → plan `:core:apiDump` + commit the dump).
 - **Design system**: which source set (`commonMain` vs platform actuals), and
   whether any Paparazzi golden image could be affected — if so, plan for the
   "Generate Paparazzi Golden Images" CI workflow (repo-map §3); never regenerate
-  goldens locally
+  goldens locally.
 
 ---
 
-## Step 5 — Implement the fix
+## Step 5 — Write the failing test first (TDD)
 
-For **app-owned** fixes follow all rules from `AGENTS.md`:
+Write the test that reproduces the crash condition **before** touching
+production code, and confirm it fails — on an assertion, or because the API the
+fix introduces does not compile yet. If the crash cannot be reproduced in a unit
+test, say so and move the decision into a testable layer (Step 4).
 
-- **ViewModels**: use `launchUseCase { }`, never `viewModelScope.launch` directly —
-  `launchUseCase` wraps `CoroutineTracker` for Espresso `IdlingResource` integration
-- **Repositories**: translate `D2Error` → domain errors via `DomainErrorMapper`
-  ```kotlin
-  import org.dhis2.mobile.commons.error.DomainErrorMapper
-  import org.hisp.dhis.android.core.maintenance.D2Error
-  ```
-- **Models**: `data class` for new data models; `sealed interface` for new UiState variants
-- **Style** (`ktlint_official`):
-  - No wildcard imports
-  - Trailing commas on every multi-line parameter/argument list
-  - Expression bodies for single-expression functions
-- **No comments** unless the WHY is non-obvious (hidden constraint, workaround for a
-  specific upstream bug). Specifically, **never narrate the fix in the source** —
-  no "moved this here because it caused an ANR", no Sentry issue IDs, no
-  before/after explanation, no multi-line block justifying the change. That
-  history belongs in the PR body and the Jira ticket, which is where a reader
-  goes looking for it. The diff already shows what changed.
-  When a comment *is* warranted, make it one concise line describing what the
-  code does or the constraint it satisfies — stated in the present tense, as if
-  the code had always looked this way.
-
-For **library-owned** fixes the app's conventions do NOT apply (no
-`launchUseCase`, no `DomainErrorMapper`). Follow the target repo's own guidance:
-- **SDK**: its committed `CLAUDE.md`
-- **Design system**: its `CLAUDE.md` if present (it is untracked and may be
-  absent), else `README.md` + `docs/`
-- Plus the hard constraints in repo-map §3 (SDK: `apiCheck`/`apiDump`; design
-  system: no local golden regeneration, `allWarningsAsErrors`)
-- Match the naming, idiom, and comment density of the surrounding code in that repo
+- **App-owned**: load the `android-testing` skill and follow it. Add the test to
+  the existing test class of the touched class and assert the state that was
+  wrong.
+- **SDK**: `core/src/test/java/`, class named `<Class>Should`, mirroring the
+  neighboring tests of the touched class.
+- **Design system**: pure-Kotlin tests next to the existing tests of the same
+  component (they run via `desktopTest`); a Paparazzi snapshot test only if a
+  visual contract changed, and let CI generate the goldens.
 
 ---
 
-## Step 6 — Write unit tests
+## Step 6 — Implement the fix
 
-Load the `android-testing` skill for full patterns. At minimum write:
+Make the smallest change that turns the Step 5 test green without breaking
+neighboring tests.
 
-**UseCase test** (if the UseCase was created or modified):
-- Success path
-- Failure path (wraps exception in `Result.failure`)
-- The specific edge case that caused the crash (e.g. empty list, null return from D2)
-
-**ViewModel test** (if the ViewModel was modified):
-- The state transition that was failing (use `app.cash.turbine` to assert `StateFlow` emissions)
-- Use `launchUseCase` / `CoroutineTracker` idiom — never `Thread.sleep()`
-
-**Repository test** (if the repository was modified):
-- Mock D2 with `mock(defaultAnswer = RETURNS_DEEP_STUBS)`
-- The `D2Error` → domain error mapping path
-
-**Placement**:
-- `commonTest/` — for classes in `commonMain`
-- `androidUnitTest/` — for classes in `androidMain`
-- Existing module test source set — for legacy Android modules (`form`, `commons`, `tracker`, `app`)
-- **SDK** — `core/src/test/java/`, class named `<Class>Should`, mirroring the
-  neighboring tests of the touched class
-- **Design system** — put pure-Kotlin tests next to the existing tests of the
-  same component (they run via `desktopTest`); add a Paparazzi snapshot test only
-  if a visual contract changed, and let CI generate the goldens
+- **App-owned**: follow `AGENTS.md`.
+- **Library-owned**: the app's conventions do NOT apply. Follow the target
+  repo's own guidance — SDK: its committed `CLAUDE.md`; design system: its
+  `CLAUDE.md` if present (untracked, may be absent), else `README.md` + `docs/`
+  — plus the hard constraints in repo-map §3. Match the naming, idiom, and
+  comment density of the surrounding code.
+- **Never narrate the fix in the source** (any repo): no Sentry IDs, no
+  before/after explanation, no "moved this because it crashed". That history
+  belongs in the PR and Jira ticket. A comment, if warranted, is one line in
+  the present tense describing what the code does.
 
 ---
 
@@ -257,9 +229,13 @@ inside the worktree from Step 2). Fix any failures before moving on.
 # KMP module (androidUnitTest source set):
 ./gradlew :<module>:testAndroidDebugUnitTest
 
-# Legacy Android module:
+# Legacy Android module (form, commons, tracker, …):
 ./gradlew :<module>:testDebugUnitTest
+
+# :app has product flavors — the task is flavor-qualified:
+./gradlew :app:testDhis2DebugUnitTest --tests "<package>.*"
 ```
+Per-module task names live in repo-map §3.
 
 **SDK** (in the worktree):
 ```bash
@@ -332,36 +308,47 @@ triggered, and the PR must target that same branch. Never use `main`, `develop`,
 or `origin/main` as the base unless you are explicitly told to. (This rule is
 app-repo-only — library base branches are fixed in Step 9b.)
 
-**0. Jira (optional, before creating the branch)**
+Once lint and tests pass (Step 7), run this whole step without pausing for
+confirmation — Jira ticket, branch, commit, push, draft PR. The draft PR is the
+review point.
+
+**0. Jira (required — before the branch exists, because the key names it)**
 
 - Check whether Atlassian/Jira MCP tools are connected: search for them (e.g.
   `ToolSearch` with a query like `"jira accessible resources create issue search"`).
   Tool names are prefixed with a connection-specific server ID, so match by
   keyword, not by a hardcoded name.
-- **Not connected** → ask the user once: "I can create/link a Jira issue for
-  this fix if you connect the Atlassian MCP — want me to, or should I skip
-  Jira for this fix?" Declined, or still unavailable after asking → skip Jira
-  entirely and continue to step 1 below with no ticket reference (the PR
-  title/body stay exactly as documented further down, no `[ANDROAPP-XXXX]`
-  prefix, no `Related task:` line).
+- **Not connected** → ask the user once to connect the Atlassian MCP. Declined,
+  or still unavailable → continue with no ticket: branch
+  `fix/sentry-<issue-id-lowercase>`, no `[ANDROAPP-XXXX]` title prefix, no
+  `Related task:` line, and state "no Jira ticket" in the Step 8 report.
 - **Connected** → resolve `cloudId` via the accessible-resources tool, then:
   1. Search the `ANDROAPP` project for an issue that already covers this
-     crash — narrow JQL by the Sentry short-ID, the crash-site class name, or
-     a distinctive phrase from the culprit (`project = ANDROAPP AND text ~
-     "<term>"`, `fields: ["summary","status"]`). Prefer several narrow queries
-     over one broad one — an unscoped `text ~` search across the whole
-     project can return an oversized result.
+     crash. Run several narrow JQL queries — the Sentry short-ID suffix, the
+     crash-site method name, the crash-site class name plus a symptom word
+     (`project = ANDROAPP AND text ~ "<term>"`, `fields: ["summary","status"]`)
+     — rather than one broad one; an unscoped `text ~` search across the
+     whole project can return an oversized result.
   2. **Found an existing open issue** covering the same crash → reuse its key
      as `JIRA_KEY`; do not create a duplicate. Leave its description alone
      except to append the `## How to test manually` section described in 3 if
-     it has none.
-  3. **Nothing found** → create a new `Bug` in `ANDROAPP`. Before creating,
-     fetch this issue type's required fields
-     (`getJiraIssueTypeMetaWithFields`) — at the time of writing `Bug`
-     requires `components` (use `AndroidApp` unless a more specific component
-     obviously fits), `environment` (free text — release + platform is
-     enough), and `versions` (`Affects versions` — the crashing release, e.g.
-     the `release` tag from Step 1). Store the new key as `JIRA_KEY`.
+     it has none. A matching issue that is already **closed** (same symptom,
+     earlier fix) is not reused — create a new one and link it (see 4).
+  3. **Nothing open found** → create a new `Bug` in `ANDROAPP`. Before
+     creating, fetch this issue type's required fields
+     (`getJiraIssueTypeMetaWithFields`) and set at least:
+     - `components: [{"id": "10415"}]` (`AndroidApp`, unless a more specific
+       component obviously fits)
+     - `environment` — free text, release + platform, e.g.
+       `"Android app 3.4.2 (build 157), production"`
+     - `versions` — `Affects versions`: the crashing release from Step 1's
+       `release` tag, matched by name against the field's allowed values
+     - `customfield_10131: {"id": "10196"}` — Internal feature = General
+       interest (creation returns 400 without it)
+     - `customfield_10135: {"id": "10203"}` — Product Team = Android
+
+     A new Bug starts in status **Open**; confirm the create response shows
+     `Open` and do not transition it. Store the new key as `JIRA_KEY`.
 
      **Write the description short and scannable** — a developer opening the
      ticket should grasp the problem in about fifteen seconds:
@@ -378,41 +365,62 @@ app-repo-only — library base branches are fixed in Step 9b.)
      - Include: the Sentry issue link(s) with user/event counts, the
        one-sentence root cause from Step 3, the affected release, and (once
        known) the PR link.
-     - Close with a `## How to test manually` section — steps a field tester can
-       run on a release APK, with no adb and no debug build. Derive it from the
-       code you read in Steps 2-5 and follow
-       `.claude/skills/sentry-fix/references/manual-test.md`, including its
-       self-check. A test that a correct build would fail, or a broken build
-       would pass, is worse than no test at all.
+     - Close with a `## How to test manually` section for a field tester on a
+       **release APK** (no adb, no debug build, no logcat), derived from the
+       code read in Steps 2-6:
+       1. Preconditions — user and metadata needed (never a hardcoded UID).
+       2. Numbered steps using the labels visible on screen, including any
+          state the crash needs (search form closed, offline, rotated…).
+       3. **Expected** — one observable outcome on the fixed build, plus what
+          the shipped build did instead.
+       4. Variants where the code branches (landscape, offline), then a
+          regression step showing the normal path still works.
+
+       Self-check before writing it: walk the steps against the fixed code
+       (Expected holds) and against the shipped release (it reproduces the
+       bug). If either fails, rewrite the steps — a test a correct build would
+       fail, or a broken build would pass, is worse than none.
      - Nothing else — no stack traces, no tool transcripts, no fix history.
   4. If the search in 1 (or a `/sentry-triage` report) surfaced a clearly
-     related prior ticket — same anti-pattern, adjacent call site or repo —
-     link `JIRA_KEY` to it (`createIssueLink`, type `Relates`) and mention the
-     link when reporting back.
+     related prior ticket — a closed issue with the same symptom, the same
+     anti-pattern, an adjacent call site or repo — link `JIRA_KEY` to it
+     (`createIssueLink`, type `Relates`) and mention the link when reporting
+     back.
+  5. After the PR exists, add a comment to `JIRA_KEY` with the PR URL
+     (`addCommentToJiraIssue`).
+
+**Branch naming** follows the team convention `ANDROAPP-<key>` (optionally
+`ANDROAPP-<key>-<short-desc>`), see repo-map §3. Name it correctly **before**
+opening the PR: GitHub cannot retarget an open PR's head branch, and renaming a
+pushed branch is blocked by org rulesets.
 
 ```bash
 # 1. Record the current branch BEFORE creating the fix branch
 BASE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
-# 2. Create fix branch FROM that base — never from main or origin/main
-git checkout -b fix/sentry-<issue-id-lowercase> "$BASE_BRANCH"
+# 2. Branch name: the Jira key; fix/sentry-<id> only when Jira was declined
+BRANCH="<JIRA_KEY>"            # e.g. ANDROAPP-7860
+# BRANCH="fix/sentry-<issue-id-lowercase>"   # no-ticket fallback
 
-# 3. Stage and commit — end the message with the Co-Authored-By trailer the
+# 3. Create the fix branch FROM that base — never from main or origin/main
+git checkout -b "$BRANCH" "$BASE_BRANCH"
+
+# 4. Stage and commit — end the message with the Co-Authored-By trailer the
 #    harness specifies for the current model (never hardcode a model name)
 git add <files>
-git commit -m "fix: <short description of fix>"
+git commit -m "fix: [<JIRA_KEY>] <short description of fix>"
 
-# 4. Push
-git push -u origin fix/sentry-<issue-id-lowercase>
+# 5. Push
+git push -u origin "$BRANCH"
 
-# 5. Open PR as draft targeting BASE_BRANCH (not main/develop). Title gets the
-#    [JIRA_KEY] prefix only if step 0 produced one:
+# 6. Open PR as draft targeting BASE_BRANCH (not main/develop)
 gh pr create \
   --draft \
   --base "$BASE_BRANCH" \
+  --head "$BRANCH" \
   --title "fix: [<JIRA_KEY>] <short description>" \
   --body "..."
-# (title is "fix: <short description>", no brackets, when there is no JIRA_KEY)
+# (commit/title are "fix: <short description>", no brackets, when there is no JIRA_KEY)
 ```
 
 When `JIRA_KEY` exists, add one line to the `## Sentry issue` section of the PR
@@ -458,85 +466,20 @@ Work happens inside the worktree created in Step 2; the branch
 
 ---
 
-## Step 10 — Monitor the PR until merged or closed
-
-Once a PR exists (from either 9a or 9b), don't stop at "opened" — stay attached
-so review feedback gets answered without the user having to ask again or paste
-the comment back in.
-
-1. Start a persistent `Monitor` polling the PR every ~30s for anything new
-   since the last poll, emitting one line per new item, and exiting once the
-   PR's state is no longer `OPEN`:
-   ```bash
-   last=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-   while true; do
-     state=$(gh pr view <PR-NUMBER> --repo <owner>/<repo> --json state -q .state)
-     now=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-     gh api "repos/<owner>/<repo>/issues/<PR-NUMBER>/comments?since=$last" \
-       --jq '.[] | "issue-comment \(.id) \(.user.login): \(.body)"'
-     gh api "repos/<owner>/<repo>/pulls/<PR-NUMBER>/comments?since=$last" \
-       --jq '.[] | "review-comment \(.id) \(.path):\(.line // .original_line) \(.user.login): \(.body)"'
-     gh api "repos/<owner>/<repo>/pulls/<PR-NUMBER>/reviews" \
-       --jq --arg since "$last" '.[] | select(.submitted_at > $since and .body != "") | "review \(.id) \(.user.login) \(.state): \(.body)"'
-     last=$now
-     if [ "$state" != "OPEN" ]; then echo "pr-state $state"; break; fi
-     sleep 30
-   done
-   ```
-   Use `persistent: true` (no timeout) and a description naming the PR, e.g.
-   `"PR #<N> comments/reviews"`.
-
-2. **On each new-comment/review notification**:
-   - Re-sync first — other work may have moved the worktree since the PR was
-     opened: `git checkout <branch> && git pull --ff-only` (app repo) or
-     `git -C <worktree> pull --ff-only` (library repo).
-   - Read the full comment and classify it:
-     - **Pure status/bot noise** (a CI check going green, a coverage report, a
-       passing quality-gate summary with nothing flagged) → no action.
-     - **A question** → answer directly by replying on the same thread — no
-       code change needed.
-     - **A requested change or a spotted bug** → re-run Steps 3–7 (diagnose,
-       implement, test, lint) for the new scope, commit, and push to the same
-       branch.
-   - For anything you acted on or answered, reply on that specific thread
-     (`gh api repos/<owner>/<repo>/pulls/<PR-NUMBER>/comments/<comment-id>/replies`
-     for inline review comments, `gh pr comment` for issue-level ones) with a
-     one-line summary of what changed — or why not, if you decided against it
-     — ending with the line
-     `_🤖 Addressed by [Claude Code](https://claude.com/claude-code)_`. Then
-     resolve the thread if it's an inline review thread (GraphQL
-     `resolveReviewThread` on the thread ID from `reviewThreads` in the PR's
-     GraphQL query). Skip replies for anything you didn't act on.
-
-3. **Stop condition**: the moment the poll reports `pr-state MERGED` or
-   `pr-state CLOSED`, stop watching and tell the user the final state.
-
-4. **Session-scoped caveat**: this watch runs only for the lifetime of the
-   current session — it is not a durable cron job, and it does not survive a
-   session ending or being cleared. If asked to resume watching a PR that was
-   left mid-review in an earlier session, just re-arm the Monitor from step 1
-   using that PR's number; say so if the user seems to expect it persisted
-   automatically.
-
----
-
-## Step 11 — Auto-resolve the Sentry issue once the Jira ticket is Done
+## Step 10 — Auto-resolve the Sentry issue once the Jira ticket is Done
 
 Only applies when Step 9a's Jira sub-step produced a `JIRA_KEY` (skip this
 step entirely if there is none — nothing to close the loop with).
 
-Jira polling can't be a `Monitor` bash script like Step 10's — there is no CLI
-for the Atlassian MCP the way `gh` is a CLI for GitHub, so a detached shell
-process cannot call `getJiraIssue`. Only the agent itself can, which means
-this has to run as scheduled **prompts** (`CronCreate`), not a background
-script.
+Jira polling can't be a background shell script — there is no CLI for the
+Atlassian MCP the way `gh` is a CLI for GitHub, so a detached process cannot
+call `getJiraIssue`. Only the agent itself can, which means this has to run as
+scheduled **prompts** (`CronCreate`), not a background script.
 
-1. **Check once immediately** when Step 10 reports the PR as `MERGED` (tickets
-   are sometimes auto-transitioned by a smart commit on merge, so this can
-   resolve instantly): call `getJiraIssue` on `JIRA_KEY` with
-   `fields: ["status"]`. If `status.statusCategory.key == "done"`, skip
-   straight to step 3.
-2. **Otherwise, schedule a recurring check** — `CronCreate` with a
+Run this right after the draft PR is opened (a ticket created minutes earlier
+is never Done yet, so there is no immediate check):
+
+1. **Schedule a recurring check** — `CronCreate` with a
    self-contained prompt (it must carry everything needed, since it runs as a
    fresh turn with no memory of this conversation):
    > Check Jira issue `<JIRA_KEY>`'s status via the Atlassian MCP
@@ -554,9 +497,8 @@ script.
    before the ticket is closed, the Sentry issue is left as-is with no
    automatic follow-up — say so plainly rather than implying it will
    eventually resolve on its own.
-3. **Resolve**: call the Sentry MCP's `update_issue` with
-   `status: "resolved"` and `reason: "Closed via Jira <JIRA_KEY>"` on the
-   original Sentry issue. Report the resolution back — inline if step 1
-   caught it immediately, or (when this fires later from the cron job, in
-   what may be a different session) that report is simply the cron prompt's
-   own final message.
+2. **Resolve**: when the cron prompt finds the ticket Done, it calls the
+   Sentry MCP's `update_issue` with `status: "resolved"` and
+   `reason: "Closed via Jira <JIRA_KEY>"` on the original Sentry issue. That
+   report is the cron prompt's own final message (possibly in a different
+   session).
