@@ -459,7 +459,7 @@ class SyncManagerPresenterTest {
                         errorComponent = null,
                     ),
                 )
-            whenever(getSyncErrors()) doReturn testingList
+            whenever(getSyncErrors.invokeLegacy()) doReturn testingList
 
             presenter.errorLogChannel.test {
                 presenter.checkSyncErrors()
