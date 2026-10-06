@@ -17,7 +17,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -28,7 +30,6 @@ import org.dhis2.usescases.settings.SettingItem
 import org.dhis2.usescases.settings.SyncManagerPresenter
 import org.dhis2.usescases.settings.models.AccountType
 import org.dhis2.usescases.settings.models.DeleteDataState
-import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.settings.models.SettingsState
 import org.dhis2.usescases.settings.models.SettingsUiAction
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
@@ -46,22 +47,18 @@ fun SettingsScreen(
     viewmodel: SyncManagerPresenter,
     checkProgramSpecificSettings: () -> Unit,
     manageReserveValues: () -> Unit,
-    showErrorLogs: (List<ErrorViewModel>) -> Unit,
     showShareActions: (file: File) -> Unit,
     display2FASettingsScreen: () -> Unit,
 ) {
     val settingsUIModel by viewmodel.settingsState.collectAsState()
     val exportingDatabase by viewmodel.exporting.observeAsState(false)
     val snackbarHostState = remember { SnackbarHostState() }
+    var showErrorLog by remember { mutableStateOf(false) }
 
     LaunchedEffect(viewmodel.messageChannel) {
         viewmodel.messageChannel.collect { message ->
             snackbarHostState.showSnackbar(message)
         }
-    }
-
-    LaunchedEffect(viewmodel.errorLogChannel) {
-        viewmodel.errorLogChannel.collect { showErrorLogs(it) }
     }
 
     LaunchedEffect(viewmodel.fileToShareChannel) {
@@ -104,7 +101,9 @@ fun SettingsScreen(
 
                         SettingsUiAction.OnSpecificProgramSettingsClick -> checkProgramSpecificSettings()
                         SettingsUiAction.OnManageReserveValues -> manageReserveValues()
-                        SettingsUiAction.OnOpenErrorLog -> viewmodel.checkSyncErrors()
+                        SettingsUiAction.OnOpenErrorLog -> {
+                            showErrorLog = true
+                        }
                         SettingsUiAction.OnOpenTwoFASettings -> {
                             viewmodel.onItemClick(SettingItem.TWO_FACTOR_AUTH)
                             display2FASettingsScreen()
@@ -158,6 +157,12 @@ fun SettingsScreen(
                     onDismissRequest = viewmodel::onDismissLocalData,
                 )
             }
+        }
+    }
+
+    if (showErrorLog) {
+        SyncErrorLogDialog {
+            showErrorLog = false
         }
     }
 }
