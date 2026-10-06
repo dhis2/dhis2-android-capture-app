@@ -480,6 +480,7 @@ def preflight():
     print("\nNOTE  Sentry     cannot be checked from this script. In Claude Code, confirm the")
     print("      Sentry MCP tools are available; if not, authorize the server with /mcp.")
     print("      Without it the report omits production stability.")
+    print("      Crash-free rate is not in the MCP: run sentry_health.py --preflight.")
     return ok
 
 
