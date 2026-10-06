@@ -56,7 +56,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public String getTEType() {
-        return dashboardRepository.getTETypeName();
+        String teType = dashboardRepository.getTETypeName();
+        return teType != null ? teType : "";
     }
 
     @Override

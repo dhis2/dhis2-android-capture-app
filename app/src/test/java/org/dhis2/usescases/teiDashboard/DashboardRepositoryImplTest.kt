@@ -8,6 +8,8 @@ import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.repositories.filters.internal.StringFilterConnector
+import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.common.Unit
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -19,6 +21,9 @@ import org.hisp.dhis.android.core.maintenance.D2ErrorComponent
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceCollectionRepository
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
@@ -548,6 +553,20 @@ class DashboardRepositoryImplTest {
                     it[1].value() == expectedResults[1] &&
                     it[2].value() == expectedResults[2]
             }
+    }
+
+    @Test
+    fun `Should return null tracked entity type name if the tei is not stored locally`() {
+        val teiRepository: TrackedEntityInstanceCollectionRepository = mock()
+        val uidFilter: StringFilterConnector<TrackedEntityInstanceCollectionRepository> = mock()
+        val teiObjectRepository: ReadOnlyOneObjectRepositoryFinalImpl<TrackedEntityInstance> = mock()
+        whenever(d2.trackedEntityModule().trackedEntityInstances()) doReturn teiRepository
+        whenever(teiRepository.byUid()) doReturn uidFilter
+        whenever(uidFilter.eq("teiUid")) doReturn teiRepository
+        whenever(teiRepository.one()) doReturn teiObjectRepository
+        whenever(teiObjectRepository.blockingGet()) doReturn null
+
+        assertNull(repository.getTETypeName())
     }
 
     private fun mockAttributeValue(
