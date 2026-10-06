@@ -69,6 +69,7 @@ class DashboardViewModel(
     private val pageConfigurator: NavigationPageConfigurator,
     private val resourcesManager: ResourceManager,
     private val customLabelProvider: CustomLabelProvider,
+    private val isPortrait: () -> Boolean = ::isPortrait,
 ) : ViewModel() {
     private val eventUid = MutableLiveData<String>()
 
@@ -345,22 +346,23 @@ class DashboardViewModel(
                     )
                 }
 
-                enrollmentItems.add(
-                    NavigationBarItem(
-                        id = TEIDashboardItems.NOTES,
-                        icon = Icons.AutoMirrored.Outlined.StickyNote2,
-                        selectedIcon = Icons.AutoMirrored.Filled.StickyNote2,
-                        label = resourcesManager.getString(R.string.navigation_notes),
-                    ),
-                )
+                if (pageConfigurator.displayNotes()) {
+                    enrollmentItems.add(
+                        NavigationBarItem(
+                            id = TEIDashboardItems.NOTES,
+                            icon = Icons.AutoMirrored.Outlined.StickyNote2,
+                            selectedIcon = Icons.AutoMirrored.Filled.StickyNote2,
+                            label = resourcesManager.getString(R.string.navigation_notes),
+                        ),
+                    )
+                }
 
                 _navigationBarUIState.update {
                     it.copy(items = enrollmentItems)
                 }
 
                 if (enrollmentItems.none { it.id == _navigationBarUIState.value.selectedItem }) {
-                    val selectedItem = enrollmentItems.first()
-                    onNavigationItemSelected(selectedItem.id)
+                    enrollmentItems.firstOrNull()?.let { onNavigationItemSelected(it.id) }
                 }
             } finally {
                 CoroutineTracker.unconditionalDecrement()
