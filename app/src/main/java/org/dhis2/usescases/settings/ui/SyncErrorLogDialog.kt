@@ -86,7 +86,7 @@ fun SyncErrorLogDialog(onDismiss: () -> Unit) {
                     },
                     title = {
                         Text(
-                            text = "Sync Error Log",
+                            text = stringResource(R.string.error_dialog_title),
                             style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onPrimary,
                         )
