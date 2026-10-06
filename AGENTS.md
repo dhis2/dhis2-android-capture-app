@@ -284,7 +284,7 @@ dynamically from the plugin at runtime.
   the previous edition, checks which action items were ticked, and reports whether they
   actually moved the numbers.
 
-**The whole report runs with zero credentials.** Jira is world-readable over the REST API,
+**The whole report runs with zero credentials**, except the crash-free rate: the Sentry MCP cannot read release health, so `scripts/metrics/sentry_health.py` needs an `org:read` Sentry token (`SENTRY_METRICS_TOKEN`) and the report says "not fetched" without one. Jira is world-readable over the REST API,
 changelogs included; Confluence reading and publishing go through the Atlassian connector's
 per-user OAuth, so it works in a worktree, in a cloud session, and for any teammate who has
 the connector but no local checkout of anything but this repo.

@@ -294,7 +294,7 @@ against the install base — fix the scale rather than publishing a ranking that
 
 - Legacy top-issue query, still useful for the 90-day view: `search_issues` with
   `is:unresolved environment:production`, `sort=freq`, `period=90d`
-- **Crash load by release** = events ÷ users, per release, over the window. Query:
+- **Crash load by release** = events ÷ error-affected users, per release, over the window. Query:
   `search_events` dataset `errors`, fields `release`, `count()`, `count_unique(user)` —
   **report the rate, not raw counts**, because install bases and time in the field differ, and
   raw counts are not comparable across releases where the rate is. Three things it is not:
@@ -307,8 +307,30 @@ against the install base — fix the scale rather than publishing a ranking that
   present in exactly one release is a regression in that release; one spread across many is
   long-standing.
 - New issues per release: `get_release_details` via `execute_sentry_tool`
-- **Crash-free rate is unavailable** — session tracking is not enabled in the Android SDK, so
-  release health returns no session data. Use users-affected and events-per-user instead.
+- **Crash-free rate and ANR rate** — `python3 scripts/metrics/sentry_health.py --as-of <date>`,
+  which calls `GET /api/0/organizations/dhis2/sessions/` (project `5676228`, `environment=production`,
+  `groupBy=release`, fields `sum(session)`, `count_unique(user)`, `crash_free_rate(session)`,
+  `crash_free_rate(user)`, `anr_rate()`, `foreground_anr_rate()`). Session tracking has always
+  been on — sentry-android enables it by default — but **the Sentry MCP cannot read it**:
+  `get_release_details(includeHealth=true)` returns no health block and `search_metrics` has no
+  session gauges. Editions up to Sep 2026 said "session tracking is not enabled"; that was this
+  gap, never the app. The script needs `SENTRY_METRICS_TOKEN` (scope `org:read`) in
+  `local.properties`, or falls back to `~/.sentryclirc`. **Without a token, say "crash-free rate
+  not fetched (no Sentry token)"** — never that tracking is off.
+  - Lead with **crash-free sessions**; give crash-free users beside it. Users is always much
+    lower (88.6% vs 99.2% on 3.4.2) because a user with hundreds of sessions in 90 days needs
+    to crash once to count — it is not a contradiction.
+  - Sessions are retained 90 days, so there is **no previous-window figure**. Compare releases
+    within the window instead.
+  - `anr_rate()` is the share of *users* with an ANR over the whole window. It is **not**
+    Google Play's daily user-perceived ANR rate (bad-behaviour threshold 0.47%) and must not be
+    compared against it.
+  - Only users who are logged in **and** have granted the analytics permission start Sentry
+    (`App.initCrashController`), so every rate covers opted-in, logged-in use; crashes on the
+    login screen before consent are not counted. State it once in Method.
+  - Use session `count_unique(user)` as a release's install base. The errors dataset's
+    `count_unique(user)` counts only users who hit an error — 10,931 vs 61,034 on 3.4.2 at the
+    Sep 2026 cut — and must never be presented as "users" of a release.
 - Users-affected can overlap between issues, so never sum them.
 
 Aggregate events-per-user was flat across 3.4.x (3.17–3.22) while two new NPEs affecting ~7,000

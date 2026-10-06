@@ -43,6 +43,7 @@ user rather than working around it — a silently skipped source produces a misl
 | GitHub | PR cycle time, review latency, PR size, CI | `gh` login, or the GitHub MCP tools where `gh` is absent (cloud sessions have no `gh`) | Skip the **PR/CI** line and say so |
 | SonarCloud | code quality trend, security (vulnerabilities + hotspots) | none | Skip; no token needed, so failure means network |
 | Sentry MCP | production stability | per-user OAuth | Check the Sentry tools are available in-session. If not, tell the user to authorize with `/mcp` — **you cannot run OAuth yourself.** Mark the section unavailable |
+| Sentry API | crash-free sessions/users, ANR rate (`sentry_health.py`) | `SENTRY_METRICS_TOKEN` (`org:read`) in `local.properties`, else `~/.sentryclirc` | Publish without it and say the rate was not fetched. **Never** write that session tracking is off — it is on |
 
 **Running in a cloud session.** Everything works there except what the environment's network
 policy blocks. Confluence (the connector) and Sentry (MCP) are fine. What cloud containers do not
@@ -137,8 +138,12 @@ and returns the impact/effort quadrants — which is what makes the stability se
 actionable instead of a leaderboard. Take its scores verbatim into the report;
 do not re-derive them, or the page and the triage will disagree.
 
-Two things the triage does not cover, so still query them here:
+Three things the triage does not cover, so still query them here:
 
+- **crash-free sessions and users per release** — `python3 scripts/metrics/sentry_health.py
+  --as-of <date>`. The MCP cannot read release health, so this is the one Sentry figure that
+  needs a token (`SENTRY_METRICS_TOKEN`, scope `org:read`; see the reference). No token → say
+  the rate was not fetched, never that session tracking is off
 - **crash load by release** (events per user across releases) — the 90-day trend, in the reference
 - **whether a top issue is confined to one release** — what separates a regression from a
   long-standing problem, which aggregate averages hide
@@ -254,9 +259,9 @@ describes each section; take the order from this paragraph.
    with the PR), **chart `03-sonarcloud-trend`**, then collapsed **Data table** (coverage,
    smells, debt, duplication, LOC: first month → report date, direction).
 
-2. **Crash / ANR exposure** — from the `sentry-triage` run. Open with one bold line: events
-   per affected user on the newest production release against the previous one, with the
-   change in percent. Then the issues **split by root cause, in priority order, only causes
+2. **Crash / ANR exposure** — from the `sentry-triage` run. Open with one bold line:
+   crash-free sessions on the newest production release against the previous one (from
+   `sentry_health.py`), with events per affected user beside it. Then the issues **split by root cause, in priority order, only causes
    with direct evidence**, under two sub-headings carrying the combined reach:
    - `ANR rate — ~X% combined reach, N confirmed causes`
    - `NPE / crash rate — ~X% combined reach, N confirmed causes`
