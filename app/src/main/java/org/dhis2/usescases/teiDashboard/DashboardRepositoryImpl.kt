@@ -886,17 +886,23 @@ class DashboardRepositoryImpl(
         return grouping
     }
 
-    override fun getTETypeName(): String? =
-        getTrackedEntityInstance(teiUid)
-            .flatMap { tei: TrackedEntityInstance ->
-                d2
-                    .trackedEntityModule()
-                    .trackedEntityTypes()
-                    .uid(tei.trackedEntityType())
-                    .rxGet()
-                    .toObservable()
-            }.blockingFirst()
+    override fun getTETypeName(): String? {
+        val teiTypeUid =
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstances()
+                .byUid()
+                .eq(teiUid)
+                .one()
+                .blockingGet()
+                ?.trackedEntityType() ?: return null
+        return d2
+            .trackedEntityModule()
+            .trackedEntityTypes()
+            .uid(teiTypeUid)
+            .blockingGet()
             ?.displayName()
+    }
 
     override fun getAttributesMap(
         programUid: String,
