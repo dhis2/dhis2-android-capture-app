@@ -39,10 +39,11 @@ class TroubleshootingRepository(
                 var ruleValidationItem = RuleValidation(rule, ruleExternalLink(rule.uid))
                 val ruleConditionResult =
                     process(
-                        rule.condition,
-                        valueMap,
-                        null,
-                        ExpressionMode.RULE_ENGINE_CONDITION,
+                        condition = rule.condition,
+                        valueMap = valueMap,
+                        ruleActionType = null,
+                        mode = ExpressionMode.RULE_ENGINE_CONDITION,
+                        allowEmptyCondition = false,
                     )
                 if (ruleConditionResult.isNotEmpty()) {
                     ruleValidationItem = ruleValidationItem.copy(conditionError = ruleConditionResult)
@@ -189,13 +190,12 @@ class TroubleshootingRepository(
         valueMap: Map<String, RuleVariableValue>,
         ruleActionType: String? = null,
         mode: ExpressionMode,
+        allowEmptyCondition: Boolean,
     ): String {
-        if (condition.isEmpty()) {
-            return if (ruleActionType != null) {
+        if (!allowEmptyCondition && condition.isEmpty()) {
+            return ruleActionType?.let {
                 "$ruleActionType: Condition is empty"
-            } else {
-                "%s Condition is empty"
-            }
+            } ?: "Condition is empty"
         }
         return try {
             val expression = Expression(condition, mode)
@@ -254,10 +254,11 @@ class TroubleshootingRepository(
         if (ruleAction.needsContent()) {
             val actionConditionResult =
                 process(
-                    ruleAction.data ?: "",
-                    valueMap,
-                    ruleAction.ruleActionType(),
-                    ExpressionMode.RULE_ENGINE_ACTION,
+                    condition = ruleAction.data ?: "",
+                    valueMap = valueMap,
+                    ruleActionType = ruleAction.ruleActionType(),
+                    mode = ExpressionMode.RULE_ENGINE_ACTION,
+                    allowEmptyCondition = true,
                 )
             actionConditionResult.ifEmpty {
                 null
