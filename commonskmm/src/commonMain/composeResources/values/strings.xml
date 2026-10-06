@@ -244,4 +244,19 @@
     <string name="program_stage">Program stage</string>
     <string name="group_by_stage_label">Group by %s</string>
     <string name="stage">stage</string>
+
+    <string name="http_error_bad_request">Bad request</string>
+    <string name="http_error_unauthorized">Unauthorized</string>
+    <string name="http_error_forbidden">Forbidden</string>
+    <string name="http_error_not_found">Not found</string>
+    <string name="http_error_method_not_allowed">Method not allowed</string>
+    <string name="http_error_request_timeout">Request timeout</string>
+    <string name="http_error_conflict">Conflict</string>
+    <string name="http_error_unprocessable_entity">Unprocessable entity</string>
+    <string name="http_error_too_many_requests">Too many requests</string>
+    <string name="http_error_internal_server_error">Internal server error</string>
+    <string name="http_error_bad_gateway">Bad gateway</string>
+    <string name="http_error_service_unavailable">Service unavailable</string>
+    <string name="http_error_gateway_timeout">Gateway timeout</string>
+    <string name="http_error_unknown">Unknown error</string>
 </resources>
