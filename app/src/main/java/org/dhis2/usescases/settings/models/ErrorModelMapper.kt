@@ -13,7 +13,7 @@ import kotlin.time.Instant
 
 class ErrorModelMapper(
     private val fkMessage: String,
-    private val httpStatusMessageProvider: HttpStatusMessageProvider = HttpStatusMessageProvider(),
+    private val httpStatusMessageProvider: HttpStatusMessageProvider,
 ) {
     companion object {
         const val FK = "FK"
@@ -33,20 +33,6 @@ class ErrorModelMapper(
                     val message = httpStatusMessageProvider.httpStatusMessage(errorCode)
                     "$errorCode $message"
                 },
-            errorDescription = error.errorDescription(),
-            errorComponent = error.errorComponent()?.name ?: "",
-        )
-
-    // Used by SyncManagerPresenter's legacy Java dialog until it is cut over to SyncErrorLogViewModel.
-    fun mapD2ErrorLegacy(errors: List<D2Error>): List<ErrorViewModel> =
-        errors.map {
-            mapLegacy(it)
-        }
-
-    private fun mapLegacy(error: D2Error): ErrorViewModel =
-        ErrorViewModel(
-            creationDate = error.created(),
-            errorCode = error.httpErrorCode().toString(),
             errorDescription = error.errorDescription(),
             errorComponent = error.errorComponent()?.name ?: "",
         )
