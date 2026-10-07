@@ -100,20 +100,16 @@ class CustomLabelProviderImpl(
             quantity = if (isPlural) 2 else 1,
             capitalizeFirstLetter = true,
         ) {
+            val teType =
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityTypes()
+                    .uid(teTypeUid)
+                    .blockingGet()
             if (isPlural) {
-                d2
-                    .trackedEntityModule()
-                    .trackedEntityTypes()
-                    .uid(teTypeUid)
-                    .blockingGet()
-                    ?.displayTrackedEntityTypesLabel
+                teType?.displayTrackedEntityTypesLabel ?: teType?.displayName
             } else {
-                d2
-                    .trackedEntityModule()
-                    .trackedEntityTypes()
-                    .uid(teTypeUid)
-                    .blockingGet()
-                    ?.displayName
+                teType?.displayName
             }
         }
 
