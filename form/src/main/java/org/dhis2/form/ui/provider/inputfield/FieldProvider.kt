@@ -83,7 +83,7 @@ fun FieldProvider(
                         offset = Offset(0f, 200f),
                     )
             }.onFocusChanged {
-                if (it.isFocused && !fieldUiModel.focused) {
+                if (it.hasFocus && !fieldUiModel.focused) {
                     scope.launch {
                         fieldUiModel.onItemClick()
                         delay(10)
