@@ -332,6 +332,7 @@ dependencies {
     implementation(project(":login"))
     implementation(project(":sync"))
 
+    implementation(libs.dhis2.expressionparser)
     implementation(libs.security.conscrypt)
     implementation(libs.security.rootbeer)
     implementation(libs.security.openId)

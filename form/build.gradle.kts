@@ -64,6 +64,7 @@ dependencies {
     implementation(project(":commonskmm"))
     implementation(project(":dhis2_android_maps"))
     implementation(project(":dhis2-mobile-program-rules"))
+    implementation(libs.dhis2.expressionparser)
     implementation(libs.androidx.activity.compose)
     testImplementation(libs.bundles.form.test)
     testImplementation(libs.test.junit)
