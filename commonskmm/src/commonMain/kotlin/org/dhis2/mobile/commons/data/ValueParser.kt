@@ -25,4 +25,6 @@ interface ValueParser {
     suspend fun valueFromCoordinateAsLatLong(value: String): String
 
     suspend fun valueFromBooleanType(value: String): String
+
+    suspend fun valueFromTrueOnlyType(value: String): String
 }

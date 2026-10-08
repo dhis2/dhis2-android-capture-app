@@ -128,7 +128,6 @@ class EventTest : BaseTest() {
         programEventsRobot(composeTestRule) {
             checkEventIsComplete(event.displayDate)
             // [ANDROAPP-904] The 3 filled DEs show; the empty 4th does not.
-            // TODO [ANDROAPP-7723]: expect "No" once the boolean-display bug is fixed.
             checkEventCardReportValues(
                 eventDate = event.displayDate,
                 expectedEntries = FLOW_A_EXPECTED_CARD_REPORT_ENTRIES,

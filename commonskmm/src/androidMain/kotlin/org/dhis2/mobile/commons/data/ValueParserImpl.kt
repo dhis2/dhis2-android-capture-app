@@ -32,6 +32,7 @@ internal class ValueParserImpl(
             isTime = valueType == ValueType.TIME,
             isCoordinate = valueType == ValueType.COORDINATE,
             isBooleanType = valueType == ValueType.BOOLEAN,
+            isTrueOnlyType = valueType == ValueType.TRUE_ONLY,
         )
     }
 
@@ -83,6 +84,8 @@ internal class ValueParserImpl(
 
     override suspend fun valueFromBooleanType(value: String): String =
         if (value == "true") getString(Res.string.yes) else getString(Res.string.no)
+
+    override suspend fun valueFromTrueOnlyType(value: String): String = if (value == "true") getString(Res.string.yes) else ""
 
     override suspend fun valueFromOrgUnitAsOrgUnitName(value: String) =
         d2
