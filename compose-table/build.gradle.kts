@@ -49,9 +49,11 @@ kotlin {
 }
 
 dependencies {
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.table.implementation)
     debugImplementation(libs.bundles.table.debugImplementation)
     testImplementation(libs.bundles.table.test)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.bundles.table.androidTest)
     implementation(libs.dhis2.mobile.designsystem)
     implementation(libs.androidx.material3)

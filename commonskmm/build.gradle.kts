@@ -40,6 +40,7 @@ kotlin {
             implementation(libs.lifecycle.runtime.compose)
 
             // Koin
+            api(project.dependencies.platform(libs.koin.bom))
             api(libs.koin.core)
             implementation(libs.ktxml)
             implementation(libs.koin.compose)
@@ -68,6 +69,7 @@ kotlin {
         }
 
         androidMain.dependencies {
+            implementation(project.dependencies.platform(libs.androidx.compose.bom))
             implementation(libs.dhis2.android.sdk)
             implementation(libs.androidx.exifinterface)
             implementation(libs.test.espresso.idlingresource)
