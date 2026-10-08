@@ -8,11 +8,8 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.mobile.login.authentication.TwoFASettingsActivity
@@ -91,8 +88,13 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithTag(SettingItem.ERROR_LOG.name).performClick()
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun checkLogViewIsDisplayed() {
-        waitForView(withId(R.id.errorRecycler)).check(matches(isDisplayed()))
+        composeTestRule.waitUntilAtLeastOneExists(
+            hasTestTag(ERROR_LOG_BACK_BUTTON),
+            TIMEOUT
+        )
+        composeTestRule.onNodeWithTag(ERROR_LOG_BACK_BUTTON).assertIsDisplayed()
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -119,5 +121,6 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     companion object {
         const val NOT_EDIT_TEXT = "Syncing period is not editable"
         const val SYNC_PARAMETERS_NOT_EDIT_TEXT = "Sync parameters are not editable"
+        const val ERROR_LOG_BACK_BUTTON = "ERROR_LOG_BACK_BUTTON"
     }
 }

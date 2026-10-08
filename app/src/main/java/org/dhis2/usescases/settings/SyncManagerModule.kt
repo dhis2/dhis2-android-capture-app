@@ -3,7 +3,6 @@ package org.dhis2.usescases.settings
 import android.content.Context
 import dagger.Module
 import dagger.Provides
-import org.dhis2.R
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -11,7 +10,6 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.mobile.commons.error.DomainErrorMapper
-import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.mobile.commons.files.FileHandlerImpl
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.commons.network.NetworkStatusProviderImpl
@@ -25,15 +23,14 @@ import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.ExportDatabase
 import org.dhis2.usescases.settings.domain.GetSettingsState
-import org.dhis2.usescases.settings.domain.GetSyncErrors
 import org.dhis2.usescases.settings.domain.LaunchSync
 import org.dhis2.usescases.settings.domain.SettingsMessages
 import org.dhis2.usescases.settings.domain.UpdateSmsModule
 import org.dhis2.usescases.settings.domain.UpdateSmsResponse
 import org.dhis2.usescases.settings.domain.UpdateSyncSettings
-import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
+import org.dhis2.mobile.commons.providers.PreferenceProvider as MobilePreferenceProvider
 
 @Module
 class SyncManagerModule(
@@ -46,7 +43,6 @@ class SyncManagerModule(
         getSettingsState: GetSettingsState,
         updateSyncSettings: UpdateSyncSettings,
         updateSmsResponse: UpdateSmsResponse,
-        getSyncErrors: GetSyncErrors,
         updateSmsModule: UpdateSmsModule,
         deleteLocalData: DeleteLocalData,
         exportDatabase: ExportDatabase,
@@ -60,7 +56,6 @@ class SyncManagerModule(
         getSettingsState,
         updateSyncSettings,
         updateSmsResponse,
-        getSyncErrors,
         updateSmsModule,
         deleteLocalData,
         exportDatabase,
@@ -95,18 +90,6 @@ class SyncManagerModule(
         settingsRepository: SettingsRepository,
         gatewayValidator: GatewayValidator,
     ) = UpdateSmsResponse(settingsRepository, gatewayValidator)
-
-    @Provides
-    @PerFragment
-    fun provideGetSyncErrors(
-        settingsRepository: SettingsRepository,
-        resourceManager: ResourceManager,
-    ) = GetSyncErrors(
-        settingsRepository,
-        ErrorModelMapper(
-            resourceManager.getString(R.string.fk_message),
-        ),
-    )
 
     @Provides
     @PerFragment
@@ -175,13 +158,11 @@ class SyncManagerModule(
     @PerFragment
     fun provideRepository(
         d2: D2,
-        preferenceProvider: PreferenceProvider,
-        featureConfigRepository: FeatureConfigRepository,
+        preferenceProvider: MobilePreferenceProvider,
     ): SettingsRepository =
         SettingsRepository(
             d2,
             preferenceProvider,
-            featureConfigRepository,
             syncBackgroundJobAction,
         )
 
