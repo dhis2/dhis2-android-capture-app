@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -14,6 +15,7 @@ import org.dhis2.mobile.login.accounts.domain.model.AuthorizationMethod
 import org.dhis2.mobile.login.main.data.LoginRepository
 import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
+import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
 import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
@@ -225,6 +227,89 @@ class LoginScreenIntegrationTest {
             )
         }
 
+    /**
+     *
+     * Test case: ANDROAPP-7709
+     * Scenario: Login flow selection after server validation
+     * Given the user is on the server configuration screen
+     * When enters the URL of a server with OAuth <oauth_status>
+     * Then goes to the credentials screen in <entry_mode> mode
+     *
+     * Examples:
+     * |oauth_status |entry_mode        |
+     * | enabled     |NEW_ACCOUNT_OAUTH |
+     * | disabled    |NEW_ACCOUNT_BASIC |
+     *
+     */
+
+    @Test
+    fun `should start OAuth login flow when server has OAuth enabled`() =
+        runTest {
+            // Given the user is on the server configuration screen
+            givenServerConfigurationScreen()
+            whenever(loginRepository.validateServer(SERVER_URL, true))
+                .thenReturn(serverValidationSuccess(oAuthEnabled = true))
+            initViewModel()
+
+            // When enters the URL of a server with OAuth enabled
+            viewModel.onValidateServer(SERVER_URL)
+            advanceUntilIdle()
+
+            // Then goes to the credentials screen in OAuth mode
+            verify(navigator).navigate(
+                eq(newAccountCredentials(CredentialsEntryMode.NEW_ACCOUNT_OAUTH)),
+                any(),
+            )
+        }
+
+    @Test
+    fun `should start legacy login flow when server has OAuth disabled`() =
+        runTest {
+            // Given the user is on the server configuration screen
+            givenServerConfigurationScreen()
+            whenever(loginRepository.validateServer(SERVER_URL, true))
+                .thenReturn(serverValidationSuccess(oAuthEnabled = false))
+            initViewModel()
+
+            // When enters the URL of a server with OAuth disabled
+            viewModel.onValidateServer(SERVER_URL)
+            advanceUntilIdle()
+
+            // Then goes to the credentials screen in username and password mode
+            verify(navigator).navigate(
+                eq(newAccountCredentials(CredentialsEntryMode.NEW_ACCOUNT_BASIC)),
+                any(),
+            )
+        }
+
+    private suspend fun givenServerConfigurationScreen() {
+        whenever(accountRepository.getLoggedInAccounts()).thenReturn(emptyList())
+        whenever(accountRepository.availableServers()).thenReturn(emptyList())
+        whenever(sessionRepository.isSessionLocked()).thenReturn(false)
+    }
+
+    private fun serverValidationSuccess(oAuthEnabled: Boolean) =
+        ServerValidationResult.Success(
+            serverName = SERVER_NAME,
+            serverDescription = null,
+            countryFlag = SERVER_FLAG,
+            allowRecovery = true,
+            oidcIcon = null,
+            oidcLoginText = null,
+            oidcUrl = null,
+            oAuthEnabled = oAuthEnabled,
+        )
+
+    private fun newAccountCredentials(entryMode: CredentialsEntryMode) =
+        LoginScreenState.LoginCredentials(
+            selectedServer = SERVER_URL,
+            selectedUsername = null,
+            serverName = SERVER_NAME,
+            selectedServerFlag = SERVER_FLAG,
+            allowRecovery = true,
+            entryMode = entryMode,
+        )
+
     private fun initViewModel() {
         viewModel =
             LoginViewModel(
@@ -273,4 +358,10 @@ class LoginScreenIntegrationTest {
             isOauthEnabled = true,
             authorizationMethod = AuthorizationMethod.OAUTH2,
         )
+
+    private companion object {
+        const val SERVER_URL = "https://oauth.dhis2.org"
+        const val SERVER_NAME = "Test Server"
+        const val SERVER_FLAG = "🇺🇸"
+    }
 }
