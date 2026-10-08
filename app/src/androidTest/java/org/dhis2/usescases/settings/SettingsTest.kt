@@ -1,13 +1,19 @@
 package org.dhis2.usescases.settings
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.dhis2.R
 import org.dhis2.lazyActivityScenarioRule
+import org.dhis2.mobile.login.authentication.domain.model.TwoFAStatus
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.MainScreenType
 import org.dhis2.usescases.main.homeRobot
+import org.dhis2.usescases.settings.ui.TwoFASettingItem
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -34,6 +40,7 @@ class SettingsTest : BaseTest() {
      * shouldFindEditDisabledWhenClickOnSyncConfiguration, shouldFindEditDisableWhenClickOnSyncParameters,
      * shouldRefillValuesWhenClickOnReservedValues, shouldSuccessfullyOpenLogs, and
      * MainTest.shouldNavigateToHomeWhenBackPressed (final back-to-home checkpoint).
+     * The test account is BASIC, so it also checks the 2FA entry point is hidden (ANDROAPP-7232).
      * The settings sections are an exclusive accordion (opening one closes the previous),
      * so each section can be opened in sequence without manual collapsing.
      */
@@ -63,12 +70,52 @@ class SettingsTest : BaseTest() {
             clickOnManageReservedValues()
             pressBack()
 
+            // 2FA entry point is only offered to OAuth accounts (ANDROAPP-7232)
+            checkTwoFAOptionIsNotShownForBasicAccount()
+
             // Back from Settings returns to Home (former shouldNavigateToHomeWhenBackPressed)
             pressBack()
         }
         homeRobot(composeTestRule) {
             checkHomeIsDisplayed(composeTestRule)
         }
+    }
+
+    /**
+     * 2FA settings menu item (ANDROAPP-7232). The item is only rendered for OAuth accounts and the
+     * test database logs in with a BASIC one, so the item is rendered in isolation instead of
+     * launching MainActivity. Content is set once and the status is switched through state, so
+     * every status is checked without paying the per-test setup again.
+     */
+    @Test
+    fun shouldShowTwoFASettingItemForEachStatus() {
+        val status = mutableStateOf<TwoFAStatus>(TwoFAStatus.Enabled())
+        var clicked = false
+        composeTestRule.setContent {
+            DHIS2Theme {
+                TwoFASettingItem(
+                    status = status.value,
+                    onClick = { clicked = true },
+                )
+            }
+        }
+        settingsRobot(composeTestRule) {
+            // Enabled: status and description are shown
+            checkTwoFAOptionIsDisplayed()
+            checkTwoFAStatusIs(getString(R.string.settingsTwoFAEnabled))
+
+            // Disabled: status and description are shown
+            status.value = TwoFAStatus.Disabled(secretCode = "SECRET")
+            checkTwoFAStatusIs(getString(R.string.settingsTwoFADisabled))
+
+            // No connection: only the title is shown
+            status.value = TwoFAStatus.NoConnection
+            checkTwoFAStatusIsHidden()
+
+            // Clicking the item triggers the open 2FA settings action
+            clickOnTwoFASettings()
+        }
+        assertTrue(clicked)
     }
 
     private fun startActivity() {
