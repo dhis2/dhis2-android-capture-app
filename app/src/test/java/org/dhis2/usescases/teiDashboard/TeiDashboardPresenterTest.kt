@@ -21,7 +21,6 @@ import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -242,12 +241,5 @@ class TeiDashboardPresenterTest {
         presenter.onTransferClick()
 
         verify(view).showOrgUnitSelector(programUid)
-    }
-
-    @Test
-    fun `Should return empty tracked entity type if the repository cannot resolve it`() {
-        whenever(repository.getTETypeName()) doReturn null
-
-        assertEquals("", presenter.teType)
     }
 }

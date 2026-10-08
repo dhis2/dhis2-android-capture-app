@@ -7,7 +7,9 @@ import io.reactivex.Observable
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -23,6 +25,8 @@ import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemData
 import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -96,6 +100,31 @@ class DashboardViewModelTest {
                     assertTrue(dashboardViewModel.state.value == null)
                 }
             }
+        }
+
+    @Test
+    fun shouldExposeTrackedEntityTypeName() =
+        runTest {
+            mockGrouping(false)
+            whenever(repository.getTETypeName()) doReturn "Person"
+
+            val dashboardViewModel = getViewModel()
+
+            assertEquals("Person", dashboardViewModel.teTypeName.first { it != null })
+        }
+
+    @Test
+    fun shouldKeepTrackedEntityTypeNameNullIfItCannotBeResolved() =
+        runTest {
+            mockGrouping(false)
+            whenever(repository.getTETypeName()) doReturn null
+
+            val dashboardViewModel = getViewModel()
+
+            advanceUntilIdle()
+
+            verify(repository).getTETypeName()
+            assertNull(dashboardViewModel.teTypeName.value)
         }
 
     @Test

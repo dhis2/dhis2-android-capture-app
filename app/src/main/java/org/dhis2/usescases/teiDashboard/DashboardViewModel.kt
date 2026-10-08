@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -99,6 +100,15 @@ class DashboardViewModel(
             }.stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(5000L),
+                null,
+            )
+
+    val teTypeName: StateFlow<String?> =
+        flow { emit(repository.getTETypeName()) }
+            .flowOn(dispatcher.io())
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
                 null,
             )
 
@@ -504,7 +514,7 @@ class DashboardViewModel(
         )
     }
 
-    private fun MutableList<MenuItemData<EnrollmentMenuItem>>.addDeleteTeiMenuItem() {
+    private suspend fun MutableList<MenuItemData<EnrollmentMenuItem>>.addDeleteTeiMenuItem() {
         if (repository.checkIfDeleteTeiIsPossible()) {
             add(
                 MenuItemData(

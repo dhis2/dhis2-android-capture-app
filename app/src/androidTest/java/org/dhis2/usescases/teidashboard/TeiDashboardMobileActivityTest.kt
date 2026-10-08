@@ -34,6 +34,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.mockito.kotlin.wheneverBlocking
 import java.util.Calendar
 
 class TeiDashboardMobileActivityTest {
@@ -135,7 +136,7 @@ class TeiDashboardMobileActivityTest {
     @Test
     fun shouldSuccessfullyInitializeTeiDashBoardMobileActivity() {
         setUp()
-        whenever(repository.getTETypeName()) doReturn TETYPE_NAME
+        wheneverBlocking { repository.getTETypeName() } doReturn TETYPE_NAME
         whenever(repository.getTrackedEntityInstance("")) doReturn mock()
         whenever {
             repository.getTrackedEntityInstance("").flatMap { tei: TrackedEntityInstance ->
@@ -153,13 +154,7 @@ class TeiDashboardMobileActivityTest {
                     .toObservable()
             }.blockingFirst()
         } doReturn { teType }
-        whenever(
-            presenter.teType
-        ) doReturn TETYPE_NAME
-
-        whenever(
-            repository.getTETypeName()
-        ) doReturn TETYPE_NAME
+        wheneverBlocking { repository.getTETypeName() } doReturn TETYPE_NAME
         whenever(
             d2.trackedEntityModule()
         ) doReturn mock()
