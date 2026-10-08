@@ -886,7 +886,7 @@ class DashboardRepositoryImpl(
         return grouping
     }
 
-    override fun getTETypeName(): String? {
+    override suspend fun getTETypeName(): String? {
         val teiTypeUid =
             d2
                 .trackedEntityModule()

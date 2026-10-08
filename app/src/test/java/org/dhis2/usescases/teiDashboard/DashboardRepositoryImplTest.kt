@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard
 
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Single
+import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
@@ -556,18 +557,19 @@ class DashboardRepositoryImplTest {
     }
 
     @Test
-    fun `Should return null tracked entity type name if the tei is not stored locally`() {
-        val teiRepository: TrackedEntityInstanceCollectionRepository = mock()
-        val uidFilter: StringFilterConnector<TrackedEntityInstanceCollectionRepository> = mock()
-        val teiObjectRepository: ReadOnlyOneObjectRepositoryFinalImpl<TrackedEntityInstance> = mock()
-        whenever(d2.trackedEntityModule().trackedEntityInstances()) doReturn teiRepository
-        whenever(teiRepository.byUid()) doReturn uidFilter
-        whenever(uidFilter.eq("teiUid")) doReturn teiRepository
-        whenever(teiRepository.one()) doReturn teiObjectRepository
-        whenever(teiObjectRepository.blockingGet()) doReturn null
+    fun `Should return null tracked entity type name if the tei is not stored locally`() =
+        runTest {
+            val teiRepository: TrackedEntityInstanceCollectionRepository = mock()
+            val uidFilter: StringFilterConnector<TrackedEntityInstanceCollectionRepository> = mock()
+            val teiObjectRepository: ReadOnlyOneObjectRepositoryFinalImpl<TrackedEntityInstance> = mock()
+            whenever(d2.trackedEntityModule().trackedEntityInstances()) doReturn teiRepository
+            whenever(teiRepository.byUid()) doReturn uidFilter
+            whenever(uidFilter.eq("teiUid")) doReturn teiRepository
+            whenever(teiRepository.one()) doReturn teiObjectRepository
+            whenever(teiObjectRepository.blockingGet()) doReturn null
 
-        assertNull(repository.getTETypeName())
-    }
+            assertNull(repository.getTETypeName())
+        }
 
     private fun mockAttributeValue(
         attribute: String,

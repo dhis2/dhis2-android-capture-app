@@ -55,8 +55,6 @@ public class TeiDashboardContracts {
 
         void updateEnrollmentStatus(String enrollmentUid, EnrollmentStatus status);
 
-        String getTEType();
-
         void trackDashboardAnalytics();
 
         void trackDashboardRelationships();
