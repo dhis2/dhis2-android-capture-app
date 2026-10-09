@@ -3,7 +3,6 @@ package org.dhis2.usescases.searchTrackEntity
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
-import java.util.Date
 
 class SearchNavigationConfiguration(
     val d2: D2,
@@ -21,10 +20,11 @@ class SearchNavigationConfiguration(
 
     fun refreshDataOnBackFromDashboard(): Boolean {
         val refresh =
-            openedTei?.let { tei ->
-                val previousLastUpdate = tei.lastUpdated() ?: Date()
-                val newLastUpdate = tei(tei.uid())?.lastUpdated() ?: Date()
-                return previousLastUpdate != newLastUpdate
+            openedTei?.let { openedTei ->
+                val currentTei = tei(openedTei.uid())
+                currentTei == null ||
+                    currentTei.deleted() == true ||
+                    currentTei.lastUpdated() != openedTei.lastUpdated()
             } ?: true
 
         openedTei = null
