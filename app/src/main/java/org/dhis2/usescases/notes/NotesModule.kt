@@ -39,6 +39,7 @@ class NotesModule(
     private val programUid: String,
     private val uid: String,
     private val noteType: NoteType,
+    private val enrollmentUid: String?,
 ) {
     @Provides
     @PerFragment
@@ -56,5 +57,5 @@ class NotesModule(
 
     @Provides
     @PerFragment
-    internal fun providesNotesRepository(d2: D2): NotesRepository = NotesRepository(d2, programUid)
+    internal fun providesNotesRepository(d2: D2): NotesRepository = NotesRepository(d2, programUid, enrollmentUid)
 }

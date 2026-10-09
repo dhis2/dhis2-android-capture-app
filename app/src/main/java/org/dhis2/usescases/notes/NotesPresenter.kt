@@ -67,7 +67,7 @@ class NotesPresenter(
                                 .doOnError { NotesIdlingResource.decrement() }
                         NoteType.ENROLLMENT ->
                             notesRepository
-                                .getEnrollmentNotes(uid)
+                                .getEnrollmentNotes()
                                 .doOnSuccess { NotesIdlingResource.decrement() }
                                 .doOnError { NotesIdlingResource.decrement() }
                     }
