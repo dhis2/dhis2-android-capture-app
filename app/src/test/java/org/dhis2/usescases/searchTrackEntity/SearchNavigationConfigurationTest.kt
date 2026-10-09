@@ -37,11 +37,28 @@ class SearchNavigationConfigurationTest {
     }
 
     @Test
-    fun shouldNotRefreshDataIfTeiDeleted() {
+    fun shouldRefreshDataIfSyncedTeiMarkedAsDeleted() {
+        mockTeiMarkedAsDeleted("teiUid")
+        configuration.openingTEI("teiUid")
+        val result = configuration.refreshDataOnBackFromDashboard()
+        assertTrue(result)
+    }
+
+    @Test
+    fun shouldNotRefreshDataIfTeiNotChanged() {
         mockTeiNotChanged("teiUid")
         configuration.openingTEI("teiUid")
         val result = configuration.refreshDataOnBackFromDashboard()
         assertFalse(result)
+    }
+
+    @Test
+    fun shouldResetOpenedTeiAfterCheckingDashboardRefresh() {
+        mockTeiNotChanged("teiUid")
+        configuration.openingTEI("teiUid")
+        configuration.refreshDataOnBackFromDashboard()
+        val result = configuration.refreshDataOnBackFromDashboard()
+        assertTrue(result)
     }
 
     @Test
@@ -93,6 +110,20 @@ class SearchNavigationConfigurationTest {
             listOf(
                 defaultTei,
                 null,
+            )
+    }
+
+    private fun mockTeiMarkedAsDeleted(teiUId: String) {
+        whenever(
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstances()
+                .uid(teiUId)
+                .blockingGet(),
+        ) doReturnConsecutively
+            listOf(
+                defaultTei,
+                deletedTei,
             )
     }
 
@@ -158,6 +189,13 @@ class SearchNavigationConfigurationTest {
         mock {
             on { uid() } doReturn "teiUid"
             on { lastUpdated() } doReturn newDate
+        }
+
+    private val deletedTei: TrackedEntityInstance =
+        mock {
+            on { uid() } doReturn "teiUid"
+            on { lastUpdated() } doReturn defaultDate
+            on { deleted() } doReturn true
         }
 
     private val defaultEnrollment: Enrollment =

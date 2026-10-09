@@ -407,6 +407,53 @@ class SearchTEIViewModelTest {
     }
 
     @Test
+    fun `Should refresh search results when there is an active query`() {
+        mockTrackerMapData()
+        setCurrentProgram(testingProgram(displayFrontPageList = false))
+        viewModel.setMapScreen()
+        viewModel.onValueChange(
+            fieldUid = "testingUid",
+            value = "testingValue",
+        )
+
+        viewModel.refreshData()
+        testingDispatcher.scheduler.advanceUntilIdle()
+
+        verify(mapDataRepository).getTrackerMapData(
+            testingProgram(displayFrontPageList = false),
+            viewModel.queryDataAsMap(),
+        )
+    }
+
+    @Test
+    fun `Should not refresh search results without front page list nor active query`() {
+        mockTrackerMapData()
+        setCurrentProgram(testingProgram(displayFrontPageList = false))
+        viewModel.setMapScreen()
+
+        viewModel.refreshData()
+        testingDispatcher.scheduler.advanceUntilIdle()
+
+        verify(mapDataRepository, never()).getTrackerMapData(anyOrNull(), any(), any())
+    }
+
+    private fun mockTrackerMapData() {
+        whenever(mapDataRepository.getTrackerMapData(anyOrNull(), any(), any())) doReturn
+            TrackerMapData(
+                EventsByProgramStage("tag", mapOf()),
+                mutableListOf(),
+                hashMapOf(),
+                BoundingBox.fromLngLats(
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                ),
+                mutableMapOf(),
+            )
+    }
+
+    @Test
     fun `Should filter query data for new program`() {
         viewModel.queryDataByProgram("programUid")
         verify(repository).filterQueryForProgram(viewModel.queryDataAsMap(), "programUid")
