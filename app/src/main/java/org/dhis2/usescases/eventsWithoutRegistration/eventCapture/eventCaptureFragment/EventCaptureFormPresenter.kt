@@ -79,6 +79,12 @@ class EventCaptureFormPresenter(
                             resourceManager.getString(R.string.edition_orgunit_user_scope),
                             customLabelProvider.getCustomOrgUnitLabel(getEvent()?.program()),
                         ) to false
+
+                    EventNonEditableReason.EVENT_NOT_FOUND ->
+                        customLabelProvider.formatStringWithCustomLabel(
+                            resourceManager.getString(R.string.event_not_found),
+                            customLabelProvider.getCustomOrgUnitLabel(getEvent()?.program()),
+                        ) to false
                 }
             view.showNonEditableMessage(reason, canBeReOpened)
         }

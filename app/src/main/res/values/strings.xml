@@ -492,6 +492,7 @@
     <string name="event_date_not_in_orgunit_range">This data is not editable because the %s is closed</string>
     <string name="edition_no_catcombo_access">You do not have permission to edit this data</string>
     <string name="edition_orgunit_user_scope">You cannot edit data from this %s</string>
+    <string name="event_not_found">Could not find this %s</string>
     <string name="error_tei_online_search_title">The online search returned the following message:</string>
     <string name="delete_account">Delete Account</string>
     <string name="main_menu_troubleshooting">Configuration troubleshooting</string>

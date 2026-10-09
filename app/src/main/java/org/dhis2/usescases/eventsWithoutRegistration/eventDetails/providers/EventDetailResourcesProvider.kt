@@ -48,6 +48,8 @@ class EventDetailResourcesProvider(
                 )
             EventNonEditableReason.ORGUNIT_IS_NOT_IN_USER_SCOPE ->
                 resourceManager.getString(R.string.edition_orgunit_user_scope)
+
+            EventNonEditableReason.EVENT_NOT_FOUND -> resourceManager.getString(R.string.event_not_found)
         }
 
     fun provideButtonUpdate() = resourceManager.getString(R.string.update)
