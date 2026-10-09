@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable
 import androidx.appcompat.content.res.AppCompatResources
 import com.google.gson.Gson
 import org.dhis2.maps.R
-import org.dhis2.maps.layer.basemaps.BaseMapStyleBuilder.internalBaseMap
 import org.maplibre.android.maps.Style
 
 const val OSM_LIGHT = "OSM Light"
@@ -19,13 +18,16 @@ const val AZURE_DARK = "Azure Dark"
 const val AZURE_AERIAL = "Azure Aerial"
 const val AZURE_AERIAL_LABELS = "Azure Aerial Labels"
 
-const val DEFAULT_TILE_URL =
-    "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}@2x.png"
+const val DEFAULT_STYLE_URL =
+    "https://tiles.openfreemap.org/styles/positron"
 const val DEFAULT_GLYPH_URL =
     "https://fonts.openmaptiles.org/{fontstack}/{range}.pbf"
+
+// Must be served by both DEFAULT_GLYPH_URL and the glyphs of DEFAULT_STYLE_URL
 const val DEFAULT_FONT =
-    "Klokantech Noto Sans Regular"
-const val DEFAULT_ATTRIBUTION = "© OpenStreetMap contributors, © Carto"
+    "Noto Sans Regular"
+const val DEFAULT_ATTRIBUTION =
+    "© OpenFreeMap © OpenMapTiles © OpenStreetMap contributors"
 
 class BaseMapManager(
     private val context: Context,
@@ -81,9 +83,9 @@ class BaseMapManager(
     }
 
     fun styleJson(baseMapStyle: BaseMapStyle): Style.Builder =
-        Style
+        baseMapStyle.styleUrl?.let { styleUrl ->
+            Style.Builder().fromUri(styleUrl)
+        } ?: Style
             .Builder()
             .fromJson(Gson().toJson(baseMapStyle.copy(glyphs = DEFAULT_GLYPH_URL)))
-
-    fun getDefaultBasemap(): BaseMapStyle = baseMapStyles.firstOrNull() ?: internalBaseMap()
 }
