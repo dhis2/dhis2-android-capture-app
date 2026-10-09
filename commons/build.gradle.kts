@@ -109,7 +109,6 @@ dependencies {
     testImplementation(libs.test.junit)
     testImplementation(libs.test.mockitoCore)
     testImplementation(libs.test.mockitoKotlin)
-    testImplementation(libs.test.mockitoInline)
     androidTestImplementation(libs.test.mockitoCore)
     androidTestImplementation(libs.test.mockitoKotlin)
     androidTestImplementation(libs.test.dexmaker.mockitoInline)
