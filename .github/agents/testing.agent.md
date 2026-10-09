@@ -17,7 +17,7 @@ testing guidelines and architecture patterns.
 ## Project Context
 
 This is a Kotlin Multiplatform (KMP) project migrating to Compose Multiplatform,
-targeting Android, iOS, and Desktop platforms. The app uses:
+targeting Android and Desktop (iOS is not implemented). The app uses:
 
 - DHIS2 Android SDK (`org.hisp.dhis.android.core.*`) for all data operations
 - DHIS2 Mobile UI (`org.hisp.dhis.mobile.ui.designsystem.*`) design system
