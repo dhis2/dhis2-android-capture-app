@@ -17,11 +17,10 @@ ruleEngine = "3.8.1"
 expressionParser = "1.4.3"
 appcompat = "1.7.1"
 annotation = "1.9.1"
-cardview = "1.0.0"
-legacysupport = "1.0.0"
 constraintlayout = "2.2.2"
 lifecycle = "2.9.4"
 work = "2.10.5"
+swiperefreshlayout = "1.0.0"
 exif = "1.4.2"
 corektx = "1.17.0"
 fragmentktx = "1.8.9"
@@ -60,7 +59,6 @@ guava = "33.5.0-android"
 mockito = "5.20.0"
 mockito-kotlin = "6.1.0"
 junit = "4.13.2"
-mockito_inline = "5.2.0"
 javafaker = "1.0.2"
 junit_ext = "1.3.0"
 espresso_core = "3.7.0"
@@ -127,11 +125,9 @@ test-androidx-paging = { group = "androidx.paging", name = "paging-testing", ver
 androidx-coreKtx = { group = "androidx.core", name = "core-ktx", version.ref = "corektx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
-androidx-cardview = { group = "androidx.cardview", name = "cardview", version.ref = "cardview" }
-androidx-legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacysupport" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 androidx-work = { group = "androidx.work", name = "work-runtime", version.ref = "work" }
-androidx-workrx = { group = "androidx.work", name = "work-rxjava2", version.ref = "work" }
+androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 androidx-exifinterface = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "exif" }
 androidx-preferenceKtx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preference_ktx" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
@@ -175,7 +171,6 @@ test-junit = { group = "junit", name = "junit", version.ref = "junit" }
 test-archCoreTesting = { group = "androidx.arch.core", name = "core-testing", version = "2.2.0" }
 test-testCore = { group = "androidx.test", name = "core", version.ref = "androidx_test" }
 test-mockitoCore = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
-test-mockitoInline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito_inline" }
 test-mockitoKotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito-kotlin" }
 test-dexmaker-mockitoInline = { group = "com.linkedin.dexmaker", name = "dexmaker-mockito-inline", version.ref = "dexmaker-mockito-inline" }
 test-truth = { group = "com.google.truth", name = "truth", version.ref = "google_truth" }
@@ -190,7 +185,6 @@ test-rules = { group = "androidx.test", name = "rules", version.ref = "androidx_
 test-junitKtx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junit_ext" }
 test-junit-ext = { group = "androidx.test.ext", name = "junit", version.ref = "junit_ext" }
 test-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
-test-support-annotations = { group = "com.android.support", name = "support-annotations", version = "28.0.0" }
 test-rx2-idler = { group = "com.squareup.rx.idler", name = "rx2-idler", version = "0.11.0" }
 test-kotlinCoroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxcoroutines" }
 test-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "compose" }
@@ -243,15 +237,15 @@ cyclonedx = { id = "org.cyclonedx.bom", version.ref = "cyclonedx" }
 android-lint = { id = "com.android.lint", version.ref = "gradle" }
 
 [bundles]
-analytics-implementation = ["androidx-cardview", "androidx-constraintlayout"]
+analytics-implementation = ["androidx-constraintlayout"]
 analytics-api = ["github-charts"]
-analytics-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin", "test-kotlinCoroutines", "test-archCoreTesting"]
-form-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin", "test-testCore", "test-archCoreTesting", "test-kotlinCoroutines"]
-map-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin", "test-turbine", "test-archCoreTesting", "test-kotlinCoroutines"]
+analytics-test = ["test-mockitoCore", "test-mockitoKotlin", "test-kotlinCoroutines", "test-archCoreTesting"]
+form-test = ["test-mockitoCore", "test-mockitoKotlin", "test-testCore", "test-archCoreTesting", "test-kotlinCoroutines"]
+map-test = ["test-mockitoCore", "test-mockitoKotlin", "test-turbine", "test-archCoreTesting", "test-kotlinCoroutines"]
 table-implementation = ["kotlin-serialization-json", "androidx-appcompat", "androidx-activity-compose", "androidx-compose", "androidx-compose-constraintlayout", "androidx-compose-preview", "androidx-compose-ui", "androidx-compose-livedata"]
 table-debugImplementation = ["androidx-compose-uitooling", "test-ui-test-manifest"]
 table-test = ["test-junit"]
 table-androidTest = ["test-compose-ui-test", "test-uiautomator", "test-junitKtx", "test-espresso"]
 stock-implementation = ["androidx-activity-compose", "androidx-annotation", "rx-relay", "security-openId", "androidx-preferenceKtx", "androidx-work", "androidx-activityKtx", "androidx-lifecycle-viewmodel-compose", "analytics-customactivityoncrash"]
 stock-core = ["desugar"]
-stock-test = ["test-mockitoKotlin", "test-mockitoInline", "test-archCoreTesting", "test-javafaker", "test-kotlinCoroutines"]
+stock-test = ["test-mockitoCore", "test-mockitoKotlin", "test-archCoreTesting", "test-javafaker", "test-kotlinCoroutines"]
