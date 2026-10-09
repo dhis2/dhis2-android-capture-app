@@ -405,8 +405,11 @@ class TeiDashboardMobileActivity :
                 }
 
                 TEIDashboardItems.NOTES -> {
+                    val programUid = programUid ?: return
+                    val teiUid = teiUid ?: return
+                    val enrollmentUid = enrollmentUid ?: return
                     presenter.trackDashboardNotes()
-                    NotesFragment.newTrackerInstance(programUid!!, teiUid!!)
+                    NotesFragment.newTrackerInstance(programUid, teiUid, enrollmentUid)
                 }
             }
 

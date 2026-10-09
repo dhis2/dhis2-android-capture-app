@@ -31,7 +31,14 @@ class TeiDashboardPageConfiguratorTest {
     }
 
     @Test
-    fun `Should display the notes screen`() {
+    fun `Should display the notes screen if a program is selected`() {
+        whenever(dashboardRepository.isProgramSelected()) doReturn true
         assertTrue(pageConfigurator.displayNotes())
+    }
+
+    @Test
+    fun `Should not display the notes screen if no program is selected`() {
+        whenever(dashboardRepository.isProgramSelected()) doReturn false
+        assertTrue(!pageConfigurator.displayNotes())
     }
 }

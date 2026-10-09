@@ -5,7 +5,6 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.ObjectWithUid
-import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.note.Note
 import org.hisp.dhis.android.core.program.Program
 import org.junit.Before
@@ -20,19 +19,16 @@ class NotesRepositoryTest {
     private lateinit var repository: NotesRepository
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val programUid = UUID.randomUUID().toString()
+    private val enrollmentUid = UUID.randomUUID().toString()
 
     @Before
     fun setUp() {
-        repository = NotesRepository(d2, programUid)
+        repository = NotesRepository(d2, programUid, enrollmentUid)
     }
 
     @Test
     fun `Should return notes for TEI enrollment`() {
         val notes = listOf(dummyNote(), dummyNote())
-        val teiUid = UUID.randomUUID().toString()
-        val enrollmentUid = UUID.randomUUID().toString()
-
-        mockEnrollment(teiUid, enrollmentUid)
 
         whenever(
             d2
@@ -50,7 +46,7 @@ class NotesRepositoryTest {
                 .rxGet(),
         ) doReturn Single.just(notes)
 
-        val testObserver = repository.getEnrollmentNotes(teiUid).test()
+        val testObserver = repository.getEnrollmentNotes().test()
 
         testObserver.assertNoErrors()
         testObserver.assertValueCount(1)
@@ -127,60 +123,4 @@ class NotesRepositoryTest {
             .uid(UUID.randomUUID().toString())
             .value("Note")
             .build()
-
-    private fun mockEnrollment(
-        teiUid: String,
-        enrollmentUid: String,
-    ) {
-        whenever(
-            d2
-                .enrollmentModule()
-                .enrollments()
-                .byProgram()
-                .eq(programUid),
-        ) doReturn mock()
-        whenever(
-            d2
-                .enrollmentModule()
-                .enrollments()
-                .byProgram()
-                .eq(programUid)
-                .byTrackedEntityInstance(),
-        ) doReturn mock()
-        whenever(
-            d2
-                .enrollmentModule()
-                .enrollments()
-                .byProgram()
-                .eq(programUid)
-                .byTrackedEntityInstance()
-                .eq(teiUid),
-        ) doReturn mock()
-        whenever(
-            d2
-                .enrollmentModule()
-                .enrollments()
-                .byProgram()
-                .eq(programUid)
-                .byTrackedEntityInstance()
-                .eq(teiUid)
-                .one(),
-        ) doReturn mock()
-        whenever(
-            d2
-                .enrollmentModule()
-                .enrollments()
-                .byProgram()
-                .eq(programUid)
-                .byTrackedEntityInstance()
-                .eq(teiUid)
-                .one()
-                .blockingGet(),
-        ) doReturn
-            Enrollment
-                .builder()
-                .uid(enrollmentUid)
-                .attributeOptionCombo("attributeOptionComboUid")
-                .build()
-    }
 }
