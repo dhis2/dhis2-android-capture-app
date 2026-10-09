@@ -7,7 +7,8 @@ object BaseMapStyleBuilder {
         attribution: String,
         overlays: List<Overlay>,
         isDefault: Boolean,
-    ) = if (tileUrls.size > 1) {
+        isVectorStyle: Boolean = false,
+    ) = if (!isVectorStyle) {
         BaseMapStyle(
             version = 8,
             sources =

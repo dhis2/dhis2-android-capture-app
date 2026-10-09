@@ -9,10 +9,12 @@ import org.hisp.dhis.android.core.map.layer.MapLayer
 import org.hisp.dhis.android.core.map.layer.MapLayerCollectionRepository
 import org.hisp.dhis.android.core.map.layer.MapLayerImageryProvider
 import org.hisp.dhis.android.core.map.layer.MapLayerPosition
+import org.hisp.dhis.android.core.map.layer.MapService
 import org.hisp.dhis.android.core.settings.DataSetConfigurationSetting
 import org.hisp.dhis.android.core.settings.ProgramConfigurationSetting
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito
@@ -213,6 +215,48 @@ class MapStyleConfigurationTest {
     }
 
     @Test
+    fun shouldUseStyleUrlForVectorStyleBasemaps() {
+        mockBasemaps(
+            d2,
+            listOf(
+                mockMapLayer(
+                    displayName = "vector basemap",
+                    imageUrl = "https://test.test/styles/positron",
+                    subDomainPlaceHolder = null,
+                    subdomains = null,
+                    imaginaryProviders =
+                        listOf(
+                            mockImaginaryProvider("© Maplibre"),
+                        ),
+                    mapService = MapService.VECTOR_STYLE,
+                ),
+                mockMapLayer(
+                    displayName = "raster basemap",
+                    imageUrl = "https://test.test/{z}/{x}/{y}.png",
+                    subDomainPlaceHolder = null,
+                    subdomains = null,
+                    imaginaryProviders =
+                        listOf(
+                            mockImaginaryProvider("© Maplibre"),
+                        ),
+                    mapService = MapService.XYZ,
+                ),
+            ),
+        )
+
+        mockOverlays(d2, emptyList())
+
+        mapStyleConfiguration.fetchMapStyles().let { result ->
+            assertEquals("https://test.test/styles/positron", result[0].styleUrl)
+            assertNull(result[1].styleUrl)
+            assertEquals(
+                listOf("https://test.test/{z}/{x}/{y}.png"),
+                result[1].sources["raster-tiles"]?.tiles,
+            )
+        }
+    }
+
+    @Test
     fun shouldCaptureManuallyForProgram() {
         whenever(programConfigurationSetting.disableManualLocation()) doReturn false
 
@@ -308,6 +352,7 @@ class MapStyleConfigurationTest {
         subDomainPlaceHolder: String?,
         subdomains: List<String>?,
         imaginaryProviders: List<MapLayerImageryProvider>,
+        mapService: MapService? = null,
     ) = MapLayer
         .builder()
         .displayName(displayName)
@@ -319,6 +364,7 @@ class MapStyleConfigurationTest {
         .uid(displayName)
         .name(displayName)
         .external(false)
+        .mapService(mapService)
         .build()
 
     private fun mockImaginaryProvider(attribution: String) =
