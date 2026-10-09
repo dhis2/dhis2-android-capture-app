@@ -489,6 +489,7 @@
     <string name="blocked_by_completion">This data is not editable because is marked as completed</string>
     <string name="edition_expired">This data is not editable because its edition time is expired</string>
     <string name="edition_no_write_access">You do not have permission to edit this data</string>
+    <string name="edition_event_not_found">This event is not available on this device</string>
     <string name="event_date_not_in_orgunit_range">This data is not editable because the %s is closed</string>
     <string name="edition_no_catcombo_access">You do not have permission to edit this data</string>
     <string name="edition_orgunit_user_scope">You cannot edit data from this %s</string>
