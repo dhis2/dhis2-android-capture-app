@@ -1,7 +1,8 @@
 # DHIS2 Android Capture App - Agent Guidelines
 
-This is a **Kotlin Multiplatform (KMP)** Android project migrating to Compose Multiplatform,
-targeting Android, Desktop, and iOS. The app uses MVVM + Repository + Use Case architecture.
+This is a **Kotlin Multiplatform (KMP)** Android project migrating to Compose Multiplatform.
+KMP modules target **Android and Desktop**; Desktop is being added to every KMP module to ease
+future targets. **iOS is not implemented.** The app uses MVVM + Repository + Use Case architecture.
 
 ---
 
@@ -108,18 +109,20 @@ Config in `.editorconfig`:
 ### Layer structure (per feature module)
 ```
 domain/
-  model/          # Pure data classes / sealed states
+  model/          # Domain models: pure data classes / sealed types, no SDK types
   usecase/        # Business logic, implements UseCase<R, T>
-  repository/     # Repository interfaces
-data/
-  repository/     # Repository implementations (androidMain)
+data/             # Repository interfaces (commonMain) and their implementations,
+                  # one per target (androidMain, desktopMain)
 ui/
-  state/          # UiState sealed classes
+  state/          # UiState and other UI models
   viewmodel/      # ViewModels (expose StateFlow<UiState>)
   screen/         # @Composable screens
   component/      # Reusable composables
 di/               # Koin module definitions
 ```
+
+Domain models go in `domain/model/`, UI models in `ui/state/`. Do not add new top-level
+`model/` packages.
 
 ### UseCase interface (commonskmm)
 New use cases implement `UseCase<in R, out T>` from
@@ -138,26 +141,36 @@ It is the dominant pattern already — 33 implementations across `app` (14), `sy
 `login` (6), `tracker` (3) and `commonskmm` (1). Where it is not used, a plain
 `suspend operator fun invoke` returning `Result<T>` is accepted.
 
+**Naming:** name use cases as an action, **without** the `UseCase` suffix (`SavePin`,
+`SyncDataSet`, `FetchSearchParameters`). Existing `…UseCase` classes are renamed when touched.
+
 Implementation pattern:
 ```kotlin
-class SavePinUseCase(private val repo: SessionRepository) : UseCase<String, Unit> {
+class SavePin(private val repo: SessionRepository) : UseCase<String, Unit> {
     override suspend fun invoke(input: String): Result<Unit> =
         try {
             repo.savePin(input)
             Result.success(Unit)
         } catch (cancellation: CancellationException) {
             throw cancellation
-        } catch (error: Throwable) {
+        } catch (error: DomainError) {
+            Result.failure(error)
+        } catch (error: Exception) {
             Result.failure(error)
         }
 }
 ```
 
-**Catch `Throwable`, not `Exception`.** `DomainError` is declared
-`sealed class DomainError : Throwable()`, so `catch (e: Exception)` does **not**
-match it: a mapped SDK error escapes the `try` entirely and propagates to a caller
-that was promised a `Result`. Rethrow `CancellationException` first, as coroutine
-convention requires.
+**A use case never throws; catch in this order:**
+1. Rethrow `CancellationException`, as coroutine convention requires.
+2. Catch `DomainError`. It is declared `sealed class DomainError : Throwable()`, so
+   `catch (e: Exception)` does **not** match it and a mapped SDK error would escape to a
+   caller that was promised a `Result`.
+3. Catch `Exception` for everything else.
+
+Do not catch `Throwable` (it turns JVM `Error`s such as `OutOfMemoryError` into a `Result`)
+and do not use `runCatching` (it swallows `CancellationException`). ANDROAPP-7892 plans to make
+`DomainError` extend `Exception`, which will reduce this to a single `catch (Exception)`.
 
 ### ViewModel pattern
 - Use `launchUseCase { }` (not `viewModelScope.launch`) — it wraps `CoroutineTracker`
@@ -165,9 +178,22 @@ convention requires.
   **Required** in KMP-module ViewModels and in any ViewModel with instrumented
   coverage. The ~140 existing `viewModelScope.launch` sites in legacy modules are
   not being migrated; do not "fix" them as drive-by changes
+- Repositories are main-safe, so `launchUseCase` usually needs no dispatcher. If the
+  ViewModel itself does heavy work, pass the **injected** `Dispatcher` from `commonskmm`:
+  `launchUseCase(dispatcher.default) { }`. Never use `Dispatchers.*` directly, so tests can
+  replace it
 - Expose state via `StateFlow`; collect in composables with `collectAsState()`
 
 ### Repository pattern (Android implementations)
+The repository interface is declared in `data/` in `commonMain`; each target implements it in
+its own source set.
+
+**The repository implementation owns the dispatcher.** Switch to `dispatcher.io` (the injected
+`org.dhis2.mobile.commons.coroutine.Dispatcher`) for SDK calls so every repository function is
+main-safe; use cases and ViewModels do not switch dispatchers for I/O. New code uses only the
+`commonskmm` `Dispatcher` — not the legacy `commons` `DispatcherProvider` nor the `aggregates`
+`Dispatcher`.
+
 Wrap SDK calls in `withDomainErrors { }` / `withDomainErrorsAsResult { }` from
 `org.dhis2.mobile.commons.error` rather than catching `D2Error` inline:
 
@@ -175,8 +201,18 @@ They are extension functions on `DomainErrorMapper`, so call them on the injecte
 mapper:
 
 ```kotlin
-suspend fun getData(): List<Item> = domainErrorMapper.withDomainErrors {
-    d2.someModule().someRepository().blockingGet().map(::toDomain)
+override suspend fun uploadTei(enrollmentInfo: EnrollmentInfo) {
+    withContext(dispatcher.io) {
+        domainErrorMapper.withDomainErrors {
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstances()
+                .byUid()
+                .eq(enrollmentInfo.teiUid)
+                .byProgramUids(listOf(enrollmentInfo.programUid))
+                .blockingUpload()
+        }
+    }
 }
 ```
 
@@ -186,13 +222,13 @@ call. The wrappers walk the cause chain (`Throwable.asD2Error()`, depth 5, with 
 self-reference guard) before mapping, so both shapes are handled.
 
 Use `withDomainErrorsAsResult { }` when the call reports failure as a `Result`
-instead of throwing. `SyncDataSetRepositoryImpl` is a worked example.
+instead of throwing. `SyncTeiRepositoryImpl` is a worked example.
 
 ### Dependency Injection (Koin 4.x)
 ```kotlin
 val featureModule = module {
     single<MyRepository> { MyRepositoryImpl(get(), get()) }
-    factory { MyUseCase(get()) }
+    factory { MyAction(get()) }  // use case, no `UseCase` suffix
     viewModel { MyViewModel(get()) }
 }
 ```
