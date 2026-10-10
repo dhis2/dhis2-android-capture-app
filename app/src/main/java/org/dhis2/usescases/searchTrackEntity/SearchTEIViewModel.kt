@@ -452,7 +452,7 @@ class SearchTEIViewModel(
     }
 
     fun refreshData() {
-        if (shouldDisplayFrontPageList()) performSearch()
+        if (shouldDisplayFrontPageList() || queryDataList.isNotEmpty()) performSearch()
     }
 
     private fun updateQuery(

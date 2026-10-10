@@ -325,7 +325,7 @@ class TeiDashboardMobileActivity :
     }
 
     private fun setEditButton() {
-        binding.editButton.setButtonContent(presenter.teType) {
+        binding.editButton.setButtonContent(dashboardViewModel.teTypeName) {
             enrollmentUid?.let { enrollmentUid ->
                 programUid?.let { programUid ->
                     detailsLauncher.launch(
@@ -689,7 +689,9 @@ class TeiDashboardMobileActivity :
                     title =
                         getString(
                             R.string.transfer_tei_org_sheet_title,
-                            presenter.teType.lowercase(),
+                            dashboardViewModel.teTypeName.value
+                                .orEmpty()
+                                .lowercase(),
                         ),
                     subtitle =
                         getString(
@@ -723,9 +725,10 @@ class TeiDashboardMobileActivity :
     }
 
     private fun showDeleteTEIConfirmationDialog() {
+        val teTypeName = dashboardViewModel.teTypeName.value.orEmpty()
         DeleteBottomSheetDialog(
-            title = getString(R.string.delete_tei_dialog_title).format(presenter.teType),
-            description = getString(R.string.delete_tei_dialog_message).format(presenter.teType),
+            title = getString(R.string.delete_tei_dialog_title).format(teTypeName),
+            description = getString(R.string.delete_tei_dialog_message).format(teTypeName),
             mainButtonText = getString(R.string.delete),
             deleteForever = true,
             onMainButtonClick = {
