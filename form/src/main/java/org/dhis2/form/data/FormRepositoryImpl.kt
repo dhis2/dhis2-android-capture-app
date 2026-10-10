@@ -16,6 +16,7 @@ import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.StoreResult
+import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.mobile.commons.model.CustomIntentRequestArgumentModel
@@ -42,6 +43,7 @@ class FormRepositoryImpl(
     private var completionPercentage: Float = 0f
     private val itemsWithError: MutableList<RowAction> = mutableListOf()
     private val mandatoryItemsWithoutValue: MutableMap<String, String> = mutableMapOf()
+    private var mandatoryFieldUids: Set<String> = emptySet()
     private var openedSectionUid: String? = null
     private var itemList: List<FieldUiModel> = emptyList()
     private var focusedItemId: String? = null
@@ -754,6 +756,12 @@ class FormRepositoryImpl(
 
     private suspend fun List<FieldUiModel>.mergeListWithErrorFields(fieldsWithError: List<RowAction>): List<FieldUiModel> {
         mandatoryItemsWithoutValue.clear()
+        mandatoryFieldUids =
+            filter {
+                it.mandatory &&
+                    it.programStageSection != EventRepository.EVENT_DETAILS_SECTION_UID &&
+                    it.programStageSection != EventRepository.EVENT_CATEGORY_COMBO_SECTION_UID
+            }.map { it.uid }.toSet()
         val mergedList =
             this.map { item ->
                 if (hasMandatoryWarnings(item)) {
@@ -792,11 +800,27 @@ class FormRepositoryImpl(
         }
     }
 
+    /**
+     * An emptied mandatory field is only kept in memory when the stage validation strategy is
+     * ON_UPDATE_AND_INSERT, so the stored event is never left without its mandatory values.
+     */
+    private fun keepsEmptyMandatoryValueInMemory(
+        uid: String,
+        value: String?,
+    ): Boolean =
+        value.isNullOrEmpty() &&
+            uid in mandatoryFieldUids &&
+            dataEntryRepository.isEvent() &&
+            dataEntryRepository.validationStrategy() == ValidationStrategy.ON_UPDATE_AND_INSERT
+
     override fun save(
         id: String,
         value: String?,
         extraData: String?,
     ): StoreResult {
+        if (keepsEmptyMandatoryValueInMemory(id, value)) {
+            return StoreResult(id, ValueStoreResult.VALUE_HAS_NOT_CHANGED)
+        }
         val result = formValueStore.save(id, value, extraData)
         if (result.contextDataChanged()) ruleEngineRepository?.refreshContext()
         return result

@@ -58,7 +58,7 @@ class EventCaptureContract {
 
         fun isEnrollmentOpen(): Boolean
 
-        fun deleteEvent()
+        fun deleteEvent(onDeleted: (() -> Unit)? = null)
 
         fun skipEvent()
 
