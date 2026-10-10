@@ -20,21 +20,20 @@ annotation = "1.9.1"
 cardview = "1.0.0"
 legacysupport = "1.0.0"
 constraintlayout = "2.2.2"
-lifecycle = "2.9.4"
-work = "2.10.5"
+lifecycle = "2.10.0"
+work = "2.11.1"
 exif = "1.4.2"
 corektx = "1.17.0"
 fragmentktx = "1.8.9"
 recyclerview = "1.4.0"
-compose = "1.10.6"
 composePluginVersion = "1.10.3"
 composePaging = "3.4.2"
 pagingTesting = "3.4.2"
+composeBom = "2026.03.01"
 composeConstraintLayout = "1.1.2"
-activityCompose = "1.11.0"
-viewModelCompose = "2.9.4"
+activityCompose = "1.12.4"
+viewModelCompose = "2.10.0"
 material = "1.13.0"
-material3 = "1.4.0"
 fancyshowcase = "1.4.0"
 lottie = "6.6.10"
 rxjava = "2.2.21"
@@ -78,10 +77,8 @@ preference_ktx = "1.2.1"
 uiautomator = "2.3.0"
 maplibre = "11.13.5"
 maplibregeogson = "6.0.1"
-material3WindowSize = "1.4.0"
 material3WindowSizeCompose = "1.8.2"
-material3AdaptiveAndroid = "1.1.0"
-koin = "4.1.1"
+koinBom = "4.2.2"
 junitJupiter = "6.0.3"
 ktxml = "1.0.0"
 atomicfu = "0.29.0"
@@ -114,12 +111,13 @@ androidx-fragmentKtx = { group = "androidx.fragment", name = "fragment-ktx", ver
 androidx-viewModelKtx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "viewModelCompose" }
 androidx-recyclerView = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
-androidx-compose = { group = "androidx.compose.material", name = "material", version.ref = "compose" }
-androidx-compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compose" }
+androidx-compose = { group = "androidx.compose.material", name = "material" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-compose-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "composeConstraintLayout" }
-androidx-compose-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "compose" }
-androidx-compose-uitooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "compose" }
-androidx-compose-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "compose" }
+androidx-compose-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata" }
+androidx-compose-uitooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-compose-paging = { group = "androidx.paging", name = "paging-compose", version.ref = "composePaging" }
 lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
@@ -134,10 +132,10 @@ androidx-work = { group = "androidx.work", name = "work-runtime", version.ref = 
 androidx-workrx = { group = "androidx.work", name = "work-rxjava2", version.ref = "work" }
 androidx-exifinterface = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "exif" }
 androidx-preferenceKtx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preference_ktx" }
-androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
-androidx-material3-window = { group = "androidx.compose.material3", name = "material3-window-size-class-android", version.ref = "material3WindowSize" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-material3-window = { group = "androidx.compose.material3", name = "material3-window-size-class-android" }
 compose-material3-window = { group = "org.jetbrains.compose.material3", name = "material3-window-size-class", version.ref = "material3WindowSizeCompose" }
-androidx-material3-adaptative-android = { group = "androidx.compose.material3.adaptive", name = "adaptive-android", version.ref = "material3AdaptiveAndroid" }
+androidx-material3-adaptative-android = { group = "androidx.compose.material3.adaptive", name = "adaptive-android" }
 androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
 kotlin-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxserialization" }
@@ -193,9 +191,9 @@ test-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", 
 test-support-annotations = { group = "com.android.support", name = "support-annotations", version = "28.0.0" }
 test-rx2-idler = { group = "com.squareup.rx.idler", name = "rx2-idler", version = "0.11.0" }
 test-kotlinCoroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxcoroutines" }
-test-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "compose" }
-test-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version.ref = "compose" }
-test-compose-ui-test-junit4-android = { group = "androidx.compose.ui", name = "ui-test-junit4-android", version.ref = "compose" }
+test-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+test-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+test-compose-ui-test-junit4-android = { group = "androidx.compose.ui", name = "ui-test-junit4-android" }
 test-hamcrest = { group = "org.hamcrest", name = "hamcrest", version.ref = "hamcrest" }
 test-turbine = { group = "app.cash.turbine", name = "turbine", version = "1.2.1" }
 test-javafaker = { group = "com.github.javafaker", name = "javafaker", version.ref = "javafaker" }
@@ -203,15 +201,16 @@ maps-maplibre = { group = "org.maplibre.gl", name = "android-sdk", version.ref =
 maps-geojson = { group = "org.maplibre.gl", name = "android-sdk-geojson", version.ref = "maplibregeogson" }
 maps-markerViewPlugin = { group = "org.maplibre.gl", name = "android-plugin-markerview-v9", version.ref = "maplibremarkerview" }
 maps-annotationPlugin = { group = "org.maplibre.gl", name = "android-plugin-annotation-v9", version.ref = "maplibreannotation" }
-koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
-koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
-koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
-koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
-koin-composeVM = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
-koin-work = { module = "io.insert-koin:koin-androidx-workmanager", version.ref = "koin" }
-koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
-koin-test-junit5 = { module = "io.insert-koin:koin-test-junit5", version.ref = "koin" }
-koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4", version.ref = "koin" }
+koin-bom = { group = "io.insert-koin", name = "koin-bom", version.ref = "koinBom" }
+koin-core = { group = "io.insert-koin", name = "koin-core" }
+koin-android = { group = "io.insert-koin", name = "koin-android" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
+koin-compose = { module = "io.insert-koin:koin-compose" }
+koin-composeVM = { module = "io.insert-koin:koin-compose-viewmodel" }
+koin-work = { module = "io.insert-koin:koin-androidx-workmanager" }
+koin-test = { module = "io.insert-koin:koin-test" }
+koin-test-junit5 = { module = "io.insert-koin:koin-test-junit5" }
+koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 ktxml = { module = "org.kobjects.ktxml:core", version.ref = "ktxml" }

@@ -332,6 +332,8 @@ dependencies {
     implementation(project(":login"))
     implementation(project(":sync"))
 
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(platform(libs.koin.bom))
     implementation(libs.security.conscrypt)
     implementation(libs.security.rootbeer)
     implementation(libs.security.openId)
@@ -375,6 +377,8 @@ dependencies {
     testImplementation(libs.test.androidx.paging)
     androidTestUtil(libs.test.orchestrator)
 
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(platform(libs.koin.bom))
     androidTestImplementation(libs.test.testRunner)
     androidTestImplementation(libs.test.espresso.intents)
     androidTestImplementation(libs.test.espresso.contrib)
