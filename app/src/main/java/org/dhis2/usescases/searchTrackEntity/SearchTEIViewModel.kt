@@ -336,6 +336,7 @@ class SearchTEIViewModel(
                     searchRepository
                         .getProgram(initialProgramUid)
                         ?.displayFrontPageList() == true,
+                canSync = !initialProgramUid.isNullOrEmpty(),
                 canCreateWithoutSearch = searchRepository.canCreateInProgramWithoutSearch(),
                 isSearching = searching,
                 searchForm =
@@ -373,6 +374,7 @@ class SearchTEIViewModel(
                         .getProgram(initialProgramUid)
                         ?.displayFrontPageList()
                         ?: false,
+                canSync = !initialProgramUid.isNullOrEmpty(),
                 canCreateWithoutSearch = searchRepository.canCreateInProgramWithoutSearch(),
                 isSearching = searching,
                 searchForm =
@@ -413,6 +415,7 @@ class SearchTEIViewModel(
                         .getProgram(initialProgramUid)
                         ?.displayFrontPageList()
                         ?: false,
+                canSync = !initialProgramUid.isNullOrEmpty(),
                 canCreateWithoutSearch = searchRepository.canCreateInProgramWithoutSearch(),
                 isSearching = searching,
                 searchForm =
