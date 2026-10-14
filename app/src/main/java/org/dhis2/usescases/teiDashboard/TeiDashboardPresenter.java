@@ -55,11 +55,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public String getTEType() {
-        return dashboardRepository.getTETypeName();
-    }
-
-    @Override
     public void trackDashboardAnalytics() {
         matomoAnalyticsController.trackEvent(DASHBOARD, OPEN_ANALYTICS, CLICK);
     }
