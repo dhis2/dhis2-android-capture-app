@@ -77,6 +77,8 @@ class FormView : Fragment() {
     private var onLoadingListener: ((loading: Boolean) -> Unit)? = null
     private var onFocused: (() -> Unit)? = null
     private var onFinishDataEntry: (() -> Unit)? = null
+    private var pendingLeaveCallback: (() -> Unit)? = null
+    private var discardingChanges = false
     private var onActivityForResult: (() -> Unit)? = null
     private var completionListener: ((percentage: Float) -> Unit)? = null
     private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
@@ -203,7 +205,7 @@ class FormView : Fragment() {
                     viewModel.actionsChannel.collect { action ->
                         when (action) {
                             FormViewModel.FormActions.OnFinish ->
-                                onFinishDataEntry?.invoke()
+                                leaveForm()
 
                             is FormViewModel.FormActions.ShowResultDialog ->
                                 resultDialogData = action
@@ -225,24 +227,12 @@ class FormView : Fragment() {
                         model = it.model,
                         allowDiscard = it.allowDiscard,
                         fieldsWithIssues = it.fieldsWithIssues,
-                        onPrimaryButtonClick = {
-                            when (it.model.mainButton) {
-                                DialogButtonStyle.CompleteButton -> {
-                                    viewModel.completeEvent()
-                                    onFinishDataEntry?.invoke()
-                                }
-
-                                else -> {
-                                    // Do nothing
-                                }
-                            }
-                        },
-                        onSecondaryButtonClick = {
-                            onFinishDataEntry?.invoke()
-                        },
-                        onDiscardChanges = viewModel::discardChanges,
+                        onPrimaryButtonClick = { onResultDialogMainButtonClick(it.model.mainButton) },
+                        onSecondaryButtonClick = ::onResultDialogSecondaryButtonClick,
+                        onDiscardChanges = ::onDiscardChanges,
                         onDismiss = {
                             resultDialogData = null
+                            onResultDialogDismissed()
                         },
                     )
                 }
@@ -558,8 +548,51 @@ class FormView : Fragment() {
         }
     }
 
-    fun onBackPressed() {
-        viewModel.runDataIntegrityCheck(backButtonPressed = true)
+    /**
+     * Runs the form validation flow before [onReadyToLeave]. With [allowDiscard] set to false the
+     * flow behaves as saving: the user can only continue when the validation strategy allows it.
+     */
+    fun onBackPressed(
+        onReadyToLeave: (() -> Unit)? = null,
+        allowDiscard: Boolean = true,
+    ) {
+        pendingLeaveCallback = onReadyToLeave
+        viewModel.runDataIntegrityCheck(backButtonPressed = allowDiscard, forNavigationAway = onReadyToLeave != null)
+    }
+
+    private fun onResultDialogMainButtonClick(mainButton: DialogButtonStyle?) {
+        when (mainButton) {
+            DialogButtonStyle.CompleteButton -> {
+                viewModel.completeEvent()
+                leaveForm()
+            }
+
+            else -> {
+                // Do nothing, user must review: pending navigation is cancelled
+                pendingLeaveCallback = null
+            }
+        }
+    }
+
+    private fun onResultDialogSecondaryButtonClick() {
+        // When discarding, the form is left once the changes are reverted
+        if (!discardingChanges) leaveForm()
+    }
+
+    private fun onDiscardChanges() {
+        discardingChanges = true
+        viewModel.discardChanges()
+    }
+
+    private fun onResultDialogDismissed() {
+        if (!discardingChanges) pendingLeaveCallback = null
+    }
+
+    private fun leaveForm() {
+        val callback = pendingLeaveCallback
+        pendingLeaveCallback = null
+        discardingChanges = false
+        (callback ?: onFinishDataEntry)?.invoke()
     }
 
     fun onSaveClick() {
