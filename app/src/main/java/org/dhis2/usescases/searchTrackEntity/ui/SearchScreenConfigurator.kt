@@ -41,7 +41,7 @@ class SearchScreenConfigurator(
         }
 
         binding.clearFilters?.display(searchConfiguration.displayResetFiltersButton())
-        syncButtonVisibility(!searchConfiguration.searchForm.isOpened)
+        syncButtonVisibility(searchConfiguration.canSync && !searchConfiguration.searchForm.isOpened)
         setFiltersVisibility(!searchConfiguration.searchForm.isOpened)
     }
 
@@ -52,7 +52,7 @@ class SearchScreenConfigurator(
             openSearch()
         }
 
-        syncButtonVisibility(true)
+        syncButtonVisibility(searchConfiguration.canSync)
         setFiltersVisibility(true)
     }
 
