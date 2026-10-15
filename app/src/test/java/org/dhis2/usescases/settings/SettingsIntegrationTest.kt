@@ -38,6 +38,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class SettingsIntegrationTest {
@@ -169,6 +170,29 @@ class SettingsIntegrationTest {
                 assert(awaitItem()?.accountType == AccountType.OAUTH)
                 assert(awaitItem()?.twoFAStatus is TwoFAStatus.Disabled)
             }
+        }
+
+    @Test
+    fun `should display TFA without status when there is no connection`() =
+        runTest {
+            // Given TFA configured but the status cannot be checked
+            whenever(settingsRepository.authType()) doReturn AuthorizationType.OAUTH2
+            whenever(twoFAStatus.invoke()) doReturn TwoFAStatus.NoConnection
+
+            // When set settings config
+            buildPresenter()
+
+            // Then TFA should be displayed with no connection status
+            syncManagerPresenter.settingsState.test {
+                assert(awaitItem() == null)
+                val settingsState = awaitItem()
+                assert(settingsState?.accountType == AccountType.OAUTH)
+                assert(settingsState?.twoFAStatus is TwoFAStatus.NoConnection)
+                // NoConnection is the default status, so checking it emits no new state
+                testingDispatcher.scheduler.advanceUntilIdle()
+                expectNoEvents()
+            }
+            verify(twoFAStatus).invoke()
         }
 
     @Test

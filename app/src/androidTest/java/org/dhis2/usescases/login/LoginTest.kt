@@ -40,6 +40,11 @@ class LoginTest : BaseTest() {
         D2Manager.setCredentials(KeyStoreRobot.KEYSTORE_USERNAME, KeyStoreRobot.PASSWORD)
     }
 
+    /**
+     * End-to-end legacy login. Also covers the OAuth-disabled path of ANDROAPP-7709: the server
+     * exposes no OAuth configuration, so the username and password flow is triggered.
+     * The OAuth-enabled path is covered in LoginScreenIntegrationTest.
+     */
     @Test
     fun shouldLoginWithoutOauth() {
         enableIntents()
