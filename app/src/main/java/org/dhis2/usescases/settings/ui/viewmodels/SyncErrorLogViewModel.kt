@@ -48,45 +48,57 @@ class SyncErrorLogViewModel(
     }
 
     fun initSelectionMode() {
-        launchUseCase(dispatchers.io()) {
-            _errorLogUiState.update {
-                SyncErrorLogUiState.Selection(errorList = (it as SyncErrorLogUiState.Log).errorList)
+        _errorLogUiState.update { state ->
+            when (state) {
+                is SyncErrorLogUiState.Log -> SyncErrorLogUiState.Selection(errorList = state.errorList)
+                else -> state
             }
         }
     }
 
     fun exitSelectionMode() {
-        launchUseCase(dispatchers.io()) {
-            _errorLogUiState.update {
-                SyncErrorLogUiState.Log(
-                    errorList =
-                        (it as SyncErrorLogUiState.Selection).errorList.map { errorModel ->
-                            errorModel.copy(isSelected = false)
-                        },
-                )
+        _errorLogUiState.update { state ->
+            when (state) {
+                is SyncErrorLogUiState.Selection ->
+                    SyncErrorLogUiState.Log(
+                        errorList = state.errorList.map { it.copy(isSelected = false) },
+                    )
+
+                else -> state
             }
         }
     }
 
+    /**
+     * Toggles the item at [selectedIndex]. The card fires this on long press even outside
+     * selection mode, so from [SyncErrorLogUiState.Log] it enters selection mode with the
+     * item selected.
+     */
     fun setSelected(selectedIndex: Int) {
-        launchUseCase(dispatchers.io()) {
-            _errorLogUiState.update {
-                val updatedList =
-                    (it as SyncErrorLogUiState.Selection).errorList.mapIndexed { index, model ->
+        _errorLogUiState.update { state ->
+            val errorList =
+                when (state) {
+                    is SyncErrorLogUiState.Log -> state.errorList
+                    is SyncErrorLogUiState.Selection -> state.errorList
+                    SyncErrorLogUiState.Loading -> return@update state
+                }
+            SyncErrorLogUiState.Selection(
+                errorList =
+                    errorList.mapIndexed { index, model ->
                         if (index == selectedIndex) {
                             model.copy(isSelected = !model.isSelected)
                         } else {
                             model
                         }
-                    }
-                SyncErrorLogUiState.Selection(errorList = updatedList)
-            }
+                    },
+            )
         }
     }
 
     fun onShareLog() {
+        val state = errorLogUiState.value as? SyncErrorLogUiState.Selection ?: return
         launchUseCase(dispatchers.io()) {
-            getSharedData((errorLogUiState.value as SyncErrorLogUiState.Selection).errorList)
+            getSharedData(state.errorList)
                 .onSuccess {
                     _shareEvent.emit(it)
                 }

@@ -19,6 +19,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -133,6 +134,62 @@ class SyncErrorLogViewModelTest {
                 assertEquals(false, item.errorList[0].isSelected)
                 assertEquals(true, item.errorList[1].isSelected)
             }
+        }
+
+    // Regression: the list card fires onCardSelected on long press while still in Log state,
+    // which used to crash with a ClassCastException (Log cannot be cast to Selection).
+    @Test
+    fun `should enter selection mode with item selected when selecting from log state`() =
+        runTest {
+            val secondError = errorModel.copy(errorCode = "2")
+            whenever(getSyncErrors.invoke()) doReturn
+                Result.success(
+                    listOf(
+                        errorModel,
+                        secondError,
+                    ),
+                )
+
+            viewModel.errorLogUiState.test {
+                awaitItem() // Log
+
+                viewModel.setSelected(1)
+
+                val item = awaitItem() as SyncErrorLogUiState.Selection
+                assertEquals(false, item.errorList[0].isSelected)
+                assertEquals(true, item.errorList[1].isSelected)
+            }
+        }
+
+    @Test
+    fun `should ignore exit selection mode when not in selection mode`() =
+        runTest {
+            whenever(getSyncErrors.invoke()) doReturn Result.success(listOf(errorModel))
+
+            viewModel.errorLogUiState.test {
+                awaitItem() // Log
+
+                viewModel.exitSelectionMode()
+
+                expectNoEvents()
+            }
+        }
+
+    @Test
+    fun `should not share when not in selection mode`() =
+        runTest {
+            whenever(getSyncErrors.invoke()) doReturn Result.success(listOf(errorModel))
+
+            viewModel.errorLogUiState.test {
+                awaitItem() // Log
+                cancelAndIgnoreRemainingEvents()
+            }
+
+            viewModel.shareEvent.test {
+                viewModel.onShareLog()
+                expectNoEvents()
+            }
+            verifyNoInteractions(getSharedData)
         }
 
     @Test
