@@ -60,7 +60,7 @@ class SettingsTest : BaseTest() {
             clickOnSyncParameters()
             checkEditPeriodIsDisableForParameters()
 
-            // Error log opens the ErrorDialog; dismiss it to return to Settings
+            // Error log opens the SyncErrorLogDialog; dismiss it to return to Settings
             clickOnOpenSyncErrorLog()
             checkLogViewIsDisplayed()
             pressBack()

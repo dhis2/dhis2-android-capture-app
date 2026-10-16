@@ -116,7 +116,6 @@ class SettingsIntegrationTest {
                 getSettingsState = getSettingsState,
                 updateSyncSettings = updateSyncSettings,
                 updateSmsResponse = updateSmsResponse,
-                getSyncErrors = getSyncErrors,
                 updateSmsModule = updateSmsModule,
                 deleteLocalData = deleteLocalData,
                 exportDatabase = exportDatabase,
