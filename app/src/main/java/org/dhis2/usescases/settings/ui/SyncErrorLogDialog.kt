@@ -49,10 +49,14 @@ import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalIn
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
-fun SyncErrorLogDialog(onDismiss: () -> Unit) {
-    val viewModel = koinViewModel<SyncErrorLogViewModel>()
+fun SyncErrorLogDialog(
+    errorLogType: ErrorLogType,
+    onDismiss: () -> Unit,
+) {
+    val viewModel = koinViewModel<SyncErrorLogViewModel> { parametersOf(errorLogType) }
     val uiState by viewModel.errorLogUiState.collectAsState()
     val shareEvent by viewModel.shareEvent.collectAsState(null)
 
@@ -86,7 +90,11 @@ fun SyncErrorLogDialog(onDismiss: () -> Unit) {
                     },
                     title = {
                         Text(
-                            text = stringResource(R.string.error_dialog_title),
+                            text =
+                                when (errorLogType) {
+                                    ErrorLogType.MetadataIntegrity -> stringResource(R.string.troubleshooting_metadata_integrity)
+                                    ErrorLogType.Sync -> stringResource(R.string.error_dialog_title)
+                                },
                             style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onPrimary,
                         )
@@ -225,9 +233,11 @@ private fun ErrorListItem(
                         text = errorItem.errorCode ?: "",
                     ),
                 description =
-                    ListCardDescriptionModel(
-                        text = errorItem.errorComponent ?: "",
-                    ),
+                    errorItem.errorComponent?.let {
+                        ListCardDescriptionModel(
+                            text = it,
+                        )
+                    },
                 lastUpdated = errorItem.creationDateLabel,
                 additionalInfoColumnState =
                     rememberAdditionalInfoColumnState(
