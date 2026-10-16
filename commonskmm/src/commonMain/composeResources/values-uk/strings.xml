@@ -45,7 +45,7 @@
     <string name="complete">Завершити</string>
     <string name="discard_changes">Відхилити внесені зміни</string>
     <string name="saved">Збережено!</string>
-    <string name="event_error_on_complete">У вас є кілька повідомлень про помилки. Бажаєте їх переглянути\?</string>
+    <string name="event_error_on_complete">У вас є кілька повідомлень про помилки. Бажаєте їх переглянути?</string>
     <string name="not_now">Не зараз</string>
     <string name="keep_editing">Продовжити редагування</string>
     <string name="event_can_be_completed">Ви бажаєте позначити цю форму як завершену?</string>
