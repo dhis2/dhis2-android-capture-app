@@ -334,6 +334,7 @@ dependencies {
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(platform(libs.koin.bom))
+    implementation(libs.dhis2.expressionparser)
     implementation(libs.security.conscrypt)
     implementation(libs.security.rootbeer)
     implementation(libs.security.openId)

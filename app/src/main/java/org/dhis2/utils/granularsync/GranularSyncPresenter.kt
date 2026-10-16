@@ -31,12 +31,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.dhis2.commons.Constants
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.sync.ConflictType.ALL
 import org.dhis2.commons.sync.ConflictType.DATA_SET
@@ -46,12 +46,15 @@ import org.dhis2.commons.sync.ConflictType.PROGRAM
 import org.dhis2.commons.sync.ConflictType.TEI
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.extensions.launchUseCase
+import org.dhis2.mobile.sync.data.DATA_SYNC_NOW
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.model.GRANULAR_SYNC_DATASET_NAME
 import org.dhis2.mobile.sync.model.GRANULAR_SYNC_DATAVALUE_NAME
 import org.dhis2.mobile.sync.model.GRANULAR_SYNC_EVENT_NAME
 import org.dhis2.mobile.sync.model.GRANULAR_SYNC_PROGRAM_NAME
 import org.dhis2.mobile.sync.model.GRANULAR_SYNC_TEI_NAME
+import org.dhis2.mobile.sync.model.GranularSyncAction
 import org.dhis2.mobile.sync.model.GranularSyncType
 import org.dhis2.mobile.sync.model.SyncJobStatus
 import org.dhis2.usescases.sms.SmsSendingService
@@ -81,6 +84,11 @@ class GranularSyncPresenter(
     private lateinit var states: MutableLiveData<List<SmsSendingService.SendingStatus>>
     private lateinit var statesList: ArrayList<SmsSendingService.SendingStatus>
     private var refreshing = false
+
+    // WorkManager replays the last stored WorkInfo for a unique work name, which can be a
+    // finished job from a previous sync. Only react once a sync launched from here is seen running.
+    private var awaitingSyncResult = false
+    private var syncStarted = false
     private val _currentState = MutableStateFlow<SyncUiState?>(null)
     val currentState: StateFlow<SyncUiState?> = _currentState
 
@@ -88,6 +96,8 @@ class GranularSyncPresenter(
 
     private val _serverAvailability = MutableLiveData<Boolean?>()
     val serverAvailability: LiveData<Boolean?> = _serverAvailability
+    private val _granularSyncChannel = Channel<GranularSyncAction>()
+    val granularSyncChannel = _granularSyncChannel.receiveAsFlow()
 
     private fun loadSyncInfo(forcedState: State? = null) {
         viewModelScope.launch(dispatcher.io()) {
@@ -127,7 +137,9 @@ class GranularSyncPresenter(
             -> true
         }
 
-    fun initGranularSync(): Flow<List<SyncJobStatus>> {
+    fun initGranularSync() {
+        awaitingSyncResult = true
+        syncStarted = false
         viewModelScope.launch(dispatcher.io()) {
             when (syncContext.conflictType()) {
                 PROGRAM,
@@ -164,13 +176,13 @@ class GranularSyncPresenter(
                 }
             }
         }
-        return observeWorkInfo()
     }
 
     fun observeWorkInfo() =
         syncBackgroundJobAction.observeGranularJob(
             when (syncContext.conflictType()) {
-                ALL -> Constants.INITIAL_SYNC
+                // Matches the unique work name enqueued by launchDataSync(0) in initGranularSync
+                ALL -> DATA_SYNC_NOW
                 PROGRAM -> GRANULAR_SYNC_PROGRAM_NAME
                 TEI -> GRANULAR_SYNC_TEI_NAME
                 EVENT -> GRANULAR_SYNC_EVENT_NAME
@@ -420,18 +432,36 @@ class GranularSyncPresenter(
     }
 
     fun manageWorkInfo(jobStatus: SyncJobStatus) {
+        if (!awaitingSyncResult) return
         when (jobStatus.status) {
             org.dhis2.mobile.sync.model.SyncStatus.Enqueue,
             org.dhis2.mobile.sync.model.SyncStatus.Blocked,
             org.dhis2.mobile.sync.model.SyncStatus.Running,
-            ->
+            -> {
+                syncStarted = true
                 loadSyncInfo(State.UPLOADING)
+            }
 
             org.dhis2.mobile.sync.model.SyncStatus.Cancelled,
             org.dhis2.mobile.sync.model.SyncStatus.Failed,
-            org.dhis2.mobile.sync.model.SyncStatus.Succeed,
             ->
-                loadSyncInfo()
+                if (syncStarted) {
+                    awaitingSyncResult = false
+                    loadSyncInfo()
+                }
+
+            org.dhis2.mobile.sync.model.SyncStatus.Succeed ->
+                if (syncStarted) {
+                    awaitingSyncResult = false
+                    loadSyncInfo()
+                    sendDisplaySuccessMessage()
+                }
+        }
+    }
+
+    private fun sendDisplaySuccessMessage() {
+        launchUseCase(dispatcher.io()) {
+            _granularSyncChannel.send(GranularSyncAction.DisplaySyncSuccess)
         }
     }
 

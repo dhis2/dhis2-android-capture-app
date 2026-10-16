@@ -258,6 +258,7 @@ fun CredentialsScreen(
         LockedSessionDialog(
             entryMode = entryMode,
             viewModel = viewModel,
+            isUserLoggedIn = screenState.isUserLoggedIn,
         )
     }
 }
@@ -305,8 +306,9 @@ private fun AfterLoginActionDialogs(
 private fun LockedSessionDialog(
     entryMode: CredentialsEntryMode,
     viewModel: CredentialsViewModel,
+    isUserLoggedIn: Boolean,
 ) {
-    if (entryMode.usesOfflineCredential()) {
+    if (entryMode.usesOfflineCredential() && isUserLoggedIn.not()) {
         OfflineCredentialDialog(
             mode = OfflineCredentialMode.ENTER,
             onSubmit = { credential ->

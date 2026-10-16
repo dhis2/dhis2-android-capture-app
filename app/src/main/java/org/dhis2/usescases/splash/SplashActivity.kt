@@ -15,6 +15,7 @@ import com.scottyab.rootbeer.RootBeer
 import org.dhis2.App
 import org.dhis2.BuildConfig
 import org.dhis2.R
+import org.dhis2.bindings.app
 import org.dhis2.databinding.ActivitySplashBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
@@ -140,36 +141,58 @@ class SplashActivity :
         sessionLocked: Boolean,
         initialSyncDone: Boolean,
         initialDataSyncDone: Boolean,
+        needsOfflineCredentials: Boolean,
     ) {
-        if (isUserLogged && initialSyncDone && !sessionLocked) {
-            presenter.clearSingleProgramNavigation()
-            startActivity(
-                MainActivity::class.java,
-                MainActivity.bundle(launchDataSync = initialDataSyncDone),
-                true,
-                true,
-                null,
-            )
-        } else if (isUserLogged && !initialSyncDone) {
-            presenter.clearSingleProgramNavigation()
-            startActivity(
-                SyncActivity::class.java,
-                null,
-                true,
-                true,
-                null,
-            )
-        } else {
-            startActivity(
-                LoginActivity::class.java,
-                LoginActivity.bundle(
-                    accountsCount = presenter.getAccounts(),
-                    fromSplash = true,
-                ),
-                true,
-                true,
-                null,
-            )
+        when {
+            isUserLogged && initialSyncDone && !sessionLocked && !needsOfflineCredentials -> {
+                goToMain(initialDataSyncDone)
+            }
+            isUserLogged && initialSyncDone && !needsOfflineCredentials -> {
+                showPinBottomSheet(
+                    onSuccess = {
+                        app().disableBackGroundFlag()
+                        goToMain(initialDataSyncDone)
+                    },
+                    onDismiss = ::goToLogin,
+                )
+            }
+            isUserLogged && !initialSyncDone && !needsOfflineCredentials -> {
+                presenter.clearSingleProgramNavigation()
+                startActivity(
+                    SyncActivity::class.java,
+                    null,
+                    true,
+                    true,
+                    null,
+                )
+            }
+            else -> {
+                goToLogin()
+            }
         }
+    }
+
+    private fun goToMain(launchDataSync: Boolean) {
+        presenter.clearSingleProgramNavigation()
+        startActivity(
+            MainActivity::class.java,
+            MainActivity.bundle(launchDataSync = launchDataSync),
+            true,
+            true,
+            null,
+        )
+    }
+
+    private fun goToLogin() {
+        startActivity(
+            LoginActivity::class.java,
+            LoginActivity.bundle(
+                accountsCount = presenter.getAccounts(),
+                fromSplash = true,
+            ),
+            true,
+            true,
+            null,
+        )
     }
 }

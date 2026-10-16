@@ -7,10 +7,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.main.domain.model.BiometricsInfo
@@ -27,15 +29,17 @@ import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
 import org.dhis2.mobile.login.main.domain.usecase.GetOAuthLogoutUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetRecoveryUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetSessionRenewalUrl
+import org.dhis2.mobile.login.main.domain.usecase.IsUserLoggedIn
 import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUserOffline
 import org.dhis2.mobile.login.main.domain.usecase.LoginUserWithOAuth
 import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
 import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
-import org.dhis2.mobile.login.main.domain.usecase.SetOfflinePin
+import org.dhis2.mobile.login.main.domain.usecase.SetOfflineCode
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
+import org.dhis2.mobile.login.main.domain.usecase.VerifyNeedOfflineCode
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
 import org.dhis2.mobile.login.main.ui.provider.CredentialsResourceProvider
@@ -89,9 +93,11 @@ class CredentialsViewModelTest {
     private val networkStatusProvider: NetworkStatusProvider = mock()
     private val getIsSessionLockedUseCase: GetIsSessionLockedUseCase = mock()
     private val forgotPinUseCase: ForgotPinUseCase = mock()
-    private val setOfflinePin: SetOfflinePin = mock()
+    private val verifyNeedOfflineCode: VerifyNeedOfflineCode = mock()
+    private val setOfflineCode: SetOfflineCode = mock()
     private val loginUserOfflineWithCode: LoginUserOffline = mock()
     private val credentialsResourceProvider: CredentialsResourceProvider = mock()
+    private val isUserLoggedIn: IsUserLoggedIn = mock()
 
     private lateinit var viewModel: CredentialsViewModel
 
@@ -102,6 +108,7 @@ class CredentialsViewModelTest {
         Dispatchers.setMain(testDispatcher)
         whenever(networkStatusProvider.connectionStatus) doReturn flowOf(true)
         whenever(appLinkNavigation.appLink) doReturn MutableSharedFlow()
+        runBlocking { whenever(isUserLoggedIn()) doReturn Result.success(false) }
     }
 
     @AfterTest
@@ -660,13 +667,13 @@ class CredentialsViewModelTest {
                 )
 
                 // WHEN - the user creates the mandatory offline credential
-                whenever(setOfflinePin("1234")) doReturn Result.success(Unit)
+                whenever(setOfflineCode("1234")) doReturn Result.success(Unit)
                 viewModel.onOfflineCredentialCreated("1234")
                 testDispatcher.scheduler.advanceUntilIdle()
 
                 // THEN - it is stored with the SDK and the create gate clears, leaving the
                 // remaining post-login actions to run
-                verify(setOfflinePin).invoke("1234")
+                verify(setOfflineCode).invoke("1234")
                 val finalState = expectMostRecentItem()
                 assertTrue(finalState.afterLoginActions.none { it is AfterLoginAction.CreateOfflineCredential })
                 assertTrue(finalState.afterLoginActions.isNotEmpty())
@@ -743,7 +750,12 @@ class CredentialsViewModelTest {
                 // AND - the OAuth flow is over, so later app links are ignored
                 mockAppLinkFlow.emit("https://test.redirect.org?code=late_code&state=$state")
                 testDispatcher.scheduler.advanceUntilIdle()
-                verify(loginUserWithOAuth, never()).invoke(any(), eq("late_code"), any(), anyOrNull())
+                verify(loginUserWithOAuth, never()).invoke(
+                    any(),
+                    eq("late_code"),
+                    any(),
+                    anyOrNull(),
+                )
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -930,6 +942,7 @@ class CredentialsViewModelTest {
             whenever(getHasOtherAccounts.invoke()) doReturn true
             whenever(getIsSessionLockedUseCase(any())) doReturn false
             whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
             whenever(getOAuthLogoutUrl(any())) doReturn Result.success(logoutUrl)
             whenever(
                 loginUserWithOAuth.invoke(any(), any(), any(), anyOrNull()),
@@ -978,7 +991,12 @@ class CredentialsViewModelTest {
             }
 
             // AND - the stale view model never consumed the callbacks
-            verify(loginUserWithOAuth, never()).invoke(eq(staleServerUrl), any(), any(), anyOrNull())
+            verify(loginUserWithOAuth, never()).invoke(
+                eq(staleServerUrl),
+                any(),
+                any(),
+                anyOrNull(),
+            )
             assertTrue(
                 staleViewModel.credentialsScreenState.value.afterLoginActions
                     .isEmpty(),
@@ -1172,6 +1190,7 @@ class CredentialsViewModelTest {
                 )
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(true)) doReturn true
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
             whenever(loginUserOfflineWithCode.invoke(serverUrl, username, pin)) doReturn
                 LoginResult.Success(displayTrackingMessage = false, initialSyncDone = true)
 
@@ -1199,6 +1218,39 @@ class CredentialsViewModelTest {
         }
 
     @Test
+    fun `GIVEN EXISTING_OAUTH WHEN offline credential are not saved THEN create offline credential dialog is launched`() =
+        runTest {
+            // GIVEN
+            val serverUrl = "https://test.server.org"
+            val username = "testUser"
+            whenever(getBiometricInfo(any())) doReturn
+                BiometricsInfo(
+                    canUseBiometrics = false,
+                    displayBiometricsMessageAfterLogin = false,
+                )
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(true)) doReturn false
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(true)
+            initViewModel(
+                serverUrl = serverUrl,
+                username = username,
+                entryMode = CredentialsEntryMode.EXISTING_OAUTH,
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                // WHEN - offline credential are not saved
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN - create offline credential dialog is launched
+                val finalState = expectMostRecentItem()
+                assertTrue(finalState.afterLoginActions.isNotEmpty())
+                assertTrue(finalState.afterLoginActions.first() is AfterLoginAction.CreateOfflineCredential)
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
     fun `GIVEN too many failed offline attempts WHEN lockout is triggered THEN login is disabled then re-enabled`() =
         runTest {
             // GIVEN
@@ -1218,6 +1270,7 @@ class CredentialsViewModelTest {
             whenever(loginUserOfflineWithCode.invoke(serverUrl, username, pin)) doReturn
                 LoginResult.LockOut(lockoutSeconds)
             whenever(credentialsResourceProvider.getLockoutCountdownMessage(any())) doReturn countdownMessage
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
 
             initViewModel(
                 serverUrl = serverUrl,
@@ -1275,6 +1328,8 @@ class CredentialsViewModelTest {
                 whenever(getHasOtherAccounts.invoke()) doReturn false
                 whenever(getIsSessionLockedUseCase(any())) doReturn false
                 whenever(biometricLogin.invoke()) doReturn Result.success(pin)
+                whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
+
                 whenever(loginUserOfflineWithCode.invoke(serverUrl, username, pin)) doReturn
                     LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
 
@@ -1310,7 +1365,7 @@ class CredentialsViewModelTest {
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(any())) doReturn false
             whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
-            whenever(setOfflinePin(pin)) doReturn Result.success(Unit)
+            whenever(setOfflineCode(pin)) doReturn Result.success(Unit)
 
             initViewModel(serverUrl = serverUrl, entryMode = CredentialsEntryMode.NEW_ACCOUNT_OAUTH)
 
@@ -1409,6 +1464,7 @@ class CredentialsViewModelTest {
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(true)) doReturn true
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
 
             initViewModel(
                 entryMode = CredentialsEntryMode.EXISTING_OAUTH,
@@ -1438,6 +1494,7 @@ class CredentialsViewModelTest {
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(true, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(true)) doReturn true
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
 
             initViewModel(
                 entryMode = CredentialsEntryMode.EXISTING_OAUTH,
@@ -1463,6 +1520,7 @@ class CredentialsViewModelTest {
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(true)) doReturn true
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
 
             initViewModel(
                 entryMode = CredentialsEntryMode.EXISTING_OAUTH,
@@ -1490,6 +1548,7 @@ class CredentialsViewModelTest {
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(true, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(true)) doReturn true
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
 
             initViewModel(
                 entryMode = CredentialsEntryMode.EXISTING_OAUTH,
@@ -1542,6 +1601,7 @@ class CredentialsViewModelTest {
             whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
             whenever(getSessionRenewalUrl(any())) doReturn Result.success(authorizationUrl)
             whenever(getOAuthLogoutUrl(any())) doReturn Result.success("$serverUrl/logout")
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
             whenever(
                 loginUserWithOAuth.invoke(any(), any(), any(), anyOrNull()),
             ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
@@ -1596,6 +1656,7 @@ class CredentialsViewModelTest {
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
             whenever(getSessionRenewalUrl(any())) doReturn
                 Result.failure(DomainError.ServerError(errorMessage))
 
@@ -1641,6 +1702,7 @@ class CredentialsViewModelTest {
             whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
             whenever(getSessionRenewalUrl(any())) doReturn Result.success(authorizationUrl)
             whenever(getOAuthLogoutUrl(any())) doReturn Result.success(logoutUrl)
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
             whenever(
                 loginUserWithOAuth.invoke(any(), any(), any(), anyOrNull()),
             ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
@@ -1673,11 +1735,11 @@ class CredentialsViewModelTest {
                 )
 
                 // AND - storing it with the SDK clears the gate
-                whenever(setOfflinePin("5678")) doReturn Result.success(Unit)
+                whenever(setOfflineCode("5678")) doReturn Result.success(Unit)
                 viewModel.onOfflineCredentialCreated("5678")
                 testDispatcher.scheduler.advanceUntilIdle()
 
-                verify(setOfflinePin).invoke("5678")
+                verify(setOfflineCode).invoke("5678")
                 val finalState = expectMostRecentItem()
                 assertTrue(
                     finalState.afterLoginActions.none {
@@ -1701,6 +1763,7 @@ class CredentialsViewModelTest {
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(true)) doReturn true
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
             whenever(loginUserOfflineWithCode.invoke(serverUrl, username, pin)) doReturn
                 LoginResult.Success(displayTrackingMessage = false, initialSyncDone = true)
 
@@ -1743,6 +1806,7 @@ class CredentialsViewModelTest {
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(true)) doReturn true
             whenever(getSessionRenewalUrl(any())) doReturn Result.success(authorizationUrl)
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
 
             initViewModel(
                 serverUrl = serverUrl,
@@ -1779,6 +1843,7 @@ class CredentialsViewModelTest {
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(true)) doReturn true
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
 
             initViewModel(
                 serverUrl = serverUrl,
@@ -1821,10 +1886,11 @@ class CredentialsViewModelTest {
             whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
             whenever(getSessionRenewalUrl(any())) doReturn Result.success(authorizationUrl)
             whenever(getOAuthLogoutUrl(any())) doReturn Result.success("$serverUrl/logout")
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
             whenever(
                 loginUserWithOAuth.invoke(any(), any(), any(), anyOrNull()),
             ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
-            whenever(setOfflinePin("5678")) doReturn
+            whenever(setOfflineCode("5678")) doReturn
                 Result.failure(DomainError.AuthenticationError(storeErrorMessage))
 
             initViewModel(
@@ -1909,6 +1975,7 @@ class CredentialsViewModelTest {
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
 
             // WHEN
             initViewModel(
@@ -1986,6 +2053,7 @@ class CredentialsViewModelTest {
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(any())) doReturn false
             whenever(getSessionRenewalUrl(any())) doReturn Result.success(authorizationUrl)
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
 
             initViewModel(
                 serverUrl = serverUrl,
@@ -2033,6 +2101,7 @@ class CredentialsViewModelTest {
             whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
             whenever(getSessionRenewalUrl(any())) doReturn Result.success(authorizationUrl)
             whenever(getOAuthLogoutUrl(any())) doReturn Result.success(logoutUrl)
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
             whenever(
                 loginUserWithOAuth.invoke(any(), any(), any(), anyOrNull()),
             ) doReturn LoginResult.Error(mismatchMessage)
@@ -2086,6 +2155,7 @@ class CredentialsViewModelTest {
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
 
             initViewModel(
                 username = "testuser",
@@ -2116,6 +2186,7 @@ class CredentialsViewModelTest {
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
 
             initViewModel(
                 username = "testuser",
@@ -2173,11 +2244,11 @@ class CredentialsViewModelTest {
                 )
 
                 // AND - storing it with the SDK clears the gate
-                whenever(setOfflinePin("1234")) doReturn Result.success(Unit)
+                whenever(setOfflineCode("1234")) doReturn Result.success(Unit)
                 viewModel.onOfflineCredentialCreated("1234")
                 testDispatcher.scheduler.advanceUntilIdle()
 
-                verify(setOfflinePin).invoke("1234")
+                verify(setOfflineCode).invoke("1234")
                 assertTrue(
                     expectMostRecentItem().afterLoginActions.none {
                         it is AfterLoginAction.CreateOfflineCredential
@@ -2197,6 +2268,7 @@ class CredentialsViewModelTest {
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
             whenever(openIdLogin.invoke(any())) doReturn
                 LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
 
@@ -2244,6 +2316,7 @@ class CredentialsViewModelTest {
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(any())) doReturn false
             whenever(credentialsResourceProvider.getMissingOidcConfigMessage()) doReturn message
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
 
             initViewModel(
                 username = "testuser",
@@ -2292,6 +2365,7 @@ class CredentialsViewModelTest {
                 whenever(getHasOtherAccounts.invoke()) doReturn false
                 whenever(getIsSessionLockedUseCase(any())) doReturn false
                 whenever(biometricLogin.invoke()) doReturn Result.success(pin)
+                whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
                 whenever(loginUserOfflineWithCode.invoke(serverUrl, username, pin)) doReturn
                     LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
 
@@ -2319,14 +2393,15 @@ class CredentialsViewModelTest {
             // GIVEN - an OpenID login that stored an offline code and then offers biometrics
             val serverUrl = "https://test.server.org"
             val username = "testuser"
-            val pin = "1234"
+            val code = "1234"
             val platformContext = mock<PlatformContext>()
 
             whenever(getAvailableUsernames()) doReturn emptyList()
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(true, true)
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase(any())) doReturn false
-            whenever(setOfflinePin(pin)) doReturn Result.success(Unit)
+            whenever(setOfflineCode(code)) doReturn Result.success(Unit)
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
             whenever(openIdLogin.invoke(any())) doReturn
                 LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
 
@@ -2344,7 +2419,7 @@ class CredentialsViewModelTest {
                 testDispatcher.scheduler.advanceUntilIdle()
                 testDispatcher.scheduler.advanceTimeBy(4.seconds)
                 testDispatcher.scheduler.advanceUntilIdle()
-                viewModel.onOfflineCredentialCreated(pin)
+                viewModel.onOfflineCredentialCreated(code)
                 testDispatcher.scheduler.advanceUntilIdle()
 
                 with(platformContext) {
@@ -2353,8 +2428,96 @@ class CredentialsViewModelTest {
                     testDispatcher.scheduler.advanceUntilIdle()
 
                     // THEN - there is no password to fall back on, so the code has to be stored
-                    verify(updateBiometricPermission).invoke(serverUrl, username, pin, true)
+                    verify(updateBiometricPermission).invoke(serverUrl, username, code, true)
                 }
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN EXISTING_OPEN_ID WHEN the user already has an active session THEN isUserLoggedIn is true`() =
+        runTest {
+            // GIVEN - the session was left unlocked (e.g. the process was not killed), so the
+            // offline-code dialog should not gate the screen again
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(isUserLoggedIn()) doReturn Result.success(true)
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
+
+            initViewModel(
+                username = "testuser",
+                entryMode = CredentialsEntryMode.EXISTING_OPEN_ID,
+                oidcInfo = discoveryOidcInfo(),
+                autoPromptLogin = false,
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                // WHEN
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN
+                assertTrue(expectMostRecentItem().isUserLoggedIn)
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN EXISTING_OPEN_ID WHEN there is no active session THEN isUserLoggedIn is false`() =
+        runTest {
+            // GIVEN
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(isUserLoggedIn()) doReturn Result.success(false)
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
+
+            initViewModel(
+                username = "testuser",
+                entryMode = CredentialsEntryMode.EXISTING_OPEN_ID,
+                oidcInfo = discoveryOidcInfo(),
+                autoPromptLogin = false,
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                // WHEN
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN
+                assertFalse(expectMostRecentItem().isUserLoggedIn)
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN EXISTING_OAUTH WHEN checking the active session fails THEN isUserLoggedIn defaults to false`() =
+        runTest {
+            // GIVEN - a failure to check the session must not be mistaken for an active one, so the
+            // offline-code dialog still gates the screen
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase(any())) doReturn false
+            whenever(verifyNeedOfflineCode()) doReturn Result.success(false)
+            whenever(isUserLoggedIn()) doReturn Result.failure(Exception("cannot check session"))
+
+            initViewModel(
+                username = "testuser",
+                entryMode = CredentialsEntryMode.EXISTING_OAUTH,
+                autoPromptLogin = false,
+            )
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                // WHEN
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // THEN
+                assertFalse(expectMostRecentItem().isUserLoggedIn)
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -2575,15 +2738,17 @@ class CredentialsViewModelTest {
                 allowRecovery,
                 getIsSessionLockedUseCase,
                 forgotPinUseCase,
+                verifyNeedOfflineCode = verifyNeedOfflineCode,
                 oidcInfo = oidcInfo,
                 entryMode = entryMode,
                 autoPromptLogin = autoPromptLogin,
-                setOfflinePin = setOfflinePin,
+                setOfflineCode = setOfflineCode,
                 loginUserOfflineWithCode = loginUserOfflineWithCode,
                 credentialsResourceProvider = credentialsResourceProvider,
                 getSessionRenewalUrl = getSessionRenewalUrl,
                 autoStartRenewal = autoStartRenewal,
                 getRecoveryUrl = getRecoveryUrl,
+                isUserLoggedIn = isUserLoggedIn,
             )
         return viewModel
     }

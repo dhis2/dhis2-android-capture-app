@@ -61,6 +61,7 @@ dependencies {
     implementation(project(":commons"))
     implementation(project(":compose-table"))
 
+    implementation(libs.dhis2.expressionparser)
     implementation(libs.bundles.analytics.implementation)
     api(libs.bundles.analytics.api)
     ksp(libs.dagger.compiler)
