@@ -37,4 +37,4 @@ then
   git fetch --no-tags --force --progress -- $url +refs/heads/$GIT_BRANCH_DEST:refs/remotes/$remote/$GIT_BRANCH_DEST
 fi
 
-./gradlew sonarqube --stacktrace --no-daemon
+./gradlew sonar --stacktrace --no-daemon

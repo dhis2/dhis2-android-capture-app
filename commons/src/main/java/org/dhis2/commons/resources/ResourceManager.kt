@@ -40,6 +40,7 @@ class ResourceManager(
         vararg arguments: Any,
     ) = getWrapperContext().resources.getQuantityString(pluralResource, quantity, *arguments)
 
+    @Deprecated("Use customLabelProvider instead")
     fun formatWithEnrollmentLabel(
         programUid: String?,
         @StringRes stringResource: Int,
@@ -56,6 +57,7 @@ class ResourceManager(
         }
     }
 
+    @Deprecated("Use customLabelProvider instead")
     fun defaultEnrollmentLabel(
         programUid: String?,
         capitalize: Boolean = false,
@@ -113,24 +115,33 @@ class ResourceManager(
             colorUtils.parseColor(it)
         } ?: -1
 
+    @Deprecated("Use D2ErrorMesaggeProvider instead")
     fun parseD2Error(throwable: Throwable) =
         D2ErrorUtils(getWrapperContext(), NetworkUtils(getWrapperContext()))
             .getErrorMessage(throwable)
 
+    @Deprecated("Use customLabelProvider instead")
     fun defaultEventLabel(): String = getWrapperContext().getString(R.string.events)
 
+    @Deprecated("Use customLabelProvider instead")
     fun defaultDataSetLabel(): String = getWrapperContext().getString(R.string.data_sets)
 
+    @Deprecated("Use customLabelProvider instead")
     fun defaultTeiLabel(): String = getWrapperContext().getString(R.string.tei)
 
+    @Deprecated("Use customLabelProvider instead")
     fun sectionFeedback(): String = getWrapperContext().getString(R.string.section_feedback)
 
+    @Deprecated("Use customLabelProvider instead")
     fun sectionIndicators(): String = getWrapperContext().getString(R.string.section_indicators)
 
+    @Deprecated("Use customLabelProvider instead")
     fun sectionCharts(): String = getWrapperContext().getString(R.string.section_charts)
 
+    @Deprecated("Use customLabelProvider instead")
     fun sectionChartsAndIndicators(): String = getWrapperContext().getString(R.string.section_charts_indicators)
 
+    @Deprecated("Use customLabelProvider instead")
     fun defaultIndicatorLabel(): String = getWrapperContext().getString(R.string.info)
 
     fun getWrapperContext() =

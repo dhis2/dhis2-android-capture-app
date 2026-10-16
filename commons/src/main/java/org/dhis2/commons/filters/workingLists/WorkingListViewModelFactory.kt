@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import org.dhis2.commons.filters.data.FilterRepository
 
+@Suppress("UNCHECKED_CAST")
 class WorkingListViewModelFactory(
     private val programUid: String?,
     private val filterRepository: FilterRepository,

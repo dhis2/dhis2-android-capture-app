@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
@@ -49,7 +48,6 @@ import org.dhis2.mobile.aggregates.ui.states.CellSelectionState.InputDataUiState
 import org.dhis2.mobile.commons.extensions.fileSizeLabel
 import org.dhis2.mobile.commons.extensions.getDateFromAge
 import org.dhis2.mobile.commons.extensions.hasDateFormat
-import org.dhis2.mobile.commons.extensions.toImageBitmap
 import org.dhis2.mobile.commons.input.InputType
 import org.dhis2.mobile.commons.input.UiAction
 import org.dhis2.mobile.commons.ui.ImagePickerOptionsDialog
@@ -307,7 +305,6 @@ internal fun InputProvider(
                                         InputType.Date -> DateTimeActionType.DATE
                                         InputType.DateTime -> DateTimeActionType.DATE_TIME
                                         InputType.Time -> DateTimeActionType.TIME
-                                        else -> throw IllegalArgumentException("Invalid input type")
                                     },
                                 allowsManualInput = inputData.dateExtras().allowManualInput,
                                 visualTransformation = inputData.dateExtras().visualTransformation,
@@ -407,16 +404,10 @@ internal fun InputProvider(
                 )
             }
 
-            val painter =
-                inputData
-                    .fileExtras()
-                    .filePath
-                    ?.toImageBitmap()
-                    ?.let { BitmapPainter(it) }
-
             InputImage(
                 title = inputData.label,
                 state = inputData.inputShellState,
+                imageFilePath = inputData.fileExtras().filePath,
                 inputStyle = inputData.inputStyle,
                 supportingText = inputData.supportingText,
                 legendData = inputData.legendData,
@@ -424,8 +415,6 @@ internal fun InputProvider(
                 addImageBtnText = stringResource(Res.string.add_image),
                 downloadButtonVisible = inputData.value != null,
                 isRequired = inputData.isRequired,
-                load = { painter },
-                painterFor = { remember { it!! } },
                 modifier = modifierWithFocus,
                 onDownloadButtonClick = { onAction(UiAction.OnDownloadFile(inputData.id, inputData.fileExtras().filePath)) },
                 onShareButtonClick = { onAction(UiAction.OnShareImage(inputData.id, inputData.fileExtras().filePath)) },

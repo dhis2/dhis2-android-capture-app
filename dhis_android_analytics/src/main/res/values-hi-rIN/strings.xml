@@ -38,7 +38,7 @@
     <string name="yearly">वार्षिक</string>
     <string name="all">सभी</string>
     <string name="selection">चयन</string>
-    <string name="reset">रीसेट</string>
+    <string name="reset">रीसेट करें</string>
     <string name="include_this_period_title">क्या आप करंट पीरियड शामिल करना चाहते हैं\?</string>
     <string name="include_this_period_body">यह चार्ट में वर्तमान अवधि दिखाएगा</string>
     <string name="no_data_for_selected_filters">आपके द्वारा लगाए गए फ़िल्टर कोई डेटा नहीं दिखा रहे हैं</string>

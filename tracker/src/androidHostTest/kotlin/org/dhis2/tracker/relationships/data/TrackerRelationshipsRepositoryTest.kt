@@ -2,6 +2,7 @@ package org.dhis2.tracker.relationships.data
 
 import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.tracker.data.ProfilePictureProvider
 import org.dhis2.tracker.relationships.relationshipSection1
 import org.dhis2.tracker.relationships.relationshipSection2
@@ -33,6 +34,8 @@ class TrackerRelationshipsRepositoryTest {
     private val teiUid = "teiUid"
     private val enrollmentUid = "enrollmentUid"
     private val trackedEntityType = "trackedEntityType1"
+    private val programUid = "programUid"
+    private val customLabelProvider: CustomLabelProvider = mock()
 
     @Before
     fun setup() {
@@ -62,6 +65,8 @@ class TrackerRelationshipsRepositoryTest {
                 teiUid = teiUid,
                 enrollmentUid = enrollmentUid,
                 profilePictureProvider = profilePictureProvider,
+                programUid = programUid,
+                customLabelProvider = customLabelProvider,
             )
     }
 

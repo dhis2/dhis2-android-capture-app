@@ -15,10 +15,10 @@ import org.dhis2.form.data.EventRepository.Companion.EVENT_REPORT_DATE_UID
 import org.dhis2.form.model.EnrollmentDetail
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
-import org.dhis2.mobile.commons.files.FileController
-import org.dhis2.mobile.commons.files.FileControllerImpl
+import org.dhis2.mobile.commons.files.deleteStagedFile
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.helpers.ResourceContext
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
@@ -38,7 +38,6 @@ class FormValueStore(
     private val crashReportController: CrashReportController,
     private val networkUtils: NetworkUtils,
     private val resourceManager: ResourceManager,
-    private val fileController: FileController = FileControllerImpl(),
     private val uniqueAttributeController: UniqueAttributeController =
         UniqueAttributeController(
             d2,
@@ -272,7 +271,11 @@ class FormValueStore(
         return filePath
             ?.let {
                 try {
-                    saveFileResource(filePath, valueType == ValueType.IMAGE)
+                    saveFileResource(
+                        path = filePath,
+                        uid = uid,
+                        isImage = valueType == ValueType.IMAGE,
+                    )
                 } catch (e: Exception) {
                     return StoreResult(
                         uid = uid,
@@ -555,16 +558,30 @@ class FormValueStore(
 
     private fun saveFileResource(
         path: String,
-        resize: Boolean,
+        uid: String,
+        isImage: Boolean,
     ): String {
-        val file =
-            if (resize) {
-                fileController.resize(path)
+        val fileContext =
+            if (isImage) {
+                ResourceContext.ImageContext.ProgramImageContext(
+                    programUid = resolveProgramUid().orEmpty(),
+                    resourceUid = uid,
+                )
             } else {
-                File(path)
+                ResourceContext.FileContext
             }
-        return d2.fileResourceModule().fileResources().blockingAdd(file)
+
+        val fileResourceUid =
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(File(path), fileContext)
+
+        deleteStagedFile(path)
+
+        return fileResourceUid
     }
+
+    private fun resolveProgramUid(): String? =
+        enrollmentRepository?.blockingGet()?.program()
+            ?: eventRepository?.blockingGet()?.program()
 
     private fun saveDataElement(
         uid: String,

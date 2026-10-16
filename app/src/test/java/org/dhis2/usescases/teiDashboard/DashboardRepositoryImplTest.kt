@@ -3,10 +3,10 @@ package org.dhis2.usescases.teiDashboard
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Single
 import org.dhis2.commons.data.ProgramConfigurationRepository
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Unit
 import org.hisp.dhis.android.core.common.ValueType
@@ -38,7 +38,7 @@ class DashboardRepositoryImplTest {
     private val preferences: PreferenceProvider = mock()
     private val metadataIconProvider: MetadataIconProvider = mock()
     private val programConfigurationRepository: ProgramConfigurationRepository = mock()
-    private val featureConfigRepository: FeatureConfigRepository = mock()
+    private val customLabelProvider: CustomLabelProvider = mock()
 
     @Before
     fun setUp() {
@@ -53,7 +53,7 @@ class DashboardRepositoryImplTest {
                 preferences,
                 metadataIconProvider,
                 programConfigurationRepository,
-                featureConfigRepository,
+                customLabelProvider,
             )
     }
 
@@ -67,7 +67,7 @@ class DashboardRepositoryImplTest {
                 .eventModule()
                 .events()
                 .uid("event_uid")
-                .get(),
+                .rxGet(),
         ) doReturn
             Single.just(getMockSingleEvent())
 
@@ -79,7 +79,7 @@ class DashboardRepositoryImplTest {
                 .programModule()
                 .programStages()
                 .uid("program_stage")
-                .get(),
+                .rxGet(),
         ) doReturn
             Single.just(getMockStage())
 
@@ -146,7 +146,7 @@ class DashboardRepositoryImplTest {
                 .eq(teiUid)
                 .byDeleted()
                 .eq(false)
-                .get(),
+                .rxGet(),
         ) doReturn Single.just(enrollments)
 
         val testObserver = repository.getTEIEnrollments(teiUid).test()
@@ -354,32 +354,17 @@ class DashboardRepositoryImplTest {
         val teiUid = "teiUid"
         val expectedResults = arrayListOf("1", "", "3")
 
+        val attributeValues =
+            arrayListOf(
+                mockAttributeValue("attr1", "1"),
+                mockAttributeValue("attr2", null),
+                mockAttributeValue("attr3", "3"),
+            )
+
         whenever(
             teiAttributesProvider
                 .getValuesFromProgramTrackedEntityAttributesByProgram(programUid, teiUid),
-        ) doReturn
-            Single.just(
-                arrayListOf(
-                    TrackedEntityAttributeValue
-                        .builder()
-                        .trackedEntityAttribute("attr1")
-                        .trackedEntityInstance(teiUid)
-                        .value("1")
-                        .build(),
-                    TrackedEntityAttributeValue
-                        .builder()
-                        .trackedEntityAttribute("attr2")
-                        .trackedEntityInstance(teiUid)
-                        .value(null)
-                        .build(),
-                    TrackedEntityAttributeValue
-                        .builder()
-                        .trackedEntityAttribute("attr3")
-                        .trackedEntityInstance(teiUid)
-                        .value("3")
-                        .build(),
-                ),
-            )
+        ) doReturn Single.just(attributeValues)
 
         whenever(
             d2
@@ -437,26 +422,16 @@ class DashboardRepositoryImplTest {
                 ?.trackedEntityType(),
         ) doReturn teType
 
+        val attributeValues =
+            arrayListOf(
+                mockAttributeValue("attr1", "attrValue1"),
+                mockAttributeValue("attr2", "attrValue2"),
+                mockAttributeValue("attr4", "attrValue4"),
+            )
+
         whenever(
             teiAttributesProvider.getValuesFromTrackedEntityTypeAttributes(teType, teiUid),
-        ) doReturn
-            arrayListOf(
-                TrackedEntityAttributeValue
-                    .builder()
-                    .value("attrValue1")
-                    .trackedEntityAttribute("attr1")
-                    .build(),
-                TrackedEntityAttributeValue
-                    .builder()
-                    .value("attrValue2")
-                    .trackedEntityAttribute("attr2")
-                    .build(),
-                TrackedEntityAttributeValue
-                    .builder()
-                    .value("attrValue4")
-                    .trackedEntityAttribute("attr4")
-                    .build(),
-            )
+        ) doReturn attributeValues
 
         whenever(d2.trackedEntityModule().trackedEntityAttributes()) doReturn mock()
         whenever(
@@ -522,29 +497,19 @@ class DashboardRepositoryImplTest {
                 .blockingGet()
                 ?.trackedEntityType(),
         ) doReturn teType
+        val attributeValues =
+            arrayListOf(
+                mockAttributeValue("attr1", "attrValue1"),
+                mockAttributeValue("attr2", "attrValue2"),
+                mockAttributeValue("attr3", "attrValue3"),
+            )
+
         whenever(
             teiAttributesProvider.getValuesFromTrackedEntityTypeAttributes(teType, teiUid),
         ) doReturn emptyList()
         whenever(
             teiAttributesProvider.getValuesFromProgramTrackedEntityAttributes(teType, teiUid),
-        ) doReturn
-            arrayListOf(
-                TrackedEntityAttributeValue
-                    .builder()
-                    .value("attrValue1")
-                    .trackedEntityAttribute("attr1")
-                    .build(),
-                TrackedEntityAttributeValue
-                    .builder()
-                    .value("attrValue2")
-                    .trackedEntityAttribute("attr2")
-                    .build(),
-                TrackedEntityAttributeValue
-                    .builder()
-                    .value("attrValue3")
-                    .trackedEntityAttribute("attr3")
-                    .build(),
-            )
+        ) doReturn attributeValues
 
         whenever(d2.trackedEntityModule().trackedEntityAttributes()) doReturn mock()
         whenever(
@@ -584,6 +549,15 @@ class DashboardRepositoryImplTest {
                     it[2].value() == expectedResults[2]
             }
     }
+
+    private fun mockAttributeValue(
+        attribute: String,
+        value: String?,
+    ): TrackedEntityAttributeValue =
+        mock {
+            on { trackedEntityAttribute() } doReturn attribute
+            on { value() } doReturn value
+        }
 
     private fun getMockingEnrollment(): Enrollment =
         Enrollment

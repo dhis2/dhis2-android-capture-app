@@ -9,4 +9,6 @@
     <string name="openid_or">या</string>
     <string name="action_no_now">अभी नहीं</string>
     <string name="action_yes">हाँ</string>
-    </resources>
+    <string name="offline_credential_enter_button">लॉग इन</string>
+    <string name="cancel">रद्द करें</string>
+</resources>

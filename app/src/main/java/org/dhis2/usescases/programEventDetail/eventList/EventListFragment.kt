@@ -13,7 +13,6 @@ import org.dhis2.databinding.FragmentComposeHolderBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel
-import org.dhis2.usescases.programEventDetail.eventList.ui.mapper.EventCardMapper
 import javax.inject.Inject
 
 class EventListFragment : FragmentGlobalAbstract() {
@@ -22,9 +21,6 @@ class EventListFragment : FragmentGlobalAbstract() {
 
     @Inject
     lateinit var workingListViewModelFactory: WorkingListViewModelFactory
-
-    @Inject
-    lateinit var cardMapper: EventCardMapper
 
     val eventListViewModel by viewModels<EventListViewModel> { eventListViewModelFactory }
 

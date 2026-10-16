@@ -1,7 +1,7 @@
 package org.dhis2.common.featureConfig
 
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepositoryImpl
-import org.dhis2.commons.featureconfig.model.Feature
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepositoryImpl
+import org.dhis2.mobile.commons.featureconfig.model.Feature
 
 class FeatureConfigRobot (private val featureConfigRepository: FeatureConfigRepositoryImpl) {
 

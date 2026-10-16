@@ -37,8 +37,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import org.dhis2.commons.R
 import org.dhis2.commons.featureconfig.di.FeatureConfigComponentProvider
-import org.dhis2.commons.featureconfig.model.FeatureOptions
 import org.dhis2.commons.ui.extensions.handleInsets
+import org.dhis2.mobile.commons.featureconfig.model.FeatureOptions
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import javax.inject.Inject
 

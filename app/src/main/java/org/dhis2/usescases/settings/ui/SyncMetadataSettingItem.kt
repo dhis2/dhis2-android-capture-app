@@ -96,16 +96,17 @@ internal fun SyncMetadataSettingItem(
                         }
 
                     var selectedItem by
-                    remember {
-                        mutableStateOf(
-                            DropdownItem(
-                                label = syncPeriodLabel(
-                                    metadataSettings.metadataSyncPeriod,
-                                    context
+                        remember {
+                            mutableStateOf(
+                                DropdownItem(
+                                    label =
+                                        syncPeriodLabel(
+                                            metadataSettings.metadataSyncPeriod,
+                                            context,
+                                        ),
                                 ),
-                            ),
-                        )
-                    }
+                            )
+                        }
                     var inputSyncConfigurationState by remember {
                         mutableStateOf(InputShellState.UNFOCUSED)
                     }
@@ -165,14 +166,14 @@ private fun provideDefaultInfoItems(
         AdditionalInfoItem(
             key = stringResource(R.string.settings_sync_period_v2),
             value = syncPeriodLabel(metadataSyncPeriod, context),
-        )
+        ),
     )
     add(
         AdditionalInfoItem(
             key = stringResource(R.string.last_data_sync),
             value = lastMetadataSync,
             color = TextColor.OnSurface,
-        )
+        ),
     )
     nextMetadataSync?.takeIf { BuildConfig.DEBUG }?.let {
         add(
@@ -180,7 +181,7 @@ private fun provideDefaultInfoItems(
                 key = "Next sync on",
                 value = it,
                 color = TextColor.OnSurface,
-            )
+            ),
         )
     }
     nextSettingsSync?.takeIf { BuildConfig.DEBUG }?.let {
@@ -189,7 +190,7 @@ private fun provideDefaultInfoItems(
                 key = "Next settings sync on",
                 value = it,
                 color = TextColor.OnSurface,
-            )
+            ),
         )
     }
 }

@@ -2,13 +2,14 @@ package org.dhis2.usescases.main.program
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.mobile.sync.domain.SyncStatusController
 
+@Suppress("UNCHECKED_CAST")
 class ProgramViewModelFactory(
     private val view: ProgramView,
     private val programRepository: ProgramRepository,

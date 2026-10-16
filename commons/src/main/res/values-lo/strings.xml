@@ -35,7 +35,6 @@
     <string name="filters_title_state">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
     <string name="filters_title_assigned">ມອບໝາຍໃຫ້ຂ້ອຍ</string>
     <string name="filters_title_date">ວັນທີ່</string>
-    <string name="filter_follow_up_label">ຕິດຕາມ%s</string>
     <string name="select_period">​ເລືອກ​ໄລ​ຍະ​ເວ​ລາ​ປະ​ເພດ​ຕ່າງໆ</string>
     <string name="weekly">ລາຍອາທິດ</string>
     <string name="bi_weekly">ສອງອາທິດຕໍ່ຄັ້ງ</string>

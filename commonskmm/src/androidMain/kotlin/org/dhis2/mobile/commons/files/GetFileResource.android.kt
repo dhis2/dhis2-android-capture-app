@@ -61,19 +61,25 @@ fun Uri.toFileOverWrite(
     if (ContentResolver.SCHEME_CONTENT == this.scheme) {
         val cr = context.contentResolver
 
-        var fileName = "tempFile"
-        cr.query(this, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { cursor ->
-            if (cursor.moveToFirst()) {
+        val displayName =
+            cr.query(this, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { cursor ->
                 val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                if (nameIndex != -1) {
-                    fileName = cursor.getString(nameIndex).substringBeforeLast('.')
+                if (cursor.moveToFirst() && nameIndex != -1) {
+                    cursor.getString(nameIndex)
+                } else {
+                    null
                 }
             }
-        }
 
-        val mimeTypeMap = MimeTypeMap.getSingleton()
-        val extensionsFile = mimeTypeMap.getExtensionFromMimeType(cr.getType(this))
-        val fullName = "$fileName$suffix.${extensionsFile ?: ""}".trimEnd('.')
+        val fileName = displayName?.substringBeforeLast('.') ?: STAGED_FILE_FALLBACK_NAME
+
+        // The extension the provider reports for the content is more reliable than the one in the
+        // display name, but the display name is all there is when the mime type is not recognised.
+        val extension =
+            MimeTypeMap.getSingleton().getExtensionFromMimeType(cr.getType(this))
+                ?: displayName?.substringAfterLast('.', "")
+
+        val fullName = "$fileName$suffix.${extension.orEmpty()}".trimEnd('.')
         resultFile = File(context.cacheDir, fullName)
         val input = cr.openInputStream(this)
         resultFile.outputStream().use { stream ->
@@ -83,3 +89,5 @@ fun Uri.toFileOverWrite(
     }
     return resultFile
 }
+
+private const val STAGED_FILE_FALLBACK_NAME = "attachment"

@@ -16,6 +16,8 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobile.commons.domain.invoke
+import org.dhis2.mobile.login.authentication.domain.model.TwoFAStatus
+import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
 import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.ExportDatabase
@@ -26,6 +28,7 @@ import org.dhis2.usescases.settings.domain.SettingsMessages
 import org.dhis2.usescases.settings.domain.UpdateSmsModule
 import org.dhis2.usescases.settings.domain.UpdateSmsResponse
 import org.dhis2.usescases.settings.domain.UpdateSyncSettings
+import org.dhis2.usescases.settings.models.AccountType
 import org.dhis2.usescases.settings.models.DataSettingsViewModel
 import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
@@ -75,6 +78,7 @@ class SyncManagerPresenterTest {
     private val exportDatabase: ExportDatabase = mock()
     private val checkVersionUpdate: CheckVersionUpdate = mock()
     private val launchSync: LaunchSync = mock()
+    private val twoFAStatus: GetTwoFAStatus = mock()
 
     private val mockedSyncedStatusProgress =
         MutableStateFlow(
@@ -89,6 +93,7 @@ class SyncManagerPresenterTest {
         Dispatchers.setMain(testingDispatcher)
         whenever(launchSync.syncWorkInfo) doReturn mockedSyncedStatusProgress
         whenever(networkUtils.connectionStatus) doReturn MutableStateFlow(true)
+        runTest { whenever(twoFAStatus.invoke()) doReturn TwoFAStatus.NoConnection }
 
         presenter =
             SyncManagerPresenter(
@@ -104,6 +109,7 @@ class SyncManagerPresenterTest {
                 dispatcherProvider = dispatcherProvider,
                 networkUtils = networkUtils,
                 settingsMessages = settingMessages,
+                twoFaStatus = twoFAStatus,
             )
     }
 
@@ -499,7 +505,8 @@ class SyncManagerPresenterTest {
             syncParametersViewModel = mockedParamsViewModel(),
             reservedValueSettingsViewModel = mockedReservecValuesViewModel(),
             smsSettingsViewModel = mockedSMSViewModel(),
-            isTwoFAConfigured = true,
+            accountType = AccountType.OAUTH,
             versionName = "1.0.0",
+            twoFAStatus = TwoFAStatus.NoConnection,
         )
 }

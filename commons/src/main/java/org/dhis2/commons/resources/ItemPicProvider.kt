@@ -27,7 +27,7 @@ fun ImageView.setItemPic(
     when {
         imagePath?.isNotEmpty() == true -> {
             visibility = View.VISIBLE
-            textView?.visibility = View.GONE
+            textView.visibility = View.GONE
             Glide
                 .with(context)
                 .load(File(imagePath))
@@ -42,16 +42,16 @@ fun ImageView.setItemPic(
         }
         defaultValue != null && !isSingleEvent -> {
             visibility = View.GONE
-            textView?.visibility = View.VISIBLE
-            textView?.clipWithAllRoundedCorners(20.dp)
+            textView.visibility = View.VISIBLE
+            textView.clipWithAllRoundedCorners(20.dp)
             setImageDrawable(null)
-            textView?.text = defaultValue.first().toString().uppercase(Locale.getDefault())
-            textView?.setTextColor(colorUtils.getAlphaContrastColor(defaultColorRes))
-            textView?.setBackgroundColor(defaultColorRes)
+            textView.text = defaultValue.first().toString().uppercase(Locale.getDefault())
+            textView.setTextColor(colorUtils.getAlphaContrastColor(defaultColorRes))
+            textView.setBackgroundColor(defaultColorRes)
         }
         else -> {
             visibility = View.VISIBLE
-            textView?.visibility = View.GONE
+            textView.visibility = View.GONE
             setBackgroundColor(defaultColorRes)
             clipWithAllRoundedCorners(6.dp)
             ContextCompat.getDrawable(context, defaultImageRes)?.let {

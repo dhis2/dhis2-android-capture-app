@@ -90,9 +90,11 @@ class FormViewModel(
 
     private val _items = MutableSharedFlow<List<FieldUiModel>>()
 
-    val items = _items.map { items ->
-        formSectionMapper.mapFromFieldUiModelList(items)
-    }.shareIn(viewModelScope, SharingStarted.Eagerly, 0)
+    val items =
+        _items
+            .map { items ->
+                formSectionMapper.mapFromFieldUiModelList(items)
+            }.shareIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     var previousActionItem: RowAction? = null
 
@@ -134,7 +136,7 @@ class FormViewModel(
 
         pendingIntents
             .distinctUntilChanged { old, new ->
-                if (old is FormIntent.OnFinish && new is FormIntent.OnFinish) {
+                if (isRepeatableIntent(old) || isRepeatableIntent(new)) {
                     false
                 } else {
                     old == new
@@ -166,6 +168,8 @@ class FormViewModel(
         textChangeDebounceRunnable?.let { handler.removeCallbacks(it) }
         super.onCleared()
     }
+
+    private fun isRepeatableIntent(intent: FormIntent): Boolean = intent is FormIntent.OnFinish || intent is FormIntent.OnSection
 
     private fun displayResult(result: Pair<RowAction, StoreResult>) {
         result.second.valueStoreResult?.let {
@@ -316,17 +320,18 @@ class FormViewModel(
     private fun handleOnTextChangeAction(action: RowAction): StoreResult {
         repository.updateValueOnList(action.id, action.value, action.valueType)
         textChangeDebounceRunnable?.let { handler.removeCallbacks(it) }
-        textChangeDebounceRunnable = Runnable {
-            viewModelScope.launch {
-                pendingIntents.emit(
-                    FormIntent.OnSave(
-                        uid = action.id,
-                        value = action.value,
-                        valueType = action.valueType,
-                    ),
-                )
-            }
-        }.also { handler.postDelayed(it, 1_000L) }
+        textChangeDebounceRunnable =
+            Runnable {
+                viewModelScope.launch {
+                    pendingIntents.emit(
+                        FormIntent.OnSave(
+                            uid = action.id,
+                            value = action.value,
+                            valueType = action.valueType,
+                        ),
+                    )
+                }
+            }.also { handler.postDelayed(it, 1_000L) }
         return StoreResult(
             action.id,
             ValueStoreResult.TEXT_CHANGING,
@@ -461,26 +466,26 @@ class FormViewModel(
             false
         } else {
             valueType.isNumeric ||
-                    valueType.isText &&
-                    renderType?.isPolygon() != true ||
-                    valueType == ValueType.URL ||
-                    valueType == ValueType.EMAIL ||
-                    valueType == ValueType.PHONE_NUMBER
+                valueType.isText &&
+                renderType?.isPolygon() != true ||
+                valueType == ValueType.URL ||
+                valueType == ValueType.EMAIL ||
+                valueType == ValueType.PHONE_NUMBER
         }
 
     private fun getLastFocusedTextItem() =
         repository.currentFocusedItem()?.takeIf {
             it.optionSet == null &&
-                    (
-                            valueTypeIsTextField(
-                                it.valueType,
-                                it.renderingType,
-                            ) ||
-                                    it.valueType == ValueType.AGE ||
-                                    it.valueType == ValueType.DATETIME ||
-                                    it.valueType == ValueType.DATE ||
-                                    it.valueType == ValueType.TIME
-                            )
+                (
+                    valueTypeIsTextField(
+                        it.valueType,
+                        it.renderingType,
+                    ) ||
+                        it.valueType == ValueType.AGE ||
+                        it.valueType == ValueType.DATETIME ||
+                        it.valueType == ValueType.DATE ||
+                        it.valueType == ValueType.TIME
+                )
         }
 
     private fun rowActionFromIntent(intent: FormIntent): RowAction =
@@ -884,8 +889,9 @@ class FormViewModel(
                 val resultAction = provideShowResultDialog(result)
                 if (resultAction?.fieldsWithIssues?.isEmpty() == true) {
                     FormActions.OnFinish
+                } else {
+                    resultAction
                 }
-                resultAction
             }
 
             EventStatus.SKIPPED -> {
@@ -899,7 +905,7 @@ class FormViewModel(
             EventStatus.SCHEDULE,
             EventStatus.VISITED,
             EventStatus.OVERDUE,
-                -> FormActions.OnFinish
+            -> FormActions.OnFinish
         }
 
     private fun provideShowResultDialog(result: DataIntegrityCheckResult): FormActions.ShowResultDialog? =
@@ -967,7 +973,7 @@ class FormViewModel(
             val result =
                 async(dispatcher.io()) {
                     repository.completedFieldsPercentage(
-                        value = _items.firstOrNull() ?: emptyList()
+                        value = _items.firstOrNull() ?: emptyList(),
                     )
                 }
             try {

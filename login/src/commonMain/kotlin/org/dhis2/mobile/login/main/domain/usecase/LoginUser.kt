@@ -10,10 +10,14 @@ class LoginUser(
         serverUrl: String,
         username: String,
         password: String,
-        isNetworkAvailable: Boolean,
     ): LoginResult {
-        val trimmedUsername = username.trim()
-        val result = repository.loginUser(serverUrl, trimmedUsername, password, isNetworkAvailable)
-        return handleResult(result, serverUrl, trimmedUsername)
+        val urlWithScheme =
+            if (serverUrl.startsWith("https://") || serverUrl.startsWith("http://")) {
+                serverUrl
+            } else {
+                "https://$serverUrl"
+            }
+        val result = repository.loginUser(urlWithScheme, username, password)
+        return handleResult(result, urlWithScheme, username)
     }
 }

@@ -43,6 +43,7 @@ class OptionSetDialogViewModel(
         }
 }
 
+@Suppress("UNCHECKED_CAST")
 class OptionSetDialogViewModelFactory(
     private val searchOptionSetOption: SearchOptionSetOption,
     private val field: FieldUiModel,

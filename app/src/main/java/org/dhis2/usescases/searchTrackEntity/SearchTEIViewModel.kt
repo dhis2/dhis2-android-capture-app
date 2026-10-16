@@ -27,8 +27,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -45,6 +45,7 @@ import org.dhis2.commons.extensions.toFriendlyDate
 import org.dhis2.commons.extensions.toFriendlyDateTime
 import org.dhis2.commons.extensions.toPercentage
 import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.sorting.SortingItem
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -69,6 +70,7 @@ import org.dhis2.tracker.search.domain.SearchTrackedEntities
 import org.dhis2.tracker.search.model.FetchSearchParametersData
 import org.dhis2.tracker.search.model.QueryData
 import org.dhis2.tracker.search.model.SearchTrackedEntitiesInput
+import org.dhis2.tracker.search.model.TrackedEntitySearchPagingItem
 import org.dhis2.tracker.search.ui.state.SearchParametersUiState
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
@@ -149,8 +151,11 @@ class SearchTEIViewModel(
     private val _backdropActive = MutableLiveData<Boolean>()
     val backdropActive: LiveData<Boolean> get() = _backdropActive
 
-    private val _teTypeName = MutableLiveData("")
-    val teTypeName: LiveData<String> = _teTypeName
+    private val _teTypeLabel = MutableLiveData("")
+    val teTypeLabel: LiveData<String> = _teTypeLabel
+
+    private val _teTypePluralLabel = MutableLiveData("")
+    val teTypePluralLabel: LiveData<String> = _teTypePluralLabel
 
     var searchParametersUiState by mutableStateOf(SearchParametersUiState())
 
@@ -168,6 +173,7 @@ class SearchTEIViewModel(
     private val _searchActions = Channel<TrackerInputAction>()
     val searchActions = _searchActions.receiveAsFlow()
 
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val searchPagingData =
         onNewSearch
             .onStart { emit(Unit) }
@@ -194,8 +200,17 @@ class SearchTEIViewModel(
             )
             loadNavigationBarItems()
 
-            _teTypeName.postValue(
-                searchRepository.trackedEntityType.displayName(),
+            _teTypeLabel.postValue(
+                searchRepositoryKt.getTeTypeCustomLabel(
+                    searchRepository.trackedEntityType.uid,
+                    isPlural = false,
+                ),
+            )
+            _teTypePluralLabel.postValue(
+                searchRepositoryKt.getTeTypeCustomLabel(
+                    searchRepository.trackedEntityType.uid,
+                    isPlural = true,
+                ),
             )
         }
     }
@@ -310,9 +325,9 @@ class SearchTEIViewModel(
             searchRepository.getProgram(initialProgramUid)?.displayFrontPageList() ?: true
         val shouldOpenSearch =
             !displayFrontPageList &&
-                    !searchRepository.canCreateInProgramWithoutSearch() &&
-                    !searching &&
-                    filtersActive.value == false
+                !searchRepository.canCreateInProgramWithoutSearch() &&
+                !searching &&
+                filtersActive.value == false
 
         createButtonScrollVisibility.postValue(
             if (searching) {
@@ -445,7 +460,7 @@ class SearchTEIViewModel(
     }
 
     fun refreshData() {
-        if(shouldDisplayFrontPageList()) performSearch()
+        if (shouldDisplayFrontPageList()) performSearch()
     }
 
     private fun updateQuery(
@@ -539,6 +554,32 @@ class SearchTEIViewModel(
             searchParametersUiState.copy(searchEnabled = queryDataList.isNotEmpty())
     }
 
+    /**
+     * Maps the repository's paging stream to [SearchTeiModel]s for the RecyclerView adapter.
+     * A page-load failure ([TrackedEntitySearchPagingItem.Error]) is logged and dropped from the
+     * list rather than failing the whole page load.
+     */
+    private fun Flow<PagingData<TrackedEntitySearchPagingItem>>.toSearchTeiModelPagingData(
+        sortingItem: SortingItem?,
+    ): Flow<PagingData<SearchTeiModel>> =
+        map { pagingData ->
+            pagingData
+                .map { item ->
+                    withContext(dispatchers.io()) {
+                        when (item) {
+                            is TrackedEntitySearchPagingItem.Error ->
+                                SearchTeiErrorModel(item.error.message)
+
+                            is TrackedEntitySearchPagingItem.Item ->
+                                searchRepositoryKt.mapTrackedEntitySearchItemResultToSearchTeiModel(
+                                    searchItemResult = item.result,
+                                    sortingItem = sortingItem,
+                                )
+                        }
+                    }
+                }
+        }
+
     private fun loadSearchResults(): Flow<PagingData<SearchTeiModel>> =
         flow {
             // get uids to exclude for possible duplicates
@@ -564,16 +605,7 @@ class SearchTEIViewModel(
             val results = searchTrackedEntities.invoke(trackerSearchModel)
 
             emitAll(
-                results.getOrThrow().map { pagingData ->
-                    pagingData.map { item ->
-                        withContext(dispatchers.io()) {
-                            searchRepositoryKt.mapTrackedEntitySearchItemResultToSearchTeiModel(
-                                item,
-                                filterManager.sortingItem,
-                            )
-                        }
-                    }
-                },
+                results.getOrThrow().toSearchTeiModelPagingData(filterManager.sortingItem),
             )
         }
 
@@ -599,16 +631,7 @@ class SearchTEIViewModel(
             val results = searchTrackedEntities.invoke(newTrackerSearchModel)
 
             emitAll(
-                results.getOrThrow().map { pagingData ->
-                    pagingData.map { item ->
-                        withContext(dispatchers.io()) {
-                            searchRepositoryKt.mapTrackedEntitySearchItemResultToSearchTeiModel(
-                                item,
-                                filterManager.sortingItem,
-                            )
-                        }
-                    }
-                },
+                results.getOrThrow().toSearchTeiModelPagingData(filterManager.sortingItem),
             )
         }
 
@@ -638,16 +661,7 @@ class SearchTEIViewModel(
                 val results = searchTrackedEntities.invoke(newTrackerSearchModel)
 
                 emitAll(
-                    results.getOrThrow().map { pagingData ->
-                        pagingData.map { item ->
-                            withContext(dispatchers.io()) {
-                                searchRepositoryKt.mapTrackedEntitySearchItemResultToSearchTeiModel(
-                                    item,
-                                    filterManager.sortingItem,
-                                )
-                            }
-                        }
-                    },
+                    results.getOrThrow().toSearchTeiModelPagingData(filterManager.sortingItem),
                 )
             }
         } else {
@@ -678,7 +692,7 @@ class SearchTEIViewModel(
     }
 
     fun onSearch() {
-        if(hasMinNumberOfAttributesToSearch()) {
+        if (hasMinNumberOfAttributesToSearch()) {
             searchRepository.clearFetchedList()
             performSearch()
         } else {
@@ -690,28 +704,27 @@ class SearchTEIViewModel(
         viewModelScope.launch(dispatchers.io()) {
             CoroutineTracker.increment()
             try {
-                    searching = queryDataList.isNotEmpty()
-                    searchParametersUiState =
-                        searchParametersUiState.copy(
-                            clearSearchEnabled = queryDataList.isNotEmpty(),
-                            searchedItems = getFriendlyQueryData(),
-                        )
+                searching = queryDataList.isNotEmpty()
+                searchParametersUiState =
+                    searchParametersUiState.copy(
+                        clearSearchEnabled = queryDataList.isNotEmpty(),
+                        searchedItems = getFriendlyQueryData(),
+                    )
 
-                    when (_screenState.value?.screenState) {
-                        SearchScreenState.LIST -> {
-                            setListScreen()
-                            onNewSearch.emit(Unit)
-                        }
-
-                        SearchScreenState.MAP -> {
-                            _refreshData.postValue(Unit)
-                            setMapScreen()
-                            fetchMapResults()
-                        }
-
-                        else -> searching = false
+                when (_screenState.value?.screenState) {
+                    SearchScreenState.LIST -> {
+                        setListScreen()
+                        onNewSearch.emit(Unit)
                     }
 
+                    SearchScreenState.MAP -> {
+                        _refreshData.postValue(Unit)
+                        setMapScreen()
+                        fetchMapResults()
+                    }
+
+                    else -> searching = false
+                }
             } catch (e: Exception) {
                 Timber.d(e)
             } finally {
@@ -724,22 +737,22 @@ class SearchTEIViewModel(
         viewModelScope.launch(dispatchers.io()) {
             CoroutineTracker.increment()
             try {
-                    val minAttributesToSearch =
-                        searchRepository
-                            .getProgram(initialProgramUid)
-                            ?.minAttributesRequiredToSearch()
-                            ?: 0
-                    val message =
-                        resourceManager.getString(
-                            R.string.search_min_num_attr,
-                            minAttributesToSearch,
-                        )
-                    searchParametersUiState =
-                        searchParametersUiState.copy(minAttributesMessage = message)
-                    searchParametersUiState.updateMinAttributeWarning(true)
-                    setSearchScreen()
-                    _refreshData.postValue(Unit)
-                    onNewSearch.emit(Unit)
+                val minAttributesToSearch =
+                    searchRepository
+                        .getProgram(initialProgramUid)
+                        ?.minAttributesRequiredToSearch()
+                        ?: 0
+                val message =
+                    resourceManager.getString(
+                        R.string.search_min_num_attr,
+                        minAttributesToSearch,
+                    )
+                searchParametersUiState =
+                    searchParametersUiState.copy(minAttributesMessage = message)
+                searchParametersUiState.updateMinAttributeWarning(true)
+                setSearchScreen()
+                _refreshData.postValue(Unit)
+                onNewSearch.emit(Unit)
             } catch (e: Exception) {
                 Timber.d(e)
             } finally {
@@ -748,8 +761,7 @@ class SearchTEIViewModel(
         }
     }
 
-    private fun shouldDisplayFrontPageList(): Boolean =
-      displayFrontPageListSettingIsConfigured()
+    private fun shouldDisplayFrontPageList(): Boolean = displayFrontPageListSettingIsConfigured()
 
     private fun hasMinNumberOfAttributesToSearch(): Boolean =
         searchRepository.getProgram(initialProgramUid)?.let { program ->
@@ -766,17 +778,17 @@ class SearchTEIViewModel(
         onlineTooManyResults: Boolean,
     ): Boolean =
         !onlineTooManyResults &&
-                when (initialProgramUid) {
-                    null -> itemCount <= TEI_TYPE_SEARCH_MAX_RESULTS
-                    else ->
-                        searchRepository
-                            .getProgram(initialProgramUid)
-                            ?.maxTeiCountToReturn()
-                            ?.takeIf { it != 0 }
-                            ?.let { maxTeiCount ->
-                                itemCount <= maxTeiCount
-                            } ?: true
-                }
+            when (initialProgramUid) {
+                null -> itemCount <= TEI_TYPE_SEARCH_MAX_RESULTS
+                else ->
+                    searchRepository
+                        .getProgram(initialProgramUid)
+                        ?.maxTeiCountToReturn()
+                        ?.takeIf { it != 0 }
+                        ?.let { maxTeiCount ->
+                            itemCount <= maxTeiCount
+                        } ?: true
+            }
 
     fun queryDataByProgram(programUid: String?): MutableMap<String, List<String>> =
         searchRepository.filterQueryForProgram(queryDataAsMap(), programUid)
@@ -906,10 +918,11 @@ class SearchTEIViewModel(
                 }
 
                 hasGlobalResults == null &&
-                        searchRepository.getProgram(initialProgramUid) != null &&
-                        searchRepository.filterQueryForProgram(queryDataAsMap(), null)
-                            .isNotEmpty() &&
-                        searchRepository.filtersApplyOnGlobalSearch() -> {
+                    searchRepository.getProgram(initialProgramUid) != null &&
+                    searchRepository
+                        .filterQueryForProgram(queryDataAsMap(), null)
+                        .isNotEmpty() &&
+                    searchRepository.filtersApplyOnGlobalSearch() -> {
                     listOf(
                         SearchResult(
                             SearchResult.SearchResultType.SEARCH_OUTSIDE,
@@ -919,9 +932,9 @@ class SearchTEIViewModel(
                 }
 
                 hasGlobalResults == null &&
-                        searchRepository.getProgram(initialProgramUid) != null &&
-                        searchRepository.trackedEntityTypeFields().isNotEmpty() &&
-                        searchRepository.filtersApplyOnGlobalSearch() -> {
+                    searchRepository.getProgram(initialProgramUid) != null &&
+                    searchRepository.trackedEntityTypeFields().isNotEmpty() &&
+                    searchRepository.filtersApplyOnGlobalSearch() -> {
                     listOf(
                         SearchResult(
                             type = SearchResult.SearchResultType.UNABLE_SEARCH_OUTSIDE,
@@ -1229,7 +1242,7 @@ class SearchTEIViewModel(
                     TrackerInputType.VERTICAL_RADIOBUTTONS,
                     TrackerInputType.HORIZONTAL_CHECKBOXES,
                     TrackerInputType.VERTICAL_CHECKBOXES,
-                        -> {
+                    -> {
                         item.value?.let {
                             if (it == "true" || it == "false") {
                                 map[item.uid] = "${item.label}: $it"

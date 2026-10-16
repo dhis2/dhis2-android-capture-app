@@ -35,6 +35,21 @@
                 android:scheme="smsto" />
         </intent>
 
+        <!--
+             Without these the package manager filters browsers out on Android 11+,
+             so CustomTabsClient cannot resolve a browser or detect Auth Tab support.
+        -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+
+            <category android:name="android.intent.category.BROWSABLE" />
+
+            <data android:scheme="https" />
+        </intent>
+        <intent>
+            <action android:name="android.support.customtabs.action.CustomTabsService" />
+        </intent>
+
     </queries>
 
     <application

@@ -10,13 +10,14 @@ class CheckVersionUpdate(
     private val settingsMessages: SettingsMessages,
     private val resourceManager: ResourceManager,
 ) : UseCase<Unit, Unit> {
-    override suspend fun invoke(input: Unit): Result<Unit> = try {
-        val newVersion = versionRepository.downloadLatestVersionInfo()
-        if (newVersion == null) {
-            settingsMessages.sendMessage(resourceManager.getString(R.string.no_updates))
+    override suspend fun invoke(input: Unit): Result<Unit> =
+        try {
+            val newVersion = versionRepository.downloadLatestVersionInfo()
+            if (newVersion == null) {
+                settingsMessages.sendMessage(resourceManager.getString(R.string.no_updates))
+            }
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
         }
-        Result.success(Unit)
-    } catch (e: Exception) {
-        Result.failure(e)
-    }
 }

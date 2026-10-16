@@ -1,0 +1,9 @@
+package org.dhis2.mobile.commons.featureconfig.model
+
+enum class Feature(
+    val description: String,
+) {
+    AUTO_LOGOUT("automatic log out"),
+    RESPONSIVE_HOME("responsive home"),
+    TWO_FACTOR_AUTHENTICATION("Two Factor Authentication"),
+}

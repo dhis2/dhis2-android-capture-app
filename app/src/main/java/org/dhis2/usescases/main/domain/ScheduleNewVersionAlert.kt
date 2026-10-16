@@ -14,7 +14,6 @@ class ScheduleNewVersionAlert(
     private val workManagerController: WorkManagerController,
     private val versionRepository: VersionRepository,
 ) : UseCase<Unit, Unit> {
-
     val newVersionFlow = versionRepository.newAppVersion
 
     override suspend fun invoke(input: Unit): Result<Unit> =

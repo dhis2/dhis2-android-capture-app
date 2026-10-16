@@ -10,7 +10,7 @@ plugins {
 kotlin {
     android {
         namespace = "org.dhis2.mobile.tracker"
-        compileSdk = libs.versions.sdk.get().toInt()
+        compileSdk = libs.versions.compileSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
         compilerOptions { jvmTarget.set(JvmTarget.JVM_17) }
         androidResources { enable = true }

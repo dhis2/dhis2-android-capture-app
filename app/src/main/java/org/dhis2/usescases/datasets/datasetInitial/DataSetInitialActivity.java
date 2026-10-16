@@ -17,7 +17,7 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.extensions.CategoryOptionExtensionsKt;
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope;
 import org.dhis2.commons.resources.DhisPeriodUtils;

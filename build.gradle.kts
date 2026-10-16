@@ -32,7 +32,7 @@ var totalTestsSkipped: Long = 0
 var totalModules: MutableList<String> = mutableListOf()
 var failedTests: MutableList<String> = mutableListOf()
 
-sonarqube {
+sonar {
     properties {
         val branch = System.getenv("GIT_BRANCH")
         val targetBranch = System.getenv("GIT_BRANCH_DEST")
@@ -44,7 +44,16 @@ sonarqube {
         property("sonar.host.url", "https://sonarcloud.io")
         property("sonar.projectName", "android capture app")
 
-        if (pullRequestId == null) {
+        // Workaround for SCANGRADLE-410: sonar-scanner-gradle 7.3.1.8318 leaves
+        // sonar.java.binaries empty under AGP 9, breaking analysis of remaining
+        // .java sources. Remove once the upstream fix is released.
+        property("sonar.exclusions", "**/*.java")
+
+        // GitHub Actions always defines PULL_REQUEST, resolving it to an empty
+        // string on push events, so a null check alone sends push builds down the
+        // pull-request path with a blank sonar.pullrequest.key. Since scanner
+        // 7.3.x that is rejected outright and the analysis fails.
+        if (pullRequestId.isNullOrEmpty()) {
             property("sonar.branch.name", branch)
         } else {
             property("sonar.pullrequest.base", targetBranch)

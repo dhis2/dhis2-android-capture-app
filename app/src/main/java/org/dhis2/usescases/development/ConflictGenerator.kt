@@ -221,7 +221,7 @@ class ConflictGenerator(
             runBlocking {
                 d2.databaseAdapter().upsertObject(conflict, TrackerImportConflict::class)
             }
-            enrollmentUid?.let {
+            enrollmentUid.let {
                 runBlocking {
                     d2
                         .databaseAdapter()
@@ -547,7 +547,7 @@ class ConflictGenerator(
         syncState: String,
     ): String =
         "UPDATE Enrollment SET syncState = '$syncState'," +
-                " aggregatedSyncState = '$syncState' where uid = '$enrollmentUid'"
+            " aggregatedSyncState = '$syncState' where uid = '$enrollmentUid'"
 
     private fun updateTei(
         teiUid: String,

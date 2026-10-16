@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.dhis2.mobile.login.accounts.data.repository.AccountRepository
 import org.dhis2.mobile.login.accounts.domain.model.AccountModel
+import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
 
@@ -42,7 +43,7 @@ class AccountsViewModel(
                     serverName = account.serverName,
                     selectedServerFlag = account.serverFlag,
                     allowRecovery = account.allowRecovery,
-                    oAuthEnabled = account.isOauthEnabled,
+                    entryMode = CredentialsEntryMode.existing(account.authorizationMethod),
                 ),
             )
         }

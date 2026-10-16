@@ -36,17 +36,18 @@ class TrackerAnalyticsRepository(
     }
 
     override suspend fun fetchData(): List<AnalyticsModel> {
-        val indicators = getIndicators(
-            !DhisTextUtils.isEmpty(enrollmentUid),
-        ) { indicatorUid ->
-            d2
-                .programModule()
-                .programIndicatorEngine()
-                .getEnrollmentProgramIndicatorValue(
-                    enrollmentUid,
-                    indicatorUid,
-                ) ?: ""
-        }.blockingFirst(emptyList())
+        val indicators =
+            getIndicators(
+                !DhisTextUtils.isEmpty(enrollmentUid),
+            ) { indicatorUid ->
+                d2
+                    .programModule()
+                    .programIndicatorEngine()
+                    .getEnrollmentProgramIndicatorValue(
+                        enrollmentUid,
+                        indicatorUid,
+                    ) ?: ""
+            }.blockingFirst(emptyList())
 
         val ruleIndicators = getRulesIndicators().blockingFirst(emptyList())
 

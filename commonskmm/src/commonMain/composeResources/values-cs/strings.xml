@@ -130,7 +130,7 @@
     <string name="login_error_bad_credentials">Uživatelské jméno nebo heslo jsou nesprávné</string>
     <string name="login_error_unknown_host">Neznámý server</string>
     <string name="online_search_parsing_error">Chyba při analýze výsledků</string>
-    <string name="error_unexpected">Něco neočekávaného se opotřebovalo.</string>
+    <string name="error_unexpected">Něco neočekávaného se pokazilo.</string>
     <string name="error_too_manu_org_units">Váš uživatel má více než jednu kořenovou organizační jednotku. Zkontrolujte svou konfiguraci nebo kontaktujte svého správce.</string>
     <string name="error_max_tei_count_reached">Online výsledky překračují maximální počet instancí sledování, které lze zobrazit. Upřesněte prosím vyhledávání.</string>
     <string name="error_many_requests">Server je v tuto chvíli trochu zaneprázdněn. Zkuste to o něco později.</string>
@@ -192,4 +192,13 @@
     <string name="cancel">Zrušit</string>
     <string name="ok">OK</string>
 
+    <string name="not_synced">Není synchronizováno</string>
+    <string name="sync">Synchronizace</string>
+    <string name="sync_warning">Upozornění na synchronizaci</string>
+    <string name="sync_retry">Opakování synchronizace</string>
+    <string name="sync_error">Chyba synchronizace</string>
+    <string name="marked_follow_up">Označeno pro další sledování</string>
+    <string name="remove_follow_up">Odstranit</string>
+    <string name="program_stage">Programová fáze</string>
+    <string name="stage">fáze</string>
 </resources>

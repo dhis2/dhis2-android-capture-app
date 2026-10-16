@@ -29,11 +29,9 @@ import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatarSize
 import org.hisp.dhis.mobile.ui.designsystem.component.MetadataIcon
 import org.hisp.dhis.mobile.ui.designsystem.resource.provideDHIS2Icon
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
-import java.util.Date
 
 const val ENROLLMENT_ICONS_TO_SHOW = 3
 const val MAX_NUMBER_REMAINING_ENROLLMENTS = 99
-
 
 fun List<Program>.getEnrollmentIconsData(
     currentProgram: String?,
@@ -136,4 +134,3 @@ fun getRemainingEnrollmentsForTei(teiEnrollmentCount: Int): Int =
     } else {
         teiEnrollmentCount - ENROLLMENT_ICONS_TO_SHOW
     }
-

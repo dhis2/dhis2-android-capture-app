@@ -2,6 +2,7 @@ package org.dhis2.mobile.sync.domain
 
 import org.dhis2.mobile.commons.domain.UseCase
 import org.dhis2.mobile.commons.error.DomainError
+import org.dhis2.mobile.commons.session.SessionRenewalNotifier
 import org.dhis2.mobile.sync.data.SyncRepository
 import org.dhis2.mobile.sync.model.DataSyncProgress
 import org.dhis2.mobile.sync.model.DataSyncTask
@@ -11,6 +12,7 @@ private const val SYNC_DATA_NAME = "SYNC_DATA"
 class SyncData(
     private val repository: SyncRepository,
     private val syncStatusController: SyncStatusController,
+    private val sessionRenewalNotifier: SessionRenewalNotifier,
 ) : UseCase<(progress: DataSyncProgress) -> Unit, Unit> {
     override suspend fun invoke(input: (progress: DataSyncProgress) -> Unit): Result<Unit> =
         try {
@@ -75,20 +77,36 @@ class SyncData(
                 input(DataSyncProgress(DataSyncTask.SyncReservedValues, progress))
             }
 
-            val isSuccess =
-                uploadEventResult.isSuccess &&
-                    downloadEventResult.isSuccess &&
-                    uploadTEIResult.isSuccess &&
-                    downloadTEIResult.isSuccess &&
-                    uploadDataValueResult.isSuccess &&
-                    downloadDataValueResult.isSuccess
+            val syncResults =
+                listOf(
+                    uploadEventResult,
+                    downloadEventResult,
+                    uploadTEIResult,
+                    downloadTEIResult,
+                    uploadDataValueResult,
+                    downloadDataValueResult,
+                )
+            val isSuccess = syncResults.all { it.isSuccess }
+
+            sessionRenewalNotifier.notifyIfRequired(
+                syncResults.firstNotNullOfOrNull { result ->
+                    result.exceptionOrNull() as? DomainError.SessionRenewalRequiredError
+                },
+            )
 
             repository.saveDataSyncState(isSuccess)
 
             Result.success(Unit)
         } catch (domainError: DomainError) {
-            if (domainError is DomainError.NetworkError) {
-                syncStatusController.onNetworkUnavailable()
+            when (domainError) {
+                is DomainError.NetworkError -> syncStatusController.onNetworkUnavailable()
+
+                is DomainError.SessionRenewalRequiredError ->
+                    sessionRenewalNotifier.notifyRenewalRequired()
+
+                else -> {
+                    // Nothing else to signal
+                }
             }
             Result.failure(domainError)
         } catch (e: Exception) {

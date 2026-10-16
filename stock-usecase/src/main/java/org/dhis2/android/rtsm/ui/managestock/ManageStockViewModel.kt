@@ -160,10 +160,16 @@ class ManageStockViewModel(
                         ),
                         transaction.value?.facility?.uid,
                         config,
-                    ).items
-
-            result.asFlow().collect {
+                    )
+            val items = result.first.items
+            val syncStatus = result.second
+            items.asFlow().collect {
                 stockItems.value = it
+                _dataEntryUiState.update { currentUiState ->
+                    currentUiState.copy(
+                        infoBar = syncStatus?.type,
+                    )
+                }
                 populateTable()
             }
         }

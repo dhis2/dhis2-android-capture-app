@@ -241,7 +241,7 @@ class EventMapFragment :
                                                     )
 
                                                 is AvatarProviderConfiguration.ProfilePic ->
-                                                    AvatarStyleData.Image(buildPainterForFile(config.profilePicturePath))
+                                                    AvatarStyleData.Image(buildPainterForFile(config.profilePicturePath).painter)
                                             },
                                         onImageClick =
                                             when (

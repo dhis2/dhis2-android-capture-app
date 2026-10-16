@@ -5,4 +5,5 @@
     <string name="password_hint">Lösenord</string>
     <string name="openid_or">Eller</string>
     <string name="action_yes">Ja</string>
-    </resources>
+    <string name="cancel">Avbryt</string>
+</resources>

@@ -1,5 +1,6 @@
 package org.dhis2.usescases.settings.models
 
+import org.dhis2.mobile.login.authentication.domain.model.TwoFAStatus
 import org.dhis2.usescases.settings.SettingItem
 
 data class SettingsState(
@@ -10,9 +11,10 @@ data class SettingsState(
     val syncParametersViewModel: SyncParametersViewModel,
     val reservedValueSettingsViewModel: ReservedValueSettingsViewModel,
     val smsSettingsViewModel: SMSSettingsViewModel,
-    val isTwoFAConfigured: Boolean,
+    val accountType: AccountType,
     val versionName: String,
     val deleteDataState: DeleteDataState = DeleteDataState.None,
+    val twoFAStatus: TwoFAStatus = TwoFAStatus.NoConnection,
 ) {
     fun canInitDataSync() = hasConnection && !dataSettingsViewModel.syncInProgress
 

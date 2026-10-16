@@ -36,7 +36,6 @@
     <string name="filters_title_state">Sincronizar</string>
     <string name="filters_title_assigned">Atribuído a mim</string>
     <string name="filters_title_date">Data</string>
-    <string name="filter_follow_up_label">Acompanhado%s</string>
     <string name="select_period">Seleccionar tipo de período</string>
     <string name="weekly">Semanal</string>
     <string name="bi_weekly">Quinzenal</string>

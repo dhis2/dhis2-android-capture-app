@@ -5,5 +5,6 @@ import org.dhis2.mobile.login.pin.data.SessionRepository
 class GetIsSessionLockedUseCase(
     private val sessionRepository: SessionRepository,
 ) {
-    suspend operator fun invoke() = sessionRepository.isSessionLocked()
+    suspend operator fun invoke(requireOfflineCredentials: Boolean): Boolean =
+        requireOfflineCredentials || sessionRepository.isSessionLocked()
 }

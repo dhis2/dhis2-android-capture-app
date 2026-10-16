@@ -85,10 +85,10 @@ class TeiDashboardPresenterTest {
             listOf(
                 Pair(
                     TrackedEntityAttribute.builder().uid("teiAttr").build(),
-                    TrackedEntityAttributeValue.builder().build(),
+                    mock<TrackedEntityAttributeValue>(),
                 ),
             )
-        val trackedEntityAttributeValues = listOf(TrackedEntityAttributeValue.builder().build())
+        val trackedEntityAttributeValues = listOf(mock<TrackedEntityAttributeValue>())
         val orgUnits = listOf(OrganisationUnit.builder().uid("orgUnitUid").build())
         val programs =
             listOf(

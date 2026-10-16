@@ -46,7 +46,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -70,7 +69,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.menu.DropDownMenu
 import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemData
 import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuLeadingElement
-import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.dropShadow
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
@@ -80,18 +78,26 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+/**
+ * The scheme the DHIS2 OAuth2 flow redirects back to.
+ *
+ * Must stay in sync with `OAuth2Config.DEFAULT_REDIRECT_URI` in the DHIS2 Android SDK and with the
+ * `LoginActivity` intent filter that receives it in the app manifest.
+ */
+private const val OAUTH_REDIRECT_SCHEME = "dhis2oauth"
+
 @Composable
 fun LoginScreen(
     navController: NavHostController = rememberNavController(),
     versionName: String,
-    fromHome: Boolean,
     onNavigateToSync: () -> Unit,
     onNavigateToHome: () -> Unit,
     onNavigateToPrivacyPolicy: () -> Unit,
     onFinish: () -> Unit,
+    renewSession: Boolean = false,
 ) {
     val context = LocalPlatformContext.current
-    val viewModel = koinViewModel<LoginViewModel> { parametersOf(context) }
+    val viewModel = koinViewModel<LoginViewModel> { parametersOf(context, renewSession) }
     val fixedOidcInfo = koinInject<OidcInfo>()
     var displayMoreActions by remember { mutableStateOf(false) }
     var displayBackArrow by remember { mutableStateOf(false) }
@@ -213,14 +219,19 @@ fun LoginScreen(
                             fixedOpenIdProvider(fixedOidcInfo).takeIf { info ->
                                 info.serverUrl == arg.selectedServer
                             },
-                        fromHome = fromHome,
-                        oAuthEnable = arg.oAuthEnabled,
+                        entryMode = arg.entryMode,
+                        autoPromptLogin = arg.autoPromptLogin,
+                        autoStartRenewal = arg.autoStartRenewal,
                     )
                 }
                 composable<LoginScreenState.OauthAuthentication> {
                     val args = it.toRoute<LoginScreenState.OauthAuthentication>()
                     WebAuthenticator(
                         url = args.selectedServer,
+                        redirectScheme = OAUTH_REDIRECT_SCHEME,
+                        onAuthCallback = { redirectUri ->
+                            viewModel.onOauthRedirect(redirectUri)
+                        },
                         onDismiss = {
                             viewModel.onOauthLoginCancelled()
                         },
@@ -346,13 +357,5 @@ fun LoginTopBar(
                 style = MaterialTheme.typography.bodySmall,
             )
         }
-    }
-}
-
-@Preview
-@Composable
-fun TopBarPreview() {
-    DHIS2Theme {
-        LoginTopBar("v3.3.0-DEV : 0b3f5487", true, onBack = {}) {}
     }
 }

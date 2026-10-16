@@ -46,4 +46,18 @@ interface NotificationManager {
     fun cancelSyncSettingsNotification()
 
     fun cancelDataSyncNotification()
+
+    fun displayGranularSyncNotification(
+        smallIcon: Int,
+        contentTitle: String,
+        contentText: String,
+    )
+
+    fun cancelGranularSyncNotification()
+
+    fun getGranularSyncNotification(
+        smallIcon: Int,
+        contentTitle: String,
+        contentText: String,
+    ): NotificationModel
 }

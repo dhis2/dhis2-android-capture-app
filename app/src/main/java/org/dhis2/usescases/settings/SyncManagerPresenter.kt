@@ -16,6 +16,7 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.extensions.launchUseCase
+import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
 import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.ExportDatabase
@@ -26,6 +27,7 @@ import org.dhis2.usescases.settings.domain.SettingsMessages
 import org.dhis2.usescases.settings.domain.UpdateSmsModule
 import org.dhis2.usescases.settings.domain.UpdateSmsResponse
 import org.dhis2.usescases.settings.domain.UpdateSyncSettings
+import org.dhis2.usescases.settings.models.AccountType
 import org.dhis2.usescases.settings.models.DeleteDataState
 import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.settings.models.SettingsState
@@ -46,6 +48,7 @@ class SyncManagerPresenter(
     private val dispatcherProvider: DispatcherProvider,
     private val networkUtils: NetworkUtils,
     private val settingsMessages: SettingsMessages,
+    private val twoFaStatus: GetTwoFAStatus,
 ) : ViewModel() {
     val exporting = exportDatabase.exporting
 
@@ -125,7 +128,13 @@ class SyncManagerPresenter(
             ),
         ).fold(
             onSuccess = { settingsState ->
-                _settingsState.update { settingsState }
+                _settingsState
+                    .update { settingsState }
+                    .also {
+                        if (_settingsState.value?.accountType == AccountType.OAUTH) {
+                            getTwoFAStatus()
+                        }
+                    }
             },
             onFailure = {
                 // do nothing
@@ -374,6 +383,12 @@ class SyncManagerPresenter(
         }
     }
 
+    fun refreshData() {
+        viewModelScope.launch(dispatcherProvider.io()) {
+            loadData()
+        }
+    }
+
     fun onSyncMetaPeriodChanged(period: Int) {
         viewModelScope.launch(dispatcherProvider.io()) {
             launchSync(LaunchSync.SyncAction.UpdateSyncMetadataPeriod(period))
@@ -384,5 +399,16 @@ class SyncManagerPresenter(
     fun closeChannel() {
         settingsMessages.close()
         _errorLogChannel.close()
+    }
+
+    private fun getTwoFAStatus() {
+        launchUseCase {
+            val state = twoFaStatus()
+            _settingsState.update {
+                it?.copy(
+                    twoFAStatus = state,
+                )
+            }
+        }
     }
 }

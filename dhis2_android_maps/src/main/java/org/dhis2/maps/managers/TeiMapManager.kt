@@ -317,7 +317,9 @@ class TeiMapManager(
         listOf(TEIS_SOURCE_ID, ENROLLMENT_SOURCE_ID).forEach { sourceId ->
             if (teiFeatureCollections?.get(sourceId)?.features()?.isNotEmpty() == true &&
                 mapLayerManager.mapLayers.containsKey(sourceId)
-            ) return sourceId
+            ) {
+                return sourceId
+            }
         }
         eventsFeatureCollection?.forEach { (sourceId, fc) ->
             if (fc.features()?.isNotEmpty() == true && mapLayerManager.mapLayers.containsKey(sourceId)) {

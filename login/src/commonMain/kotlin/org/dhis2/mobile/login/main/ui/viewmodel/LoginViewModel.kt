@@ -9,12 +9,14 @@ import kotlinx.coroutines.flow.update
 import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.commons.extensions.withMinimumDuration
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
+import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState.LoginCredentials
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
+import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
 import org.dhis2.mobile.login.main.ui.state.DatabaseImportState
 import org.dhis2.mobile.login.main.ui.state.ServerValidationUiState
@@ -25,6 +27,8 @@ class LoginViewModel(
     private val importDatabase: ImportDatabase,
     private val validateServer: ValidateServer,
     private val networkStatusProvider: NetworkStatusProvider,
+    private val appLinkNavigation: AppLinkNavigation,
+    private val renewSession: Boolean = false,
 ) : ViewModel() {
     private val _serverValidationState = MutableStateFlow(ServerValidationUiState())
     val serverValidationState = _serverValidationState.asStateFlow()
@@ -40,7 +44,7 @@ class LoginViewModel(
 
     private fun goToInitialScreen() {
         launchUseCase {
-            val destination = getInitialScreen()
+            val destination = getInitialScreen(renewSession)
             navigator.navigate(
                 destination = destination,
                 navOptions = {
@@ -87,7 +91,12 @@ class LoginViewModel(
                                     selectedServer = serverUrl,
                                     selectedServerFlag = result.countryFlag,
                                     selectedUsername = null,
-                                    oAuthEnabled = result.oAuthEnabled,
+                                    entryMode =
+                                        if (result.oAuthEnabled) {
+                                            CredentialsEntryMode.NEW_ACCOUNT_OAUTH
+                                        } else {
+                                            CredentialsEntryMode.NEW_ACCOUNT_BASIC
+                                        },
                                 ),
                         )
                         stopValidation()
@@ -103,6 +112,11 @@ class LoginViewModel(
 
     private fun stopValidation() {
         _serverValidationState.update { it.copy(validationRunning = false) }
+    }
+
+    // Reports a redirect that a browser with Auth Tab support handed back directly, as an activity result.
+    fun onOauthRedirect(url: String) {
+        appLinkNavigation.emit(url)
     }
 
     fun onOauthLoginCancelled() {

@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 import org.dhis2.R
 import org.dhis2.commons.extensions.inDateRange
 import org.dhis2.commons.extensions.inOrgUnit
@@ -191,7 +192,7 @@ fun formatUIDateToStored(dateValue: String?): InputDateValues? =
         null
     } else {
         val date = LocalDate.Formats.ISO.parse(dateValue)
-        InputDateValues(date.dayOfMonth, date.monthNumber, date.year)
+        InputDateValues(date.day, date.month.number, date.year)
     }
 
 data class InputDateValues(

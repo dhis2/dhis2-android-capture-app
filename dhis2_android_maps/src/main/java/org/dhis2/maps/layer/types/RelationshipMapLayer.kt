@@ -168,7 +168,7 @@ class RelationshipMapLayer(
                 ?: FillLayer(polygonLayerId, sourceId)
                     .withProperties(
                         PropertyFactory.fillColor(
-                            colorUtils.withAlpha(lineColor ?: LINE_COLOR ?: -1, 50),
+                            colorUtils.withAlpha(lineColor ?: LINE_COLOR, 50),
                         ),
                     ).withFilter(isPolygon())
 

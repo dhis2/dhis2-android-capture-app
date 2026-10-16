@@ -81,9 +81,9 @@ class LaunchSync(
             metadataWasRunning: Boolean,
             dataWasRunning: Boolean,
         ) = metadataSyncProgress == SyncStatus.Finished &&
-                metadataWasRunning ||
-                dataSyncProgress == SyncStatus.Finished &&
-                dataWasRunning
+            metadataWasRunning ||
+            dataSyncProgress == SyncStatus.Finished &&
+            dataWasRunning
     }
 
     suspend operator fun invoke(syncAction: SyncAction) {
@@ -135,10 +135,11 @@ class LaunchSync(
         syncBackgroundJobAction.launchDataSync(seconds.toLong())
     }
 
-    private fun combinedStatus(workStatuses: List<SyncJobStatus>) = when {
-        workStatuses.any { (it.status is Status.Running) or (it.status is Status.Blocked) } -> SyncStatus.InProgress
-        workStatuses.all { it.status is Status.Enqueue } -> SyncStatus.None
-        workStatuses.all { it.status is Status.Cancelled } -> SyncStatus.Cancelled
-        else -> SyncStatus.Finished
-    }
+    private fun combinedStatus(workStatuses: List<SyncJobStatus>) =
+        when {
+            workStatuses.any { (it.status is Status.Running) or (it.status is Status.Blocked) } -> SyncStatus.InProgress
+            workStatuses.all { it.status is Status.Enqueue } -> SyncStatus.None
+            workStatuses.all { it.status is Status.Cancelled } -> SyncStatus.Cancelled
+            else -> SyncStatus.Finished
+        }
 }

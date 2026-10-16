@@ -101,17 +101,17 @@ class RulesRepositoryTest {
         OrganisationUnit
             .builder()
             .uid("org_unit_test")
-            .organisationUnitGroups(arrayListOf(getTestOrgUnitGroup("org_unit_group_test_code")))
+            .organisationUnitGroups(listOf(getTestOrgUnitGroup("org_unit_group_test_code")))
             .build()
 
     private fun getTestOrgUnitWithNullCodeGroup(): OrganisationUnit =
         OrganisationUnit
             .builder()
             .uid("org_unit_test")
-            .organisationUnitGroups(arrayListOf(getTestOrgUnitGroup()))
+            .organisationUnitGroups(listOf(getTestOrgUnitGroup()))
             .build()
 
-    private fun getTestOrgUnitGroup(ouCode: String? = null): OrganisationUnitGroup? =
+    private fun getTestOrgUnitGroup(ouCode: String? = null): OrganisationUnitGroup =
         OrganisationUnitGroup
             .builder()
             .uid("org_unit_group_test")

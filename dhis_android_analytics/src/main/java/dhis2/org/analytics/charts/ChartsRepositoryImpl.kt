@@ -395,13 +395,14 @@ class ChartsRepositoryImpl(
     }
 
     private suspend fun getSettingsAnalytics(enrollment: Enrollment): List<Graph> {
-        val analyticsSettings = d2
-            .settingModule()
-            .analyticsSetting()
-            .teis()
-            .byProgram()
-            .eq(enrollment.program())
-            .blockingGet()
+        val analyticsSettings =
+            d2
+                .settingModule()
+                .analyticsSetting()
+                .teis()
+                .byProgram()
+                .eq(enrollment.program())
+                .blockingGet()
         if (analyticsSettings.isEmpty()) return emptyList()
         return analyticsTeiSettingsToGraph.map(
             enrollment.trackedEntityInstance()!!,

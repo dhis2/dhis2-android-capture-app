@@ -77,7 +77,7 @@ class TrackerFilterSearchHelper
                     ).let {
                         if (filterManager.periodFilters.isEmpty()) {
                             val datePeriod =
-                                DatePeriod.create(
+                                DatePeriod(
                                     Calendar.getInstance().apply { add(Calendar.YEAR, -1) }.time,
                                     Calendar.getInstance().apply { add(Calendar.YEAR, 1) }.time,
                                 )

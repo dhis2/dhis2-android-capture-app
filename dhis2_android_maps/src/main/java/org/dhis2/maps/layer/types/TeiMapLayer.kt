@@ -86,7 +86,7 @@ class TeiMapLayer(
             style.getLayer(POLYGON_LAYER_ID)
                 ?: FillLayer(POLYGON_LAYER_ID, TEIS_SOURCE_ID)
                     .withProperties(
-                        PropertyFactory.fillColor(colorUtils.withAlpha(enrollmentColor ?: -1)),
+                        PropertyFactory.fillColor(colorUtils.withAlpha(enrollmentColor)),
                     ).withFilter(isPolygon())
 
     private val polygonBorderLayer: Layer
@@ -94,7 +94,7 @@ class TeiMapLayer(
             style.getLayer(POLYGON_BORDER_LAYER_ID)
                 ?: LineLayer(POLYGON_BORDER_LAYER_ID, TEIS_SOURCE_ID)
                     .withProperties(
-                        PropertyFactory.lineColor(enrollmentDarkColor ?: -1),
+                        PropertyFactory.lineColor(enrollmentDarkColor),
                         PropertyFactory.lineWidth(2f),
                     ).withFilter(isPolygon())
 

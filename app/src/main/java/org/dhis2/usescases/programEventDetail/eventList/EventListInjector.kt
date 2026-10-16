@@ -6,6 +6,7 @@ import dagger.Subcomponent
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailRepository
 import org.dhis2.usescases.programEventDetail.ProgramEventMapper
 import org.dhis2.usescases.programEventDetail.eventList.ui.mapper.EventCardMapper
@@ -26,6 +27,7 @@ class EventListModule {
         dispatcher: DispatcherProvider,
         mapper: ProgramEventMapper,
         cardMapper: EventCardMapper,
+        customLabelProvider: CustomLabelProvider,
     ): EventListPresenterFactory =
         EventListPresenterFactory(
             filterManager,
@@ -33,5 +35,6 @@ class EventListModule {
             dispatcher,
             mapper,
             cardMapper,
+            customLabelProvider,
         )
 }

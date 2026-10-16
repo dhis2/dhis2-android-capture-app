@@ -62,14 +62,15 @@ class ChartsRepositoryTest {
         )
 
     @Test
-    fun `Should return empty list if enrollment teiUid is null`() = runTest {
-        whenever(
-            d2
-                .enrollmentModule()
-                .enrollments()
-                .uid(any())
-                .blockingGet(),
-        ) doReturn
+    fun `Should return empty list if enrollment teiUid is null`() =
+        runTest {
+            whenever(
+                d2
+                    .enrollmentModule()
+                    .enrollments()
+                    .uid(any())
+                    .blockingGet(),
+            ) doReturn
                 Enrollment
                     .builder()
                     .uid("enrollmentUid")
@@ -77,40 +78,42 @@ class ChartsRepositoryTest {
                     .trackedEntityInstance(null)
                     .attributeOptionCombo("attributeOptionComboUid")
                     .build()
-        val result = repository.getAnalyticsForEnrollment("enrollmentUid")
-        assertTrue(
-            result.isEmpty(),
-        )
-    }
+            val result = repository.getAnalyticsForEnrollment("enrollmentUid")
+            assertTrue(
+                result.isEmpty(),
+            )
+        }
 
     @Test
-    fun `Should get analytics if settings is not null`() = runTest {
-        mockEnrollmentCall()
-        mockAnalyticsSettingsCall(mockedAnalyticsSettings())
-        whenever(
-            analyticsTeiSettingsToGraph.map(any(), any(), any(), any(), any(), any(), any()),
-        ) doReturn mockedSettingsGraphs()
+    fun `Should get analytics if settings is not null`() =
+        runTest {
+            mockEnrollmentCall()
+            mockAnalyticsSettingsCall(mockedAnalyticsSettings())
+            whenever(
+                analyticsTeiSettingsToGraph.map(any(), any(), any(), any(), any(), any(), any()),
+            ) doReturn mockedSettingsGraphs()
 
-        val result = repository.getAnalyticsForEnrollment("enrollmentUid")
-        assertTrue(
-            result.isNotEmpty() &&
+            val result = repository.getAnalyticsForEnrollment("enrollmentUid")
+            assertTrue(
+                result.isNotEmpty() &&
                     result.size == mockedSettingsGraphs().size &&
                     result[0].title == "settings_1",
-        )
-    }
+            )
+        }
 
     @Test
-    fun `Should get default analytics if settings is null and return empty list`() = runTest {
-        mockEnrollmentCall()
-        mockAnalyticsSettingsCall(null)
-        mockRepeatableStagesCall()
-        mockNumericDataElements(true)
-        mockIndicators(true)
-        val result = repository.getAnalyticsForEnrollment("enrollmentUid")
-        assertTrue(
-            result.isEmpty(),
-        )
-    }
+    fun `Should get default analytics if settings is null and return empty list`() =
+        runTest {
+            mockEnrollmentCall()
+            mockAnalyticsSettingsCall(null)
+            mockRepeatableStagesCall()
+            mockNumericDataElements(true)
+            mockIndicators(true)
+            val result = repository.getAnalyticsForEnrollment("enrollmentUid")
+            assertTrue(
+                result.isEmpty(),
+            )
+        }
 
     @Test
     fun `Should return visualization groups in home`() {
@@ -131,12 +134,13 @@ class ChartsRepositoryTest {
         val mockedVisualizationGroup: AnalyticsDhisVisualizationsGroup = mock()
         val visualizationSetting: AnalyticsDhisVisualizationsSetting =
             mock {
-                on { program() } doReturn mapOf(
-                    Pair(
-                        "programUid",
-                        listOf(mockedVisualizationGroup)
+                on { program() } doReturn
+                    mapOf(
+                        Pair(
+                            "programUid",
+                            listOf(mockedVisualizationGroup),
+                        ),
                     )
-                )
             }
         whenever(
             d2
@@ -155,12 +159,13 @@ class ChartsRepositoryTest {
         val visualizationSetting: AnalyticsDhisVisualizationsSetting =
             mock {
                 on { program() } doReturn mapOf()
-                on { dataSet() } doReturn mapOf(
-                    Pair(
-                        "dataSetUid",
-                        listOf(mockedVisualizationGroup)
+                on { dataSet() } doReturn
+                    mapOf(
+                        Pair(
+                            "dataSetUid",
+                            listOf(mockedVisualizationGroup),
+                        ),
                     )
-                )
             }
         whenever(
             d2
@@ -250,7 +255,7 @@ class ChartsRepositoryTest {
 
     @Test
     fun `Should return home visualization`() {
-        mockVisualizationSettings(returnHome = true)
+        mockVisualizationSettings("", returnHome = true)
         mockVisualization()
         mockedVisualizationPeriodFilterWithValue()
         mockedVisualizationOrgUnitFilterWithValue()
@@ -268,7 +273,7 @@ class ChartsRepositoryTest {
 
     @Test
     fun `Should add error visualization`() {
-        mockVisualizationSettings(returnHome = true)
+        mockVisualizationSettings("", returnHome = true)
         mockVisualization()
         mockedVisualizationPeriodFilterWithValue()
         mockedVisualizationOrgUnitFilterWithValue()
@@ -329,7 +334,7 @@ class ChartsRepositoryTest {
     }
 
     private fun mockVisualizationSettings(
-        settingsUid: String? = null,
+        settingsUid: String,
         returnProgram: Boolean = false,
         returnDataSet: Boolean = false,
         returnHome: Boolean = false,
@@ -450,11 +455,11 @@ class ChartsRepositoryTest {
                     } ?: this
                 }.blockingEvaluate(),
         ) doReturn
-                if (analyticsException == null) {
-                    Result.Success(mockedAnalyticResponse)
-                } else {
-                    Result.Failure(analyticsException)
-                }
+            if (analyticsException == null) {
+                Result.Success(mockedAnalyticResponse)
+            } else {
+                Result.Failure(analyticsException)
+            }
     }
 
     private fun mockEnrollmentCall() {
@@ -465,13 +470,13 @@ class ChartsRepositoryTest {
                 .uid(any())
                 .blockingGet(),
         ) doReturn
-                Enrollment
-                    .builder()
-                    .uid("enrollmentUid")
-                    .program("programUid")
-                    .trackedEntityInstance("teiUid")
-                    .attributeOptionCombo("attributeOptionComboUid")
-                    .build()
+            Enrollment
+                .builder()
+                .uid("enrollmentUid")
+                .program("programUid")
+                .trackedEntityInstance("teiUid")
+                .attributeOptionCombo("attributeOptionComboUid")
+                .build()
     }
 
     private fun mockAnalyticsSettingsCall(result: List<AnalyticsTeiSetting>?) {
@@ -539,12 +544,12 @@ class ChartsRepositoryTest {
                 .eq(true)
                 .blockingGet(),
         ) doReturn
-                listOf(
-                    ProgramStage
-                        .builder()
-                        .uid("stage_1")
-                        .build(),
-                )
+            listOf(
+                ProgramStage
+                    .builder()
+                    .uid("stage_1")
+                    .build(),
+            )
     }
 
     private fun mockIndicators(emptyList: Boolean) {
@@ -594,12 +599,14 @@ class ChartsRepositoryTest {
                     .eq("programUid")
                     .blockingGet(),
             ) doReturn
-                    listOf(
-                        ProgramIndicator
-                            .builder()
-                            .uid("indicator_1")
-                            .build(),
-                    )
+                listOf(
+                    ProgramIndicator
+                        .builder()
+                        .uid("indicator_1")
+                        .attributeCombo(ObjectWithUid.create("defaultCC"))
+                        .categoryCombo(ObjectWithUid.create("defaultCC"))
+                        .build(),
+                )
         }
     }
 
@@ -636,13 +643,13 @@ class ChartsRepositoryTest {
                     .eq("stage_1")
                     .blockingGet(),
             ) doReturn
-                    listOf(
-                        ProgramStageDataElement
-                            .builder()
-                            .uid("psde_uid_1")
-                            .dataElement(ObjectWithUid.create("de_1"))
-                            .build(),
-                    )
+                listOf(
+                    ProgramStageDataElement
+                        .builder()
+                        .uid("psde_uid_1")
+                        .dataElement(ObjectWithUid.create("de_1"))
+                        .build(),
+                )
         }
 
         whenever(

@@ -3,6 +3,8 @@ package org.dhis2.mobile.login.pin.domain.usecase
 import kotlinx.coroutines.test.runTest
 import org.dhis2.mobile.login.accounts.data.repository.AccountRepository
 import org.dhis2.mobile.login.accounts.domain.model.AccountModel
+import org.dhis2.mobile.login.accounts.domain.model.AuthorizationMethod
+import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.pin.data.SessionRepository
@@ -65,7 +67,10 @@ class GetInitialScreenUseCaseTest {
 
             // Then
             assertTrue(result is LoginScreenState.LoginCredentials)
-            assertEquals(true, result.oAuthEnabled) // OAuth enabled, enrollment URL will be fetched by CredentialsViewModel
+            assertEquals(
+                CredentialsEntryMode.EXISTING_OAUTH,
+                result.entryMode,
+            )
         }
 
     @Test
@@ -109,7 +114,10 @@ class GetInitialScreenUseCaseTest {
             assertIs<LoginScreenState.LoginCredentials>(result)
             assertEquals("https://active.com", result.selectedServer)
             assertEquals("active_user", result.selectedUsername)
-            assertEquals(true, result.oAuthEnabled) // OAuth enabled, enrollment URL will be fetched by CredentialsViewModel
+            assertEquals(
+                CredentialsEntryMode.EXISTING_OAUTH,
+                result.entryMode,
+            )
         }
 
     @Test
@@ -189,6 +197,30 @@ class GetInitialScreenUseCaseTest {
             assertEquals("locked_user", result.selectedUsername)
         }
 
+    @Test
+    fun `should handle locked account when renewSession is true`() =
+        runTest {
+            // GIVEN
+            val activeAccount =
+                createAccountModel(
+                    name = "locked_user",
+                    serverUrl = "https://locked.com",
+                    isOauthEnabled = false,
+                )
+            val accounts =
+                listOf(
+                    createAccountModel(name = "user1"),
+                    createAccountModel(name = "user2"),
+                    createAccountModel(name = "user3"),
+                )
+            whenever(accountRepository.getLoggedInAccounts()) doReturn accounts
+            whenever(accountRepository.getActiveAccount()) doReturn activeAccount
+
+            // WHEN
+            val result = useCase(renewSession = true)
+            assertIs<LoginScreenState.LoginCredentials>(result)
+        }
+
     private fun createAccountModel(
         name: String = "testuser",
         serverUrl: String = "https://test.com",
@@ -208,5 +240,6 @@ class GetInitialScreenUseCaseTest {
             oidcLoginText = null,
             oidcUrl = null,
             isOauthEnabled = isOauthEnabled,
+            authorizationMethod = if (isOauthEnabled) AuthorizationMethod.OAUTH2 else AuthorizationMethod.BASIC,
         )
 }

@@ -1,6 +1,7 @@
 package org.dhis2.form.data
 
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.option.Option
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -20,6 +21,7 @@ class OptionsRepositoryTest {
             .code("code")
             .name("optionName")
             .displayName("OptionDisplayName")
+            .optionSet(ObjectWithUid.create("optionSetUid"))
             .build()
 
     @Before

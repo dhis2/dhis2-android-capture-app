@@ -8,7 +8,7 @@ apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
 android {
     namespace = "org.dhis2.dhis2_mobile_program_rules"
-    compileSdk = libs.versions.sdk.get().toInt()
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()

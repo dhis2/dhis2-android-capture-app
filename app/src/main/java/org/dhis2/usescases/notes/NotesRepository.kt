@@ -25,7 +25,7 @@ class NotesRepository(
                     .one()
                     .blockingGet()
                     ?.uid(),
-            ).get()
+            ).rxGet()
             .map { notes ->
                 notes.sortedWith(
                     Comparator { note1, note2 ->
@@ -40,7 +40,7 @@ class NotesRepository(
             .notes()
             .byEventUid()
             .eq(eventUid)
-            .get()
+            .rxGet()
             .map { notes ->
                 notes.sortedWith(
                     Comparator { note1, note2 ->

@@ -74,7 +74,7 @@ class MatomoAnalyticsControllerImpl(
             D2Manager
                 .getD2()
                 .userModule()
-                .isLogged()
+                .rxIsLogged()
                 .blockingGet()
         ) {
             D2Manager.getD2().settingModule().let { settingModule ->

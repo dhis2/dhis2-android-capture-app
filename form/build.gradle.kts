@@ -8,12 +8,12 @@ plugins {
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
 android {
-    compileSdk = libs.versions.sdk.get().toInt()
+    compileSdk = libs.versions.compileSdk.get().toInt()
     namespace = "org.dhis2.form"
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
-        testOptions.targetSdk = libs.versions.sdk.get().toInt()
+        testOptions.targetSdk = libs.versions.targetSdk.get().toInt()
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -64,16 +64,12 @@ dependencies {
     implementation(project(":commonskmm"))
     implementation(project(":dhis2_android_maps"))
     implementation(project(":dhis2-mobile-program-rules"))
+    implementation(libs.dhis2.expressionparser)
     implementation(libs.androidx.activity.compose)
     testImplementation(libs.bundles.form.test)
     testImplementation(libs.test.junit)
     testImplementation(libs.test.turbine)
-    androidTestImplementation(libs.test.compose.ui.test)
-    androidTestImplementation(libs.test.mockitoCore)
-    androidTestImplementation(libs.test.mockitoKotlin)
-    androidTestImplementation(libs.test.dexmaker.mockitoInline)
     debugImplementation(libs.androidx.compose.uitooling)
-    debugImplementation(libs.test.ui.test.manifest)
 
     coreLibraryDesugaring(libs.desugar)
 }

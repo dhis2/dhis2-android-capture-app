@@ -322,7 +322,7 @@ private fun PinInputBlock(
             segmentCount = uiState.pinLength,
             initialValue = null,
             supportingTextData = supportingTextData,
-            segmentedShellType = SegmentedShellType.Numeric,
+            segmentedShellType = SegmentedShellType.Numeric(obfuscated = true),
             onValueChanged = onPinChanged,
         )
 

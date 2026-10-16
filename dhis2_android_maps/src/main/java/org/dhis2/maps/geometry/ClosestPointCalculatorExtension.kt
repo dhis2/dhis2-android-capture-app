@@ -8,7 +8,7 @@ fun List<List<List<Double>>>.closestPointTo(point: List<Double>): List<Double> {
     var closestDistance: Double? = null
     this[0].forEach { polygonPoint ->
         val distance = polygonPoint.toLatLn().distanceTo(initPoint)
-        if (closestDistance == null || distance < closestDistance!!) {
+        if (closestDistance == null || distance < closestDistance) {
             closestPoint = polygonPoint
             closestDistance = distance
         }

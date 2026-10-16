@@ -12,4 +12,5 @@
     <string name="action_yes">Да</string>
     <string name="enter_pin_button">Разблокировано</string>
     <string name="importing_successful">Импорт прошел успешно</string>
-    </resources>
+    <string name="cancel">Отменить</string>
+</resources>

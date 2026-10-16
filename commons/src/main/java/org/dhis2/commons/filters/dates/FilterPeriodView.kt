@@ -99,7 +99,7 @@ class FilterPeriodView
                 val id: Int = compoundButton.id
                 updateSelection(id)
                 if (id != R.id.other && id != R.id.fromTo) {
-                    var dates: Array<Date?>? = null
+                    var dates: Array<Date>? = null
                     val calendar = Calendar.getInstance()
                     when (id) {
                         R.id.today ->
@@ -172,13 +172,7 @@ class FilterPeriodView
 
                     val periods =
                         if (dates != null) {
-                            mutableListOf(
-                                DatePeriod
-                                    .builder()
-                                    .startDate(dates[0])
-                                    .endDate(dates[1])
-                                    .build(),
-                            )
+                            mutableListOf(DatePeriod(dates[0], dates[1]))
                         } else {
                             mutableListOf()
                         }

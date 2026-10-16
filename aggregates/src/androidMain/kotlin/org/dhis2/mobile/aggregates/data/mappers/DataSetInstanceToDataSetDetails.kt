@@ -9,12 +9,14 @@ import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.dataset.TextAlign
 
 internal fun DataSetInstance.toDataSetDetails(
+    dataSetUid: String,
     isDefaultCatCombo: Boolean,
     customText: CustomText?,
     periodLabel: String,
     isCompleted: Boolean,
     edition: DataSetEdition,
 ) = DataSetDetails(
+    dataSetUid = dataSetUid,
     customTitle =
         customText?.toCustomTitle() ?: DataSetCustomTitle(
             header = null,

@@ -28,9 +28,9 @@ import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.time.Instant
 import java.util.Date
 import kotlin.time.Instant as KtlInstant
-import java.time.Instant
 
 class SearchSortingValueSetterTest {
     lateinit var searchSortingValueSetter: SearchSortingValueSetter
@@ -40,20 +40,23 @@ class SearchSortingValueSetterTest {
     private val programUid = "programUid"
     private val enrollmentOrgUnit = "enrollmentOrgUnit"
     private val teiUid = "teiUid"
-    private val selectedEnrollment =      DomainEnrollment(
-        uid = enrollmentUid,
-        orgUnit = enrollmentOrgUnit,
-        program = programUid,
-        enrollmentDate = KtlInstant.parse("2020-01-01T00:00:00.00Z"),
-        incidentDate = KtlInstant.parse("2020-01-01T00:00:00.00Z"),
-        completedDate = KtlInstant.parse("2020-01-01T00:00:00.00Z"),
-        followUp = false,
-        status = EnrollmentStatus.ACTIVE,
-        trackedEntityInstance = teiUid,
-    )
-    private val enrollments = listOf(
-           selectedEnrollment
-    )
+    private val selectedEnrollment =
+        DomainEnrollment(
+            uid = enrollmentUid,
+            orgUnit = enrollmentOrgUnit,
+            program = programUid,
+            enrollmentDate = KtlInstant.parse("2020-01-01T00:00:00.00Z"),
+            incidentDate = KtlInstant.parse("2020-01-01T00:00:00.00Z"),
+            completedDate = KtlInstant.parse("2020-01-01T00:00:00.00Z"),
+            followUp = false,
+            status = EnrollmentStatus.ACTIVE,
+            trackedEntityInstance = teiUid,
+        )
+    private val enrollments =
+        listOf(
+            selectedEnrollment,
+        )
+
     @Before
     fun setUp() {
         searchSortingValueSetter =
@@ -562,65 +565,72 @@ class SearchSortingValueSetterTest {
         )
 
     private fun generateSearchTeiModel(): SearchTeiModel {
-        val tei = TrackedEntitySearchItemResult(
-            uid = "teiUid",
-            created = KtlInstant.parse("2020-01-01T00:00:00.00Z"),
-            lastUpdated = KtlInstant.parse("2020-01-01T00:00:00.00Z"),
-            createdAtClient = KtlInstant.parse("2020-01-01T00:00:00.00Z"),
-            lastUpdatedAtClient = KtlInstant.parse("2020-01-01T00:00:00.00Z"),
-            ownerOrgUnit = "ownerOrgUnit",
-            enrollmentOrgUnit = "enrollmentOrgUnit",
-            shouldDisplayOrgUnit = true,
-            geometry = null,
-            syncState = SyncState.SYNCED,
-            aggregatedSyncState = SyncState.SYNCED,
-            deleted = false,
-            isOnline = true,
-            teTypeName = "teTypeName",
-            type = TrackedEntityTypeDomain(
-                trackedEntityTypeAttributeDomains = listOf(TrackedEntityTypeAttributeDomain(
-                     trackedEntityTypeUid=  "trackedEntityTypeUid",
-                     trackedEntityAttributeUid = "trackedEntityAttributeUid",
-                 displayInList= true,
-                       mandatory = false,
-                 searchable = true,
-                 sortOrder = 1,
-                )),
-                featureType = GeometryFeatureType.POINT,
-            ),
-            header = "teiHeader",
-            overDueDate = null,
-            selectedEnrollment = selectedEnrollment,
-            profilePicture = null,
-            enrolledPrograms = listOf(DomainProgram(
-                uid = "programUid",
-                displayName = "programDisplayName",
-                style = DomainObjectStyle(
-                    icon = "iconUid",
-                    color = "colorUid"
-                )
-            )),
-            enrollments = enrollments,
-            relationships = null,
-            defaultTypeIcon = null,
-            attributeValues = emptyList(),
-        )
+        val tei =
+            TrackedEntitySearchItemResult(
+                uid = "teiUid",
+                created = KtlInstant.parse("2020-01-01T00:00:00.00Z"),
+                lastUpdated = KtlInstant.parse("2020-01-01T00:00:00.00Z"),
+                createdAtClient = KtlInstant.parse("2020-01-01T00:00:00.00Z"),
+                lastUpdatedAtClient = KtlInstant.parse("2020-01-01T00:00:00.00Z"),
+                ownerOrgUnit = "ownerOrgUnit",
+                enrollmentOrgUnit = "enrollmentOrgUnit",
+                shouldDisplayOrgUnit = true,
+                geometry = null,
+                syncState = SyncState.SYNCED,
+                aggregatedSyncState = SyncState.SYNCED,
+                deleted = false,
+                isOnline = true,
+                teTypeName = "teTypeName",
+                type =
+                    TrackedEntityTypeDomain(
+                        trackedEntityTypeAttributeDomains =
+                            listOf(
+                                TrackedEntityTypeAttributeDomain(
+                                    trackedEntityTypeUid = "trackedEntityTypeUid",
+                                    trackedEntityAttributeUid = "trackedEntityAttributeUid",
+                                    displayInList = true,
+                                    mandatory = false,
+                                    searchable = true,
+                                    sortOrder = 1,
+                                ),
+                            ),
+                        featureType = GeometryFeatureType.POINT,
+                    ),
+                header = "teiHeader",
+                overDueDate = null,
+                selectedEnrollment = selectedEnrollment,
+                profilePicture = null,
+                enrolledPrograms =
+                    listOf(
+                        DomainProgram(
+                            uid = "programUid",
+                            displayName = "programDisplayName",
+                            style =
+                                DomainObjectStyle(
+                                    icon = "iconUid",
+                                    color = "colorUid",
+                                ),
+                        ),
+                    ),
+                enrollments = enrollments,
+                relationships = null,
+                defaultTypeIcon = null,
+                attributeValues = emptyList(),
+            )
         val searchTeiModel = SearchTeiModel()
         searchTeiModel.tei = tei
         return searchTeiModel
     }
 
-    private fun onlineSearchTeiModel(): SearchTeiModel  {
+    private fun onlineSearchTeiModel(): SearchTeiModel {
         val searchTeiModel = generateSearchTeiModel()
         searchTeiModel.tei = searchTeiModel.tei?.copy(isOnline = true)
         return searchTeiModel
     }
-
 
     private fun searchTeiModelWithoutEnrollment(): SearchTeiModel {
         val searchTeiModel = generateSearchTeiModel()
         searchTeiModel.tei = searchTeiModel.tei?.copy(selectedEnrollment = null, enrollments = emptyList())
         return searchTeiModel
     }
-
 }

@@ -249,9 +249,10 @@ class MainViewModel(
                                 filterButtonVisible = false,
                                 bottomNavigationBarVisible = false,
                                 syncButtonVisible = false,
-                                )
+                            )
                         }
                     }
+
                     SyncStatus.Succeed -> {
                         launchUseCase(dispatcher.io()) {
                             val navigationBarItems =
@@ -267,6 +268,7 @@ class MainViewModel(
                             }
                         }
                     }
+
                     SyncStatus.Failed -> _homeScreenState.update { it.copy(syncButtonVisible = true) }
                     else -> {
                         // Do nothing
@@ -325,7 +327,8 @@ class MainViewModel(
             _homeEffects.send(HomeEffect.ToggleFilters)
             _homeScreenState.update {
                 it.copy(
-                    bottomNavigationBarVisible = !it.bottomNavigationBarVisible && it.currentScreen.isHome() && it.navigationBarItems.size > 1,
+                    bottomNavigationBarVisible =
+                        !it.bottomNavigationBarVisible && it.currentScreen.isHome() && it.navigationBarItems.size > 1,
                 )
             }
         }
@@ -355,8 +358,8 @@ class MainViewModel(
             getLockAction().fold(
                 onSuccess = { result ->
                     when (result) {
-                        LockAction.BlockSession ->
-                            _homeEffects.send(HomeEffect.BlockSession)
+                        LockAction.PinAlreadyCreated ->
+                            _homeEffects.send(HomeEffect.PinAlreadyCreated)
 
                         LockAction.CreatePin ->
                             _homeEffects.send(HomeEffect.ShowPinDialog)
@@ -422,7 +425,10 @@ class MainViewModel(
     fun updateNavigationBarVisibility(bottomNavigationBarIsVisible: Boolean) {
         launchUseCase(dispatcher.io()) {
             _homeScreenState.update {
-                it.copy(bottomNavigationBarVisible = bottomNavigationBarIsVisible && it.currentScreen.isHome() && it.navigationBarItems.size > 1)
+                it.copy(
+                    bottomNavigationBarVisible =
+                        bottomNavigationBarIsVisible && it.currentScreen.isHome() && it.navigationBarItems.size > 1,
+                )
             }
         }
     }
@@ -460,7 +466,7 @@ class MainViewModel(
             }
 
             MainScreenType.Loading -> {
-                /*no-op*/
+                // no-op
             }
 
             MainScreenType.QRScanner -> {
@@ -475,7 +481,6 @@ class MainViewModel(
 
             MainScreenType.TroubleShooting ->
                 mainNavigator.openTroubleShooting()
-
         }
     }
 
@@ -493,7 +498,7 @@ class MainViewModel(
 
     private fun onPinSet() {
         launchUseCase(dispatcher.io()) {
-            _homeEffects.send(HomeEffect.BlockSession)
+            _homeEffects.send(HomeEffect.PinCreated)
         }
     }
 

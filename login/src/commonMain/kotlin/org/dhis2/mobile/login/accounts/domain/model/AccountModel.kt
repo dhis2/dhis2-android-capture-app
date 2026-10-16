@@ -11,6 +11,7 @@ data class AccountModel(
     val oidcLoginText: String?,
     val oidcUrl: String?,
     val isOauthEnabled: Boolean,
+    val authorizationMethod: AuthorizationMethod,
 ) {
     fun key() = "$name@$serverUrl"
 }

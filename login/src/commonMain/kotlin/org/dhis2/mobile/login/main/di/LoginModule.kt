@@ -2,24 +2,33 @@ package org.dhis2.mobile.login.main.di
 
 import coil3.PlatformContext
 import org.dhis2.mobile.login.authentication.di.twoFAModule
+import org.dhis2.mobile.login.main.data.LoginErrorMessageProvider
+import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
 import org.dhis2.mobile.login.main.domain.usecase.BiometricLogin
 import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
 import org.dhis2.mobile.login.main.domain.usecase.GetDeviceEnrollmentUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
+import org.dhis2.mobile.login.main.domain.usecase.GetOAuthLogoutUrl
+import org.dhis2.mobile.login.main.domain.usecase.GetSessionRenewalUrl
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
+import org.dhis2.mobile.login.main.domain.usecase.IsUserLoggedIn
 import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
+import org.dhis2.mobile.login.main.domain.usecase.LoginUserOffline
 import org.dhis2.mobile.login.main.domain.usecase.LoginUserWithOAuth
 import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
 import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
+import org.dhis2.mobile.login.main.domain.usecase.SetOfflineCode
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
+import org.dhis2.mobile.login.main.domain.usecase.VerifyNeedOfflineCode
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.DefaultNavigator
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
+import org.dhis2.mobile.login.main.ui.provider.CredentialsResourceProvider
 import org.dhis2.mobile.login.main.ui.state.OidcInfo
 import org.dhis2.mobile.login.main.ui.viewmodel.CredentialsViewModel
 import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
@@ -80,12 +89,40 @@ internal val mainLoginModule =
         }
 
         factory { params ->
+            GetSessionRenewalUrl(get { parametersOf(params.get()) })
+        }
+
+        factory { params ->
+            GetOAuthLogoutUrl(get { parametersOf(params.get()) })
+        }
+
+        factory { params ->
             ProcessDeviceEnrollment(get { parametersOf(params.get()) })
         }
 
         factory { params ->
             LoginUserWithOAuth(get { parametersOf(params.get()) })
         }
+
+        factory { params ->
+            SetOfflineCode(get { parametersOf(params.get()) })
+        }
+
+        factory { params ->
+            VerifyNeedOfflineCode(get { parametersOf(params.get()) })
+        }
+
+        factory { params ->
+            LoginUserOffline(get { parametersOf(params.get()) })
+        }
+
+        factory { params ->
+            IsUserLoggedIn(get { parametersOf(params.get()) })
+        }
+
+        single { CredentialsResourceProvider() }
+
+        single { LoginErrorMessageProvider() }
 
         viewModel { parameters ->
             val context = parameters.get<PlatformContext>()
@@ -95,6 +132,8 @@ internal val mainLoginModule =
                 importDatabase = get { parametersOf(context) },
                 validateServer = get { parametersOf(context) },
                 networkStatusProvider = get(),
+                appLinkNavigation = get(),
+                renewSession = parameters.getOrNull<Boolean>() ?: false,
             )
         }
         viewModel { parameters ->
@@ -104,8 +143,9 @@ internal val mainLoginModule =
             val allowRecovery = parameters[3] as Boolean
             val oidcInfo = parameters[4] as OidcInfo?
             val context = parameters[5] as PlatformContext
-            val fromHome = parameters[6] as Boolean
-            val oAuthEnable = parameters[7] as Boolean
+            val entryMode = parameters[6] as CredentialsEntryMode
+            val autoPromptLogin = parameters[7] as Boolean
+            val autoStartRenewal = parameters[8] as Boolean
             CredentialsViewModel(
                 navigator = get(),
                 getAvailableUsernames = get { parametersOf(context) },
@@ -117,6 +157,7 @@ internal val mainLoginModule =
                 biometricLogin = get { parametersOf(context) },
                 loginUserWithOAuth = get { parametersOf(context) },
                 getDeviceEnrollmentUrl = get { parametersOf(context) },
+                getOAuthLogoutUrl = get { parametersOf(context) },
                 processDeviceEnrollment = get { parametersOf(context) },
                 updateTrackingPermission = get { parametersOf(context) },
                 updateBiometricPermission = get { parametersOf(context) },
@@ -129,8 +170,15 @@ internal val mainLoginModule =
                 getIsSessionLockedUseCase = get(),
                 oidcInfo = oidcInfo,
                 forgotPinUseCase = get(),
-                fromHome = fromHome,
-                oAuthEnable = oAuthEnable,
+                entryMode = entryMode,
+                autoPromptLogin = autoPromptLogin,
+                setOfflineCode = get { parametersOf(context) },
+                verifyNeedOfflineCode = get { parametersOf(context) },
+                loginUserOfflineWithCode = get { parametersOf(context) },
+                credentialsResourceProvider = get(),
+                getSessionRenewalUrl = get { parametersOf(context) },
+                autoStartRenewal = autoStartRenewal,
+                isUserLoggedIn = get { parametersOf(context) },
             )
         }
     }

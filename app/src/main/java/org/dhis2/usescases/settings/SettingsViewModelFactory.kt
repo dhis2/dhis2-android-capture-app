@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
 import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.ExportDatabase
@@ -29,6 +30,7 @@ class SettingsViewModelFactory(
     private val dispatcherProvider: DispatcherProvider,
     private val networkUtils: NetworkUtils,
     private val settingsMessages: SettingsMessages,
+    private val twoFaStatus: GetTwoFAStatus,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
         SyncManagerPresenter(
@@ -44,5 +46,6 @@ class SettingsViewModelFactory(
             dispatcherProvider = dispatcherProvider,
             networkUtils = networkUtils,
             settingsMessages = settingsMessages,
+            twoFaStatus = twoFaStatus,
         ) as T
 }

@@ -32,8 +32,6 @@ class TEIDataContracts {
             eventCreationType: EventCreationType,
         )
 
-        fun displayNoAccessToEventSnackbar(enrollmentOrgUnit: String)
-
         fun showDialogCloseProgram()
 
         fun areEventsCompleted(): Consumer<Single<Boolean>>

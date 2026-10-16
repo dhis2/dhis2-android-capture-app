@@ -56,7 +56,7 @@ class QRCodeGenerator(
             .trackedEntityModule()
             .trackedEntityInstances()
             .uid(teiUid)
-            .get()
+            .rxGet()
             .map(
                 Function { data: TrackedEntityInstance? ->
                     bitmaps.add(
@@ -73,7 +73,7 @@ class QRCodeGenerator(
                         .trackedEntityAttributeValues()
                         .byTrackedEntityInstance()
                         .eq(teiUid)
-                        .get()
+                        .rxGet()
                 },
             ).map(
                 Function { data: List<TrackedEntityAttributeValue> ->
@@ -88,7 +88,7 @@ class QRCodeGenerator(
                         .enrollments()
                         .byTrackedEntityInstance()
                         .eq(teiUid)
-                        .get()
+                        .rxGet()
                 },
             ).map(
                 Function { data: List<Enrollment> ->
@@ -107,7 +107,7 @@ class QRCodeGenerator(
                                 .events()
                                 .byEnrollmentUid()
                                 .eq(enrollment.uid())
-                                .get()
+                                .rxGet()
                                 .toObservable()
                         },
                     )
@@ -122,7 +122,7 @@ class QRCodeGenerator(
                                 .trackedEntityDataValues()
                                 .byEvent()
                                 .eq(event.uid())
-                                .get()
+                                .rxGet()
                                 .toObservable()
                                 .map(
                                     Function { dataValueList: List<TrackedEntityDataValue> ->
@@ -167,52 +167,46 @@ class QRCodeGenerator(
             .eventModule()
             .events()
             .uid(eventUid)
-            .get()
-            .map<Event>(
-                Function { data: Event ->
-                    bitmaps.add(QrViewModel(QRjson.EVENT_JSON, gson.toJson(data)))
-                    data
-                },
-            ).flatMap(
-                Function<Event, SingleSource<out List<TrackedEntityDataValue>>> { data: Event ->
-                    d2
-                        .trackedEntityModule()
-                        .trackedEntityDataValues()
-                        .byEvent()
-                        .eq(data.uid())
-                        .get()
-                },
-            ).map(
-                Function { data: List<TrackedEntityDataValue> ->
-                    val arrayListAux = ArrayList<TrackedEntityDataValue>()
-                    // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
-                    var count = 0
-                    for (i in data.indices) {
-                        arrayListAux.add(data[i])
-                        if (count == 1) {
-                            count = 0
-                            bitmaps.add(
-                                QrViewModel(
-                                    QRjson.DATA_JSON_WO_REGISTRATION,
-                                    gson.toJson(arrayListAux),
-                                ),
-                            )
-                            arrayListAux.clear()
-                        } else if (i == data.size - 1) {
-                            bitmaps.add(
-                                QrViewModel(
-                                    QRjson.DATA_JSON_WO_REGISTRATION,
-                                    gson.toJson(arrayListAux),
-                                ),
-                            )
-                        } else {
-                            count++
-                        }
+            .rxGet()
+            .map { data ->
+                bitmaps.add(QrViewModel(QRjson.EVENT_JSON, gson.toJson(data)))
+                data
+            }.flatMap { data ->
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityDataValues()
+                    .byEvent()
+                    .eq(data.uid())
+                    .rxGet()
+            }.map { data ->
+                val arrayListAux = ArrayList<TrackedEntityDataValue>()
+                // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
+                var count = 0
+                for (i in data.indices) {
+                    arrayListAux.add(data[i])
+                    if (count == 1) {
+                        count = 0
+                        bitmaps.add(
+                            QrViewModel(
+                                QRjson.DATA_JSON_WO_REGISTRATION,
+                                gson.toJson(arrayListAux),
+                            ),
+                        )
+                        arrayListAux.clear()
+                    } else if (i == data.size - 1) {
+                        bitmaps.add(
+                            QrViewModel(
+                                QRjson.DATA_JSON_WO_REGISTRATION,
+                                gson.toJson(arrayListAux),
+                            ),
+                        )
+                    } else {
+                        count++
                     }
-                    true
-                },
-            ).toObservable()
-            .map(Function<Boolean, List<QrViewModel>> { _: Boolean? -> bitmaps })
+                }
+                true
+            }.toObservable()
+            .map { bitmaps }
     }
 
     private fun decodeData(data: String): String {

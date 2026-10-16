@@ -3,7 +3,6 @@ package org.dhis2.usescases.settings
 import io.reactivex.Single
 import org.dhis2.bindings.toSeconds
 import org.dhis2.commons.Constants
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_NUMBER_RV
 import org.dhis2.commons.prefs.Preference.Companion.EVENT_MAX
 import org.dhis2.commons.prefs.Preference.Companion.EVENT_MAX_DEFAULT
@@ -19,6 +18,7 @@ import org.dhis2.commons.prefs.Preference.Companion.TIME_META
 import org.dhis2.commons.prefs.Preference.Companion.TIME_WEEKLY
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.server.UserManager
+import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
@@ -44,11 +44,12 @@ class SettingsRepositoryTest {
         Mockito.mock(UserManager::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val preferencesProvider: PreferenceProvider = mock()
     private val featureConfigRepository: FeatureConfigRepository = mock()
-    private val syncBackgroundJobAction: SyncBackgroundJobAction = mock {
-        on { getNextSettingsSync() } doReturn null
-        on { getNextMetadataSync() } doReturn null
-        on { getNextDataSync() } doReturn null
-    }
+    private val syncBackgroundJobAction: SyncBackgroundJobAction =
+        mock {
+            on { getNextSettingsSync() } doReturn null
+            on { getNextMetadataSync() } doReturn null
+            on { getNextDataSync() } doReturn null
+        }
     private val smsConfig: ConfigCase.SmsConfig =
         mock {
             on { isModuleEnabled } doReturn true

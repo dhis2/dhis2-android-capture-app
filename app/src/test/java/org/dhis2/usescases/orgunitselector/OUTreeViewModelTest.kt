@@ -12,13 +12,18 @@ import org.dhis2.commons.orgunitselector.OUTreeModel
 import org.dhis2.commons.orgunitselector.OUTreeRepository
 import org.dhis2.commons.orgunitselector.OUTreeViewModel
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.domain.FetchOrgUnits
+import org.dhis2.mobile.commons.model.internal.DomainOrgUnit
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.mobile.ui.designsystem.component.OrgTreeItem
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.mock
@@ -31,6 +36,8 @@ class OUTreeViewModelTest {
     private lateinit var viewModel: OUTreeViewModel
     private val repository: OUTreeRepository = mock()
     private lateinit var testingDispatcher: TestDispatcher
+
+    private val fetchOrgUnits: FetchOrgUnits = mock()
     private val dispatchers: DispatcherProvider =
         object : DispatcherProvider {
             override fun io() = testingDispatcher
@@ -55,38 +62,40 @@ class OUTreeViewModelTest {
     @Test
     fun `Should set initial org units`() =
         runTest {
-            val orgUnit1 = dummyOrgUnit(1)
-            val orgUnit2 = dummyOrgUnit(2, parent = orgUnit1)
+            val orgUnit1 =
+                dummyOrgTreeItem(1)
+                    .copy(
+                        canBeSelected = true,
+                        hasChildren = true,
+                        selectedChildrenCount = 0,
+                    )
+            val orgUnit2 =
+                dummyOrgTreeItem(2, parent = orgUnit1)
+                    .copy(
+                        canBeSelected = true,
+                        hasChildren = false,
+                        selectedChildrenCount = 0,
+                    )
             val orgUnits = listOf(orgUnit1, orgUnit2)
 
-            whenever(
-                repository.orgUnits(),
-            ) doReturn orgUnits
+            whenever(fetchOrgUnits(anyOrNull())) doReturn Result.success(orgUnits)
 
-            whenever(
-                repository.orgUnit(any()),
-            ) doReturnConsecutively orgUnits
-
-            whenever(
-                repository.canBeSelected(any()),
-            ) doReturnConsecutively listOf(true, true)
-
-            whenever(
-                repository.orgUnitHasChildren(any()),
-            ) doReturnConsecutively listOf(true, false)
-
-            whenever(
-                repository.countSelectedChildren(any(), any()),
-            ) doReturnConsecutively listOf(0, 0)
-
-            viewModel = OUTreeViewModel(repository, mutableListOf(), false, OUTreeModel(), dispatchers)
+            viewModel =
+                OUTreeViewModel(
+                    repository,
+                    mutableListOf(),
+                    false,
+                    OUTreeModel(),
+                    dispatchers,
+                    fetchOrgUnits,
+                )
 
             viewModel.treeNodes.test {
                 awaitItem()
                 with(awaitItem()) {
                     assertTrue(size == 2)
-                    assertTrue(get(0).uid == orgUnits[0].uid())
-                    assertTrue(get(1).uid == orgUnits[1].uid())
+                    assertTrue(get(0).uid == orgUnits[0].uid)
+                    assertTrue(get(1).uid == orgUnits[1].uid)
                 }
             }
         }
@@ -100,9 +109,12 @@ class OUTreeViewModelTest {
                     dummyOrgUnit(2, parent = parentOrgUnit),
                     dummyOrgUnit(2, parent = parentOrgUnit),
                 )
-            val orgUnits = listOf(parentOrgUnit) + childOrgUnits
+            val orgUnits = (listOf(parentOrgUnit) + childOrgUnits)
 
-            whenever(repository.childrenOrgUnits(parentOrgUnit.uid())) doReturn childOrgUnits
+            whenever(repository.orgUnitHasChildren(any())) doReturn true
+            whenever(repository.countSelectedChildren(any(), any())) doReturnConsecutively listOf(0, 0, 0)
+            whenever(repository.canBeSelected(any())) doReturn true
+            whenever(repository.childrenOrgUnits(parentOrgUnit.uid())) doReturn childOrgUnits.map { it.toDomainModel() }
 
             defaultViewModelInit(orgUnits)
             viewModel.treeNodes.test {
@@ -125,27 +137,21 @@ class OUTreeViewModelTest {
             val orgUnits = listOf(parentOrgUnit) + childOrgUnits
             val searchInput = "ABC"
 
-            whenever(
-                repository.orgUnits(null),
-            ) doReturn listOf(parentOrgUnit, childOrgUnits[0])
-
-            whenever(
-                repository.orgUnits(searchInput),
-            ) doReturn listOf(parentOrgUnit, childOrgUnits[0])
-
-            whenever(
-                repository.canBeSelected(any()),
-            ) doReturnConsecutively listOf(true, true)
-
-            whenever(
-                repository.orgUnitHasChildren(any()),
-            ) doReturnConsecutively listOf(true, false)
-
-            whenever(
-                repository.countSelectedChildren(any(), any()),
-            ) doReturnConsecutively listOf(0, 0)
-
             defaultViewModelInit(orgUnits)
+
+            val searchResultItems =
+                listOf(parentOrgUnit, childOrgUnits[0]).mapIndexed { index, it ->
+                    OrgTreeItem(
+                        uid = it.uid,
+                        label = it.displayName ?: "",
+                        isOpen = index == 0,
+                        hasChildren = index == 0,
+                        level = it.level ?: 0,
+                        selectedChildrenCount = 0,
+                        canBeSelected = true,
+                    )
+                }
+            whenever(fetchOrgUnits(argThat { query == searchInput })) doReturn Result.success(searchResultItems)
 
             viewModel.treeNodes.test {
                 awaitItem()
@@ -165,6 +171,8 @@ class OUTreeViewModelTest {
                     dummyOrgUnit(2, "DEF", parentOrgUnit),
                 )
             val orgUnits = mutableListOf(parentOrgUnit) + childOrgUnits
+
+            whenever(repository.countSelectedChildren(any(), any())) doReturn 0
 
             defaultViewModelInit(orgUnits, true)
 
@@ -199,6 +207,8 @@ class OUTreeViewModelTest {
                 )
             val orgUnits = mutableListOf(parentOrgUnit) + childOrgUnits
 
+            whenever(repository.countSelectedChildren(any(), any())) doReturn 0
+
             defaultViewModelInit(orgUnits)
 
             viewModel.treeNodes.test {
@@ -228,7 +238,7 @@ class OUTreeViewModelTest {
             defaultViewModelInit(listOf(parentOrgUnit))
 
             // Mock repository responses
-            whenever(repository.orgUnit(childOrgUnits.first().uid())) doReturn childOrgUnits[0]
+            whenever(repository.legacyOrgUnit(childOrgUnits.first().uid())) doReturn childOrgUnits[0]
             whenever(repository.countSelectedChildren(any(), any())) doReturn 0
             whenever(repository.canBeSelected(any())) doReturn true
             whenever(repository.orgUnitHasChildren(any())) doReturn false
@@ -299,6 +309,8 @@ class OUTreeViewModelTest {
                 )
             val orgUnits = mutableListOf(parentOrgUnit) + childOrgUnits
 
+            whenever(repository.countSelectedChildren(any(), any())) doReturn 0
+
             defaultViewModelInit(orgUnits)
 
             viewModel.treeNodes.test {
@@ -317,30 +329,25 @@ class OUTreeViewModelTest {
             }
         }
 
-    private fun defaultViewModelInit(
+    private suspend fun defaultViewModelInit(
         orgUnits: List<OrganisationUnit>,
         singleSelection: Boolean = false,
         model: OUTreeModel = OUTreeModel(),
     ) {
-        whenever(
-            repository.orgUnits(),
-        ) doReturn orgUnits
-
-        whenever(
-            repository.orgUnit(any()),
-        ) doReturnConsecutively orgUnits
-
-        whenever(
-            repository.canBeSelected(any()),
-        ) doReturnConsecutively listOf(true, true)
-
-        whenever(
-            repository.orgUnitHasChildren(any()),
-        ) doReturnConsecutively listOf(true, false)
-
-        whenever(
-            repository.countSelectedChildren(any(), any()),
-        ) doReturnConsecutively listOf(0, 0)
+        whenever(fetchOrgUnits(anyOrNull())) doReturn
+            Result.success(
+                orgUnits.mapIndexed { index, it ->
+                    OrgTreeItem(
+                        uid = it.uid,
+                        label = it.displayName ?: "",
+                        isOpen = index == 0,
+                        hasChildren = index == 0,
+                        level = it.level ?: 0,
+                        selectedChildrenCount = 0,
+                        canBeSelected = true,
+                    )
+                },
+            )
 
         viewModel =
             OUTreeViewModel(
@@ -349,6 +356,7 @@ class OUTreeViewModelTest {
                 singleSelection,
                 model,
                 dispatchers,
+                fetchOrgUnits,
             )
     }
 
@@ -367,4 +375,23 @@ class OUTreeViewModelTest {
                     .path("/${it.uid()}/")
             }
         }.build()
+
+    private fun dummyOrgTreeItem(
+        level: Int,
+        name: String = "name$level",
+        parent: OrgTreeItem? = null,
+    ) = OrgTreeItem(
+        uid = "orgUnitUid$name",
+        label = name,
+        level = level,
+    )
+
+    private fun OrganisationUnit.toDomainModel() =
+        DomainOrgUnit(
+            uid = uid,
+            label = displayName ?: "",
+            level = level ?: 0,
+            path = path ?: "",
+            namePath = displayNamePath,
+        )
 }

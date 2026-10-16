@@ -39,6 +39,7 @@ data class DashboardEnrollmentModel(
     override val avatarPath: String?,
     override val ownerOrgUnit: OrganisationUnit?,
     val quickActions: List<String>,
+    val markedForFollowUpLabel: String,
 ) : DashboardModel(
         trackedEntityInstance,
         trackedEntityAttributeValues,

@@ -10,4 +10,6 @@
     <string name="action_no_now">Hozir emas</string>
     <string name="action_yes">Ҳа</string>
     <string name="enter_pin_button">Қулфни очиш</string>
-    </resources>
+    <string name="offline_credential_enter_button">Кириш</string>
+    <string name="cancel">Рад этиш</string>
+</resources>

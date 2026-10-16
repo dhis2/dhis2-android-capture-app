@@ -7,9 +7,16 @@ import org.dhis2.usescases.main.MainScreenType
  */
 sealed interface HomeAction {
     data object BackPressed : HomeAction
+
     data object MenuClicked : HomeAction
+
     data object SyncClicked : HomeAction
+
     data object FilterClicked : HomeAction
-    data class ScreenChanged(val screen: MainScreenType) : HomeAction
+
+    data class ScreenChanged(
+        val screen: MainScreenType,
+    ) : HomeAction
+
     data object PinSet : HomeAction
 }

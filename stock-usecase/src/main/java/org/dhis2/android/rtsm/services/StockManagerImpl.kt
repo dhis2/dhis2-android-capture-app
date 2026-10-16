@@ -18,9 +18,12 @@ import org.dhis2.android.rtsm.utils.AttributeHelper
 import org.dhis2.android.rtsm.utils.ConfigUtils.getTransactionDataElement
 import org.dhis2.commons.bindings.distributedTo
 import org.dhis2.commons.bindings.stockUseCase
+import org.dhis2.mobile.commons.providers.InfoBarType
+import org.dhis2.mobile.commons.providers.InfoBarUiModel
 import org.dhis2.mobileProgramRules.sortForRuleEngine
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventCreateProjection
@@ -45,8 +48,8 @@ class StockManagerImpl(
         query: SearchParametersModel,
         ou: String?,
         config: StockUseCase,
-    ): SearchResult {
-        val list =
+    ): Pair<SearchResult, InfoBarUiModel?> {
+        val returnResult =
             withContext(dispatcher.io()) {
                 var teiRepository = d2.trackedEntityModule().trackedEntityInstanceQuery()
 
@@ -87,13 +90,34 @@ class StockManagerImpl(
                     teiRepository
                         .blockingGet()
                         .filter { it.deleted() == null || !it.deleted()!! }
-                        .map { transform(it, config) }
+                val syncStatus = checkSyncStatus(teiList)
 
-                teiList
+                val transformedList = teiList.map { transform(it, config) }
+
+                Pair(transformedList, syncStatus)
             }
 
-        return SearchResult(liveData { emit(list) })
+        return Pair(SearchResult(liveData { emit(returnResult.first) }), returnResult.second)
     }
+
+    private fun checkSyncStatus(teiList: List<TrackedEntityInstance>): InfoBarUiModel? =
+        when {
+            teiList.any { it.aggregatedSyncState == State.ERROR } -> {
+                InfoBarUiModel(InfoBarType.SYNC_ERROR)
+            }
+
+            teiList.any { it.aggregatedSyncState == State.WARNING } -> {
+                InfoBarUiModel(InfoBarType.SYNC_WARNING)
+            }
+
+            teiList.any { it.aggregatedSyncState == State.TO_UPDATE || it.aggregatedSyncState == State.TO_POST } -> {
+                InfoBarUiModel(InfoBarType.PENDING_SYNC)
+            }
+
+            else -> {
+                null
+            }
+        }
 
     private fun transform(
         tei: TrackedEntityInstance,
@@ -133,9 +157,13 @@ class StockManagerImpl(
         tei: TrackedEntityInstance,
         stockOnHandUid: String,
     ): String? {
-
         val activeEnrollments =
-            d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(tei.uid()).byStatus()
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .byTrackedEntityInstance()
+                .eq(tei.uid())
+                .byStatus()
                 .eq(EnrollmentStatus.ACTIVE)
                 .blockingGetUids()
 
@@ -143,19 +171,24 @@ class StockManagerImpl(
             d2
                 .eventModule()
                 .events()
-                .byEnrollmentUid().`in`(activeEnrollments)
+                .byEnrollmentUid()
+                .`in`(activeEnrollments)
                 .byDeleted()
                 .isFalse
                 .blockingGet()
                 .sortForRuleEngine()
 
         events.forEach { event ->
-            val dataValue = d2.trackedEntityModule().trackedEntityDataValues()
-                .value(event.uid(), stockOnHandUid).blockingGet()
+            val dataValue =
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityDataValues()
+                    .value(event.uid(), stockOnHandUid)
+                    .blockingGet()
             dataValue?.let {
                 return it.value()
             }
-         }
+        }
         return null
     }
 
@@ -167,9 +200,9 @@ class StockManagerImpl(
     ): String {
         Timber.tag("EVENT_CREATION").i(
             "Enrollment: ${enrollment.uid()}\n" +
-                    "Program: ${programUid}\n" +
-                    "Stage: ${programStage.uid()}\n" +
-                    "OU: ${facility.uid}\n",
+                "Program: ${programUid}\n" +
+                "Stage: ${programStage.uid()}\n" +
+                "OU: ${facility.uid}\n",
         )
         return d2.eventModule().events().blockingAdd(
             EventCreateProjection
@@ -207,7 +240,7 @@ class StockManagerImpl(
                     enrollment,
                     transaction,
                     stockUseCase,
-                    hasErrorOnComplete
+                    hasErrorOnComplete,
                 )
             }
         }
@@ -312,9 +345,9 @@ class StockManagerImpl(
                     "de:${
                         getTransactionDataElement(
                             transaction.transactionType,
-                            stockUseCase
+                            stockUseCase,
                         )
-                    }"
+                    }",
                 )
                 Timber.i("data to save:${item.qty}")
                 d2
@@ -334,12 +367,12 @@ class StockManagerImpl(
             }
 
             try {
-                transaction.distributedTo?.let {
+                transaction.distributedTo.let {
                     val destination =
                         d2
                             .optionModule()
                             .options()
-                            .uid(it.uid)
+                            .uid(it?.uid)
                             .blockingGet()
 
                     d2
@@ -365,7 +398,7 @@ class StockManagerImpl(
                     stockUseCase.programUid,
                     transaction,
                     eventUid,
-                    stockUseCase
+                    stockUseCase,
                 )
             } catch (e: Exception) {
                 if (e is D2Error) {

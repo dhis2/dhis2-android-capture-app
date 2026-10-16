@@ -50,15 +50,15 @@ class GroupAnalyticsViewModel(
         AnalyticsCountingIdlingResource.increment()
         viewModelScope.launch(dispatchers.io()) {
             try {
-                val groups = charts.getVisualizationGroups(uid).map {
-                    AnalyticGroup(it.id(), it.name())
-                }
+                val groups =
+                    charts.getVisualizationGroups(uid).map {
+                        AnalyticGroup(it.id(), it.name())
+                    }
                 _chipItems.value = Result.success(groups)
                 onSuccess()
             } catch (e: Exception) {
                 _chipItems.value = Result.failure(e)
-            }
-            finally {
+            } finally {
                 AnalyticsCountingIdlingResource.decrement()
             }
         }
@@ -161,30 +161,34 @@ class GroupAnalyticsViewModel(
             else ->
                 viewModelScope.launch(dispatchers.io()) {
                     try {
-                        val result = when (mode) {
-                            AnalyticMode.TRACKER_PROGRAM ->
-                                uid?.let {
-                                    charts.getProgramVisualizations(groupUid, uid)
-                                        .map { ChartModel(it) }
-                                } ?: emptyList()
+                        val result =
+                            when (mode) {
+                                AnalyticMode.TRACKER_PROGRAM ->
+                                    uid?.let {
+                                        charts
+                                            .getProgramVisualizations(groupUid, uid)
+                                            .map { ChartModel(it) }
+                                    } ?: emptyList()
 
-                            AnalyticMode.EVENT_PROGRAM ->
-                                uid?.let {
-                                    charts.getProgramVisualizations(groupUid, uid)
-                                        .map { ChartModel(it) }
-                                } ?: emptyList()
+                                AnalyticMode.EVENT_PROGRAM ->
+                                    uid?.let {
+                                        charts
+                                            .getProgramVisualizations(groupUid, uid)
+                                            .map { ChartModel(it) }
+                                    } ?: emptyList()
 
-                            AnalyticMode.HOME ->
-                                charts.getHomeVisualizations(groupUid).map { ChartModel(it) }
+                                AnalyticMode.HOME ->
+                                    charts.getHomeVisualizations(groupUid).map { ChartModel(it) }
 
-                            AnalyticMode.DATASET ->
-                                uid?.let {
-                                    charts.getDataSetVisualizations(groupUid, uid)
-                                        .map { ChartModel(it) }
-                                } ?: emptyList()
+                                AnalyticMode.DATASET ->
+                                    uid?.let {
+                                        charts
+                                            .getDataSetVisualizations(groupUid, uid)
+                                            .map { ChartModel(it) }
+                                    } ?: emptyList()
 
-                            AnalyticMode.ENROLLMENT -> emptyList()
-                        }
+                                AnalyticMode.ENROLLMENT -> emptyList()
+                            }
                         _analytics.value = Result.success(result)
                     } catch (e: Exception) {
                         Timber.e(e)

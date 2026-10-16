@@ -173,7 +173,6 @@ class DataEntryIntegrationTest {
     fun shouldAllowDataEntryCorrectly() =
         runTest {
             formViewModel.items.test {
-
                 val focusOnReportDateIntent =
                     FormIntent.OnFocus(
                         uid = "EVENT_REPORT_DATE_UID",
@@ -182,7 +181,9 @@ class DataEntryIntegrationTest {
                 formViewModel.submitIntent(focusOnReportDateIntent)
 
                 assert(
-                    awaitItem().first().fields
+                    awaitItem()
+                        .first()
+                        .fields
                         .find { it.uid == "EVENT_REPORT_DATE_UID" }
                         ?.value
                         .isNullOrEmpty(),
@@ -204,8 +205,11 @@ class DataEntryIntegrationTest {
                 formViewModel.submitIntent(focusOnOrgUnitIntent)
 
                 assert(
-                    awaitItem().first().fields
-                        .find { it.uid == "EVENT_REPORT_DATE_UID" }?.value == "2024-03-20",
+                    awaitItem()
+                        .first()
+                        .fields
+                        .find { it.uid == "EVENT_REPORT_DATE_UID" }
+                        ?.value == "2024-03-20",
                 )
 
                 val enterOrgUnitIntent =
@@ -224,8 +228,11 @@ class DataEntryIntegrationTest {
                 formViewModel.submitIntent(focusOnCoordinatesIntent)
 
                 assert(
-                    awaitItem().first().fields
-                        .find { it.uid == "EVENT_ORG_UNIT_UID" }?.value == "g8upMTyEZGZ",
+                    awaitItem()
+                        .first()
+                        .fields
+                        .find { it.uid == "EVENT_ORG_UNIT_UID" }
+                        ?.value == "g8upMTyEZGZ",
                 )
 
                 // Change section
@@ -261,8 +268,10 @@ class DataEntryIntegrationTest {
                 formViewModel.submitIntent(focusOnLegendFieldIntent)
 
                 assert(
-                    awaitItem()[1].fields
-                        .find { it.uid == "qrur9Dvnyt5" }?.value == "20",
+                    awaitItem()[1]
+                        .fields
+                        .find { it.uid == "qrur9Dvnyt5" }
+                        ?.value == "20",
                 )
 
                 // enter value on input field with legend
@@ -284,7 +293,8 @@ class DataEntryIntegrationTest {
                 formViewModel.submitIntent(focusOnGenderIntent)
 
                 assert(
-                    awaitItem()[1].fields
+                    awaitItem()[1]
+                        .fields
                         .find { it.uid == "INPUT_NUMBER_WITH_LEGEND_UID" }
                         ?.legend == legendValueItem,
                 )
@@ -298,8 +308,10 @@ class DataEntryIntegrationTest {
                 formViewModel.submitIntent(enterGenderIntent)
 
                 assert(
-                    awaitItem()[1].fields
-                        .find { it.uid == "oZg33kd9taw" }?.value == "Female",
+                    awaitItem()[1]
+                        .fields
+                        .find { it.uid == "oZg33kd9taw" }
+                        ?.value == "Female",
                 )
             }
         }

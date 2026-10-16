@@ -68,7 +68,7 @@ class EventDetailsRepository(
             d2
                 .eventModule()
                 .eventService()
-                .getEditableStatus(it)
+                .rxGetEditableStatus(it)
                 .blockingGet()
         }
 
@@ -140,7 +140,7 @@ class EventDetailsRepository(
             d2
                 .eventModule()
                 .eventService()
-                .isEditable(eventUid)
+                .rxIsEditable(eventUid)
                 .blockingGet()
         } else {
             return getProgramStage()?.access()?.data()?.write() == true
@@ -379,14 +379,14 @@ class EventDetailsRepository(
             .programModule()
             .programs()
             .uid(programUid)
-            .get()
+            .rxGet()
             .flatMap { program: Program ->
                 d2
                     .categoryModule()
                     .categoryCombos()
                     .withCategories()
-                    .uid(program.categoryCombo()?.uid())
-                    .get()
+                    .uid(program.categoryCombo().uid())
+                    .rxGet()
             }.blockingGet()
 
     fun updateEvent(
@@ -481,14 +481,23 @@ class EventDetailsRepository(
             cal[Calendar.SECOND] = 0
             cal[Calendar.MILLISECOND] = 0
 
+            val stageUid =
+                requireNotNull(programStageUid ?: getProgramStage()?.uid()) {
+                    "Program stage is required to schedule an event"
+                }
+            val orgUnit =
+                requireNotNull(orgUnitUid) {
+                    "Org unit is required to schedule an event"
+                }
+
             val uid =
                 d2.eventModule().events().blockingAdd(
                     EventCreateProjection
                         .builder()
                         .enrollment(enrollmentUid)
                         .program(programUid)
-                        .programStage(programStageUid)
-                        .organisationUnit(orgUnitUid)
+                        .programStage(stageUid)
+                        .organisationUnit(orgUnit)
                         .attributeOptionCombo(categoryOptionComboUid)
                         .build(),
                 )

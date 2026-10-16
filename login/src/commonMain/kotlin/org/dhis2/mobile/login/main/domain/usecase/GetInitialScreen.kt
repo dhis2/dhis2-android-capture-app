@@ -2,6 +2,7 @@ package org.dhis2.mobile.login.main.domain.usecase
 
 import org.dhis2.mobile.login.accounts.data.repository.AccountRepository
 import org.dhis2.mobile.login.accounts.domain.model.AccountModel
+import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.pin.data.SessionRepository
 
@@ -9,7 +10,7 @@ class GetInitialScreen(
     private val accountRepository: AccountRepository,
     private val sessionRepository: SessionRepository,
 ) {
-    suspend operator fun invoke(): LoginScreenState {
+    suspend operator fun invoke(renewSession: Boolean = false): LoginScreenState {
         val accounts = accountRepository.getLoggedInAccounts()
 
         return when {
@@ -19,9 +20,9 @@ class GetInitialScreen(
                     availableServers = accountRepository.availableServers(),
                     hasAccounts = false,
                 )
-
+            renewSession -> handleLockedSession(true)
             accounts.size == 1 -> handleSingleAccount(accounts.first())
-            sessionRepository.isSessionLocked() -> handleLockedSession()
+            sessionRepository.isSessionLocked() -> handleLockedSession(false)
             else -> LoginScreenState.Accounts
         }
     }
@@ -33,10 +34,11 @@ class GetInitialScreen(
             serverName = account.serverName,
             selectedServerFlag = account.serverFlag,
             allowRecovery = account.allowRecovery,
-            oAuthEnabled = account.isOauthEnabled,
+            entryMode = CredentialsEntryMode.existing(account.authorizationMethod),
+            autoPromptLogin = false,
         )
 
-    private suspend fun handleLockedSession(): LoginScreenState {
+    private suspend fun handleLockedSession(renewSession: Boolean): LoginScreenState {
         val activeAccount = accountRepository.getActiveAccount() ?: return LoginScreenState.Accounts
         return LoginScreenState.LoginCredentials(
             selectedServer = activeAccount.serverUrl,
@@ -44,7 +46,9 @@ class GetInitialScreen(
             serverName = activeAccount.serverName,
             selectedServerFlag = activeAccount.serverFlag,
             allowRecovery = activeAccount.allowRecovery,
-            oAuthEnabled = activeAccount.isOauthEnabled,
+            entryMode = CredentialsEntryMode.existing(activeAccount.authorizationMethod),
+            autoPromptLogin = false,
+            autoStartRenewal = renewSession,
         )
     }
 }

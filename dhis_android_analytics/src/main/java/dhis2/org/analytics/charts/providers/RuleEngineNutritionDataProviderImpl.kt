@@ -6,8 +6,13 @@ import dhis2.org.analytics.charts.data.NutritionChartType
 import dhis2.org.analytics.charts.data.SerieData
 import org.hisp.dhis.lib.expression.math.ZScoreTable
 import java.util.GregorianCalendar
+import kotlin.math.exp
+import kotlin.math.pow
 
 class RuleEngineNutritionDataProviderImpl : NutritionDataProvider {
+    // Standard SD levels plotted as reference lines on WHO growth charts
+    private val sdLevels = listOf(-3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0)
+
     override fun getNutritionData(nutritionChartType: NutritionChartType): List<SerieData> {
         val zscoreTable =
             when (nutritionChartType) {
@@ -19,28 +24,17 @@ class RuleEngineNutritionDataProviderImpl : NutritionDataProvider {
                 NutritionChartType.WHO_WHO_WFH_GIRL -> ZScoreTable.Z_SCORE_WFH_TABLE_GIRL
             }
 
-        val numberOfData =
-            zscoreTable.values
-                .first()
-                .sdMap.size
-        val nutritionData =
-            mutableListOf<MutableList<GraphPoint>>().apply {
-                for (i in 0 until numberOfData) {
-                    add(mutableListOf())
-                }
-            }
+        val nutritionData = sdLevels.map { mutableListOf<GraphPoint>() }
 
-        zscoreTable.toSortedMap(compareBy { it.parameter }).forEach {
-            val parameter = it.key.parameter
-            val values =
-                it.value.sdMap.keys
-                    .sorted()
-            for (dataIndex in 0 until numberOfData) {
+        zscoreTable.toSortedMap(compareBy { it.parameter }).forEach { (key, lms) ->
+            val parameter = key.parameter
+            sdLevels.forEachIndexed { dataIndex, z ->
+                val value = lmsToMeasurement(lms.l, lms.m, lms.s, z)
                 nutritionData[dataIndex].add(
                     GraphPoint(
                         eventDate = GregorianCalendar(2021, 0, 1).time,
                         position = parameter,
-                        fieldValue = GraphFieldValue.Decimal(values[dataIndex]),
+                        fieldValue = GraphFieldValue.Decimal(value.toFloat()),
                     ),
                 )
             }
@@ -50,4 +44,17 @@ class RuleEngineNutritionDataProviderImpl : NutritionDataProvider {
             SerieData("", it)
         }
     }
+
+    // WHO LMS formula: M*(1+L*S*Z)^(1/L) for L≠0, M*exp(S*Z) for L=0
+    private fun lmsToMeasurement(
+        l: Double,
+        m: Double,
+        s: Double,
+        z: Double,
+    ): Double =
+        if (l != 0.0) {
+            m * (1 + l * s * z).pow(1.0 / l)
+        } else {
+            m * exp(s * z)
+        }
 }

@@ -6,11 +6,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.PrimaryScrollableTabRow
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -82,7 +81,7 @@ fun AdaptiveTabRow(
         val finalPlaceable =
             subcompose("finalLayout") {
                 if (scrollable) {
-                    ScrollableTabRow(
+                    PrimaryScrollableTabRow(
                         modifier =
                             Modifier
                                 .fillMaxWidth()
@@ -92,10 +91,10 @@ fun AdaptiveTabRow(
                         selectedTabIndex = currentSelectedTab,
                         containerColor = MaterialTheme.colorScheme.primary,
                         edgePadding = Spacing.Spacing16,
-                        indicator = { tabPositions ->
+                        indicator = {
                             TabRowDefaults.PrimaryIndicator(
                                 width = indicatorWidth,
-                                modifier = Modifier.tabIndicatorOffset(tabPositions[currentSelectedTab]),
+                                modifier = Modifier.tabIndicatorOffset(currentSelectedTab),
                                 color = MaterialTheme.colorScheme.onPrimary,
                             )
                         },
@@ -116,7 +115,7 @@ fun AdaptiveTabRow(
                         }
                     }
                 } else {
-                    TabRow(
+                    PrimaryTabRow(
                         modifier =
                             modifier
                                 .height(48.dp)
@@ -126,10 +125,10 @@ fun AdaptiveTabRow(
                                 },
                         selectedTabIndex = currentSelectedTab,
                         containerColor = MaterialTheme.colorScheme.primary,
-                        indicator = { tabPositions ->
+                        indicator = {
                             TabRowDefaults.PrimaryIndicator(
                                 width = indicatorWidth,
-                                modifier = Modifier.tabIndicatorOffset(tabPositions[currentSelectedTab]),
+                                modifier = Modifier.tabIndicatorOffset(currentSelectedTab),
                                 color = MaterialTheme.colorScheme.onPrimary,
                             )
                         },

@@ -14,4 +14,5 @@
     <string name="action_yes">sim</string>
     <string name="enter_pin_button">Desbloquear</string>
     <string name="importing_successful">Importação bem sucedida</string>
-    </resources>
+    <string name="cancel">Cancelar</string>
+</resources>

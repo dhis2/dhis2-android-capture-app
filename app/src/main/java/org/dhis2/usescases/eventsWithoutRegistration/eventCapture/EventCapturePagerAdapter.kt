@@ -139,7 +139,5 @@ class EventCapturePagerAdapter(
         notifyItemChanged(index)
     }
 
-    override fun getItemId(position: Int): Long {
-        return itemIds[position]
-    }
+    override fun getItemId(position: Int): Long = itemIds[position]
 }

@@ -170,10 +170,10 @@ class SchedulingDialog : BottomSheetDialogFragment() {
 
     private fun showCalendarDialog() {
         val dialog = CalendarPicker(requireContext())
-        dialog.setInitialDate(viewModel.eventDate.value.currentDate)
-        dialog.setMinDate(viewModel.eventDate.value.minDate)
-        dialog.setMaxDate(viewModel.eventDate.value.maxDate)
-        dialog.isFutureDatesAllowed(viewModel.eventDate.value.allowFutureDates)
+        dialog.setInitialDate(viewModel.uiState.value.eventDate.currentDate)
+        dialog.setMinDate(viewModel.uiState.value.eventDate.minDate)
+        dialog.setMaxDate(viewModel.uiState.value.eventDate.maxDate)
+        dialog.isFutureDatesAllowed(viewModel.uiState.value.eventDate.allowFutureDates)
         dialog.setListener(
             object : OnDatePickerListener {
                 override fun onNegativeClick() {

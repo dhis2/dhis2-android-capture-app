@@ -13,15 +13,16 @@ class EventIndicatorRepository(
     resourceManager: ResourceManager,
 ) : BaseIndicatorRepository(d2, ruleEngineHelper, programUid, resourceManager) {
     override suspend fun fetchData(): List<AnalyticsModel> {
-        val indicators = getIndicators { indicatorUid ->
-            d2
-                .programModule()
-                .programIndicatorEngine()
-                .getEventProgramIndicatorValue(
-                    eventUid,
-                    indicatorUid,
-                ) ?: ""
-        }.blockingFirst(emptyList())
+        val indicators =
+            getIndicators { indicatorUid ->
+                d2
+                    .programModule()
+                    .programIndicatorEngine()
+                    .getEventProgramIndicatorValue(
+                        eventUid,
+                        indicatorUid,
+                    ) ?: ""
+            }.blockingFirst(emptyList())
 
         val ruleIndicators = getRulesIndicators().blockingFirst(emptyList())
 

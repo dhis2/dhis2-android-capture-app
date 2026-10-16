@@ -1,6 +1,7 @@
 package org.dhis2.tracker.relationships
 
 import org.hisp.dhis.android.core.common.Access
+import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.relationship.RelationshipConstraint
 import org.hisp.dhis.android.core.relationship.RelationshipType
@@ -25,7 +26,7 @@ val relationshipTypeTeiToTei: RelationshipType =
                     ObjectWithUid.create("trackedEntityType2"),
                 ).build(),
         ).access(
-            Access.builder().read(true).build(),
+            Access(true, true, DataAccess(true, true)),
         ).build()
 
 val relationshipTypeEventToTei: RelationshipType =
@@ -48,5 +49,5 @@ val relationshipTypeEventToTei: RelationshipType =
                     ObjectWithUid.create("trackedEntityType2"),
                 ).build(),
         ).access(
-            Access.builder().read(true).build(),
+            Access(true, true, DataAccess(true, true)),
         ).build()

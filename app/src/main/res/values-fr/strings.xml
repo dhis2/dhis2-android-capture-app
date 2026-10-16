@@ -63,7 +63,7 @@
     <!--Event initial-->
     <string name="update">Mettre à jour</string>
     <string name="org_unit">Unités d´Organisation</string>
-    <string name="no_org_units">Il n\'y a pas d\'Unité d\'organisation Ouvert pour la date sélectionnée. Merci de sélectionner une autre date ou une autre Unité d\'Organisation.</string>
+    <string name="no_org_units">Il n\'y a pas d\'unité d\'organisation ouverte pour la date sélectionnée. Merci de sélectionner une autre date ou une autre unité d\'organisation.</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
 
@@ -196,10 +196,10 @@
     <string name="about_sdk">Version de SDK: %s</string>
     <string name="about_connected">Connectée à: %s</string>
     <string name="about_user">Utilisateur actuel: %s</string>
-    <string name="about_more">Plus d\'informations sur l\'application: lisez <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">ici</a>ce qui est supporté et ce qui n\'est pas supporté</string>
-    <string name="about_git">Cette version et les versions précédentes de cette application sont disponibles sur <a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>. DHIS2 Android Capture est sous licence de la GNU General Public License telle que publiée par la Free Software Foundation, voir <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
-    <string name="about_dev">Développé et entretenu par le <a href="https://www.dhis2.org/">DHIS2</a> projet, partie de l\'Université d\'Oslo, <a href="https://www.mn.uio.no/ifi/english/">département d\'informatique</a>.</string>
-    <string name="about_contact">Pour plus d\'informations ou des questions sur cette application, veuillez écrire à <a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
+    <string name="about_more">\"Plus d\'informations sur l\'application: lisez \"<a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">ici</a>ce qui est supporté et ce qui n\'est pas supporté</string>
+    <string name="about_git">\"Cette version et les versions précédentes de cette application sont disponibles sur \"<a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>\". DHIS2 Android Capture est sous licence de la GNU General Public License telle que publiée par la Free Software Foundation, voir \"<a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
+    <string name="about_dev">\"Développé et entretenu par le \"<a href="https://www.dhis2.org/">DHIS2</a>\" projet, partie de l\'Université d\'Oslo, \"<a href="https://www.mn.uio.no/ifi/english/">département d\'informatique</a>.</string>
+    <string name="about_contact">\"Pour plus d\'informations ou des questions sur cette application, veuillez écrire à \"<a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
 
     <string name="search_program_not_selected">Sélectionnez un programme pour permettre l\'inscription</string>
     <string name="search_access_error">Vous n\'avez pas l\'autorisation requise</string>
@@ -221,7 +221,6 @@
     <string name="tuto_event_initial_new_1">Entrez toutes les données pour créer l\'événement</string>
     <string name="tuto_event_initial_1">Cliquez ici pour vérifier l\'état d\'achèvement de l\'événement</string>
     <string name="relationships">Relation</string>
-    <string name="empty_tei_add">Aucun évènement n\'a été enregistré, cliquez \"+\" pour en ajouter un nouveau.</string>
     <string name="qr_data_values">Valeurs de données</string>
     <string name="info">Info</string>
     <string name="qr_no_id_error">Impossible de lire cet Id</string>
@@ -248,9 +247,9 @@
     <string name="sent_by_sms">Envoyé par sms</string>
     <string name="action_close">Fermer</string>
     <string name="tuto_main_11">Maintenant vous pouvez vérifier l\'information de synchronisation en cliquant ici</string>
-    <string name="relationship_error_recursive">Vous ne pouvez pas établir de relation une donnée avec elle-même</string>
+    <string name="relationship_error_recursive">Vous ne pouvez pas établir de relation entre une donnée et elle-même</string>
     <string name="change_calendar_view">Changer de vue calendrier</string>
-    <string name="relationship_without_enrollment">La donnée à laquelle vous essayer d\'acceéer n\'a pas d\'enrôlement. Vous ne pouvez pas accéder au tableau de bord.</string>
+    <string name="relationship_without_enrollment">La donnée à laquelle vous essayer d\'accéder n\'a pas d\'enrôlement. Vous ne pouvez pas accéder au tableau de bord.</string>
     <string name="formatting_error">Erreur de formattage</string>
     <string name="dashboard_menu_delete_tei_v2">Supprimer 1%s</string>
     <string name="delete_authority_error">Vous n\'avez pas l\'autorité pour supprimer cette donnée</string>
@@ -439,8 +438,6 @@
     <string name="take_photo">Prendre une photo</string>
     <string name="break_glass_dialog_title">Ce programme est protégé</string>
     <string name="break_glass_hint">Décrivez la raison ici</string>
-    <string name="openid_session_expired">La session a expiré</string>
-    <string name="openid_session_expired_message">Votre session actuelle a expiré. Pour des raisons de sécurité, vous devrez fournir à nouveau vos informations d\'identification</string>
     <string name="week_period_span_default_label">Semaine %d %s à %s</string>
     <string name="action_do_not_show_again">Ne pas montrer de nouveau</string>
     <string name="update_field_error">Ce champ n\'a pas pu être mis à jour. Veuillez réessayer</string>
@@ -448,17 +445,19 @@
     <string name="edition_expired">Cette donnée n\'est pas modifiable car son heure d\'édition est expirée</string>
     <string name="edition_no_write_access">Vous n\'êtes pas autorisé à modifier ces données</string>
     <string name="edition_no_catcombo_access">Vous n\'êtes pas autorisé à modifier ces données</string>
-    <string name="edition_orgunit_user_scope">Vous ne pouvez pas modifier les données de cette unité organisationnelle</string>
     <string name="error_tei_online_search_title">La recherche en ligne a renvoyé le message suivant :</string>
     <string name="delete_account">Supprimer compte</string>
     <string name="troubleshooting_language_title">Langue</string>
     <string name="not_saved">Non enregistré!</string>
+    <string name="review_message">Certains champs nécessitent votre attention. \n Voulez-vous revoir le formulaire ?</string>
     <string name="search_no_results">Il n\'y a pas de résultats pour cette recherche</string>
     <string name="search_too_many_results">Résultats trop nombreux</string>
     <string name="action_ok">Ok</string>
     <string name="init_search">Lancez une recherche pour trouver 1%s</string>
     <string name="search_or_create">Vous pouvez rechercher ou créer un nouveau 1%s</string>
     <string name="missing_warning_fields_completed_events">Vous avez des messages d\'avertissement.</string>
+    <string name="missing_warning_fields_events">Vous avez des messages d\'avertissement.\nVoulez-vous marquer ce formulaire comme terminé ?</string>
+    <string name="missing_error_fields_events">Certains champs contiennent des erreurs et ils ne sont pas enregistrés. \ nVoulez-vous revoir le formulaire ?</string>
     <string name="event_can_be_completed">Voulez-vous marquer ce formulaire comme complet?</string>
     <string name="event_error_on_complete">Vous avez des messages d\'erreur.\nVoulez-vous les consulter ?</string>
     <string name="re_opened">Réouvert</string>
@@ -482,21 +481,18 @@
     <string name="app_version">Version de l\'application</string>
     <string name="not_synced">Non synchronisé</string>
     <string name="sync_retry">Réessayer la synchronisation</string>
-    <string name="marked_follow_up">Marqué pour suivi</string>
     <string name="view_only">Visualiser uniquement</string>
     <string name="skipped">Ignoré</string>
     <string name="programs">Programmes</string>
     <string name="sync_successful">Synchronisation réussie</string>
     <string name="sync_warning">Alerte de synchronisation</string>
     <string name="sync_error">Erreur de synchronisation</string>
-    <string name="mark_follow_up">Marquer pour suivi</string>
     <string name="coordinates">Coordonnées</string>
     <string name="sync_offline_check_connection">Il semble que vous n\'êtes pas connecté. Vérifier votre connexion.</string>
     <string name="delete_tei_dialog_message">Ce %s et toutes ses données dans tous les programmes seront supprimés. Cette action ne peut pas être annulée.</string>
     <string name="schedule">Planifier</string>
     <string name="refer">Référer</string>
     <string name="scheduled_enter_event">Planifié</string>
-    <string name="program_stage">Étape du programme</string>
     <string name="event">événement</string>
     <string name="timeline">Chronologie</string>
     <string name="show_more">Afficher plus</string>

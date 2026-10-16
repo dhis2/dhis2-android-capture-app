@@ -116,8 +116,6 @@ class FilterResources(
             1,
         )
 
-    fun filterFollowUpLabel(teTypeName: String): String = resourceManager.getString(R.string.filter_follow_up_label).format(teTypeName)
-
     fun filterEventStatusLabel(programUid: String): String =
         eventResourcesProvider.formatWithProgramEventLabel(
             R.string.filters_title_event_label_status,

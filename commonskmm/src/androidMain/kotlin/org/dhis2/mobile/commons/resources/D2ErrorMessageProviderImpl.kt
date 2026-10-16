@@ -51,6 +51,9 @@ class D2ErrorMessageProviderImpl : D2ErrorMessageProvider {
             D2ErrorCode.BAD_CREDENTIALS ->
                 getString(Res.string.login_error_bad_credentials)
 
+            D2ErrorCode.BAD_CREDENTIALS_OFFLINE_CODE ->
+                getString(Res.string.login_error_bad_credentials_offline)
+
             D2ErrorCode.UNKNOWN_HOST -> {
                 if (isNetworkAvailable) {
                     getString(Res.string.login_error_unknown_host)
@@ -208,6 +211,7 @@ class D2ErrorMessageProviderImpl : D2ErrorMessageProvider {
 
             D2ErrorCode.ORGUNIT_NOT_IN_SEARCH_SCOPE ->
                 getString(Res.string.error_org_unit_scope)
+
             D2ErrorCode.INVALID_CONFIGURATION ->
                 getString(Res.string.invalid_configuration)
 
@@ -230,6 +234,23 @@ class D2ErrorMessageProviderImpl : D2ErrorMessageProvider {
 
             D2ErrorCode.NOT_IN_TOTP_2FA_ENROLLMENT_MODE ->
                 getString(Res.string.not_in_totp_2fa_enrollment_mode)
+
+            D2ErrorCode.OAUTH2_DEVICE_NOT_REGISTERED ->
+                getString(Res.string.error_device_not_registered)
+
+            D2ErrorCode.OAUTH2_INCOMPLETE_REGISTRATION,
+            D2ErrorCode.OAUTH2_INVALID_IAT,
+            D2ErrorCode.OAUTH2_INVALID_STATE,
+            ->
+                getString(Res.string.oauth2_error)
+
+            D2ErrorCode.OAUTH2_NO_VALID_TOKEN,
+            D2ErrorCode.OPEN_ID_CONNECT_NO_VALID_TOKEN,
+            ->
+                getString(Res.string.error_session_renewal_required)
+
+            D2ErrorCode.AUTHENTICATED_USER_MISMATCH ->
+                getString(Res.string.error_authenticated_user_mismatch)
         }
 
     private suspend fun defaultError() = getString(Res.string.error_unexpected)

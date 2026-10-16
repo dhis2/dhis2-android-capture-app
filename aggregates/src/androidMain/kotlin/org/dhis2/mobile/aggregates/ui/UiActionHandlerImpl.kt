@@ -23,14 +23,13 @@ import org.dhis2.maps.views.MapSelectorActivity.Companion.PROGRAM_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.SCOPE
 import org.dhis2.mobile.aggregates.R
 import org.dhis2.mobile.aggregates.data.files.AggregatesFileProvider
-import org.dhis2.mobile.commons.extensions.rotateImage
 import org.dhis2.mobile.commons.files.FileHandler
 import org.dhis2.mobile.commons.files.GetFileResource
+import org.dhis2.mobile.commons.files.createImageCaptureFile
 import org.dhis2.mobile.commons.files.toFileOverWrite
 import org.dhis2.mobile.commons.input.CallbackStatus
 import org.dhis2.mobile.commons.input.UiActionHandler
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
-import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import java.io.File
 
 class UiActionHandlerImpl(
@@ -41,7 +40,7 @@ class UiActionHandlerImpl(
     private var callback: ((String?) -> Unit)? = null
     private var onFailure: (() -> Unit)? = null
     private var filepath: String? = null
-    private var tempFile: File? = null
+    private var captureFile: File? = null
 
     init {
         AggregatesFileProvider.init(context.applicationContext)
@@ -84,12 +83,12 @@ class UiActionHandlerImpl(
             contract = ActivityResultContracts.TakePicture(),
         ) { success ->
             if (success) {
-                tempFile?.let {
-                    callback?.invoke(it.rotateImage(context).path)
+                captureFile?.let {
+                    callback?.invoke(it.path)
                 } ?: run {
                     callback?.invoke(CallbackStatus.ERROR.name)
                 }
-                tempFile = null
+                captureFile = null
             } else {
                 callback?.invoke(CallbackStatus.ERROR.name)
             }
@@ -116,7 +115,7 @@ class UiActionHandlerImpl(
             contract = ActivityResultContracts.RequestPermission(),
         ) { isGranted ->
             if (isGranted) {
-                cameraLauncher.launch(getPhotoUri(tempFile!!))
+                cameraLauncher.launch(getPhotoUri(captureFile!!))
             } else {
                 callback?.invoke(CallbackStatus.ERROR.name)
             }
@@ -227,13 +226,13 @@ class UiActionHandlerImpl(
 
     override fun onTakePicture(callback: (result: String?) -> Unit) {
         this.callback = callback
-        tempFile = getTempFile()
+        captureFile = createImageCaptureFile(context)
         if (ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.CAMERA,
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            cameraLauncher.launch(getPhotoUri(tempFile!!))
+            cameraLauncher.launch(getPhotoUri(captureFile!!))
         } else {
             requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
@@ -299,8 +298,6 @@ class UiActionHandlerImpl(
             onActivityNotFound()
         }
     }
-
-    private fun getTempFile() = File(FileResourceDirectoryHelper.getFileResourceDirectory(context), "tempFile.png")
 
     private fun getPhotoUri(file: File): Uri =
         FileProvider.getUriForFile(
