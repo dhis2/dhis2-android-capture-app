@@ -150,13 +150,9 @@ class VisualizationToGraph(
             }
 
             else -> {
-                val combCategories = mutableListOf<String>()
-                dimensionRowCombinator.combineWithNextItem(
+                dimensionRowCombinator.combinedRow(
                     gridAnalyticsResponse = gridAnalyticsResponse,
-                    currentList = combCategories,
-                    hasMoreRows = gridAnalyticsResponse.headers.rows.isNotEmpty(),
                 )
-                combCategories
             }
         }
 
