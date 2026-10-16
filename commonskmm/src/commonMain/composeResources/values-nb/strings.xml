@@ -80,4 +80,7 @@
     <string name="remove_follow_up">Fjern</string>
     <string name="program_stage">Programfase</string>
     <string name="stage">fase</string>
-</resources>
+
+    <string name="http_error_conflict">Konflikt</string>
+    <string name="http_error_internal_server_error">Intern serverfeil</string>
+    </resources>

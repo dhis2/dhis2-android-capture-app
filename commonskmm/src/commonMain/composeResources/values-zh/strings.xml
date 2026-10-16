@@ -238,4 +238,9 @@
     <string name="program_stage">项目阶段</string>
     <string name="group_by_stage_label">按%s分组</string>
     <string name="stage">阶段</string>
+
+    <string name="http_error_not_found">未找到</string>
+    <string name="http_error_conflict">冲突</string>
+    <string name="http_error_internal_server_error">服务器内部错误</string>
+    <string name="http_error_unknown">未知错误</string>
 </resources>
