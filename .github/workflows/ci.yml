@@ -138,7 +138,7 @@ jobs:
       # app/build/outputs/apk/**/*.apk path the archive is rooted at app/build/outputs/apk.
       # Download into that same directory to restore the layout the find commands below expect.
       - name: Download APKs
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: test-apks
           path: app/build/outputs/apk
@@ -178,7 +178,7 @@ jobs:
       # app/build/outputs/apk/**/*.apk path the archive is rooted at app/build/outputs/apk.
       # Download into that same directory to restore the layout the find commands below expect.
       - name: Download APKs
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: test-apks
           path: app/build/outputs/apk
@@ -230,21 +230,21 @@ jobs:
       # Unit test coverage is reported by unit-tests against the classes it compiled.
       # Missing when unit tests failed or were skipped; the analysis still runs.
       - name: Download JaCoCo Report
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: jacoco-report
           path: .
         continue-on-error: true
 
       - name: Download instrumented classes
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: instrumented-classes
           path: app/build/coverage-classes
         continue-on-error: true
 
       - name: Download BrowserStack coverage
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           pattern: browserstack-coverage-*
           path: app/build/outputs/code_coverage/browserstack
