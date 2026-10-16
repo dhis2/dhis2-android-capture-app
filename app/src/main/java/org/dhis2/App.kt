@@ -188,7 +188,7 @@ open class App :
     }
 
     protected open fun setUpUserComponent() {
-        serverComponent?.userManager()?.takeIf { it.isUserLoggedIn.blockingFirst() }?.let {
+        serverComponent?.userManager()?.takeIf { it.isUserLoggedIn().blockingFirst() }?.let {
             userComponent = serverComponent!!.plus(UserModule())
         }
     }
