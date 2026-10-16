@@ -14,6 +14,7 @@ data class CredentialsUiState(
     val displayBiometricsDialog: Boolean,
     val hasOtherAccounts: Boolean,
     val isSessionLocked: Boolean,
+    val isUserLoggedIn: Boolean,
 ) {
     fun username() = serverInfo.username ?: credentialsInfo?.username ?: ""
 }

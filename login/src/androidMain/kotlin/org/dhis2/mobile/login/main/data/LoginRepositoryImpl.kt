@@ -219,7 +219,7 @@ class LoginRepositoryImpl(
             }
         }
 
-    override suspend fun setOfflinePin(pin: String): kotlin.Result<Unit> =
+    override suspend fun setOfflineCode(code: String): kotlin.Result<Unit> =
         withContext(dispatcher.io) {
             val result =
                 when (
@@ -230,9 +230,9 @@ class LoginRepositoryImpl(
                         ?.authorizationType
                 ) {
                     AuthorizationType.OPEN_ID_CONNECT ->
-                        d2.userModule().openIdHandler().suspendSetPin(pin)
+                        d2.userModule().openIdHandler().suspendSetPin(code)
 
-                    else -> d2.userModule().oauth2Handler().suspendSetPin(pin)
+                    else -> d2.userModule().oauth2Handler().suspendSetPin(code)
                 }
             when (result) {
                 is Result.Success -> kotlin.Result.success(Unit)
@@ -530,6 +530,59 @@ class LoginRepositoryImpl(
                     .databaseImportExport()
                     .importDatabase(File(path))
                 kotlin.Result.success(Unit)
+            } catch (e: Exception) {
+                kotlin.Result.failure(
+                    Exception(
+                        d2ErrorMessageProvider.getErrorMessage(
+                            e,
+                            isNetworkAvailable = true,
+                        ),
+                    ),
+                )
+            }
+        }
+
+    override suspend fun isUserLoggedIn() =
+        withContext(dispatcher.io) {
+            try {
+                val isLoggedIn =
+                    d2
+                        .userModule()
+                        .blockingIsLogged()
+                kotlin.Result.success(isLoggedIn)
+            } catch (e: Exception) {
+                kotlin.Result.failure(
+                    Exception(
+                        d2ErrorMessageProvider.getErrorMessage(
+                            e,
+                            isNetworkAvailable = true,
+                        ),
+                    ),
+                )
+            }
+        }
+
+    override suspend fun needsOfflineCode() =
+        withContext(dispatcher.io) {
+            try {
+                val authType =
+                    d2
+                        .userModule()
+                        .accountManager()
+                        .getCurrentAccount()
+                        ?.authorizationType
+                val isPinStored =
+                    d2
+                        .dataStoreModule()
+                        .localDataStore()
+                        .value(PIN)
+                        .blockingExists()
+
+                kotlin.Result.success(
+                    (authType == AuthorizationType.OAUTH2 || authType == AuthorizationType.OPEN_ID_CONNECT) &&
+                        isUserLoggedIn().getOrDefault(false) &&
+                        !isPinStored,
+                )
             } catch (e: Exception) {
                 kotlin.Result.failure(
                     Exception(

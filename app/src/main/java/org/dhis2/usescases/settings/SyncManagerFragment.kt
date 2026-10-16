@@ -89,6 +89,11 @@ class SyncManagerFragment : FragmentGlobalAbstract() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        presenter.refreshData()
+    }
+
     override fun onStop() {
         val notificationManager =
             requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

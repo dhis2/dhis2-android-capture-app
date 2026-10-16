@@ -64,13 +64,13 @@
     <string name="pin_error_reset_failed">Failed to reset PIN</string>
     <string name="pin_error_remaining_attempts">%1$s attempts remaining</string>
     <string name="pin_error_locked_countdown">Too many attempts. Try again in %1$s seconds</string>
-    <string name="offline_credential_create_title">Create an offline PIN</string>
-    <string name="offline_credential_create_description">Set a PIN to log in to this account offline.</string>
-    <string name="offline_credential_create_button">Create PIN</string>
-    <string name="offline_credential_enter_title">Enter your offline PIN</string>
-    <string name="offline_credential_enter_description">Enter your 4-digit PIN to log in offline.</string>
+    <string name="offline_credential_create_title">Create an offline CODE</string>
+    <string name="offline_credential_create_description">Set a CODE to log in to this account offline.</string>
+    <string name="offline_credential_create_button">Create CODE</string>
+    <string name="offline_credential_enter_title">Enter your offline CODE </string>
+    <string name="offline_credential_enter_description">Enter your 4-digit CODE to log in offline.</string>
     <string name="offline_credential_enter_button">Log in</string>
-    <string name="offline_credential_forgot_button">Forgot your PIN?</string>
+    <string name="offline_credential_forgot_button">Forgot your CODE?</string>
     <string name="import_database">Import Database</string>
     <string name="importing_successful">Import successful</string>
     <string name="openid_process_cancelled">The login was cancelled</string>
@@ -81,7 +81,7 @@
     <string name="openid_error_not_configured">OpenID login is not configured for this server</string>
     <string name="error_device_not_registered">Device not registered</string>
     <string name="missing_username_from_oauth_login_response">Missing username from OAuth login response</string>
-    <string name="forgot_pin_description">To set a new PIN you need to log in with your username and password. This requires an internet connection.</string>
+    <string name="offline_credential_forgot_code_description">To set a new CODE you need to log in with your username and password. This requires an internet connection.</string>
     <string name="login_online">Login online</string>
     <string name="cancel">Cancel</string>
 </resources>

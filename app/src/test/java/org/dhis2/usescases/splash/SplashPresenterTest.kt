@@ -47,7 +47,8 @@ class SplashPresenterTest {
 
     @Test
     fun `Should go to next screen when user is not logged in without touching the SDK`() {
-        whenever(userManager.isUserLoggedIn) doReturn Observable.just(false)
+        whenever(userManager.isUserLoggedIn()) doReturn Observable.just(false)
+        whenever(userManager.needsOfflinePin()) doReturn Observable.just(false)
 
         presenter.init()
 
@@ -56,6 +57,7 @@ class SplashPresenterTest {
             preferenceProvider.getBoolean(Preference.SESSION_LOCKED, false),
             preferenceProvider.getBoolean(Preference.INITIAL_METADATA_SYNC_DONE, false),
             preferenceProvider.getBoolean(Preference.INITIAL_DATA_SYNC_DONE, false),
+            false,
         )
         verify(d2, never()).systemInfoModule()
         verify(crashReportController, never()).trackServer(any(), any())
@@ -63,7 +65,8 @@ class SplashPresenterTest {
 
     @Test
     fun `Should track user info and go to next screen when user is logged in and tracking permission is granted`() {
-        whenever(userManager.isUserLoggedIn) doReturn Observable.just(true)
+        whenever(userManager.isUserLoggedIn()) doReturn Observable.just(true)
+        whenever(userManager.needsOfflinePin()) doReturn Observable.just(false)
         val permissionGranted =
             KeyValuePair
                 .builder()
@@ -93,12 +96,14 @@ class SplashPresenterTest {
             preferenceProvider.getBoolean(Preference.SESSION_LOCKED, false),
             preferenceProvider.getBoolean(Preference.INITIAL_METADATA_SYNC_DONE, false),
             preferenceProvider.getBoolean(Preference.INITIAL_DATA_SYNC_DONE, false),
+            false,
         )
     }
 
     @Test
     fun `Should not track user info when user is logged in but tracking permission is not granted`() {
-        whenever(userManager.isUserLoggedIn) doReturn Observable.just(true)
+        whenever(userManager.isUserLoggedIn()) doReturn Observable.just(true)
+        whenever(userManager.needsOfflinePin()) doReturn Observable.just(false)
         val permissionDenied =
             KeyValuePair
                 .builder()
@@ -121,6 +126,7 @@ class SplashPresenterTest {
             preferenceProvider.getBoolean(Preference.SESSION_LOCKED, false),
             preferenceProvider.getBoolean(Preference.INITIAL_METADATA_SYNC_DONE, false),
             preferenceProvider.getBoolean(Preference.INITIAL_DATA_SYNC_DONE, false),
+            false,
         )
     }
 
@@ -142,6 +148,7 @@ class SplashPresenterTest {
             sessionLocked = false,
             initialSyncDone = false,
             initialDataSyncDone = false,
+            needsOfflineCredentials = false,
         )
     }
 

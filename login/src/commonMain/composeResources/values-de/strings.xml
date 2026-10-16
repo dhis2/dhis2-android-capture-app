@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="two_fa_is_on">Die Zwei-Faktor-Authentifizierung ist aktiviert.</string>
+    <string name="username_hint">Benutzername</string>
+    </resources>

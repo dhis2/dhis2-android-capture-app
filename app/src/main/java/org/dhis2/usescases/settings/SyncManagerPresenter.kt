@@ -383,6 +383,12 @@ class SyncManagerPresenter(
         }
     }
 
+    fun refreshData() {
+        viewModelScope.launch(dispatcherProvider.io()) {
+            loadData()
+        }
+    }
+
     fun onSyncMetaPeriodChanged(period: Int) {
         viewModelScope.launch(dispatcherProvider.io()) {
             launchSync(LaunchSync.SyncAction.UpdateSyncMetadataPeriod(period))

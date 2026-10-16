@@ -89,5 +89,9 @@ interface LoginRepository {
 
     suspend fun getServerApiVersion(serverUrl: String): String?
 
-    suspend fun setOfflinePin(pin: String): Result<Unit>
+    suspend fun setOfflineCode(code: String): Result<Unit>
+
+    suspend fun isUserLoggedIn(): Result<Boolean>
+
+    suspend fun needsOfflineCode(): Result<Boolean>
 }

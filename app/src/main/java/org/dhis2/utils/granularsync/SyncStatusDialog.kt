@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
@@ -38,6 +39,7 @@ import org.dhis2.commons.sync.OnSyncNavigationListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.ui.icons.SyncStateIcon
 import org.dhis2.mobile.commons.extensions.ObserveAsEvents
+import org.dhis2.mobile.sync.model.GranularSyncAction
 import org.dhis2.usescases.sms.SmsSendingService
 import org.dhis2.utils.customviews.MessageAmountDialog
 import org.dhis2.utils.granularsync.domain.SyncStatus
@@ -94,24 +96,28 @@ class SyncStatusDialog :
             setContent {
                 DHIS2Theme {
                     val syncState by viewModel.currentState.collectAsStateWithLifecycle()
-                    ObserveAsEvents(viewModel.observeWorkInfo()) { jobStatus ->
+                    val workInfoFlow = remember(viewModel) { viewModel.observeWorkInfo() }
+                    ObserveAsEvents(workInfoFlow) { jobStatus ->
                         jobStatus.firstOrNull()?.let {
                             viewModel.manageWorkInfo(it)
                         }
                     }
+                    ObserveAsEvents(viewModel.granularSyncChannel) { action ->
+                        action.takeIf { it is GranularSyncAction.DisplaySyncSuccess }?.let {
+                            Toast
+                                .makeText(
+                                    requireContext(),
+                                    getString(R.string.sync_successful),
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                        }
+                    }
                     LaunchedEffect(syncState) {
                         val syncUiState = syncState ?: return@LaunchedEffect
-                        when {
-                            syncUiState.shouldDismissOnUpdate -> dismissSafely()
-                            syncing && syncUiState.syncState == SyncStatus.SYNCED -> {
-                                dismissSafely()
-                                Toast
-                                    .makeText(
-                                        requireContext(),
-                                        getString(R.string.sync_successful),
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
-                            }
+                        if (syncUiState.shouldDismissOnUpdate ||
+                            (syncing && syncUiState.syncState == SyncStatus.SYNCED)
+                        ) {
+                            dismissSafely()
                         }
                     }
                     syncState?.let { syncUiState ->
