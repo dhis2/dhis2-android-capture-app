@@ -174,4 +174,6 @@
     <string name="marked_follow_up">مُعلَّم للمتابعة</string>
     <string name="remove_follow_up">إزلة</string>
     <string name="program_stage">مرحلة البرنامج</string>
+    <string name="http_error_conflict">تعارض</string>
+    <string name="http_error_internal_server_error">خطأ داخلي في الخادم</string>
     </resources>
