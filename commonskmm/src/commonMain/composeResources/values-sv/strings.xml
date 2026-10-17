@@ -46,4 +46,5 @@
     <string name="sync">Synkronisera</string>
     <string name="sync_error">Synkroniseringsfel</string>
     <string name="remove_follow_up">Ta bort</string>
+    <string name="http_error_internal_server_error">Internt serverfel</string>
     </resources>
