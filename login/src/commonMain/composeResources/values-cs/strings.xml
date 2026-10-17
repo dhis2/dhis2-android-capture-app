@@ -22,7 +22,7 @@
     <string name="back_to_settings">Zpět na nastavení</string>
     <string name="action_next">Další</string>
     <string name="server_verification_running">Navázání spojení...</string>
-    <string name="server_verification_title">Ke kterému serveru se chcete připojit\?</string>
+    <string name="server_verification_title">Ke kterému serveru se chcete připojit?</string>
     <string name="server_url_title">URL serveru</string>
     <string name="two_fa_is_on">Je zapnuté dvoufaktorové ověřování.</string>
     <string name="two_fa_disable_title">Vypnutí dvoufaktorového ověřování</string>
@@ -56,7 +56,7 @@
     <string name="enter_pin">Zadejte svůj kód PIN</string>
     <string name="enter_pin_description">Pro přístup k účtu zadejte čtyřmístný kód PIN.</string>
     <string name="enter_pin_button">Odemknout</string>
-    <string name="forgot_pin_button">Zapomněli jste kód PIN\?</string>
+    <string name="forgot_pin_button">Zapomněli jste kód PIN?</string>
     <string name="pin_error_incorrect">Nesprávný kód PIN</string>
     <string name="pin_error_no_pin">Není nakonfigurován žádný kód PIN</string>
     <string name="pin_error_save_failed">Nepodařilo se uložit kód PIN</string>
