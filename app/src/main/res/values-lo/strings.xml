@@ -177,7 +177,6 @@
     <string name="qr_attributes">Attributes</string>
     <string name="qr_enrollment">ການຂື້ນທະບຽນ</string>
     <string name="qr_events">ເຫດການ</string>
-    <string name="qr_relationships">ສາຍພົວພັນ</string>
     <string name="read_more_qr">ອ່ານລະຫັດ QR ຕໍ່ໄປເພື່ອເອົາຂໍ່້ມູນເພື່ມຕື່ມ</string>
     <string name="save_qr">ຢຸດການອ່ານ ແລະ ບັນທຶກຂໍ້ມູນ</string>
     <string name="qr_no_data">ບໍໍ່ມີຂໍ້ມູນ</string>
@@ -199,10 +198,10 @@
     <string name="about_sdk">SDK ລຸ້ນ: %s</string>
     <string name="about_connected">ເຊື່ອມຕໍ່ເຂົ້າກັບ: %s</string>
     <string name="about_user">ຜູ້ນໍາໃຊ້ປະຈຸບັນນີ້: %s</string>
-    <string name="about_more">\"ຂໍ້ມູນເພີ່ມຕື່ມກ່ຽວກັບໂປຣແກຣມນີ້: ອ່ານໄດ້ທີ່ \"<a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">here</a>. ໃຊ້ໄດ້ກັບໂທລະສັບລຸ້ນໃດ ແລະ ໃຊ້ບໍ່ໄດ້ກັບລຸ້ນໃດ</string>
-    <string name="about_git">\"ລຸ້ນນີ້ ແລະ ລຸ້ນກ່ອນໆ ຂອງໂປຣແກຣມນີ້ ກໍ່ຄື ລະບົບໂປຣແກຣມຂອງມັນແມ່ນເບີ່ງໄດ້ທີ່ at \"<a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>\". ໂປຣແກຣມ DHIS2 Android Capture ແມ່ນໄດ້ຮັບອະນຸຍາດພາຍໃຕ້ເງື່ອນໄຂຂອງ GNU General Public License ແລະ ປະກາດນໍາໃຊ້ໂດຍມຸນນິທິຊອບແວບໍ່ໄດ້ເສຍຄ່າ - ເບີ່ງໄດ້ທີ \"<a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a></string>
-    <string name="about_dev">\"ຖືກພັດທະນາ ແລະ ບໍາລຸງຮັກສາໂດຍ \"<a href="https://www.dhis2.org/">DHIS2</a>\" ໂຄງການເຊີ່ງເປັນພາກສ່ວນໜື່ງຂອງມຫາວິທະຍາໄລ ໂອສໂລ, ກົມຂໍ້ມູນຂ່າວສານ\"<a href="https://www.mn.uio.no/ifi/english/">department of informatics</a>.</string>
-    <string name="about_contact">\"ສໍາລັບຂໍ້ມູນເພີມຕື່ມ ຫຼື ມີຄໍາຖາມກ່ຽວກັບໂປຣແກຣມນີ້, ກະລຸນາ ຂຽນໄປສອບຖາມໄດ້ທີ \"<a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
+    <string name="about_more">ຂໍ້ມູນເພີ່ມຕື່ມກ່ຽວກັບໂປຣແກຣມນີ້: ອ່ານໄດ້ທີ່ <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">here</a>. ໃຊ້ໄດ້ກັບໂທລະສັບລຸ້ນໃດ ແລະ ໃຊ້ບໍ່ໄດ້ກັບລຸ້ນໃດ</string>
+    <string name="about_git">ລຸ້ນນີ້ ແລະ ລຸ້ນກ່ອນໆ ຂອງໂປຣແກຣມນີ້ ກໍ່ຄື ລະບົບໂປຣແກຣມຂອງມັນແມ່ນເບີ່ງໄດ້ທີ່ at <a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>. ໂປຣແກຣມ DHIS2 Android Capture ແມ່ນໄດ້ຮັບອະນຸຍາດພາຍໃຕ້ເງື່ອນໄຂຂອງ GNU General Public License ແລະ ປະກາດນໍາໃຊ້ໂດຍມຸນນິທິຊອບແວບໍ່ໄດ້ເສຍຄ່າ - ເບີ່ງໄດ້ທີ <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a></string>
+    <string name="about_dev">ຖືກພັດທະນາ ແລະ ບໍາລຸງຮັກສາໂດຍ <a href="https://www.dhis2.org/">DHIS2</a> ໂຄງການເຊີ່ງເປັນພາກສ່ວນໜື່ງຂອງມຫາວິທະຍາໄລ ໂອສໂລ, ກົມຂໍ້ມູນຂ່າວສານ<a href="https://www.mn.uio.no/ifi/english/">department of informatics</a>.</string>
+    <string name="about_contact">ສໍາລັບຂໍ້ມູນເພີມຕື່ມ ຫຼື ມີຄໍາຖາມກ່ຽວກັບໂປຣແກຣມນີ້, ກະລຸນາ ຂຽນໄປສອບຖາມໄດ້ທີ <a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
 
     <string name="search_program_not_selected">ເລືອກໂປຣແກຣມເພື່ອໃຫ້ສາມາດຂື້ນທະບຽນໄດ້</string>
     <string name="search_access_error">ທ່ານບໍ່ໄດ້ຮັບອະນຸຍາດຕາມທີ່ໄດ້ຮ້ອງຂໍ</string>
@@ -455,7 +454,6 @@
     <string name="troubleshooting_ongoing_rule_validation">ກຳລັງກວດສອບຄວາມຖຶກຕ້ອງຂອງສາຍງານ...</string>
     <string name="troubleshooting_pass_rule_validation">ບໍ່ພົບຂໍ້ຄວນລະວັງ</string>
     <string name="not_saved">ບໍ່ໄດ້ບັນທຶກ</string>
-    <string name="review_message">ບາງຊ່ອງຂໍ້ມູນຈຳເປັນຕ້ອງດຳເນີນການຂອງທ່ານ.\n ທ່ານຕ້ອງການກວດສອບແບບຟອມຫຼືບໍ?</string>
     <string name="search_loading_more">ກຳລັງໂຫຼດຫາຜົນລັບເພີ່ມເຕີມ</string>
     <string name="search_no_results_in_program">ບໍ່ມີຜົນໄດ້ຮັບເພີ່ມເຕີມສໍາລັບ%s</string>
     <string name="search_outside_action">ຄົ້ນຫານອກສາຍງານນີ້</string>
@@ -467,7 +465,6 @@
     <string name="action_ok">ຕົກລົງ</string>
     <string name="init_search">ເລີ່ມການຄົ້ນຫາເພື່ອຊອກຫາອັນໃດນຶ່ງ%s</string>
     <string name="search_or_create">ທ່ານສາມາດຄົ້ນຫາຫຼືສ້າງໃຫມ່%s</string>
-    <string name="missing_warning_fields_events">ທ່ານມີບາງຂໍ້ຄວາມເຕືອນ.\nທ່ານຕ້ອງການໝາຍແບບຟອມນີ້ວ່າສຳເລັດແລ້ວຫຼືບໍ?</string>
     <string name="event_can_be_completed">ທ່ານຕ້ອງການໝາຍແບບຟອມນີ້ວ່າສຳເລັດແລ້ວຫຼືບໍ?</string>
     <string name="event_error_on_complete">ທ່ານມີຂໍ້ຜິດພາດໃນບາງຂໍ້ຄວາມ.\nທ່ານຕ້ອງການກວດເບິ່ງຄືນບໍ?</string>
     <string name="re_opened">ເປີດຄືນໃໝ່</string>

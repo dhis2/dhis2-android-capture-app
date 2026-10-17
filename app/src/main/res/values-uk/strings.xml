@@ -180,7 +180,6 @@
     <string name="qr_attributes">Атрибути</string>
     <string name="qr_enrollment">Реєстрації</string>
     <string name="qr_events">Події</string>
-    <string name="qr_relationships">Зв\'язки</string>
     <string name="read_more_qr">Зчитайте QR-код, щоб отримати більше інформації.</string>
     <string name="save_qr">Зупинити зчитування та зберегти дані </string>
     <string name="qr_no_data">немає даних</string>
@@ -466,7 +465,6 @@
     <string name="troubleshooting_pass_rule_validation">Попереджень не знайдено</string>
     <string name="troobleshooting_pass_rule_validation_title">Все виглядає чудово</string>
     <string name="not_saved">Не збережено</string>
-    <string name="review_message">Деякі поля потребують Вашої уваги. Бажаєте переглянути форму?</string>
     <string name="search_loading_more">Завантаження результатів</string>
     <string name="search_no_results_in_program">Результатів для %s не знайдено</string>
     <string name="search_outside_action">Пошук за межами цієї програми</string>
@@ -479,8 +477,6 @@
     <string name="action_ok">OK</string>
     <string name="init_search">Почніть пошук, щоб знайти будь-який %s</string>
     <string name="search_or_create">Ви можете знайти або створити новий %s</string>
-    <string name="missing_warning_fields_events">У вас є кілька попереджень. Ви хочете позначити цю форму як завершену?</string>
-    <string name="missing_error_fields_events">Деякі поля містять помилки і не були збережені. Бажаєте переглянути форму?</string>
     <string name="event_can_be_completed">Ви бажаєте позначити цю форму як завершену?</string>
     <string name="event_error_on_complete">У вас є кілька повідомлень про помилки. Бажаєте їх переглянути?</string>
     <string name="re_opened">Відкрито знову</string>
