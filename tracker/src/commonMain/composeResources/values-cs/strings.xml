@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="empty_relationships">Neexistují žádné vztahy, kliknutím na „+“ přidáte nový.</string>
-    <string name="relation_creation_date">Vztah vytvořený na</string>
     <string name="remove_relationship_title">Odstranit %1$s?</string>
     <string name="remove_relationship_desc">%1$s bude smazán. Tuto akci nelze vzít zpět.</string>
     <string name="remove_some_relationships_title">Odebrat %1$d vybrané vztahy ?</string>

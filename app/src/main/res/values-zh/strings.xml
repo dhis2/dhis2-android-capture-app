@@ -115,7 +115,8 @@
     <string name="every_12_hours">12小时</string>
     <string name="Manual">手工</string>
     <string name="a_week">1周</string>
-    <string name="wipe_data_meesage">数据库将被删除，\n 你将被要求再次登录。</string>
+    <string name="wipe_data_meesage">数据库将被删除。
+您将被要求重新登录。</string>
     <string name="wipe_data_ok">接受</string>
     <string name="wipe_data_no">取消</string>
     <string name="SYNC_DATA">现在同步数据</string>
@@ -197,7 +198,6 @@
     <string name="qr_attributes">属性</string>
     <string name="qr_enrollment">加入</string>
     <string name="qr_events">事件</string>
-    <string name="qr_relationships">关系</string>
     <string name="read_more_qr">读取下一个二维码获取更多信息</string>
     <string name="save_qr">停止读取并保存数据</string>
     <string name="qr_no_data">无数据</string>
@@ -410,11 +410,13 @@
     <string name="filters_title_date">日期</string>
     <string name="privacy_policy_title">私有策略</string>
     <string name="open_privacy_policy">点击这里检查<a href="">隐私策略</a></string>
-    <string name="break_glass_error_v2">您无法在此项目中加入来自其他组织单位的 %s，因为它受到保护。\n请与您的管理员联系。</string>
+    <string name="break_glass_error_v2">由于%s 受保护，您不能从其他组织单位注册该程序。
+请联系您的管理员。</string>
     <string name="field_is_mandatory">此字段是必填字段</string>
     <string name="security_debugger_message">出于安全原因，此版本的应用程序不允许与adb一起使用。请使用培训版本。</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">哎呀！有些事情没有按计划进行。\n让我们帮你恢复行动。</string>
+    <string name="customactivityoncrash_error_activity_error_occurred_explanation">哎呀！有些事情没有按计划进行。
+让我们帮你恢复行动。</string>
     <string name="customactivityoncrash_error_activity_restart_app">后退</string>
     <string name="customactivityoncrash_error_activity_error_details_copy">复制到剪贴板</string>
     <string name="metada_first_sync_error">与您的服务器同步时发现错误。如果可能，与系统管理员共享错误。</string>
@@ -427,7 +429,6 @@
     <string name="navigation_tasks">任务</string>
     <string name="navigation_programs">项目</string>
     <string name="navigation_charts">可视化图表应用</string>
-    <string name="navigation_relationships">关系</string>
     <string name="navigation_notes">笔记</string>
     <string name="navigation_data_entry">数据输入</string>
     <string name="navigation_form">表单</string>
@@ -467,7 +468,7 @@
     <string name="filter_period_last_n_biweeks">最近%d双周</string>
     <string name="section_feedback">反馈</string>
     <string name="section_indicators">指标</string>
-    <string name="camera_permission_denied">相机权限被拒绝。\n 您需要启用它才能使用此功能。</string>
+    <string name="camera_permission_denied">相机权限被拒绝。\n您需要启用它才能使用此功能。</string>
     <string name="section_charts_indicators">图表和指标</string>
     <string name="take_photo">拍照</string>
     <string name="break_glass_dialog_title">该项目受保护</string>
@@ -494,7 +495,7 @@
     <string name="troubleshooting_pass_rule_validation">未发现任何警告</string>
     <string name="troobleshooting_pass_rule_validation_title">一切看起来都很棒</string>
     <string name="not_saved">未保存</string>
-    <string name="review_message">有些字段需要您注意。\n您要复查表单吗？</string>
+    <string name="review_message">某些字段需要您注意。\n您要查看表单吗？</string>
     <string name="search_loading_more">加载更多结果</string>
     <string name="search_no_results_in_program">%s 没有更多结果</string>
     <string name="search_outside_action">在此项目之外搜索</string>

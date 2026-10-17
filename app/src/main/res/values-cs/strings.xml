@@ -194,7 +194,6 @@
     <string name="qr_attributes">Atributy</string>
     <string name="qr_enrollment">Zápisy</string>
     <string name="qr_events">Události</string>
-    <string name="qr_relationships">Vztahy</string>
     <string name="read_more_qr">Přečtěte si další QR a získejte více informací.</string>
     <string name="save_qr">Přestaňte číst a ukládejte data</string>
     <string name="qr_no_data">žádná data</string>
@@ -421,7 +420,6 @@
     <string name="navigation_tasks">Úkoly</string>
     <string name="navigation_programs">Programy</string>
     <string name="navigation_charts">Grafy</string>
-    <string name="navigation_relationships">Vztahy</string>
     <string name="navigation_notes">Poznámky</string>
     <string name="navigation_data_entry">Vstup dat</string>
     <string name="navigation_form">Formulář</string>
@@ -461,7 +459,7 @@
     <string name="filter_period_last_n_biweeks">Poslední %d dvoutýdny</string>
     <string name="section_feedback">Zpětná vazba</string>
     <string name="section_indicators">Indikátory</string>
-    <string name="camera_permission_denied">Povolení fotoaparátu bylo odepřeno.\nPro použití této funkce je nutné ji povolit.</string>
+    <string name="camera_permission_denied">Povolení k použití kamery je zamítnuto.\nChcete-li tuto funkci používat, musíte ji povolit.</string>
     <string name="section_charts_indicators">Grafy a indikátory</string>
     <string name="take_photo">Vyfotit</string>
     <string name="break_glass_dialog_title">Tento program je chráněn</string>
@@ -486,7 +484,7 @@
     <string name="troubleshooting_pass_rule_validation">Nebyla nalezena žádná upozornění</string>
     <string name="troobleshooting_pass_rule_validation_title">Všechno vypadá skvěle</string>
     <string name="not_saved">Neuloženo</string>
-    <string name="review_message">Některá pole vyžadují vaši pozornost.\nChcete formulář zkontrolovat?</string>
+    <string name="review_message">Některé oblasti vyžadují vaši pozornost.\nChcete formulář zkontrolovat\?</string>
     <string name="search_loading_more">Načítání dalších výsledků</string>
     <string name="search_no_results_in_program">Žádné další výsledky pro %s</string>
     <string name="search_outside_action">Hledat mimo tento program</string>
@@ -500,10 +498,10 @@
     <string name="init_search">Spusťte vyhledávání a najděte jakýkoli %s</string>
     <string name="search_or_create">Můžete vyhledat nebo vytvořit nový %s</string>
     <string name="missing_warning_fields_completed_events">Máte několik varovných hlášení.</string>
-    <string name="missing_warning_fields_events">Máte nějaké varovné zprávy.\nChcete tento formulář označit jako dokončený?</string>
-    <string name="missing_error_fields_events">Některá pole obsahují chyby a neuloží se. \nChcete zkontrolovat formulář?</string>
+    <string name="missing_warning_fields_events">Máte několik varovných hlášení.\nChcete tento formulář označit jako dokončený\?</string>
+    <string name="missing_error_fields_events">Některá pole obsahují chyby a neukládají se. \nChcete formulář zkontrolovat\?</string>
     <string name="event_can_be_completed">Chcete tento formulář označit jako vyplněný?</string>
-    <string name="event_error_on_complete">Máte nějaké chybové zprávy.\nChcete je zkontrolovat?</string>
+    <string name="event_error_on_complete">Máte několik chybových hlášení.\nChcete je zkontrolovat\?</string>
     <string name="re_opened">Znovu otevřeno</string>
     <string name="account_disable_title">Účet zakázán</string>
     <string name="account_disable_message">Váš účet byl zakázán správcem.</string>
@@ -542,8 +540,6 @@
     <string name="download_now">Stáhnout teď</string>
     <string name="check_for_updates">Kontrola aktualizací</string>
     <string name="no_updates">Nejsou žádné nové aktualizace</string>
-    <string name="unknow_sources_denied">Oprávnění k neznámým zdrojům je odepřeno.\nAbyste mohli nainstalovat verzi, musíte jej povolit.</string>
-    <string name="storage_denied">Oprávnění úložiště je odepřeno.\nAbyste mohli nainstalovat verzi, musíte jej povolit.</string>
     <string name="app_version">Verze aplikace</string>
     <string name="error_applying_rule_effects">Něco se pokazilo v konfiguraci programu, tuto událost nelze načíst. Obraťte se prosím na správce systému.</string>
     <string name="dashboard_menu_delete_person">Odstranit osobu</string>
@@ -562,7 +558,6 @@
     <string name="sync_warning">Upozornění na synchronizaci</string>
     <string name="sync_error">Chyba synchronizace</string>
     <string name="coordinates">Souřadnice</string>
-    <string name="no_data_access">Nemáte přístup k datům.\nObraťte se na správce.</string>
     <string name="sync_offline_check_connection">Vypadá to, že jste offline. Zkontrolujte prosím své připojení</string>
     <string name="delete_tei_dialog_title">Smazat tuto stránku %s?</string>
     <string name="delete_tei_dialog_message">Tato stránka %s a všechna její data ve všech programech budou odstraněna. Tuto akci nelze vrátit zpět.</string>
