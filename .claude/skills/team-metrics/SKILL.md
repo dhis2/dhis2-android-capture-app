@@ -5,8 +5,7 @@ description: >
   page in the MOB space. Pulls flow metrics from Jira ANDROAPP changelogs (intake,
   delivery, post-merge, throughput, where time queues), production stability from
   Sentry, code quality from SonarCloud, and PR/CI health from GitHub; compares the
-  rolling 90-day window against the preceding one; reviews how the Needs info gate is
-  performing; composes the concise report layout with its three charts; and reports back on what
+  rolling 90-day window against the preceding one; composes the concise report layout with its three charts; and reports back on what
   moved since last edition's recommendations. Use when
   asked to produce, refresh or publish the team metrics report, or for a mid-month check
   on flow and bottlenecks.
@@ -104,7 +103,7 @@ python3 scripts/metrics/metrics.py            # full run, writes metrics.json
 allow-list is still right. The **status** check comes from the full run, which prints either
 `all observed statuses classified.` or a list of unclassified statuses. **If any status is
 unclassified, stop and classify it before reading a single number** — unclassified time is
-dropped silently and inflates flow efficiency. This has already caused two wrong numbers
+dropped silently and skews the stage shares. This has already caused two wrong numbers
 historically (see the reference).
 
 The one other recognised flag is **`--as-of YYYY-MM-DD`**, which pins the window end to a
@@ -119,11 +118,8 @@ There is no `--help`: an unrecognised flag (including `--help`) is not rejected,
 through to a full run against today that overwrites `metrics.json` — don't pass anything
 other than `--preflight`, `--census`, `--token-help`, or `--as-of` plus its date.
 
-The full run also prints the Needs info review. Its stock list is current-state, so under
-`--as-of` it describes today rather than the window end. If it
-warns about a **Needs info spelling variant**, the status was renamed or a second spelling
-exists — fix `NEEDS_INFO` before reading the section, because unmatched stays are simply
-absent from it, with no gap to notice.
+The full run also prints a Needs info review. **The report does not publish it** — there is
+no Needs-info section — so ignore that block.
 
 The script prints a correctness gate on ANDROAPP-7679. Expected: **42.8 d lead, 8.2 d in
 `In Review`, 15.0 d `Ready to Start` → merged**. If it does not match, the stage math is wrong —
@@ -227,32 +223,44 @@ of their own, each with its chart (§4) above a collapsed table.
 another section or in Method; Method holds only what appears nowhere else. Link back
 ("see Trend at a glance") instead of restating.
 
-Structure, in order. Only the five core sections — Crash / ANR, Security, Backlog growth, Needs-info triage,
-Delivery predictability — carry heading numbers 1–5, in that relative order. **Since last
-time**, **Trend at a glance**, **Where the time goes**, **Code quality trend**, **Carried
-forward, unchanged**, **Recommendations**, **Parked** and **Method** are unnumbered. The page
-order is: Since last time → Trend at a glance → Where the time goes → 1 Crash / ANR → Code
-quality trend → 2 Security → 3 Backlog growth → 4 Needs-info triage → 5 Delivery
-predictability → Carried forward → Recommendations → Parked → Method. The list below
-describes each section; take the order from this paragraph.
+Structure, in order. **Every section is numbered**, 1–11, in this page order, and the
+heading carries the number (`## 4. Crash / ANR exposure`):
+
+1. Since last time · 2. Trend at a glance · 3. Where the time goes · 4. Crash / ANR exposure ·
+5. Code quality trend · 6. Security · 7. Backlog growth · 8. Carried forward, unchanged ·
+9. Recommendations · 10. Parked / not included this edition · 11. Method.
+
+**Subsections are lettered** `a`, `b`, `c` under their section number, and the letter is part of
+the label: the two Crash / ANR sub-headings (`4a. ANR rate …`, `4b. NPE / crash rate …`), the
+named collapsed blocks (`2a. Data table`, `2b. All flow metrics`, `3a. Data table`,
+`5a. Data table`). The Carried forward items (PR/CI, Epics, Releases) are plain bullets and are
+not lettered, nor are list items such as the Security Top 3 or the Recommendations. The list below describes each section; its own numbering is only for reference.
 
 1. **Since last time** — one bullet per recommendation of the previous edition, prefixed
    `DONE` or `PARTIAL` (unticked and untouched ones are carried forward or dropped per §2).
    Say what was picked up and what the number did, e.g. "PARTIAL Vulnerabilities 17→4 —
    rating stayed E; mechanism explained in Security below." Omitted on a first edition (see §2).
-   **Trend at a glance** — the four-metric table (Delivery p50, Delivery p85, Flow
-   efficiency, Throughput; columns metric, what it measures, prev, now, change as a status
-   lozenge), one line ("Intake and the post-merge tail …; Delivery stayed the same"), then
+   **Trend at a glance** — the three-metric table (Delivery p50, Delivery p85, Throughput;
+   columns metric, what it measures, prev, now, change as a status lozenge). **Flow
+   efficiency is not reported** — `metrics.py` still prints it; leave it out of the page.
+   Then one line ("Intake and the post-merge tail …; Delivery stayed the same"), then
    **chart `01-journey`**, then two collapsed blocks: **Data table** (stage medians: intake,
    delivery, post-merge, sum) and **All flow metrics** (intake p50/p85, lead time p50/p85,
    post-merge p50, closed without a fix, with the lead-time-p85 and clean-up note). Throughput
-   links to its JQL.
+   links to its JQL. **Delivery** is the downstream loop — commitment to merge; never use the
+   word for PR/CI.
 
-   **Where the time goes** — **scoped to delivery, not the lifecycle.** One bold line naming
-   the largest queue inside delivery and whether it grew, one line on the runner-up if it is an
-   outlier, **chart `02-where-time-goes`**, then collapsed **Data table** (status, previous,
-   current, p85 duration; remaining stages grouped) and **Whole lifecycle, for context** (a
-   different scope, not comparable).
+   **Where the time goes** — **downstream statuses only**: Needs Update, In Progress, In Review,
+   Waiting for Testing, Testing, Ready to Merge, Ready for Integration Testing, In Integration
+   Testing. Pixel Perfect (Waiting for / In) is folded into Testing; Ready to Start,
+   Prioritization, Needs info and the backlog statuses are out of scope and out of the
+   denominator. Time is whole-life, every visit summed, over items resolved Done in the window;
+   shares add to 100% across the eight. One bold line naming the largest queue (a `wait` row)
+   and whether it grew; **chart `02-where-time-goes`**; then a collapsed **Data table**
+   (status, active/wait tag, previous %, current %, p85 days per item). Note in one clause that
+   this scope runs past merge (Ready for Integration Testing and In Integration Testing), so
+   it is wider than **Delivery** in Trend at a glance, which still ends at merge. Source:
+   `stages_downstream` in `metrics.json` (printed as "STAGES, DOWNSTREAM ONLY").
 
    **Code quality trend** — placed after Crash / ANR, before Security. One bold line (the
    12-month direction of smells and debt; flag a coverage jump that is a measurement change,
@@ -287,19 +295,7 @@ describes each section; take the order from this paragraph.
    created / closed / net table for **Bug, Feature, Task** (90 days), the growing row in bold,
    then one line on intake per 30-day bucket, most recent first, noting whether a driver is
    confirmed. If part of the growth is a known batch (an epic's children), say so here.
-5. **Needs-info triage** — **three bullets, no table.** N closed without a fix, then:
-   one bullet per distinct pattern, split by resolution **and dwell** (see the reference):
-   `Cannot Reproduce` closed in days is a genuine attempt and healthy; `Obsolete` aged weeks
-   or months is a stale item, not an unanswered question. A third bullet for the one thing
-   unusual this window (a concrete intake-quality gap with the issue linked, the oldest
-   stock, or repeat visits) — one of them, not all. Outcome counts, dwell percentiles and
-   type mix go to Method. Deleted issues cannot appear (Jira drops them); say so in Method.
-6. **Delivery predictability** — **one sentence**: whether a driver for the movement in delivery
-   p85 and flow efficiency is confirmed, and any theory considered and parked (named in
-   Parked). Do not restate the p85, flow-efficiency or queue figures — they are in Trend at a
-   glance and Where the time goes. **Delivery** is the downstream loop — commitment to merge;
-   never use the word for PR/CI.
-7. **Carried forward, unchanged** — an italic line ("Full detail in the <previous> edition")
+5. **Carried forward, unchanged** — an italic line ("Full detail in the <previous> edition")
    and a bullet list, **one line per item, no tables**, each labelled with its date. Holds, in
    this order, whichever have something to say:
    - **PR/CI** — review coverage, CI pass rate on `develop` **split at a fix rather than
@@ -308,15 +304,15 @@ describes each section; take the order from this paragraph.
    - **Epics** — open count with last edition's in brackets, median age, whether it moved.
    - **Releases** — nothing overdue / what is due, and any version whose bookkeeping skews
      the other numbers.
-8. **Recommendations** — checkboxes, five to eight, ordered roughly most-surprising first.
+6. **Recommendations** — checkboxes, five to eight, ordered roughly most-surprising first.
    Each names the hot spot, the number that makes it checkable next edition, and where it
    might be worth looking. **Suggest, do not instruct;** never assume a cause; no deadlines
    or owners; two lines at most. Security Top 3 entries get one recommendation each. Ticking
    one is the team saying "we picked this up", which is what the next edition reads (§2).
-9. **Parked / not included this edition** — theories considered and left unproven (with the
+7. **Parked / not included this edition** — theories considered and left unproven (with the
    reason), and anything gathered but not published. Keep the heading even when empty.
-10. **Method** — inside `<details>`. Window and sources; every figure not already shown above
-    (whole-life flow efficiency, the closed-without-a-fix resolution breakdown, PR cycle time / review latency / PR size, Needs-info outcome counts,
+8. **Method** — inside `<details>`. Window and sources; every figure not already shown above
+    (the closed-without-a-fix resolution breakdown, PR cycle time / review latency / PR size,
     epic age and status split, released-patch bug counts); which queries were live rather than
     pinned to the window end and how far they drift; whether Jira was read anonymously (the
     numbers are then a floor); and a link to the earlier edition for definitions, the status

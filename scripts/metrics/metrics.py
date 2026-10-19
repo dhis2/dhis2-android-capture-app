@@ -70,6 +70,14 @@ ORDER = [
 # Backlog = not yet committed, i.e. never reached Ready to Start.
 BACKLOG = ["To do", "Waiting for analysis", "Prioritization", "Open"]
 
+# `Where the time goes` covers only the downstream statuses, whole-life, all visits summed.
+# Pixel Perfect is the review step between Testing and Ready to Merge, so it is folded
+# into Testing. Everything else (Ready to Start, Prioritization, Needs info, backlog
+# statuses) is outside this scope and does not enter the denominator.
+DOWNSTREAM = ["Needs Update", "In Progress", "In Review", "Waiting for Testing", "Testing",
+              "Ready to Merge", "Ready for Integration Testing", "In Integration Testing"]
+DOWNSTREAM_FOLD = {"Waiting for Pixel Perfect": "Testing", "In Pixel Perfect": "Testing"}
+
 COMMIT_AT = "Ready to Start"
 MERGE_AT = ["Ready for Integration Testing", "In Integration Testing"]
 
@@ -636,6 +644,7 @@ def window(issues):
     m = {"resolved": len(issues), "throughput": len(done)}
     leads, deliv, eff_d, eff_full, intake, post = [], [], [], [], [], []
     stage, stage_d = defaultdict(list), defaultdict(list)
+    stage_dn, dn_kind = defaultdict(list), defaultdict(lambda: defaultdict(float))
     for i in done:
         f = i["fields"]
         c, r = ts(f["created"]), ts(f["resolutiondate"])
@@ -667,6 +676,14 @@ def window(issues):
         for k, v in dur.items():
             if classify(k) in ("active", "wait"):
                 stage[k].append(v / D)
+        dn = defaultdict(float)
+        for k, v in dur.items():
+            row = DOWNSTREAM_FOLD.get(k, k)
+            if row in DOWNSTREAM:
+                dn[row] += v
+                dn_kind[row][classify(k)] += v
+        for row, v in dn.items():
+            stage_dn[row].append(v / D)
 
     m.update(lead_p50=pct(leads, 50), lead_p85=pct(leads, 85),
              deliv_p50=pct(deliv, 50), deliv_p85=pct(deliv, 85), deliv_n=len(deliv),
@@ -689,6 +706,14 @@ def window(issues):
                                 "share": sum(v) / tot_d * 100, "kind": classify(k),
                                 "n": len(v)}
                             for k, v in stage_d.items()}
+    # Downstream scope: only the DOWNSTREAM statuses, shares over their total. The row's
+    # kind is whichever of active/wait holds most of its time (Testing mixes both once
+    # Pixel Perfect is folded in).
+    tot_dn = sum(sum(v) for v in stage_dn.values()) or 1
+    m["stages_downstream"] = {
+        k: {"p50": pct(v, 50), "p85": pct(v, 85), "share": sum(v) / tot_dn * 100,
+            "kind": max(dn_kind[k], key=dn_kind[k].get), "n": len(v)}
+        for k, v in stage_dn.items()}
     return m
 
 
@@ -997,6 +1022,16 @@ def main():
         if not c:
             continue
         p = prev["stages_delivery"].get(k, {}).get("share", 0)
+        print(f"  {k:<32}{c['kind']:<7}{p:>6.1f}{c['share']:>7.1f}"
+              f"{c['p50']:>8.1f}{c['p85']:>8.1f}{c['n']:>6}")
+
+    print("\n=== STAGES, DOWNSTREAM ONLY (the report's Where the time goes; prev -> cur) ===")
+    print("  eight statuses, Pixel Perfect folded into Testing, shares over their total")
+    for k in DOWNSTREAM:
+        c = cur["stages_downstream"].get(k)
+        if not c:
+            continue
+        p = prev["stages_downstream"].get(k, {}).get("share", 0)
         print(f"  {k:<32}{c['kind']:<7}{p:>6.1f}{c['share']:>7.1f}"
               f"{c['p50']:>8.1f}{c['p85']:>8.1f}{c['n']:>6}")
 

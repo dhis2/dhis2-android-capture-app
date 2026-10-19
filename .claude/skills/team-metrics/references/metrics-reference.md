@@ -22,8 +22,8 @@ drives 69 of 84 such transitions and 79 of them come from `Ready to Merge`. Fall
 `In Integration Testing`, then the terminal transition. 93% of completed items carry both boundary
 markers.
 
-Flow efficiency is active ÷ (active + waiting) **inside the delivery window only**. The whole-life
-figure is also computed but mostly reflects backlog dwell, so quote the delivery one.
+**Flow efficiency is not reported.** `metrics.py` still computes and prints it (delivery window and
+whole life); the report does not publish it, so ignore those lines.
 
 
 ## Stage taxonomy — classify every status, or lose time silently
@@ -135,6 +135,9 @@ project = ANDROAPP AND issuetype = Epic AND resolutiondate >= "<w1>" AND resolut
 ```
 
 ## Needs info
+
+> **Not published.** The report no longer has a Needs-info section; `metrics.py` still prints this
+> review and these definitions are kept for reference only.
 
 `Needs info` parks an item that cannot proceed until someone answers a question. It is a
 `WAITING` status in the flow numbers like every other queue — the stage chart already carries
@@ -382,7 +385,8 @@ curl "https://sonarcloud.io/api/qualitygates/project_status?projectKey=dhis2_dhi
 | Key in `metrics.json` | Scope | Used for |
 |---|---|---|
 | `stages` | the whole lifecycle, every visit to every status summed | context only — printed to the console, kept in the snapshot, not charted |
-| `stages_delivery` | clipped to commitment → merge, per issue | **Where the time goes** in the report, and chart `02` |
+| `stages_delivery` | clipped to commitment → merge, per issue | context only; no longer published |
+| `stages_downstream` | whole-life time in the eight downstream statuses (Pixel Perfect folded into Testing), shares over their total | **Where the time goes** in the report, and chart `02` |
 
 Both are computed from the same segments, so they cannot disagree; the difference is only
 where the clock starts and stops. The delivery-scoped one is what the section publishes
@@ -436,7 +440,7 @@ Rules the script already encodes — do not undo them by hand:
   `var(--role, #fallback)` so the SVG can be re-themed without editing the shapes.
 - Bars are rounded on the data end only, separated by a 2px surface gap, never a border.
 
-**Not charted, deliberately:** throughput, coverage, lead-time percentiles, flow efficiency,
+**Not charted, deliberately:** throughput, coverage, lead-time percentiles,
 WIP, epics, releases, and the Needs info review — its outcome mix is a handful of counts that a
 table states more precisely than a stacked bar. **PR size against the 400-line gate** is no longer excluded for scope reasons — `--limit 150`
 truncated the previous window at 18 Mar and undercounted it (25 PRs against a true 35), and
@@ -629,7 +633,7 @@ reasoning about the codebase.
 
 | Theory | Metric it was proposed for | Why it was parked |
 |---|---|---|
-| KMP-migration completeness (share of business logic in `commonMain` vs. Android-only) | Delivery p85 / flow efficiency | Reasoned from general principle ("shared code should reduce duplicate work"), not verified against this repo's PR data. Would need PR cycle time segmented by legacy-vs-KMP modules touched to promote out of this list. |
+| KMP-migration completeness (share of business logic in `commonMain` vs. Android-only) | Delivery p85 | Reasoned from general principle ("shared code should reduce duplicate work"), not verified against this repo's PR data. Would need PR cycle time segmented by legacy-vs-KMP modules touched to promote out of this list. |
 | SonarCloud new-code coverage gate | Crash/ANR exposure, backlog/needs-info churn | Plausible ("better-tested code ships fewer regressions") but not checked against which specific crashes or backlog items trace to recently-changed, under-covered code. |
 
 Also parked as **not a tracked metric at all** (not a causal theory, but rejected as a KPI):

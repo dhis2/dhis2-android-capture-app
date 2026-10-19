@@ -171,16 +171,15 @@ def chart_journey(m):
 # backlog dwell (`Open`, `Waiting for analysis`) that the delivery loop does not
 # contain. The lifecycle shares are still in metrics.json for context.
 # --------------------------------------------------------------------------
-def chart_stages(m, top_n=7):
-    cur = m["cur"].get("stages_delivery") or m["cur"]["stages"]
-    prev = m["prev"].get("stages_delivery") or m["prev"]["stages"]
-    if not m["cur"].get("stages_delivery"):
-        print("  ! metrics.json predates delivery-scoped stages — chart 2 is falling back "
-              "to whole-lifecycle shares. Re-run metrics.py.", file=sys.stderr)
-    # rank by the larger of the two shares, so a stage that collapsed still shows
-    ranked = sorted(set(cur) | set(prev),
-                    key=lambda k: -max(cur.get(k, {}).get("share", 0),
-                                       prev.get(k, {}).get("share", 0)))
+def chart_stages(m, top_n=8):
+    cur = m["cur"].get("stages_downstream")
+    prev = m["prev"].get("stages_downstream")
+    if not cur:
+        sys.exit("metrics.json has no downstream stages - re-run metrics.py first.")
+    # downstream statuses in workflow order (Pixel Perfect is folded into Testing)
+    order = ["Needs Update", "In Progress", "In Review", "Waiting for Testing", "Testing",
+             "Ready to Merge", "Ready for Integration Testing", "In Integration Testing"]
+    ranked = [k for k in order if k in cur or k in prev]
     keep, rest = ranked[:top_n], ranked[top_n:]
     data = [(k, prev.get(k, {}).get("share", 0), cur.get(k, {}).get("share", 0),
              cur.get(k, {}).get("p85"), cur.get(k, {}).get("kind", "")) for k in keep]
@@ -197,8 +196,8 @@ def chart_stages(m, top_n=7):
     axis_max = (int(max(max(p, c) for _, p, c, _, _ in data) / step) + 1) * step
     scale = plot_w / axis_max
     queue = sum(c for _, _, c, _, k in data if k == "wait")
-    s = svg_open(W, H, "Where the time goes inside delivery",
-                 "Share of time between commitment and merge, by status. "
+    s = svg_open(W, H, "Where the time goes downstream",
+                 "Share of time across the eight downstream statuses. "
                  f"Queues account for {queue:.0f}% of the current window.")
     for i, (name, col) in enumerate([("Previous 90 days", C["s1"]), ("Current 90 days", C["s2"])]):
         lx = i * 170
@@ -222,8 +221,8 @@ def chart_stages(m, top_n=7):
     top_q = max(((n, c) for n, _, c, _, k in data if k == "wait"),
                 key=lambda x: x[1], default=None)
     s.append(txt(0, H - 26,
-                 (f"The largest queue inside delivery is {top_q[0]}, at {top_q[1]:.0f}% of the "
-                  "time between commitment and merge." if top_q else
+                 (f"The largest queue downstream is {top_q[0]}, at {top_q[1]:.0f}% of the "
+                  "time spent in these statuses." if top_q else
                   "Queue stages are waiting time; active stages are worked time."),
                  size=12, fill=C["muted"]))
     s.append("</g></svg>")
@@ -231,10 +230,9 @@ def chart_stages(m, top_n=7):
     rows_t = [[n, f"{p:.1f}%", f"{c:.1f}%", f"{p85:.1f} d" if p85 is not None else "—"]
               for n, p, c, p85, _ in data]
     return "\n".join(s), table(["Status", "Previous", "Current", "p85 duration"], rows_t,
-                               "Share of time between commitment (Ready to Start) and merge, so "
-                               "backlog dwell is excluded. Queue stages are waiting time, active "
-                               "stages are worked time. A high share with a low p85 comes from a "
-                               "few extreme outliers.")
+                               "Share of time in the eight downstream statuses only (Pixel Perfect "
+                               "is counted under Testing); other statuses are excluded. Queue "
+                               "stages are waiting time, active stages are worked time.")
 
 
 # --------------------------------------------------------------------------
