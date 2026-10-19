@@ -33,5 +33,6 @@ interface SplashView {
         sessionLocked: Boolean,
         initialSyncDone: Boolean,
         initialDataSyncDone: Boolean,
+        needsOfflineCredentials: Boolean,
     )
 }

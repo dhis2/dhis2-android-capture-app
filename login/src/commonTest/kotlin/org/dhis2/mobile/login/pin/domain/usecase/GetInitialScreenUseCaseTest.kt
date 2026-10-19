@@ -197,6 +197,30 @@ class GetInitialScreenUseCaseTest {
             assertEquals("locked_user", result.selectedUsername)
         }
 
+    @Test
+    fun `should handle locked account when renewSession is true`() =
+        runTest {
+            // GIVEN
+            val activeAccount =
+                createAccountModel(
+                    name = "locked_user",
+                    serverUrl = "https://locked.com",
+                    isOauthEnabled = false,
+                )
+            val accounts =
+                listOf(
+                    createAccountModel(name = "user1"),
+                    createAccountModel(name = "user2"),
+                    createAccountModel(name = "user3"),
+                )
+            whenever(accountRepository.getLoggedInAccounts()) doReturn accounts
+            whenever(accountRepository.getActiveAccount()) doReturn activeAccount
+
+            // WHEN
+            val result = useCase(renewSession = true)
+            assertIs<LoginScreenState.LoginCredentials>(result)
+        }
+
     private fun createAccountModel(
         name: String = "testuser",
         serverUrl: String = "https://test.com",

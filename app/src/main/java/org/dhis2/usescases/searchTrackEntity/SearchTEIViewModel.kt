@@ -45,6 +45,7 @@ import org.dhis2.commons.extensions.toFriendlyDate
 import org.dhis2.commons.extensions.toFriendlyDateTime
 import org.dhis2.commons.extensions.toPercentage
 import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.sorting.SortingItem
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -69,6 +70,7 @@ import org.dhis2.tracker.search.domain.SearchTrackedEntities
 import org.dhis2.tracker.search.model.FetchSearchParametersData
 import org.dhis2.tracker.search.model.QueryData
 import org.dhis2.tracker.search.model.SearchTrackedEntitiesInput
+import org.dhis2.tracker.search.model.TrackedEntitySearchPagingItem
 import org.dhis2.tracker.search.ui.state.SearchParametersUiState
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
@@ -199,10 +201,16 @@ class SearchTEIViewModel(
             loadNavigationBarItems()
 
             _teTypeLabel.postValue(
-                searchRepositoryKt.getTeTypeCustomLabel(searchRepository.trackedEntityType.uid, isPlural = false),
+                searchRepositoryKt.getTeTypeCustomLabel(
+                    searchRepository.trackedEntityType.uid,
+                    isPlural = false,
+                ),
             )
             _teTypePluralLabel.postValue(
-                searchRepositoryKt.getTeTypeCustomLabel(searchRepository.trackedEntityType.uid, isPlural = true),
+                searchRepositoryKt.getTeTypeCustomLabel(
+                    searchRepository.trackedEntityType.uid,
+                    isPlural = true,
+                ),
             )
         }
     }
@@ -546,6 +554,32 @@ class SearchTEIViewModel(
             searchParametersUiState.copy(searchEnabled = queryDataList.isNotEmpty())
     }
 
+    /**
+     * Maps the repository's paging stream to [SearchTeiModel]s for the RecyclerView adapter.
+     * A page-load failure ([TrackedEntitySearchPagingItem.Error]) is logged and dropped from the
+     * list rather than failing the whole page load.
+     */
+    private fun Flow<PagingData<TrackedEntitySearchPagingItem>>.toSearchTeiModelPagingData(
+        sortingItem: SortingItem?,
+    ): Flow<PagingData<SearchTeiModel>> =
+        map { pagingData ->
+            pagingData
+                .map { item ->
+                    withContext(dispatchers.io()) {
+                        when (item) {
+                            is TrackedEntitySearchPagingItem.Error ->
+                                SearchTeiErrorModel(item.error.message)
+
+                            is TrackedEntitySearchPagingItem.Item ->
+                                searchRepositoryKt.mapTrackedEntitySearchItemResultToSearchTeiModel(
+                                    searchItemResult = item.result,
+                                    sortingItem = sortingItem,
+                                )
+                        }
+                    }
+                }
+        }
+
     private fun loadSearchResults(): Flow<PagingData<SearchTeiModel>> =
         flow {
             // get uids to exclude for possible duplicates
@@ -571,16 +605,7 @@ class SearchTEIViewModel(
             val results = searchTrackedEntities.invoke(trackerSearchModel)
 
             emitAll(
-                results.getOrThrow().map { pagingData ->
-                    pagingData.map { item ->
-                        withContext(dispatchers.io()) {
-                            searchRepositoryKt.mapTrackedEntitySearchItemResultToSearchTeiModel(
-                                item,
-                                filterManager.sortingItem,
-                            )
-                        }
-                    }
-                },
+                results.getOrThrow().toSearchTeiModelPagingData(filterManager.sortingItem),
             )
         }
 
@@ -606,16 +631,7 @@ class SearchTEIViewModel(
             val results = searchTrackedEntities.invoke(newTrackerSearchModel)
 
             emitAll(
-                results.getOrThrow().map { pagingData ->
-                    pagingData.map { item ->
-                        withContext(dispatchers.io()) {
-                            searchRepositoryKt.mapTrackedEntitySearchItemResultToSearchTeiModel(
-                                item,
-                                filterManager.sortingItem,
-                            )
-                        }
-                    }
-                },
+                results.getOrThrow().toSearchTeiModelPagingData(filterManager.sortingItem),
             )
         }
 
@@ -645,16 +661,7 @@ class SearchTEIViewModel(
                 val results = searchTrackedEntities.invoke(newTrackerSearchModel)
 
                 emitAll(
-                    results.getOrThrow().map { pagingData ->
-                        pagingData.map { item ->
-                            withContext(dispatchers.io()) {
-                                searchRepositoryKt.mapTrackedEntitySearchItemResultToSearchTeiModel(
-                                    item,
-                                    filterManager.sortingItem,
-                                )
-                            }
-                        }
-                    },
+                    results.getOrThrow().toSearchTeiModelPagingData(filterManager.sortingItem),
                 )
             }
         } else {

@@ -75,7 +75,7 @@ dependencies {
         exclude("junit", "junit")
     }
 
-    api(libs.dhis2.expressionparser)
+
     api(libs.androidx.coreKtx)
     api(libs.androidx.appcompat)
     api(libs.androidx.fragmentKtx)

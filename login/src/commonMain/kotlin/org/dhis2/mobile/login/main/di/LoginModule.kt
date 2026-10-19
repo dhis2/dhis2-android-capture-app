@@ -13,16 +13,18 @@ import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.GetOAuthLogoutUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetSessionRenewalUrl
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
+import org.dhis2.mobile.login.main.domain.usecase.IsUserLoggedIn
 import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUserOffline
 import org.dhis2.mobile.login.main.domain.usecase.LoginUserWithOAuth
 import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
 import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
-import org.dhis2.mobile.login.main.domain.usecase.SetOfflinePin
+import org.dhis2.mobile.login.main.domain.usecase.SetOfflineCode
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
+import org.dhis2.mobile.login.main.domain.usecase.VerifyNeedOfflineCode
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.DefaultNavigator
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
@@ -103,11 +105,19 @@ internal val mainLoginModule =
         }
 
         factory { params ->
-            SetOfflinePin(get { parametersOf(params.get()) })
+            SetOfflineCode(get { parametersOf(params.get()) })
+        }
+
+        factory { params ->
+            VerifyNeedOfflineCode(get { parametersOf(params.get()) })
         }
 
         factory { params ->
             LoginUserOffline(get { parametersOf(params.get()) })
+        }
+
+        factory { params ->
+            IsUserLoggedIn(get { parametersOf(params.get()) })
         }
 
         single { CredentialsResourceProvider() }
@@ -162,11 +172,13 @@ internal val mainLoginModule =
                 forgotPinUseCase = get(),
                 entryMode = entryMode,
                 autoPromptLogin = autoPromptLogin,
-                setOfflinePin = get { parametersOf(context) },
+                setOfflineCode = get { parametersOf(context) },
+                verifyNeedOfflineCode = get { parametersOf(context) },
                 loginUserOfflineWithCode = get { parametersOf(context) },
                 credentialsResourceProvider = get(),
                 getSessionRenewalUrl = get { parametersOf(context) },
                 autoStartRenewal = autoStartRenewal,
+                isUserLoggedIn = get { parametersOf(context) },
             )
         }
     }

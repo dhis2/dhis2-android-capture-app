@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
@@ -37,6 +38,7 @@ import org.dhis2.commons.sync.OnSyncNavigationListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.ui.icons.SyncStateIcon
 import org.dhis2.mobile.commons.extensions.ObserveAsEvents
+import org.dhis2.mobile.sync.model.GranularSyncAction
 import org.dhis2.usescases.sms.SmsSendingService
 import org.dhis2.utils.customviews.MessageAmountDialog
 import org.dhis2.utils.granularsync.domain.SyncStatus
@@ -93,24 +95,28 @@ class SyncStatusDialog :
             setContent {
                 DHIS2Theme {
                     val syncState by viewModel.currentState.collectAsState()
-                    ObserveAsEvents(viewModel.observeWorkInfo()) { jobStatus ->
+                    val workInfoFlow = remember(viewModel) { viewModel.observeWorkInfo() }
+                    ObserveAsEvents(workInfoFlow) { jobStatus ->
                         jobStatus.firstOrNull()?.let {
                             viewModel.manageWorkInfo(it)
                         }
                     }
-                    syncState?.let { syncUiState ->
-                        when {
-                            syncUiState.shouldDismissOnUpdate -> dismiss()
-                            syncing && syncUiState.syncState == SyncStatus.SYNCED -> {
-                                dismiss()
-                                Toast
-                                    .makeText(
-                                        requireContext(),
-                                        getString(R.string.sync_successful),
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
-                            }
+                    ObserveAsEvents(viewModel.granularSyncChannel) { action ->
+                        action.takeIf { it is GranularSyncAction.DisplaySyncSuccess }?.let {
+                            Toast
+                                .makeText(
+                                    requireContext(),
+                                    getString(R.string.sync_successful),
+                                    Toast.LENGTH_SHORT,
+                                ).show()
                         }
+                    }
+                    syncState?.let { syncUiState ->
+                        shouldDismissDialog(
+                            syncUiState.shouldDismissOnUpdate ||
+                                (syncing && syncUiState.syncState == SyncStatus.SYNCED),
+                        )
+
                         BottomSheetDialogUi(
                             bottomSheetDialogUiModel =
                                 BottomSheetDialogUiModel(
@@ -172,6 +178,12 @@ class SyncStatusDialog :
     override fun onResume() {
         super.onResume()
         viewModel.refreshContent()
+    }
+
+    private fun shouldDismissDialog(shouldDismiss: Boolean) {
+        if (shouldDismiss) {
+            dismiss()
+        }
     }
 
     private fun onSyncClick() {

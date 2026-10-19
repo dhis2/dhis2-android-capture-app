@@ -26,6 +26,7 @@ import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.user.oauth2.OAuth2Config
 import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -47,6 +48,7 @@ class LoginRepositoryImplTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val domainErrorMapper: DomainErrorMapper = mock()
     private val loginErrorMessageProvider: LoginErrorMessageProvider = mock()
+    private val d2ErrorMessageProvider: D2ErrorMessageProvider = mock()
     private val testDispatcher = StandardTestDispatcher()
 
     private val serverUrl = "https://test.server.org"
@@ -63,7 +65,7 @@ class LoginRepositoryImplTest {
             authenticator = mock<BiometricActions>(),
             cryptographyManager = mock<CryptographicActions>(),
             preferences = mock<PreferenceProvider>(),
-            d2ErrorMessageProvider = mock<D2ErrorMessageProvider>(),
+            d2ErrorMessageProvider = d2ErrorMessageProvider,
             crashReportController = mock<CrashReportController>(),
             analyticActions = mock<AnalyticActions>(),
             openIdController = mock<OpenIdController>(),
@@ -243,7 +245,7 @@ class LoginRepositoryImplTest {
             whenever(openIdHandler.suspendSetPin(PIN)) doReturn Result.Success(Unit)
 
             // WHEN
-            val result = repository.setOfflinePin(PIN)
+            val result = repository.setOfflineCode(PIN)
 
             // THEN
             assertTrue(result.isSuccess)
@@ -259,7 +261,7 @@ class LoginRepositoryImplTest {
             whenever(oauth2Handler.suspendSetPin(PIN)) doReturn Result.Success(Unit)
 
             // WHEN
-            val result = repository.setOfflinePin(PIN)
+            val result = repository.setOfflineCode(PIN)
 
             // THEN
             assertTrue(result.isSuccess)
@@ -278,10 +280,52 @@ class LoginRepositoryImplTest {
             whenever(domainErrorMapper.mapToDomainError(d2Error)) doReturn mappedError
 
             // WHEN
-            val result = repository.setOfflinePin(PIN)
+            val result = repository.setOfflineCode(PIN)
 
             // THEN - the caller logs the user out on failure, so the reason has to survive
             assertEquals(mappedError, result.exceptionOrNull())
+        }
+
+    @Test
+    fun `GIVEN an active session WHEN checking if the user is logged in THEN it reports true`() =
+        runTest {
+            // GIVEN
+            whenever(d2.userModule().blockingIsLogged()) doReturn true
+            // WHEN
+            val result = repository.isUserLoggedIn()
+            // THEN
+            assertTrue(result.isSuccess)
+            assertTrue(result.getOrThrow())
+        }
+
+    @Test
+    fun `GIVEN no active session WHEN checking if the user is logged in THEN it reports false`() =
+        runTest {
+            // GIVEN
+            whenever(d2.userModule().blockingIsLogged()) doReturn false
+            // WHEN
+            val result = repository.isUserLoggedIn()
+            // THEN
+            assertTrue(result.isSuccess)
+            assertFalse(result.getOrThrow())
+        }
+
+    @Test
+    fun `GIVEN the SDK call fails WHEN checking if the user is logged in THEN the mapped message is returned`() =
+        runTest {
+            // GIVEN
+            val exception = RuntimeException("boom")
+            val errorMessage = "Could not check the session"
+            whenever(d2.userModule().blockingIsLogged()) doThrow exception
+            whenever(
+                d2ErrorMessageProvider.getErrorMessage(exception, isNetworkAvailable = true),
+            ) doReturn errorMessage
+
+            // WHEN
+            val result = repository.isUserLoggedIn()
+            // THEN
+            assertTrue(result.isFailure)
+            assertEquals(errorMessage, result.exceptionOrNull()?.message)
         }
 
     private fun givenActiveAccountWith(authorizationType: AuthorizationType) {
