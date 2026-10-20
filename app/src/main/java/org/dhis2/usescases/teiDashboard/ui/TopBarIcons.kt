@@ -14,6 +14,7 @@ import org.dhis2.R
 import org.dhis2.tracker.relationships.ui.state.RelationshipTopBarIconState
 import org.dhis2.utils.getOnToolbarColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonState
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 
@@ -25,8 +26,12 @@ fun ComposeView?.setButtonContent(
         val onToolbarColor = getOnToolbarColor()
         val name by trackedEntityName.collectAsStateWithLifecycle()
         Button(
-            text = "${stringResource(id = R.string.edit)} ${name.orEmpty().lowercase()}",
-            style = ButtonStyle.TEXT_LIGHT,
+            state =
+                ButtonState(
+                    text = "${stringResource(id = R.string.edit)} ${name.orEmpty().lowercase()}",
+                    textColor = onToolbarColor,
+                    style = ButtonStyle.TEXT_LIGHT,
+                ),
             icon = {
                 Icon(
                     imageVector = Icons.Outlined.Edit,
