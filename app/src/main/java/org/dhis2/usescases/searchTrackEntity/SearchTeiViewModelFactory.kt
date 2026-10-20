@@ -6,7 +6,6 @@ import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.tracker.search.domain.FetchOptionSetOptions
 import org.dhis2.tracker.search.domain.FetchSearchParameters
@@ -24,7 +23,6 @@ class SearchTeiViewModelFactory(
     private val dispatchers: DispatcherProvider,
     private val mapStyleConfig: MapStyleConfiguration,
     private val resourceManager: ResourceManager,
-    private val displayNameProvider: DisplayNameProvider,
     private val filterManager: FilterManager,
     private val searchTrackedEntities: SearchTrackedEntities,
     private val fetchSearchParameters: FetchSearchParameters,
@@ -42,7 +40,6 @@ class SearchTeiViewModelFactory(
             dispatchers,
             mapStyleConfig,
             resourceManager,
-            displayNameProvider,
             filterManager,
             searchTrackedEntities,
             fetchSearchParameters,

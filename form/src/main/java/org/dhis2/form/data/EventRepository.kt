@@ -6,8 +6,8 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import org.dhis2.bindings.blockingGetValueCheck
-import org.dhis2.bindings.toFormDisplayValue
 import org.dhis2.commons.bindings.program
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.inDateRange
@@ -30,6 +30,7 @@ import org.dhis2.form.model.PeriodSelector
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.extensions.toColor
+import org.dhis2.mobile.commons.extensions.userFriendlyValue
 import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.D2
@@ -661,9 +662,12 @@ class EventRepository(
             }
         val friendlyValue =
             dataValue?.let {
-                valueRepository
-                    .blockingGetValueCheck(d2, uid)
-                    .toFormDisplayValue(d2)
+                runBlocking {
+                    valueRepository
+                        .blockingGetValueCheck(d2, uid)
+                        ?.value
+                        ?.userFriendlyValue(uid, valueType != ValueType.PERCENTAGE)
+                }
             }
         val allowFutureDates = programStageDataElement.allowFutureDate() ?: false
         val formName = de?.displayFormName()
@@ -718,7 +722,9 @@ class EventRepository(
         val isOrgUnit =
             valueType === ValueType.ORGANISATION_UNIT
         val isDate = valueType != null && valueType.isDate
-        if (!isOrgUnit && !isDate) {
+        // File values must stay as the file resource uid so inputs can resolve the local path
+        val isFile = valueType == ValueType.IMAGE || valueType == ValueType.FILE_RESOURCE
+        if (!isOrgUnit && !isDate && !isFile) {
             dataValue = friendlyValue
         }
         val renderingType = getSectionRenderingType(programStageSection)

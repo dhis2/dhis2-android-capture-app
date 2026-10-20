@@ -39,6 +39,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.dhis2.R
 import org.dhis2.commons.extensions.toFriendlyDate
@@ -50,13 +51,13 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.ui.customintent.CustomIntentResult
-import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.extensions.toStringProperty
 import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.managers.MapManager
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
+import org.dhis2.mobile.commons.extensions.userFriendlyValue
 import org.dhis2.tracker.NavigationBarUIState
 import org.dhis2.tracker.input.model.TrackerInputType
 import org.dhis2.tracker.input.ui.action.CustomIntentUid
@@ -95,7 +96,6 @@ class SearchTEIViewModel(
     private val dispatchers: DispatcherProvider,
     private val mapStyleConfig: MapStyleConfiguration,
     private val resourceManager: ResourceManager,
-    private val displayNameProvider: DisplayNameProvider,
     private val filterManager: FilterManager,
     private val searchTrackedEntities: SearchTrackedEntities,
     private val fetchSearchParameters: FetchSearchParameters,
@@ -506,12 +506,9 @@ class SearchTEIViewModel(
                     it.copy(
                         value = values?.joinToString(","),
                         displayName =
-                            displayNameProvider.provideDisplayName(
-                                valueType = searchRepositoryKt.trackerValueTypeToSDKValueType(it.valueType),
-                                value = values?.joinToString(","),
-                                optionSet = it.optionSet,
-                                periodType = null,
-                            ),
+                            runBlocking {
+                                values?.joinToString(",")?.userFriendlyValue(it.uid, false)
+                            },
                         error = errorMessage,
                     )
                 } else {

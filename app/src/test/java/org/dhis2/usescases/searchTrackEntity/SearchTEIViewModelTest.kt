@@ -24,7 +24,6 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.ui.customintent.CustomIntentResult
-import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.geometry.mapper.EventsByProgramStage
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.mobile.commons.model.CustomIntentModel
@@ -73,7 +72,6 @@ class SearchTEIViewModelTest {
     private val networkUtils: NetworkUtils = mock()
     private val mapStyleConfiguration: MapStyleConfiguration = mock()
     private val resourceManager: ResourceManager = mock()
-    private val displayNameProvider: DisplayNameProvider = mock()
     private val filterManager: FilterManager = mock()
     private val searchTrackedEntities: SearchTrackedEntities =
         mock {
@@ -119,7 +117,6 @@ class SearchTEIViewModelTest {
                 },
                 mapStyleConfiguration,
                 resourceManager = resourceManager,
-                displayNameProvider = displayNameProvider,
                 filterManager = filterManager,
                 searchTrackedEntities = searchTrackedEntities,
                 fetchSearchParameters = fetchSearchParameters,
@@ -866,7 +863,6 @@ class SearchTEIViewModelTest {
                     },
                 mapStyleConfig = mapStyleConfiguration,
                 resourceManager = resourceManager,
-                displayNameProvider = displayNameProvider,
                 filterManager = filterManager,
                 searchTrackedEntities = searchTrackedEntities,
                 fetchSearchParameters = fetchSearchParameters,
@@ -915,7 +911,6 @@ class SearchTEIViewModelTest {
                         on { getString(R.string.navigation_list_view) } doReturn "List"
                         on { getString(R.string.navigation_map_view) } doReturn "Map"
                     },
-                displayNameProvider = displayNameProvider,
                 filterManager = filterManager,
                 searchTrackedEntities = searchTrackedEntities,
                 fetchSearchParameters = fetchSearchParameters,

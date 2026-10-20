@@ -9,19 +9,13 @@ import org.dhis2.R;
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.prefs.PreferenceProvider;
-import org.dhis2.commons.prefs.PreferenceProviderImpl;
-import org.dhis2.commons.resources.DhisPeriodUtils;
 import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.form.data.RulesUtilsProvider;
-import org.dhis2.form.data.metadata.FileResourceConfiguration;
-import org.dhis2.form.data.metadata.OptionSetConfiguration;
-import org.dhis2.form.data.metadata.OrgUnitConfiguration;
 import org.dhis2.form.ui.FieldViewModelFactory;
 import org.dhis2.form.ui.FieldViewModelFactoryImpl;
 import org.dhis2.form.ui.provider.AutoCompleteProviderImpl;
-import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
 import org.dhis2.form.ui.provider.LegendValueProviderImpl;
@@ -83,17 +77,10 @@ public class EventInitialModule {
             Context context,
             D2 d2,
             ResourceManager resourceManager,
-            DhisPeriodUtils periodUtils,
             PreferenceProvider preferenceProvider
     ) {
         return new FieldViewModelFactoryImpl(
                 new HintProviderImpl(context),
-                new DisplayNameProviderImpl(
-                        new OptionSetConfiguration(d2),
-                        new OrgUnitConfiguration(d2),
-                        new FileResourceConfiguration(d2),
-                        periodUtils
-                ),
                 new UiEventTypesProviderImpl(),
                 new KeyboardActionProviderImpl(),
                 new LegendValueProviderImpl(d2, resourceManager),

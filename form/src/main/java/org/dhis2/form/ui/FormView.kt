@@ -30,7 +30,9 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.Constants
 import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.commons.date.DateUtils
@@ -64,12 +66,14 @@ import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.maps.views.MapSelectorActivity.Companion.DATA_EXTRA
 import org.dhis2.maps.views.MapSelectorActivity.Companion.FIELD_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
+import org.dhis2.mobile.commons.extensions.fileResourcePath
 import org.dhis2.mobile.commons.files.FileHandlerImpl
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import timber.log.Timber
 import java.io.File
+import java.io.FileNotFoundException
 
 class FormView : Fragment() {
     private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
@@ -123,8 +127,8 @@ class FormView : Fragment() {
             ActivityResultContracts.RequestPermission(),
         ) { granted ->
             if (granted) {
-                downloadFile(viewModel.filePath)
-                viewModel.filePath = null
+                downloadFile(viewModel.fileUid)
+                viewModel.fileUid = null
             } else {
                 Toast
                     .makeText(
@@ -383,32 +387,50 @@ class FormView : Fragment() {
                                     currentValue.value.toUri()
                                 }
                         }
-
-                        Intent.ACTION_SEND -> {
-                            val contentUri =
-                                FileProvider.getUriForFile(
-                                    requireContext(),
-                                    FormFileProvider.fileProviderAuthority,
-                                    File(currentValue.value),
-                                )
-                            setDataAndType(
-                                contentUri,
-                                requireContext().contentResolver.getType(contentUri),
-                            )
-                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            putExtra(Intent.EXTRA_STREAM, contentUri)
-                        }
                     }
                 }
 
-            val title = resources.getString(R.string.open_with)
-            val chooser = Intent.createChooser(intent, title)
-
-            try {
-                startActivity(chooser)
-            } catch (_: ActivityNotFoundException) {
-                Timber.e("No activity found that can handle this action")
+            if (uiEvent.action == Intent.ACTION_SEND) {
+                shareFile(intent, currentValue.value)
+            } else {
+                startChooser(intent)
             }
+        }
+    }
+
+    private fun shareFile(
+        intent: Intent,
+        fileUid: String,
+    ) {
+        lifecycleScope.launch {
+            val filePath =
+                withContext(Dispatchers.IO) { fileUid.fileResourcePath() } ?: return@launch
+            val contentUri =
+                FileProvider.getUriForFile(
+                    requireContext(),
+                    FormFileProvider.fileProviderAuthority,
+                    File(filePath),
+                )
+            intent.apply {
+                setDataAndType(
+                    contentUri,
+                    requireContext().contentResolver.getType(contentUri),
+                )
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                putExtra(Intent.EXTRA_STREAM, contentUri)
+            }
+            startChooser(intent)
+        }
+    }
+
+    private fun startChooser(intent: Intent) {
+        val title = resources.getString(R.string.open_with)
+        val chooser = Intent.createChooser(intent, title)
+
+        try {
+            startActivity(chooser)
+        } catch (_: ActivityNotFoundException) {
+            Timber.e("No activity found that can handle this action")
         }
     }
 
@@ -458,18 +480,21 @@ class FormView : Fragment() {
 
     private fun openFile(event: RecyclerViewUiEvents.OpenFile) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            downloadFile(event.field.displayName)
+            downloadFile(event.field.value)
         } else {
-            viewModel.filePath = event.field.displayName
+            viewModel.fileUid = event.field.value
             requestStoragePermissions.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
     }
 
-    private fun downloadFile(fileName: String?) {
-        fileName?.let { filePath ->
+    private fun downloadFile(fileUid: String?) {
+        fileUid?.let {
             // Fragment scope: this can also run from the permission result, before the view exists
             lifecycleScope.launch {
                 try {
+                    val filePath =
+                        withContext(Dispatchers.IO) { fileUid.fileResourcePath() }
+                            ?: throw FileNotFoundException("File resource $fileUid not found")
                     fileHandler.copyAndOpen(File(filePath)) {
                         Toast
                             .makeText(

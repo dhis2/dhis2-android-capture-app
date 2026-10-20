@@ -1,12 +1,10 @@
 package org.dhis2.form.di
 
 import android.content.Context
-import org.dhis2.commons.R
 import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.resources.ColorUtils
-import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
@@ -21,9 +19,6 @@ import org.dhis2.form.data.OptionsRepository
 import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.form.data.SearchOptionSetOption
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
-import org.dhis2.form.data.metadata.FileResourceConfiguration
-import org.dhis2.form.data.metadata.OptionSetConfiguration
-import org.dhis2.form.data.metadata.OrgUnitConfiguration
 import org.dhis2.form.model.EnrollmentRecords
 import org.dhis2.form.model.EventRecords
 import org.dhis2.form.model.FormRepositoryRecords
@@ -33,7 +28,6 @@ import org.dhis2.form.ui.FieldViewModelFactoryImpl
 import org.dhis2.form.ui.FormViewModelFactory
 import org.dhis2.form.ui.mapper.FormSectionMapper
 import org.dhis2.form.ui.provider.AutoCompleteProviderImpl
-import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
 import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.form.ui.provider.FormResultDialogResourcesProvider
@@ -105,7 +99,6 @@ object Injector {
                     entryMode = repositoryRecords.entryMode,
                 ),
             fieldErrorMessageProvider = provideFieldErrorMessage(),
-            displayNameProvider = provideDisplayNameProvider(context),
             dataEntryRepository =
                 provideDataEntryRepository(
                     entryMode = repositoryRecords.entryMode,
@@ -196,7 +189,6 @@ object Injector {
     private fun provideFieldFactory(context: Context): FieldViewModelFactory =
         FieldViewModelFactoryImpl(
             hintProvider = provideHintProvider(context),
-            displayNameProvider = provideDisplayNameProvider(context),
             uiEventTypesProvider = provideUiEventTypesProvider(),
             keyboardActionProvider = provideKeyBoardActionProvider(),
             legendValueProvider = provideLegendValueProvider(context),
@@ -258,19 +250,6 @@ object Injector {
         )
 
     private fun provideFieldErrorMessage() = FieldErrorMessageProvider()
-
-    private fun provideDisplayNameProvider(context: Context) =
-        DisplayNameProviderImpl(
-            OptionSetConfiguration(provideD2()),
-            OrgUnitConfiguration(provideD2()),
-            FileResourceConfiguration(provideD2()),
-            DhisPeriodUtils(
-                d2 = provideD2(),
-                defaultPeriodLabel = context.getString(R.string.period_span_default_label),
-                defaultWeeklyLabel = context.getString(R.string.week_period_span_default_label),
-                defaultBiWeeklyLabel = context.getString(R.string.biweek_period_span_default_label),
-            ),
-        )
 
     private fun providePreferenceProvider(context: Context) = PreferenceProviderImpl(context)
 

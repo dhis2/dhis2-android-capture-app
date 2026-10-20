@@ -8,7 +8,6 @@ import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
 import org.dhis2.form.ui.provider.AutoCompleteProvider
-import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.KeyboardActionProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
@@ -43,16 +42,7 @@ class RulesUtilsProviderImplTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val valueStore: FormValueStore = mock()
     private val hintProvider: HintProvider = mock()
-    private val displayNameProvider: DisplayNameProvider =
-        mock {
-            on {
-                provideDisplayName(
-                    valueType = ValueType.TEXT,
-                    value = "Old Value",
-                    optionSet = "optionSetUid",
-                )
-            } doReturn "OldDisplayName"
-        }
+
     private val uiEventTypesProvider: UiEventTypesProvider = mock()
     private val keyboardActionProvider: KeyboardActionProvider = mock()
     private val legendValueProvider: LegendValueProvider = mock()
@@ -67,7 +57,6 @@ class RulesUtilsProviderImplTest {
         fieldFactory =
             FieldViewModelFactoryImpl(
                 hintProvider,
-                displayNameProvider,
                 uiEventTypesProvider,
                 keyboardActionProvider,
                 legendValueProvider,

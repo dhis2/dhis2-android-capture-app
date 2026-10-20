@@ -78,6 +78,12 @@ suspend fun String.userFriendlyValue(
     }
 }
 
+/**
+ * Returns the local path of the file resource whose uid is this string,
+ * or null if it is not stored locally.
+ */
+suspend fun String.fileResourcePath(): String? = getKoin().get<ValueParser>().valueToFilePath(this)
+
 private fun String.toDateTimeFormat(crashReportController: CrashReportController = getKoin().get<CrashReportController>()) =
     try {
         LocalDateTime.parse(this).format(dateTimeFormat)

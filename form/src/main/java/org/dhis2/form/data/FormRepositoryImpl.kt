@@ -2,6 +2,7 @@ package org.dhis2.form.data
 
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.commons.dialogs.bottomsheet.IssueType
 import org.dhis2.commons.periods.model.Period
@@ -17,8 +18,8 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
-import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
+import org.dhis2.mobile.commons.extensions.userFriendlyValue
 import org.dhis2.mobile.commons.model.CustomIntentRequestArgumentModel
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.dhis2.mobileProgramRules.RuleEngineHelper
@@ -31,7 +32,6 @@ import org.hisp.dhis.rules.models.RuleEffect
 class FormRepositoryImpl(
     private val formValueStore: FormValueStore,
     private val fieldErrorMessageProvider: FieldErrorMessageProvider,
-    private val displayNameProvider: DisplayNameProvider,
     private val dataEntryRepository: DataEntryRepository,
     private val ruleEngineRepository: RuleEngineHelper?,
     private val rulesUtilsProvider: RulesUtilsProvider,
@@ -677,12 +677,9 @@ class FormRepositoryImpl(
                             item
                                 .setValue(value)
                                 .setDisplayName(
-                                    displayNameProvider.provideDisplayName(
-                                        valueType,
-                                        value,
-                                        item.optionSet,
-                                        item.periodSelector?.type,
-                                    ),
+                                    runBlocking {
+                                        value?.userFriendlyValue(uid, item.valueType != ValueType.PERCENTAGE)
+                                    },
                                 ).setLegend(
                                     legendValueProvider.provideLegendValue(
                                         item.uid,
@@ -776,11 +773,9 @@ class FormRepositoryImpl(
                         .setValue(action.value)
                         .setError(error)
                         .setDisplayName(
-                            displayNameProvider.provideDisplayName(
-                                action.valueType,
-                                action.value,
-                                item.optionSet,
-                                item.periodSelector?.type,
+                            action.value?.userFriendlyValue(
+                                item.uid,
+                                item.valueType != ValueType.PERCENTAGE,
                             ),
                         )
                 } ?: item

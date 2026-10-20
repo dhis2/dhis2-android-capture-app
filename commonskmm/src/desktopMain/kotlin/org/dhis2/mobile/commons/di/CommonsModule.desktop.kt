@@ -58,6 +58,8 @@ actual val commonsModule: Module
 
                     override suspend fun valueToFileName(value: String) = value
 
+                    override suspend fun valueToFilePath(value: String): String? = null
+
                     override suspend fun valueFromCoordinateAsLatLong(value: String) = value
 
                     override suspend fun valueFromBooleanType(value: String) = value

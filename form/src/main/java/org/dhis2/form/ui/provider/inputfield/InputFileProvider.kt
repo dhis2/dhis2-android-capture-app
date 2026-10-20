@@ -4,10 +4,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
@@ -15,10 +18,10 @@ import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.files.rememberFilePicker
+import org.dhis2.mobile.commons.extensions.fileResourcePath
+import org.dhis2.mobile.commons.extensions.getFormattedFileSize
 import org.hisp.dhis.mobile.ui.designsystem.component.InputFileResource
 import org.hisp.dhis.mobile.ui.designsystem.component.UploadFileState
-import java.io.File
-import java.text.DecimalFormat
 
 @Composable
 internal fun ProvideInputFileResource(
@@ -35,7 +38,12 @@ internal fun ProvideInputFileResource(
             ),
         )
     }
-    val file = fieldUiModel.displayName?.let { File(it) }
+    val fileWeight by produceState<String?>(null, fieldUiModel.value) {
+        value =
+            withContext(Dispatchers.IO) {
+                fieldUiModel.value?.fileResourcePath()?.let { getFormattedFileSize(it) }
+            }
+    }
 
     val filePicker = rememberFilePicker(onFileSelected)
 
@@ -46,8 +54,8 @@ internal fun ProvideInputFileResource(
         supportingText = fieldUiModel.supportingText(),
         buttonText = stringResource(R.string.add_file),
         uploadFileState = uploadState,
-        fileName = file?.name,
-        fileWeight = file?.length()?.let { fileSizeLabel(it) },
+        fileName = fieldUiModel.displayName,
+        fileWeight = fileWeight,
         onSelectFile = {
             uploadState = getFileUploadState(fieldUiModel.displayName, true)
             filePicker.launch("*/*")
@@ -61,17 +69,6 @@ internal fun ProvideInputFileResource(
         isRequired = fieldUiModel.mandatory,
     )
 }
-
-private fun fileSizeLabel(fileSize: Long) =
-    run {
-        val kb = fileSize / 1024f
-        val mb = kb / 1024f
-        if (kb < 1024f) {
-            "${DecimalFormat("*0").format(kb)}KB"
-        } else {
-            "${DecimalFormat("*0.##").format(mb)}MB"
-        }
-    }
 
 private fun getFileUploadState(
     value: String?,

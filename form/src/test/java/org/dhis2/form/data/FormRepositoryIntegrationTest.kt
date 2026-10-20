@@ -9,7 +9,6 @@ import org.dhis2.form.model.EnrollmentMode
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
 import org.dhis2.form.ui.provider.AutoCompleteProvider
-import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
 import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.KeyboardActionProvider
@@ -173,7 +172,6 @@ class FormRepositoryIntegrationTest {
 
     private fun mockFormRepository(enrollmentMode: EnrollmentMode = EnrollmentMode.NEW): FormRepositoryImpl {
         val hintProvider: HintProvider = mock()
-        val displayNameProvider: DisplayNameProvider = mock()
         val uiEventTypesProvider: UiEventTypesProvider = mock()
         val keyboardActionProvider: KeyboardActionProvider = mock()
         val legendValueProvider: LegendValueProvider = mock()
@@ -182,7 +180,6 @@ class FormRepositoryIntegrationTest {
         val fieldFactory =
             FieldViewModelFactoryImpl(
                 hintProvider,
-                displayNameProvider,
                 uiEventTypesProvider,
                 keyboardActionProvider,
                 legendValueProvider,
@@ -202,7 +199,6 @@ class FormRepositoryIntegrationTest {
         return FormRepositoryImpl(
             formValueStore,
             fieldErrorMessageProvider,
-            displayNameProvider,
             dataEntryRepository,
             ruleEngineHelper,
             rulesUtilsProvider,

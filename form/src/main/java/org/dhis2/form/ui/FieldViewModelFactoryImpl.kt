@@ -1,6 +1,7 @@
 package org.dhis2.form.ui
 
 import androidx.databinding.ObservableField
+import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.extensions.Preconditions.Companion.isNull
 import org.dhis2.form.model.EventCategory
 import org.dhis2.form.model.FieldUiModel
@@ -10,11 +11,11 @@ import org.dhis2.form.model.PeriodSelector
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.event.UiEventFactoryImpl
 import org.dhis2.form.ui.provider.AutoCompleteProvider
-import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.KeyboardActionProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.provider.UiEventTypesProvider
+import org.dhis2.mobile.commons.extensions.userFriendlyValue
 import org.dhis2.mobile.commons.model.CustomIntentModel
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.common.FeatureType
@@ -26,7 +27,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 
 class FieldViewModelFactoryImpl(
     private val hintProvider: HintProvider,
-    private val displayNameProvider: DisplayNameProvider,
     private val uiEventTypesProvider: UiEventTypesProvider,
     private val keyboardActionProvider: KeyboardActionProvider,
     private val legendValueProvider: LegendValueProvider,
@@ -85,12 +85,9 @@ class FieldViewModelFactoryImpl(
                     optionSet,
                 ),
             displayName =
-                displayNameProvider.provideDisplayName(
-                    valueType,
-                    value,
-                    optionSet,
-                    periodSelector?.type,
-                ),
+                runBlocking {
+                    value?.userFriendlyValue(id, valueType != ValueType.PERCENTAGE)
+                },
             renderingType =
                 uiEventTypesProvider.provideUiRenderType(
                     featureType,

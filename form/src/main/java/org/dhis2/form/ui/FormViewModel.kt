@@ -129,7 +129,7 @@ class FormViewModel(
     private val handler = Handler(Looper.getMainLooper())
     private var textChangeDebounceRunnable: Runnable? = null
 
-    var filePath: String? = null
+    var fileUid: String? = null
 
     init {
 
