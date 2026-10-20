@@ -57,6 +57,7 @@ class SyncData(
 
             input(DataSyncProgress(DataSyncTask.UploadDataValue, null))
             val uploadDataValueResult = repository.uploadDataValues()
+            val uploadDataStoreResult = repository.uploadDataStore()
             syncStatusController.startDownloadingDataSets()
             val downloadDataValueResult =
                 repository.downloadDataValues { progressData ->
@@ -84,6 +85,7 @@ class SyncData(
                     uploadTEIResult,
                     downloadTEIResult,
                     uploadDataValueResult,
+                    uploadDataStoreResult,
                     downloadDataValueResult,
                 )
             val isSuccess = syncResults.all { it.isSuccess }

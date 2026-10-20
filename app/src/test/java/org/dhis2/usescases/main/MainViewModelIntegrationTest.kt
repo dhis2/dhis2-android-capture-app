@@ -18,6 +18,7 @@ import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobile.commons.providers.PreferenceProvider
+import org.dhis2.mobile.plugin.domain.LoadPlugins
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.dhis2.mobile.sync.model.SyncJobStatus
@@ -79,6 +80,7 @@ class MainViewModelIntegrationTest {
     private val mainNavigator: MainNavigator = mock()
     private val preferences: PreferenceProvider = mock()
     private val syncBackgroundJobAction: SyncBackgroundJobAction = mock()
+    private val loadPlugins: LoadPlugins = mock()
     private val downloadNewVersion: DownloadNewVersion = mock()
     private val scheduleNewVersionAlert: ScheduleNewVersionAlert = mock()
 
@@ -134,6 +136,8 @@ class MainViewModelIntegrationTest {
 
             // Default: multiple programs → CheckSingleNavigation fails silently, no effect emitted
             whenever(homeRepository.homeItemCount()) doReturn 2
+
+            whenever(loadPlugins(Unit)) doReturn Result.success(Unit)
         }
 
     // ------------------------------------------------------------------ helpers
@@ -158,6 +162,7 @@ class MainViewModelIntegrationTest {
                 launchInitialSync = launchInitialSync,
                 scheduleNewVersionAlert = scheduleNewVersionAlert,
                 syncBackgroundJobAction = syncBackgroundJobAction,
+                loadPlugins = loadPlugins,
                 initialScreen = initialScreen,
                 dispatcher =
                     object : DispatcherProvider {

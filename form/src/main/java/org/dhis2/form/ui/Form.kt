@@ -34,6 +34,9 @@ import org.dhis2.form.model.FormSection
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.provider.inputfield.FieldProvider
+import org.dhis2.mobile.plugin.domain.model.FormPluginTarget
+import org.dhis2.mobile.plugin.domain.model.PluginFieldState
+import org.dhis2.mobile.plugin.web.FormFieldPluginSlot
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
 import org.hisp.dhis.mobile.ui.designsystem.component.Section
 import org.hisp.dhis.mobile.ui.designsystem.component.SectionState
@@ -46,6 +49,7 @@ fun Form(
     sections: List<FormSection> = emptyList(),
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
+    pluginTarget: FormPluginTarget? = null,
 ) {
     val scrollState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
@@ -156,6 +160,21 @@ fun Form(
                     },
                 )
             }
+            // After the sections, so section indices still match list positions for scrolling. The
+            // configured layout (section order, fields the plugin replaces) is not applied yet.
+            pluginTarget?.let { target ->
+                item(key = FORM_FIELD_PLUGINS_KEY) {
+                    FormFieldPluginSlot(
+                        target = target,
+                        modifier = Modifier.padding(top = Spacing.Spacing16),
+                        fieldStates = remember(sections) { sections.pluginFieldStates() },
+                        onFieldValue = { uid, value ->
+                            val field = sections.flatMap { it.fields }.firstOrNull { it.uid == uid }
+                            intentHandler(FormIntent.OnSave(uid = uid, value = value, valueType = field?.valueType))
+                        },
+                    )
+                }
+            }
             item(sections.size - 1) {
                 Spacer(modifier = Modifier.height(Spacing.Spacing120))
             }
@@ -165,6 +184,20 @@ fun Form(
         NoFieldsWarning()
     }
 }
+
+private const val FORM_FIELD_PLUGINS_KEY = "form-field-plugins"
+
+private fun List<FormSection>.pluginFieldStates(): Map<String, PluginFieldState> =
+    flatMap { it.fields }.associate { field ->
+        field.uid to
+            PluginFieldState(
+                value = field.value,
+                error = field.error,
+                warning = field.warning,
+                editable = field.editable,
+                mandatory = field.mandatory,
+            )
+    }
 
 private fun manageOnNextEvent(
     focusManager: FocusManager,

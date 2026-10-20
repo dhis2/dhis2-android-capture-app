@@ -402,6 +402,12 @@ internal class AndroidSyncRepository(
             Result.success(Unit)
         }
 
+    override suspend fun uploadDataStore(): Result<Unit> =
+        run {
+            d2.dataStoreModule().dataStore().blockingUpload()
+            Result.success(Unit)
+        }
+
     override suspend fun downloadEvents(
         onProgressUpdate: suspend (progressData: Map<String, DataSyncProgressStatus>) -> Unit,
     ): Result<Unit> =

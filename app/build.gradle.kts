@@ -334,6 +334,7 @@ dependencies {
     implementation(project(":commonskmm"))
     implementation(project(":login"))
     implementation(project(":sync"))
+    implementation(project(":plugin"))
 
     implementation(libs.dhis2.expressionparser)
     implementation(libs.security.conscrypt)

@@ -46,6 +46,8 @@ import org.dhis2.form.data.RulesUtilsProviderConfigurationError
 import org.dhis2.form.data.scan.ScanContract
 import org.dhis2.form.data.toMessage
 import org.dhis2.form.di.Injector
+import org.dhis2.form.model.EnrollmentRecords
+import org.dhis2.form.model.EventRecords
 import org.dhis2.form.model.FormRepositoryRecords
 import org.dhis2.form.model.FormSection
 import org.dhis2.form.model.InfoUiModel
@@ -65,6 +67,7 @@ import org.dhis2.maps.views.MapSelectorActivity.Companion.FIELD_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
 import org.dhis2.mobile.commons.files.FileHandlerImpl
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
+import org.dhis2.mobile.plugin.domain.model.FormPluginTarget
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import timber.log.Timber
@@ -178,6 +181,14 @@ class FormView : Fragment() {
 
     private val fileHandler = FileHandlerImpl()
 
+    /** The record this form edits, which decides the form field plugins it shows. */
+    private fun pluginTarget(): FormPluginTarget? =
+        when (val records = arguments?.serializable<FormRepositoryRecords>(RECORDS)) {
+            is EventRecords -> FormPluginTarget.Event(records.eventUid)
+            is EnrollmentRecords -> FormPluginTarget.Enrollment(records.enrollmentUid)
+            else -> null
+        }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -214,6 +225,7 @@ class FormView : Fragment() {
                     sections = items,
                     intentHandler = ::intentHandler,
                     uiEventHandler = ::uiEventHandler,
+                    pluginTarget = remember { pluginTarget() },
                 )
 
                 LaunchedEffect(items) {

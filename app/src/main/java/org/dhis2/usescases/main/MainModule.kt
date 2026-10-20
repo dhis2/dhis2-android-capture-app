@@ -121,6 +121,7 @@ val mainModule =
                 launchInitialSync = get(),
                 scheduleNewVersionAlert = get(),
                 syncBackgroundJobAction = get(),
+                loadPlugins = get(),
                 initialScreen = initialScreen,
                 dispatcher = dispatcher,
             )

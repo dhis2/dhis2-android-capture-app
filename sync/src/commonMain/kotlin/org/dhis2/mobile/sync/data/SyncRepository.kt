@@ -33,6 +33,9 @@ interface SyncRepository {
 
     suspend fun uploadDataValues(): Result<Unit>
 
+    /** Uploads server dataStore entries created or changed on the device, e.g. by web plugins. */
+    suspend fun uploadDataStore(): Result<Unit>
+
     suspend fun downloadDataValues(onProgressUpdate: (progressData: Map<String, DataSyncProgressStatus>) -> Unit): Result<Unit>
 
     suspend fun downloadDataFileResources(onProgressUpdate: (progress: Double?) -> Unit): Result<Unit>

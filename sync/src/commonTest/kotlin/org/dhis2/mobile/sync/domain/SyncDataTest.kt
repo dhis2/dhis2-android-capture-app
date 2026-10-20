@@ -91,6 +91,34 @@ class SyncDataTest {
             verify(sessionRenewalNotifier, never()).notifyRenewalRequired()
         }
 
+    @Test
+    fun `GIVEN dataStore entries changed offline WHEN data is synced THEN they are uploaded`() =
+        runTest {
+            // GIVEN - web plugins write to the server dataStore through the SDK while offline
+            stubSyncFlow()
+
+            // WHEN
+            syncData { }
+
+            // THEN
+            verify(repository).uploadDataStore()
+        }
+
+    @Test
+    fun `GIVEN the dataStore upload fails WHEN data is synced THEN the sync is recorded as failed`() =
+        runTest {
+            // GIVEN
+            stubSyncFlow()
+            whenever(repository.uploadDataStore()) doReturn Result.failure(RuntimeException("409"))
+
+            // WHEN
+            val result = syncData { }
+
+            // THEN
+            assertTrue(result.isSuccess)
+            verify(repository).saveDataSyncState(false)
+        }
+
     private suspend fun stubSyncFlow() {
         whenever(repository.isServerAvailable(any())) doReturn true
         whenever(repository.getAllProgramsInitialStatus()) doReturn Result.success(emptyMap())
@@ -101,6 +129,7 @@ class SyncDataTest {
         whenever(repository.downloadTEIs(any())) doReturn Result.success(Unit)
         whenever(repository.getAllTrackerPrograms()) doReturn Result.success(emptyList())
         whenever(repository.uploadDataValues()) doReturn Result.success(Unit)
+        whenever(repository.uploadDataStore()) doReturn Result.success(Unit)
         whenever(repository.downloadDataValues(any())) doReturn Result.success(Unit)
         whenever(repository.getAllDataSets()) doReturn Result.success(emptyList())
         whenever(repository.downloadDataFileResources(any())) doReturn Result.success(Unit)
