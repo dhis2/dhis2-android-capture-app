@@ -412,13 +412,8 @@ class GraphToTable {
             val combination = splitted.first().size
             val headerList = mutableListOf<List<CellModel>>()
             for (i in 0 until combination) {
-                val values = splitted.map { it[i] }
-                headerList.add(
-                    values
-                        .filterIndexed { index, value ->
-                            index == 0 || values[index - 1] != value
-                        }.map { CellModel(it) },
-                )
+                val values = splitted.map { it[i] }.distinct().map { CellModel(it) }
+                headerList.add(values)
             }
             headerList
         } else {
