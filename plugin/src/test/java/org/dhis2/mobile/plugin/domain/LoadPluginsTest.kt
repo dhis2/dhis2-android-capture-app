@@ -5,6 +5,7 @@ import kotlinx.coroutines.test.runTest
 import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.plugin.data.AppHubRepository
 import org.dhis2.mobile.plugin.data.CaptureConfigRepository
+import org.dhis2.mobile.plugin.data.CustomFormRepository
 import org.dhis2.mobile.plugin.data.PluginAppRepository
 import org.dhis2.mobile.plugin.data.PluginBundleInstaller
 import org.dhis2.mobile.plugin.domain.model.FormFieldPluginPlacement
@@ -37,11 +38,12 @@ class LoadPluginsTest {
     private val apps: PluginAppRepository = mock()
     private val appHub: AppHubRepository = mock()
     private val registry = PluginRegistry()
+    private val customForms: CustomFormRepository = mock { onBlocking { refresh() } doReturn Result.success(Unit) }
     private val installer by lazy {
         val unconfined = Dispatchers.Unconfined
         PluginBundleInstaller(temp.newFolder("web-plugins"), Dispatcher(unconfined, unconfined, unconfined))
     }
-    private val loadPlugins by lazy { LoadPlugins(captureConfig, apps, appHub, installer, registry) }
+    private val loadPlugins by lazy { LoadPlugins(captureConfig, apps, appHub, installer, registry, customForms) }
 
     private val placement =
         FormFieldPluginPlacement(
@@ -88,6 +90,16 @@ class LoadPluginsTest {
             assertEquals(listOf("matrix-select"), state.plugins.keys.toList())
             assertEquals("1.0.2", state.plugins.getValue("matrix-select").version)
             assertEquals(listOf(layoutWith(placement)), state.layouts.values.toList())
+        }
+
+    @Test
+    fun `refreshes the data set custom forms, which the SDK does not sync`() =
+        runTest {
+            givenOnline()
+
+            loadPlugins(Unit)
+
+            verify(customForms).refresh()
         }
 
     @Test

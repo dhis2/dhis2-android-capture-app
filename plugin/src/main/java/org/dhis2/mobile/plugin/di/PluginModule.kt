@@ -3,6 +3,7 @@ package org.dhis2.mobile.plugin.di
 import org.dhis2.mobile.plugin.api.PluginApiRouter
 import org.dhis2.mobile.plugin.data.AppHubRepository
 import org.dhis2.mobile.plugin.data.CaptureConfigRepository
+import org.dhis2.mobile.plugin.data.CustomFormRepository
 import org.dhis2.mobile.plugin.data.FormPluginContextRepository
 import org.dhis2.mobile.plugin.data.PluginAppRepository
 import org.dhis2.mobile.plugin.data.PluginBundleInstaller
@@ -17,6 +18,9 @@ import java.io.File
 /** Directory under `filesDir` holding the extracted bundles the WebView serves. */
 internal const val WEB_PLUGINS_DIR = "web-plugins"
 
+/** Directory under `filesDir` caching the data set custom forms, which the SDK does not sync. */
+private const val CUSTOM_FORMS_DIR = "custom-forms"
+
 val pluginModule =
     module {
         single { PluginRegistry() }
@@ -28,5 +32,6 @@ val pluginModule =
         single { PluginFieldValueRepository(get(), get()) }
         single { FormPluginContextRepository(get(), get()) }
         single { PluginApiRouter(get(), get()) }
-        factory { LoadPlugins(get(), get(), get(), get(), get()) }
+        single { CustomFormRepository(get(), get(), File(androidContext().filesDir, CUSTOM_FORMS_DIR)) }
+        factory { LoadPlugins(get(), get(), get(), get(), get(), get()) }
     }

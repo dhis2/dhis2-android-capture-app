@@ -81,6 +81,34 @@ the "Yes NoneKnown" option set):
 Anything else answers `501` and is logged. Enrollment plugins such as the WHO Growth Chart need
 tracker and metadata endpoints added here.
 
+## Data set custom forms (spike)
+
+The same WebView host renders **data set custom forms**, the HTML the web Data Entry app shows,
+instead of the native tables.
+
+- The SDK does not sync custom forms. `CustomFormRepository` downloads the `CUSTOM` ones from
+  `/api/dataSets` when Home opens online and caches them under `filesDir/custom-forms/`.
+- `custom-form.html` + `custom-form.js` recreate the legacy environment forms rely on:
+  - jQuery 3.2.1;
+  - `dhis2.util.on`, `dhis2.de.event.*` and `dhis2.de.current*`;
+  - the hidden `#selectedPeriodId`-style context elements.
+- Fields `{dataElement}-{categoryOptionCombo}-val` are rendered by value type (options, booleans,
+  dates, numeric keypad). They read and write through the SDK with the native table's validation.
+- Totals are summed in the page. Indicators come from the SDK's `dataSetIndicatorEngine`.
+- Completion, validation and sync stay native.
+
+Verified on EPI Stock (Sierra Leone), online and in airplane mode:
+- the form's script ran (`formReady`, `dataValueSaved`);
+- values were saved and synced;
+- indicators were recalculated;
+- the form became read-only when completed.
+
+Limits:
+- wide desktop tables need horizontal scrolling;
+- forms that call other endpoints only work for what `PluginApiRouter` emulates;
+- file, image, coordinate and org unit fields are disabled;
+- the form's scripts run in the bridge page.
+
 ## Known limits
 
 - Section counts are the native ones, so they include fields a plugin represents.

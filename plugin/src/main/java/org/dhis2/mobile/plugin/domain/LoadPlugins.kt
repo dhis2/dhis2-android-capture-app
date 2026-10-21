@@ -3,6 +3,7 @@ package org.dhis2.mobile.plugin.domain
 import org.dhis2.mobile.commons.domain.UseCase
 import org.dhis2.mobile.plugin.data.AppHubRepository
 import org.dhis2.mobile.plugin.data.CaptureConfigRepository
+import org.dhis2.mobile.plugin.data.CustomFormRepository
 import org.dhis2.mobile.plugin.data.PluginAppRepository
 import org.dhis2.mobile.plugin.data.PluginBundleInstaller
 import org.dhis2.mobile.plugin.data.PluginBundleVerifier
@@ -22,6 +23,8 @@ private const val PLUGIN_ENTRY = "plugin.html"
  * placement points at, the version installed on the server is downloaded from the App Hub, checked
  * against what the server serves, and extracted. An installed version is never downloaded again, and
  * without a connection the last installed bundle is used, so plugins keep working offline.
+ *
+ * The data set custom forms, which the SDK does not sync, are refreshed here too.
  */
 class LoadPlugins(
     private val captureConfig: CaptureConfigRepository,
@@ -29,6 +32,7 @@ class LoadPlugins(
     private val appHub: AppHubRepository,
     private val installer: PluginBundleInstaller,
     private val registry: PluginRegistry,
+    private val customForms: CustomFormRepository,
 ) : UseCase<Unit, Unit> {
     override suspend fun invoke(input: Unit): Result<Unit> =
         try {
@@ -41,6 +45,8 @@ class LoadPlugins(
         }
 
     private suspend fun load() {
+        customForms.refresh().onFailure { Timber.w(it, "Could not refresh the custom forms — using the cached ones") }
+
         captureConfig.refresh().onFailure { Timber.w(it, "Could not refresh the capture configuration — using the cached one") }
 
         val layouts =

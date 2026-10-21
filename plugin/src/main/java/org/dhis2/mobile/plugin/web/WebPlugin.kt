@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.webkit.JavaScriptReplyProxy
 import androidx.webkit.WebViewAssetLoader
 import androidx.webkit.WebViewClientCompat
 import androidx.webkit.WebViewCompat
@@ -38,7 +39,7 @@ import java.io.ByteArrayInputStream
 import java.io.File
 
 private const val HOST = "appassets.androidplatform.net"
-private const val ORIGIN = "https://$HOST"
+internal const val ORIGIN = "https://$HOST"
 private const val BRIDGE_URL = "$ORIGIN/host/dhis2-plugin-host/bridge.html"
 private const val SHIM_ASSET = "dhis2-plugin-host/api-shim.js"
 private const val BRIDGE_OBJECT = "dhis2Native"
@@ -101,7 +102,7 @@ fun WebPlugin(
 
     AndroidView(
         modifier = modifier.fillMaxWidth().height(height),
-        factory = { context -> pluginWebView(context, session) },
+        factory = { context -> hostWebView(context, BRIDGE_URL, session::onMessage) },
         update = { session.updateProps(props) },
         onRelease = { it.destroy() },
     )
@@ -114,10 +115,17 @@ object WebPluginSupport {
             WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)
 }
 
+/**
+ * A WebView that loads only local content, starting at [startUrl]: the host pages from the APK's
+ * assets under `/host/`, and the extracted plugin bundles under `/plugins/`. Messages on the
+ * `dhis2Native` bridge go to [onMessage], and `api-shim.js` routes every `/api/` call through it.
+ */
 @SuppressLint("SetJavaScriptEnabled", "RequiresFeature")
-private fun pluginWebView(
+internal fun hostWebView(
     context: Context,
-    session: PluginBridgeSession,
+    startUrl: String,
+    onMessage: (data: String?, isMainFrame: Boolean, replyProxy: JavaScriptReplyProxy) -> Unit,
+    zoomable: Boolean = false,
 ): WebView {
     val assetLoader =
         WebViewAssetLoader
@@ -147,11 +155,14 @@ private fun pluginWebView(
         settings.allowContentAccess = false
         settings.javaScriptCanOpenWindowsAutomatically = false
         settings.setSupportMultipleWindows(false)
+        settings.setSupportZoom(zoomable)
+        settings.builtInZoomControls = zoomable
+        settings.displayZoomControls = false
         WebView.setWebContentsDebuggingEnabled(context.isDebuggable())
 
         // Only frames served from the asset-loader origin get the bridge or the shim.
         WebViewCompat.addWebMessageListener(this, BRIDGE_OBJECT, setOf(ORIGIN)) { _, message, _, isMainFrame, replyProxy ->
-            session.onMessage(message.data, isMainFrame, replyProxy)
+            onMessage(message.data, isMainFrame, replyProxy)
         }
         WebViewCompat.addDocumentStartJavaScript(this, shim, setOf(ORIGIN))
 
@@ -174,7 +185,7 @@ private fun pluginWebView(
                 ): Boolean = request.url.host != HOST
             }
 
-        loadUrl(BRIDGE_URL)
+        loadUrl(startUrl)
     }
 }
 

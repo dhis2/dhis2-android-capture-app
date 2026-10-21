@@ -130,6 +130,8 @@ private val FabContainerHeight = 56.dp + 16.dp + 16.dp
  * @param useTwoPane: Whether to use a two pane layout
  * @param onBackClicked: Callback function to be invoked when the back button is clicked
  * @param onSyncClicked: Callback function to be invoked when the sync button is clicked
+ * @param customForm: Renders the data set's custom form in place of its tables, given whether its
+ * values can be changed; null to show the tables
  * */
 @Composable
 fun DataSetInstanceScreen(
@@ -139,6 +141,7 @@ fun DataSetInstanceScreen(
     onBackClicked: () -> Unit,
     onSyncClicked: (onUpdateData: () -> Unit) -> Unit,
     uiActionHandler: UiActionHandler,
+    customForm: (@Composable (modifier: Modifier, editable: Boolean) -> Unit)? = null,
 ) {
     val dataSetTableViewModel: DataSetTableViewModel =
         koinViewModel<DataSetTableViewModel>(parameters = {
@@ -305,7 +308,11 @@ fun DataSetInstanceScreen(
                     .padding(paddingValues),
             propagateMinConstraints = true,
         ) {
-            if (allowTwoPane) {
+            val loadedState = dataSetScreenState as? DataSetScreenState.Loaded
+            if (customForm != null && loadedState != null) {
+                val details = loadedState.dataSetDetails
+                customForm(Modifier.fillMaxSize(), details.edition.editable && !details.isCompleted)
+            } else if (allowTwoPane) {
                 TwoPaneLayout(
                     modifier =
                         Modifier

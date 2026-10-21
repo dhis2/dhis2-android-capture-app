@@ -26,6 +26,9 @@ import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_ORGANISATION_UNIT_U
 import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_PERIOD_ID
 import org.dhis2.mobile.aggregates.ui.constants.OPEN_ERROR_LOCATION
 import org.dhis2.mobile.commons.files.FileHandlerImpl
+import org.dhis2.mobile.plugin.domain.model.CustomFormContext
+import org.dhis2.mobile.plugin.web.CustomDataEntryForm
+import org.dhis2.mobile.plugin.web.rememberCustomFormHtml
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
@@ -56,6 +59,16 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
                     }
                 val dataSetParams = intent.toDataSetInstanceParameters()
                 val snackbarHostState = remember { SnackbarHostState() }
+                val customFormHtml = rememberCustomFormHtml(dataSetParams.dataSetUid)
+                val customFormContext =
+                    remember(dataSetParams) {
+                        CustomFormContext(
+                            dataSetUid = dataSetParams.dataSetUid,
+                            periodId = dataSetParams.periodId,
+                            orgUnitUid = dataSetParams.organisationUnitUid,
+                            attributeOptionComboUid = dataSetParams.attributeOptionComboUid,
+                        )
+                    }
                 DataSetInstanceScreen(
                     parameters = intent.toDataSetInstanceParameters(),
                     useTwoPane = useTwoPane,
@@ -69,6 +82,12 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
                         )
                     },
                     uiActionHandler = uiActionHandler,
+                    customForm =
+                        customFormHtml?.let { html ->
+                            { modifier, editable ->
+                                CustomDataEntryForm(html, customFormContext, editable, modifier)
+                            }
+                        },
                 )
             }
             supportFragmentManager
