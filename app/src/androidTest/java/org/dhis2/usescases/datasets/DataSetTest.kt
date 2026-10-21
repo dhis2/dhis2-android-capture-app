@@ -135,7 +135,10 @@ class DataSetTest : BaseTest() {
 
         tapOnSaveButtonStep()
 
-        checkValidationBarIsDisplayedAndReview()
+        // Form name is shown instead of name
+        checkValidationBarIsDisplayedAndReview {
+            assertDataToReviewLabelIsDisplayed("Children trained on key survival skills")
+        }
 
         enterDataStep(
             tableId = tableId,
@@ -291,6 +294,38 @@ class DataSetTest : BaseTest() {
         checkValidationBarIsDisplayedAndCompleteAnyway()
         checkDataSetInstanceHasBeenCreatedAndIsCompleted(orgUnit)
 
+    }
+
+    @Test
+    fun validationRuleErrorShowsDataElementNameWhenItHasNoFormName() = runTest {
+        val tableId = "dzjKKQq0cSO"
+        val cellPcv2FixedUnder1yId = "PGRlPm1HTjFhejhYdWI2Ojxjb2M+UHJsdDBDMVJGMHM="
+
+        enterDataSetStep(
+            uid = "BfMAe6Itzgt",
+            name = "Child Health",
+        )
+
+        createDataSetInstanceStep(
+            orgUnit = "Ngelehun CHC",
+        )
+
+        // Breaks rule "PCV 2 <= PCV 1"
+        enterDataStep(
+            tableId = tableId,
+            cellId = cellPcv2FixedUnder1yId,
+            value = "1",
+            inputTestTag = "INPUT_NUMBER_FIELD",
+        )
+
+        tapOnSaveButtonStep()
+
+        runOptionalValidationRules()
+
+        // No form name, so name is shown
+        checkValidationBarIsDisplayedAndReview {
+            assertDataToReviewLabelIsDisplayed("PCV2 doses given / Fixed, <1y")
+        }
     }
 
     @Test
@@ -523,10 +558,13 @@ class DataSetTest : BaseTest() {
         }
     }
 
-    private fun checkValidationBarIsDisplayedAndReview() {
+    private fun checkValidationBarIsDisplayedAndReview(
+        checkValidationErrors: DataSetTableRobot.() -> Unit = {},
+    ) {
         dataSetTableRobot(composeTestRule) {
             assertValidationBarIsDisplayed()
             expandValidationRulesErrorDialog()
+            checkValidationErrors()
             tapOnReview()
         }
     }

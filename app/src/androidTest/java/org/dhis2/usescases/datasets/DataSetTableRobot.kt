@@ -2,6 +2,7 @@
 
 package org.dhis2.usescases.datasets
 
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties.TestTag
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
@@ -26,6 +27,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.printToLog
@@ -45,6 +47,7 @@ import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_EXPAND_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_REVIEW_BUTTON_TEST_TAG
+import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_VIOLATION_TEST_TAG
 import org.dhis2.mobile.commons.extensions.toColor
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.CellSelected
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.RowBackground
@@ -72,10 +75,11 @@ internal class DataSetTableRobot(
 
     fun clickOnCell(tableId: String, cellId: String) {
         scrollToItemWithTag(cellTestTag(tableId, cellId))
+        // A touch can land on the sticky header covering the cell (tablets in landscape)
         composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId), useUnmergedTree = true)
             .performScrollTo()
             .assertIsDisplayed()
-            .performClick()
+            .performSemanticsAction(SemanticsActions.OnClick)
     }
 
     @Deprecated("This won't work for the design system table")
@@ -324,6 +328,12 @@ internal class DataSetTableRobot(
 
     fun expandValidationRulesErrorDialog() {
         composeTestRule.onNodeWithTag(VALIDATION_BAR_EXPAND_TEST_TAG).performClick()
+    }
+
+    fun assertDataToReviewLabelIsDisplayed(label: String) {
+        composeTestRule.onNodeWithTag(VALIDATION_DIALOG_VIOLATION_TEST_TAG)
+            .performScrollToNode(hasText("$label:"))
+        composeTestRule.onNodeWithText("$label:").assertIsDisplayed()
     }
 
     fun tapOnReview() {
