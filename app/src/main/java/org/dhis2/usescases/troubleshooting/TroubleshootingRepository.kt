@@ -197,6 +197,7 @@ class TroubleshootingRepository(
                 "$ruleActionType: Condition is empty"
             } ?: "Condition is empty"
         }
+        if (condition.isEmpty()) return ""
         return try {
             val expression = Expression(condition, mode)
             val values =
@@ -234,8 +235,6 @@ class TroubleshootingRepository(
             result
         }
 
-    private fun RuleAction.ruleActionType() = this.javaClass.simpleName.removePrefix("AutoValue_")
-
     private fun RuleAction.needsContent() =
         when (this.type) {
             ProgramRuleActionType.HIDEFIELD.name, ProgramRuleActionType.HIDEOPTION.name,
@@ -256,7 +255,7 @@ class TroubleshootingRepository(
                 process(
                     condition = ruleAction.data ?: "",
                     valueMap = valueMap,
-                    ruleActionType = ruleAction.ruleActionType(),
+                    ruleActionType = ruleAction.type,
                     mode = ExpressionMode.RULE_ENGINE_ACTION,
                     allowEmptyCondition = true,
                 )
