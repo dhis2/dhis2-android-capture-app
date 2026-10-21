@@ -6,6 +6,7 @@ import org.dhis2.mobile.plugin.data.CaptureConfigRepository
 import org.dhis2.mobile.plugin.data.PluginAppRepository
 import org.dhis2.mobile.plugin.data.PluginBundleInstaller
 import org.dhis2.mobile.plugin.data.PluginBundleVerifier
+import org.dhis2.mobile.plugin.domain.model.placements
 import org.dhis2.mobile.plugin.registry.PluginRegistry
 import org.dhis2.mobile.plugin.registry.RegisteredPlugin
 import timber.log.Timber
@@ -42,14 +43,15 @@ class LoadPlugins(
     private suspend fun load() {
         captureConfig.refresh().onFailure { Timber.w(it, "Could not refresh the capture configuration — using the cached one") }
 
-        val placements =
-            captureConfig.formFieldPlacements().getOrElse {
+        val layouts =
+            captureConfig.formLayouts().getOrElse {
                 Timber.e(it, "Could not read capture/dataEntryForms")
                 return
             }
-        registry.setPlacements(placements)
+        registry.setLayouts(layouts)
 
-        placements
+        layouts
+            .placements()
             .mapNotNull { placement ->
                 placement.appKey.also {
                     if (it ==

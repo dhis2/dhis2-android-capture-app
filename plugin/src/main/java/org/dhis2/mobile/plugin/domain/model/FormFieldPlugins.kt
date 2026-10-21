@@ -32,6 +32,43 @@ data class FormFieldPluginPlacement(
     val appKey: String? get() = pluginAppKey(pluginSource)
 }
 
+/**
+ * A form's layout from `capture/dataEntryForms`: when a form has one, the web Capture app renders
+ * exactly these sections and elements, in this order, and so does this app.
+ *
+ * @property formUid The program stage, program or tracked entity type it applies to.
+ */
+data class FormLayout(
+    val formUid: String,
+    val sections: List<FormLayoutSection>,
+)
+
+/**
+ * @property id A program stage section uid, or an id only the configuration knows.
+ * @property name Title for a section only the configuration knows; the Tracker Plugin Configurator
+ *   leaves it out for native sections.
+ */
+data class FormLayoutSection(
+    val id: String,
+    val name: String?,
+    val elements: List<FormLayoutElement>,
+)
+
+sealed interface FormLayoutElement {
+    /** A data element or tracked entity attribute rendered natively. */
+    data class Field(
+        val uid: String,
+    ) : FormLayoutElement
+
+    data class Plugin(
+        val placement: FormFieldPluginPlacement,
+    ) : FormLayoutElement
+}
+
+/** Every plugin placed in these layouts. */
+fun List<FormLayout>.placements(): List<FormFieldPluginPlacement> =
+    flatMap { layout -> layout.sections.flatMap { it.elements } }.filterIsInstance<FormLayoutElement.Plugin>().map { it.placement }
+
 /** An app installed on the server, as `/api/apps` describes it. */
 data class PluginApp(
     val key: String,
@@ -52,10 +89,10 @@ private const val METADATA_ATTRIBUTE = "Attribute"
 fun pluginAppKey(pluginSource: String): String? = INSTALLED_APP_PATH.find(pluginSource)?.groupValues?.get(1)
 
 /**
- * The plugin elements of a `capture/dataEntryForms` value. Each form is read on its own, so one
+ * The form layouts in a `capture/dataEntryForms` value. Each form is read on its own, so one
  * malformed entry costs only its own form.
  */
-fun parseDataEntryForms(json: String): List<FormFieldPluginPlacement> {
+fun parseDataEntryForms(json: String): List<FormLayout> {
     val forms =
         try {
             Json.parseToJsonElement(json) as? JsonObject
@@ -64,17 +101,34 @@ fun parseDataEntryForms(json: String): List<FormFieldPluginPlacement> {
             null
         } ?: return emptyList()
 
-    return forms.flatMap { (formUid, sections) ->
-        (sections as? JsonArray)
-            .orEmpty()
-            .mapNotNull { (it as? JsonObject)?.get("elements") as? JsonArray }
-            .flatten()
-            .mapNotNull { (it as? JsonObject)?.toPlacement(formUid) }
+    return forms.mapNotNull { (formUid, sections) ->
+        val sectionList = sections as? JsonArray ?: return@mapNotNull null
+        FormLayout(
+            formUid = formUid,
+            sections =
+                sectionList.mapNotNull { section ->
+                    val sectionObject = section as? JsonObject ?: return@mapNotNull null
+                    FormLayoutSection(
+                        id = sectionObject.string("id") ?: return@mapNotNull null,
+                        name = sectionObject.string("name"),
+                        elements =
+                            (sectionObject["elements"] as? JsonArray)
+                                .orEmpty()
+                                .mapNotNull { (it as? JsonObject)?.toElement(formUid) },
+                    )
+                },
+        )
     }
 }
 
+private fun JsonObject.toElement(formUid: String): FormLayoutElement? =
+    if (string("type") == PLUGIN_ELEMENT) {
+        toPlacement(formUid)?.let(FormLayoutElement::Plugin)
+    } else {
+        string("id")?.let(FormLayoutElement::Field)
+    }
+
 private fun JsonObject.toPlacement(formUid: String): FormFieldPluginPlacement? {
-    if (string("type") != PLUGIN_ELEMENT) return null
     val source = string("pluginSource") ?: return null
     val fields =
         (this["fieldMap"] as? JsonArray)

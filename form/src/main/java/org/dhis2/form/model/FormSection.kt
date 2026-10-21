@@ -13,4 +13,15 @@ data class FormSection(
     val totalFields: Int = 0,
     val warnings: Int = 0,
     val errors: Int = 0,
+    /** Form field plugins drawn among [fields], from the form's configured layout. */
+    val plugins: List<SectionPlugin> = emptyList(),
+)
+
+/**
+ * A plugin drawn in a section, before the field at [position] in its fields, or after the last one
+ * when [position] is the number of fields.
+ */
+data class SectionPlugin(
+    val elementId: String,
+    val position: Int,
 )

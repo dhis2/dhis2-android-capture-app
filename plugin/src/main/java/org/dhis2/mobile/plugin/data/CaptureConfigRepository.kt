@@ -2,7 +2,7 @@ package org.dhis2.mobile.plugin.data
 
 import kotlinx.coroutines.withContext
 import org.dhis2.mobile.commons.coroutine.Dispatcher
-import org.dhis2.mobile.plugin.domain.model.FormFieldPluginPlacement
+import org.dhis2.mobile.plugin.domain.model.FormLayout
 import org.dhis2.mobile.plugin.domain.model.parseDataEntryForms
 import org.hisp.dhis.android.core.D2
 import kotlin.coroutines.cancellation.CancellationException
@@ -32,8 +32,8 @@ class CaptureConfigRepository(
                 .blockingDownload()
         }
 
-    /** The form field plugins placed in any form, from the cached `capture/dataEntryForms`. */
-    suspend fun formFieldPlacements(): Result<List<FormFieldPluginPlacement>> =
+    /** The configured form layouts, from the cached `capture/dataEntryForms`. */
+    suspend fun formLayouts(): Result<List<FormLayout>> =
         io {
             val config =
                 d2

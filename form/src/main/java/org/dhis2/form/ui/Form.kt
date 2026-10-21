@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -33,10 +34,13 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FormSection
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.mapper.withLayout
 import org.dhis2.form.ui.provider.inputfield.FieldProvider
 import org.dhis2.mobile.plugin.domain.model.FormPluginTarget
 import org.dhis2.mobile.plugin.domain.model.PluginFieldState
-import org.dhis2.mobile.plugin.web.FormFieldPluginSlot
+import org.dhis2.mobile.plugin.web.FormFieldPluginItem
+import org.dhis2.mobile.plugin.web.FormPluginLayout
+import org.dhis2.mobile.plugin.web.rememberFormPluginLayout
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
 import org.hisp.dhis.mobile.ui.designsystem.component.Section
 import org.hisp.dhis.mobile.ui.designsystem.component.SectionState
@@ -51,6 +55,15 @@ fun Form(
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     pluginTarget: FormPluginTarget? = null,
 ) {
+    val pluginLayout = pluginTarget?.let { rememberFormPluginLayout(it) }
+    // A form with a configured layout renders it, as the web Capture app does.
+    val formSections =
+        remember(sections, pluginLayout) { pluginLayout?.let { sections.withLayout(it.resolved.layout) } ?: sections }
+    val fieldStates = remember(sections) { sections.pluginFieldStates() }
+    val onPluginFieldValue: (String, String?) -> Unit = { uid, value ->
+        val field = sections.flatMap { it.fields }.firstOrNull { it.uid == uid }
+        intentHandler(FormIntent.OnSave(uid = uid, value = value, valueType = field?.valueType))
+    }
     val scrollState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
@@ -95,17 +108,17 @@ fun Form(
             ),
         state = scrollState,
     ) {
-        if (sections.isNotEmpty()) {
+        if (formSections.isNotEmpty()) {
             this.itemsIndexed(
-                items = sections,
+                items = formSections,
                 key = { _, fieldUiModel -> fieldUiModel.uid },
             ) { _, section ->
 
                 val onNextSection: () -> Unit = {
-                    getNextSection(section, sections)?.let {
+                    getNextSection(section, formSections)?.let {
                         intentHandler.invoke(FormIntent.OnSection(it.uid))
                         scope.launch {
-                            scrollState.animateScrollToItem(sections.indexOf(it))
+                            scrollState.animateScrollToItem(formSections.indexOf(it))
                         }
                     } ?: run {
                         intentHandler.invoke(FormIntent.OnFocus("", null))
@@ -114,7 +127,7 @@ fun Form(
                 }
                 Section(
                     title = section.title,
-                    isLastSection = getNextSection(section, sections) == null,
+                    isLastSection = getNextSection(section, formSections) == null,
                     description = if (section.fields.isNotEmpty()) section.description else null,
                     completedFields = section.completeFields,
                     totalFields = section.totalFields,
@@ -127,8 +140,9 @@ fun Form(
                         intentHandler.invoke(FormIntent.OnSection(section.uid))
                     },
                     content = {
-                        if (section.fields.isNotEmpty()) {
+                        if (section.fields.isNotEmpty() || section.plugins.isNotEmpty()) {
                             section.fields.forEachIndexed { index, fieldUiModel ->
+                                SectionPlugins(section, index, pluginLayout, fieldStates, onPluginFieldValue)
                                 fieldUiModel.setCallback(callback)
                                 FieldProvider(
                                     modifier = Modifier,
@@ -156,26 +170,12 @@ fun Form(
                                     reEvaluateCustomIntentRequestParameters = true,
                                 )
                             }
+                            SectionPlugins(section, section.fields.size, pluginLayout, fieldStates, onPluginFieldValue)
                         }
                     },
                 )
             }
-            // After the sections, so section indices still match list positions for scrolling. The
-            // configured layout (section order, fields the plugin replaces) is not applied yet.
-            pluginTarget?.let { target ->
-                item(key = FORM_FIELD_PLUGINS_KEY) {
-                    FormFieldPluginSlot(
-                        target = target,
-                        modifier = Modifier.padding(top = Spacing.Spacing16),
-                        fieldStates = remember(sections) { sections.pluginFieldStates() },
-                        onFieldValue = { uid, value ->
-                            val field = sections.flatMap { it.fields }.firstOrNull { it.uid == uid }
-                            intentHandler(FormIntent.OnSave(uid = uid, value = value, valueType = field?.valueType))
-                        },
-                    )
-                }
-            }
-            item(sections.size - 1) {
+            item(formSections.size - 1) {
                 Spacer(modifier = Modifier.height(Spacing.Spacing120))
             }
         }
@@ -185,7 +185,24 @@ fun Form(
     }
 }
 
-private const val FORM_FIELD_PLUGINS_KEY = "form-field-plugins"
+/** The plugins the layout places before the field at [position] of [section]. */
+@Composable
+private fun SectionPlugins(
+    section: FormSection,
+    position: Int,
+    pluginLayout: FormPluginLayout?,
+    fieldStates: Map<String, PluginFieldState>,
+    onFieldValue: (String, String?) -> Unit,
+) {
+    section.plugins
+        .filter { it.position == position }
+        .forEach { sectionPlugin ->
+            val formFieldPlugin = pluginLayout?.resolved?.plugins?.get(sectionPlugin.elementId) ?: return@forEach
+            key(sectionPlugin.elementId) {
+                FormFieldPluginItem(formFieldPlugin, pluginLayout, fieldStates, onFieldValue)
+            }
+        }
+}
 
 private fun List<FormSection>.pluginFieldStates(): Map<String, PluginFieldState> =
     flatMap { it.fields }.associate { field ->

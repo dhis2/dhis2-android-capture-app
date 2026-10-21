@@ -7,6 +7,7 @@ import org.dhis2.mobile.plugin.data.FormPluginContextRepository
 import org.dhis2.mobile.plugin.data.PluginAppRepository
 import org.dhis2.mobile.plugin.data.PluginBundleInstaller
 import org.dhis2.mobile.plugin.data.PluginFieldMetadataRepository
+import org.dhis2.mobile.plugin.data.PluginFieldValueRepository
 import org.dhis2.mobile.plugin.domain.LoadPlugins
 import org.dhis2.mobile.plugin.registry.PluginRegistry
 import org.koin.android.ext.koin.androidContext
@@ -24,6 +25,7 @@ val pluginModule =
         single { PluginAppRepository(get(), get()) }
         single { AppHubRepository(get(), get()) }
         single { PluginFieldMetadataRepository(get(), get()) }
+        single { PluginFieldValueRepository(get(), get()) }
         single { FormPluginContextRepository(get(), get()) }
         single { PluginApiRouter(get(), get()) }
         factory { LoadPlugins(get(), get(), get(), get(), get()) }

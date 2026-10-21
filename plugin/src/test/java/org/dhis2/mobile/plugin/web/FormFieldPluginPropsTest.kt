@@ -93,6 +93,24 @@ class FormFieldPluginPropsTest {
     }
 
     @Test
+    fun `the stored values replace the values the form displays`() {
+        // The form shows an option's name; a plugin, as on the web, gets the stored option code.
+        val displayed = mapOf("deA" to states.getValue("deA").copy(value = "Yes"))
+
+        val merged = displayed.withStoredValues(mapOf("deA" to "YES"))
+
+        assertEquals("YES", merged.getValue("deA").value)
+        assertEquals("Check this", merged.getValue("deA").error)
+    }
+
+    @Test
+    fun `a field with no stored value has none, whatever the form displays`() {
+        val merged = mapOf("deA" to states.getValue("deA")).withStoredValues(emptyMap())
+
+        assertNull(merged.getValue("deA").value)
+    }
+
+    @Test
     fun `setFieldValue on an alias writes the field it maps to`() {
         val args =
             buildJsonObject {

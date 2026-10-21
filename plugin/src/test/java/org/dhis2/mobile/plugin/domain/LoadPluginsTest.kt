@@ -8,6 +8,9 @@ import org.dhis2.mobile.plugin.data.CaptureConfigRepository
 import org.dhis2.mobile.plugin.data.PluginAppRepository
 import org.dhis2.mobile.plugin.data.PluginBundleInstaller
 import org.dhis2.mobile.plugin.domain.model.FormFieldPluginPlacement
+import org.dhis2.mobile.plugin.domain.model.FormLayout
+import org.dhis2.mobile.plugin.domain.model.FormLayoutElement
+import org.dhis2.mobile.plugin.domain.model.FormLayoutSection
 import org.dhis2.mobile.plugin.domain.model.PluginApp
 import org.dhis2.mobile.plugin.registry.PluginRegistry
 import org.junit.Assert.assertEquals
@@ -62,9 +65,12 @@ class LoadPluginsTest {
                 }
             }.toByteArray()
 
+    private fun layoutWith(placement: FormFieldPluginPlacement) =
+        FormLayout(placement.formUid, listOf(FormLayoutSection("section", null, listOf(FormLayoutElement.Plugin(placement)))))
+
     private suspend fun givenOnline() {
         whenever(captureConfig.refresh()) doReturn Result.success(Unit)
-        whenever(captureConfig.formFieldPlacements()) doReturn Result.success(listOf(placement))
+        whenever(captureConfig.formLayouts()) doReturn Result.success(listOf(layoutWith(placement)))
         whenever(apps.installedApp("matrix-select")) doReturn Result.success(app)
         whenever(apps.serverFile("matrix-select", "assets/plugin-a.js")) doReturn entryScript
         whenever(appHub.downloadUrl(app)) doReturn Result.success("https://apps.dhis2.org/x.zip")
@@ -81,7 +87,7 @@ class LoadPluginsTest {
             val state = registry.state.value
             assertEquals(listOf("matrix-select"), state.plugins.keys.toList())
             assertEquals("1.0.2", state.plugins.getValue("matrix-select").version)
-            assertEquals(listOf(placement), state.placements)
+            assertEquals(listOf(layoutWith(placement)), state.layouts.values.toList())
         }
 
     @Test
@@ -147,8 +153,8 @@ class LoadPluginsTest {
     fun `a source that is not an installed app is ignored`() =
         runTest {
             givenOnline()
-            whenever(captureConfig.formFieldPlacements()) doReturn
-                Result.success(listOf(placement.copy(pluginSource = "http://localhost:3001/plugin.html")))
+            whenever(captureConfig.formLayouts()) doReturn
+                Result.success(listOf(layoutWith(placement.copy(pluginSource = "http://localhost:3001/plugin.html"))))
 
             assertTrue(loadPlugins(Unit).isSuccess)
 

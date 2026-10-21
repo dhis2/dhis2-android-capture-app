@@ -40,7 +40,7 @@ class DataEntryFormsConfigTest {
 
     @Test
     fun `reads every plugin element with the form it belongs to`() {
-        val placements = parseDataEntryForms(config)
+        val placements = parseDataEntryForms(config).placements()
 
         val placement = placements.single()
         assertEquals("WZbXY0S00lP", placement.formUid)
@@ -50,7 +50,7 @@ class DataEntryFormsConfigTest {
 
     @Test
     fun `keeps the field map order, which is the order the plugin renders fields in`() {
-        val fields = parseDataEntryForms(config).single().fields
+        val fields = parseDataEntryForms(config).placements().single().fields
 
         assertEquals(listOf("allergies", "penicillin"), fields.map { it.alias })
         assertEquals(listOf("QFX1FLWBwtq", "E6QaDtrQP5e"), fields.map { it.uid })
@@ -58,15 +58,15 @@ class DataEntryFormsConfigTest {
 
     @Test
     fun `metadata attributes are not form fields`() {
-        val placement = parseDataEntryForms(config).single()
+        val placement = parseDataEntryForms(config).placements().single()
 
         assertTrue(placement.fields.none { it.alias == "category" })
     }
 
     @Test
     fun `a missing or malformed configuration is no plugins`() {
-        assertEquals(emptyList<FormFieldPluginPlacement>(), parseDataEntryForms(""))
-        assertEquals(emptyList<FormFieldPluginPlacement>(), parseDataEntryForms("{ not json"))
+        assertEquals(emptyList<FormLayout>(), parseDataEntryForms(""))
+        assertEquals(emptyList<FormLayout>(), parseDataEntryForms("{ not json"))
     }
 
     @Test
@@ -83,7 +83,37 @@ class DataEntryFormsConfigTest {
                 """.trimIndent(),
             )
 
-        assertEquals(listOf("stage"), placements.map { it.formUid })
+        assertEquals(listOf("stage"), placements.placements().map { it.formUid })
+    }
+
+    @Test
+    fun `keeps every form's sections and elements in configured order`() {
+        val layout = parseDataEntryForms(config).single { it.formUid == "WZbXY0S00lP" }
+
+        assertEquals(listOf("section-1", "section-2"), layout.sections.map { it.id })
+        assertEquals("Allergies", layout.sections.first().name)
+        assertEquals("matrix-allergies", (layout.sections[0].elements.single() as FormLayoutElement.Plugin).placement.elementId)
+        assertEquals(FormLayoutElement.Field("abc"), layout.sections[1].elements.single())
+    }
+
+    @Test
+    fun `a section without a name has none, as the Tracker Plugin Configurator writes it`() {
+        val layouts =
+            parseDataEntryForms("""{"stage": [{"id": "EzhVeTS7vx4", "elements": [{"id": "de", "type": "TrackedEntityAttribute"}]}]}""")
+
+        assertNull(
+            layouts
+                .single()
+                .sections
+                .single()
+                .name,
+        )
+    }
+
+    @Test
+    fun `a form configured without plugins still has a layout`() {
+        // The web Capture app renders such a form from the configuration too.
+        assertTrue(parseDataEntryForms(config).any { it.formUid == "IpHINAT79UW" })
     }
 
     @Test

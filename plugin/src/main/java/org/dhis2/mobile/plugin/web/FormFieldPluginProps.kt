@@ -107,3 +107,10 @@ private fun PluginOptionSet.toProps() =
             },
         )
     }
+
+/**
+ * These field states with each field's stored value. The form displays option names and formatted
+ * values; a plugin, as on the web, works with what is stored: option codes and raw values.
+ */
+fun Map<String, PluginFieldState>.withStoredValues(stored: Map<String, String?>): Map<String, PluginFieldState> =
+    mapValues { (uid, state) -> state.copy(value = stored[uid]) }

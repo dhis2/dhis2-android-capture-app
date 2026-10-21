@@ -37,13 +37,20 @@ offline: cached config + last installed bundle
 `plugin.html` cannot be compared, because the server rewrites it to inject its base URL. The script
 it loads is served byte-identical.
 
-## How it renders (`FormFieldPluginSlot` in `Form`)
+## How it renders (`Form` + `withLayout`)
 
 - A form is resolved to its `dataEntryForms` key: an event to its program stage, an enrollment to its
   program.
-- The plugins configured there render **after the form's sections**. The configured layout (section
-  order, fields the plugin replaces) is **not applied yet**, so mapped fields also stay as native
-  fields.
+- **Sections and fields keep the SDK order.** Maintenance owns the order; the Tracker Plugin
+  Configurator cannot change it and saves only a snapshot of it.
+- **Plugins** go right after the nearest field before them in their configured section that the
+  form shows; fields hidden by program rules are skipped. With no such field they go before the
+  nearest field after them, and with neither at the end of the section.
+- The configuration is refreshed when Home opens online; until then the cached one is used.
+- **No field is hidden.** The Configurator keeps every native field, so the web shows them next to
+  the plugin too.
+- Plugins get **stored** values from the SDK (option codes, raw values). The form's own field values
+  are display values (option names, formatted numbers).
 - Props match the web Capture app. `values`, `errors`, `warnings` and `fieldsMetadata` are keyed by
   alias; option sets carry `options[{id, code, value, text, name}]`.
 - `setFieldValue({fieldId: alias})` maps back to the uid and saves through `FormIntent.OnSave`, so the
@@ -76,7 +83,7 @@ tracker and metadata endpoints added here.
 
 ## Known limits
 
-- The `dataEntryForms` layout is not respected yet: plugins render after the native form.
+- Section counts are the native ones, so they include fields a plugin represents.
 - Only form field plugins; enrollment plugins (`enrollment*Layout` keys) are not read yet.
 - Plugins uploaded manually, without an App Hub release, cannot be fetched: the server has no
   endpoint that serves an installed app's bundle.
