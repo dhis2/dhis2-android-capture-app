@@ -167,17 +167,6 @@ class EventAdapter(
                                                     event.uid(),
                                                     event.status()!!,
                                                 )
-
-                                                if (isLandscape()) {
-                                                    if (previousSelectedPosition != RecyclerView.NO_POSITION) {
-                                                        currentList[previousSelectedPosition].isClicked =
-                                                            false
-                                                        notifyItemChanged(previousSelectedPosition)
-                                                    }
-                                                    previousSelectedPosition = position
-                                                    getItem(position).isClicked = true
-                                                    notifyItemChanged(position)
-                                                }
                                             }
                                         }
                                     }
@@ -245,4 +234,18 @@ class EventAdapter(
     }
 
     override fun getItemId(position: Int): Long = getItem(position).hashCode().toLong()
+
+    fun setSelectedItem(eventUid: String) {
+        if (isLandscape()) {
+            val position = currentList.indexOfFirst { it.event?.uid == eventUid }
+            if (previousSelectedPosition != RecyclerView.NO_POSITION) {
+                currentList[previousSelectedPosition].isClicked =
+                    false
+                notifyItemChanged(previousSelectedPosition)
+            }
+            previousSelectedPosition = position
+            getItem(position).isClicked = true
+            notifyItemChanged(position)
+        }
+    }
 }

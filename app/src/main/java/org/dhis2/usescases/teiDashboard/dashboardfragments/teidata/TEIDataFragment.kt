@@ -185,6 +185,9 @@ class TEIDataFragment :
                             }
                         }
                     }
+                    selectedEventUid().observe(viewLifecycleOwner) {
+                        eventAdapter?.setSelectedItem(it)
+                    }
                 }
 
                 if (::presenter.isInitialized) {
