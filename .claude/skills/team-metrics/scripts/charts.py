@@ -7,7 +7,7 @@ command line — Sentry is only reachable through the MCP tools, so whoever ran
 those tools already has the numbers and hands them straight over. Nothing is
 written to disk except the charts themselves.
 
-Each chart is emitted three ways:
+Each chart is emitted three ways, under build/metrics/:
 
   charts/NN-name.svg    vector source, colours as var(--role, #fallback)
   charts/NN-name.png    2x raster, the file attached to Confluence
@@ -15,7 +15,7 @@ Each chart is emitted three ways:
                         Confluence storage format, so no number is retyped
 
 Usage:
-    python3 scripts/metrics/charts.py --as-of 2026-09-08 \
+    python3 .claude/skills/team-metrics/scripts/charts.py --as-of 2026-09-08 \
       --release 3.4.2 \
       --issue "79TN|NPE, TEI dashboard|DashboardRepositoryImpl.kt:889|353|5.0|5|2|Q1" \
       --issue "7F4F|ANR in LocaleSelector|LocaleSelector.kt:47|506|7.1|5|3|Q2"
@@ -37,8 +37,9 @@ import subprocess
 import sys
 import urllib.request
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, "charts")
+from metrics import OUT_DIR
+
+OUT = os.path.join(OUT_DIR, "charts")
 SONAR = ("https://sonarcloud.io/api/measures/search_history"
          "?component=dhis2_dhis2-android-capture-app&branch=develop"
          "&metrics=coverage,code_smells,sqale_index,duplicated_lines_density,ncloc&ps=1000")
@@ -561,7 +562,7 @@ def main():
     ap.add_argument("--issue", action="append", type=parse_issue, default=[],
                     metavar="ID|Title|Where|Users|Scope|new|old",
                     help="repeat, highest users first; 'new' means regression")
-    ap.add_argument("--metrics", default=os.path.join(HERE, "metrics.json"))
+    ap.add_argument("--metrics", default=os.path.join(OUT_DIR, "metrics.json"))
     ap.add_argument("--no-png", action="store_true", help="emit SVG only")
     a = ap.parse_args()
 
@@ -591,7 +592,7 @@ def main():
     open(os.path.join(OUT, "tables.html"), "w").write("\n\n".join(tables))
 
     print(f"\nwrote {len(made)}/4 charts to {OUT}")
-    print("collapsed data tables, in Confluence storage format: charts/tables.html")
+    print(f"collapsed data tables, in Confluence storage format: {os.path.join(OUT, 'tables.html')}")
     if len(made) < 4:
         print("say in the report which chart is missing and why — never drop one silently")
 

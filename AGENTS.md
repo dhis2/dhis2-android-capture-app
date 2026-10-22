@@ -313,14 +313,14 @@ dynamically from the plugin at runtime.
   times, throughput, where work queues), Sentry (production stability and per-release
   regressions), SonarCloud (quality trend on `develop`) and GitHub (PR and CI health),
   comparing a rolling 90-day window against the preceding one. Four of the findings are
-  drawn as charts by `scripts/metrics/charts.py` and attached to the page — the journey
+  drawn as charts by `.claude/skills/team-metrics/scripts/charts.py` and attached to the page — the journey
   breakdown, stage shares, the SonarCloud trend and per-release Sentry regressions — each
   with its numbers kept underneath in a collapsed table, since a figure that exists only
   inside a PNG is invisible to Confluence search and to next month's edition. It also reads
   the previous edition, checks which action items were ticked, and reports whether they
   actually moved the numbers.
 
-**The whole report runs with zero credentials**, except the crash-free rate: the Sentry MCP cannot read release health, so `scripts/metrics/sentry_health.py` needs an `org:read` Sentry token (`SENTRY_METRICS_TOKEN`) and the report says "not fetched" without one. Jira is world-readable over the REST API,
+**The whole report runs with zero credentials**, except the crash-free rate: the Sentry MCP cannot read release health, so `.claude/skills/team-metrics/scripts/sentry_health.py` needs an `org:read` Sentry token (`SENTRY_METRICS_TOKEN`) and the report says "not fetched" without one. Jira is world-readable over the REST API,
 changelogs included; Confluence reading and publishing go through the Atlassian connector's
 per-user OAuth, so it works in a worktree, in a cloud session, and for any teammate who has
 the connector but no local checkout of anything but this repo.
@@ -338,9 +338,9 @@ only `read:content-details:confluence` + `write:attachment:confluence` — no Ji
 operation at all.) A classic token is a full impersonation credential across every project
 and space. The two look
 identical as strings and only differ in how they authenticate, so run
-`python3 scripts/metrics/metrics.py --preflight` to see which you have and what it can do,
+`python3 .claude/skills/team-metrics/scripts/metrics.py --preflight` to see which you have and what it can do,
 and `--token-help` for the details. Attach with
-`python3 scripts/metrics/attach_charts.py <pageId>` after the page is published.
+`python3 .claude/skills/team-metrics/scripts/attach_charts.py <pageId>` after the page is published.
 
 Definitions, the status taxonomy and the data-quality traps live in
 `.claude/skills/team-metrics/references/metrics-reference.md`. Two worth knowing before

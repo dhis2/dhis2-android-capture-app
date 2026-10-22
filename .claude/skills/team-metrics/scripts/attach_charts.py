@@ -8,7 +8,7 @@ connector has no attachment-upload tool, which is the entire reason this script
 exists — see `metrics.py --token-help`.
 
 Usage:
-    python3 scripts/metrics/attach_charts.py <pageId> [--dry-run] [--charts DIR]
+    python3 .claude/skills/team-metrics/scripts/attach_charts.py <pageId> [--dry-run] [--charts DIR]
 
 The page must already be published (status `current`). Attaching to a draft is
 rejected by the API, so publish first, then attach, then the page body's
@@ -45,7 +45,6 @@ import uuid
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import metrics  # noqa: E402  — shares find_token/classify_token/cloud_id
 
-HERE = os.path.dirname(os.path.abspath(__file__))
 CHARTS = ["01-journey.png", "02-where-time-goes.png",
           "03-sonarcloud-trend.png", "04-sentry-issues.png"]
 
@@ -74,7 +73,7 @@ def transport():
     if kind is None:
         sys.exit("No JIRA_AUTH configured, so the charts cannot be attached.\n"
                  "Publish the collapsed tables instead and say so in the report.\n"
-                 "Run `python3 scripts/metrics/metrics.py --token-help` for the options.")
+                 "Run `python3 .claude/skills/team-metrics/scripts/metrics.py --token-help` for the options.")
     if kind == "rejected":
         sys.exit(f"JIRA_AUTH is set but no auth scheme accepts it ({who}).\n"
                  "Likely revoked, mistyped, or from a different Atlassian account.")
@@ -169,7 +168,7 @@ def main():
         sys.exit(__doc__)
     page_id = args[0]
     dry = "--dry-run" in sys.argv
-    cdir = os.path.join(HERE, "charts")
+    cdir = os.path.join(metrics.OUT_DIR, "charts")
     if "--charts" in sys.argv:
         cdir = sys.argv[sys.argv.index("--charts") + 1]
 
@@ -179,7 +178,7 @@ def main():
         print(f"!  not generated, will be skipped: {', '.join(missing)}", file=sys.stderr)
         print("   run charts.py first; without Chrome it emits SVG only and no PNG.",
               file=sys.stderr)
-    snapshot = os.path.join(HERE, "metrics.json")
+    snapshot = os.path.join(metrics.OUT_DIR, "metrics.json")
     files = [f for f in files if fresh(f, snapshot)]
     if not files:
         sys.exit("No chart PNGs to attach.")

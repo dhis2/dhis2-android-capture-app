@@ -25,7 +25,8 @@ from datetime import datetime, timedelta, timezone
 
 BASE = "https://dhis2.atlassian.net"
 HERE = os.path.dirname(os.path.abspath(__file__))
-REPO = os.path.dirname(os.path.dirname(HERE))  # repo root, two levels up
+REPO = os.path.abspath(os.path.join(HERE, "..", "..", "..", ".."))  # .claude/skills/team-metrics/scripts
+OUT_DIR = os.path.join(REPO, "build", "metrics")  # metrics.json, sentry_health.json, charts/
 NOW = datetime.now(timezone.utc)
 D = 86400.0
 
@@ -1113,6 +1114,7 @@ def main():
           f"age p50 {pct(sd,50) or 0:.0f}d oldest {max(sd) if sd else 0:.0f}d"
           + (f"  ({stock[0]['key']}, since {stock[0]['since']})" if stock else ""))
 
+    os.makedirs(OUT_DIR, exist_ok=True)
     json.dump({"window": {"as_of": str(w2), "cur_from": str(w1), "prev_from": str(w0),
                           "anonymous": auth() is None},
                "cur": cur, "prev": prev, "live": live, "orphans": orph,
@@ -1127,8 +1129,8 @@ def main():
                               "stock": len(stock), "stock_oldest": stock[:1],
                               "stock_age_p50": pct(sd, 50), "stock_age_p85": pct(sd, 85),
                               "spelling_variants": dict(variants)}},
-              open(os.path.join(HERE, "metrics.json"), "w"), indent=1, default=str)
-    print("\nwrote metrics.json")
+              open(os.path.join(OUT_DIR, "metrics.json"), "w"), indent=1, default=str)
+    print(f"\nwrote {os.path.join(OUT_DIR, 'metrics.json')}")
 
 
 if __name__ == "__main__":

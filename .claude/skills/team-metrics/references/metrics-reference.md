@@ -29,7 +29,7 @@ whole life); the report does not publish it, so ignore those lines.
 ## Stage taxonomy — classify every status, or lose time silently
 
 The project defines **38 statuses**, not the 14 on the board. `ACTIVE` / `WAITING` / `TERMINAL` in
-`scripts/metrics/metrics.py` must cover all of them, and the script raises a loud warning listing any
+`.claude/skills/team-metrics/scripts/metrics.py` must cover all of them, and the script raises a loud warning listing any
 status seen in a changelog that is not classified.
 
 This is not theoretical. Unclassified statuses had their durations dropped entirely, which produced
@@ -310,7 +310,7 @@ against the install base — fix the scale rather than publishing a ranking that
   present in exactly one release is a regression in that release; one spread across many is
   long-standing.
 - New issues per release: `get_release_details` via `execute_sentry_tool`
-- **Crash-free rate and ANR rate** — `python3 scripts/metrics/sentry_health.py --as-of <date>`,
+- **Crash-free rate and ANR rate** — `python3 .claude/skills/team-metrics/scripts/sentry_health.py --as-of <date>`,
   which calls `GET /api/0/organizations/dhis2/sessions/` (project `5676228`, `environment=production`,
   `groupBy=release`, fields `sum(session)`, `count_unique(user)`, `crash_free_rate(session)`,
   `crash_free_rate(user)`, `anr_rate()`, `foreground_anr_rate()`). Session tracking has always
@@ -408,7 +408,7 @@ Two consequences worth knowing:
 
 ## Charts
 
-`scripts/metrics/charts.py` draws four, and only four. The test for charting something is
+`.claude/skills/team-metrics/scripts/charts.py` draws four, and only four. The test for charting something is
 whether it has **internal structure** — a composition, a distribution, a trend over many
 points. Everything else in this report is one number now against one number then, and a
 two-bar chart of that is strictly worse than the sentence: same information, more pixels,
@@ -451,8 +451,8 @@ every run**; if the limit ever truncates again, the comparison is silently wrong
 ### Attaching them to Confluence
 
 ```bash
-python3 scripts/metrics/attach_charts.py <pageId>            # add or replace all four
-python3 scripts/metrics/attach_charts.py <pageId> --dry-run   # check auth without writing
+python3 .claude/skills/team-metrics/scripts/attach_charts.py <pageId>            # add or replace all four
+python3 .claude/skills/team-metrics/scripts/attach_charts.py <pageId> --dry-run   # check auth without writing
 ```
 
 Do not hand-roll the `curl`. The transport depends on which token type is configured, and

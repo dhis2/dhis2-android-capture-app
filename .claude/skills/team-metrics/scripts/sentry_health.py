@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Release health per production release: crash-free sessions and users, ANR rate.
 
-Usage:  python3 sentry_health.py [--as-of YYYY-MM-DD] [--preflight]
+Usage:  python3 .claude/skills/team-metrics/scripts/sentry_health.py [--as-of YYYY-MM-DD] [--preflight]
 
 The Sentry MCP has no release-health tool — get_release_details(includeHealth=true)
 returns nothing and the metrics dataset has no session gauges — so this one figure
@@ -30,7 +30,7 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
 
-from metrics import HERE, main_checkout, REPO
+from metrics import OUT_DIR, main_checkout, REPO
 
 ORG = "dhis2"
 PROJECT_ID = "5676228"            # dhis2-android-capture
@@ -139,10 +139,11 @@ def main():
               f"{r['crash_free_sessions']*100:>8.2f}%{r['crash_free_users']*100:>9.2f}%"
               f"{r['anr_users']*100:>8.2f}%{r['foreground_anr_users']*100:>7.2f}%")
 
+    os.makedirs(OUT_DIR, exist_ok=True)
     json.dump({"window": {"from": str(start), "as_of": str(as_of)},
                "environment": ENVIRONMENT, "releases": rows},
-              open(os.path.join(HERE, "sentry_health.json"), "w"), indent=1)
-    print("\nwrote sentry_health.json")
+              open(os.path.join(OUT_DIR, "sentry_health.json"), "w"), indent=1)
+    print(f"\nwrote {os.path.join(OUT_DIR, 'sentry_health.json')}")
 
 
 if __name__ == "__main__":

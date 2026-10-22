@@ -29,7 +29,7 @@ caveats to restate, and the current baseline. Read it before interpreting any nu
 ## 1. Preflight
 
 ```bash
-python3 scripts/metrics/metrics.py --preflight
+python3 .claude/skills/team-metrics/scripts/metrics.py --preflight
 ```
 
 It reports each source and prints exact remediation for anything missing. Relay that to the
@@ -95,8 +95,8 @@ returns automatically on the next edition, when there is a predecessor to read.
 ## 3. Gather
 
 ```bash
-python3 scripts/metrics/metrics.py --census   # types and statuses actually present
-python3 scripts/metrics/metrics.py            # full run, writes metrics.json
+python3 .claude/skills/team-metrics/scripts/metrics.py --census   # types and statuses actually present
+python3 .claude/skills/team-metrics/scripts/metrics.py            # full run, writes build/metrics/metrics.json
 ```
 
 `--census` reports **issue types and the in-flight list only** — use it to confirm the type
@@ -136,7 +136,7 @@ do not re-derive them, or the page and the triage will disagree.
 
 Three things the triage does not cover, so still query them here:
 
-- **crash-free sessions and users per release** — `python3 scripts/metrics/sentry_health.py
+- **crash-free sessions and users per release** — `python3 .claude/skills/team-metrics/scripts/sentry_health.py
   --as-of <date>`. The MCP cannot read release health, so this is the one Sentry figure that
   needs a token (`SENTRY_METRICS_TOKEN`, scope `org:read`; see the reference). No token → say
   the rate was not fetched, never that session tracking is off
@@ -159,7 +159,7 @@ still carry every number, so a draft without images loses no data, but it is not
 until the charts are attached.
 
 ```bash
-python3 scripts/metrics/charts.py --as-of <window-end YYYY-MM-DD> --release <e.g. 3.4.2>
+python3 .claude/skills/team-metrics/scripts/charts.py --as-of <window-end YYYY-MM-DD> --release <e.g. 3.4.2>
 ```
 
 | Chart | Sits under | Source |
@@ -169,7 +169,7 @@ python3 scripts/metrics/charts.py --as-of <window-end YYYY-MM-DD> --release <e.g
 | `03-sonarcloud-trend` | **Code quality trend** | SonarCloud API |
 
 `04-sentry-issues` is **not used**: Crash / ANR is a root-cause list, not a plot. Use `--as-of`
-with the window end, never today. `charts/tables.html` holds each chart's collapsed table —
+with the window end, never today. `build/metrics/charts/tables.html` holds each chart's collapsed table —
 paste it, never retype figures.
 
 Attaching needs a working scoped token **and a page with status `current`** (Confluence
@@ -356,7 +356,7 @@ spliced in before it counts as published. Create `current` only when asked to pu
 page excerpt showing placeholder text in listings.
 
 **Charts.** With a working token, attach after the page is `current`:
-`python3 scripts/metrics/attach_charts.py <pageId>`, then update the body with the figure HTML
+`python3 .claude/skills/team-metrics/scripts/attach_charts.py <pageId>`, then update the body with the figure HTML
 it prints (paste verbatim; the Media API fileId is not the upload id). Without one, the report stays a
 draft. A figure element referencing another page's media is silently dropped by the
 connector — copy images across in the editor instead.
