@@ -19,7 +19,10 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.hasTextExactly
 import androidx.compose.ui.test.isEnabled
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onChildren
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -330,10 +333,11 @@ internal class DataSetTableRobot(
         composeTestRule.onNodeWithTag(VALIDATION_BAR_EXPAND_TEST_TAG).performClick()
     }
 
+    // With several errors the next page is also composed; the first one is on screen
     fun assertDataToReviewLabelIsDisplayed(label: String) {
-        composeTestRule.onNodeWithTag(VALIDATION_DIALOG_VIOLATION_TEST_TAG)
+        composeTestRule.onAllNodesWithTag(VALIDATION_DIALOG_VIOLATION_TEST_TAG).onFirst()
             .performScrollToNode(hasText("$label:"))
-        composeTestRule.onNodeWithText("$label:").assertIsDisplayed()
+        composeTestRule.onAllNodesWithText("$label:").onFirst().assertIsDisplayed()
     }
 
     fun tapOnReview() {
