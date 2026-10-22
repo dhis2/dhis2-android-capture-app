@@ -103,6 +103,14 @@ internal class ValueParserImpl(
             .blockingGet()
             ?.name() ?: value
 
+    override suspend fun valueToFilePath(value: String) =
+        d2
+            .fileResourceModule()
+            .fileResources()
+            .uid(value)
+            .blockingGet()
+            ?.path()
+
     private fun getValueTypeAndOptionSetUid(uid: String) =
         trackedEntityAttribute(uid)
             ?.let { Pair(it.valueType(), it.optionSet()?.uid()) }

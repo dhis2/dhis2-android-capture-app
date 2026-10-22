@@ -231,9 +231,13 @@ class EnrollmentRepository(
             }
         }
 
-        if ((valueType == ValueType.ORGANISATION_UNIT || valueType?.isDate == true) &&
-            !dataValue.isNullOrEmpty()
-        ) {
+        // File values must stay as the file resource uid so inputs can resolve the local path
+        val keepRawValue =
+            valueType == ValueType.ORGANISATION_UNIT ||
+                valueType?.isDate == true ||
+                valueType == ValueType.IMAGE ||
+                valueType == ValueType.FILE_RESOURCE
+        if (keepRawValue && !dataValue.isNullOrEmpty()) {
             dataValue = conf.getValue(attribute.uid())?.value()
         }
 

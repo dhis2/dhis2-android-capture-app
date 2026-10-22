@@ -22,6 +22,8 @@ interface ValueParser {
 
     suspend fun valueToFileName(value: String): String
 
+    suspend fun valueToFilePath(value: String): String?
+
     suspend fun valueFromCoordinateAsLatLong(value: String): String
 
     suspend fun valueFromBooleanType(value: String): String

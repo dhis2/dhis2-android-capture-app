@@ -29,14 +29,9 @@ import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
 import org.dhis2.data.forms.dataentry.SearchTEIRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
-import org.dhis2.form.data.metadata.FileResourceConfiguration;
-import org.dhis2.form.data.metadata.OptionSetConfiguration;
-import org.dhis2.form.data.metadata.OrgUnitConfiguration;
 import org.dhis2.form.ui.FieldViewModelFactory;
 import org.dhis2.form.ui.FieldViewModelFactoryImpl;
 import org.dhis2.form.ui.provider.AutoCompleteProviderImpl;
-import org.dhis2.form.ui.provider.DisplayNameProvider;
-import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
 import org.dhis2.form.ui.provider.LegendValueProviderImpl;
@@ -247,17 +242,10 @@ public class SearchTEModule {
             Context context,
             D2 d2,
             ResourceManager resourceManager,
-            DhisPeriodUtils periodUtils,
             PreferenceProvider preferenceProvider
     ) {
         return new FieldViewModelFactoryImpl(
                 new HintProviderImpl(context),
-                new DisplayNameProviderImpl(
-                        new OptionSetConfiguration(d2),
-                        new OrgUnitConfiguration(d2),
-                        new FileResourceConfiguration(d2),
-                        periodUtils
-                ),
                 new UiEventTypesProviderImpl(),
                 new KeyboardActionProviderImpl(),
                 new LegendValueProviderImpl(d2, resourceManager),
@@ -339,7 +327,6 @@ public class SearchTEModule {
             NetworkUtils networkUtils,
             D2 d2,
             ResourceManager resourceManager,
-            DisplayNameProvider displayNameProvider,
             FilterManager filterManager,
             ProgramConfigurationRepository programConfigurationRepository,
             SearchTrackedEntities searchTrackedEntities,
@@ -362,7 +349,6 @@ public class SearchTEModule {
                         programConfigurationRepository
                 ),
                 resourceManager,
-                displayNameProvider,
                 filterManager,
                 searchTrackedEntities,
                 fetchSearchParameters,
@@ -467,20 +453,6 @@ public class SearchTEModule {
             D2 d2
     ) {
         return new ProgramConfigurationRepository(d2);
-    }
-
-    @Provides
-    @PerActivity
-    DisplayNameProvider provideDisplayNameProvider(
-            D2 d2,
-            DhisPeriodUtils periodUtils
-    ) {
-        return new DisplayNameProviderImpl(
-                new OptionSetConfiguration(d2),
-                new OrgUnitConfiguration(d2),
-                new FileResourceConfiguration(d2),
-                periodUtils
-        );
     }
 
     @Provides

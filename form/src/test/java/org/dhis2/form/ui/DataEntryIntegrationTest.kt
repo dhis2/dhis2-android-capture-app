@@ -32,7 +32,6 @@ import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.mapper.FormSectionMapper
-import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.mobile.commons.model.MetadataIconData
@@ -80,7 +79,6 @@ class DataEntryIntegrationTest {
             }
         }
     private val fieldErrorMessageProvider: FieldErrorMessageProvider = mock()
-    private val displayNameProvider: DisplayNameProvider = mock()
     private val legendValueProvider: LegendValueProvider = mock()
     private val dataEntryRepository: DataEntryRepository =
         mock {
@@ -101,7 +99,6 @@ class DataEntryIntegrationTest {
         FormRepositoryImpl(
             formValueStore = formValueStore,
             fieldErrorMessageProvider = fieldErrorMessageProvider,
-            displayNameProvider = displayNameProvider,
             dataEntryRepository = dataEntryRepository,
             ruleEngineRepository = ruleEngineRepository,
             rulesUtilsProvider = rulesUtilsProvider,

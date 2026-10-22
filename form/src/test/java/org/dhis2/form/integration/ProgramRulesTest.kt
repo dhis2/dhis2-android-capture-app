@@ -123,7 +123,6 @@ class ProgramRulesTest {
             FormRepositoryImpl(
                 formValueStore = formValueStore,
                 fieldErrorMessageProvider = mock(),
-                displayNameProvider = mock(),
                 dataEntryRepository = dataEntryRepository,
                 ruleEngineRepository = ruleEngineHelper,
                 rulesUtilsProvider = rulesUtilsProvider,

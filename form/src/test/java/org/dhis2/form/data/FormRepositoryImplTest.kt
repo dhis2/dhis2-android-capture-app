@@ -17,7 +17,6 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
-import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.dhis2.mobileProgramRules.RuleEngineHelper
@@ -52,7 +51,6 @@ class FormRepositoryImplTest {
     private val formValueStore: FormValueStore = mock()
     private val preferenceProvider: PreferenceProvider = mock()
     private val fieldErrorMessageProvider: FieldErrorMessageProvider = mock()
-    private val displayNameProvider: DisplayNameProvider = mock()
     private val legendValueProvider: LegendValueProvider = mock()
     private val resourceManager: ResourceManager =
         mock {
@@ -97,7 +95,6 @@ class FormRepositoryImplTest {
                 FormRepositoryImpl(
                     formValueStore,
                     fieldErrorMessageProvider,
-                    displayNameProvider,
                     dataEntryRepository,
                     ruleEngineHelper,
                     rulesUtilsProvider,
