@@ -33,11 +33,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.aggregates.model.Violation
 import org.dhis2.mobile.aggregates.resources.Res
 import org.dhis2.mobile.aggregates.resources.validation_rules_data_to_review
+import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_VIOLATION_TEST_TAG
 import org.hisp.dhis.mobile.ui.designsystem.component.Tag
 import org.hisp.dhis.mobile.ui.designsystem.component.TagType
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
@@ -78,7 +80,8 @@ internal fun ValidationRulesErrorDialog(violations: List<Violation>) {
                         .fillMaxSize()
                         .clip(Shape.Large)
                         .background(SurfaceColor.PrimaryContainer)
-                        .padding(Spacing.Spacing16),
+                        .padding(Spacing.Spacing16)
+                        .testTag(VALIDATION_DIALOG_VIOLATION_TEST_TAG),
             ) {
                 item {
                     Column(
