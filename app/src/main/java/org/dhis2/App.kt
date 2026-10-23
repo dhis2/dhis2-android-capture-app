@@ -87,7 +87,6 @@ open class App :
     private val checkPeriodicJobs: CheckPeriodicJobs by inject()
 
     private var fromBackGround = false
-    private var recreated = false
 
     override fun onCreate() {
         super<Application>.onCreate()
@@ -228,20 +227,25 @@ open class App :
     }
 
     fun createDashboardComponent(dashboardModule: TeiDashboardModule): TeiDashboardComponent {
-        if (dashboardComponent != null) {
-            this.recreated = true
-        }
         dashboardComponent = userComponent?.plus(dashboardModule)
         return dashboardComponent!!
     }
 
     fun dashboardComponent(): TeiDashboardComponent? = dashboardComponent
 
-    fun releaseDashboardComponent() {
-        if (!this.recreated) {
+    /**
+     * Several dashboards can be alive in the back stack, each with its own component. The one
+     * returning to the foreground sets its component back, so its fragments and the screens it
+     * opens inject from it instead of from the last dashboard created.
+     */
+    fun setDashboardComponent(component: TeiDashboardComponent) {
+        dashboardComponent = component
+    }
+
+    /** Releases [component] only if it is still the current one, as another dashboard may own it. */
+    fun releaseDashboardComponent(component: TeiDashboardComponent) {
+        if (dashboardComponent === component) {
             dashboardComponent = null
-        } else {
-            recreated = false
         }
     }
 

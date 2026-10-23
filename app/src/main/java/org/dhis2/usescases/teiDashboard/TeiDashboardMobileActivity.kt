@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.dhis2.App
 import org.dhis2.R
+import org.dhis2.bindings.app
 import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.TEI_UID
 import org.dhis2.commons.dialogs.bottomsheet.DeleteBottomSheetDialog
@@ -141,6 +142,7 @@ class TeiDashboardMobileActivity :
 
     private var elevation = 0f
     private var restartingActivity = false
+    private lateinit var dashboardComponent: TeiDashboardComponent
 
     private val detailsLauncher =
         registerForActivityResult(
@@ -190,16 +192,17 @@ class TeiDashboardMobileActivity :
             programUid = intent.getStringExtra(Constants.PROGRAM_UID)
             enrollmentUid = intent.getStringExtra(Constants.ENROLLMENT_UID)
         }
-        (applicationContext as App)
-            .createDashboardComponent(
-                TeiDashboardModule(
-                    this,
-                    teiUid ?: "",
-                    programUid,
-                    enrollmentUid,
-                    this.isPortrait(),
-                ),
-            ).inject(this)
+        dashboardComponent =
+            app()
+                .createDashboardComponent(
+                    TeiDashboardModule(
+                        this,
+                        teiUid ?: "",
+                        programUid,
+                        enrollmentUid,
+                        this.isPortrait(),
+                    ),
+                ).also { it.inject(this) }
         setTheme(themeManager.getProgramTheme())
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile)
@@ -441,6 +444,12 @@ class TeiDashboardMobileActivity :
         }
     }
 
+    override fun onStart() {
+        // Before super.onStart(), which runs the pending fragment transactions that inject from it
+        app().setDashboardComponent(dashboardComponent)
+        super.onStart()
+    }
+
     override fun onResume() {
         super.onResume()
         if (sessionManagerServiceImpl.isUserLoggedIn()) {
@@ -456,7 +465,7 @@ class TeiDashboardMobileActivity :
     }
 
     override fun onDestroy() {
-        (applicationContext as App).releaseDashboardComponent()
+        (applicationContext as App).releaseDashboardComponent(dashboardComponent)
         super.onDestroy()
     }
 
