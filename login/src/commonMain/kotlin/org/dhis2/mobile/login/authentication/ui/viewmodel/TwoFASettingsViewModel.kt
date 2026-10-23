@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
+import org.dhis2.mobile.login.authentication.domain.repository.SecretClipboard
 import org.dhis2.mobile.login.authentication.domain.usecase.DisableTwoFA
 import org.dhis2.mobile.login.authentication.domain.usecase.EnableTwoFA
 import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
@@ -28,6 +29,7 @@ open class TwoFASettingsViewModel(
     private val mapper: TwoFAUiStateMapper,
     private val networkStatusProvider: NetworkStatusProvider,
     private val dispatchers: Dispatcher,
+    private val secretClipboard: SecretClipboard,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<TwoFAUiState>(TwoFAUiState.Checking)
     val uiState: StateFlow<TwoFAUiState> =
@@ -76,6 +78,7 @@ open class TwoFASettingsViewModel(
             yield()
             enableTwoFA.invoke(code, isNetworkOnline.value).fold(
                 onSuccess = {
+                    secretClipboard.clearIfOwned()
                     checkTwoFAStatus()
                 },
                 onFailure = { throwable ->
@@ -88,6 +91,14 @@ open class TwoFASettingsViewModel(
                 },
             )
         }
+    }
+
+    fun copySecretCode() {
+        (_uiState.value as? TwoFAUiState.Enable)?.let { secretClipboard.copy(it.secretCode) }
+    }
+
+    fun onLeaveScreen() {
+        secretClipboard.clearIfOwned()
     }
 
     fun updateAuthCode(authCode: String) {
