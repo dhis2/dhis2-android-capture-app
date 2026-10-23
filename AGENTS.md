@@ -301,3 +301,50 @@ the skills offer to clone them if missing.
 Stack traces are deobfuscated (ProGuard mappings are uploaded on every release build),
 so library frames carry real class names. Sentry org and project are resolved
 dynamically from the plugin at runtime.
+
+---
+
+## Team Metrics Skill
+
+- **`/team-metrics`** — Generates the monthly Android team metrics report and publishes it
+  as a draft Confluence page under
+  [Android Metrics](https://dhis2.atlassian.net/wiki/spaces/MOB/pages/1948057602/Android+Metrics)
+  in the MOB space. Combines Jira ANDROAPP changelogs (intake / delivery / post-merge
+  times, throughput, where work queues), Sentry (production stability and per-release
+  regressions), SonarCloud (quality trend on `develop`) and GitHub (PR and CI health),
+  comparing a rolling 90-day window against the preceding one. Four of the findings are
+  drawn as charts by `.claude/skills/team-metrics/scripts/charts.py` and attached to the page — the journey
+  breakdown, stage shares, the SonarCloud trend and per-release Sentry regressions — each
+  with its numbers kept underneath in a collapsed table, since a figure that exists only
+  inside a PNG is invisible to Confluence search and to next month's edition. It also reads
+  the previous edition, checks which action items were ticked, and reports whether they
+  actually moved the numbers.
+
+**The whole report runs with zero credentials**, except the crash-free rate: the Sentry MCP cannot read release health, so `.claude/skills/team-metrics/scripts/sentry_health.py` needs an `org:read` Sentry token (`SENTRY_METRICS_TOKEN`) and the report says "not fetched" without one. Jira is world-readable over the REST API,
+changelogs included; Confluence reading and publishing go through the Atlassian connector's
+per-user OAuth, so it works in a worktree, in a cloud session, and for any teammate who has
+the connector but no local checkout of anything but this repo.
+
+`JIRA_AUTH=<email>:<api-token>` in `local.properties` (gitignored, and a worktree inherits
+the main checkout's file) is optional, and buys exactly two things: attaching the four chart
+PNGs — the only step the connector cannot do, since it has no attachment-upload tool — and
+covering permission-restricted Jira issues, which are invisible anonymously. Without it the
+report publishes with the chart data as expanded tables instead, which is a supported
+outcome rather than a failure.
+
+Prefer a **scoped** token (`Create API token with scopes`) over a classic one, and grant
+only `read:content-details:confluence` + `write:attachment:confluence` — no Jira scopes.
+(Not `read:attachment:confluence`: it grants the v2 attachment reads, and v2 has no upload
+operation at all.) A classic token is a full impersonation credential across every project
+and space. The two look
+identical as strings and only differ in how they authenticate, so run
+`python3 .claude/skills/team-metrics/scripts/metrics.py --preflight` to see which you have and what it can do,
+and `--token-help` for the details. Attach with
+`python3 .claude/skills/team-metrics/scripts/attach_charts.py <pageId>` after the page is published.
+
+Definitions, the status taxonomy and the data-quality traps live in
+`.claude/skills/team-metrics/references/metrics-reference.md`. Two worth knowing before
+reading any number: flow metrics cover **Feature, Task and Bug only** (`Story` is retired,
+`Epic` is a container, Zephyr `Test` issues count as Done with no resolution), and **every
+one of the project's 38 statuses must stay classified** — unclassified time is dropped
+silently and inflates flow efficiency.

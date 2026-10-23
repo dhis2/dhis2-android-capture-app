@@ -1,0 +1,601 @@
+#!/usr/bin/env python3
+"""Render the report's four charts from the metrics snapshot.
+
+Flow numbers come from metrics.json (written by metrics.py in the same run),
+SonarCloud history is fetched here, and the Sentry figures are passed on the
+command line — Sentry is only reachable through the MCP tools, so whoever ran
+those tools already has the numbers and hands them straight over. Nothing is
+written to disk except the charts themselves.
+
+Each chart is emitted three ways, under build/metrics/:
+
+  charts/NN-name.svg    vector source, colours as var(--role, #fallback)
+  charts/NN-name.png    2x raster, the file attached to Confluence
+  charts/tables.html    the collapsed data table for each chart, already in
+                        Confluence storage format, so no number is retyped
+
+Usage:
+    python3 .claude/skills/team-metrics/scripts/charts.py --as-of 2026-09-08 \
+      --release 3.4.2 \
+      --issue "79TN|NPE, TEI dashboard|DashboardRepositoryImpl.kt:889|353|5.0|5|2|Q1" \
+      --issue "7F4F|ANR in LocaleSelector|LocaleSelector.kt:47|506|7.1|5|3|Q2"
+
+--issue is ID|Title|CrashSite|Users|Reach%|Impact|Effort|Quadrant, repeated. The
+scores come from /sentry-triage — run it first and copy its numbers across rather
+than re-deriving them, so the chart and the triage report cannot disagree. Reach is
+the share of the release's users, which is also what triage scores Impact on.
+
+--as-of must be the report's window end, not today: the charts have to agree
+with the page they illustrate. See references/metrics-reference.md.
+"""
+import argparse
+import datetime as dt
+import json
+import os
+import re
+import subprocess
+import sys
+import urllib.request
+
+from metrics import OUT_DIR
+
+OUT = os.path.join(OUT_DIR, "charts")
+SONAR = ("https://sonarcloud.io/api/measures/search_history"
+         "?component=dhis2_dhis2-android-capture-app&branch=develop"
+         "&metrics=coverage,code_smells,sqale_index,duplicated_lines_density,ncloc&ps=1000")
+
+# Palette: dataviz reference instance, validated for CVD in both modes.
+# Written as var(--role, #light) so the SVG stands alone but can be re-themed.
+C = {
+    "ink": "var(--viz-ink, #0b0b0b)", "ink2": "var(--viz-ink2, #52514e)",
+    "muted": "var(--viz-muted, #898781)", "grid": "var(--viz-grid, #e1e0d9)",
+    "axis": "var(--viz-axis, #c3c2b7)", "surface": "var(--viz-surface, #fcfcfb)",
+    "s1": "var(--viz-s1, #2a78d6)", "s2": "var(--viz-s2, #eb6834)",
+    "s3": "var(--viz-s3, #1baf7a)", "crit": "var(--viz-crit, #d03b3b)",
+    "long": "var(--viz-long, #898781)",
+}
+FONT = '"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif'
+M = 20  # outer margin
+
+
+def esc(s):
+    return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def txt(x, y, s, size=12, fill=None, anchor="start", weight=400, tab=False):
+    t = ' style="font-variant-numeric:tabular-nums"' if tab else ""
+    return (f'<text x="{x:.1f}" y="{y:.1f}" font-size="{size}" font-weight="{weight}" '
+            f'fill="{fill or C["ink2"]}" text-anchor="{anchor}"{t}>{esc(s)}</text>')
+
+
+def svg_open(w, h, title, subtitle=None):
+    s = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" '
+         f'height="{h}" font-family=\'{FONT}\' role="img" aria-label="{esc(title)}">',
+         f'<style>text{{font-family:{FONT}}}</style>',
+         f'<g transform="translate({M},12)">',
+         txt(0, 18, title, size=15, fill=C["ink"], weight=600)]
+    if subtitle:
+        s.append(txt(0, 38, subtitle, size=12, fill=C["muted"]))
+    return s
+
+
+def bar(x, y, w, h, fill, side="right"):
+    """Bar rounded 4px on the data end only, square at the baseline."""
+    w = max(w, 0.6)
+    r = min(4, w / 2, h / 2)
+    if side == "right":
+        d = (f"M{x:.1f},{y:.1f} H{x+w-r:.1f} A{r},{r} 0 0 1 {x+w:.1f},{y+r:.1f} "
+             f"V{y+h-r:.1f} A{r},{r} 0 0 1 {x+w-r:.1f},{y+h:.1f} H{x:.1f} Z")
+    else:
+        d = f"M{x:.1f},{y:.1f} H{x+w:.1f} V{y+h:.1f} H{x:.1f} Z"
+    return f'<path d="{d}" fill="{fill}"/>'
+
+
+def table(headers, rows, note=None):
+    """A chart's numbers as a collapsed expand, in Confluence HTML+ format.
+
+    HTML+ (`<details>`, `data-type` nodes) is what both createConfluencePage and the
+    editor accept. Storage-format XML (`<ac:structured-macro>`) renders as raw text
+    through those paths — do not switch this back.
+    """
+    th = "".join(f"<th><p><strong>{esc(h)}</strong></p></th>" for h in headers)
+    body = "".join("<tr>" + "".join(f"<td><p>{esc(c)}</p></td>" for c in r) + "</tr>"
+                   for r in rows)
+    n = f"<p><em>{esc(note)}</em></p>" if note else ""
+    return ("<details><summary>Data table</summary>"
+            f"<table><tbody><tr>{th}</tr>{body}</tbody></table>{n}</details>")
+
+
+# --------------------------------------------------------------------------
+# 1. The journey: intake + delivery + post-merge, previous vs current
+# --------------------------------------------------------------------------
+def chart_journey(m):
+    cur, prev = m["cur"], m["prev"]
+    keys = [("intake_p50", "Intake — created to committed", C["s1"]),
+            ("deliv_p50", "Delivery — committed to merged", C["s2"]),
+            ("post_merge_p50", "Post-merge — merged to done", C["s3"])]
+    rows = [("Previous 90 days", [prev[k] for k, _, _ in keys]),
+            ("Current 90 days", [cur[k] for k, _, _ in keys])]
+    tot_prev, tot_now = sum(rows[0][1]), sum(rows[1][1])
+
+    W, H, IW = 900, 300, 900 - 2 * M
+    top, bar_h, gap = 96, 46, 34
+    scale = (IW - 110) / max(tot_prev, tot_now, 1) * 0.92
+    delta = tot_prev - tot_now
+    # NB: this is the sum of three medians, which is NOT the median lead time —
+    # never label it "lead time", the trend table carries that and they differ.
+    s = svg_open(W, H, "The journey end to end",
+                 f"Median days in each stage, summed. {abs(delta):.1f} days "
+                 f"{'shorter' if delta >= 0 else 'longer'} than last window.")
+    for k, (_, label, col) in enumerate(keys):
+        lx = k * (IW / 3)
+        s.append(f'<rect x="{lx:.0f}" y="58" width="10" height="10" rx="2" fill="{col}"/>')
+        s.append(txt(lx + 16, 67, label, size=12, fill=C["ink2"]))
+    for i, (label, vals) in enumerate(rows):
+        y = top + i * (bar_h + gap)
+        s.append(txt(0, y - 8, label, size=12, fill=C["ink2"], weight=600))
+        cx = 0
+        for j, v in enumerate(vals):
+            w = v * scale
+            last = j == len(vals) - 1
+            s.append(bar(cx, y, w - (0 if last else 2), bar_h, keys[j][2],
+                         "right" if last else "flat"))
+            # aqua is sub-3:1 on the light surface, so every segment is labelled
+            if w > 46:
+                s.append(txt(cx + w / 2 - 1, y + bar_h / 2 + 4, f"{v:.1f} d", size=12,
+                             fill=C["surface"], anchor="middle", weight=600, tab=True))
+            cx += w
+        s.append(txt(cx + 10, y + bar_h / 2 + 5, f"{sum(vals):.1f} d", size=13,
+                     fill=C["ink"], weight=600, tab=True))
+    rule = top + 2 * (bar_h + gap) - 22
+    s.append(f'<line x1="0" y1="{rule}" x2="{IW}" y2="{rule}" stroke="{C["grid"]}" '
+             f'stroke-width="1"/>')
+    share = cur["intake_p50"] / tot_now * 100 if tot_now else 0
+    big_k, big_lbl, _ = max(keys, key=lambda k: cur[k[0]])
+    s.append(txt(0, H - 26, f"The largest single stage is {big_lbl.split(' — ')[0].lower()}, at "
+                            f"{cur[big_k]:.1f} d. Intake is {share:.0f}% of the journey and the "
+                            f"part the team does not control.", size=12, fill=C["muted"]))
+    s.append("</g></svg>")
+
+    rows_t = [[lbl, f"{prev[k]:.1f} d", f"{cur[k]:.1f} d"] for k, lbl, _ in keys]
+    rows_t.append(["Sum of stage medians", f"{tot_prev:.1f} d", f"{tot_now:.1f} d"])
+    return "\n".join(s), table(["Stage", "Previous 90 days", "Current 90 days"], rows_t,
+                               "Medians (p50). The stages are disjoint, but a sum of medians is not the "
+                               "median lead time — see the trend table for that.")
+
+
+# --------------------------------------------------------------------------
+# 2. Where the time goes inside delivery: stage shares, previous vs current
+#
+# Scoped to committed -> merged, not the whole lifecycle. The section exists to
+# find the delivery bottleneck, and full-lifecycle shares are dominated by
+# backlog dwell (`Open`, `Waiting for analysis`) that the delivery loop does not
+# contain. The lifecycle shares are still in metrics.json for context.
+# --------------------------------------------------------------------------
+def chart_stages(m, top_n=8):
+    cur = m["cur"].get("stages_downstream")
+    prev = m["prev"].get("stages_downstream")
+    if not cur:
+        sys.exit("metrics.json has no downstream stages - re-run metrics.py first.")
+    # downstream statuses in workflow order (Pixel Perfect is folded into Testing)
+    order = ["Needs Update", "In Progress", "In Review", "Waiting for Testing", "Testing",
+             "Ready to Merge", "Ready for Integration Testing", "In Integration Testing"]
+    ranked = [k for k in order if k in cur or k in prev]
+    keep, rest = ranked[:top_n], ranked[top_n:]
+    data = [(k, prev.get(k, {}).get("share", 0), cur.get(k, {}).get("share", 0),
+             cur.get(k, {}).get("p85"), cur.get(k, {}).get("kind", "")) for k in keep]
+    if rest:
+        data.append((f"All other stages ({len(rest)})",
+                     sum(prev.get(k, {}).get("share", 0) for k in rest),
+                     sum(cur.get(k, {}).get("share", 0) for k in rest), None, ""))
+
+    W, IW = 900, 900 - 2 * M
+    top, row_h, bh = 96, 44, 15
+    H = top + len(data) * row_h + 90
+    lab_w, plot_w = 215, IW - 215 - 50
+    step = 15 if max(max(p, c) for _, p, c, _, _ in data) > 30 else 5
+    axis_max = (int(max(max(p, c) for _, p, c, _, _ in data) / step) + 1) * step
+    scale = plot_w / axis_max
+    queue = sum(c for _, _, c, _, k in data if k == "wait")
+    s = svg_open(W, H, "Where the time goes downstream",
+                 "Share of time across the eight downstream statuses. "
+                 f"Queues account for {queue:.0f}% of the current window.")
+    for i, (name, col) in enumerate([("Previous 90 days", C["s1"]), ("Current 90 days", C["s2"])]):
+        lx = i * 170
+        s.append(f'<rect x="{lx}" y="58" width="10" height="10" rx="2" fill="{col}"/>')
+        s.append(txt(lx + 16, 67, name, size=12, fill=C["ink2"]))
+    for g in range(0, axis_max + 1, step):
+        x = lab_w + g * scale
+        s.append(f'<line x1="{x:.1f}" y1="{top-6}" x2="{x:.1f}" '
+                 f'y2="{top + len(data)*row_h - 12}" stroke="{C["grid"]}" stroke-width="1"/>')
+        s.append(txt(x, top + len(data) * row_h + 6, f"{g}%", size=11, fill=C["muted"],
+                     anchor="middle", tab=True))
+    for i, (name, p, c, _, kind) in enumerate(data):
+        y = top + i * row_h
+        s.append(txt(lab_w - 12, y + 18, f"{name} ({kind})" if kind else name,
+                     size=12, fill=C["ink2"], anchor="end"))
+        for j, (v, col) in enumerate([(p, C["s1"]), (c, C["s2"])]):
+            by = y + j * (bh + 2)      # 2px surface gap, never a border
+            s.append(bar(lab_w, by, v * scale, bh, col))
+            s.append(txt(lab_w + v * scale + 7, by + 12, f"{v:.1f}", size=11,
+                         fill=C["muted"], tab=True))
+    top_q = max(((n, c) for n, _, c, _, k in data if k == "wait"),
+                key=lambda x: x[1], default=None)
+    s.append(txt(0, H - 26,
+                 (f"The largest queue downstream is {top_q[0]}, at {top_q[1]:.0f}% of the "
+                  "time spent in these statuses." if top_q else
+                  "Queue stages are waiting time; active stages are worked time."),
+                 size=12, fill=C["muted"]))
+    s.append("</g></svg>")
+
+    rows_t = [[n, f"{p:.1f}%", f"{c:.1f}%", f"{p85:.1f} d" if p85 is not None else "—"]
+              for n, p, c, p85, _ in data]
+    return "\n".join(s), table(["Status", "Previous", "Current", "p85 duration"], rows_t,
+                               "Share of time in the eight downstream statuses only (Pixel Perfect "
+                               "is counted under Testing); other statuses are excluded. Queue "
+                               "stages are waiting time, active stages are worked time.")
+
+
+# --------------------------------------------------------------------------
+# 3. SonarCloud: 12-month trend, one panel per metric (never a shared axis)
+# --------------------------------------------------------------------------
+def chart_sonar(as_of):
+    try:
+        with urllib.request.urlopen(SONAR, timeout=30) as r:
+            raw = json.load(r)
+    except Exception as e:                                    # noqa: BLE001
+        print(f"  ! SonarCloud unreachable ({e}) — skipping chart 3", file=sys.stderr)
+        return None, None
+    cut = as_of.isoformat()
+    # search_history returns the full retained series, so window it explicitly —
+    # otherwise the panel says "12 months" and plots two years, and a metric can
+    # trend the opposite way over the longer span.
+    start = (as_of - dt.timedelta(days=365)).isoformat()
+    ser = {m["metric"]: [(dt.datetime.strptime(p["date"][:10], "%Y-%m-%d"), float(p["value"]))
+                         for p in m["history"]
+                         if p.get("value") and start <= p["date"][:10] <= cut]
+           for m in raw["measures"]}
+    need = ("coverage", "code_smells", "sqale_index", "duplicated_lines_density")
+    if not all(ser.get(k) for k in need):
+        print("  ! SonarCloud history empty for the window — skipping chart 3", file=sys.stderr)
+        return None, None
+    panels = [("Test coverage", ser["coverage"], "{:.1f}%", "higher is better"),
+              ("Code smells", ser["code_smells"], "{:.0f}", "lower is better"),
+              ("Technical debt", [(d, v / 60) for d, v in ser["sqale_index"]], "{:.0f} h",
+               "lower is better"),
+              ("Duplicated lines", ser["duplicated_lines_density"], "{:.1f}%",
+               "lower is better")]
+    W, H = 940, 520
+    pw, ph, oy = 400, 130, 92
+    s = svg_open(W, H, "Code quality on develop, 12 months",
+                 "Four separate scales, four separate panels — never two y-axes on one plot. "
+                 f"Series end at the report date, {as_of.strftime('%d %b %Y').lstrip('0')}.")
+    for k, (name, pts, fmt, dirn) in enumerate(panels):
+        px, py = (k % 2) * (pw + 60), oy + (k // 2) * (ph + 86)
+        xs = [d.timestamp() for d, _ in pts]
+        ys = [v for _, v in pts]
+        lo, hi = min(ys), max(ys)
+        pad = (hi - lo) * 0.18 or 1
+        lo, hi = lo - pad, hi + pad
+        spanx = (max(xs) - min(xs)) or 1
+        fx = lambda t: px + (t - min(xs)) / spanx * pw            # noqa: E731
+        fy = lambda v: py + ph - (v - lo) / (hi - lo) * ph        # noqa: E731
+        s.append(txt(px, py - 26, name, size=13, fill=C["ink"], weight=600))
+        s.append(txt(px + pw, py - 26, dirn, size=11, fill=C["muted"], anchor="end"))
+        s.append(f'<line x1="{px}" y1="{py+ph:.1f}" x2="{px+pw}" y2="{py+ph:.1f}" '
+                 f'stroke="{C["axis"]}" stroke-width="1"/>')
+        d = " ".join(("M" if i == 0 else "L") + f"{fx(t):.1f},{fy(v):.1f}"
+                     for i, (t, v) in enumerate(zip(xs, ys)))
+        s.append(f'<path d="{d}" fill="none" stroke="{C["s1"]}" stroke-width="2" '
+                 f'stroke-linejoin="round" stroke-linecap="round"/>')
+        for t, v, anc in ((xs[0], ys[0], "start"), (xs[-1], ys[-1], "end")):
+            s.append(f'<circle cx="{fx(t):.1f}" cy="{fy(v):.1f}" r="4" fill="{C["s1"]}" '
+                     f'stroke="{C["surface"]}" stroke-width="2"/>')
+            s.append(txt(fx(t), fy(v) - 12, fmt.format(v), size=12, fill=C["ink"],
+                         anchor=anc, weight=600, tab=True))
+        s.append(txt(px, py + ph + 18, pts[0][0].strftime("%b %Y"), size=11, fill=C["muted"]))
+        s.append(txt(px + pw, py + ph + 18, pts[-1][0].strftime("%b %Y"), size=11,
+                     fill=C["muted"], anchor="end"))
+    s.append(txt(0, H - 26, "Read each panel on its own scale; the four are not comparable with "
+                            "each other.", size=12, fill=C["muted"]))
+    s.append("</g></svg>")
+
+    rows_t = []
+    for name, pts, fmt, dirn in panels:
+        first, last = pts[0][1], pts[-1][1]
+        better = (last > first) if dirn.startswith("higher") else (last < first)
+        rows_t.append([name, fmt.format(first), fmt.format(last),
+                       "improving" if better else ("flat" if last == first else "worsening")])
+    if ser.get("ncloc"):
+        n0, n1 = ser["ncloc"][0][1], ser["ncloc"][-1][1]
+        rows_t.append(["Lines of code", f"{n0:,.0f}", f"{n1:,.0f}", f"{(n1-n0)/n0*100:+.0f}%"])
+    start = panels[0][1][0][0].strftime("%b %Y")
+    return "\n".join(s), table(["Metric", start, as_of.strftime("%d %b %Y").lstrip("0"),
+                                "Direction"], rows_t,
+                               "Series are cut at the report date, not today, so they agree with "
+                               "the rest of the page.")
+
+
+# --------------------------------------------------------------------------
+# 4. Sentry triage: reach against effort, quadrant-coloured
+# --------------------------------------------------------------------------
+# Plots REACH (share of the release's users) against Effort rather than the
+# triage's Impact score. Impact is derived from reach and then capped at 5, so on
+# an install base this size several issues share the top score and an Impact axis
+# collapses to a vertical line — a scatter that cannot separate its own points.
+# Reach is the continuous quantity underneath, so it separates them; the quadrant
+# each issue was assigned to is carried by colour and stated in the table.
+QUAD = {"Q1": ("crit", "Q1 Fix ASAP"), "Q2": ("s2", "Q2 Plan carefully"),
+        "Q3": ("s3", "Q3 Quick wins"), "Q4": ("long", "Q4 Defer")}
+
+
+def chart_sentry(issues, release):
+    if not issues:
+        # Delete any chart 4 left by an earlier run. attach_charts.py uploads a fixed
+        # list of four filenames, so a stale PNG would be published alongside fresh
+        # text - one snapshot in the prose and another in the picture, which is the
+        # exact failure the "re-run charts.py after any re-fetch" guardrail exists to
+        # stop. A missing chart is recoverable; a wrong one is not.
+        for ext in ("png", "svg"):
+            stale = os.path.join(OUT, f"04-sentry-issues.{ext}")
+            if os.path.exists(stale):
+                os.unlink(stale)
+                print(f"  ! removed stale 04-sentry-issues.{ext} from an earlier run",
+                      file=sys.stderr)
+        print("  ! no --issue given — skipping chart 4", file=sys.stderr)
+        return None, None
+    W, IW = 900, 900 - 2 * M
+    top, plot_h = 118, 330
+    left, plot_w = 58, IW - 58 - 30
+    H = top + plot_h + 96
+
+    max_reach = max(i["reach"] for i in issues)
+    y_max = max(8.0, (int(max_reach) + 2))
+    ex, ey = (lambda e: left + plot_w * (e - 0.5) / 5.0,
+              lambda r: top + plot_h - plot_h * (r / y_max))
+
+    s = svg_open(W, H, "Production issues: reach against fix effort",
+                 f"Top {len(issues)} unresolved issues on {release}, positioned by the share "
+                 "of that release's users they hit and by how much work the fix is. "
+                 "Left of the divider is cheap to fix.")
+
+    for k, q in enumerate(["Q1", "Q2", "Q3", "Q4"]):
+        col, lbl = QUAD[q]
+        lx = k * 200
+        s.append(f'<circle cx="{lx + 5}" cy="72" r="5" fill="{C[col]}"/>')
+        s.append(txt(lx + 16, 76, lbl, size=12, fill=C["ink2"]))
+
+    # gridlines and y axis: reach in percent
+    for g in range(0, int(y_max) + 1, 2):
+        gy = ey(g)
+        s.append(f'<line x1="{left}" y1="{gy}" x2="{left + plot_w}" y2="{gy}" '
+                 f'stroke="{C["grid"]}" stroke-width="1"/>')
+        s.append(txt(left - 10, gy + 4, f"{g}%", size=11, fill=C["muted"], anchor="end"))
+    s.append(txt(left - 10, top - 14, "share of release users", size=11, fill=C["ink2"],
+                 anchor="start"))
+
+    # the effort divider: <=2 is the low-effort half the quadrants split on
+    dx = ex(2.5)
+    s.append(f'<line x1="{dx}" y1="{top - 6}" x2="{dx}" y2="{top + plot_h}" '
+             f'stroke="{C["axis"]}" stroke-width="1" stroke-dasharray="4 3"/>')
+    s.append(txt(dx - 8, top - 12, "cheap to fix", size=11, fill=C["muted"], anchor="end"))
+    s.append(txt(dx + 8, top - 12, "costly", size=11, fill=C["muted"]))
+
+    for e in range(1, 6):
+        s.append(txt(ex(e), top + plot_h + 20, str(e), size=11, fill=C["muted"],
+                     anchor="middle"))
+    s.append(txt(left + plot_w / 2, top + plot_h + 40, "effort to fix (1 = single line)",
+                 size=11, fill=C["ink2"], anchor="middle"))
+    s.append(f'<line x1="{left}" y1="{top + plot_h}" x2="{left + plot_w}" '
+             f'y2="{top + plot_h}" stroke="{C["axis"]}" stroke-width="1"/>')
+
+    # x stays exactly on the effort value — jittering it would drift a point across
+    # the cheap/costly divider and misreport the one thing the divider is for.
+    # Labels are what collide, so those get nudged instead, per effort column.
+    placed = {}
+    for it in sorted(issues, key=lambda i: -i["reach"]):
+        col = C[QUAD[it["quadrant"]][0]]
+        cx, cy = ex(it["effort"]), ey(it["reach"])
+        ly = cy
+        for prev in placed.setdefault(it["effort"], []):
+            if abs(ly - prev) < 26:
+                ly = prev + 26
+        placed[it["effort"]].append(ly)
+        s.append(f'<circle cx="{cx}" cy="{cy}" r="7" fill="{col}" '
+                 f'stroke="{C["surface"]}" stroke-width="2"/>')
+        if abs(ly - cy) > 1:  # leader line, so a nudged label still reads as its point
+            s.append(f'<line x1="{cx + 8}" y1="{cy}" x2="{cx + 13}" y2="{ly - 4}" '
+                     f'stroke="{C["axis"]}" stroke-width="1"/>')
+        # colour is never the only channel: the quadrant is written by every point
+        s.append(txt(cx + 14, ly - 2, it["id"], size=11, fill=C["ink"], weight=600))
+        s.append(txt(cx + 14, ly + 10, f'{it["reach"]:.1f}% · {it["quadrant"]}', size=10,
+                     fill=C["muted"]))
+
+    q1 = [i["id"] for i in issues if i["quadrant"] == "Q1"]
+    tail = (f"Q1 — high reach, cheap to fix: {', '.join(q1)}." if q1
+            else "Nothing sits in Q1 this period.")
+    s.append(txt(0, H - 26, tail, size=12, fill=C["muted"]))
+    s.append("</g></svg>")
+
+    rows_t = [[f'{i["id"]} {i["title"]}', i["quadrant"], str(i["impact"]), str(i["effort"]),
+               f'{i["users"]:,}', f'{i["reach"]:.1f}%', i["where"]]
+              for i in sorted(issues, key=lambda i: (i["quadrant"], -i["reach"]))]
+    return "\n".join(s), table(
+        ["Issue", "Quadrant", "Impact", "Effort", "Users", "Reach", "Crash site"], rows_t,
+        "Reach is the share of this release's users, so counts are release-scoped and not "
+        "the lifetime totals shown on a Sentry issue page. Users-affected counts overlap "
+        "between issues and must never be added together.")
+
+
+def parse_issue(spec):
+    """ID|Title|CrashSite|Users|Reach%|Impact|Effort|Quadrant"""
+    p = [x.strip() for x in spec.split("|")]
+    if len(p) != 8:
+        raise argparse.ArgumentTypeError(
+            f"--issue needs 8 fields separated by |, got {len(p)}: {spec}\n"
+            "  ID|Title|CrashSite|Users|Reach%|Impact|Effort|Quadrant")
+    if p[7] not in QUAD:
+        raise argparse.ArgumentTypeError(f"quadrant must be one of {', '.join(QUAD)}")
+    return {"id": p[0], "title": p[1], "where": p[2],
+            "users": int(p[3].replace(",", "")), "reach": float(p[4].rstrip("%")),
+            "impact": int(p[5]), "effort": int(p[6]), "quadrant": p[7]}
+
+
+# --------------------------------------------------------------------------
+def chrome_candidates():
+    """(binary, headless flag) pairs to try, in order.
+
+    Two things this list has to get right:
+
+    * A cloud session has no `chrome` on PATH but does ship Playwright's Chromium
+      under PLAYWRIGHT_BROWSERS_PATH (default /opt/pw-browsers), so the charts
+      rasterize there too — without it the run silently degrades to SVG-only and
+      the page loses every figure. CHROME_BIN overrides everything.
+    * `--headless=old` renders the page at exactly --window-size; `--headless=new`
+      treats that as the *outer* window and gives the page a shorter viewport
+      (see viewport_delta). Old headless is therefore tried first and, on Chrome
+      132+ where it was removed, simply fails to launch and falls through.
+    """
+    out = []
+    if os.environ.get("CHROME_BIN"):
+        out.append(os.environ["CHROME_BIN"])
+    out += ["google-chrome", "google-chrome-stable", "chromium", "chromium-browser",
+            "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+            "/Applications/Chromium.app/Contents/MacOS/Chromium"]
+    root = os.environ.get("PLAYWRIGHT_BROWSERS_PATH") or "/opt/pw-browsers"
+    if os.path.isdir(root):
+        # headless_shell before full Chromium wherever both are installed: it is the
+        # old engine, so it needs no frame padding and the PNG is exactly the chart.
+        for rel in ("chrome-linux/headless_shell", "chrome-linux/chrome",
+                    "chrome-mac/Chromium.app/Contents/MacOS/Chromium"):
+            for name in sorted(os.listdir(root)):
+                cand = os.path.join(root, name, rel)
+                if os.path.exists(cand):
+                    out.append(cand)
+    pairs = []
+    for exe in out:
+        # headless_shell IS the old engine and rejects --headless=old.
+        flags = ["--headless"] if "headless_shell" in exe else ["--headless=old",
+                                                                "--headless=new"]
+        pairs += [(exe, f) for f in flags]
+    return pairs
+
+
+DELTA = {}
+
+
+def viewport_delta(exe, flag):
+    """CSS pixels --window-size loses to the window frame, measured not guessed.
+
+    Under `--headless=new` the window is sized outer-first, so a 300px window
+    lays out in a ~213px viewport while --screenshot still writes a full 300px
+    image: the chart's axis labels and its footnote render into nothing and the
+    bottom of the PNG comes out blank. It is silent — the file is there and looks
+    plausible — so the padding is measured per binary with a probe page rather
+    than assumed to be zero.
+    """
+    key = (exe, flag)
+    if key in DELTA:
+        return DELTA[key]
+    probe = os.path.join(OUT, ".probe.html")
+    open(probe, "w").write('<!doctype html><meta charset="utf-8"><body><script>'
+                           'document.body.textContent="VH="+window.innerHeight</script>')
+    d = 0
+    try:
+        r = subprocess.run([exe, flag, "--disable-gpu", "--no-sandbox", "--hide-scrollbars",
+                            "--virtual-time-budget=2000", "--window-size=900,600",
+                            "--dump-dom", f"file://{probe}"],
+                           capture_output=True, text=True, timeout=60)
+        seen = re.search(r"VH=(\d+)", r.stdout or "")
+        if seen:
+            d = max(0, 600 - int(seen.group(1)))
+    except (FileNotFoundError, subprocess.SubprocessError):
+        pass
+    finally:
+        os.path.exists(probe) and os.unlink(probe)
+    DELTA[key] = d
+    return d
+
+
+def render_png(svg_path):
+    """2x PNG via headless Chrome, with the webfont loaded. Optional."""
+    body = open(svg_path).read()
+    w, h = re.search(r'viewBox="0 0 (\d+) (\d+)"', body).groups()
+    wrap = ('<!doctype html><meta charset="utf-8">'
+            '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?'
+            'family=IBM+Plex+Sans:wght@400;500;600&display=swap">'
+            "<style>html,body{margin:0;padding:0;background:#fff}svg{display:block}</style>"
+            + body)
+    tmp, png = svg_path + ".html", svg_path[:-4] + ".png"
+    open(tmp, "w").write(wrap)
+    try:
+        for exe, flag in chrome_candidates():
+            # Pad the window by the frame so the whole chart lands in the viewport.
+            # The padding shows up as white below the chart, which is why an engine
+            # that needs none is tried first.
+            pad = viewport_delta(exe, flag)
+            try:
+                subprocess.run([exe, flag, "--disable-gpu", "--no-sandbox",
+                                "--hide-scrollbars", "--force-device-scale-factor=2",
+                                "--default-background-color=FFFFFFFF",
+                                "--virtual-time-budget=5000",
+                                f"--window-size={w},{int(h) + pad}",
+                                f"--screenshot={png}", f"file://{tmp}"],
+                               capture_output=True, check=True, timeout=90)
+            except (FileNotFoundError, subprocess.SubprocessError):
+                continue
+            if os.path.exists(png) and os.path.getsize(png) > 1024:
+                return png
+    finally:
+        os.unlink(tmp)
+    print(f"  ! no Chrome found — {os.path.basename(svg_path)} has no PNG; attach the SVG, "
+          "install Chrome, or point CHROME_BIN at a binary", file=sys.stderr)
+    return None
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--as-of", required=True, help="report window end, YYYY-MM-DD")
+    ap.add_argument("--release", default="the current release",
+                    help="production release the Sentry issues are scoped to, e.g. 3.4.1")
+    ap.add_argument("--issue", action="append", type=parse_issue, default=[],
+                    metavar="ID|Title|Where|Users|Scope|new|old",
+                    help="repeat, highest users first; 'new' means regression")
+    ap.add_argument("--metrics", default=os.path.join(OUT_DIR, "metrics.json"))
+    ap.add_argument("--no-png", action="store_true", help="emit SVG only")
+    a = ap.parse_args()
+
+    as_of = dt.datetime.strptime(a.as_of, "%Y-%m-%d").date()
+    if as_of > dt.date.today():
+        sys.exit("--as-of is in the future")
+    if not os.path.exists(a.metrics):
+        sys.exit(f"{a.metrics} not found — run metrics.py first")
+    m = json.load(open(a.metrics))
+    os.makedirs(OUT, exist_ok=True)
+
+    built = [("01-journey", *chart_journey(m)),
+             ("02-where-time-goes", *chart_stages(m)),
+             ("03-sonarcloud-trend", *chart_sonar(as_of)),
+             ("04-sentry-issues", *chart_sentry(a.issue, a.release))]
+
+    tables, made = [], []
+    for name, svg, tbl in built:
+        if svg is None:
+            continue
+        p = os.path.join(OUT, name + ".svg")
+        open(p, "w").write(svg)
+        made.append(name)
+        png = None if a.no_png else render_png(p)
+        print(f"  {name}.svg" + (f" + {name}.png" if png else ""))
+        tables.append(f"<!-- {name} -->\n{tbl}")
+    open(os.path.join(OUT, "tables.html"), "w").write("\n\n".join(tables))
+
+    print(f"\nwrote {len(made)}/4 charts to {OUT}")
+    print(f"collapsed data tables, in Confluence storage format: {os.path.join(OUT, 'tables.html')}")
+    if len(made) < 4:
+        print("say in the report which chart is missing and why — never drop one silently")
+
+
+if __name__ == "__main__":
+    main()
