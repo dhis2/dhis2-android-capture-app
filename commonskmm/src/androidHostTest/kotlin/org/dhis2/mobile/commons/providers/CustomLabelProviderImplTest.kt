@@ -1,5 +1,7 @@
 package org.dhis2.mobile.commons.providers
 
+import android.content.res.Configuration
+import android.content.res.Resources
 import kotlinx.coroutines.test.runTest
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.Program
@@ -9,6 +11,7 @@ import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.util.Locale
 import kotlin.test.assertEquals
 
 class CustomLabelProviderImplTest {
@@ -175,6 +178,37 @@ class CustomLabelProviderImplTest {
 
     // endregion
 
+    // region unsupported plural locale
+
+    @Test
+    fun `falls back to default labels when locale has no plural rules`() =
+        runTest {
+            mockProgram(eventLabel = null, eventsLabel = null)
+            val previousLocale = Locale.getDefault()
+            Locale.setDefault(Locale.forLanguageTag("rw"))
+            try {
+                mockSystemResources {
+                    val singular =
+                        customLabelProvider.getCustomEventLabel(
+                            customLabelContext = CustomLabelContext.Program(PROGRAM_UID),
+                            quantity = 1,
+                        )
+                    val plural =
+                        customLabelProvider.getCustomEventLabel(
+                            customLabelContext = CustomLabelContext.Program(PROGRAM_UID),
+                            quantity = 2,
+                        )
+
+                    assertEquals("Event", singular)
+                    assertEquals("Events", plural)
+                }
+            } finally {
+                Locale.setDefault(previousLocale)
+            }
+        }
+
+    // endregion
+
     private fun mockProgram(
         eventLabel: String? = null,
         eventsLabel: String? = null,
@@ -213,6 +247,18 @@ class CustomLabelProviderImplTest {
                 .uid(STAGE_UID)
                 .blockingGet(),
         ) doReturn programStage
+    }
+
+    // Compose resources reads the system configuration, which isn't available in host tests.
+    private suspend fun mockSystemResources(block: suspend () -> Unit) {
+        val resources =
+            mock<Resources> {
+                on { configuration } doReturn mock<Configuration>()
+            }
+        Mockito.mockStatic(Resources::class.java).use { mocked ->
+            mocked.`when`<Resources> { Resources.getSystem() }.thenReturn(resources)
+            block()
+        }
     }
 
     companion object {
