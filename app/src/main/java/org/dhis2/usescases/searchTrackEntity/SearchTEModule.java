@@ -482,10 +482,9 @@ public class SearchTEModule {
     @PerActivity
     TEICardMapper provideListCardMapper(
             Context context,
-            ResourceManager resourceManager,
-            CustomLabelProvider customLabelProvider
+            ResourceManager resourceManager
     ) {
-        return new TEICardMapper(context, resourceManager, customLabelProvider);
+        return new TEICardMapper(context, resourceManager);
     }
 
     @Provides

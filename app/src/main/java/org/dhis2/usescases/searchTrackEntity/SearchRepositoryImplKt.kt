@@ -15,6 +15,7 @@ import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
 import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.tracker.input.model.TrackerInputType
 import org.dhis2.tracker.input.ui.action.FieldUid
+import org.dhis2.tracker.search.model.EnrollmentStatus
 import org.dhis2.tracker.search.model.TrackedEntitySearchItemResult
 import org.dhis2.usescases.events.EventInfoProvider
 import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider
@@ -220,7 +221,7 @@ class SearchRepositoryImplKt(
             TrackerInputType.IMAGE -> ValueType.IMAGE
         }
 
-    override fun mapTrackedEntitySearchItemResultToSearchTeiModel(
+    override suspend fun mapTrackedEntitySearchItemResultToSearchTeiModel(
         searchItemResult: TrackedEntitySearchItemResult,
         sortingItem: SortingItem?,
     ): SearchTeiModel {
@@ -255,6 +256,12 @@ class SearchRepositoryImplKt(
         sortingItem?.let {
             searchTeiModel.setSortingValue(trackedEntityInstanceInfoProvider.getSortingKeyValue(searchTeiModel, sortingItem))
         }
+        searchItemResult.selectedEnrollment
+            ?.takeIf { it.status == EnrollmentStatus.COMPLETED || it.status == EnrollmentStatus.CANCELLED }
+            ?.let { searchTeiModel.enrollmentLabel = customLabelProvider.getCustomEnrollmentLabel(it.program) }
+        searchItemResult.enrollments
+            ?.firstOrNull { it.followUp }
+            ?.let { searchTeiModel.followUpLabel = customLabelProvider.getCustomMarkedForFollowUpLabel(it.program) }
         return searchTeiModel
     }
 

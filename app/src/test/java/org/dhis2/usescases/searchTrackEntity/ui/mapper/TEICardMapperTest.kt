@@ -8,7 +8,6 @@ import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobile.commons.extensions.toJavaDate
 import org.dhis2.mobile.commons.extensions.toKtxInstant
-import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.tracker.input.model.TrackerInputType
 import org.dhis2.tracker.search.model.DomainEnrollment
 import org.dhis2.tracker.search.model.DomainObjectStyle
@@ -28,6 +27,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.Calendar
 import java.util.Date
@@ -36,7 +37,6 @@ import kotlin.time.Instant
 class TEICardMapperTest {
     private val context: Context = mock()
     private val resourceManager: ResourceManager = mock()
-    private val customLabelProvider: CustomLabelProvider = mock()
 
     private lateinit var mapper: TEICardMapper
 
@@ -68,15 +68,12 @@ class TEICardMapperTest {
         whenever(resourceManager.getString(R.string.show_more)) doReturn "Show more"
         whenever(resourceManager.getString(R.string.show_less)) doReturn "Show less"
         whenever(resourceManager.getString(R.string.completed)) doReturn "Completed"
-        whenever(
-            resourceManager.formatWithEnrollmentLabel(any(), any(), any(), any()),
-        ) doReturn "Enrollment Completed"
+        whenever(resourceManager.getString(R.string.enrollment_completed_V2)) doReturn "%s completed"
         whenever(
             resourceManager.getString(R.string.overdue_today),
         ) doReturn "Today"
-        whenever(customLabelProvider.blockingCustomMarkedForFollowUpLabel(anyOrNull())) doReturn "Marked for follow-up"
 
-        mapper = TEICardMapper(context, resourceManager, customLabelProvider)
+        mapper = TEICardMapper(context, resourceManager)
     }
 
     @Test
@@ -107,7 +104,7 @@ class TEICardMapperTest {
         )
         assertEquals(
             result.additionalInfo[4].value,
-            "Enrollment Completed",
+            "Case completed",
         )
 
         assertEquals(
@@ -119,6 +116,23 @@ class TEICardMapperTest {
         assertEquals(
             result.additionalInfo[6].value,
             "Marked for follow-up",
+        )
+    }
+
+    @Test
+    fun shouldNotQueryEnrollmentLabelWhileMappingCard() {
+        mapper.map(
+            searchTEIModel = createFakeModel(),
+            onSyncIconClick = {},
+            onCardClick = {},
+            onImageClick = {},
+        )
+
+        verify(resourceManager, never()).formatWithEnrollmentLabel(
+            anyOrNull(),
+            any(),
+            any(),
+            any(),
         )
     }
 
@@ -224,6 +238,8 @@ class TEICardMapperTest {
         val searchTeiModel = SearchTeiModel()
         searchTeiModel.tei = tei
         searchTeiModel.attributeValues = attributeValues
+        searchTeiModel.enrollmentLabel = "Case"
+        searchTeiModel.followUpLabel = "Marked for follow-up"
 
         return searchTeiModel
     }
