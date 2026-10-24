@@ -29,4 +29,5 @@
 
     <string name="remove_follow_up">Remover</string>
     <string name="program_stage">Estágio do programa</string>
+    <string name="http_error_internal_server_error">Erro interno do servidor</string>
     </resources>
