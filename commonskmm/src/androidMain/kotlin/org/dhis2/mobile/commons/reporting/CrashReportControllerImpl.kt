@@ -43,13 +43,9 @@ class CrashReportControllerImpl(
         Sentry.close()
     }
 
-    override fun trackServer(
-        server: String?,
-        serverDhisVersion: String?,
-    ) {
+    override fun trackServer(serverDhisVersion: String?) {
         if (isCrashReportPermissionGranted()) {
             Sentry.configureScope { scope ->
-                scope.setTag(SERVER_NAME, server ?: "")
                 scope.setTag(SERVER_VERSION, serverDhisVersion ?: "")
             }
         }
@@ -84,7 +80,6 @@ class CrashReportControllerImpl(
     }
 
     companion object {
-        const val SERVER_NAME = "server_name"
         const val SERVER_VERSION = "server_version"
     }
 

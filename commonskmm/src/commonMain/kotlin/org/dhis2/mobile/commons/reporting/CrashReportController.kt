@@ -5,10 +5,7 @@ interface CrashReportController {
 
     fun close()
 
-    fun trackServer(
-        server: String?,
-        serverDhisVersion: String?,
-    )
+    fun trackServer(serverDhisVersion: String?)
 
     fun trackError(
         exception: Exception,
