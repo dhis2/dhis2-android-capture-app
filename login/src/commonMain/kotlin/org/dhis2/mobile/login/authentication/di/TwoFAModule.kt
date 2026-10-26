@@ -13,9 +13,6 @@ internal expect val twoFARepositoryModule: Module
 
 internal val twoFAModule =
     module {
-        // Repository
-        includes(twoFARepositoryModule)
-
         // Use Cases
         single<GetTwoFAStatus> { GetTwoFAStatus(get()) }
         single<EnableTwoFA> { EnableTwoFA(get()) }

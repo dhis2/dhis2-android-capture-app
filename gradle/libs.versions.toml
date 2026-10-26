@@ -2,6 +2,8 @@
 kotlinxDatetime = "0.7.1-0.6.x-compat" #Needs to be compatible with the Rule engine, update when it's updated
 lifecycleRuntimeCompose = "2.9.6"
 navigationCompose = "2.9.2"
+navigation3 = "1.1.1" # 1.1.2 pulls compose runtime 1.11, keep in line with composePluginVersion
+lifecycleNavigation3 = "2.10.0"
 targetSdk = "36"
 compileSdk = "37"
 minSdk = "23"
@@ -93,6 +95,7 @@ sonarqube = "7.3.1.8318"
 browser = "1.9.0"
 biometric = "1.1.0"
 coil = "3.3.0"
+ktor = "3.1.0"
 cyclonedx = "3.4.1"
 jetbrains-material3="1.9.0"
 materialIconsExtended = "1.7.3"
@@ -122,6 +125,8 @@ androidx-compose-preview = { group = "androidx.compose.ui", name = "ui-tooling-p
 androidx-compose-paging = { group = "androidx.paging", name = "paging-compose", version.ref = "composePaging" }
 lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
+lifecycle-viewmodel-navigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleNavigation3" }
 test-androidx-paging = { group = "androidx.paging", name = "paging-testing", version.ref = "pagingTesting" }
 androidx-coreKtx = { group = "androidx.core", name = "core-ktx", version.ref = "corektx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
@@ -191,6 +196,7 @@ test-junit-ext = { group = "androidx.test.ext", name = "junit", version.ref = "j
 test-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
 test-support-annotations = { group = "com.android.support", name = "support-annotations", version = "28.0.0" }
 test-rx2-idler = { group = "com.squareup.rx.idler", name = "rx2-idler", version = "0.11.0" }
+kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinxcoroutines" }
 test-kotlinCoroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxcoroutines" }
 test-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "compose" }
 test-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version.ref = "compose" }
@@ -215,6 +221,8 @@ ktxml = { module = "org.kobjects.ktxml:core", version.ref = "ktxml" }
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "commonsText" }
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil"}
 coil-network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil"}
+coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil"}
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 compose-runtime = { group = "org.jetbrains.compose.runtime", name = "runtime", version.ref = "composePluginVersion" }
 compose-foundation = { group = "org.jetbrains.compose.foundation", name = "foundation", version.ref = "composePluginVersion" }
 compose-ui = { group = "org.jetbrains.compose.ui", name = "ui", version.ref = "composePluginVersion" }

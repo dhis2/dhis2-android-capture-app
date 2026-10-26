@@ -1,21 +1,16 @@
 package org.dhis2.mobile.app
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import org.dhis2.mobile.app.di.appModules
+import org.dhis2.mobile.app.navigation.AppNavigation
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import org.koin.compose.KoinApplication
 
 @Composable
 fun App() {
-    MaterialTheme {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(text = "Hello, World! Running on ${platformName()}")
+    KoinApplication(application = { modules(appModules) }) {
+        DHIS2Theme {
+            AppNavigation()
         }
     }
 }

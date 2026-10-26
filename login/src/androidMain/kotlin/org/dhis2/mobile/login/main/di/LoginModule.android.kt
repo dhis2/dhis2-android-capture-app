@@ -4,14 +4,11 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import org.dhis2.mobile.login.accounts.data.repository.AccountRepository
 import org.dhis2.mobile.login.accounts.data.repository.AccountRepositoryImpl
-import org.dhis2.mobile.login.accounts.ui.viewmodel.AccountsViewModel
 import org.dhis2.mobile.login.authentication.OpenIdController
 import org.dhis2.mobile.login.authentication.OpenIdControllerImpl
 import org.dhis2.mobile.login.main.data.LoginRepository
 import org.dhis2.mobile.login.main.data.LoginRepositoryImpl
 import org.dhis2.mobile.login.main.ui.state.OidcInfo
-import org.koin.core.module.dsl.viewModel
-import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
 internal actual val accountModule =
@@ -57,8 +54,7 @@ internal actual val accountModule =
         factory<LoginRepository> { _ ->
             LoginRepositoryImpl(
                 d2 = get(),
-                authenticator = get(),
-                cryptographyManager = get(),
+                biometrics = get(),
                 preferences = get(),
                 d2ErrorMessageProvider = get(),
                 crashReportController = get(),
@@ -67,13 +63,6 @@ internal actual val accountModule =
                 dispatcher = get(),
                 domainErrorMapper = get(),
                 loginErrorMessageProvider = get(),
-            )
-        }
-
-        viewModel { params ->
-            AccountsViewModel(
-                navigator = get(),
-                repository = get { parametersOf(params.get()) },
             )
         }
     }

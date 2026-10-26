@@ -307,7 +307,7 @@ class CredentialsViewModelTest {
             testDispatcher.scheduler.advanceUntilIdle()
 
             // THEN
-            verify(navigator).navigate(eq(LoginScreenState.Accounts), any())
+            verify(navigator).navigate(eq(LoginScreenState.Accounts))
         }
 
     @Test
@@ -602,7 +602,6 @@ class CredentialsViewModelTest {
                 testDispatcher.scheduler.advanceUntilIdle()
                 verify(navigator).navigate(
                     eq(LoginScreenState.OauthAuthentication(selectedServer = enrollmentUrl)),
-                    any(),
                 )
 
                 // WHEN - Send app link with authorization code (simulates OAuth callback)
@@ -625,7 +624,6 @@ class CredentialsViewModelTest {
                 // navigate to the logout URL and defer the after-login actions
                 verify(navigator).navigate(
                     eq(LoginScreenState.OauthAuthentication(selectedServer = logoutUrl)),
-                    any(),
                 )
                 assertTrue(expectMostRecentItem().afterLoginActions.isEmpty())
 
@@ -709,7 +707,6 @@ class CredentialsViewModelTest {
                 // next attempt would silently reuse the account that just failed
                 verify(navigator).navigate(
                     eq(LoginScreenState.OauthAuthentication(selectedServer = logoutUrl)),
-                    any(),
                 )
 
                 // WHEN - the logout redirect returns
@@ -768,7 +765,6 @@ class CredentialsViewModelTest {
                 testDispatcher.scheduler.advanceUntilIdle()
                 verify(navigator).navigate(
                     eq(LoginScreenState.OauthAuthentication(selectedServer = enrollmentUrl)),
-                    any(),
                 )
 
                 // WHEN - Send app link with IAT token (simulates enrollment callback)
@@ -781,7 +777,6 @@ class CredentialsViewModelTest {
                 // Verify navigation to the consent URL
                 verify(navigator).navigate(
                     eq(LoginScreenState.OauthAuthentication(selectedServer = consentUrl)),
-                    any(),
                 )
 
                 cancelAndIgnoreRemainingEvents()
@@ -822,7 +817,6 @@ class CredentialsViewModelTest {
                 testDispatcher.scheduler.advanceUntilIdle()
                 verify(navigator).navigate(
                     eq(LoginScreenState.OauthAuthentication(selectedServer = enrollmentUrl)),
-                    any(),
                 )
 
                 // WHEN - the enrollment token arrives
@@ -843,7 +837,7 @@ class CredentialsViewModelTest {
                 assertEquals(oauth2ErrorMessage, errorState.errorMessage)
                 assertEquals(LoginState.Enabled, errorState.loginState)
                 assertTrue(errorState.afterLoginActions.isEmpty())
-                verify(navigator, times(1)).navigate(any(), any())
+                verify(navigator, times(1)).navigate(any())
 
                 // AND - the OAuth flow is over, so later app links are ignored
                 mockAppLinkFlow.emit("https://test.redirect.org?code=late_code&state=$state")
@@ -1599,7 +1593,6 @@ class CredentialsViewModelTest {
                 // enrollment ceremony is not started again
                 verify(navigator).navigate(
                     eq(LoginScreenState.OauthAuthentication(selectedServer = authorizationUrl)),
-                    any(),
                 )
                 verify(getDeviceEnrollmentUrl, never()).invoke(any())
 
@@ -1654,7 +1647,7 @@ class CredentialsViewModelTest {
                 val errorState = expectMostRecentItem()
                 assertEquals(errorMessage, errorState.errorMessage)
                 assertEquals(LoginState.Enabled, errorState.loginState)
-                verify(navigator, never()).navigate(any(), any())
+                verify(navigator, never()).navigate(any())
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -1801,7 +1794,6 @@ class CredentialsViewModelTest {
                 assertFalse(expectMostRecentItem().isSessionLocked)
                 verify(navigator).navigate(
                     eq(LoginScreenState.OauthAuthentication(selectedServer = authorizationUrl)),
-                    any(),
                 )
 
                 cancelAndIgnoreRemainingEvents()
@@ -1838,7 +1830,7 @@ class CredentialsViewModelTest {
                 // forgetting the code, so no session renewal is started
                 assertFalse(expectMostRecentItem().isSessionLocked)
                 verify(getSessionRenewalUrl, never()).invoke(any())
-                verify(navigator, never()).navigate(any(), any())
+                verify(navigator, never()).navigate(any())
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -1934,7 +1926,6 @@ class CredentialsViewModelTest {
                 // sitting behind it
                 verify(navigator).navigate(
                     eq(LoginScreenState.OauthAuthentication(selectedServer = authorizationUrl)),
-                    any(),
                 )
                 assertFalse(expectMostRecentItem().isSessionLocked)
 
@@ -2050,7 +2041,6 @@ class CredentialsViewModelTest {
                     verify(loginOutUser).invoke()
                     verify(navigator).navigate(
                         eq(LoginScreenState.OauthAuthentication(selectedServer = authorizationUrl)),
-                        any(),
                     )
                 }
 
@@ -2102,7 +2092,6 @@ class CredentialsViewModelTest {
                 // credentials again instead of reusing the account that just failed
                 verify(navigator).navigate(
                     eq(LoginScreenState.OauthAuthentication(selectedServer = logoutUrl)),
-                    any(),
                 )
 
                 // WHEN - the logout redirect returns
@@ -2549,7 +2538,6 @@ class CredentialsViewModelTest {
             // a second pop cannot discard the destination this callback just pushed
             verify(navigator).navigate(
                 eq(LoginScreenState.OauthAuthentication(selectedServer = logoutUrl)),
-                any(),
             )
             verify(navigator, never()).navigateUp()
         }
@@ -2674,7 +2662,6 @@ class CredentialsViewModelTest {
             verify(processDeviceEnrollment, times(1)).invoke(any())
             verify(navigator, times(1)).navigate(
                 eq(LoginScreenState.OauthAuthentication(selectedServer = consentUrl)),
-                any(),
             )
         }
 

@@ -1,7 +1,9 @@
 package org.dhis2.mobile.login.main.di
 
 import coil3.PlatformContext
+import org.dhis2.mobile.login.accounts.ui.viewmodel.AccountsViewModel
 import org.dhis2.mobile.login.authentication.di.twoFAModule
+import org.dhis2.mobile.login.authentication.di.twoFARepositoryModule
 import org.dhis2.mobile.login.main.data.LoginErrorMessageProvider
 import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
 import org.dhis2.mobile.login.main.domain.usecase.BiometricLogin
@@ -32,7 +34,8 @@ import org.dhis2.mobile.login.main.ui.provider.CredentialsResourceProvider
 import org.dhis2.mobile.login.main.ui.state.OidcInfo
 import org.dhis2.mobile.login.main.ui.viewmodel.CredentialsViewModel
 import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
-import org.dhis2.mobile.login.pin.di.completePinModule
+import org.dhis2.mobile.login.pin.di.pinDataModule
+import org.dhis2.mobile.login.pin.di.pinModule
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
@@ -77,7 +80,7 @@ internal val mainLoginModule =
                 get { parametersOf(params.get()) },
                 get { parametersOf(params.get()) },
                 get { parametersOf(params.get()) },
-                get { parametersOf(params.get()) },
+                get(),
             )
         }
         factory { params ->
@@ -181,11 +184,30 @@ internal val mainLoginModule =
                 isUserLoggedIn = get { parametersOf(context) },
             )
         }
+        viewModel { params ->
+            AccountsViewModel(
+                navigator = get(),
+                repository = get { parametersOf(params.get()) },
+            )
+        }
     }
 
 internal expect val accountModule: Module
 
+/**
+ * Login use cases, view models and UI providers, without the data layer. Pair it with a data
+ * module: the platform one, as [loginModule] does, or [fakeLoginDataModule].
+ */
+val loginFeatureModule =
+    module {
+        includes(mainLoginModule, twoFAModule, pinModule)
+    }
+
+/**
+ * Login feature backed by the platform data layer: the DHIS2 Android SDK on Android and
+ * [fakeLoginDataModule] on the targets that do not have it yet.
+ */
 val loginModule =
     module {
-        includes(mainLoginModule, twoFAModule, accountModule, completePinModule)
+        includes(loginFeatureModule, accountModule, twoFARepositoryModule, pinDataModule)
     }

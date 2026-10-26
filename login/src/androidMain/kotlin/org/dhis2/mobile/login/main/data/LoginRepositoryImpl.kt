@@ -7,11 +7,9 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import org.dhis2.mobile.commons.biometrics.BiometricActions
-import org.dhis2.mobile.commons.biometrics.CryptographicActions
 import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.mobile.commons.error.DomainErrorMapper
-import org.dhis2.mobile.commons.providers.BIOMETRIC_CREDENTIALS
 import org.dhis2.mobile.commons.providers.PreferenceProvider
 import org.dhis2.mobile.commons.providers.SECURE_PASS
 import org.dhis2.mobile.commons.providers.SECURE_SERVER_URL
@@ -48,8 +46,7 @@ private const val VERSION = "version"
 
 class LoginRepositoryImpl(
     private val d2: D2,
-    private val authenticator: BiometricActions,
-    private val cryptographyManager: CryptographicActions,
+    private val biometrics: BiometricActions,
     private val preferences: PreferenceProvider,
     private val d2ErrorMessageProvider: D2ErrorMessageProvider,
     private val crashReportController: CrashReportController,
@@ -296,7 +293,7 @@ class LoginRepositoryImpl(
 
     override suspend fun canLoginWithBiometrics(serverUrl: String): Boolean =
         withContext(dispatcher.io) {
-            val hasBiometrics = authenticator.hasBiometric()
+            val hasBiometrics = biometrics.hasBiometric()
             val biometricPermissionGranted = hasEnabledBiometricsPermission()
             val hasOnlyOneAccount =
                 d2
@@ -306,13 +303,13 @@ class LoginRepositoryImpl(
                     .count() == 1
             val isSameServer =
                 preferences.getString(SECURE_SERVER_URL)?.let { it == serverUrl } ?: false
-            val hasKey = preferences.contains(SECURE_PASS) || cryptographyManager.isKeyReady()
+            val hasKey = preferences.contains(SECURE_PASS) || biometrics.hasProtectedSecret()
             hasBiometrics && hasOnlyOneAccount && isSameServer && hasKey && biometricPermissionGranted
         }
 
     override suspend fun displayBiometricMessage(): Boolean =
         withContext(dispatcher.io) {
-            val hasBiometrics = authenticator.hasBiometric()
+            val hasBiometrics = biometrics.hasBiometric()
             val credentialsNotSet = preferences.areCredentialsSet().not()
             val hasOnlyOneAccount =
                 d2
@@ -374,31 +371,12 @@ class LoginRepositoryImpl(
     context(context: PlatformContext)
     override suspend fun loginWithBiometric(): kotlin.Result<UserPassword> =
         withContext(dispatcher.main) {
-            preferences.getBiometricCredentials()?.let { ciphertextWrapper ->
-                cryptographyManager
-                    .getInitializedCipherForDecryption(ciphertextWrapper.initializationVector)
-                    .let { cipher ->
-                        suspendCancellableCoroutine { continuation ->
-                            authenticator.authenticate(cipher) { cipher ->
-                                val pass =
-                                    cryptographyManager.decryptData(
-                                        ciphertextWrapper.ciphertext,
-                                        cipher,
-                                    )
-                                continuation.resume(value = kotlin.Result.success(pass)) { _, _, _ -> }
-                            }
-                            continuation.invokeOnCancellation {
-                                // If needed perform action on cancellation
-                            }
-                        }
-                    }
-            } ?: kotlin.Result.failure(Exception("No biometrics found"))
+            biometrics.readSecret()
         }
 
     override suspend fun deleteBiometricCredentials() {
         withContext(dispatcher.io) {
-            preferences.removeValue(BIOMETRIC_CREDENTIALS)
-            cryptographyManager.deleteInvalidKey()
+            biometrics.deleteSecret()
         }
     }
 

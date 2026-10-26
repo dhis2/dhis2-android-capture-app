@@ -2,6 +2,10 @@ package org.dhis2.mobile.login.main.ui.screen
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -47,17 +51,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import androidx.navigation3.ui.NavDisplay
 import coil3.compose.LocalPlatformContext
 import org.dhis2.mobile.commons.extensions.ObserveAsEvents
 import org.dhis2.mobile.login.accounts.ui.screen.AccountsScreen
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.ui.contracts.filePicker
 import org.dhis2.mobile.login.main.ui.navigation.NavigationAction
+import org.dhis2.mobile.login.main.ui.navigation.loginSavedStateConfiguration
+import org.dhis2.mobile.login.main.ui.navigation.navigateTo
+import org.dhis2.mobile.login.main.ui.navigation.navigateUp
 import org.dhis2.mobile.login.main.ui.state.DatabaseImportState
 import org.dhis2.mobile.login.main.ui.state.OidcInfo
 import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
@@ -86,9 +94,11 @@ import org.koin.core.parameter.parametersOf
  */
 private const val OAUTH_REDIRECT_SCHEME = "dhis2oauth"
 
+/** Same fade navigation-compose used by default, so screens keep animating as before. */
+private const val SCREEN_TRANSITION_MILLIS = 700
+
 @Composable
 fun LoginScreen(
-    navController: NavHostController = rememberNavController(),
     versionName: String,
     onNavigateToSync: () -> Unit,
     onNavigateToHome: () -> Unit,
@@ -103,6 +113,7 @@ fun LoginScreen(
     var displayBackArrow by remember { mutableStateOf(false) }
     val snackBarHostState = remember { SnackbarHostState() }
     val databaseImportState by viewModel.importDatabaseState.collectAsState()
+    val backStack = rememberNavBackStack(loginSavedStateConfiguration, LoginScreenState.Loading)
 
     val picker =
         filePicker { path ->
@@ -131,7 +142,7 @@ fun LoginScreen(
                 displayMoreActions = displayMoreActions,
                 displayBackArrow = displayBackArrow,
                 onBack = {
-                    if (!navController.popBackStack()) {
+                    if (!backStack.navigateUp()) {
                         onFinish()
                     }
                 },
@@ -152,12 +163,8 @@ fun LoginScreen(
 
         ObserveAsEvents(viewModel.navigator.navigationActions) { action ->
             when (action) {
-                is NavigationAction.Navigate -> {
-                    navController.popBackStack(LoginScreenState.Loading, true)
-                    navController.navigate(action.destination)
-                }
-
-                NavigationAction.NavigateUp -> navController.navigateUp()
+                is NavigationAction.Navigate -> backStack.navigateTo(action.destination)
+                NavigationAction.NavigateUp -> backStack.navigateUp()
                 NavigationAction.NavigateToHome -> onNavigateToHome()
                 NavigationAction.NavigateToSync -> onNavigateToSync()
                 NavigationAction.NavigateToPrivacyPolicy -> onNavigateToPrivacyPolicy()
@@ -167,9 +174,16 @@ fun LoginScreen(
         val layoutDirection = LocalLayoutDirection.current
 
         SharedTransitionLayout {
-            NavHost(
-                navController = navController,
-                startDestination = LoginScreenState.Loading,
+            NavDisplay(
+                backStack = backStack,
+                onBack = { backStack.navigateUp() },
+                entryDecorators =
+                    listOf(
+                        rememberSaveableStateHolderNavEntryDecorator(),
+                        rememberViewModelStoreNavEntryDecorator(),
+                    ),
+                transitionSpec = { fadeIn(tween(SCREEN_TRANSITION_MILLIS)) togetherWith fadeOut(tween(SCREEN_TRANSITION_MILLIS)) },
+                popTransitionSpec = { fadeIn(tween(SCREEN_TRANSITION_MILLIS)) togetherWith fadeOut(tween(SCREEN_TRANSITION_MILLIS)) },
                 modifier =
                     Modifier
                         .fillMaxSize()
@@ -184,74 +198,74 @@ fun LoginScreen(
                             Color.White,
                             shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
                         ).padding(bottom = padding.calculateBottomPadding()),
-            ) {
-                composable<LoginScreenState.Loading> {
-                    displayMoreActions = false
-                    displayBackArrow = false
-                    LoadingScreen()
-                }
-                composable<LoginScreenState.ServerValidation> {
-                    val args = it.toRoute<LoginScreenState.ServerValidation>()
-                    displayMoreActions = true
-                    displayBackArrow = false
+                entryProvider =
+                    entryProvider {
+                        entry<LoginScreenState.Loading> {
+                            displayMoreActions = false
+                            displayBackArrow = false
+                            LoadingScreen()
+                        }
+                        entry<LoginScreenState.ServerValidation> { args ->
+                            displayMoreActions = true
+                            displayBackArrow = false
 
-                    val uiState by viewModel.serverValidationState.collectAsState()
-                    ServerValidationContent(
-                        availableServers = args.availableServers,
-                        state = uiState,
-                        hasAccount = args.hasAccounts,
-                        onValidate = viewModel::onValidateServer,
-                        onCancel = viewModel::cancelServerValidation,
-                        onManageAccounts = viewModel::onBackToManageAccounts,
-                    )
-                }
-                composable<LoginScreenState.LoginCredentials> {
-                    val arg = it.toRoute<LoginScreenState.LoginCredentials>()
-                    displayMoreActions = arg.selectedServer.isEmpty()
-                    displayBackArrow = true
-                    CredentialsScreen(
-                        selectedServer = arg.selectedServer,
-                        selectedServerName = arg.serverName,
-                        selectedUsername = arg.selectedUsername?.takeIf { username -> username.isNotEmpty() },
-                        selectedServerFlag = arg.selectedServerFlag,
-                        allowRecovery = arg.allowRecovery,
-                        oidcInfo =
-                            fixedOpenIdProvider(fixedOidcInfo).takeIf { info ->
-                                info.serverUrl == arg.selectedServer
-                            },
-                        entryMode = arg.entryMode,
-                        autoPromptLogin = arg.autoPromptLogin,
-                        autoStartRenewal = arg.autoStartRenewal,
-                    )
-                }
-                composable<LoginScreenState.OauthAuthentication> {
-                    val args = it.toRoute<LoginScreenState.OauthAuthentication>()
-                    WebAuthenticator(
-                        url = args.selectedServer,
-                        redirectScheme = OAUTH_REDIRECT_SCHEME,
-                        onAuthCallback = { redirectUri ->
-                            viewModel.onOauthRedirect(redirectUri)
-                        },
-                        onDismiss = {
-                            viewModel.onOauthLoginCancelled()
-                        },
-                    )
-                }
-                composable<LoginScreenState.Accounts> {
-                    displayMoreActions = true
-                    displayBackArrow = false
-                    AccountsScreen(
-                        sharedTransitionScope = this@SharedTransitionLayout,
-                        animatedVisibilityScope = this@composable,
-                    )
-                }
-                composable<LoginScreenState.RecoverAccount> {
-                    val arg = it.toRoute<LoginScreenState.RecoverAccount>()
-                    WebRecovery(arg.selectedServer) {
-                        viewModel.onRecoveryCancelled()
-                    }
-                }
-            }
+                            val uiState by viewModel.serverValidationState.collectAsState()
+                            ServerValidationContent(
+                                availableServers = args.availableServers,
+                                state = uiState,
+                                hasAccount = args.hasAccounts,
+                                onValidate = viewModel::onValidateServer,
+                                onCancel = viewModel::cancelServerValidation,
+                                onManageAccounts = viewModel::onBackToManageAccounts,
+                            )
+                        }
+                        entry<LoginScreenState.LoginCredentials> { arg ->
+                            displayMoreActions = arg.selectedServer.isEmpty()
+                            displayBackArrow = true
+                            with(LocalNavAnimatedContentScope.current) {
+                                CredentialsScreen(
+                                    selectedServer = arg.selectedServer,
+                                    selectedServerName = arg.serverName,
+                                    selectedUsername = arg.selectedUsername?.takeIf { username -> username.isNotEmpty() },
+                                    selectedServerFlag = arg.selectedServerFlag,
+                                    allowRecovery = arg.allowRecovery,
+                                    oidcInfo =
+                                        fixedOpenIdProvider(fixedOidcInfo).takeIf { info ->
+                                            info.serverUrl == arg.selectedServer
+                                        },
+                                    entryMode = arg.entryMode,
+                                    autoPromptLogin = arg.autoPromptLogin,
+                                    autoStartRenewal = arg.autoStartRenewal,
+                                )
+                            }
+                        }
+                        entry<LoginScreenState.OauthAuthentication> { args ->
+                            WebAuthenticator(
+                                url = args.selectedServer,
+                                redirectScheme = OAUTH_REDIRECT_SCHEME,
+                                onAuthCallback = { redirectUri ->
+                                    viewModel.onOauthRedirect(redirectUri)
+                                },
+                                onDismiss = {
+                                    viewModel.onOauthLoginCancelled()
+                                },
+                            )
+                        }
+                        entry<LoginScreenState.Accounts> {
+                            displayMoreActions = true
+                            displayBackArrow = false
+                            AccountsScreen(
+                                sharedTransitionScope = this@SharedTransitionLayout,
+                                animatedVisibilityScope = LocalNavAnimatedContentScope.current,
+                            )
+                        }
+                        entry<LoginScreenState.RecoverAccount> { arg ->
+                            WebRecovery(arg.selectedServer) {
+                                viewModel.onRecoveryCancelled()
+                            }
+                        }
+                    },
+            )
         }
     }
 }

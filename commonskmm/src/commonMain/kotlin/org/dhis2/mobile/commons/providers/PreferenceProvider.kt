@@ -10,12 +10,6 @@ interface PreferenceProvider {
         pass: String?,
     )
 
-    fun saveUserCredentialsAndCipher(
-        serverUrl: String,
-        userName: String,
-        ciphertextWrapper: CiphertextWrapper,
-    )
-
     fun getBiometricCredentials(): CiphertextWrapper?
 
     fun areCredentialsSet(): Boolean
