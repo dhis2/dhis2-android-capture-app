@@ -17,7 +17,6 @@ import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
 import org.dhis2.mobile.login.main.ui.state.DatabaseImportState
 import org.dhis2.mobile.login.main.ui.state.ServerValidationUiState
-import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -71,7 +70,6 @@ class LoginViewModelTest {
 
             verify(navigator).navigate(
                 eq(initialScreenState),
-                any(),
             )
         }
 

@@ -1,8 +1,9 @@
 package org.dhis2.mobile.login.main.domain.model
 
+import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
-sealed interface LoginScreenState {
+sealed interface LoginScreenState : NavKey {
     @Serializable
     data object Loading : LoginScreenState
 

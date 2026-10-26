@@ -10,7 +10,6 @@ import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.commons.extensions.withMinimumDuration
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
-import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState.LoginCredentials
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
@@ -45,14 +44,7 @@ class LoginViewModel(
     private fun goToInitialScreen() {
         launchUseCase {
             val destination = getInitialScreen(renewSession)
-            navigator.navigate(
-                destination = destination,
-                navOptions = {
-                    popUpTo(LoginScreenState.Loading) {
-                        inclusive = true
-                    }
-                },
-            )
+            navigator.navigate(destination = destination)
         }
     }
 

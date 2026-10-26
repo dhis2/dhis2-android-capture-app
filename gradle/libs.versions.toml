@@ -2,6 +2,8 @@
 kotlinxDatetime = "0.7.1-0.6.x-compat" #Needs to be compatible with the Rule engine, update when it's updated
 lifecycleRuntimeCompose = "2.9.6"
 navigationCompose = "2.9.2"
+navigation3 = "1.1.1" # 1.1.2 pulls compose runtime 1.11, keep in line with composePluginVersion
+lifecycleNavigation3 = "2.10.0"
 targetSdk = "36"
 compileSdk = "37"
 minSdk = "23"
@@ -118,6 +120,8 @@ androidx-compose-preview = { group = "androidx.compose.ui", name = "ui-tooling-p
 androidx-compose-paging = { group = "androidx.paging", name = "paging-compose", version.ref = "composePaging" }
 lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
+lifecycle-viewmodel-navigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleNavigation3" }
 test-androidx-paging = { group = "androidx.paging", name = "paging-testing", version.ref = "pagingTesting" }
 androidx-coreKtx = { group = "androidx.core", name = "core-ktx", version.ref = "corektx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
@@ -183,6 +187,7 @@ test-junitKtx = { group = "androidx.test.ext", name = "junit-ktx", version.ref =
 test-junit-ext = { group = "androidx.test.ext", name = "junit", version.ref = "junit_ext" }
 test-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
 test-rx2-idler = { group = "com.squareup.rx.idler", name = "rx2-idler", version = "0.11.0" }
+kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinxcoroutines" }
 test-kotlinCoroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxcoroutines" }
 test-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 test-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }

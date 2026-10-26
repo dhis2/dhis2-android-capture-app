@@ -32,6 +32,9 @@ kotlin {
 
     jvm("desktop")
 
+    iosArm64()
+    iosSimulatorArm64()
+
     configurations.all {
         resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
     }
@@ -53,7 +56,8 @@ kotlin {
                 implementation(libs.compose.material3.window)
                 implementation(libs.compose.components.resources)
                 implementation(project(":commonskmm"))
-                implementation(libs.navigation.compose)
+                implementation(libs.navigation3.ui)
+                implementation(libs.lifecycle.viewmodel.navigation3)
                 implementation(libs.compose.ui.uiToolingPreview)
 
                 // Koin
