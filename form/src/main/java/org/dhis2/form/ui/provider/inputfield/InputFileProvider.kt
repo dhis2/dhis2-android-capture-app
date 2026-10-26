@@ -45,7 +45,11 @@ internal fun ProvideInputFileResource(
             }
     }
 
-    val filePicker = rememberFilePicker(onFileSelected)
+    val filePicker =
+        rememberFilePicker(
+            onResult = onFileSelected,
+            onCancel = { uploadState = getFileUploadState(fieldUiModel.displayName, false) },
+        )
 
     InputFileResource(
         modifier = modifier.fillMaxWidth(),
