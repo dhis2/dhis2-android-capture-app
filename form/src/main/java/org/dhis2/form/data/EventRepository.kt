@@ -1,13 +1,10 @@
 package org.dhis2.form.data
 
-import android.text.TextUtils
 import androidx.paging.PagingData
 import io.reactivex.Flowable
 import io.reactivex.Single
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
-import org.dhis2.bindings.blockingGetValueCheck
 import org.dhis2.commons.bindings.program
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.inDateRange
@@ -30,7 +27,6 @@ import org.dhis2.form.model.PeriodSelector
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.extensions.toColor
-import org.dhis2.mobile.commons.extensions.userFriendlyValue
 import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.D2
@@ -655,51 +651,16 @@ class EventRepository(
             sectionMap.values.firstOrNull { section ->
                 section.dataElements()?.map { it.uid() }?.contains(de?.uid()) ?: false
             }
-        var dataValue =
-            when {
-                valueRepository.blockingExists() -> valueRepository.blockingGet()?.value()
-                else -> null
-            }
-        val friendlyValue =
-            dataValue?.let {
-                runBlocking {
-                    valueRepository
-                        .blockingGetValueCheck(d2, uid)
-                        ?.value
-                        ?.userFriendlyValue(uid, valueType != ValueType.PERCENTAGE)
-                }
-            }
+        val dataValue = valueRepository.blockingGet()?.value()
+
         val allowFutureDates = programStageDataElement.allowFutureDate() ?: false
         val formName = de?.displayFormName()
         val description = de?.displayDescription()
         var optionSetConfig: OptionSetConfiguration? = null
-        if (!TextUtils.isEmpty(optionSet)) {
-            if (!TextUtils.isEmpty(dataValue) &&
-                d2
-                    .optionModule()
-                    .options()
-                    .byOptionSetUid()
-                    .eq(optionSet)
-                    .byCode()
-                    .eq(dataValue)
-                    .one()
-                    .blockingExists()
-            ) {
-                dataValue =
-                    d2
-                        .optionModule()
-                        .options()
-                        .byOptionSetUid()
-                        .eq(optionSet)
-                        .byCode()
-                        .eq(dataValue)
-                        .one()
-                        .blockingGet()
-                        ?.displayName()
-            }
+        if (!optionSet.isNullOrEmpty()) {
             val (searchEmitter, optionFlow) =
                 options(
-                    optionSetUid = optionSet!!,
+                    optionSetUid = optionSet,
                     optionsToHide = emptyList(),
                     optionGroupsToHide = emptyList(),
                     optionGroupsToShow = emptyList(),
@@ -719,14 +680,6 @@ class EventRepository(
                 getConflictErrorsAndWarnings(deUid, dataValue)
             } ?: Pair(null, null)
 
-        val isOrgUnit =
-            valueType === ValueType.ORGANISATION_UNIT
-        val isDate = valueType != null && valueType.isDate
-        // File values must stay as the file resource uid so inputs can resolve the local path
-        val isFile = valueType == ValueType.IMAGE || valueType == ValueType.FILE_RESOURCE
-        if (!isOrgUnit && !isDate && !isFile) {
-            dataValue = friendlyValue
-        }
         val renderingType = getSectionRenderingType(programStageSection)
         val featureType = getFeatureType(valueType)
 

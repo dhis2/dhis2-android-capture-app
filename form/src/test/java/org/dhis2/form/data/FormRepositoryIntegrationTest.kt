@@ -26,6 +26,7 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -92,7 +93,7 @@ class FormRepositoryIntegrationTest {
                 on { fieldMask() } doReturn null
             }
         whenever(conf.trackedEntityAttribute("teAttributeUid")) doReturn teAttribute
-        whenever(conf.attributeValue(any())) doReturn null
+        whenever(conf.getValue(any())) doReturn null
         whenever(conf.conflicts()) doReturn emptyList()
         whenever(conf.program()) doReturn program
         whenever(conf.trackedEntityType()) doReturn teType
@@ -150,6 +151,29 @@ class FormRepositoryIntegrationTest {
             assertTrue(
                 (fields.filter { it.isSection() }[1] as SectionUiModelImpl).isOpen == true,
             )
+        }
+
+    @Test
+    fun shouldKeepStoredValueForCoordinateAttribute() =
+        runTest {
+            mockCompletedEnrollment()
+            whenever(conf.disableCollapsableSectionsInProgram(any())) doReturn false
+            val coordinateAttribute: TrackedEntityAttribute =
+                mock {
+                    on { uid() } doReturn "teAttributeUid"
+                    on { valueType() } doReturn ValueType.COORDINATE
+                    on { optionSet() } doReturn null
+                    on { generated() } doReturn false
+                    on { style() } doReturn ObjectStyle.builder().build()
+                    on { fieldMask() } doReturn null
+                }
+            whenever(conf.trackedEntityAttribute("teAttributeUid")) doReturn coordinateAttribute
+            whenever(conf.getValue("teAttributeUid")) doReturn "[-11.5,8.4]"
+
+            val repository = mockFormRepository(EnrollmentMode.CHECK)
+
+            val fields = repository.fetchFormItems()
+            assertEquals("[-11.5,8.4]", fields.first { it.uid == "teAttributeUid" }.value)
         }
 
     private fun mockUncompletedEnrollment() {
