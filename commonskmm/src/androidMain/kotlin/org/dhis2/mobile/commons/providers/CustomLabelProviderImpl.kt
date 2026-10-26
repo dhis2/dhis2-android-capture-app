@@ -4,16 +4,26 @@ import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import org.dhis2.mobile.commons.resources.Res
 import org.dhis2.mobile.commons.resources.enrollment
+import org.dhis2.mobile.commons.resources.enrollment_one
+import org.dhis2.mobile.commons.resources.enrollment_other
 import org.dhis2.mobile.commons.resources.event
+import org.dhis2.mobile.commons.resources.event_one
+import org.dhis2.mobile.commons.resources.event_other
 import org.dhis2.mobile.commons.resources.follow_up
 import org.dhis2.mobile.commons.resources.group_by_stage_label
 import org.dhis2.mobile.commons.resources.mark_for_follow_up
 import org.dhis2.mobile.commons.resources.marked_for_follow_up
 import org.dhis2.mobile.commons.resources.org_unit
+import org.dhis2.mobile.commons.resources.org_unit_one
+import org.dhis2.mobile.commons.resources.org_unit_other
 import org.dhis2.mobile.commons.resources.program_stage
 import org.dhis2.mobile.commons.resources.relationship
+import org.dhis2.mobile.commons.resources.relationship_one
+import org.dhis2.mobile.commons.resources.relationship_other
 import org.dhis2.mobile.commons.resources.stage
 import org.dhis2.mobile.commons.resources.tei
+import org.dhis2.mobile.commons.resources.tei_one
+import org.dhis2.mobile.commons.resources.tei_other
 import org.hisp.dhis.android.core.D2
 import org.jetbrains.compose.resources.PluralStringResource
 import org.jetbrains.compose.resources.StringResource
@@ -50,9 +60,35 @@ class CustomLabelProviderImpl(
     ): String =
         execute(
             capitalizeFirstLetter = capitalizeFirstLetter,
-            defaultLabel = { getPluralString(defaultResource, quantity ?: 1) },
+            defaultLabel = { loadPluralString(defaultResource, quantity ?: 1) },
             block = block,
         )
+
+    /**
+     * Compose resources 1.10 throws [NoSuchElementException] when the current locale has no CLDR
+     * plural rules (e.g. rw, rn, tet, tg, prs, cnr). Fixed upstream in 1.13 which is currently in alpha
+     * (JetBrains/compose-multiplatform#5650); until then fall back to plain string resources.
+     */
+    private suspend fun loadPluralString(
+        resource: PluralStringResource,
+        quantity: Int,
+    ): String =
+        try {
+            getPluralString(resource, quantity)
+        } catch (e: NoSuchElementException) {
+            val (one, other) = pluralFallbacks[resource] ?: throw e
+            getString(if (quantity == 1) one else other)
+        }
+
+    private val pluralFallbacks: Map<PluralStringResource, Pair<StringResource, StringResource>> by lazy {
+        mapOf(
+            Res.plurals.enrollment to (Res.string.enrollment_one to Res.string.enrollment_other),
+            Res.plurals.org_unit to (Res.string.org_unit_one to Res.string.org_unit_other),
+            Res.plurals.tei to (Res.string.tei_one to Res.string.tei_other),
+            Res.plurals.event to (Res.string.event_one to Res.string.event_other),
+            Res.plurals.relationship to (Res.string.relationship_one to Res.string.relationship_other),
+        )
+    }
 
     private suspend fun execute(
         defaultResource: StringResource,
