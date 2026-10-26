@@ -24,7 +24,6 @@ import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
 import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
 import org.dhis2.mobile.login.pin.data.SessionRepository
-import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -101,7 +100,6 @@ class LoginScreenIntegrationTest {
                         hasAccounts = false,
                     ),
                 ),
-                any(),
             )
         }
 
@@ -135,7 +133,6 @@ class LoginScreenIntegrationTest {
                         autoPromptLogin = false,
                     ),
                 ),
-                any(),
             )
         }
 
@@ -169,7 +166,6 @@ class LoginScreenIntegrationTest {
                         autoPromptLogin = false,
                     ),
                 ),
-                any(),
             )
         }
 
@@ -199,7 +195,6 @@ class LoginScreenIntegrationTest {
             // Then goes to manage accounts screen (Accounts)
             verify(navigator).navigate(
                 eq(LoginScreenState.Accounts),
-                any(),
             )
         }
 
@@ -223,7 +218,6 @@ class LoginScreenIntegrationTest {
             // Then goes to manage accounts screen (Accounts)
             verify(navigator).navigate(
                 eq(LoginScreenState.Accounts),
-                any(),
             )
         }
 
@@ -258,7 +252,6 @@ class LoginScreenIntegrationTest {
             // Then goes to the credentials screen in OAuth mode
             verify(navigator).navigate(
                 eq(newAccountCredentials(CredentialsEntryMode.NEW_ACCOUNT_OAUTH)),
-                any(),
             )
         }
 
@@ -278,7 +271,6 @@ class LoginScreenIntegrationTest {
             // Then goes to the credentials screen in username and password mode
             verify(navigator).navigate(
                 eq(newAccountCredentials(CredentialsEntryMode.NEW_ACCOUNT_BASIC)),
-                any(),
             )
         }
 

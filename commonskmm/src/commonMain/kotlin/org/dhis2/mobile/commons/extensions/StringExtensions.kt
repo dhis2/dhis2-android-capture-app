@@ -12,12 +12,7 @@ import org.dhis2.mobile.commons.dates.dateFormat
 import org.dhis2.mobile.commons.dates.dateTimeFormat
 import org.dhis2.mobile.commons.dates.timeFormat
 import org.dhis2.mobile.commons.reporting.CrashReportController
-import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
-import org.hisp.dhis.mobile.ui.designsystem.component.TimeUnitValues
 import org.koin.mp.KoinPlatform.getKoin
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 expect fun String.toImageBitmap(): ImageBitmap?
 
@@ -59,7 +54,7 @@ suspend fun String.userFriendlyValue(
             valueInfo.isBooleanType -> {
                 valueParser
                     .valueFromBooleanType(this)
-                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
             }
 
             valueInfo.isCoordinate ->
@@ -114,30 +109,3 @@ fun String.toColorInt(): Int {
     val color = toColor()
     return color.toArgb()
 }
-
-fun String.getDateFromAge(age: AgeInputType.Age): String? {
-    val calendar = Calendar.getInstance()
-    return try {
-        when (age.unit) {
-            TimeUnitValues.YEARS -> calendar.add(Calendar.YEAR, -age.value.text.toInt())
-            TimeUnitValues.MONTHS -> calendar.add(Calendar.MONTH, -age.value.text.toInt())
-            TimeUnitValues.DAYS -> calendar.add(Calendar.DAY_OF_MONTH, -age.value.text.toInt())
-        }
-
-        val dateFormat = SimpleDateFormat(DB_FORMAT, Locale.ENGLISH)
-        dateFormat.format(calendar.time)
-    } catch (e: Exception) {
-        null
-    }
-}
-
-fun String.hasDateFormat(format: String = DB_FORMAT): Boolean =
-    try {
-        val dateFormat = SimpleDateFormat(format, Locale.ENGLISH)
-        dateFormat.parse(this)
-        true
-    } catch (e: Exception) {
-        false
-    }
-
-private const val DB_FORMAT = "yyyy-MM-dd"

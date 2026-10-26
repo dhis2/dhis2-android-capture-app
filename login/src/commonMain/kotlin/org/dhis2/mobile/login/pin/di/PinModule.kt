@@ -36,11 +36,3 @@ internal val pinModule =
  * Expected to be implemented in androidMain, iosMain, etc.
  */
 internal expect val pinDataModule: Module
-
-/**
- * Complete PIN module including common and platform-specific parts.
- */
-val completePinModule =
-    module {
-        includes(pinModule, pinDataModule)
-    }
