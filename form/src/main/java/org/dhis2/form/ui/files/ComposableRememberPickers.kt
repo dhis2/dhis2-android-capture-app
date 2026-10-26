@@ -18,21 +18,24 @@ import org.dhis2.mobile.commons.files.toFileOverWrite
 import java.io.File
 
 @Composable
-fun rememberFilePicker(onResult: (String) -> Unit) =
-    with(LocalContext.current) {
-        val launcher =
-            rememberLauncherForActivityResult(
-                contract = GetFileResource(),
-                onResult = { uris ->
-                    uris
-                        .firstOrNull()
-                        ?.toFileOverWrite(context = this)
-                        ?.path
-                        ?.let(onResult)
-                },
-            )
-        return@with launcher
-    }
+fun rememberFilePicker(
+    onResult: (String) -> Unit,
+    onCancel: () -> Unit = {},
+) = with(LocalContext.current) {
+    val launcher =
+        rememberLauncherForActivityResult(
+            contract = GetFileResource(),
+            onResult = { uris ->
+                uris
+                    .firstOrNull()
+                    ?.toFileOverWrite(context = this)
+                    ?.path
+                    ?.let(onResult)
+                    ?: onCancel()
+            },
+        )
+    return@with launcher
+}
 
 /**
  * Drives the camera capture of an image field: asks for the permission when it is missing, and hands
