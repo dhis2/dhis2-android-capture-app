@@ -79,6 +79,23 @@ allprojects {
         }
     }
 
+    // commons-io only arrives through the SDK's sms-compression, which declares it but never
+    // uses it. Its 2.6 version is vulnerable (CVE-2021-29425) and newer ones rely on
+    // java.nio.file (API 26+, minSdk is 23), so keep it out instead of upgrading it.
+    configurations
+        .matching { it.name.matches(Regex(".*([dD]ebug|[rR]elease|android)RuntimeClasspath")) }
+        .configureEach {
+            exclude(group = "commons-io", module = "commons-io")
+        }
+
+    // The SBOM uploaded to DependencyTrack must only list what ships in the APK, so it is
+    // built from the app release classpaths alone. Build and test tooling would flood it with
+    // findings, and library modules resolve older versions than the ones the app ends up with.
+    tasks.withType<org.cyclonedx.gradle.CyclonedxDirectTask>().configureEach {
+        enabled = project.path == ":app"
+        includeConfigs.set(listOf(".*ReleaseRuntimeClasspath"))
+    }
+
     // JUnit Jupiter must never reach a test configuration. useJUnitPlatform() is set
     // nowhere in this build, so a Jupiter @Test would compile but never run, and the
     // build would still pass. Excluding it turns that into a compile error.
