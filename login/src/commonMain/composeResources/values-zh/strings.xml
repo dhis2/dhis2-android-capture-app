@@ -64,7 +64,13 @@
     <string name="pin_error_reset_failed">重置密码失败</string>
     <string name="pin_error_remaining_attempts">%1$s 剩余尝试次数</string>
     <string name="pin_error_locked_countdown">尝试次数过多。请在%1$s 秒后重试</string>
+    <string name="offline_credential_create_title">生成一个离线代码</string>
+    <string name="offline_credential_create_description">设置一个代码，以便离线登录此账户。</string>
+    <string name="offline_credential_create_button">生成代码</string>
+    <string name="offline_credential_enter_title">请输入您的离线代码 </string>
+    <string name="offline_credential_enter_description">请输入您的4位数密码以进行离线登录。</string>
     <string name="offline_credential_enter_button">登录</string>
+    <string name="offline_credential_forgot_button">忘记密码了吗？</string>
     <string name="import_database">导入数据库</string>
     <string name="importing_successful">导入成功</string>
     <string name="openid_process_cancelled">登录被取消</string>
@@ -75,6 +81,7 @@
     <string name="openid_error_not_configured">此服务器未配置 OpenID 登录功能</string>
     <string name="error_device_not_registered">设备未注册</string>
     <string name="missing_username_from_oauth_login_response">OAuth 登录响应中缺少用户名</string>
+    <string name="offline_credential_forgot_code_description">要设置新的密码，您需要使用用户名和密码登录。此操作需要联网。</string>
     <string name="login_online">在线登录</string>
     <string name="cancel">取消</string>
 </resources>
