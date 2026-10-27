@@ -31,6 +31,7 @@ val settingsModule =
         factory<ErrorModelMapper> {
             val resourceManager: ResourceManager = get()
             ErrorModelMapper(
+                fkTitle = resourceManager.getString(R.string.fk_error),
                 fkMessage = resourceManager.getString(R.string.fk_message),
                 httpStatusMessageProvider = HttpStatusMessageProvider(),
             )

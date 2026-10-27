@@ -161,7 +161,7 @@ fun SettingsScreen(
     }
 
     if (showErrorLog) {
-        SyncErrorLogDialog {
+        SyncErrorLogDialog(errorLogType = ErrorLogType.Sync) {
             showErrorLog = false
         }
     }
