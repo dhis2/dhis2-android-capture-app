@@ -1,6 +1,5 @@
 package org.dhis2.form.data.metadata
 
-import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.bindings.enrollmentImportConflicts
 import org.dhis2.commons.bindings.program
@@ -8,10 +7,8 @@ import org.dhis2.commons.bindings.tei
 import org.dhis2.commons.bindings.teiAttribute
 import org.dhis2.commons.bindings.trackedEntityType
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.mobile.commons.extensions.userFriendlyValue
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
-import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
 class EnrollmentConfiguration(
@@ -81,28 +78,6 @@ class EnrollmentConfiguration(
             .blockingGet()
 
     fun trackedEntityAttribute(trackedEntityAttributeUid: String) = d2.teiAttribute(trackedEntityAttributeUid)
-
-    fun attributeValue(trackedEntityAttributeUid: String): String? =
-        runBlocking {
-            val trackedEntityAttribute =
-                d2
-                    .trackedEntityModule()
-                    .trackedEntityAttributeValues()
-                    .value(
-                        trackedEntityAttributeUid,
-                        enrollment()?.trackedEntityInstance()!!,
-                    ).blockingGet()
-            val teiIsPercentage =
-                d2
-                    .trackedEntityModule()
-                    .trackedEntityAttributes()
-                    .uid(trackedEntityAttributeUid)
-                    .blockingGet()
-                    ?.valueType() ==
-                    ValueType.PERCENTAGE
-
-            trackedEntityAttribute?.value?.userFriendlyValue(trackedEntityAttributeUid, !teiIsPercentage)
-        }
 
     fun conflicts() = d2.enrollmentImportConflicts(enrollmentUid)
 
@@ -205,4 +180,5 @@ class EnrollmentConfiguration(
             .trackedEntityAttributeValues()
             .value(attributeUid, tei()?.uid()!!)
             .blockingGet()
+            ?.value
 }
