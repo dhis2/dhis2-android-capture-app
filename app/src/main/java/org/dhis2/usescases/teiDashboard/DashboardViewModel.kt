@@ -531,6 +531,7 @@ class DashboardViewModel(
                             customLabelProvider.getCustomEnrollmentLabel(
                                 programUid = repository.getProgramUid(),
                                 quantity = 2,
+                                keepConfiguredCase = true,
                             ),
                     ),
                 leadingElement = MenuLeadingElement.Icon(icon = Icons.AutoMirrored.Outlined.Assignment),

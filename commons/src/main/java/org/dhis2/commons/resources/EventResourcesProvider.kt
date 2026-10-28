@@ -1,10 +1,9 @@
 package org.dhis2.commons.resources
 
 import androidx.annotation.StringRes
-import androidx.compose.ui.text.capitalize
-import androidx.compose.ui.text.intl.Locale
 import org.dhis2.mobile.commons.providers.CustomLabelContext
 import org.dhis2.mobile.commons.providers.CustomLabelProvider
+import org.dhis2.mobile.commons.providers.formatWithTerm
 import org.hisp.dhis.android.core.D2
 
 class EventResourcesProvider(
@@ -31,6 +30,7 @@ class EventResourcesProvider(
                     else -> null
                 },
             quantity = quantity,
+            keepConfiguredCase = true,
         ).formatLabel(
             stringResource,
             quantity,
@@ -40,9 +40,11 @@ class EventResourcesProvider(
     fun programEventLabel(
         customLabelContext: CustomLabelContext? = null,
         quantity: Int = 1,
+        keepConfiguredCase: Boolean = false,
     ) = customLabelProvider.blockingCustomEventLabel(
         customLabelContext,
         quantity,
+        keepConfiguredCase,
     )
 
     fun formatWithProgramEventLabel(
@@ -51,7 +53,11 @@ class EventResourcesProvider(
         quantity: Int = 1,
         formatWithQuantity: Boolean = false,
     ): String =
-        programEventLabel(programUid?.let { CustomLabelContext.Program(it) }, quantity).formatLabel(
+        programEventLabel(
+            customLabelContext = programUid?.let { CustomLabelContext.Program(it) },
+            quantity = quantity,
+            keepConfiguredCase = true,
+        ).formatLabel(
             stringResource,
             quantity,
             formatWithQuantity,
@@ -62,15 +68,7 @@ class EventResourcesProvider(
         quantity: Int = 1,
         formatWithQuantity: Boolean = false,
     ): String =
-        with(resourceManager.getString(stringResource)) {
-            val finalLabel =
-                when {
-                    startsWith("%s") -> this@formatLabel.capitalize(Locale.current)
-                    else -> this@formatLabel
-                }
-            when {
-                formatWithQuantity -> format(quantity, finalLabel)
-                else -> format(finalLabel)
-            }
-        }
+        resourceManager
+            .getString(stringResource)
+            .formatWithTerm(this, quantity.takeIf { formatWithQuantity })
 }

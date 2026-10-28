@@ -350,6 +350,7 @@ class TEIDataFragment :
                                     )
                                 },
                                 eventCount,
+                                keepConfiguredCase = true,
                             ),
                             presenter.getNewEventOptionsByStages(null),
                         ),

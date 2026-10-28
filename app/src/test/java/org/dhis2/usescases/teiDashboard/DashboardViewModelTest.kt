@@ -254,11 +254,11 @@ class DashboardViewModelTest {
         whenever(repository.getEnrollmentStatus("enrollmentUid")) doReturn EnrollmentStatus.ACTIVE
         whenever(resourcesManager.getString(any<Int>())) doReturn "label"
         whenever(customLabelProvider.getCustomMarkForFollowUpLabel(anyOrNull())) doReturn "Follow up"
-        whenever(customLabelProvider.getCustomEnrollmentLabel(anyOrNull(), anyOrNull())) doReturn "Enrollments"
+        whenever(customLabelProvider.getCustomEnrollmentLabel(anyOrNull(), anyOrNull(), any())) doReturn "enrollments"
         whenever(customLabelProvider.getCustomGroupByStageLabel(anyOrNull())) doReturn "Group by stage"
         whenever(
             customLabelProvider.formatStringWithCustomLabel(any(), any(), anyOrNull()),
-        ) doReturn "More Enrollments"
+        ) doReturn "More enrollments"
     }
 
     /**

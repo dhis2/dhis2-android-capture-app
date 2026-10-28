@@ -62,7 +62,7 @@ class ProgramRepositoryImplTest {
         }
     private val customLabelProvider: CustomLabelProvider =
         mock {
-            on { blockingCustomEventLabel(any(), any()) } doReturn "Events"
+            on { blockingCustomEventLabel(any(), any(), any()) } doReturn "Events"
         }
 
     private val customProgramStage: ProgramStage =
@@ -94,7 +94,7 @@ class ProgramRepositoryImplTest {
             resourceManager.defaultEventLabel(),
         ) doReturn "event"
         runBlocking {
-            whenever(customLabelProvider.getTeTypeCustomLabel(any(), any())) doReturn "tei"
+            whenever(customLabelProvider.getTeTypeCustomLabel(any(), any(), any())) doReturn "tei"
         }
         whenever(
             d2

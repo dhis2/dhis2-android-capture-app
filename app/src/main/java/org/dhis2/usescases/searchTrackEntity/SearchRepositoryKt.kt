@@ -43,6 +43,7 @@ interface SearchRepositoryKt {
     suspend fun getTeTypeCustomLabel(
         teTypeUid: String,
         isPlural: Boolean,
+        keepConfiguredCase: Boolean = false,
     ): String
 
     fun trackerValueTypeToSDKValueType(trackerInputType: TrackerInputType): ValueType?
