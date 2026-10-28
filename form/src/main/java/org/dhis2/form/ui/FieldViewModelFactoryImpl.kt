@@ -86,7 +86,11 @@ class FieldViewModelFactoryImpl(
                 ),
             displayName =
                 runBlocking {
-                    value?.userFriendlyValue(id, valueType != ValueType.PERCENTAGE)
+                    value?.userFriendlyValue(
+                        valueType,
+                        optionSet,
+                        valueType != ValueType.PERCENTAGE,
+                    )
                 },
             renderingType =
                 uiEventTypesProvider.provideUiRenderType(
