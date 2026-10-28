@@ -678,7 +678,11 @@ class FormRepositoryImpl(
                                 .setValue(value)
                                 .setDisplayName(
                                     runBlocking {
-                                        value?.userFriendlyValue(uid, item.valueType != ValueType.PERCENTAGE)
+                                        value?.userFriendlyValue(
+                                            item.valueType,
+                                            item.optionSet,
+                                            item.valueType != ValueType.PERCENTAGE,
+                                        )
                                     },
                                 ).setLegend(
                                     legendValueProvider.provideLegendValue(
@@ -774,7 +778,8 @@ class FormRepositoryImpl(
                         .setError(error)
                         .setDisplayName(
                             action.value?.userFriendlyValue(
-                                item.uid,
+                                item.valueType,
+                                item.optionSet,
                                 item.valueType != ValueType.PERCENTAGE,
                             ),
                         )
