@@ -5,6 +5,7 @@ import androidx.paging.DataSource
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import io.reactivex.disposables.CompositeDisposable
+import org.dhis2.commons.extensions.inDateRange
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -158,15 +159,7 @@ class CategoryDialogPresenter(
         )
     }
 
-    private fun filterByDate(options: List<CategoryOption>): List<CategoryOption> =
-        options.filter {
-            date == null ||
-                (!isBeforeDate(it) && !isAfterDate(it))
-        }
-
-    private fun isBeforeDate(option: CategoryOption): Boolean = option.startDate() != null && date!!.before(option.startDate())
-
-    private fun isAfterDate(option: CategoryOption): Boolean = option.endDate() != null && date!!.after(option.endDate())
+    private fun filterByDate(options: List<CategoryOption>): List<CategoryOption> = options.filter { it.inDateRange(date) }
 
     fun getCount(): Int =
         when (type) {
