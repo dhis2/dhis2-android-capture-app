@@ -153,8 +153,6 @@ class SavePin(private val repo: SessionRepository) : UseCase<String, Unit> {
             Result.success(Unit)
         } catch (cancellation: CancellationException) {
             throw cancellation
-        } catch (error: DomainError) {
-            Result.failure(error)
         } catch (error: Exception) {
             Result.failure(error)
         }
@@ -163,14 +161,17 @@ class SavePin(private val repo: SessionRepository) : UseCase<String, Unit> {
 
 **A use case never throws; catch in this order:**
 1. Rethrow `CancellationException`, as coroutine convention requires.
-2. Catch `DomainError`. It is declared `sealed class DomainError : Throwable()`, so
-   `catch (e: Exception)` does **not** match it and a mapped SDK error would escape to a
-   caller that was promised a `Result`.
-3. Catch `Exception` for everything else.
+2. Catch `Exception` for everything else. `DomainError` is declared
+   `sealed class DomainError : Exception()`, so this also covers mapped SDK errors.
+
+Add a separate `catch (error: DomainError)` before `catch (Exception)` only when domain
+errors need handling of their own (e.g. `SyncData` signals network loss and session renewal
+but saves other failures as sync errors). If you only need to react to one domain error,
+check it inside the `Exception` catch instead, as the sync use cases do with
+`sessionRenewalNotifier.notifyIfRequired(error)`.
 
 Do not catch `Throwable` (it turns JVM `Error`s such as `OutOfMemoryError` into a `Result`)
-and do not use `runCatching` (it swallows `CancellationException`). ANDROAPP-7892 plans to make
-`DomainError` extend `Exception`, which will reduce this to a single `catch (Exception)`.
+and do not use `runCatching` (it swallows `CancellationException`).
 
 ### ViewModel pattern
 - Use `launchUseCase { }` (not `viewModelScope.launch`) — it wraps `CoroutineTracker`
