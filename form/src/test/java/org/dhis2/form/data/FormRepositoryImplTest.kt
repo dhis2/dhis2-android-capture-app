@@ -8,6 +8,7 @@ import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.EventCategory
+import org.dhis2.form.model.EventCategoryOption
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.OptionSetConfiguration
@@ -455,6 +456,17 @@ class FormRepositoryImplTest {
             assertTrue(repository.runDataIntegrityCheck(false) is SuccessfulResult)
         }
 
+    @Test
+    fun `Should return missing mandatory when a selected category option is no longer offered`() =
+        runBlocking {
+            // "expiredOption" is stored but was filtered out of Category2 for the date or org unit
+            whenever(
+                dataEntryRepository.list(),
+            ) doReturn Flowable.just(provideMandatoryListWithCategoryCombo("option1,expiredOption"))
+            repository.fetchFormItems()
+            assertTrue(repository.runDataIntegrityCheck(false) is MissingMandatoryResult)
+        }
+
     private fun mockedSections() =
         listOf(
             "section1",
@@ -579,8 +591,16 @@ class FormRepositoryImplTest {
                 autocompleteList = null,
                 eventCategories =
                     listOf(
-                        EventCategory("categoryUid1", "Category1", emptyList()),
-                        EventCategory("categoryUid2", "Category2", emptyList()),
+                        EventCategory(
+                            "categoryUid1",
+                            "Category1",
+                            listOf(EventCategoryOption("option1", "Option 1")),
+                        ),
+                        EventCategory(
+                            "categoryUid2",
+                            "Category2",
+                            listOf(EventCategoryOption("option2", "Option 2")),
+                        ),
                     ),
             ),
         )

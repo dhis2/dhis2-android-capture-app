@@ -1,10 +1,13 @@
 package org.dhis2.form.ui.provider
 
+import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 
 class EnrollmentFormLabelsProvider(
     val resourceManager: ResourceManager,
+    private val customLabelProvider: CustomLabelProvider,
 ) {
     fun provideEnrollmentDataSectionLabel(programUid: String) =
         resourceManager.formatWithEnrollmentLabel(
@@ -36,4 +39,17 @@ class EnrollmentFormLabelsProvider(
         )
 
     fun provideIncidentDateDefaultLabel() = resourceManager.getString(R.string.incident_date)
+
+    fun provideCategoryComboSectionLabel(
+        programUid: String,
+        categoryComboName: String,
+    ): String {
+        val enrollmentLabel =
+            runBlocking { customLabelProvider.getCustomEnrollmentLabel(programUid = programUid) }
+        return resourceManager.getString(
+            R.string.enrollment_category_combo_section_label,
+            enrollmentLabel,
+            categoryComboName,
+        )
+    }
 }

@@ -8,6 +8,7 @@ import org.dhis2.commons.extensions.toDate
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
+import org.dhis2.form.data.EnrollmentRepository.Companion.ENROLLMENT_CATEGORY_COMBO_UID
 import org.dhis2.form.data.EventRepository.Companion.EVENT_CATEGORY_COMBO_UID
 import org.dhis2.form.data.EventRepository.Companion.EVENT_COORDINATE_UID
 import org.dhis2.form.data.EventRepository.Companion.EVENT_ORG_UNIT_UID
@@ -147,30 +148,39 @@ class FormValueStore(
         }
     }
 
+    /**
+     * The option combo of the category combo in [uid] ("<prefix>-<categoryComboUid>") made of
+     * exactly the comma-separated option uids in [value]. `null` for a partial selection.
+     */
+    private fun findCategoryOptionCombo(
+        uid: String,
+        value: String?,
+    ): String? =
+        if (value.isNullOrEmpty()) {
+            null
+        } else {
+            val categoryComboUid = uid.split("-")[1]
+            val categoryOptionsUids = value.split(",")
+            if (categoryOptionsUids.isNotEmpty()) {
+                d2
+                    .categoryModule()
+                    .categoryOptionCombos()
+                    .byCategoryComboUid()
+                    .eq(categoryComboUid)
+                    .byCategoryOptions(categoryOptionsUids)
+                    .one()
+                    .blockingGet()
+                    ?.uid()
+            } else {
+                null
+            }
+        }
+
     private fun storeEventCategoryComboAttribute(
         uid: String,
         value: String?,
     ): Flowable<StoreResult> {
-        val categoryOptionComboUid =
-            if (value.isNullOrEmpty()) {
-                null
-            } else {
-                val categoryComboUid = uid.split("-")[1]
-                val categoryOptionsUids = value.split(",")
-                if (categoryOptionsUids.isNotEmpty()) {
-                    d2
-                        .categoryModule()
-                        .categoryOptionCombos()
-                        .byCategoryComboUid()
-                        .eq(categoryComboUid)
-                        .byCategoryOptions(categoryOptionsUids)
-                        .one()
-                        .blockingGet()
-                        ?.uid()
-                } else {
-                    null
-                }
-            }
+        val categoryOptionComboUid = findCategoryOptionCombo(uid, value)
 
         val storeResult =
             categoryOptionComboUid?.let {
@@ -396,8 +406,33 @@ class FormValueStore(
                 }
             }
 
-            else -> saveAttribute(uid, value)
+            else -> {
+                if (uid.contains(ENROLLMENT_CATEGORY_COMBO_UID)) {
+                    storeEnrollmentCategoryComboAttribute(uid, value)
+                } else {
+                    saveAttribute(uid, value)
+                }
+            }
         }
+    }
+
+    private fun storeEnrollmentCategoryComboAttribute(
+        uid: String,
+        value: String?,
+    ): Flowable<StoreResult> {
+        val storeResult =
+            findCategoryOptionCombo(uid, value)?.let { categoryOptionComboUid ->
+                enrollmentRepository?.setAttributeOptionComboUid(categoryOptionComboUid)
+                StoreResult(
+                    ENROLLMENT_CATEGORY_COMBO_UID,
+                    ValueStoreResult.VALUE_CHANGED,
+                )
+            } ?: StoreResult(
+                ENROLLMENT_CATEGORY_COMBO_UID,
+                ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+            )
+
+        return Flowable.just(storeResult)
     }
 
     private fun saveTeiGeometry(geometry: Geometry?) {

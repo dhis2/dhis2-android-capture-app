@@ -630,17 +630,13 @@ class FormRepositoryImpl(
     }
 
     private fun hasMandatoryWarnings(fieldUiModel: FieldUiModel): Boolean =
-        if (fieldUiModel.uid.contains(EventRepository.EVENT_CATEGORY_COMBO_UID)) {
+        fieldUiModel.eventCategories?.let { categories ->
+            val selectedOptionUids = fieldUiModel.value?.split(",").orEmpty()
             fieldUiModel.mandatory &&
-                (
-                    fieldUiModel.value.isNullOrEmpty() ||
-                        fieldUiModel.value?.split(",")?.size !=
-                        fieldUiModel.eventCategories?.size
-                )
-        } else {
-            fieldUiModel.mandatory &&
-                fieldUiModel.value.isNullOrEmpty()
-        }
+                categories.any { category ->
+                    category.options.none { option -> option.uid in selectedOptionUids }
+                }
+        } ?: (fieldUiModel.mandatory && fieldUiModel.value.isNullOrEmpty())
 
     private fun getNextItem(currentItemUid: String): String? {
         itemList.let { fields ->

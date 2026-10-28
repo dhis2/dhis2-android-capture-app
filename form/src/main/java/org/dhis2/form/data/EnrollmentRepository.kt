@@ -6,10 +6,14 @@ import io.reactivex.Single
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.extensions.inDateRange
+import org.dhis2.commons.extensions.inOrgUnit
 import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.model.EnrollmentMode
+import org.dhis2.form.model.EventCategory
+import org.dhis2.form.model.EventCategoryOption
 import org.dhis2.form.model.EventMode
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
@@ -23,6 +27,7 @@ import org.dhis2.mobile.commons.extensions.toColor
 import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
+import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValidationStrategy
@@ -51,6 +56,19 @@ class EnrollmentRepository(
 
     private val programSections by lazy {
         conf.sections()
+    }
+
+    private val enrollmentCategoryCombo by lazy {
+        conf.enrollmentCategoryCombo()
+    }
+
+    private val categoryComboSectionLabel by lazy {
+        enrollmentCategoryCombo?.let { categoryCombo ->
+            enrollmentFormLabelsProvider.provideCategoryComboSectionLabel(
+                programUid = programUid!!,
+                categoryComboName = categoryCombo.displayName() ?: categoryCombo.uid(),
+            )
+        }
     }
 
     override val defaultStyleColor by lazy {
@@ -95,6 +113,9 @@ class EnrollmentRepository(
 
     override fun sectionUids(): Flowable<List<String>> {
         val sectionUids = mutableListOf(ENROLLMENT_DATA_SECTION_UID)
+        if (enrollmentCategoryCombo != null) {
+            sectionUids.add(ENROLLMENT_CATEGORY_COMBO_SECTION_UID)
+        }
         if (programSections.isEmpty()) {
             sectionUids.add(SINGLE_SECTION_UID)
         } else {
@@ -386,7 +407,59 @@ class EnrollmentRepository(
             )
         }
 
+        enrollmentCategoryCombo?.let { categoryCombo ->
+            enrollmentDataList.add(getCategoryComboSection())
+            enrollmentDataList.add(getCategoryComboField(categoryCombo))
+        }
+
         return enrollmentDataList
+    }
+
+    private fun getCategoryComboSection(): FieldUiModel =
+        fieldFactory.createSection(
+            sectionUid = ENROLLMENT_CATEGORY_COMBO_SECTION_UID,
+            sectionName = categoryComboSectionLabel,
+            description = null,
+            isOpen = true,
+            totalFields = 0,
+            completedFields = 0,
+            rendering = SectionRenderingType.LISTING.name,
+        )
+
+    private fun getCategoryComboField(categoryCombo: CategoryCombo): FieldUiModel {
+        val enrollment = conf.enrollment()
+        val selectedOptionUids = getUidsList(conf.selectedCategoryOptions(categoryCombo.uid()))
+        val categories =
+            categoryCombo.categories()?.map { category ->
+                EventCategory(
+                    uid = category.uid(),
+                    name = category.displayName() ?: category.uid(),
+                    options =
+                        conf
+                            .categoryOptions(category.uid())
+                            .filter { option ->
+                                option.inDateRange(enrollment?.enrollmentDate()) &&
+                                    option.inOrgUnit(enrollment?.organisationUnit())
+                            }.map { option ->
+                                EventCategoryOption(
+                                    uid = option.uid(),
+                                    name = option.displayName() ?: option.code() ?: "",
+                                )
+                            },
+                )
+            } ?: emptyList()
+
+        return fieldFactory.create(
+            id = "$ENROLLMENT_CATEGORY_COMBO_UID-${categoryCombo.uid()}",
+            label = categoryCombo.displayName() ?: categoryCombo.uid(),
+            valueType = ValueType.TEXT,
+            value = selectedOptionUids.joinToString(",").ifEmpty { null },
+            mandatory = true,
+            programStageSection = ENROLLMENT_CATEGORY_COMBO_SECTION_UID,
+            editable = canBeEdited(),
+            description = null,
+            eventCategories = categories,
+        )
     }
 
     private fun getAllowedDatesForEnrollmentDate(): SelectableDates {
@@ -595,5 +668,7 @@ class EnrollmentRepository(
         const val ORG_UNIT_UID = "ORG_UNIT_UID"
         const val TEI_COORDINATES_UID = "TEI_COORDINATES_UID"
         const val ENROLLMENT_COORDINATES_UID = "ENROLLMENT_COORDINATES_UID"
+        const val ENROLLMENT_CATEGORY_COMBO_SECTION_UID = "ENROLLMENT_CATEGORY_COMBO_SECTION_UID"
+        const val ENROLLMENT_CATEGORY_COMBO_UID = "ENROLLMENT_CATEGORY_COMBO_UID"
     }
 }

@@ -30,6 +30,8 @@ import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
+import org.dhis2.form.data.EnrollmentRepository.Companion.ENROLLMENT_DATE_UID
+import org.dhis2.form.data.EnrollmentRepository.Companion.ORG_UNIT_UID
 import org.dhis2.form.data.EventRepository.Companion.EVENT_COORDINATE_UID
 import org.dhis2.form.data.EventRepository.Companion.EVENT_ORG_UNIT_UID
 import org.dhis2.form.data.EventRepository.Companion.EVENT_REPORT_DATE_UID
@@ -796,7 +798,13 @@ class FormViewModel(
 
     private fun isEventDetailField(uid: String): Boolean {
         val eventDetailsIds =
-            listOf(EVENT_REPORT_DATE_UID, EVENT_ORG_UNIT_UID, EVENT_COORDINATE_UID)
+            listOf(
+                EVENT_REPORT_DATE_UID,
+                EVENT_ORG_UNIT_UID,
+                EVENT_COORDINATE_UID,
+                ENROLLMENT_DATE_UID,
+                ORG_UNIT_UID,
+            )
         return eventDetailsIds.contains(uid)
     }
 
