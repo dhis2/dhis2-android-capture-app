@@ -90,25 +90,25 @@ class QuickActionsMapper(
             QuickActionType.COMPLETE_ENROLLMENT ->
                 customLabelProvider.formatStringWithCustomLabel(
                     stringResource = resourceManager.getString(R.string.complete_enrollment_label),
-                    customLabel = customLabelProvider.blockingCustomEnrollmentLabel(programUid, 1),
+                    customLabel = customLabelProvider.blockingCustomEnrollmentLabel(programUid, 1, keepConfiguredCase = true),
                 )
 
             QuickActionType.CANCEL_ENROLLMENT ->
                 customLabelProvider.formatStringWithCustomLabel(
                     stringResource = resourceManager.getString(R.string.deactivate_enrollment_label),
-                    customLabel = customLabelProvider.blockingCustomEnrollmentLabel(programUid, 1),
+                    customLabel = customLabelProvider.blockingCustomEnrollmentLabel(programUid, 1, keepConfiguredCase = true),
                 )
 
             QuickActionType.REOPEN_ENROLLMENT ->
                 customLabelProvider.formatStringWithCustomLabel(
                     stringResource = resourceManager.getString(R.string.reopen_enrollment_label),
-                    customLabel = customLabelProvider.blockingCustomEnrollmentLabel(programUid, 1),
+                    customLabel = customLabelProvider.blockingCustomEnrollmentLabel(programUid, 1, keepConfiguredCase = true),
                 )
 
             QuickActionType.MORE_ENROLLMENTS ->
                 customLabelProvider.formatStringWithCustomLabel(
                     stringResource = resourceManager.getString(R.string.more_enrollments_format),
-                    customLabel = customLabelProvider.blockingCustomEnrollmentLabel(programUid, 2),
+                    customLabel = customLabelProvider.blockingCustomEnrollmentLabel(programUid, 2, keepConfiguredCase = true),
                 )
         }
 

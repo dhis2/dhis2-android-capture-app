@@ -54,6 +54,7 @@ class EventListViewModel(
                                         programUid = eventRepository.program().blockingGet().uid,
                                     ),
                                 quantity = 2,
+                                keepConfiguredCase = true,
                             ),
                     )
             }.stateIn(
