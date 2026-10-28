@@ -381,6 +381,7 @@ class GraphToTable {
             }
 
         return TableModel(
+            id = graph.visualizationUid,
             tableHeaderModel = tableHeader,
             tableRows = tableRows,
         )
