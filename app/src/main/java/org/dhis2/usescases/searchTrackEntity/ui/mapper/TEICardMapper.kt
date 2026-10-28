@@ -23,19 +23,16 @@ import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.ui.model.ListCardUiModel
 import org.dhis2.mobile.commons.extensions.toJavaDate
-import org.dhis2.mobile.commons.providers.CustomLabelProvider
-import org.dhis2.tracker.search.model.DomainEnrollment
 import org.dhis2.tracker.search.model.DomainProgram
 import org.dhis2.tracker.search.model.EnrollmentStatus
 import org.dhis2.tracker.search.model.SyncState
 import org.dhis2.usescases.searchTrackEntity.SearchTeiModel
-import org.dhis2.usescases.searchTrackEntity.adapters.hasFollowUp
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
 import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyleData
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
-import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonState
 import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatarSize
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
@@ -45,7 +42,6 @@ import java.util.Date
 class TEICardMapper(
     val context: Context,
     val resourceManager: ResourceManager,
-    val customLabelProvider: CustomLabelProvider,
 ) {
     fun map(
         searchTEIModel: SearchTeiModel,
@@ -164,16 +160,10 @@ class TEICardMapper(
                 list = list,
                 enrolledPrograms = searchTEIModel.tei.enrolledPrograms,
             )
-            val programUid: String? =
-                if (searchTEIModel.selectedEnrollment != null) {
-                    searchTEIModel.selectedEnrollment.program
-                } else {
-                    null
-                }
             checkEnrollmentStatus(
-                programUid = programUid,
                 list = list,
                 status = searchTEIModel.selectedEnrollment?.status ?: EnrollmentStatus.ACTIVE,
+                enrollmentLabel = searchTEIModel.enrollmentLabel,
             )
 
             checkOverdue(
@@ -184,7 +174,7 @@ class TEICardMapper(
 
             checkFollowUp(
                 list = list,
-                enrollments = searchTEIModel.tei.enrollments,
+                followUpLabel = searchTEIModel.followUpLabel,
             )
 
             checkSyncStatus(
@@ -196,46 +186,39 @@ class TEICardMapper(
 
     private fun checkFollowUp(
         list: MutableList<AdditionalInfoItem>,
-        enrollments: List<DomainEnrollment>?,
+        followUpLabel: String?,
     ) {
-        enrollments?.let {
-            if (enrollments.hasFollowUp()) {
-                val followUpLabel =
-                    customLabelProvider.blockingCustomMarkedForFollowUpLabel(
-                        enrollments.first { it.followUp }.program!!,
-                    )
-                list.add(
-                    AdditionalInfoItem(
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Flag,
-                                contentDescription = followUpLabel,
-                                tint = AdditionalInfoItemColor.WARNING.color,
-                            )
-                        },
-                        value = followUpLabel,
-                        isConstantItem = true,
-                        color = AdditionalInfoItemColor.WARNING.color,
-                    ),
-                )
-            }
+        followUpLabel?.let {
+            list.add(
+                AdditionalInfoItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Flag,
+                            contentDescription = followUpLabel,
+                            tint = AdditionalInfoItemColor.WARNING.color,
+                        )
+                    },
+                    value = followUpLabel,
+                    isConstantItem = true,
+                    color = AdditionalInfoItemColor.WARNING.color,
+                ),
+            )
         }
     }
 
     private fun checkEnrollmentStatus(
-        programUid: String?,
         list: MutableList<AdditionalInfoItem>,
         status: EnrollmentStatus,
+        enrollmentLabel: String?,
     ) {
+        if (enrollmentLabel == null) return
         val item =
             when (status) {
                 EnrollmentStatus.COMPLETED -> {
                     val label =
-                        resourceManager.formatWithEnrollmentLabel(
-                            programUid,
-                            R.string.enrollment_completed_V2,
-                            1,
-                        )
+                        resourceManager
+                            .getString(R.string.enrollment_completed_V2)
+                            .format(enrollmentLabel)
                     AdditionalInfoItem(
                         icon = {
                             Icon(
@@ -252,11 +235,9 @@ class TEICardMapper(
 
                 EnrollmentStatus.CANCELLED -> {
                     val label =
-                        resourceManager.formatWithEnrollmentLabel(
-                            programUid,
-                            R.string.enrollment_cancelled_V2,
-                            1,
-                        )
+                        resourceManager
+                            .getString(R.string.enrollment_cancelled_V2)
+                            .format(enrollmentLabel)
                     AdditionalInfoItem(
                         icon = {
                             Icon(
@@ -345,8 +326,11 @@ class TEICardMapper(
             }
         buttonText?.let {
             Button(
-                style = ButtonStyle.TONAL,
-                text = it,
+                modifier = Modifier.fillMaxWidth(),
+                state =
+                    ButtonState(
+                        text = it,
+                    ),
                 icon = {
                     Icon(
                         imageVector = Icons.Outlined.Sync,
@@ -355,7 +339,6 @@ class TEICardMapper(
                     )
                 },
                 onClick = { onSyncIconClick() },
-                modifier = Modifier.fillMaxWidth(),
             )
         }
     }
