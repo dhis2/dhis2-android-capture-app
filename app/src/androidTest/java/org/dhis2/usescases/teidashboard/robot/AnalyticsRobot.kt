@@ -114,8 +114,10 @@ class AnalyticsRobot : BaseRobot() {
             matches(
                 atPosition(
                     chartPosition,
-                    hasDescendant(
-                        not(allOf(withId(R.id.error_data_icon), withEffectiveVisibility(Visibility.VISIBLE))),
+                    not(
+                        hasDescendant(
+                            allOf(withId(R.id.error_data_icon), withEffectiveVisibility(Visibility.VISIBLE)),
+                        ),
                     ),
                 ),
             ),
