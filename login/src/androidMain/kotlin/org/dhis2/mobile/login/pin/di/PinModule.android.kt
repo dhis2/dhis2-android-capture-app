@@ -1,5 +1,7 @@
 package org.dhis2.mobile.login.pin.di
 
+import org.dhis2.mobile.login.pin.data.AndroidKeystorePinKey
+import org.dhis2.mobile.login.pin.data.PinHasher
 import org.dhis2.mobile.login.pin.data.SessionRepository
 import org.dhis2.mobile.login.pin.data.SessionRepositoryImpl
 import org.koin.dsl.module
@@ -15,6 +17,7 @@ internal actual val pinDataModule =
                 preferenceProvider = get(),
                 domainErrorMapper = get(),
                 dispatcher = get(),
+                pinHasher = PinHasher(AndroidKeystorePinKey()),
             )
         }
     }
