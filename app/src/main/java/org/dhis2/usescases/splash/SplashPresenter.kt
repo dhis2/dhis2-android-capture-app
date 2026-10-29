@@ -33,10 +33,7 @@ class SplashPresenter internal constructor(
                 userManager.isUserLoggedIn
                     .delay(2000, TimeUnit.MILLISECONDS, schedulerProvider.io())
                     .subscribeOn(schedulerProvider.io())
-                    // Resolve the blocking SDK reads here, upstream of observeOn(ui): if they
-                    // run after the switch to the UI scheduler they block the main thread on
-                    // SQLiteConnectionPool while background sync holds the connection, causing
-                    // an ANR (DHIS2-ANDROID-CAPTURE-83NF / 83P1).
+                    // Blocking SDK reads must stay upstream of observeOn(ui) to avoid an ANR
                     .map { userLogged -> userLogged to trackingInfoFor(userManager, userLogged) }
                     .observeOn(schedulerProvider.ui())
                     .subscribe(

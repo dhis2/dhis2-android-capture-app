@@ -336,7 +336,7 @@ private fun InputBlock(
             segmentCount = length,
             initialValue = null,
             supportingTextData = null,
-            segmentedShellType = SegmentedShellType.Numeric,
+            segmentedShellType = SegmentedShellType.Numeric(),
             onValueChanged = onValueChanged,
         )
 
