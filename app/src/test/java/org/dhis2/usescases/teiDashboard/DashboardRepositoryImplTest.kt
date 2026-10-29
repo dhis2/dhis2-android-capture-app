@@ -8,6 +8,10 @@ import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.category.CategoryOption
+import org.hisp.dhis.android.core.category.CategoryOptionCombo
+import org.hisp.dhis.android.core.common.Access
+import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.Unit
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -19,6 +23,8 @@ import org.hisp.dhis.android.core.maintenance.D2ErrorComponent
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
@@ -178,6 +184,60 @@ class DashboardRepositoryImplTest {
         val status = repository.getEnrollmentStatus("uid")
 
         assert(status == EnrollmentStatus.COMPLETED)
+    }
+
+    @Test
+    fun `Should flag the enrollment category combo as read-only when an option is view only`() {
+        mockEnrollmentAttributeOptionCombo(
+            CategoryOption
+                .builder()
+                .uid("viewOnlyOption")
+                .access(Access.create(true, true, DataAccess.create(true, false)))
+                .build(),
+        )
+
+        assertTrue(repository.isEnrollmentCategoryComboReadOnly("uid"))
+    }
+
+    @Test
+    fun `Should not flag the enrollment category combo as read-only when every option is writable`() {
+        mockEnrollmentAttributeOptionCombo(
+            CategoryOption
+                .builder()
+                .uid("writableOption")
+                .access(Access.create(true, true, DataAccess.create(true, true)))
+                .build(),
+        )
+
+        assertFalse(repository.isEnrollmentCategoryComboReadOnly("uid"))
+    }
+
+    private fun mockEnrollmentAttributeOptionCombo(categoryOption: CategoryOption) {
+        whenever(
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .uid("uid")
+                .blockingGet(),
+        ) doReturn
+            Enrollment
+                .builder()
+                .uid("uid")
+                .attributeOptionCombo("aocUid")
+                .build()
+        whenever(
+            d2
+                .categoryModule()
+                .categoryOptionCombos()
+                .withCategoryOptions()
+                .uid("aocUid")
+                .blockingGet(),
+        ) doReturn
+            CategoryOptionCombo
+                .builder()
+                .uid("aocUid")
+                .categoryOptions(listOf(categoryOption))
+                .build()
     }
 
     @Test
