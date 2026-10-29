@@ -731,6 +731,23 @@ class DashboardRepositoryImpl(
             .blockingGet()!!
             .status()
 
+    override fun isEnrollmentCategoryComboReadOnly(enrollmentUid: String?): Boolean =
+        d2
+            .enrollmentModule()
+            .enrollments()
+            .uid(enrollmentUid)
+            .blockingGet()
+            ?.attributeOptionCombo()
+            ?.let { attributeOptionComboUid ->
+                d2
+                    .categoryModule()
+                    .categoryOptionCombos()
+                    .withCategoryOptions()
+                    .uid(attributeOptionComboUid)
+                    .blockingGet()
+            }?.categoryOptions()
+            ?.any { !it.access().data().write() } == true
+
     override fun updateEnrollmentStatus(
         enrollmentUid: String,
         status: EnrollmentStatus,

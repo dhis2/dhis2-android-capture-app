@@ -6,6 +6,7 @@ import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.form.data.EnrollmentRepository.Companion.ENROLLMENT_CATEGORY_COMBO_SECTION_UID
 import org.dhis2.form.data.EnrollmentRepository.Companion.ENROLLMENT_CATEGORY_COMBO_UID
 import org.dhis2.form.data.EnrollmentRepository.Companion.ENROLLMENT_DATA_SECTION_UID
+import org.dhis2.form.data.EnrollmentRepository.Companion.ENROLLMENT_DATE_UID
 import org.dhis2.form.data.EnrollmentRepository.Companion.ORG_UNIT_UID
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.model.EnrollmentMode
@@ -19,6 +20,10 @@ import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.hisp.dhis.android.core.category.Category
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOption
+import org.hisp.dhis.android.core.common.Access
+import org.hisp.dhis.android.core.common.DataAccess
+import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.ProgramSection
 import org.junit.Before
@@ -256,6 +261,184 @@ class EnrollmentRepositoryTest {
         )
     }
 
+    @Test
+    fun `should explain why a stored option that is out of its dates is no longer offered`() {
+        mockCategoryComboList(selectedOption = expiredOption)
+        whenever(
+            enrolmentFormLabelsProvider.provideCategoryOptionNotValidForDate("Expired option"),
+        ) doReturn "Expired option is not valid for the enrollment date"
+
+        val (editable, categories) = captureCategoryComboField()
+
+        assertEquals(true, editable)
+        assertEquals(listOf("validOption"), categories.single().options.map { it.uid })
+        assertEquals("Expired option is not valid for the enrollment date", categories.single().error)
+    }
+
+    @Test
+    fun `should explain why a stored option that is not in the org unit is no longer offered`() {
+        mockCategoryComboList(selectedOption = otherOrgUnitOption)
+        whenever(
+            enrolmentFormLabelsProvider.provideCategoryOptionNotInOrgUnit("Other org unit option"),
+        ) doReturn "Other org unit option is not available in the selected org unit"
+
+        val (_, categories) = captureCategoryComboField()
+
+        assertEquals(
+            "Other org unit option is not available in the selected org unit",
+            categories.single().error,
+        )
+    }
+
+    @Test
+    fun `should not offer options the user can only view`() {
+        mockCategoryComboList(selectedOption = null)
+
+        val (editable, categories) = captureCategoryComboField()
+
+        assertEquals(true, editable)
+        assertEquals(listOf("validOption"), categories.single().options.map { it.uid })
+        assertEquals(null, categories.single().error)
+    }
+
+    @Test
+    fun `should show a stored view-only option as read-only`() {
+        mockCategoryComboList(selectedOption = viewOnlyOption)
+
+        val (editable, categories) = captureCategoryComboField()
+
+        assertEquals(false, editable)
+        assertEquals(listOf("viewOnlyOption"), categories.single().options.map { it.uid })
+        assertEquals(null, categories.single().error)
+    }
+
+    @Test
+    fun `should explain that the user has no access to any option of a category`() {
+        assertEquals("no access", noOptionsReasonFor(viewOnlyOption))
+    }
+
+    @Test
+    fun `should explain that no option of a category is in the org unit`() {
+        assertEquals("not in org unit", noOptionsReasonFor(otherOrgUnitOption))
+    }
+
+    @Test
+    fun `should explain that no option of a category is valid for the enrollment date`() {
+        assertEquals("not for date", noOptionsReasonFor(expiredOption))
+    }
+
+    @Test
+    fun `should not let the enrollment dates be edited when the AOC is read-only`() {
+        mockCategoryComboList(selectedOption = viewOnlyOption)
+
+        repository.list().blockingFirst()
+
+        verify(fieldFactory).create(
+            id = eq(ENROLLMENT_DATE_UID),
+            label = any(),
+            valueType = any(),
+            mandatory = any(),
+            optionSet = anyOrNull(),
+            value = anyOrNull(),
+            programStageSection = anyOrNull(),
+            allowFutureDates = anyOrNull(),
+            editable = eq(false),
+            renderingType = anyOrNull(),
+            description = anyOrNull(),
+            fieldRendering = anyOrNull(),
+            objectStyle = any(),
+            fieldMask = anyOrNull(),
+            optionSetConfiguration = anyOrNull(),
+            featureType = anyOrNull(),
+            autoCompleteList = anyOrNull(),
+            orgUnitSelectorScope = anyOrNull(),
+            selectableDates = anyOrNull(),
+            eventCategories = anyOrNull(),
+            periodSelector = anyOrNull(),
+            customIntentModel = anyOrNull(),
+        )
+    }
+
+    @Test
+    fun `should open the category combo section first in edit mode when it is not completed`() {
+        mockCategoryComboList(selectedOption = null)
+
+        assertEquals(ENROLLMENT_CATEGORY_COMBO_SECTION_UID, editModeRepository().firstSectionToOpen())
+    }
+
+    @Test
+    fun `should open the first attribute section in edit mode when the category combo is completed`() {
+        mockCategoryComboList(selectedOption = validOption)
+
+        assertEquals(SINGLE_SECTION_UID, editModeRepository().firstSectionToOpen())
+    }
+
+    /** An edit-mode repository whose enrollment data is completed. */
+    private fun editModeRepository(): DataEntryRepository {
+        whenever(conf.trackedEntityType()?.featureType()) doReturn FeatureType.NONE
+        whenever(conf.program()?.featureType()) doReturn FeatureType.NONE
+        return EnrollmentRepository(
+            fieldFactory = fieldFactory,
+            conf = conf,
+            enrollmentMode = EnrollmentMode.CHECK,
+            enrollmentFormLabelsProvider = enrolmentFormLabelsProvider,
+            metadataIconProvider = metadataIconProvider,
+            customIntentRepository = customIntentRepository,
+        )
+    }
+
+    private fun noOptionsReasonFor(onlyOption: CategoryOption): String? {
+        mockCategoryComboList(selectedOption = null)
+        whenever(conf.categoryOptions("categoryUid")) doReturn listOf(onlyOption)
+        whenever(enrolmentFormLabelsProvider.provideNoCategoryOptionsWithAccess("Donor")) doReturn "no access"
+        whenever(enrolmentFormLabelsProvider.provideNoCategoryOptionsInOrgUnit("Donor")) doReturn "not in org unit"
+        whenever(enrolmentFormLabelsProvider.provideNoCategoryOptionsForDate("Donor")) doReturn "not for date"
+
+        val (_, categories) = captureCategoryComboField()
+
+        assertTrue(categories.single().options.isEmpty())
+        return categories.single().noOptionsReason
+    }
+
+    private fun mockCategoryComboList(selectedOption: CategoryOption?) {
+        whenever(conf.sections()) doReturn emptyList()
+        whenever(enrolmentFormLabelsProvider.provideSingleSectionLabel()) doReturn "enrollment label"
+        mockCategoryCombo()
+        whenever(conf.selectedCategoryOptions(CATEGORY_COMBO_UID)) doReturn listOfNotNull(selectedOption)
+    }
+
+    /** Builds the form and returns the `editable` and `eventCategories` of the category combo field. */
+    private fun captureCategoryComboField(): Pair<Boolean, List<EventCategory>> {
+        repository.list().blockingFirst()
+        val editable = argumentCaptor<Boolean>()
+        val categories = argumentCaptor<List<EventCategory>>()
+        verify(fieldFactory).create(
+            id = eq("$ENROLLMENT_CATEGORY_COMBO_UID-$CATEGORY_COMBO_UID"),
+            label = any(),
+            valueType = any(),
+            mandatory = any(),
+            optionSet = anyOrNull(),
+            value = anyOrNull(),
+            programStageSection = anyOrNull(),
+            allowFutureDates = anyOrNull(),
+            editable = editable.capture(),
+            renderingType = anyOrNull(),
+            description = anyOrNull(),
+            fieldRendering = anyOrNull(),
+            objectStyle = any(),
+            fieldMask = anyOrNull(),
+            optionSetConfiguration = anyOrNull(),
+            featureType = anyOrNull(),
+            autoCompleteList = anyOrNull(),
+            orgUnitSelectorScope = anyOrNull(),
+            selectableDates = anyOrNull(),
+            eventCategories = categories.capture(),
+            periodSelector = anyOrNull(),
+            customIntentModel = anyOrNull(),
+        )
+        return editable.firstValue to categories.firstValue
+    }
+
     private val enrollmentDate = Date(1_700_000_000_000)
 
     private val validOption =
@@ -273,6 +456,22 @@ class EnrollmentRepositoryTest {
             .endDate(Date(enrollmentDate.time - ONE_DAY_MILLIS))
             .build()
 
+    private val otherOrgUnitOption =
+        CategoryOption
+            .builder()
+            .uid("otherOrgUnitOption")
+            .displayName("Other org unit option")
+            .organisationUnits(listOf(ObjectWithUid.create("otherOrgUnitUid")))
+            .build()
+
+    private val viewOnlyOption =
+        CategoryOption
+            .builder()
+            .uid("viewOnlyOption")
+            .displayName("View only option")
+            .access(Access.create(true, true, DataAccess.create(true, false)))
+            .build()
+
     private fun mockCategoryCombo() {
         val category: Category = mock()
         whenever(category.uid()) doReturn "categoryUid"
@@ -282,7 +481,8 @@ class EnrollmentRepositoryTest {
         whenever(categoryCombo.displayName()) doReturn "Funding"
         whenever(categoryCombo.categories()) doReturn listOf(category)
         whenever(conf.enrollmentCategoryCombo()) doReturn categoryCombo
-        whenever(conf.categoryOptions("categoryUid")) doReturn listOf(validOption, expiredOption)
+        whenever(conf.categoryOptions("categoryUid")) doReturn
+            listOf(validOption, expiredOption, otherOrgUnitOption, viewOnlyOption)
 
         val enrollment: Enrollment = mock()
         whenever(enrollment.enrollmentDate()) doReturn enrollmentDate

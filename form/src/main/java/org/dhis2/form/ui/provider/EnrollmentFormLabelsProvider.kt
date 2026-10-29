@@ -52,4 +52,19 @@ class EnrollmentFormLabelsProvider(
             categoryComboName,
         )
     }
+
+    fun provideCategoryOptionNotValidForDate(optionName: String) =
+        resourceManager.getString(R.string.category_option_not_valid_for_date, optionName)
+
+    fun provideCategoryOptionNotInOrgUnit(optionName: String) =
+        resourceManager.getString(R.string.category_option_not_in_org_unit, optionName)
+
+    fun provideNoCategoryOptionsWithAccess(categoryName: String) =
+        resourceManager.getString(R.string.no_category_options_with_access, categoryName)
+
+    fun provideNoCategoryOptionsInOrgUnit(categoryName: String) =
+        resourceManager.getString(R.string.no_category_options_in_org_unit, categoryName)
+
+    fun provideNoCategoryOptionsForDate(categoryName: String) =
+        resourceManager.getString(R.string.no_category_options_for_date, categoryName)
 }

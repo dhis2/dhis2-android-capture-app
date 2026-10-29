@@ -39,6 +39,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -465,6 +466,25 @@ class FormRepositoryImplTest {
             ) doReturn Flowable.just(provideMandatoryListWithCategoryCombo("option1,expiredOption"))
             repository.fetchFormItems()
             assertTrue(repository.runDataIntegrityCheck(false) is MissingMandatoryResult)
+        }
+
+    @Test
+    fun `Should count each category of a category combo as a section field`(): Unit =
+        runBlocking {
+            whenever(
+                dataEntryRepository.list(),
+            ) doReturn Flowable.just(provideMandatoryListWithCategoryCombo("option1"))
+
+            repository.fetchFormItems()
+
+            verify(dataEntryRepository).updateSection(
+                sectionToUpdate = any(),
+                isSectionOpen = anyOrNull(),
+                totalFields = eq(2),
+                fieldsWithValue = eq(1),
+                errorCount = any(),
+                warningCount = any(),
+            )
         }
 
     private fun mockedSections() =

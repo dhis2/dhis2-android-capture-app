@@ -17,6 +17,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
+import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 
 @Composable
 internal fun ProvideCategorySelectorInput(
@@ -24,7 +26,10 @@ internal fun ProvideCategorySelectorInput(
     fieldUiModel: FieldUiModel,
     inputStyle: InputStyle,
 ) {
-    val selectedCategoryOptions: Map<String, EventCategoryOption?> by remember(fieldUiModel.value) {
+    val selectedCategoryOptions: Map<String, EventCategoryOption?> by remember(
+        fieldUiModel.value,
+        fieldUiModel.eventCategories,
+    ) {
         mutableStateOf(
             fieldUiModel.eventCategories?.associate { category ->
                 category.options
@@ -66,6 +71,28 @@ internal fun ProvideCategorySelectorInput(
     )
 }
 
+/**
+ * The supporting texts of one category: why its stored option is no longer valid, until the user
+ * picks or clears an option, the field error (e.g. mandatory) only while it is empty, and why it
+ * has no options.
+ */
+private fun categorySupportingText(
+    fieldUiModel: FieldUiModel,
+    category: EventCategory,
+    showCategoryError: Boolean,
+    isEmpty: Boolean,
+): List<SupportingTextData>? {
+    val error =
+        (category.error?.takeIf { showCategoryError } ?: fieldUiModel.error)
+            ?.takeIf { isEmpty }
+    return listOfNotNull(
+        error?.let { SupportingTextData(it, SupportingTextState.ERROR) },
+        category.noOptionsReason?.let { SupportingTextData(it, SupportingTextState.DEFAULT) },
+    ).ifEmpty { null }
+}
+
+private fun List<SupportingTextData>?.hasError() = this?.any { it.state == SupportingTextState.ERROR } == true
+
 @Composable
 private fun ProvideCategorySelector(
     modifier: Modifier = Modifier,
@@ -81,8 +108,17 @@ private fun ProvideCategorySelector(
         )
     }
 
+    var showCategoryError by remember(category.error) { mutableStateOf(true) }
+    val supportingText =
+        categorySupportingText(
+            fieldUiModel = fieldUiModel,
+            category = category,
+            showCategoryError = showCategoryError,
+            isEmpty = selectedCategoryOption == null,
+        )
+
     if (category.options.isNotEmpty()) {
-        var dropdownItems by remember {
+        var dropdownItems by remember(category.options) {
             mutableStateOf(
                 category.options.map { DropdownItem(it.name) },
             )
@@ -91,13 +127,21 @@ private fun ProvideCategorySelector(
         InputDropDown(
             modifier = modifier,
             title = category.name,
-            state = getInputState(fieldUiModel.inputState(), selectedItem.label.isEmpty()),
+            state =
+                if (supportingText.hasError() && fieldUiModel.editable) {
+                    InputShellState.ERROR
+                } else {
+                    getInputState(fieldUiModel.inputState(), selectedItem.label.isEmpty())
+                },
             inputStyle = inputStyle,
             selectedItem = selectedItem,
+            supportingTextData = supportingText,
             onResetButtonClicked = {
+                showCategoryError = false
                 onCategoryOptionSelected(null)
             },
             onItemSelected = { _, newSelectedItem ->
+                showCategoryError = false
                 onCategoryOptionSelected(
                     category.options.firstOrNull {
                         it.name == newSelectedItem.label
@@ -124,6 +168,14 @@ private fun ProvideCategorySelector(
             modifier = modifier,
             name = category.name,
             inputStyle = inputStyle,
+            isRequiredField = fieldUiModel.mandatory,
+            supportingTextData = supportingText,
+            state =
+                when {
+                    !fieldUiModel.editable -> InputShellState.DISABLED
+                    supportingText.hasError() -> InputShellState.ERROR
+                    else -> InputShellState.UNFOCUSED
+                },
         )
     }
 }
@@ -133,31 +185,27 @@ fun ProvideEmptyCategorySelector(
     modifier: Modifier = Modifier,
     name: String,
     inputStyle: InputStyle,
+    isRequiredField: Boolean = false,
+    supportingTextData: List<SupportingTextData>? = null,
+    state: InputShellState = InputShellState.UNFOCUSED,
 ) {
-    var selectedItem by remember {
-        mutableStateOf("")
-    }
-
     val emptyItems = listOf(DropdownItem(stringResource(id = R.string.no_options)))
 
     InputDropDown(
         modifier = modifier,
         title = name,
-        state = InputShellState.UNFOCUSED,
+        state = state,
         inputStyle = inputStyle,
-        selectedItem = DropdownItem(selectedItem),
-        onResetButtonClicked = {
-            selectedItem = ""
-        },
-        onItemSelected = { _, newSelectedDropdownItem ->
-            selectedItem = newSelectedDropdownItem.label
-        },
+        selectedItem = DropdownItem(""),
+        supportingTextData = supportingTextData,
+        onResetButtonClicked = { /*no-op*/ },
+        onItemSelected = { _, _ -> },
         fetchItem = { index ->
             emptyItems[index]
         },
         itemCount = 1,
         onSearchOption = { /*no-op*/ },
-        isRequiredField = false,
+        isRequiredField = isRequiredField,
         loadOptions = {
         },
     )

@@ -565,9 +565,20 @@ class FormRepositoryImpl(
             .filter {
                 it.programStageSection.equals(sectionFieldUiModel.uid) && it.valueType != null
             }.forEach {
-                total++
-                if (!it.value.isNullOrEmpty()) {
-                    values++
+                val categories = it.eventCategories
+                if (categories != null) {
+                    // A category combo counts each of its categories as a field.
+                    val selectedOptionUids = it.value?.split(",").orEmpty()
+                    total += categories.size
+                    values +=
+                        categories.count { category ->
+                            category.options.any { option -> option.uid in selectedOptionUids }
+                        }
+                } else {
+                    total++
+                    if (!it.value.isNullOrEmpty()) {
+                        values++
+                    }
                 }
             }
 

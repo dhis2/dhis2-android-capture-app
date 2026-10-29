@@ -213,8 +213,6 @@ class EnrollmentConfiguration(
             .categoryOptions()
             .withOrganisationUnits()
             .byCategoryUid(categoryUid)
-            .byAccessDataWrite()
-            .isTrue
             .blockingGet()
 
     fun selectedCategoryOptions(categoryComboUid: String): List<CategoryOption> =

@@ -135,6 +135,24 @@ class DashboardViewModelTest {
         }
 
     @Test
+    fun shouldNotOfferEnrollmentStatusChangesWhenTheEnrollmentCategoryComboIsReadOnly() =
+        runTest {
+            mockEnrollmentModel()
+            mockGrouping(true)
+            mockMoreOptionsMenu()
+            whenever(repository.isEnrollmentCategoryComboReadOnly("enrollmentUid")) doReturn true
+
+            val dashboardViewModel = getViewModel()
+
+            dashboardViewModel.moreOptionsMenu.test {
+                val menuIds = awaitMenuContaining(EnrollmentMenuItem.SHARE).map { it.id }
+                assertTrue(EnrollmentMenuItem.COMPLETE !in menuIds)
+                assertTrue(EnrollmentMenuItem.DEACTIVATE !in menuIds)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
     fun shouldUpdateEventUid() =
         runTest {
             mockEnrollmentModel()
@@ -265,9 +283,12 @@ class DashboardViewModelTest {
      * The menu is rebuilt on every change of the state it derives from, so skip the intermediate
      * emissions until the expected entry shows up.
      */
-    private suspend fun ReceiveTurbine<List<MenuItemData<EnrollmentMenuItem>>>.awaitMenuContaining(menuItem: EnrollmentMenuItem) {
+    private suspend fun ReceiveTurbine<List<MenuItemData<EnrollmentMenuItem>>>.awaitMenuContaining(
+        menuItem: EnrollmentMenuItem,
+    ): List<MenuItemData<EnrollmentMenuItem>> {
         repeat(MAX_MENU_EMISSIONS) {
-            if (awaitItem().any { it.id == menuItem }) return
+            val menu = awaitItem()
+            if (menu.any { it.id == menuItem }) return menu
         }
         throw AssertionError("$menuItem was never added to the more options menu")
     }

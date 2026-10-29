@@ -201,8 +201,10 @@ class DashboardViewModel(
                 ),
             )
             val enrollmentStatus = repository.getEnrollmentStatus(repository.getEnrollmentUid())
+            // A read-only enrollment AOC also locks the enrollment status.
+            val canChangeStatus = !repository.isEnrollmentCategoryComboReadOnly(repository.getEnrollmentUid())
 
-            if (enrollmentStatus != EnrollmentStatus.COMPLETED) {
+            if (canChangeStatus && enrollmentStatus != EnrollmentStatus.COMPLETED) {
                 add(
                     MenuItemData(
                         id = EnrollmentMenuItem.COMPLETE,
@@ -217,7 +219,7 @@ class DashboardViewModel(
                 )
             }
 
-            if (enrollmentStatus != EnrollmentStatus.ACTIVE) {
+            if (canChangeStatus && enrollmentStatus != EnrollmentStatus.ACTIVE) {
                 add(
                     MenuItemData(
                         id = EnrollmentMenuItem.ACTIVATE,
@@ -233,7 +235,7 @@ class DashboardViewModel(
                 )
             }
 
-            if (enrollmentStatus != EnrollmentStatus.CANCELLED) {
+            if (canChangeStatus && enrollmentStatus != EnrollmentStatus.CANCELLED) {
                 add(
                     MenuItemData(
                         id = EnrollmentMenuItem.DEACTIVATE,
