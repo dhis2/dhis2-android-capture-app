@@ -1,9 +1,11 @@
 package org.dhis2.mobile.login.pin.domain.usecase
 
+import kotlinx.coroutines.CancellationException
 import org.dhis2.mobile.commons.domain.UseCase
 import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.mobile.login.pin.data.SessionRepository
 import org.dhis2.mobile.login.pin.domain.model.PinError
+import org.dhis2.mobile.login.pin.domain.model.PinVerification
 import org.dhis2.mobile.login.pin.domain.model.ValidatePinInput
 
 /**
@@ -24,23 +26,23 @@ class ValidatePinUseCase(
      */
     override suspend operator fun invoke(input: ValidatePinInput): Result<Unit> {
         try {
-            val storedPin = sessionRepository.getStoredPin()
-
-            if (storedPin == null) {
-                return Result.failure(PinError.NoPinStored)
-            }
-
-            return if (storedPin == input.pin) {
-                Result.success(Unit)
-            } else {
-                val attemptsLeft = MAX_ATTEMPTS - (input.currentAttempts + 1)
-                if (attemptsLeft <= 0) {
-                    Result.failure(PinError.TooManyAttempts)
-                } else {
-                    Result.failure(PinError.Failed(attemptsLeft))
+            return when (sessionRepository.verifyPin(input.pin)) {
+                PinVerification.Match -> Result.success(Unit)
+                PinVerification.NoPinStored -> Result.failure(PinError.NoPinStored)
+                PinVerification.Mismatch -> {
+                    val attemptsLeft = MAX_ATTEMPTS - (input.currentAttempts + 1)
+                    if (attemptsLeft <= 0) {
+                        Result.failure(PinError.TooManyAttempts)
+                    } else {
+                        Result.failure(PinError.Failed(attemptsLeft))
+                    }
                 }
             }
+        } catch (cancellation: CancellationException) {
+            throw cancellation
         } catch (e: DomainError) {
+            return Result.failure(e)
+        } catch (e: Exception) {
             return Result.failure(e)
         }
     }
