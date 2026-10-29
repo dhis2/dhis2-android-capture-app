@@ -277,6 +277,98 @@ class FormRepositoryImplTest {
         }
 
     @Test
+    fun `Should keep a field hidden when it also has an option rule effect`(): Unit =
+        runBlocking {
+            whenever(ruleEngineHelper.evaluate()) doReturn
+                listOf(
+                    RuleEffect(
+                        "hideOptionRule",
+                        RuleAction(
+                            "option1",
+                            ProgramRuleActionType.HIDEOPTION.name,
+                            mutableMapOf(Pair("field", "uid004")),
+                        ),
+                    ),
+                    RuleEffect(
+                        "hideFieldRule",
+                        RuleAction(
+                            null,
+                            ProgramRuleActionType.HIDEFIELD.name,
+                            mutableMapOf(Pair("field", "uid004")),
+                        ),
+                    ),
+                )
+            whenever(dataEntryRepository.isEvent()) doReturn true
+            whenever(
+                rulesUtilsProvider.applyRuleEffects(any(), any(), any(), any()),
+            ).thenAnswer { invocationOnMock ->
+                // HIDEFIELD removes the field from the map, as RulesUtilsProviderImpl does
+                invocationOnMock.getArgument<MutableMap<String, FieldUiModel>>(1).remove("uid004")
+                ruleEffectsResultWithOptionsToHide(fieldUid = "uid004")
+            }
+            whenever(dataEntryRepository.options(any(), any(), any(), any())) doReturn
+                Pair(MutableStateFlow(""), emptyFlow())
+
+            val result = repository.composeList()
+
+            assertTrue(result.none { it.uid == "uid004" })
+        }
+
+    @Test
+    fun `Should keep rule effects on a field that also has an option rule effect`(): Unit =
+        runBlocking {
+            whenever(ruleEngineHelper.evaluate()) doReturn
+                listOf(
+                    RuleEffect(
+                        "hideOptionRule",
+                        RuleAction(
+                            "option1",
+                            ProgramRuleActionType.HIDEOPTION.name,
+                            mutableMapOf(Pair("field", "uid004")),
+                        ),
+                    ),
+                    RuleEffect(
+                        "warningRule",
+                        RuleAction(
+                            "Warning",
+                            ProgramRuleActionType.SHOWWARNING.name,
+                            mutableMapOf(Pair("field", "uid004")),
+                        ),
+                    ),
+                )
+            whenever(dataEntryRepository.isEvent()) doReturn true
+            whenever(
+                rulesUtilsProvider.applyRuleEffects(any(), any(), any(), any()),
+            ).thenAnswer { invocationOnMock ->
+                // SHOWWARNING updates the field in the map, as RulesUtilsProviderImpl does
+                val fieldMap = invocationOnMock.getArgument<MutableMap<String, FieldUiModel>>(1)
+                fieldMap["uid004"] = fieldMap.getValue("uid004").setWarning("Warning")
+                ruleEffectsResultWithOptionsToHide(fieldUid = "uid004")
+            }
+            whenever(dataEntryRepository.options(any(), any(), any(), any())) doReturn
+                Pair(MutableStateFlow(""), emptyFlow())
+
+            val result = repository.composeList()
+
+            assertEquals("Warning", result.find { it.uid == "uid004" }?.warning)
+        }
+
+    private fun ruleEffectsResultWithOptionsToHide(fieldUid: String) =
+        RuleUtilsProviderResult(
+            canComplete = true,
+            messageOnComplete = null,
+            fieldsWithErrors = emptyList(),
+            fieldsWithWarnings = emptyList(),
+            unsupportedRules = emptyList(),
+            fieldsToUpdate = emptyList(),
+            configurationErrors = emptyList(),
+            stagesToHide = emptyList(),
+            optionsToHide = mapOf(fieldUid to listOf("option1")),
+            optionGroupsToHide = emptyMap(),
+            optionGroupsToShow = emptyMap(),
+        )
+
+    @Test
     fun `Should remove sections with no fields`() =
         runBlocking {
             whenever(dataEntryRepository.list()) doReturn Flowable.just(provideEmptySectionItemList())
