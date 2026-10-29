@@ -147,30 +147,39 @@ class FormValueStore(
         }
     }
 
+    /**
+     * The option combo of the category combo in [uid] ("<prefix>-<categoryComboUid>") made of
+     * exactly the comma-separated option uids in [value]. `null` for a partial selection.
+     */
+    private fun findCategoryOptionCombo(
+        uid: String,
+        value: String?,
+    ): String? =
+        if (value.isNullOrEmpty()) {
+            null
+        } else {
+            val categoryComboUid = uid.split("-")[1]
+            val categoryOptionsUids = value.split(",")
+            if (categoryOptionsUids.isNotEmpty()) {
+                d2
+                    .categoryModule()
+                    .categoryOptionCombos()
+                    .byCategoryComboUid()
+                    .eq(categoryComboUid)
+                    .byCategoryOptions(categoryOptionsUids)
+                    .one()
+                    .blockingGet()
+                    ?.uid()
+            } else {
+                null
+            }
+        }
+
     private fun storeEventCategoryComboAttribute(
         uid: String,
         value: String?,
     ): Flowable<StoreResult> {
-        val categoryOptionComboUid =
-            if (value.isNullOrEmpty()) {
-                null
-            } else {
-                val categoryComboUid = uid.split("-")[1]
-                val categoryOptionsUids = value.split(",")
-                if (categoryOptionsUids.isNotEmpty()) {
-                    d2
-                        .categoryModule()
-                        .categoryOptionCombos()
-                        .byCategoryComboUid()
-                        .eq(categoryComboUid)
-                        .byCategoryOptions(categoryOptionsUids)
-                        .one()
-                        .blockingGet()
-                        ?.uid()
-                } else {
-                    null
-                }
-            }
+        val categoryOptionComboUid = findCategoryOptionCombo(uid, value)
 
         val storeResult =
             categoryOptionComboUid?.let {
