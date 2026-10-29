@@ -13,13 +13,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
-class ValidatePinUseCaseTest {
-    private lateinit var useCase: ValidatePinUseCase
+class ValidatePinTest {
+    private lateinit var useCase: ValidatePin
     private val repository: SessionRepository = mock()
 
     @BeforeTest
     fun setUp() {
-        useCase = ValidatePinUseCase(repository)
+        useCase = ValidatePin(repository)
     }
 
     @Test
