@@ -565,9 +565,20 @@ class FormRepositoryImpl(
             .filter {
                 it.programStageSection.equals(sectionFieldUiModel.uid) && it.valueType != null
             }.forEach {
-                total++
-                if (!it.value.isNullOrEmpty()) {
-                    values++
+                val categories = it.eventCategories
+                if (categories != null) {
+                    // A category combo counts each of its categories as a field.
+                    val selectedOptionUids = it.value?.split(",").orEmpty()
+                    total += categories.size
+                    values +=
+                        categories.count { category ->
+                            category.options.any { option -> option.uid in selectedOptionUids }
+                        }
+                } else {
+                    total++
+                    if (!it.value.isNullOrEmpty()) {
+                        values++
+                    }
                 }
             }
 
@@ -630,17 +641,13 @@ class FormRepositoryImpl(
     }
 
     private fun hasMandatoryWarnings(fieldUiModel: FieldUiModel): Boolean =
-        if (fieldUiModel.uid.contains(EventRepository.EVENT_CATEGORY_COMBO_UID)) {
+        fieldUiModel.eventCategories?.let { categories ->
+            val selectedOptionUids = fieldUiModel.value?.split(",").orEmpty()
             fieldUiModel.mandatory &&
-                (
-                    fieldUiModel.value.isNullOrEmpty() ||
-                        fieldUiModel.value?.split(",")?.size !=
-                        fieldUiModel.eventCategories?.size
-                )
-        } else {
-            fieldUiModel.mandatory &&
-                fieldUiModel.value.isNullOrEmpty()
-        }
+                categories.any { category ->
+                    category.options.none { option -> option.uid in selectedOptionUids }
+                }
+        } ?: (fieldUiModel.mandatory && fieldUiModel.value.isNullOrEmpty())
 
     private fun getNextItem(currentItemUid: String): String? {
         itemList.let { fields ->
