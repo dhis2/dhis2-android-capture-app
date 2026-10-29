@@ -349,7 +349,6 @@ class LoginRepositoryImpl(
                 .value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
                 .blockingSet(granted.toString())
             if (granted) {
-                val currentAccount = d2.userModule().accountManager().getCurrentAccount()
                 val systemInfo = d2.systemInfoModule().systemInfo().blockingGet()
 
                 analyticActions.trackMatomoEvent(
@@ -359,7 +358,6 @@ class LoginRepositoryImpl(
                 )
                 crashReportController.init()
                 crashReportController.trackServer(
-                    currentAccount?.serverUrl(),
                     systemInfo?.version(),
                 )
             }

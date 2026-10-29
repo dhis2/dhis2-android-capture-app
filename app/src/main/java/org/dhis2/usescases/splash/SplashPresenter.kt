@@ -49,7 +49,6 @@ class SplashPresenter internal constructor(
                                         .systemInfo()
                                         .blockingGet()
                                 trackUserInfo(
-                                    serverUrl = systemInfo?.contextPath() ?: "",
                                     serverVersion = systemInfo?.version() ?: "",
                                 )
                             }
@@ -91,11 +90,8 @@ class SplashPresenter internal constructor(
             ?.blockingGet()
             ?.value() == true.toString()
 
-    private fun trackUserInfo(
-        serverUrl: String,
-        serverVersion: String,
-    ) {
-        crashReportController.trackServer(serverUrl, serverVersion)
+    private fun trackUserInfo(serverVersion: String) {
+        crashReportController.trackServer(serverVersion)
     }
 
     fun getAccounts(): Int =
