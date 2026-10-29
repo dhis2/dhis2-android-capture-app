@@ -39,6 +39,7 @@ import org.dhis2.form.ui.provider.UiEventTypesProviderImpl
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.customintents.CustomIntentRepositoryImpl
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
+import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -103,7 +104,13 @@ class EnrollmentModule(
 
     @Provides
     @PerActivity
-    fun provideEnrollmentFormLabelsProvider(resourceManager: ResourceManager) = EnrollmentFormLabelsProvider(resourceManager)
+    fun provideEnrollmentFormLabelsProvider(
+        resourceManager: ResourceManager,
+        customLabelProvider: CustomLabelProvider,
+    ) = EnrollmentFormLabelsProvider(
+        resourceManager = resourceManager,
+        customLabelProvider = customLabelProvider,
+    )
 
     @Provides
     @PerActivity

@@ -190,7 +190,11 @@ object Injector {
             d2 = provideD2(),
         )
 
-    private fun provideEnrollmentFormLabelsProvider(context: Context) = EnrollmentFormLabelsProvider(provideResourcesManager(context))
+    private fun provideEnrollmentFormLabelsProvider(context: Context) =
+        EnrollmentFormLabelsProvider(
+            resourceManager = provideResourcesManager(context),
+            customLabelProvider = provideCustomLabel(),
+        )
 
     private fun provideFieldFactory(context: Context): FieldViewModelFactory =
         FieldViewModelFactoryImpl(
