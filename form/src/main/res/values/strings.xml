@@ -70,6 +70,11 @@
     <string name="no_options">No options available</string>
     <string name="cat_combo">Cat combo</string>
     <string name="enrollment_category_combo_section_label">%1$s - %2$s</string>
+    <string name="category_option_not_valid_for_date">%s is not valid for the enrollment date</string>
+    <string name="category_option_not_in_org_unit">%s is not available in the selected org unit</string>
+    <string name="no_category_options_with_access">You don\'t have access to any %s option. Please, contact your system administrator.</string>
+    <string name="no_category_options_in_org_unit">No %s option is available in the selected org unit. Please, contact your system administrator.</string>
+    <string name="no_category_options_for_date">No %s option is valid for the enrollment date. Please, contact your system administrator.</string>
     <string name="storage_permission_denied">Storage permission is not granted.\nYou need to enable it to use this feature.</string>
     <string name="select_app_intent">Select an app to launch intent</string>
     <string name="custom_intent_error">Couldn\'t retrieve data</string>
