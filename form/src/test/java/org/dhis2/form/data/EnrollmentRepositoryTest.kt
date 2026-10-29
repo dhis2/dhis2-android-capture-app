@@ -6,6 +6,7 @@ import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.form.data.EnrollmentRepository.Companion.ENROLLMENT_CATEGORY_COMBO_SECTION_UID
 import org.dhis2.form.data.EnrollmentRepository.Companion.ENROLLMENT_CATEGORY_COMBO_UID
 import org.dhis2.form.data.EnrollmentRepository.Companion.ENROLLMENT_DATA_SECTION_UID
+import org.dhis2.form.data.EnrollmentRepository.Companion.ENROLLMENT_DATE_UID
 import org.dhis2.form.data.EnrollmentRepository.Companion.ORG_UNIT_UID
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.model.EnrollmentMode
@@ -15,12 +16,15 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.SectionUiModelImpl.Companion.SINGLE_SECTION_UID
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
+import org.dhis2.mobile.commons.category.domain.model.CategorySelectionError
+import org.dhis2.mobile.commons.category.domain.model.NoOptionsReason
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.hisp.dhis.android.core.category.Category
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
+import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.ProgramSection
@@ -260,6 +264,35 @@ class EnrollmentRepositoryTest {
     }
 
     @Test
+    fun `should explain why a stored option that is out of its dates is no longer offered`() {
+        mockCategoryComboList(selectedOption = expiredOption)
+        whenever(
+            enrolmentFormLabelsProvider.provideCategorySelectionError(CategorySelectionError.OUT_OF_DATE_RANGE, "Expired option"),
+        ) doReturn "Expired option is not valid for the enrollment date"
+
+        val (editable, categories) = captureCategoryComboField()
+
+        assertEquals(true, editable)
+        assertEquals(listOf("validOption"), categories.single().options.map { it.uid })
+        assertEquals("Expired option is not valid for the enrollment date", categories.single().error)
+    }
+
+    @Test
+    fun `should explain why a stored option that is not in the org unit is no longer offered`() {
+        mockCategoryComboList(selectedOption = otherOrgUnitOption)
+        whenever(
+            enrolmentFormLabelsProvider.provideCategorySelectionError(CategorySelectionError.NOT_IN_ORG_UNIT, "Other org unit option"),
+        ) doReturn "Other org unit option is not available in the selected org unit"
+
+        val (_, categories) = captureCategoryComboField()
+
+        assertEquals(
+            "Other org unit option is not available in the selected org unit",
+            categories.single().error,
+        )
+    }
+
+    @Test
     fun `should not offer options the user can only view`() {
         mockCategoryComboList(selectedOption = null)
 
@@ -268,6 +301,107 @@ class EnrollmentRepositoryTest {
         assertEquals(true, editable)
         assertEquals(listOf("validOption"), categories.single().options.map { it.uid })
         assertEquals(null, categories.single().error)
+    }
+
+    @Test
+    fun `should show a stored view-only option as read-only`() {
+        mockCategoryComboList(selectedOption = viewOnlyOption)
+
+        val (editable, categories) = captureCategoryComboField()
+
+        assertEquals(false, editable)
+        assertEquals(listOf("viewOnlyOption"), categories.single().options.map { it.uid })
+        assertEquals(null, categories.single().error)
+    }
+
+    @Test
+    fun `should explain that the user has no access to any option of a category`() {
+        assertEquals("no access", noOptionsReasonFor(viewOnlyOption))
+    }
+
+    @Test
+    fun `should explain that no option of a category is in the org unit`() {
+        assertEquals("not in org unit", noOptionsReasonFor(otherOrgUnitOption))
+    }
+
+    @Test
+    fun `should explain that no option of a category is valid for the enrollment date`() {
+        assertEquals("not for date", noOptionsReasonFor(expiredOption))
+    }
+
+    @Test
+    fun `should not let the enrollment dates be edited when the AOC is read-only`() {
+        mockCategoryComboList(selectedOption = viewOnlyOption)
+
+        repository.list().blockingFirst()
+
+        verify(fieldFactory).create(
+            id = eq(ENROLLMENT_DATE_UID),
+            label = any(),
+            valueType = any(),
+            mandatory = any(),
+            optionSet = anyOrNull(),
+            value = anyOrNull(),
+            programStageSection = anyOrNull(),
+            allowFutureDates = anyOrNull(),
+            editable = eq(false),
+            renderingType = anyOrNull(),
+            description = anyOrNull(),
+            fieldRendering = anyOrNull(),
+            objectStyle = any(),
+            fieldMask = anyOrNull(),
+            optionSetConfiguration = anyOrNull(),
+            featureType = anyOrNull(),
+            autoCompleteList = anyOrNull(),
+            orgUnitSelectorScope = anyOrNull(),
+            selectableDates = anyOrNull(),
+            eventCategories = anyOrNull(),
+            periodSelector = anyOrNull(),
+            customIntentModel = anyOrNull(),
+        )
+    }
+
+    @Test
+    fun `should open the category combo section first in edit mode when it is not completed`() {
+        mockCategoryComboList(selectedOption = null)
+
+        assertEquals(ENROLLMENT_CATEGORY_COMBO_SECTION_UID, editModeRepository().firstSectionToOpen())
+    }
+
+    @Test
+    fun `should open the first attribute section in edit mode when the category combo is completed`() {
+        mockCategoryComboList(selectedOption = validOption)
+
+        assertEquals(SINGLE_SECTION_UID, editModeRepository().firstSectionToOpen())
+    }
+
+    /** An edit-mode repository whose enrollment data is completed. */
+    private fun editModeRepository(): DataEntryRepository {
+        whenever(conf.trackedEntityType()?.featureType()) doReturn FeatureType.NONE
+        whenever(conf.program()?.featureType()) doReturn FeatureType.NONE
+        return EnrollmentRepository(
+            fieldFactory = fieldFactory,
+            conf = conf,
+            enrollmentMode = EnrollmentMode.CHECK,
+            enrollmentFormLabelsProvider = enrolmentFormLabelsProvider,
+            metadataIconProvider = metadataIconProvider,
+            customIntentRepository = customIntentRepository,
+        )
+    }
+
+    private fun noOptionsReasonFor(onlyOption: CategoryOption): String? {
+        mockCategoryComboList(selectedOption = null)
+        whenever(conf.categoryOptions("categoryUid")) doReturn listOf(onlyOption)
+        whenever(enrolmentFormLabelsProvider.provideNoCategoryOptionsReason(NoOptionsReason.NO_ACCESS, "Donor")) doReturn "no access"
+        whenever(enrolmentFormLabelsProvider.provideNoCategoryOptionsReason(NoOptionsReason.NOT_IN_ORG_UNIT, "Donor")) doReturn
+            "not in org unit"
+        whenever(enrolmentFormLabelsProvider.provideNoCategoryOptionsReason(NoOptionsReason.NOT_VALID_FOR_DATE, "Donor")) doReturn
+            "not for date"
+
+        val (_, categories) = captureCategoryComboField()
+
+        assertTrue(categories.single().options.isEmpty())
+        return categories.single().noOptionsReason
     }
 
     private fun mockCategoryComboList(selectedOption: CategoryOption?) {
