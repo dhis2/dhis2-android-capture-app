@@ -595,5 +595,6 @@ class EnrollmentRepository(
         const val ORG_UNIT_UID = "ORG_UNIT_UID"
         const val TEI_COORDINATES_UID = "TEI_COORDINATES_UID"
         const val ENROLLMENT_COORDINATES_UID = "ENROLLMENT_COORDINATES_UID"
+        const val ENROLLMENT_CATEGORY_COMBO_UID = "ENROLLMENT_CATEGORY_COMBO_UID"
     }
 }

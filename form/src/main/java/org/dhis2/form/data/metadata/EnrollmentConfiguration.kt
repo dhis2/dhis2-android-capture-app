@@ -10,6 +10,8 @@ import org.dhis2.commons.bindings.trackedEntityType
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.category.CategoryCombo
+import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
 class EnrollmentConfiguration(
@@ -191,4 +193,39 @@ class EnrollmentConfiguration(
             .trackedEntityAttributeValues()
             .value(attributeUid, tei()?.uid()!!)
             .blockingGet()
+
+    fun enrollmentCategoryCombo(): CategoryCombo? =
+        program()
+            ?.enrollmentCategoryCombo()
+            ?.uid()
+            ?.let { categoryComboUid ->
+                d2
+                    .categoryModule()
+                    .categoryCombos()
+                    .withCategories()
+                    .uid(categoryComboUid)
+                    .blockingGet()
+            }?.takeIf { it.isDefault != true }
+
+    fun categoryOptions(categoryUid: String): List<CategoryOption> =
+        d2
+            .categoryModule()
+            .categoryOptions()
+            .withOrganisationUnits()
+            .byCategoryUid(categoryUid)
+            .blockingGet()
+
+    fun selectedCategoryOptions(categoryComboUid: String): List<CategoryOption> =
+        enrollment()
+            ?.attributeOptionCombo()
+            ?.let { attributeOptionComboUid ->
+                d2
+                    .categoryModule()
+                    .categoryOptionCombos()
+                    .withCategoryOptions()
+                    .uid(attributeOptionComboUid)
+                    .blockingGet()
+            }?.takeIf { it.categoryCombo()?.uid() == categoryComboUid }
+            ?.categoryOptions()
+            ?: emptyList()
 }
