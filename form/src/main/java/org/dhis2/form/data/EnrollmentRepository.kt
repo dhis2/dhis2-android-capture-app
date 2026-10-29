@@ -23,8 +23,13 @@ import org.dhis2.form.ui.provider.inputfield.DEFAULT_MAX_DATE
 import org.dhis2.form.ui.provider.inputfield.DEFAULT_MIN_DATE
 import org.dhis2.mobile.commons.category.data.toDomain
 import org.dhis2.mobile.commons.category.data.toLocalDate
+import org.dhis2.mobile.commons.category.domain.isCompleted
+import org.dhis2.mobile.commons.category.domain.isReadOnly
 import org.dhis2.mobile.commons.category.domain.model.Category
+import org.dhis2.mobile.commons.category.domain.noOptionsReason
 import org.dhis2.mobile.commons.category.domain.selectableOptions
+import org.dhis2.mobile.commons.category.domain.selectedOption
+import org.dhis2.mobile.commons.category.domain.selectionError
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.extensions.toColor
 import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
@@ -65,6 +70,16 @@ class EnrollmentRepository(
         conf.enrollmentCategoryCombo()
     }
 
+    /**
+     * An AOC with an option the user can only view is shown but can't be changed, and neither can
+     * the enrollment details (dates and enrollment coordinates).
+     */
+    private val isCategoryComboReadOnly by lazy {
+        enrollmentCategoryCombo?.let { categoryCombo ->
+            getCategoryComboCategories(categoryCombo).isReadOnly()
+        } == true
+    }
+
     private val categoryComboSectionLabel by lazy {
         enrollmentCategoryCombo?.let { categoryCombo ->
             enrollmentFormLabelsProvider.provideCategoryComboSectionLabel(
@@ -93,6 +108,8 @@ class EnrollmentRepository(
                 ?.write() == true
         return programAccess && teTypeAccess
     }
+
+    private fun canEnrollmentDetailsBeEdited(): Boolean = canBeEdited() && !isCategoryComboReadOnly
 
     override fun getSpecificDataEntryItems(uid: String): List<FieldUiModel> =
         when (uid) {
@@ -442,11 +459,11 @@ class EnrollmentRepository(
             value = categories.mapNotNull { it.selectedOptionUid }.joinToString(",").ifEmpty { null },
             mandatory = true,
             programStageSection = ENROLLMENT_CATEGORY_COMBO_SECTION_UID,
-            editable = canBeEdited(),
+            editable = canEnrollmentDetailsBeEdited(),
             description = null,
             eventCategories =
                 categories.map { category ->
-                    category.toEventCategory(orgUnitUid, enrollmentDate)
+                    category.toEventCategory(orgUnitUid, enrollmentDate, isCategoryComboReadOnly)
                 },
         )
     }
@@ -468,12 +485,24 @@ class EnrollmentRepository(
     private fun Category.toEventCategory(
         orgUnitUid: String?,
         enrollmentDate: LocalDate?,
+        isReadOnly: Boolean,
     ) = EventCategory(
         uid = uid,
         name = name,
         options =
-            selectableOptions(orgUnitUid, enrollmentDate, isReadOnly = false).map { option ->
+            selectableOptions(orgUnitUid, enrollmentDate, isReadOnly).map { option ->
                 EventCategoryOption(uid = option.uid, name = option.name)
+            },
+        error =
+            selectionError(orgUnitUid, enrollmentDate, isReadOnly)?.let { error ->
+                enrollmentFormLabelsProvider.provideCategorySelectionError(
+                    error = error,
+                    optionName = selectedOption?.name?.ifEmpty { null } ?: selectedOptionUid.orEmpty(),
+                )
+            },
+        noOptionsReason =
+            noOptionsReason(orgUnitUid, enrollmentDate, isReadOnly)?.let { reason ->
+                enrollmentFormLabelsProvider.provideNoCategoryOptionsReason(reason, name)
             },
     )
 
@@ -539,7 +568,7 @@ class EnrollmentRepository(
             },
             ENROLLMENT_DATA_SECTION_UID,
             allowFutureDates,
-            canBeEdited(),
+            canEnrollmentDetailsBeEdited(),
             null,
             null,
             null,
@@ -566,7 +595,7 @@ class EnrollmentRepository(
             },
             ENROLLMENT_DATA_SECTION_UID,
             allowFutureDates,
-            canBeEdited(),
+            canEnrollmentDetailsBeEdited(),
             null,
             null,
             null,
@@ -631,7 +660,7 @@ class EnrollmentRepository(
             conf.enrollment()?.geometry()?.coordinates(),
             ENROLLMENT_DATA_SECTION_UID,
             null,
-            canBeEdited(),
+            canEnrollmentDetailsBeEdited(),
             null,
             null,
             null,
@@ -642,11 +671,28 @@ class EnrollmentRepository(
         )
 
     override fun firstSectionToOpen(): String? =
-        if (enrollmentMode == EnrollmentMode.CHECK && isEnrollmentDataCompleted()) {
-            sectionUids().blockingFirst().filterIndexed { index, _ -> index != 0 }.firstOrNull()
-        } else {
-            super.firstSectionToOpen()
+        when {
+            enrollmentMode != EnrollmentMode.CHECK || !isEnrollmentDataCompleted() ->
+                super.firstSectionToOpen()
+
+            !isCategoryComboCompleted() ->
+                ENROLLMENT_CATEGORY_COMBO_SECTION_UID
+
+            else ->
+                sectionUids().blockingFirst().firstOrNull { sectionUid ->
+                    sectionUid != ENROLLMENT_DATA_SECTION_UID &&
+                        sectionUid != ENROLLMENT_CATEGORY_COMBO_SECTION_UID
+                }
         }
+
+    private fun isCategoryComboCompleted(): Boolean =
+        enrollmentCategoryCombo?.let { categoryCombo ->
+            val enrollment = conf.enrollment()
+            getCategoryComboCategories(categoryCombo).isCompleted(
+                orgUnitUid = enrollment?.organisationUnit(),
+                date = enrollment?.enrollmentDate()?.toLocalDate(),
+            )
+        } ?: true
 
     private fun isEnrollmentDataCompleted(): Boolean {
         val program = conf.program()
