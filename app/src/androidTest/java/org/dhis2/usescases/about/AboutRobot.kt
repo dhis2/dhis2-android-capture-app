@@ -1,23 +1,51 @@
 package org.dhis2.usescases.about
 
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
-import org.dhis2.R
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performScrollTo
 import org.dhis2.common.BaseRobot
+import org.dhis2.usescases.about.model.AboutLink
+import org.dhis2.usescases.about.ui.ABOUT_SDK_VALUE_TAG
+import org.dhis2.usescases.about.ui.ABOUT_VERSION_VALUE_TAG
+import org.dhis2.usescases.about.ui.aboutLinkTag
 
-fun aboutRobot(aboutBody: AboutRobot.() -> Unit) {
-    AboutRobot().apply {
+fun aboutRobot(
+    composeTestRule: ComposeTestRule,
+    aboutBody: AboutRobot.() -> Unit,
+) {
+    AboutRobot(composeTestRule).apply {
         aboutBody()
     }
 }
 
-class AboutRobot : BaseRobot() {
+class AboutRobot(
+    private val composeTestRule: ComposeTestRule,
+) : BaseRobot() {
+    @OptIn(ExperimentalTestApi::class)
+    fun checkVersionNames(
+        appVersion: String,
+        sdkVersion: String,
+    ) {
+        composeTestRule.waitUntilExactlyOneExists(
+            hasTestTag(ABOUT_VERSION_VALUE_TAG) and hasText(appVersion),
+            TIMEOUT,
+        )
+        composeTestRule.waitUntilExactlyOneExists(
+            hasTestTag(ABOUT_SDK_VALUE_TAG) and hasText(sdkVersion),
+            TIMEOUT,
+        )
+    }
 
-    fun checkVersionNames(appName: String, sdkName: String) {
-        val appNameText = "App Version: $appName"
-        onView(withId(R.id.aboutApp)).check(matches(withText(appNameText)))
-        onView(withId(R.id.appSDK)).check(matches(withText(sdkName)))
+    fun checkLinksAreDisplayed() {
+        AboutLink.entries.forEach { link ->
+            composeTestRule
+                .onNodeWithTag(aboutLinkTag(link))
+                .performScrollTo()
+                .assertIsDisplayed()
+        }
     }
 }

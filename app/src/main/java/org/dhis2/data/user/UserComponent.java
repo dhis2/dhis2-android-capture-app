@@ -8,8 +8,6 @@ import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerModule;
 import org.dhis2.commons.featureconfig.di.FeatureConfigActivityComponent;
 import org.dhis2.commons.featureconfig.di.FeatureConfigActivityModule;
 import org.dhis2.commons.filters.data.FilterPresenter;
-import org.dhis2.usescases.about.AboutComponent;
-import org.dhis2.usescases.about.AboutModule;
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailComponent;
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModule;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialComponent;
@@ -104,9 +102,6 @@ public interface UserComponent {
 
     @NonNull
     QrReaderComponent plus(QrReaderModule qrReaderModule);
-
-    @NonNull
-    AboutComponent plus(AboutModule aboutModule);
 
     @NonNull
     DataSetDetailComponent plus(DataSetDetailModule dataSetDetailModel);

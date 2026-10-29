@@ -1,74 +1,55 @@
 package org.dhis2.usescases.about
 
-import android.content.Context
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
-import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import org.dhis2.BuildConfig
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.net.toUri
 import org.dhis2.R
-import org.dhis2.bindings.app
-import org.dhis2.bindings.buildInfo
-import org.dhis2.databinding.FragmentAboutBinding
+import org.dhis2.usescases.about.model.AboutLink
+import org.dhis2.usescases.about.ui.AboutScreen
 import org.dhis2.usescases.general.FragmentGlobalAbstract
-import org.hisp.dhis.android.core.user.User
-import javax.inject.Inject
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import timber.log.Timber
 
-class AboutFragment :
-    FragmentGlobalAbstract(),
-    AboutView {
-    @Inject
-    lateinit var presenter: AboutPresenter
-    private lateinit var aboutBinding: FragmentAboutBinding
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        app().userComponent()?.plus(AboutModule(this))?.inject(this)
-    }
+class AboutFragment : FragmentGlobalAbstract() {
+    private val aboutViewModel: AboutViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
-        aboutBinding = FragmentAboutBinding.inflate(inflater, container, false)
-        return aboutBinding
-            .apply {
-                aboutMore.movementMethod
-                aboutMore.movementMethod = LinkMovementMethod.getInstance()
-                aboutGit.movementMethod = LinkMovementMethod.getInstance()
-                aboutDev.movementMethod = LinkMovementMethod.getInstance()
-                aboutContact.movementMethod = LinkMovementMethod.getInstance()
-                aboutApp.text = getString(R.string.about_app).format(context?.buildInfo())
-                appSDK.text = getString(R.string.about_sdk).format(BuildConfig.SDK_VERSION)
-                privacyPolicy.setOnClickListener { navigateToPrivacyPolicy() }
-            }.root
+    ): View =
+        ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                DHIS2Theme {
+                    AboutScreen(
+                        viewModel = aboutViewModel,
+                        onOpenLink = ::openLink,
+                    )
+                }
+            }
+        }
+
+    private fun openLink(link: AboutLink) {
+        when (link) {
+            AboutLink.PRIVACY_POLICY -> startActivity(Intent(requireContext(), PolicyView::class.java))
+            else -> link.url?.let(::openInBrowser)
+        }
     }
 
-    override fun onResume() {
-        super.onResume()
-        presenter.init()
-    }
-
-    override fun onPause() {
-        presenter.onPause()
-        super.onPause()
-    }
-
-    override fun renderUserCredentials(userModel: User?) {
-        aboutBinding.aboutUser.text =
-            getString(R.string.about_user).format(userModel?.username())
-    }
-
-    override fun renderServerUrl(serverUrl: String?) {
-        aboutBinding.aboutConnected.text = getString(R.string.about_connected).format(serverUrl)
-    }
-
-    override fun navigateToPrivacyPolicy() {
-        activity?.let {
-            startActivity(Intent(it, PolicyView::class.java))
+    private fun openInBrowser(url: String) {
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
+        } catch (e: ActivityNotFoundException) {
+            Timber.e(e)
+            displayMessage(getString(R.string.about_no_browser))
         }
     }
 }

@@ -217,14 +217,26 @@
     <string name="reserved_value">Reserved Values</string>
 
     <!--ABOUT-->
-    <string name="about_app">App Version: %s</string>
-    <string name="about_sdk">SDK Version: %s</string>
-    <string name="about_connected">Connected to: %s</string>
-    <string name="about_user">Current user: %s</string>
-    <string name="about_more">More about this app: read <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">here</a> what\'s supported and what\'s not supported</string>
-    <string name="about_git">This and previous versions of this application, as well as the source code are available at <a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>. DHIS2 Android Capture is licensed under the terms of the GNU General Public License as published by the Free Software Foundation - see <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
-    <string name="about_dev">Developed and maintained by the <a href="https://www.dhis2.org/">DHIS2</a> project, part of University of Oslo, <a href="https://www.mn.uio.no/ifi/english/">department of informatics</a>.</string>
-    <string name="about_contact">For more information or questions about this application, please write to <a href="mailto:android@dhis2.org">android@dhis2.org</a></string>
+    <string name="about_section_this_install">This install</string>
+    <string name="about_section_about_this_app">About this app</string>
+    <string name="about_section_legal_and_credits">Legal and credits</string>
+    <string name="about_label_version">Version</string>
+    <string name="about_label_sdk">SDK</string>
+    <string name="about_label_server">Server</string>
+    <string name="about_label_user">User</string>
+    <string name="about_label_licence">Licence</string>
+    <string name="about_label_developed_by">Developed by</string>
+    <string name="about_label_questions">Questions</string>
+    <string name="about_description">Data is captured on this device and uploaded when you sync. Not every DHIS2 feature is available on mobile.</string>
+    <string name="about_supported_features">What\'s supported on mobile</string>
+    <string name="about_privacy_policy">Privacy policy</string>
+    <string name="about_source_code">Source code on GitHub</string>
+    <string name="about_licence_value" translatable="false">GNU GPL v3.0</string>
+    <string name="about_developed_by_value" translatable="false">DHIS2 · University of Oslo</string>
+    <string name="about_questions_value" translatable="false">android@dhis2.org</string>
+    <string name="about_opens_in_browser">Opens in a browser</string>
+    <string name="about_no_connection">No connection. Connect to the internet to open this link.</string>
+    <string name="about_no_browser">No app available to open this link.</string>
 
     <string name="search_program_not_selected">Select a program to enable enrolling</string>
     <string name="search_access_error">You don\'t have the requiered permission</string>
@@ -417,7 +429,6 @@
     <string name="download_tei_error">The selected %s could not be downloaded.</string>
     <string name="filters_title_date">Date</string>
     <string name="privacy_policy_title">Privacy Policy</string>
-    <string name="open_privacy_policy">Click here to check our <a href="">privacy policy</a> </string>
     <string name="break_glass_error_v2">You cannot enroll a %s from other org units in this program because it is protected.\nContact your administrator.</string>
     <string name="field_is_mandatory">This field is mandatory</string>
     <string name="security_debugger_message">For security reasons, this version of the app is not allow to be used with adb. Please use the training version.</string>
