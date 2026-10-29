@@ -211,7 +211,7 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    fun shouldOpenEventAndSaveSuccessfully() {
+    fun TimelineViewWithoutCompleting() {
         mockWebServerRobot.addResponse(
             method = ResponseController.GET,
             path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,

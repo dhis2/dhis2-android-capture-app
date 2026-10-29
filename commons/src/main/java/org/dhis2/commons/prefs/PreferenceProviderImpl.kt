@@ -199,12 +199,8 @@ open class PreferenceProviderImpl(
         typeToken: TypeToken<T>,
         default: T,
     ): T {
-        val mapTypeToken = typeToken.type
-        return if (getString(key, null) == null) {
-            default
-        } else {
-            Gson().fromJson<T>(getString(key), mapTypeToken)
-        }
+        val json = getString(key, null) ?: return default
+        return Gson().fromJson<T>(json, typeToken.type) ?: default
     }
 
     override fun lastMetadataSync(): Date? =
