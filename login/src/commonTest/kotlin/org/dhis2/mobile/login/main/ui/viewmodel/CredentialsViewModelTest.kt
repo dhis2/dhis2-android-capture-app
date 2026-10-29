@@ -247,6 +247,8 @@ class CredentialsViewModelTest {
                 val finalState = awaitItem()
                 assertEquals(LoginState.Enabled, finalState.loginState)
                 assertTrue(finalState.afterLoginActions.isNotEmpty())
+                // The typed credentials are handed to the password manager
+                assertTrue(finalState.saveTypedCredentials)
                 cancelAndIgnoreRemainingEvents()
             }
         }
@@ -345,6 +347,12 @@ class CredentialsViewModelTest {
                         username = "Joe",
                         password = testPassword,
                     )
+
+                    // The password was not typed, so the password manager has nothing to save
+                    testDispatcher.scheduler.advanceUntilIdle()
+                    val loggedInState = expectMostRecentItem()
+                    assertTrue(loggedInState.afterLoginActions.isNotEmpty())
+                    assertFalse(loggedInState.saveTypedCredentials)
                     cancelAndIgnoreRemainingEvents()
                 }
             }
@@ -2214,9 +2222,12 @@ class CredentialsViewModelTest {
 
                 // THEN - the account is now token based, so it is unusable offline until a code
                 // is stored
+                val loggedInState = expectMostRecentItem()
                 assertIs<AfterLoginAction.CreateOfflineCredential>(
-                    expectMostRecentItem().afterLoginActions.firstOrNull(),
+                    loggedInState.afterLoginActions.firstOrNull(),
                 )
+                // AND - no password was typed, so the password manager has nothing to save
+                assertFalse(loggedInState.saveTypedCredentials)
 
                 // AND - storing it with the SDK clears the gate
                 whenever(setOfflineCode("1234")) doReturn Result.success(Unit)
