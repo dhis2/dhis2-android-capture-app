@@ -83,8 +83,7 @@ private fun categorySupportingText(
     isEmpty: Boolean,
 ): List<SupportingTextData>? {
     val error =
-        (category.error?.takeIf { showCategoryError } ?: fieldUiModel.error)
-            ?.takeIf { isEmpty }
+        (category.error?.takeIf { showCategoryError } ?: fieldUiModel.error).takeIf { isEmpty }
     return listOfNotNull(
         error?.let { SupportingTextData(it, SupportingTextState.ERROR) },
         category.noOptionsReason?.let { SupportingTextData(it, SupportingTextState.DEFAULT) },
