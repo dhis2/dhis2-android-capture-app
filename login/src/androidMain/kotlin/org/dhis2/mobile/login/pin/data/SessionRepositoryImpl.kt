@@ -3,6 +3,7 @@ package org.dhis2.mobile.login.pin.data
 import kotlinx.coroutines.withContext
 import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.error.DomainErrorMapper
+import org.dhis2.mobile.commons.error.withDomainErrors
 import org.dhis2.mobile.commons.providers.PreferenceProvider
 import org.dhis2.mobile.login.pin.domain.model.PinVerification
 import org.hisp.dhis.android.core.D2
@@ -39,7 +40,7 @@ class SessionRepositoryImpl(
 
     override suspend fun verifyPin(pin: String): PinVerification =
         withContext(dispatcher.io) {
-            try {
+            domainErrorMapper.withDomainErrors {
                 val storedPin =
                     d2
                         .dataStoreModule()
@@ -47,15 +48,13 @@ class SessionRepositoryImpl(
                         .value(PIN_KEY)
                         .blockingGet()
                         ?.value()
-                        ?: return@withContext PinVerification.NoPinStored
+                        ?: return@withDomainErrors PinVerification.NoPinStored
 
                 if (MessageDigest.isEqual(pin.encodeToByteArray(), storedPin.encodeToByteArray())) {
                     PinVerification.Match
                 } else {
                     PinVerification.Mismatch
                 }
-            } catch (d2Error: D2Error) {
-                throw domainErrorMapper.mapToDomainError(d2Error)
             }
         }
 

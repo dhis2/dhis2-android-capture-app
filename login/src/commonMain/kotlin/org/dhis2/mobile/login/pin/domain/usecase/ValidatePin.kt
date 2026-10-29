@@ -2,7 +2,6 @@ package org.dhis2.mobile.login.pin.domain.usecase
 
 import kotlinx.coroutines.CancellationException
 import org.dhis2.mobile.commons.domain.UseCase
-import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.mobile.login.pin.data.SessionRepository
 import org.dhis2.mobile.login.pin.domain.model.PinError
 import org.dhis2.mobile.login.pin.domain.model.PinVerification
@@ -12,7 +11,7 @@ import org.dhis2.mobile.login.pin.domain.model.ValidatePinInput
  * Use case for validating a PIN against the stored PIN.
  * Tracks attempts and enforces a maximum number of failed attempts.
  */
-class ValidatePinUseCase(
+class ValidatePin(
     private val sessionRepository: SessionRepository,
 ) : UseCase<ValidatePinInput, Unit> {
     companion object {
@@ -40,8 +39,6 @@ class ValidatePinUseCase(
             }
         } catch (cancellation: CancellationException) {
             throw cancellation
-        } catch (e: DomainError) {
-            return Result.failure(e)
         } catch (e: Exception) {
             return Result.failure(e)
         }
