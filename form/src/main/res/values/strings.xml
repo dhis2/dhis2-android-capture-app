@@ -69,6 +69,7 @@
     <string name="category_combo">Category Combo</string>
     <string name="no_options">No options available</string>
     <string name="cat_combo">Cat combo</string>
+    <string name="enrollment_category_combo_section_label">%1$s - %2$s</string>
     <string name="storage_permission_denied">Storage permission is not granted.\nYou need to enable it to use this feature.</string>
     <string name="select_app_intent">Select an app to launch intent</string>
     <string name="custom_intent_error">Couldn\'t retrieve data</string>
