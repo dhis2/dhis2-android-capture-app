@@ -27,17 +27,20 @@ import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalAutofillManager
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.LinkAnnotation
@@ -173,6 +176,24 @@ fun CredentialsScreen(
         val action = screenState.afterLoginActions.firstOrNull()
         if (action is AfterLoginAction.NavigateToNextScreen) {
             viewModel.goToNextScreen(action.initialSyncDone)
+        }
+    }
+
+    val autofillManager = LocalAutofillManager.current
+    val saveTypedCredentials by rememberUpdatedState(screenState.saveTypedCredentials)
+
+    LaunchedEffect(screenState.saveTypedCredentials) {
+        if (screenState.saveTypedCredentials) {
+            autofillManager?.commit()
+        }
+    }
+
+    DisposableEffect(autofillManager) {
+        onDispose {
+            // Leaving without a successful login must not offer to save what was typed.
+            if (!saveTypedCredentials) {
+                autofillManager?.cancel()
+            }
         }
     }
 

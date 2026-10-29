@@ -15,6 +15,7 @@ data class CredentialsUiState(
     val hasOtherAccounts: Boolean,
     val isSessionLocked: Boolean,
     val isUserLoggedIn: Boolean,
+    val saveTypedCredentials: Boolean,
 ) {
     fun username() = serverInfo.username ?: credentialsInfo?.username ?: ""
 }
