@@ -507,8 +507,7 @@ class FormRepositoryImpl(
 
         fieldsWithOptionEffects.forEach { field ->
             field.optionSet?.let { optionSetUid ->
-                fetchOptions(field.uid, optionSetUid)
-                fieldMap[field.uid] = itemList.first { it.uid == field.uid }
+                fieldMap.refreshOptions(field.uid, optionSetUid)
             }
         }
 
@@ -519,14 +518,29 @@ class FormRepositoryImpl(
 
             item?.let { field ->
                 field.optionSet?.let { optionSetUid ->
-                    fetchOptions(field.uid, optionSetUid)
-                    fieldMap[field.uid] = itemList.first { it.uid == field.uid }
+                    fieldMap.refreshOptions(field.uid, optionSetUid)
                 }
                 fieldsWithOptionEffects.add(field)
             }
         }
 
         return ArrayList(fieldMap.values)
+    }
+
+    /**
+     * Reloads the options of [fieldUid] and applies them to the field already in the map, so the
+     * other rule effects on it (warnings, errors, mandatory) are kept. A field hidden by a rule is
+     * no longer in the map and must not be added back.
+     */
+    private fun MutableMap<String, FieldUiModel>.refreshOptions(
+        fieldUid: String,
+        optionSetUid: String,
+    ) {
+        fetchOptions(fieldUid, optionSetUid)
+        val ruleField = this[fieldUid] ?: return
+        itemList.first { it.uid == fieldUid }.optionSetConfiguration?.let { optionSetConfiguration ->
+            this[fieldUid] = ruleField.setOptionSetConfiguration(optionSetConfiguration)
+        }
     }
 
     private fun List<FieldUiModel>.setFocusedItem(): List<FieldUiModel> =
