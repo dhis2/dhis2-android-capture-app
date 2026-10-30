@@ -204,12 +204,14 @@ class SearchTEIViewModel(
                 searchRepositoryKt.getTeTypeCustomLabel(
                     searchRepository.trackedEntityType.uid,
                     isPlural = false,
+                    keepConfiguredCase = true,
                 ),
             )
             _teTypePluralLabel.postValue(
                 searchRepositoryKt.getTeTypeCustomLabel(
                     searchRepository.trackedEntityType.uid,
                     isPlural = true,
+                    keepConfiguredCase = true,
                 ),
             )
         }

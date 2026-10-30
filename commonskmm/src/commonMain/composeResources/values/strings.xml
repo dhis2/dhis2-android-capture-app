@@ -221,8 +221,8 @@
         <item quantity="other">events</item>
     </plurals>
     <plurals name="relationship">
-        <item quantity="one">Relation</item>
-        <item quantity="other">Relations</item>
+        <item quantity="one">relation</item>
+        <item quantity="other">relations</item>
     </plurals>
     <!--*******************
     Info bar labels

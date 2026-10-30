@@ -166,11 +166,16 @@ internal class ProgramRepositoryImpl(
                                 programUid = programModel.uid,
                             ),
                         quantity = count,
+                        keepConfiguredCase = true,
                     )
                 } else {
                     program?.trackedEntityType?.let {
                         runBlocking {
-                            customLabelProvider.getTeTypeCustomLabel(it.uid(), count > 1)
+                            customLabelProvider.getTeTypeCustomLabel(
+                                teTypeUid = it.uid(),
+                                isPlural = count > 1,
+                                keepConfiguredCase = true,
+                            )
                         }
                     }
                 }

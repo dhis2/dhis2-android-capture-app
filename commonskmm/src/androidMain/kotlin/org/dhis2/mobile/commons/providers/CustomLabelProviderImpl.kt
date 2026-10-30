@@ -27,40 +27,40 @@ class CustomLabelProviderImpl(
         get() = this != null && this > 1
 
     private suspend fun execute(
-        capitalizeFirstLetter: Boolean,
+        keepConfiguredCase: Boolean,
         defaultLabel: suspend () -> String,
         block: suspend () -> String?,
     ): String {
         val customLabel =
             try {
-                block()?.capitalize(Locale.current)
+                block()
             } catch (_: Exception) {
                 null
             }
-        return customLabel ?: defaultLabel().let {
-            if (capitalizeFirstLetter) it.capitalize(Locale.current) else it
+        return (customLabel ?: defaultLabel()).let {
+            if (keepConfiguredCase) it else it.capitalize(Locale.current)
         }
     }
 
     private suspend fun execute(
         defaultResource: PluralStringResource,
         quantity: Int?,
-        capitalizeFirstLetter: Boolean,
+        keepConfiguredCase: Boolean,
         block: suspend () -> String?,
     ): String =
         execute(
-            capitalizeFirstLetter = capitalizeFirstLetter,
+            keepConfiguredCase = keepConfiguredCase,
             defaultLabel = { getPluralString(defaultResource, quantity ?: 1) },
             block = block,
         )
 
     private suspend fun execute(
         defaultResource: StringResource,
-        capitalizeFirstLetter: Boolean,
+        keepConfiguredCase: Boolean,
         block: suspend () -> String?,
     ): String =
         execute(
-            capitalizeFirstLetter = capitalizeFirstLetter,
+            keepConfiguredCase = keepConfiguredCase,
             defaultLabel = { getString(defaultResource) },
             block = block,
         )
@@ -68,11 +68,12 @@ class CustomLabelProviderImpl(
     override suspend fun getCustomEnrollmentLabel(
         programUid: String?,
         quantity: Int?,
+        keepConfiguredCase: Boolean,
     ): String =
         execute(
             defaultResource = Res.plurals.enrollment,
             quantity = quantity,
-            capitalizeFirstLetter = true,
+            keepConfiguredCase = keepConfiguredCase,
         ) {
             if (quantity.isPlural) {
                 d2
@@ -94,11 +95,12 @@ class CustomLabelProviderImpl(
     override suspend fun getTeTypeCustomLabel(
         teTypeUid: String,
         isPlural: Boolean,
+        keepConfiguredCase: Boolean,
     ): String =
         execute(
             defaultResource = Res.plurals.tei,
             quantity = if (isPlural) 2 else 1,
-            capitalizeFirstLetter = true,
+            keepConfiguredCase = keepConfiguredCase,
         ) {
             val teType =
                 d2
@@ -116,12 +118,12 @@ class CustomLabelProviderImpl(
     override suspend fun getCustomOrgUnitLabel(
         programUid: String?,
         quantity: Int?,
-        capitalizeFirstLetter: Boolean,
+        keepConfiguredCase: Boolean,
     ): String =
         execute(
             defaultResource = Res.plurals.org_unit,
             quantity = quantity,
-            capitalizeFirstLetter = capitalizeFirstLetter,
+            keepConfiguredCase = keepConfiguredCase,
         ) {
             d2
                 .programModule()
@@ -133,11 +135,11 @@ class CustomLabelProviderImpl(
 
     override suspend fun getCustomFollowUpLabel(
         programUid: String?,
-        capitalizeFirstLetter: Boolean,
+        keepConfiguredCase: Boolean,
     ): String =
         execute(
             defaultResource = Res.string.follow_up,
-            capitalizeFirstLetter = capitalizeFirstLetter,
+            keepConfiguredCase = keepConfiguredCase,
         ) {
             d2
                 .programModule()
@@ -148,13 +150,13 @@ class CustomLabelProviderImpl(
         }
 
     override suspend fun getCustomMarkedForFollowUpLabel(programUid: String?): String {
-        val followUpCustomLabel = getCustomFollowUpLabel(programUid)
-        return getString(Res.string.marked_for_follow_up).format(followUpCustomLabel)
+        val followUpCustomLabel = getCustomFollowUpLabel(programUid, keepConfiguredCase = true)
+        return getString(Res.string.marked_for_follow_up).formatWithTerm(followUpCustomLabel)
     }
 
     override suspend fun getCustomMarkForFollowUpLabel(programUid: String?): String {
-        val followUpCustomLabel = getCustomFollowUpLabel(programUid)
-        return getString(Res.string.mark_for_follow_up).format(followUpCustomLabel)
+        val followUpCustomLabel = getCustomFollowUpLabel(programUid, keepConfiguredCase = true)
+        return getString(Res.string.mark_for_follow_up).formatWithTerm(followUpCustomLabel)
     }
 
     private fun eventLabel(
@@ -186,10 +188,11 @@ class CustomLabelProviderImpl(
     override suspend fun getCustomEventLabel(
         customLabelContext: CustomLabelContext?,
         quantity: Int?,
+        keepConfiguredCase: Boolean,
     ) = execute(
         defaultResource = Res.plurals.event,
         quantity = quantity,
-        capitalizeFirstLetter = true,
+        keepConfiguredCase = keepConfiguredCase,
     ) {
         when (customLabelContext) {
             null -> null
@@ -205,12 +208,12 @@ class CustomLabelProviderImpl(
 
     override suspend fun getCustomProgramStageLabel(
         programUid: String?,
-        capitalizeFirstLetter: Boolean,
+        keepConfiguredCase: Boolean,
         defaultResource: StringResource?,
     ): String =
         execute(
             defaultResource = defaultResource ?: Res.string.program_stage,
-            capitalizeFirstLetter = capitalizeFirstLetter,
+            keepConfiguredCase = keepConfiguredCase,
         ) {
             d2
                 .programModule()
@@ -224,20 +227,21 @@ class CustomLabelProviderImpl(
         val customProgramStageLabel =
             getCustomProgramStageLabel(
                 programUid = programUid,
-                capitalizeFirstLetter = true,
+                keepConfiguredCase = true,
                 defaultResource = Res.string.stage,
             )
-        return getString(Res.string.group_by_stage_label).format(customProgramStageLabel)
+        return getString(Res.string.group_by_stage_label).formatWithTerm(customProgramStageLabel)
     }
 
     override suspend fun getCustomRelationshipLabel(
         programUid: String?,
         quantity: Int?,
+        keepConfiguredCase: Boolean,
     ): String =
         execute(
             Res.plurals.relationship,
             quantity = quantity,
-            capitalizeFirstLetter = false,
+            keepConfiguredCase = keepConfiguredCase,
         ) {
             d2
                 .programModule()
@@ -251,8 +255,5 @@ class CustomLabelProviderImpl(
         stringResource: String,
         customLabel: String,
         quantity: Int?,
-    ): String =
-        quantity?.let {
-            stringResource.format(it, customLabel)
-        } ?: stringResource.format(customLabel)
+    ): String = stringResource.formatWithTerm(customLabel, quantity)
 }

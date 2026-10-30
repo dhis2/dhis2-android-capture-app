@@ -3,26 +3,36 @@ package org.dhis2.mobile.commons.providers
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.StringResource
 
+/**
+ * Resolves the custom terminology a program defines for default labels (event, enrollment...).
+ *
+ * Getters return the label capitalized by default, ready to be shown on its own (a title, a
+ * chip). Pass `keepConfiguredCase = true` to get the custom or default term exactly as
+ * configured; do this whenever the term is inserted into a sentence, and let
+ * [formatStringWithCustomLabel] decide its case from its position.
+ */
 interface CustomLabelProvider {
     suspend fun getCustomEnrollmentLabel(
         programUid: String?,
         quantity: Int? = null,
+        keepConfiguredCase: Boolean = false,
     ): String
 
     suspend fun getTeTypeCustomLabel(
         teTypeUid: String,
         isPlural: Boolean,
+        keepConfiguredCase: Boolean = false,
     ): String
 
     suspend fun getCustomOrgUnitLabel(
         programUid: String?,
         quantity: Int? = null,
-        capitalizeFirstLetter: Boolean = true,
+        keepConfiguredCase: Boolean = false,
     ): String
 
     suspend fun getCustomFollowUpLabel(
         programUid: String?,
-        capitalizeFirstLetter: Boolean = true,
+        keepConfiguredCase: Boolean = false,
     ): String
 
     suspend fun getCustomMarkedForFollowUpLabel(programUid: String?): String
@@ -32,11 +42,12 @@ interface CustomLabelProvider {
     suspend fun getCustomEventLabel(
         customLabelContext: CustomLabelContext?,
         quantity: Int? = null,
+        keepConfiguredCase: Boolean = false,
     ): String
 
     suspend fun getCustomProgramStageLabel(
         programUid: String?,
-        capitalizeFirstLetter: Boolean = true,
+        keepConfiguredCase: Boolean = false,
         defaultResource: StringResource? = null,
     ): String
 
@@ -45,8 +56,14 @@ interface CustomLabelProvider {
     suspend fun getCustomRelationshipLabel(
         programUid: String?,
         quantity: Int?,
+        keepConfiguredCase: Boolean = false,
     ): String
 
+    /**
+     * Formats [stringResource] with [customLabel], capitalizing the label only when it is the
+     * first word of a sentence. Elsewhere the label is inserted unchanged, so fetch it with
+     * `keepConfiguredCase = true`.
+     */
     fun formatStringWithCustomLabel(
         stringResource: String,
         customLabel: String,
@@ -84,8 +101,9 @@ interface CustomLabelProvider {
     fun blockingCustomEventLabel(
         customLabelContext: CustomLabelContext?,
         quantity: Int?,
+        keepConfiguredCase: Boolean = false,
     ) = runBlocking {
-        getCustomEventLabel(customLabelContext, quantity)
+        getCustomEventLabel(customLabelContext, quantity, keepConfiguredCase)
     }
 
     @Deprecated(
@@ -95,8 +113,9 @@ interface CustomLabelProvider {
     fun blockingCustomEnrollmentLabel(
         programUid: String?,
         quantity: Int? = null,
+        keepConfiguredCase: Boolean = false,
     ) = runBlocking {
-        getCustomEnrollmentLabel(programUid, quantity)
+        getCustomEnrollmentLabel(programUid, quantity, keepConfiguredCase)
     }
 
     @Deprecated(
@@ -106,15 +125,16 @@ interface CustomLabelProvider {
     fun blockingCustomRelationshipLabel(
         programUid: String?,
         quantity: Int?,
+        keepConfiguredCase: Boolean = false,
     ) = runBlocking {
-        getCustomRelationshipLabel(programUid, quantity)
+        getCustomRelationshipLabel(programUid, quantity, keepConfiguredCase)
     }
 }
 
 fun CustomLabelProvider.getCustomOrgUnitLabelBlocking(
     programUid: String?,
-    capitalizeFirstLetter: Boolean = true,
+    keepConfiguredCase: Boolean = false,
 ): String =
     runBlocking {
-        getCustomOrgUnitLabel(programUid, null, capitalizeFirstLetter)
+        getCustomOrgUnitLabel(programUid, null, keepConfiguredCase)
     }
