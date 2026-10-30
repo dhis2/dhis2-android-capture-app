@@ -13,7 +13,7 @@ import org.dhis2.mobile.login.pin.domain.model.PinMode
 import org.dhis2.mobile.login.pin.domain.model.ValidatePinInput
 import org.dhis2.mobile.login.pin.domain.usecase.ForgotPinUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.SavePinUseCase
-import org.dhis2.mobile.login.pin.domain.usecase.ValidatePinUseCase
+import org.dhis2.mobile.login.pin.domain.usecase.ValidatePin
 import org.dhis2.mobile.login.pin.ui.provider.PinResourceProvider
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -30,7 +30,7 @@ import kotlin.test.assertTrue
 class PinViewModelTest {
     private lateinit var viewModel: PinViewModel
     private val savePinUseCase: SavePinUseCase = mock()
-    private val validatePinUseCase: ValidatePinUseCase = mock()
+    private val validatePin: ValidatePin = mock()
     private val forgotPinUseCase: ForgotPinUseCase = mock()
     private val resourceProvider: PinResourceProvider = mock()
     private val testDispatcher = StandardTestDispatcher()
@@ -112,7 +112,7 @@ class PinViewModelTest {
         runTest {
             viewModel = createViewModel(PinMode.ASK)
             val pin = "1234"
-            whenever(validatePinUseCase(ValidatePinInput(pin, 0))).thenReturn(Result.success(Unit))
+            whenever(validatePin(ValidatePinInput(pin, 0))).thenReturn(Result.success(Unit))
 
             viewModel.onPinChanged(pin)
             viewModel.onPinComplete()
@@ -126,7 +126,7 @@ class PinViewModelTest {
         runTest {
             viewModel = createViewModel(PinMode.ASK)
             val pin = "0000"
-            whenever(validatePinUseCase(ValidatePinInput(pin, 0))).thenReturn(
+            whenever(validatePin(ValidatePinInput(pin, 0))).thenReturn(
                 Result.failure(PinError.Failed(attemptsLeft = 2)),
             )
             whenever(resourceProvider.getPinErrorIncorrect()).thenReturn("Incorrect PIN")
@@ -147,21 +147,21 @@ class PinViewModelTest {
             val pin = "0000"
             whenever(resourceProvider.getPinErrorIncorrect()).thenReturn("Incorrect PIN")
 
-            whenever(validatePinUseCase(ValidatePinInput(pin, 0))).thenReturn(
+            whenever(validatePin(ValidatePinInput(pin, 0))).thenReturn(
                 Result.failure(PinError.Failed(attemptsLeft = 2)),
             )
             viewModel.onPinChanged(pin)
             viewModel.onPinComplete()
             advanceUntilIdle()
 
-            whenever(validatePinUseCase(ValidatePinInput(pin, 1))).thenReturn(
+            whenever(validatePin(ValidatePinInput(pin, 1))).thenReturn(
                 Result.failure(PinError.Failed(attemptsLeft = 1)),
             )
             viewModel.onPinChanged(pin)
             viewModel.onPinComplete()
             advanceUntilIdle()
 
-            whenever(validatePinUseCase(ValidatePinInput(pin, 2))).thenReturn(
+            whenever(validatePin(ValidatePinInput(pin, 2))).thenReturn(
                 Result.failure(PinError.TooManyAttempts),
             )
             viewModel.onPinChanged(pin)
@@ -176,7 +176,7 @@ class PinViewModelTest {
         runTest {
             viewModel = createViewModel(PinMode.ASK)
             val pin = "1234"
-            whenever(validatePinUseCase(ValidatePinInput(pin, 0))).thenReturn(
+            whenever(validatePin(ValidatePinInput(pin, 0))).thenReturn(
                 Result.failure(PinError.NoPinStored),
             )
             whenever(resourceProvider.getPinErrorNoPinStored()).thenReturn("No PIN stored")
@@ -230,7 +230,7 @@ class PinViewModelTest {
         runTest {
             viewModel = createViewModel(PinMode.ASK)
             val pin = "0000"
-            whenever(validatePinUseCase(ValidatePinInput(pin, 0))).thenReturn(
+            whenever(validatePin(ValidatePinInput(pin, 0))).thenReturn(
                 Result.failure(PinError.Failed(attemptsLeft = 2)),
             )
             whenever(resourceProvider.getPinErrorIncorrect()).thenReturn("Incorrect PIN")
@@ -258,7 +258,7 @@ class PinViewModelTest {
                 .thenReturn("Incorrect PIN. 2 attempts remaining")
 
             // First failed attempt (attempt index 0)
-            whenever(validatePinUseCase(ValidatePinInput(pin, 0))).thenReturn(
+            whenever(validatePin(ValidatePinInput(pin, 0))).thenReturn(
                 Result.failure(PinError.Failed(attemptsLeft = 2)),
             )
             viewModel.onPinChanged(pin)
@@ -269,7 +269,7 @@ class PinViewModelTest {
             viewModel.resetAttempts()
 
             // Second attempt should restart from index 0
-            whenever(validatePinUseCase(ValidatePinInput(pin, 0))).thenReturn(
+            whenever(validatePin(ValidatePinInput(pin, 0))).thenReturn(
                 Result.failure(PinError.Failed(attemptsLeft = 2)),
             )
             viewModel.onPinChanged(pin)
@@ -299,7 +299,7 @@ class PinViewModelTest {
         PinViewModel(
             mode = mode,
             savePinUseCase = savePinUseCase,
-            validatePinUseCase = validatePinUseCase,
+            validatePin = validatePin,
             forgotPinUseCase = forgotPinUseCase,
             resourceProvider = resourceProvider,
         )
