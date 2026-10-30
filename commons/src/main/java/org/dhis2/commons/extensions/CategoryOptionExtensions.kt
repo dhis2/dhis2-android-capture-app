@@ -5,10 +5,6 @@ import org.hisp.dhis.android.core.category.CategoryOption
 import java.util.Calendar
 import java.util.Date
 
-/**
- * Whether [date] falls within the option's start and end dates. Both dates are valid days, as on
- * the server, and the time of day is ignored.
- */
 fun CategoryOption.inDateRange(date: Date?): Boolean =
     date?.let {
         val day = date.startOfDay()
