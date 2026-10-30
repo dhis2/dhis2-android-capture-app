@@ -8,13 +8,14 @@ import org.dhis2.mobile.login.pin.domain.model.PinVerification
  */
 interface SessionRepository {
     /**
-     * Saves a PIN to secure storage.
+     * Saves a PIN to secure storage. Only a salted hash of it is stored, never the PIN itself.
      * @param pin The PIN to save.
      */
     suspend fun savePin(pin: String)
 
     /**
      * Checks a PIN against the stored one, so the stored value never leaves the data layer.
+     * A PIN stored in plaintext by a previous version is replaced by its hash when it matches.
      * @param pin The PIN to check.
      * @return Whether the PIN matches, or [PinVerification.NoPinStored] if there is none to check.
      */
