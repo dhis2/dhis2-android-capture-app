@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.WifiFind
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -50,15 +49,12 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.dropShadow
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TwoFASettingsScreen(
     onBackClick: () -> Unit = {},
     onOpenStore: () -> Unit = {},
-    onCopyCode: (String) -> Unit = {},
+    viewModel: TwoFASettingsViewModel = koinViewModel<TwoFASettingsViewModel>(),
 ) {
-    val viewModel: TwoFASettingsViewModel = koinViewModel<TwoFASettingsViewModel>()
-
     val snackbarHostState = remember { SnackbarHostState() }
     val uiState by viewModel.uiState.collectAsState()
 
@@ -168,8 +164,8 @@ fun TwoFASettingsScreen(
                                 {
                                     onOpenStore()
                                 },
-                                { code ->
-                                    onCopyCode(code)
+                                {
+                                    viewModel.copySecretCode()
                                 },
                                 { code ->
                                     viewModel.enableTwoFA(code)
