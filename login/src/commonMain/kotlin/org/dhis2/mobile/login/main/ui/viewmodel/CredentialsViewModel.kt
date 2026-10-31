@@ -117,6 +117,7 @@ class CredentialsViewModel(
             isSessionLocked = false,
             displayBiometricsDialog = false,
             isUserLoggedIn = false,
+            saveTypedCredentials = false,
         )
 
     private var loginJob: Job? = null
@@ -535,7 +536,9 @@ class CredentialsViewModel(
         }
     }
 
-    fun onLoginClicked() {
+    fun onLoginClicked() = login(passwordTypedByUser = true)
+
+    private fun login(passwordTypedByUser: Boolean) {
         when (entryMode) {
             CredentialsEntryMode.NEW_ACCOUNT_OAUTH -> fetchOAuthEnrollmentUrl()
             CredentialsEntryMode.EXISTING_OAUTH,
@@ -546,7 +549,7 @@ class CredentialsViewModel(
             CredentialsEntryMode.NEW_ACCOUNT_BASIC,
             CredentialsEntryMode.EXISTING_PASSWORD,
             ->
-                startLoginJob {
+                startLoginJob(saveTypedCredentials = passwordTypedByUser) {
                     loginUser(
                         serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
                         username = _credentialsScreenState.value.username().trim(),
@@ -587,6 +590,7 @@ class CredentialsViewModel(
 
     private fun startLoginJob(
         requiresOfflineCredential: Boolean = false,
+        saveTypedCredentials: Boolean = false,
         loginCall: suspend () -> LoginResult,
     ) {
         _credentialsScreenState.update {
@@ -601,7 +605,7 @@ class CredentialsViewModel(
                     withMinimumDuration {
                         loginCall()
                     }
-                handleLoginResult(result, requiresOfflineCredential)
+                handleLoginResult(result, requiresOfflineCredential, saveTypedCredentials)
             }
         loginJob?.invokeOnCompletion {
             if (!isLockoutActive) {
@@ -617,10 +621,12 @@ class CredentialsViewModel(
     private suspend fun handleLoginResult(
         result: LoginResult,
         requiresOfflineCredential: Boolean = false,
+        saveTypedCredentials: Boolean = false,
     ) = when (result) {
         is LoginResult.Success -> {
             _credentialsScreenState.update {
                 it.copy(
+                    saveTypedCredentials = saveTypedCredentials,
                     afterLoginActions =
                         buildList {
                             if (requiresOfflineCredential) {
@@ -712,7 +718,7 @@ class CredentialsViewModel(
                             onOfflineCredentialEntered(credential)
                         } else {
                             updatePassword(password = credential)
-                            onLoginClicked()
+                            login(passwordTypedByUser = false)
                         }
                 }
             }
