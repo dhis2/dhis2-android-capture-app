@@ -210,4 +210,8 @@
     <string name="enrollment_cancelled">Inscripción Cancelada</string>
     <string name="program_stage">Etapa de programa</string>
     <string name="stage">etapa</string>
+
+    <string name="http_error_conflict">Conflicto</string>
+    <string name="http_error_internal_server_error">Error interno</string>
+    <string name="http_error_unknown">Error desconocido</string>
 </resources>

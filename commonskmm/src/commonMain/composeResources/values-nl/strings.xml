@@ -164,4 +164,6 @@
     <string name="marked_follow_up">Gemarkeerd voor vervolg</string>
     <string name="remove_follow_up">Verwijderen</string>
     <string name="program_stage">Programma fase</string>
+    <string name="http_error_conflict">Conflict</string>
+    <string name="http_error_internal_server_error">Interne Server Fout</string>
     </resources>

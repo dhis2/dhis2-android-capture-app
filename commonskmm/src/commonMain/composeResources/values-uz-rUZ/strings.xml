@@ -73,4 +73,6 @@
     <string name="marked_follow_up">Kuzatuv uchun belgilangan</string>
     <string name="remove_follow_up">Олиб ташлаш</string>
     <string name="program_stage">Dastur bosqichi</string>
+    <string name="http_error_conflict">Nomutanosiblik</string>
+    <string name="http_error_internal_server_error">Serverdagi ichki xatolik</string>
     </resources>

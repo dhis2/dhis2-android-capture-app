@@ -16,4 +16,5 @@
     <string name="sync_error">هەڵە لە هاوکاتگەری</string>
     <string name="remove_follow_up">لابردن</string>
     <string name="program_stage">قؤناغي بةرنامة</string>
+    <string name="http_error_internal_server_error">هەڵەی ناوەکیی ڕاژە</string>
     </resources>
