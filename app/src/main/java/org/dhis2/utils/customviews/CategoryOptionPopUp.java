@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.Menu;
 import android.view.View;
 
+import org.dhis2.commons.extensions.CategoryOptionExtensionsKt;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryOption;
 
@@ -69,7 +70,7 @@ public class CategoryOptionPopUp {
         });
 
         for (CategoryOption option : options) {
-            if(date == null || ((option.startDate() == null || date.after(option.startDate())) && (option.endDate() == null || date.before(option.endDate()))))
+            if (CategoryOptionExtensionsKt.inDateRange(option, date))
                 menu.getMenu().add(Menu.NONE, Menu.NONE, options.indexOf(option) + 1, option.displayName());
         }
         menu.show();
