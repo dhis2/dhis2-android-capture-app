@@ -19,7 +19,7 @@ import java.util.Date
 
 class ErrorModelMapperTest {
     private val httpErrorMessageProvider: HttpStatusMessageProvider = mock()
-    private val mapper = ErrorModelMapper("Missing %s %s from %s %s", httpErrorMessageProvider)
+    private val mapper = ErrorModelMapper("Foreign key", "Missing %s %s from %s %s", httpErrorMessageProvider)
 
     @Before
     fun setUp() =
@@ -110,9 +110,9 @@ class ErrorModelMapperTest {
                     .build(),
             )
         result.apply {
-            assertTrue(this.errorCode == "FK")
+            assertTrue(this.errorCode == "Foreign key")
             assertTrue(this.creationDate == creationDate)
-            assertTrue(this.errorComponent == "")
+            assertTrue(this.errorComponent == null)
             assertTrue(this.errorDescription == "Missing TableB UIDB from TableA UIDA")
         }
     }

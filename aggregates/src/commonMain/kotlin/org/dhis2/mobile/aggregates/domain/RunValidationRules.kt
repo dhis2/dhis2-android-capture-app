@@ -2,6 +2,7 @@ package org.dhis2.mobile.aggregates.domain
 
 import org.dhis2.mobile.aggregates.data.DataSetInstanceRepository
 import org.dhis2.mobile.aggregates.model.ValidationResultStatus
+import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration
 import org.dhis2.mobile.aggregates.model.ValidationRulesResult
 
 internal class RunValidationRules(
@@ -25,7 +26,7 @@ internal class RunValidationRules(
             }
 
             ValidationResultStatus.ERROR -> {
-                if (dataSetInstanceRepository.areValidationRulesMandatory(dataSetUid)) {
+                if (dataSetInstanceRepository.getValidationRulesConfiguration(dataSetUid) == ValidationRulesConfiguration.MANDATORY) {
                     validationResult.copy(mandatory = true)
                 } else {
                     validationResult

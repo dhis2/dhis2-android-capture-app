@@ -1,9 +1,7 @@
 package org.dhis2.common
 
 import android.app.Activity
-import android.app.ActivityManager
 import android.content.Context
-import android.content.Context.ACTIVITY_SERVICE
 import android.os.SystemClock
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -134,10 +132,10 @@ open class BaseRobot {
         val startTime = System.currentTimeMillis()
         while (!isVisible<T>()) {
             sleep(CONDITION_CHECK_INTERVAL)
-            if (System.currentTimeMillis() - startTime >= TIMEOUT) {
+            if (System.currentTimeMillis() - startTime >= ACTIVITY_LAUNCH_TIMEOUT) {
                 throw AssertionError(
                     "Activity ${T::class.java.simpleName} " +
-                            "not visible after $TIMEOUT milliseconds"
+                            "not visible after $ACTIVITY_LAUNCH_TIMEOUT milliseconds"
                 )
             }
         }
@@ -233,16 +231,23 @@ open class BaseRobot {
         }
     }
 
+    /**
+     * True once an instance of [T] is resumed. The task's top activity is not enough: the system
+     * reports it as soon as the launch starts, while the previous screen is still the one shown.
+     */
     inline fun <reified T : Activity> isVisible(): Boolean {
-        val am = getInstrumentation().targetContext.getSystemService(
-            ACTIVITY_SERVICE
-        ) as ActivityManager
-        val visibleActivityName = am.appTasks.firstOrNull()?.taskInfo?.topActivity?.className
-        return visibleActivityName == T::class.java.name
+        var resumed = false
+        getInstrumentation().runOnMainSync {
+            resumed = ActivityLifecycleMonitorRegistry.getInstance()
+                .getActivitiesInStage(Stage.RESUMED)
+                .any { it is T }
+        }
+        return resumed
     }
 
     companion object {
         const val TIMEOUT = 5000L
+        const val ACTIVITY_LAUNCH_TIMEOUT = 15000L
         const val CONDITION_CHECK_INTERVAL = 200L
         private const val STABILITY_POLL_INTERVAL = 50L
         private const val REQUIRED_STABLE_SAMPLES = 2

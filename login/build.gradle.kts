@@ -82,7 +82,7 @@ kotlin {
                 implementation(libs.koin.androidx.compose)
                 implementation(libs.androidx.activity.compose)
                 implementation(libs.androidx.browser)
-                implementation(libs.androidx.compose.uitooling)
+                compileOnly(libs.androidx.compose.uitooling)
             }
         }
 

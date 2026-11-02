@@ -2,6 +2,7 @@
 
 package org.dhis2.usescases.datasets
 
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties.TestTag
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
@@ -18,7 +19,10 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.hasTextExactly
 import androidx.compose.ui.test.isEnabled
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onChildren
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -26,6 +30,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.printToLog
@@ -45,6 +50,7 @@ import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_EXPAND_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_REVIEW_BUTTON_TEST_TAG
+import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_VIOLATION_TEST_TAG
 import org.dhis2.mobile.commons.extensions.toColor
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.CellSelected
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.RowBackground
@@ -72,10 +78,11 @@ internal class DataSetTableRobot(
 
     fun clickOnCell(tableId: String, cellId: String) {
         scrollToItemWithTag(cellTestTag(tableId, cellId))
+        // A touch can land on the sticky header covering the cell (tablets in landscape)
         composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId), useUnmergedTree = true)
             .performScrollTo()
             .assertIsDisplayed()
-            .performClick()
+            .performSemanticsAction(SemanticsActions.OnClick)
     }
 
     @Deprecated("This won't work for the design system table")
@@ -324,6 +331,13 @@ internal class DataSetTableRobot(
 
     fun expandValidationRulesErrorDialog() {
         composeTestRule.onNodeWithTag(VALIDATION_BAR_EXPAND_TEST_TAG).performClick()
+    }
+
+    // With several errors the next page is also composed; the first one is on screen
+    fun assertDataToReviewLabelIsDisplayed(label: String) {
+        composeTestRule.onAllNodesWithTag(VALIDATION_DIALOG_VIOLATION_TEST_TAG).onFirst()
+            .performScrollToNode(hasText("$label:"))
+        composeTestRule.onAllNodesWithText("$label:").onFirst().assertIsDisplayed()
     }
 
     fun tapOnReview() {

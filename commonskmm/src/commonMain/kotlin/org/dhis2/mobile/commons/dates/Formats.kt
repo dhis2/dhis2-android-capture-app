@@ -1,6 +1,7 @@
 package org.dhis2.mobile.commons.dates
 
 import kotlinx.datetime.LocalDateTime.Companion.Format
+import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
 import kotlinx.datetime.LocalDate.Companion.Format as LocalDateFormat
@@ -33,4 +34,18 @@ val timeFormat =
         hour()
         char(':')
         minute()
+    }
+
+val errorLogDateTimeFormat =
+    Format {
+        monthName(MonthNames.ENGLISH_ABBREVIATED)
+        char(' ')
+        day(padding = Padding.ZERO)
+        char(',')
+        char(' ')
+        hour()
+        char(':')
+        minute()
+        char(':')
+        second()
     }

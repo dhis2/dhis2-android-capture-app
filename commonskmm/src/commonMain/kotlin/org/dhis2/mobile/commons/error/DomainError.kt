@@ -11,7 +11,7 @@ package org.dhis2.mobile.commons.error
  * - Configuration: App or system misconfiguration
  * - Generic: Unexpected errors with no specific category
  */
-sealed class DomainError : Throwable() {
+sealed class DomainError : Exception() {
     abstract override val message: String
 
     // ==================== Authentication & Access ====================
