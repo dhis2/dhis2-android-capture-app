@@ -73,17 +73,31 @@ than a dashboard.
 
 1. List children of page `1948057602`; take the most recent `Metrics Report …` page. Editions
    before Sep 2026 are titled `Android Metrics — Flow — YYYY-MM-DD`; match either.
-2. `getConfluencePage` on it. Task state is in the body as
-   `<ac:task-status>incomplete|complete</ac:task-status>`.
-3. For each **ticked** recommendation, check the data for movement in that area. A tick
-   means the team picked it up, not that a task was completed, so report what the numbers
-   did — including "picked up, but the figure has not moved yet", which is a normal and
-   useful outcome rather than a failure.
-4. Carry unticked recommendations forward and note how many editions they have survived.
-   **Read a stale one as a problem with the recommendation, not with the team**: something
-   nobody has picked up in three editions is probably not worth suggesting again, or was
-   never as important as the number made it look. Drop it, or say why it is still here.
-5. Open the report with a short **Since last time** section covering the above.
+2. `getConfluencePage` on it and take **every** item of its **Recommendations** list. They
+   are a plain list; editions before Nov 2026 published them as a task list
+   (`<ac:task-status>…`) — **ignore the tick state**, nobody maintained it. Also read its
+   **Since last time** to know how many editions each carried-forward item has survived.
+3. For **each** recommendation, look for evidence that it was addressed since the previous
+   edition's window end. The report runs from `develop`, but a fix can reach production
+   sooner through `main` or a release branch, so search **`develop`, `main` and every open
+   `release/*` branch** — commits, merged PRs and the Jira tickets they reference (commands
+   under **Recommendation evidence across branches** in the reference). The same change is
+   often cherry-picked to several branches: dedupe by PR or ticket and record **where** it
+   landed ("on `main` via #5301 for 3.5.1, not yet on `develop`").
+4. Then check the number the recommendation named. **Mind which branch the number reads:**
+   SonarCloud and CI are pinned to `develop`, Sentry reflects production releases. A fix only
+   on `main` or `release/*` will not move a develop-pinned figure until it is merged back, and
+   a fix only on `develop` will not move Sentry until it ships — say that rather than "not
+   moved". Give each recommendation one verdict:
+   - `DONE` — the work landed and the number moved.
+   - `PARTIAL` — the work landed, but the number has not moved yet or only partly. This is a
+     normal and useful outcome, not a failure.
+   - `NOT ADDRESSED` — no evidence on any of the branches or in Jira.
+5. Carry `NOT ADDRESSED` recommendations forward and note how many editions they have
+   survived. **Read a stale one as a problem with the recommendation, not with the team**:
+   something nobody has picked up in three editions is probably not worth suggesting again,
+   or was never as important as the number made it look. Drop it, or say why it is still here.
+6. Open the report with a short **Since last time** section covering the above.
 
 **If step 1 finds no prior edition, this is the first one.** Skip the whole step, omit the
 **Since last time** section entirely, and say in one line near the top that it is the first
@@ -237,9 +251,11 @@ named collapsed blocks (`2a. Data table`, `2b. All flow metrics`, `3a. Data tabl
 not lettered, nor are list items such as the Security Top 3 or the Recommendations. The list below describes each section; its own numbering is only for reference.
 
 1. **Since last time** — one bullet per recommendation of the previous edition, prefixed
-   `DONE` or `PARTIAL` (unticked and untouched ones are carried forward or dropped per §2).
-   Say what was picked up and what the number did, e.g. "PARTIAL Vulnerabilities 17→4 —
-   rating stayed E; mechanism explained in Security below." Omitted on a first edition (see §2).
+   `DONE`, `PARTIAL` or `NOT ADDRESSED` (§2). Say what landed, linked to its PR or ticket,
+   on which branch, and what the number did, e.g. "PARTIAL Vulnerabilities 17→4 (#5301 on
+   `develop` and `release/3.5.1`) — rating stayed E; mechanism explained in Security below."
+   A `NOT ADDRESSED` bullet says how many editions it has survived and whether it is carried
+   into Recommendations or dropped. Omitted on a first edition (see §2).
    **Trend at a glance** — the three-metric table (Delivery p50, Delivery p85, Throughput;
    columns metric, what it measures, prev, now, change as a status lozenge). **Flow
    efficiency is not reported** — `metrics.py` still prints it; leave it out of the page.
@@ -304,11 +320,13 @@ not lettered, nor are list items such as the Security Top 3 or the Recommendatio
    - **Epics** — open count with last edition's in brackets, median age, whether it moved.
    - **Releases** — nothing overdue / what is due, and any version whose bookkeeping skews
      the other numbers.
-6. **Recommendations** — checkboxes, five to eight, ordered roughly most-surprising first.
-   Each names the hot spot, the number that makes it checkable next edition, and where it
-   might be worth looking. **Suggest, do not instruct;** never assume a cause; no deadlines
-   or owners; two lines at most. Security Top 3 entries get one recommendation each. Ticking
-   one is the team saying "we picked this up", which is what the next edition reads (§2).
+6. **Recommendations** — a plain numbered list (**no checkboxes**), five to eight, ordered
+   roughly most-surprising first. Each names the hot spot, the number that makes it checkable
+   next edition, and where it might be worth looking. **Suggest, do not instruct;** never
+   assume a cause; no deadlines or owners; two lines at most. Security Top 3 entries get one
+   recommendation each. The next edition judges each one from evidence across branches (§2),
+   so name something it can find — a file, a rule, a ticket, a crash site. A `NOT ADDRESSED`
+   item still worth suggesting reappears here marked "(carried from <Month>)".
 7. **Parked / not included this edition** — theories considered and left unproven (with the
    reason), and anything gathered but not published. Keep the heading even when empty.
 8. **Method** — inside `<details>`. Window and sources; every figure not already shown above
@@ -344,7 +362,7 @@ Writing rules:
 `updateConfluencePage` authenticate as the user over OAuth, which is why this works in a
 worktree, in a cloud session, and for any teammate who has the connector — no credential in
 the repo. The connector uses **HTML+ADF**, not storage format: `<div data-type="panel-info">`,
-`<span data-type="status">`, `<details>`, `<ul data-type="task-list">`. Do not emit
+`<span data-type="status">`, `<details>`. Do not emit
 `<ac:structured-macro>`; it renders as literal text.
 
 **Draft or current.** Only a `draft` may omit the charts, and only when Sentry or Confluence is
@@ -372,7 +390,7 @@ Confluence HTML notes:
 
 - Panels: `<div data-type="panel-info|panel-warning|panel-note">`
 - Status lozenges: `<span data-type="status" data-color="green|red|yellow|neutral">`
-- Tasks: `<ul data-type="task-list"><li data-type="task-item"><input type="checkbox"> …`
+- Recommendations are a plain `<ol><li>…</li></ol>` — never a task list (`data-type="task-list"`)
 - Jira links become live issue macros automatically
 - Tables cannot nest inside table cells; panels cannot contain tables
 - Updates replace the whole body: re-read the page before overwriting it
