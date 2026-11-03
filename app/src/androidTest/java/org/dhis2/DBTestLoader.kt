@@ -21,6 +21,9 @@ class DBTestLoader(private val context: Context) {
         }
         try {
             Timber.tag("RUNNER_LOG").d("Copying database")
+            // Drop the previous test's copy together with its -wal/-shm files: SQLite would
+            // replay a leftover WAL on top of the fresh copy.
+            context.deleteDatabase(DB_NAME)
             val input = InstrumentationRegistry.getInstrumentation()
                 .context.assets.open("databases/$DB_NAME_TEST")
 

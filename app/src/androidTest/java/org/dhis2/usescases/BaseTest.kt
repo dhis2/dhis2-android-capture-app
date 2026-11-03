@@ -9,7 +9,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import dhis2.org.analytics.charts.idling.AnalyticsCountingIdlingResource
 import org.dhis2.AppTest
-import org.dhis2.AppTest.Companion.DB_TO_IMPORT
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.di.TestingInjector
 import org.dhis2.common.featureConfig.FeatureConfigRobot
@@ -101,7 +100,10 @@ open class BaseTest {
         closeKeyboard()
         disableIntents()
         cleanPreferences()
-        cleanLocalDatabase()
+        // The database is not deleted here: the activity rules close the activity after @After,
+        // and its onDestroy still queries the database. Deleting it under Room's connection pool
+        // makes the next connection open a new, empty file. AppTest replaces the database when
+        // the next test's process starts.
         cleanKeystore()
         stopMockServer()
     }
@@ -196,12 +198,6 @@ open class BaseTest {
         if(::mockWebServerRobot.isInitialized) {
             mockWebServerRobot.shutdown()
         }
-    }
-
-    fun cleanLocalDatabase() {
-       val deleted = (context.applicationContext as AppTest).deleteDatabase(DB_TO_IMPORT)
-        val currentTest = testName.methodName
-        Timber.tag("RUNNER_LOG").d("CleanDataBaseResult. Is deleted? answer: $deleted for $currentTest")
     }
 
     protected fun enableFeatureConfigValue(feature: Feature) {

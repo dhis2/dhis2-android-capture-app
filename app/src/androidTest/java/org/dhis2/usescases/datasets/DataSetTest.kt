@@ -38,11 +38,6 @@ class DataSetTest : BaseTest() {
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    override fun teardown() {
-        super.teardown()
-        cleanLocalDatabase()
-    }
-
     @Test
     fun datasetAutomate() = runTest {
         val orgUnit = "Ngelehun CHC"
