@@ -96,6 +96,7 @@ coil = "3.3.0"
 cyclonedx = "3.4.1"
 jetbrains-material3="1.9.0"
 materialIconsExtended = "1.7.3"
+ktor = "3.6.0"
 
 [libraries]
 gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
@@ -223,6 +224,7 @@ compose-material3 = { group = "org.jetbrains.compose.material3", name = "materia
 compose-components-resources = { group = "org.jetbrains.compose.components", name = "components-resources", version.ref = "composePluginVersion" }
 compose-desktop-common = { group = "org.jetbrains.compose.desktop", name = "desktop", version.ref = "composePluginVersion" }
 compose-material3-iconsExtendend = { group = "org.jetbrains.compose.material", name = "material-icons-extended", version.ref = "materialIconsExtended" }
+ktor-http = { group = "io.ktor", name = "ktor-http", version.ref = "ktor" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
