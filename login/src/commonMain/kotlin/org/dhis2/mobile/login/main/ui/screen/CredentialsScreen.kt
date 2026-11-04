@@ -488,7 +488,7 @@ private fun CredentialsContainer(
                                 it?.let { text -> TextFieldValue(text, TextRange(text.length)) }
                                     ?: TextFieldValue("")
                         },
-                        onNextClicked = {
+                        onImeActionClick = {
                             if (areCredentialsComplete) {
                                 focusManager.clearFocus()
                                 onCredentialsUpdate(CredentialsUpdate.Complete)
@@ -515,7 +515,7 @@ private fun CredentialsContainer(
                     title = stringResource(Res.string.password_hint),
                     state = inputShellStatePassword,
                     inputTextFieldValue = passwordTextValue,
-                    onNextClicked = {
+                    onImeActionClick = {
                         if (areCredentialsComplete) {
                             focusManager.clearFocus()
                             onCredentialsUpdate(CredentialsUpdate.Complete)
