@@ -318,8 +318,10 @@ dynamically from the plugin at runtime.
   breakdown, stage shares, the SonarCloud trend and per-release Sentry regressions — each
   with its numbers kept underneath in a collapsed table, since a figure that exists only
   inside a PNG is invisible to Confluence search and to next month's edition. It also reads
-  the previous edition, checks which action items were ticked, and reports whether they
-  actually moved the numbers.
+  the previous edition, looks for evidence that each recommendation was addressed — commits,
+  merged PRs and tickets on `develop`, `main` and every open `release/*` branch — and reports
+  whether it was and whether it actually moved the numbers. Recommendations are a plain list,
+  not checkboxes.
 
 **The whole report runs with zero credentials**, except the crash-free rate: the Sentry MCP cannot read release health, so `.claude/skills/team-metrics/scripts/sentry_health.py` needs an `org:read` Sentry token (`SENTRY_METRICS_TOKEN`) and the report says "not fetched" without one. Jira is world-readable over the REST API,
 changelogs included; Confluence reading and publishing go through the Atlassian connector's

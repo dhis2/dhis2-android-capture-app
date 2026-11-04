@@ -378,6 +378,41 @@ curl "https://sonarcloud.io/api/measures/component?component=dhis2_dhis2-android
 curl "https://sonarcloud.io/api/qualitygates/project_status?projectKey=dhis2_dhis2-android-capture-app&branch=develop"
 ```
 
+## Recommendation evidence across branches
+
+Used by §2 of the skill to decide whether each of last edition's recommendations was
+addressed. The skill runs from `develop`, the next major release; a fix wanted in production
+sooner lands on an open `release/*` branch or on `main` first, and may not be on `develop` yet.
+
+```bash
+# Branches to search: develop, main, and every release branch currently open on origin
+git fetch origin --prune
+git ls-remote --heads origin 'release/*'          # e.g. release/3.5.0-RC, release/3.5.1
+
+# Commits on each branch since the previous edition's window end, narrowed by what the
+# recommendation names — a path, an ANDROAPP key, a rule id or a symbol
+for b in develop main $(git ls-remote --heads origin 'release/*' | sed 's#.*refs/heads/##'); do
+  echo "== $b"
+  git log "origin/$b" --since=<prev-window-end> --oneline -- <path>       # by file
+  git log "origin/$b" --since=<prev-window-end> --oneline -i --grep=<key> # by key or word
+done
+
+# Merged PRs per base branch (GitHub MCP in cloud sessions, where gh is absent)
+gh pr list --repo dhis2/dhis2-android-capture-app --state merged --base <branch> \
+  --search "merged:>=<prev-window-end> <keyword>" --json number,title,mergedAt,baseRefName
+```
+
+Then read the ANDROAPP tickets those commits or PRs reference (status, `fixVersion`) — a
+ticket in progress with no merged PR yet is `PARTIAL` at most, never `DONE`.
+
+- **Dedupe cherry-picks.** One fix often appears on `release/*`, `main` and `develop` under
+  different SHAs; count it once, by PR or ticket, and list every branch it reached.
+- **Match the branch to the metric.** SonarCloud and CI are read on `develop`, Sentry on the
+  production release. Evidence on a branch the metric does not read means "landed, not
+  measurable yet" (`PARTIAL`), not "no effect".
+- **No evidence anywhere is the only `NOT ADDRESSED`.** Absence on `develop` alone is not
+  enough.
+
 ## Stage shares: two scopes, one of them published
 
 `metrics.py` writes stage shares twice, and the report shows the second:
