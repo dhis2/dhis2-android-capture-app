@@ -16,6 +16,7 @@ import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.server.OpenIdSession
 import org.dhis2.mobile.login.authentication.OpenIdController
+import org.dhis2.mobile.login.main.domain.OAuthCallbackParser
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.screen.LoginScreen
 import org.dhis2.usescases.about.PolicyView
@@ -125,10 +126,13 @@ class LoginActivity : ActivityGlobalAbstract() {
         super.onResume()
         val appLinkAction = intent?.action
         val appLinkData: Uri? = intent?.data
-        if (Intent.ACTION_VIEW == appLinkAction && appLinkData != null) {
+        if (Intent.ACTION_VIEW == appLinkAction &&
+            appLinkData != null &&
+            OAuthCallbackParser.isOAuthRedirect(appLinkData.scheme, appLinkData.host)
+        ) {
             appLinkNavigation.emit(appLinkData.toString())
-            intent?.action = null
         }
+        intent?.action = null
     }
 
     override fun onDestroy() {

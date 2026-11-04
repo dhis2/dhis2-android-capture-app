@@ -15,6 +15,8 @@ import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.commons.extensions.withMinimumDuration
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
+import org.dhis2.mobile.login.main.domain.OAuthCallback
+import org.dhis2.mobile.login.main.domain.OAuthCallbackParser
 import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
 import org.dhis2.mobile.login.main.domain.model.DeviceEnrollmentInfo
 import org.dhis2.mobile.login.main.domain.model.LoginResult
@@ -371,36 +373,31 @@ class CredentialsViewModel(
         }
     }
 
-    private fun handleOAuthCallbacks(urlString: String) {
-        // First check if there is any error
-        val error = urlString.substringAfter("error=", "").substringBefore('&')
-        if (error.isNotEmpty()) {
-            abortOAuthFlow(errorMessage = error)
-            return
-        }
+    private suspend fun handleOAuthCallbacks(urlString: String) {
+        when (val callback = OAuthCallbackParser.parse(urlString)) {
+            is OAuthCallback.Error -> {
+                abortOAuthFlow(errorMessage = callback.code)
+            }
 
-        // Check if there is a device enrollment callback
-        val iat = urlString.substringAfter("iat=", "").substringBefore('&')
-        val state = urlString.substringAfter("state=", "").substringBefore('&')
-        if (iat.isNotEmpty()) {
-            registerDevice(iat, state)
-            return
-        }
+            is OAuthCallback.Enrollment -> {
+                registerDevice(callback.iat, callback.state)
+            }
 
-        // Check if there is a login callback with the authorization code
-        val code = urlString.substringAfter("code=", "").substringBefore('&')
-        if (code.isNotEmpty()) {
-            loginWithOAuthCode(code, state)
-            return
-        }
+            is OAuthCallback.Login -> {
+                loginWithOAuthCode(callback.code, callback.state)
+            }
 
-        // Logout callback after a successful OAuth login: resume the deferred actions
-        if (pendingOAuthLoginResult != null) {
-            completeOAuthLogin()
-            return
-        }
+            OAuthCallback.Other -> {
+                // Logout callback after a successful OAuth login: resume the deferred actions
+                if (pendingOAuthLoginResult != null) {
+                    completeOAuthLogin()
+                    return
+                }
+            }
 
-        abortOAuthFlow(errorMessage = null)
+            // Not a DHIS2 OAuth redirect or tampered parameters: ignore it and keep the flow alive
+            OAuthCallback.Invalid -> Unit
+        }
     }
 
     private fun loginWithOAuthCode(
