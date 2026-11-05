@@ -143,7 +143,7 @@ fun SearchButton(
         Spacer(modifier = Modifier.requiredWidth(Spacing.Spacing8))
 
         Text(
-            text = stringResource(id = textId, teTypeName.lowercase()),
+            text = stringResource(id = textId, teTypeName),
             style = getTextStyle(style = DHIS2TextStyle.LABEL_LARGE),
         )
     }
@@ -179,7 +179,7 @@ fun AddNewButton(
         Spacer(modifier = Modifier.requiredWidth(Spacing.Spacing8))
 
         Text(
-            text = stringResource(id = R.string.add_te_type, teTypeName.lowercase()),
+            text = stringResource(id = R.string.add_te_type, teTypeName),
             style = getTextStyle(style = DHIS2TextStyle.LABEL_LARGE),
             color = SurfaceColor.Primary,
         )
@@ -665,7 +665,7 @@ fun CreateNewButton(
             ExtendedFAB(
                 modifier = modifier.testTag("ADD_NEW_BUTTON"),
                 onClick = onClick,
-                text = stringResource(R.string.search_new_te_type, teTypeName.lowercase()),
+                text = stringResource(R.string.search_new_te_type, teTypeName),
                 icon = icon,
                 style = FABStyle.SECONDARY,
             )

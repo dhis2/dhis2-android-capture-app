@@ -62,7 +62,10 @@ class EventCaptureFormPresenter(
                     EventNonEditableReason.EVENT_DATE_IS_NOT_IN_ORGUNIT_RANGE ->
                         customLabelProvider.formatStringWithCustomLabel(
                             resourceManager.getString(R.string.event_date_not_in_orgunit_range),
-                            customLabelProvider.getCustomOrgUnitLabel(getEvent()?.program()),
+                            customLabelProvider.getCustomOrgUnitLabel(
+                                programUid = getEvent()?.program(),
+                                keepConfiguredCase = true,
+                            ),
                         ) to false
                     EventNonEditableReason.NO_CATEGORY_COMBO_ACCESS ->
                         resourceManager.getString(R.string.edition_no_catcombo_access) to
@@ -77,7 +80,10 @@ class EventCaptureFormPresenter(
                     EventNonEditableReason.ORGUNIT_IS_NOT_IN_USER_SCOPE ->
                         customLabelProvider.formatStringWithCustomLabel(
                             resourceManager.getString(R.string.edition_orgunit_user_scope),
-                            customLabelProvider.getCustomOrgUnitLabel(getEvent()?.program()),
+                            customLabelProvider.getCustomOrgUnitLabel(
+                                programUid = getEvent()?.program(),
+                                keepConfiguredCase = true,
+                            ),
                         ) to false
                 }
             view.showNonEditableMessage(reason, canBeReOpened)

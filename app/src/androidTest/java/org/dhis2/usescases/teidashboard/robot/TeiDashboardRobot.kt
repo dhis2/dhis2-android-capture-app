@@ -239,7 +239,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnMenuProgramEnrollments() {
         with(InstrumentationRegistry.getInstrumentation().targetContext) {
-            val programSelectorLabel = "More Enrollments"
+            val programSelectorLabel = "More enrollments"
             composeTestRule.waitUntilExactlyOneExists(
                 hasText(programSelectorLabel),
                 TIMEOUT
@@ -274,7 +274,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     private fun checkIfGroupedEventsIsVisible() {
         with(InstrumentationRegistry.getInstrumentation().targetContext) {
-            val groupLabel = "Group by Stage"
+            val groupLabel = "Group by stage"
             composeTestRule.onNodeWithText(groupLabel).assertIsDisplayed()
         }
     }

@@ -80,7 +80,8 @@ class SearchRepositoryImplKt(
     override suspend fun getTeTypeCustomLabel(
         teTypeUid: String,
         isPlural: Boolean,
-    ): String = customLabelProvider.getTeTypeCustomLabel(teTypeUid, isPlural)
+        keepConfiguredCase: Boolean,
+    ): String = customLabelProvider.getTeTypeCustomLabel(teTypeUid, isPlural, keepConfiguredCase)
 
     override fun searchTeiForMap(
         searchParametersModel: SearchParametersModel,

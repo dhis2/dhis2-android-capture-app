@@ -49,6 +49,7 @@ class RelationshipsViewModel(
                             customLabelProvider.getCustomRelationshipLabel(
                                 programUid = programUid,
                                 quantity = 2,
+                                keepConfiguredCase = true,
                             ),
                     )
                 } else {
