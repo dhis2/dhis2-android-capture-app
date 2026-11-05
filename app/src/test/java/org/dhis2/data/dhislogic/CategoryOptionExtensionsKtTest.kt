@@ -59,6 +59,35 @@ class CategoryOptionExtensionsKtTest {
     }
 
     @Test
+    fun `Should return true if date is the option start or end date`() {
+        val startDate = Date.from(Instant.parse("2020-01-01T00:00:00.00Z"))
+        val endDate = Date.from(Instant.parse("2020-01-03T00:00:00.00Z"))
+        assertTrue(
+            catOption(startDate, endDate).inDateRange(startDate) &&
+                catOption(startDate, endDate).inDateRange(endDate),
+        )
+    }
+
+    @Test
+    fun `Should return true if date is later on the option end date`() {
+        val endDate = Date.from(Instant.parse("2020-01-03T00:00:00.00Z"))
+        val date = Date(endDate.time + 10 * 60 * 60 * 1000)
+        assertTrue(
+            catOption(null, endDate).inDateRange(date),
+        )
+    }
+
+    @Test
+    fun `Should return false if date is outside the option start and end dates`() {
+        val startDate = Date.from(Instant.parse("2020-01-02T00:00:00.00Z"))
+        val endDate = Date.from(Instant.parse("2020-01-03T00:00:00.00Z"))
+        assertFalse(
+            catOption(startDate, endDate).inDateRange(Date.from(Instant.parse("2020-01-01T00:00:00.00Z"))) ||
+                catOption(startDate, endDate).inDateRange(Date.from(Instant.parse("2020-01-04T00:00:00.00Z"))),
+        )
+    }
+
+    @Test
     fun `Should return true if orgUnitUid is null and orgUnits are not empty`() {
         val orgUnitUid = "orgUnitUid"
         val orgUnits = listOf(ObjectWithUid.create(orgUnitUid))
