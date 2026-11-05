@@ -237,7 +237,7 @@ class SearchRepositoryTest {
                     followUp = true,
                 )
             whenever(
-                customLabelProvider.getCustomEnrollmentLabel(anyOrNull(), anyOrNull()),
+                customLabelProvider.getCustomEnrollmentLabel(anyOrNull(), anyOrNull(), any()),
             ) doReturn "Case"
             whenever(
                 customLabelProvider.getCustomMarkedForFollowUpLabel(anyOrNull()),
