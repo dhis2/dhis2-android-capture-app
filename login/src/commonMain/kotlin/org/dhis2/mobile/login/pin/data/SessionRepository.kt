@@ -15,7 +15,6 @@ interface SessionRepository {
 
     /**
      * Checks a PIN against the stored one, so the stored value never leaves the data layer.
-     * A PIN stored in plaintext by a previous version is replaced by its hash when it matches.
      * @param pin The PIN to check.
      * @return Whether the PIN matches, or [PinVerification.NoPinStored] if there is none to check.
      */
