@@ -63,7 +63,7 @@
     <!--Event initial-->
     <string name="update">Mettre à jour</string>
     <string name="org_unit">Unités d´Organisation</string>
-    <string name="no_org_units">Il n\'y a pas d\'unité d\'organisation ouverte pour la date sélectionnée. Merci de sélectionner une autre date ou une autre unité d\'organisation.</string>
+    <string name="no_org_units">Il n\'y a pas d\'Unité d\'organisation Ouvert pour la date sélectionnée. Merci de sélectionner une autre date ou une autre Unité d\'Organisation.</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
 
@@ -173,7 +173,6 @@
     <string name="qr_attributes">Attributs</string>
     <string name="qr_enrollment">Inscriptions</string>
     <string name="qr_events">Événements</string>
-    <string name="qr_relationships">Relations</string>
     <string name="read_more_qr">Lisez le QR suivant pour plus d\'informations</string>
     <string name="save_qr">Arrêtez de lire et faites une sauvegarde des données</string>
     <string name="qr_no_data">Aucune donnée</string>
@@ -196,10 +195,10 @@
     <string name="about_sdk">Version de SDK: %s</string>
     <string name="about_connected">Connectée à: %s</string>
     <string name="about_user">Utilisateur actuel: %s</string>
-    <string name="about_more">\"Plus d\'informations sur l\'application: lisez \"<a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">ici</a>ce qui est supporté et ce qui n\'est pas supporté</string>
-    <string name="about_git">\"Cette version et les versions précédentes de cette application sont disponibles sur \"<a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>\". DHIS2 Android Capture est sous licence de la GNU General Public License telle que publiée par la Free Software Foundation, voir \"<a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
-    <string name="about_dev">\"Développé et entretenu par le \"<a href="https://www.dhis2.org/">DHIS2</a>\" projet, partie de l\'Université d\'Oslo, \"<a href="https://www.mn.uio.no/ifi/english/">département d\'informatique</a>.</string>
-    <string name="about_contact">\"Pour plus d\'informations ou des questions sur cette application, veuillez écrire à \"<a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
+    <string name="about_more">Plus d\'informations sur l\'application: lisez <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">ici</a>ce qui est supporté et ce qui n\'est pas supporté</string>
+    <string name="about_git">Cette version et les versions précédentes de cette application sont disponibles sur <a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>. DHIS2 Android Capture est sous licence de la GNU General Public License telle que publiée par la Free Software Foundation, voir <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
+    <string name="about_dev">Développé et entretenu par le <a href="https://www.dhis2.org/">DHIS2</a> projet, partie de l\'Université d\'Oslo, <a href="https://www.mn.uio.no/ifi/english/">département d\'informatique</a>.</string>
+    <string name="about_contact">Pour plus d\'informations ou des questions sur cette application, veuillez écrire à <a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
 
     <string name="search_program_not_selected">Sélectionnez un programme pour permettre l\'inscription</string>
     <string name="search_access_error">Vous n\'avez pas l\'autorisation requise</string>
@@ -247,9 +246,9 @@
     <string name="sent_by_sms">Envoyé par sms</string>
     <string name="action_close">Fermer</string>
     <string name="tuto_main_11">Maintenant vous pouvez vérifier l\'information de synchronisation en cliquant ici</string>
-    <string name="relationship_error_recursive">Vous ne pouvez pas établir de relation entre une donnée et elle-même</string>
+    <string name="relationship_error_recursive">Vous ne pouvez pas établir de relation une donnée avec elle-même</string>
     <string name="change_calendar_view">Changer de vue calendrier</string>
-    <string name="relationship_without_enrollment">La donnée à laquelle vous essayer d\'accéder n\'a pas d\'enrôlement. Vous ne pouvez pas accéder au tableau de bord.</string>
+    <string name="relationship_without_enrollment">La donnée à laquelle vous essayer d\'acceéer n\'a pas d\'enrôlement. Vous ne pouvez pas accéder au tableau de bord.</string>
     <string name="formatting_error">Erreur de formattage</string>
     <string name="dashboard_menu_delete_tei_v2">Supprimer 1%s</string>
     <string name="delete_authority_error">Vous n\'avez pas l\'autorité pour supprimer cette donnée</string>
@@ -449,15 +448,12 @@
     <string name="delete_account">Supprimer compte</string>
     <string name="troubleshooting_language_title">Langue</string>
     <string name="not_saved">Non enregistré!</string>
-    <string name="review_message">Certains champs nécessitent votre attention. \n Voulez-vous revoir le formulaire ?</string>
     <string name="search_no_results">Il n\'y a pas de résultats pour cette recherche</string>
     <string name="search_too_many_results">Résultats trop nombreux</string>
     <string name="action_ok">Ok</string>
     <string name="init_search">Lancez une recherche pour trouver 1%s</string>
     <string name="search_or_create">Vous pouvez rechercher ou créer un nouveau 1%s</string>
     <string name="missing_warning_fields_completed_events">Vous avez des messages d\'avertissement.</string>
-    <string name="missing_warning_fields_events">Vous avez des messages d\'avertissement.\nVoulez-vous marquer ce formulaire comme terminé ?</string>
-    <string name="missing_error_fields_events">Certains champs contiennent des erreurs et ils ne sont pas enregistrés. \ nVoulez-vous revoir le formulaire ?</string>
     <string name="event_can_be_completed">Voulez-vous marquer ce formulaire comme complet?</string>
     <string name="event_error_on_complete">Vous avez des messages d\'erreur.\nVoulez-vous les consulter ?</string>
     <string name="re_opened">Réouvert</string>

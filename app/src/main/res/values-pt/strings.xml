@@ -187,7 +187,6 @@
     <string name="qr_attributes">Atributos</string>
     <string name="qr_enrollment">Inscrições</string>
     <string name="qr_events">Eventos</string>
-    <string name="qr_relationships">Relacionamentos</string>
     <string name="read_more_qr">Leia o próximo QR para obter mais informações.</string>
     <string name="save_qr">Pare de ler e salve dados</string>
     <string name="qr_no_data">sem dados</string>
@@ -411,7 +410,6 @@
     <string name="navigation_tasks">Tarefas</string>
     <string name="navigation_programs">Programas</string>
     <string name="navigation_charts">Gráficos</string>
-    <string name="navigation_relationships">Relações</string>
     <string name="navigation_notes">Notas</string>
     <string name="navigation_data_entry">Entrada de dados</string>
     <string name="navigation_form">Formulário</string>
@@ -476,7 +474,6 @@
     <string name="troubleshooting_pass_rule_validation">Não foram encontrados avisos</string>
     <string name="troobleshooting_pass_rule_validation_title">Tudo parece óptimo</string>
     <string name="not_saved"> Não guardado</string>
-    <string name="review_message"> Alguns campos requerem a sua atenção.\nDeseja rever o formulário?</string>
     <string name="search_loading_more">Carregar mais resultados</string>
     <string name="search_no_results_in_program">Não há mais resultados para  %s</string>
     <string name="search_outside_action">Pesquisar fora deste programa</string>
@@ -490,8 +487,6 @@
     <string name="init_search">Iniciar uma pesquisa para encontrar qualquer %s</string>
     <string name="search_or_create">É possível pesquisar ou criar um novo %s</string>
     <string name="missing_warning_fields_completed_events">Tem algumas mensagens de aviso.</string>
-    <string name="missing_warning_fields_events">Tem algumas mensagens de aviso.\nDeseja marcar este formulário como completo?</string>
-    <string name="missing_error_fields_events">Alguns campos têm erros e não são guardados. \Deseja rever o formulário?</string>
     <string name="event_can_be_completed">Deseja marcar este formulário como completo?</string>
     <string name="event_error_on_complete">Tem algumas mensagens de erro. Quer revê-las?</string>
     <string name="re_opened">Reaberto</string>
@@ -532,8 +527,6 @@
     <string name="download_now">Descarregar agora</string>
     <string name="check_for_updates">Verifique se existem atualizações</string>
     <string name="no_updates">Não há novas actualizações</string>
-    <string name="unknow_sources_denied">A permissão de fontes desconhecidas foi negada. É necessário activá-la para instalar a versão.</string>
-    <string name="storage_denied">A permissão de armazenamento foi negada. É necessário activá-la para instalar a versão.</string>
     <string name="app_version">Versão da aplicação</string>
     <string name="error_applying_rule_effects">Algo correu mal com a configuração do programa, não é possível carregar este evento. Contacte o administrador do sistema.</string>
     <string name="dashboard_menu_delete_person">Eliminar pessoa</string>
@@ -552,7 +545,6 @@
     <string name="sync_warning">Aviso de sincronização</string>
     <string name="sync_error">Erro de Sincronização</string>
     <string name="coordinates">Coordenadas</string>
-    <string name="no_data_access"> Não tem acesso aos dados.\nContacte o seu administrador.</string>
     <string name="sync_offline_check_connection">Parece que está offline. Por favor, verifique a sua ligação</string>
     <string name="delete_tei_dialog_title">Eliminar este %s?</string>
     <string name="delete_tei_dialog_message">Este%s e todos os seus dados em todos os programas serão eliminados. Esta ação não pode ser anulada.</string>

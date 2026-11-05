@@ -73,4 +73,6 @@
     <string name="cancel">रद्द करें</string>
     <string name="ok">ठीक है</string>
 
+    <string name="sync_error">सिंक की गलती</string>
+    <string name="remove_follow_up">हटाएं</string>
     </resources>

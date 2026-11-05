@@ -180,7 +180,6 @@
     <string name="qr_attributes">السمات</string>
     <string name="qr_enrollment">التسجيلات</string>
     <string name="qr_events">الأحداث</string>
-    <string name="qr_relationships">علاقات</string>
     <string name="read_more_qr">اقرأ رمز QR التالي للحصول على مزيد من المعلومات.</string>
     <string name="save_qr">أوقف القراءة واحفظ البيانات</string>
     <string name="qr_no_data">لا وجود لبيانات</string>
@@ -460,7 +459,7 @@
     <string name="troubleshooting_pass_rule_validation">لم يتم العثور على تحذيرات</string>
     <string name="troobleshooting_pass_rule_validation_title">كل شيء يبدو جيداً</string>
     <string name="not_saved">لم يتم حفظه</string>
-    <string name="review_message">تحتاج بعض الحقول إلى إطلاعك.\n هل تريد مراجعة النموذج؟</string>
+    <string name="review_message">بعض الحقول تحتاج إلى انتباهك.\nهل تريد مراجعة النموذج؟</string>
     <string name="search_loading_more">تحميل المزيد من النتائج</string>
     <string name="search_no_results_in_program">لا يوجد المزيد من النتائج لـ %s</string>
     <string name="search_outside_action">ابحث خارج هذا البرنامج</string>
@@ -473,10 +472,10 @@
     <string name="init_search">ابدأ بحثًا للعثور على أي %s</string>
     <string name="search_or_create">يمكنك البحث أو إنشاء %s جديد</string>
     <string name="missing_warning_fields_completed_events">لديك بعض الرسائل التحذيرية.</string>
-    <string name="missing_warning_fields_events">لديك بعض رسائل التحذير.\n هل تريد وضع علامة على هذا النموذج كمكتمل؟</string>
-    <string name="missing_error_fields_events">بعض الحقول بها أخطاء ولم يتم حفظها. \n هل تريد مراجعة النموذج؟</string>
+    <string name="missing_warning_fields_events">لديك بعض الرسائل التحذيرية.\nهل تريد وضع علامة \"مكتمل\" على هذا النموذج؟</string>
+    <string name="missing_error_fields_events">بعض الحقول بها أخطاء ولم يتم حفظها. \nهل تريد مراجعة النموذج؟</string>
     <string name="event_can_be_completed">هل تريد وضع علامة على هذا النموذج كمكتمل؟</string>
-    <string name="event_error_on_complete">لديك بعض رسائل الخطأ. \nهل تريد مراجعتها؟</string>
+    <string name="event_error_on_complete">لديك بعض رسائل الخطأ.\nهل تريد مراجعتها؟</string>
     <string name="re_opened">أعيد فتحه</string>
     <string name="account_disable_title">الحساب معطل</string>
     <string name="account_disable_message">تم تعطيل حسابك من قبل المسؤول.</string>
@@ -513,7 +512,6 @@
     <string name="sync_warning">تحذير المزامنة</string>
     <string name="sync_error">يحوي خطأ في المزامنة</string>
     <string name="coordinates">الإحداثيات</string>
-    <string name="no_data_access">ليس لديك حق الوصول إلى البيانات.\nاتصل بالمسؤول لديك.</string>
     <string name="sync_offline_check_connection">يبدو أنك غير متصل بالإنترنت. يرجى التحقق من اتصالك</string>
     <string name="schedule_next">الجدول الزمني التالي</string>
     <string name="schedule">مجدول زمنياً</string>
