@@ -66,6 +66,7 @@ class LoginTest : BaseTest() {
             // Enter incorrect credentials - should show error
             mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_UNAUTHORIZE, HTTP_UNAUTHORIZE)
             checkLoginButtonIsDisabled()
+            checkCredentialsExposeAutofillContentTypes()
             typeUsername("wronguser")
             typePassword("wrongpassword")
             checkLoginButtonIsEnabled()
