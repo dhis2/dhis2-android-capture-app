@@ -288,7 +288,7 @@ abstract class SessionManagerActivity :
         } else {
             if (this.app().isSessionBlocked && this !is SplashActivity && this !is LoginActivity) {
                 if (pinComposeView == null) {
-                    showPinBottomSheet()
+                    showPinBottomSheet(onSuccess = { removePinBottomSheet() })
                 }
             } else {
                 if (this !is LoginActivity && this !is SplashActivity) {
@@ -301,7 +301,7 @@ abstract class SessionManagerActivity :
     private fun sessionAction(accountsCount: Int) {
         if (this.app().isSessionBlocked && this !is SplashActivity) {
             if (pinComposeView == null) {
-                showPinBottomSheet()
+                showPinBottomSheet(onSuccess = { removePinBottomSheet() })
             }
         } else {
             navigateToLogin(accountsCount)
