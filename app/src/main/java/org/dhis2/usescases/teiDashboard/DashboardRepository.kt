@@ -98,7 +98,7 @@ interface DashboardRepository {
 
     suspend fun programHasAnalytics(): Boolean
 
-    fun getTETypeName(): String?
+    suspend fun getTETypeName(): String?
 
     fun getAttributesMap(
         programUid: String,

@@ -4,35 +4,20 @@ import io.reactivex.Single
 import org.dhis2.bindings.toDate
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.note.Note
+import org.hisp.dhis.android.core.note.NoteCollectionRepository
 
 class NotesRepository(
     private val d2: D2,
     val programUid: String,
+    private val enrollmentUid: String?,
 ) {
-    fun getEnrollmentNotes(teiUid: String): Single<List<Note>> =
+    fun getEnrollmentNotes(): Single<List<Note>> =
         d2
             .noteModule()
             .notes()
             .byEnrollmentUid()
-            .eq(
-                d2
-                    .enrollmentModule()
-                    .enrollments()
-                    .byProgram()
-                    .eq(programUid)
-                    .byTrackedEntityInstance()
-                    .eq(teiUid)
-                    .one()
-                    .blockingGet()
-                    ?.uid(),
-            ).rxGet()
-            .map { notes ->
-                notes.sortedWith(
-                    Comparator { note1, note2 ->
-                        note1.storedDate()?.toDate()?.compareTo(note2.storedDate()?.toDate()) ?: 0
-                    },
-                )
-            }
+            .eq(enrollmentUid)
+            .getSortedByStoredDate()
 
     fun getEventNotes(eventUid: String): Single<List<Note>> =
         d2
@@ -40,14 +25,7 @@ class NotesRepository(
             .notes()
             .byEventUid()
             .eq(eventUid)
-            .rxGet()
-            .map { notes ->
-                notes.sortedWith(
-                    Comparator { note1, note2 ->
-                        note1.storedDate()?.toDate()?.compareTo(note2.storedDate()?.toDate()) ?: 0
-                    },
-                )
-            }
+            .getSortedByStoredDate()
 
     fun hasProgramWritePermission(): Boolean =
         d2
@@ -58,4 +36,7 @@ class NotesRepository(
             ?.access()
             ?.data()
             ?.write() == true
+
+    private fun NoteCollectionRepository.getSortedByStoredDate(): Single<List<Note>> =
+        rxGet().map { notes -> notes.sortedBy { note -> note.storedDate()?.toDate() } }
 }

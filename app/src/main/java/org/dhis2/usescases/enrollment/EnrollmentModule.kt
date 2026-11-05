@@ -22,15 +22,11 @@ import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
 import org.dhis2.form.data.EnrollmentRepository
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
-import org.dhis2.form.data.metadata.FileResourceConfiguration
-import org.dhis2.form.data.metadata.OptionSetConfiguration
-import org.dhis2.form.data.metadata.OrgUnitConfiguration
 import org.dhis2.form.model.EnrollmentMode
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
 import org.dhis2.form.ui.provider.AutoCompleteProviderImpl
-import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
 import org.dhis2.form.ui.provider.HintProviderImpl
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
@@ -120,12 +116,6 @@ class EnrollmentModule(
     ): FieldViewModelFactory =
         FieldViewModelFactoryImpl(
             HintProviderImpl(context),
-            DisplayNameProviderImpl(
-                OptionSetConfiguration(d2),
-                OrgUnitConfiguration(d2),
-                FileResourceConfiguration(d2),
-                periodUtils,
-            ),
             UiEventTypesProviderImpl(),
             KeyboardActionProviderImpl(),
             LegendValueProviderImpl(d2, resourceManager),

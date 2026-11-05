@@ -905,6 +905,14 @@ class DataSetTest : BaseTest() {
             pressOnInputDialogNext()
             assertCellDisabled(tableId, greyCell2)
             assertCellSelected(tableId, nextLineCell)
+            pressOnInputDialogDismiss()
+
+            // [ANDROAPP-7836]
+            // "Outreach, >1y" column is view-only for every data element in the
+            // Immunization section. Check it stays disabled table-wide.
+            lastColumnCellIdsForImmunizationSection.forEach { cellId ->
+                assertCellDisabled(tableId, cellId)
+            }
         }
     }
 

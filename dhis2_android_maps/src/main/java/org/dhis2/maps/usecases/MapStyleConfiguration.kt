@@ -8,6 +8,7 @@ import org.dhis2.maps.model.MapScope
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.map.layer.MapLayerImageryProvider
 import org.hisp.dhis.android.core.map.layer.MapLayerPosition
+import org.hisp.dhis.android.core.map.layer.MapService
 
 const val DEFAULT_FORCED_LOCATION_ACCURACY = -1
 
@@ -103,7 +104,14 @@ class MapStyleConfiguration(
                         )
                     }
 
-                build(id, tileUrls, attribution, basemapOverlays, defaultMap == mapLayer.uid())
+                build(
+                    id = id,
+                    tileUrls = tileUrls,
+                    attribution = attribution,
+                    overlays = basemapOverlays,
+                    isDefault = defaultMap == mapLayer.uid(),
+                    isVectorStyle = mapLayer.mapService() == MapService.VECTOR_STYLE,
+                )
             }
     }
 

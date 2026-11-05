@@ -189,7 +189,7 @@ class SearchTEActivity :
 
         binding.executePendingBindings()
 
-        binding.syncButton.visibility = if (initialProgram != null) View.VISIBLE else View.GONE
+        binding.syncButton.visibility = if (initialProgram.isNullOrEmpty()) View.GONE else View.VISIBLE
         binding.syncButton.setOnClickListener { openSyncDialog() }
 
         binding.landOpenSearchButton
@@ -305,12 +305,13 @@ class SearchTEActivity :
     }
 
     private fun openSyncDialog() {
+        val programUid = initialProgram?.takeIf { it.isNotEmpty() } ?: return
         val contextView = findViewById<View>(R.id.navigationBar)
         SyncStatusDialog
             .Builder()
             .withContext(this, null)
             .withSyncContext(
-                SyncContext.TrackerProgram(initialProgram!!),
+                SyncContext.TrackerProgram(programUid),
             ).onDismissListener(
                 object : OnDismissListener {
                     override fun onDismiss(hasChanged: Boolean) {

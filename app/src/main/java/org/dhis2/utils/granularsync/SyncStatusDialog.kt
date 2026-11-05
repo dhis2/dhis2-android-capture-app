@@ -12,7 +12,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -94,7 +95,7 @@ class SyncStatusDialog :
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 DHIS2Theme {
-                    val syncState by viewModel.currentState.collectAsState()
+                    val syncState by viewModel.currentState.collectAsStateWithLifecycle()
                     val workInfoFlow = remember(viewModel) { viewModel.observeWorkInfo() }
                     ObserveAsEvents(workInfoFlow) { jobStatus ->
                         jobStatus.firstOrNull()?.let {
@@ -111,12 +112,15 @@ class SyncStatusDialog :
                                 ).show()
                         }
                     }
+                    LaunchedEffect(syncState) {
+                        val syncUiState = syncState ?: return@LaunchedEffect
+                        if (syncUiState.shouldDismissOnUpdate ||
+                            (syncing && syncUiState.syncState == SyncStatus.SYNCED)
+                        ) {
+                            dismissSafely()
+                        }
+                    }
                     syncState?.let { syncUiState ->
-                        shouldDismissDialog(
-                            syncUiState.shouldDismissOnUpdate ||
-                                (syncing && syncUiState.syncState == SyncStatus.SYNCED),
-                        )
-
                         BottomSheetDialogUi(
                             bottomSheetDialogUiModel =
                                 BottomSheetDialogUiModel(
@@ -157,7 +161,7 @@ class SyncStatusDialog :
                                                     subtitle = item.description,
                                                     onClick = {
                                                         syncStatusDialogNavigator?.navigateTo(item) {
-                                                            dismiss()
+                                                            dismissSafely()
                                                         }
                                                     },
                                                 ) {
@@ -175,15 +179,14 @@ class SyncStatusDialog :
             }
         }
 
+    private fun dismissSafely() {
+        if (!isAdded) return
+        if (isStateSaved) dismissAllowingStateLoss() else dismiss()
+    }
+
     override fun onResume() {
         super.onResume()
         viewModel.refreshContent()
-    }
-
-    private fun shouldDismissDialog(shouldDismiss: Boolean) {
-        if (shouldDismiss) {
-            dismiss()
-        }
     }
 
     private fun onSyncClick() {

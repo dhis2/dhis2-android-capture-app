@@ -42,6 +42,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:onClick="@{()->view.goBack()}"
                 android:padding="@dimen/default_start_margin"
+                app:tint="?onToolbarColor"
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
@@ -52,7 +53,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
-                android:textColor="?colorAccent"
+                android:textColor="?onToolbarColor"
                 android:textSize="22sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/menu"
@@ -97,7 +98,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_save"
-            app:tint="@color/white" />
+            app:tint="?onToolbarColor" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

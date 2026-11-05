@@ -1,6 +1,5 @@
 package org.dhis2.form.data.metadata
 
-import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.bindings.enrollmentImportConflicts
 import org.dhis2.commons.bindings.program
@@ -79,16 +78,6 @@ class EnrollmentConfiguration(
             .blockingGet()
 
     fun trackedEntityAttribute(trackedEntityAttributeUid: String) = d2.teiAttribute(trackedEntityAttributeUid)
-
-    fun attributeValue(trackedEntityAttributeUid: String) =
-        d2
-            .trackedEntityModule()
-            .trackedEntityAttributeValues()
-            .value(
-                trackedEntityAttributeUid,
-                enrollment()?.trackedEntityInstance()!!,
-            ).blockingGet()
-            ?.userFriendlyValue(d2, addPercentageSymbol = false)
 
     fun conflicts() = d2.enrollmentImportConflicts(enrollmentUid)
 
@@ -191,4 +180,5 @@ class EnrollmentConfiguration(
             .trackedEntityAttributeValues()
             .value(attributeUid, tei()?.uid()!!)
             .blockingGet()
+            ?.value
 }

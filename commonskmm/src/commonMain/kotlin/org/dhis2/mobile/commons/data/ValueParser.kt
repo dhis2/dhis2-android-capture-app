@@ -8,6 +8,15 @@ interface ValueParser {
         value: String,
     ): ValueInfo
 
+    suspend fun valueAsOptionExists(
+        optionSetUid: String,
+        value: String,
+    ): Boolean
+
+    suspend fun valueAsOrgUnitExists(value: String): Boolean
+
+    suspend fun valueAsFileExists(value: String): Boolean
+
     suspend fun valueFromMultiTextAsOptionNames(
         optionSetUid: String,
         value: String,
@@ -22,7 +31,11 @@ interface ValueParser {
 
     suspend fun valueToFileName(value: String): String
 
+    suspend fun valueToFilePath(value: String): String?
+
     suspend fun valueFromCoordinateAsLatLong(value: String): String
 
     suspend fun valueFromBooleanType(value: String): String
+
+    suspend fun valueFromTrueOnlyType(value: String): String
 }

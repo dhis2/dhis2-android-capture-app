@@ -29,6 +29,7 @@ import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
 import org.dhis2.mobile.login.main.domain.usecase.GetDeviceEnrollmentUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
 import org.dhis2.mobile.login.main.domain.usecase.GetOAuthLogoutUrl
+import org.dhis2.mobile.login.main.domain.usecase.GetRecoveryUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetSessionRenewalUrl
 import org.dhis2.mobile.login.main.domain.usecase.IsUserLoggedIn
 import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
@@ -86,6 +87,7 @@ class CredentialsViewModel(
     private val credentialsResourceProvider: CredentialsResourceProvider,
     private val getSessionRenewalUrl: GetSessionRenewalUrl,
     private val autoStartRenewal: Boolean,
+    private val getRecoveryUrl: GetRecoveryUrl,
     private val isUserLoggedIn: IsUserLoggedIn,
 ) : ViewModel() {
     companion object {
@@ -732,12 +734,14 @@ class CredentialsViewModel(
 
     fun onRecoverAccountClicked() {
         launchUseCase {
-            navigator.navigate(
-                destination =
-                    LoginScreenState.RecoverAccount(
-                        selectedServer = serverUrl,
-                    ),
-            )
+            getRecoveryUrl(serverUrl).onSuccess { recoveryUrl ->
+                navigator.navigate(
+                    destination =
+                        LoginScreenState.RecoverAccount(
+                            recoveryUrl = recoveryUrl,
+                        ),
+                )
+            }
         }
     }
 

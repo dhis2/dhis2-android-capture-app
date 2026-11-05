@@ -53,7 +53,7 @@ class NotesPresenterTest {
         val notes = listOf(dummyNote(), dummyNote())
 
         whenever(
-            repository.getEnrollmentNotes(uid),
+            repository.getEnrollmentNotes(),
         ) doReturn Single.just(notes)
         whenever(
             repository.hasProgramWritePermission(),
@@ -86,7 +86,7 @@ class NotesPresenterTest {
     @Test
     fun `Should set no notes layout when notes are empty`() {
         whenever(
-            repository.getEnrollmentNotes(uid),
+            repository.getEnrollmentNotes(),
         ) doReturn Single.just(listOf())
         whenever(
             repository.hasProgramWritePermission(),
@@ -103,7 +103,7 @@ class NotesPresenterTest {
         val notes = listOf(dummyNote(), dummyNote())
 
         whenever(
-            repository.getEnrollmentNotes(uid),
+            repository.getEnrollmentNotes(),
         ) doReturn Single.just(notes)
         whenever(
             repository.hasProgramWritePermission(),

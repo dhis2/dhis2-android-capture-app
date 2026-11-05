@@ -28,7 +28,10 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.FileProvider
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 import org.dhis2.commons.data.FileHandler
 import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.commons.resources.ColorType
@@ -71,7 +74,7 @@ QRDetailBottomDialog(
     }
 
     private var showBottomSheet: Boolean = true
-    private val fileHandler = FileHandler()
+    private val fileHandler by lazy { FileHandler(requireContext()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -225,15 +228,26 @@ QRDetailBottomDialog(
                     text = resources.getString(R.string.download),
                     onClick = {
                         viewModel.qrBitmap.value?.onSuccess { bitmap ->
-                            fileHandler.saveBitmapAndOpen(
-                                bitmap,
-                                "$label.png",
-                            ) { file ->
-                                file.observe(viewLifecycleOwner) {
+                            viewLifecycleOwner.lifecycleScope.launch {
+                                try {
+                                    fileHandler.saveBitmapAndOpen(
+                                        bitmap,
+                                        "$label.png",
+                                    ) {
+                                        Toast
+                                            .makeText(
+                                                requireContext(),
+                                                getString(R.string.file_downloaded),
+                                                Toast.LENGTH_SHORT,
+                                            ).show()
+                                    }
+                                } catch (e: CancellationException) {
+                                    throw e
+                                } catch (_: Exception) {
                                     Toast
                                         .makeText(
                                             requireContext(),
-                                            getString(R.string.file_downloaded),
+                                            getString(R.string.file_download_error),
                                             Toast.LENGTH_SHORT,
                                         ).show()
                                 }

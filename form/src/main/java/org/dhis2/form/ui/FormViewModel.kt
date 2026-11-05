@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.commons.dialogs.bottomsheet.FieldWithIssue
@@ -45,7 +46,6 @@ import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldListConfiguration
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.UiRenderType
@@ -84,7 +84,6 @@ class FormViewModel(
     val loading = MutableLiveData(true)
     val showToast = MutableLiveData<Int>()
     val focused = MutableLiveData<Boolean>()
-    val showInfo = MutableLiveData<InfoUiModel>()
     val confError = MutableLiveData<List<RulesUtilsProviderConfigurationError>>()
     var dateFormatConfig: String = "ddMMyyyy"
 
@@ -94,7 +93,7 @@ class FormViewModel(
         _items
             .map { items ->
                 formSectionMapper.mapFromFieldUiModelList(items)
-            }.shareIn(viewModelScope, SharingStarted.Eagerly, 0)
+            }.shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
 
     var previousActionItem: RowAction? = null
 
@@ -130,7 +129,7 @@ class FormViewModel(
     private val handler = Handler(Looper.getMainLooper())
     private var textChangeDebounceRunnable: Runnable? = null
 
-    var filePath: String? = null
+    var fileUid: String? = null
 
     init {
 
@@ -178,6 +177,7 @@ class FormViewModel(
                     result.first.let {
                         _savedValue.postValue(it)
                     }
+                    repository.updateFieldIsUnique(result.first.id)
                     processCalculatedItems()
                 }
 
@@ -195,12 +195,7 @@ class FormViewModel(
                 }
 
                 ValueStoreResult.VALUE_NOT_UNIQUE -> {
-                    showInfo.postValue(
-                        InfoUiModel(
-                            R.string.error,
-                            R.string.unique_warning,
-                        ),
-                    )
+                    repository.updateFieldIsNotUnique(result.first.id)
                     processCalculatedItems()
                 }
 
@@ -850,7 +845,10 @@ class FormViewModel(
         confError.value = repository.getConfigurationErrors() ?: emptyList()
     }
 
-    fun runDataIntegrityCheck(backButtonPressed: Boolean? = null) {
+    fun runDataIntegrityCheck(
+        backButtonPressed: Boolean? = null,
+        forNavigationAway: Boolean = false,
+    ) {
         viewModelScope.launch {
             FormCountingIdlingResource.increment()
             val result =
@@ -858,7 +856,7 @@ class FormViewModel(
                     repository.runDataIntegrityCheck(backPressed = backButtonPressed ?: false)
                 }
             try {
-                handleDataIntegrityResult(result.await())
+                handleDataIntegrityResult(result.await(), forNavigationAway)
             } catch (e: Exception) {
                 Timber.e(e)
             } finally {
@@ -869,11 +867,16 @@ class FormViewModel(
         }
     }
 
-    private suspend fun handleDataIntegrityResult(result: DataIntegrityCheckResult) {
+    private suspend fun handleDataIntegrityResult(
+        result: DataIntegrityCheckResult,
+        forNavigationAway: Boolean = false,
+    ) {
         val isEvent = repository.isEvent()
+        val hasBlockingIssues = result is FieldsWithErrorResult || result is MissingMandatoryResult
         val action =
             when {
                 isEvent && repository.isEventEditable() == false -> FormActions.OnFinish
+                forNavigationAway && !hasBlockingIssues -> FormActions.OnFinish
                 (result is SuccessfulResult) and (result.eventResultDetails.eventStatus == null) -> FormActions.OnFinish
                 result is NotSavedResult -> FormActions.OnFinish
                 else -> showDataEntryResultDialogDeprecated(result)
@@ -1003,16 +1006,26 @@ class FormViewModel(
     }
 
     fun discardChanges() {
-        repository.backupOfChangedItems().forEach {
-            submitIntent(
-                FormIntent.OnSave(
-                    it.uid,
-                    it.value,
-                    it.valueType,
-                    it.fieldMask,
-                    it.allowFutureDates,
-                ),
-            )
+        textChangeDebounceRunnable?.let { handler.removeCallbacks(it) }
+        textChangeDebounceRunnable = null
+        // The form is left once the original values are stored again
+        viewModelScope.launch {
+            withContext(dispatcher.io()) {
+                repository.backupOfChangedItems().forEach {
+                    val result =
+                        createRowActionStore(
+                            FormIntent.OnSave(
+                                it.uid,
+                                it.value,
+                                it.valueType,
+                                it.fieldMask,
+                                it.allowFutureDates,
+                            ),
+                        )
+                    displayResult(result)
+                }
+            }
+            _actionsChannel.send(FormActions.OnFinish)
         }
     }
 

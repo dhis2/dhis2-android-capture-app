@@ -6,13 +6,17 @@ import android.content.pm.PackageManager
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
@@ -22,6 +26,7 @@ import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.files.rememberCameraPicker
 import org.dhis2.form.ui.files.rememberFilePicker
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.mobile.commons.extensions.fileResourcePath
 import org.dhis2.mobile.commons.ui.ImagePickerOptionsDialog
 import org.hisp.dhis.mobile.ui.designsystem.component.InputImage
 import org.hisp.dhis.mobile.ui.designsystem.component.UploadState
@@ -45,6 +50,10 @@ internal fun ProvideInputImage(
         )
     }
 
+    val imageFilePath by produceState<String?>(null, fieldUiModel.value) {
+        value = withContext(Dispatchers.IO) { fieldUiModel.value?.fileResourcePath() }
+    }
+
     val filePicker = rememberFilePicker(onFileSelected)
 
     val cameraPicker =
@@ -64,41 +73,43 @@ internal fun ProvideInputImage(
             },
         )
 
-    InputImage(
-        modifier = modifier.fillMaxWidth(),
-        title = fieldUiModel.label,
-        imageFilePath = fieldUiModel.displayName,
-        state = fieldUiModel.inputState(),
-        supportingText = fieldUiModel.supportingText(),
-        legendData = fieldUiModel.legend(),
-        addImageBtnText = stringResource(R.string.add_image),
-        isRequired = fieldUiModel.mandatory,
-        uploadState = uploadState,
-        onDownloadButtonClick = {
-            uiEventHandler.invoke(RecyclerViewUiEvents.OpenFile(fieldUiModel))
-        },
-        onShareButtonClick = {
-            uiEventHandler.invoke(
-                RecyclerViewUiEvents.OpenChooserIntent(
-                    Intent.ACTION_SEND,
-                    fieldUiModel.displayName,
-                    fieldUiModel.uid,
-                ),
-            )
-        },
-        onResetButtonClicked = {
-            fieldUiModel.onClear()
-            uploadState = getUploadState(fieldUiModel.displayName, false)
-            intentHandler.invoke(
-                FormIntent.OnAddImageFinished(
-                    uid = fieldUiModel.uid,
-                ),
-            )
-        },
-        onAddButtonClicked = {
-            showImageOptions = true
-        },
-    )
+    key(imageFilePath) {
+        InputImage(
+            modifier = modifier.fillMaxWidth(),
+            title = fieldUiModel.label,
+            imageFilePath = imageFilePath,
+            state = fieldUiModel.inputState(),
+            supportingText = fieldUiModel.supportingText(),
+            legendData = fieldUiModel.legend(),
+            addImageBtnText = stringResource(R.string.add_image),
+            isRequired = fieldUiModel.mandatory,
+            uploadState = uploadState,
+            onDownloadButtonClick = {
+                uiEventHandler.invoke(RecyclerViewUiEvents.OpenFile(fieldUiModel))
+            },
+            onShareButtonClick = {
+                uiEventHandler.invoke(
+                    RecyclerViewUiEvents.OpenChooserIntent(
+                        Intent.ACTION_SEND,
+                        fieldUiModel.value,
+                        fieldUiModel.uid,
+                    ),
+                )
+            },
+            onResetButtonClicked = {
+                fieldUiModel.onClear()
+                uploadState = getUploadState(fieldUiModel.displayName, false)
+                intentHandler.invoke(
+                    FormIntent.OnAddImageFinished(
+                        uid = fieldUiModel.uid,
+                    ),
+                )
+            },
+            onAddButtonClicked = {
+                showImageOptions = true
+            },
+        )
+    }
 
     val context = LocalContext.current
 

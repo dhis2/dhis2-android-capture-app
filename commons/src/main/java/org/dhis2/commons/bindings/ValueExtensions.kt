@@ -1,154 +1,9 @@
 package org.dhis2.bindings
 
-import org.dhis2.commons.date.DateUtils
-import org.dhis2.commons.extensions.toPercentage
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueObjectRepository
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueObjectRepository
-import java.text.ParseException
-
-fun TrackedEntityAttributeValue.userFriendlyValue(
-    d2: D2,
-    addPercentageSymbol: Boolean = true,
-): String? =
-    when {
-        value().isNullOrEmpty() -> value()
-        else -> {
-            val attribute =
-                d2
-                    .trackedEntityModule()
-                    .trackedEntityAttributes()
-                    .uid(trackedEntityAttribute())
-                    .blockingGet()
-            value()!!.userFriendlyValue(
-                d2,
-                attribute?.valueType(),
-                attribute?.optionSet()?.uid(),
-                addPercentageSymbol,
-            )
-        }
-    }
-
-fun TrackedEntityDataValue?.userFriendlyValue(
-    d2: D2,
-    addPercentageSymbol: Boolean = true,
-): String? =
-    when {
-        this == null -> null
-        value().isNullOrEmpty() -> value()
-        else -> {
-            val dataElement =
-                d2
-                    .dataElementModule()
-                    .dataElements()
-                    .uid(dataElement())
-                    .blockingGet()
-
-            value()!!.userFriendlyValue(
-                d2,
-                dataElement?.valueType(),
-                dataElement?.optionSetUid(),
-                addPercentageSymbol,
-            )
-        }
-    }
-
-fun String.userFriendlyValue(
-    d2: D2,
-    valueType: ValueType?,
-    optionSetUid: String?,
-    addPercentageSymbol: Boolean = true,
-): String? {
-    if (valueType == null) {
-        return null
-    } else if (check(d2, valueType, optionSetUid, this)) {
-        optionSetUid?.takeIf { valueType != ValueType.MULTI_TEXT }?.let {
-            return checkOptionSetValue(d2, optionSetUid, this)
-        } ?: return checkValueTypeValue(d2, valueType, this, addPercentageSymbol)
-    } else {
-        return null
-    }
-}
-
-fun checkOptionSetValue(
-    d2: D2,
-    optionSetUid: String,
-    code: String,
-): String? =
-    d2
-        .optionModule()
-        .options()
-        .byOptionSetUid()
-        .eq(optionSetUid)
-        .byCode()
-        .eq(code)
-        .one()
-        .blockingGet()
-        ?.displayName()
-
-fun checkValueTypeValue(
-    d2: D2,
-    valueType: ValueType?,
-    value: String,
-    addPercentageSymbol: Boolean = true,
-): String =
-    when (valueType) {
-        ValueType.ORGANISATION_UNIT ->
-            d2
-                .organisationUnitModule()
-                .organisationUnits()
-                .uid(value)
-                .blockingGet()
-                ?.displayName() ?: value
-
-        ValueType.IMAGE, ValueType.FILE_RESOURCE ->
-            d2
-                .fileResourceModule()
-                .fileResources()
-                .uid(value)
-                .blockingGet()
-                ?.path() ?: FILE_NOT_FOUND
-
-        ValueType.DATE, ValueType.AGE ->
-            try {
-                DateUtils.uiDateFormat().format(
-                    DateUtils.oldUiDateFormat().parse(value) ?: "",
-                )
-            } catch (exception: ParseException) {
-                value
-            }
-
-        ValueType.DATETIME ->
-            try {
-                DateUtils.uiDateTimeFormat().format(
-                    DateUtils.databaseDateFormatNoSeconds().parse(value) ?: "",
-                )
-            } catch (exception: ParseException) {
-                value
-            }
-
-        ValueType.TIME ->
-            try {
-                DateUtils.timeFormat().format(
-                    DateUtils.timeFormat().parse(value) ?: "",
-                )
-            } catch (exception: ParseException) {
-                value
-            }
-
-        ValueType.PERCENTAGE -> {
-            if (addPercentageSymbol) {
-                value.toPercentage()
-            } else {
-                value
-            }
-        }
-
-        else -> value
-    }
 
 fun TrackedEntityAttributeValueObjectRepository.blockingSetCheck(
     d2: D2,
@@ -172,26 +27,6 @@ fun TrackedEntityAttributeValueObjectRepository.blockingSetCheck(
         }
     } ?: false
 }
-
-fun TrackedEntityAttributeValueObjectRepository.blockingGetCheck(
-    d2: D2,
-    attrUid: String,
-): TrackedEntityAttributeValue? =
-    d2.trackedEntityModule().trackedEntityAttributes().uid(attrUid).blockingGet()?.let {
-        if (blockingExists() &&
-            check(
-                d2,
-                it.valueType(),
-                it.optionSet()?.uid(),
-                blockingGet()?.value()!!,
-            )
-        ) {
-            blockingGet()
-        } else {
-            blockingDeleteIfExist()
-            null
-        }
-    }
 
 fun TrackedEntityDataValueObjectRepository.blockingSetCheck(
     d2: D2,
@@ -228,28 +63,6 @@ fun String?.withValueTypeCheck(valueType: ValueType?): String? {
         }
     } ?: this
 }
-
-fun TrackedEntityDataValueObjectRepository.blockingGetValueCheck(
-    d2: D2,
-    deUid: String,
-): TrackedEntityDataValue? =
-    d2.dataElementModule().dataElements().uid(deUid).blockingGet()?.let {
-        if (blockingExists() &&
-            check(
-                d2,
-                it.valueType(),
-                it.optionSet()?.uid(),
-                blockingGet()?.value()!!,
-            )
-        ) {
-            blockingGet()
-        } else if (it.valueType()?.isFile == true) {
-            null
-        } else {
-            blockingDeleteIfExist()
-            null
-        }
-    }
 
 private fun check(
     d2: D2,

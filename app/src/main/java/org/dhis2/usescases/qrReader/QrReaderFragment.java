@@ -9,6 +9,7 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -161,6 +162,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements BarcodeC
             ((MainActivity) getContext()).goToHome();
             Toast.makeText(getContext(), getString(R.string.camera_permission_denied), Toast.LENGTH_LONG).show();
         }
+        mScannerView.resume();
     }
 
     @Override
@@ -182,7 +184,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements BarcodeC
     }
 
     private void initScanner() {
-        mScannerView.decodeContinuous(this);
+        mScannerView.decodeSingle(this);
     }
 
 
@@ -257,7 +259,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements BarcodeC
                 .setMessage(message)
                 .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> {
                     dialog.dismiss();
-                    mScannerView.decodeContinuous(this);
+                    mScannerView.decodeSingle(this);
                 })
                 .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
                 .show();
@@ -473,7 +475,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements BarcodeC
                 .setMessage(message)
                 .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> {
                     dialog.dismiss();
-                    mScannerView.decodeContinuous(this);
+                    mScannerView.decodeSingle(this);
                 })
                 .setNegativeButton(getString(R.string.save_qr), (dialog, which) -> {
                     presenter.downloadEventWORegistration();

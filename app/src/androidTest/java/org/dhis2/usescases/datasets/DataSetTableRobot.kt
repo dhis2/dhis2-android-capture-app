@@ -113,6 +113,7 @@ internal class DataSetTableRobot(
     }
 
     fun assertCellDisabled(tableId: String, cellId: String) {
+        scrollToItemWithTag(cellTestTag(tableId, cellId))
         composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId)).assertIsNotEnabled()
     }
 

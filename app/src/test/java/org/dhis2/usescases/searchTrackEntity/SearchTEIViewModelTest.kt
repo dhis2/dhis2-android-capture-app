@@ -24,7 +24,6 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.ui.customintent.CustomIntentResult
-import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.geometry.mapper.EventsByProgramStage
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.mobile.commons.model.CustomIntentModel
@@ -43,6 +42,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem
 import org.junit.After
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -72,7 +72,6 @@ class SearchTEIViewModelTest {
     private val networkUtils: NetworkUtils = mock()
     private val mapStyleConfiguration: MapStyleConfiguration = mock()
     private val resourceManager: ResourceManager = mock()
-    private val displayNameProvider: DisplayNameProvider = mock()
     private val filterManager: FilterManager = mock()
     private val searchTrackedEntities: SearchTrackedEntities =
         mock {
@@ -96,9 +95,13 @@ class SearchTEIViewModelTest {
         whenever(repository.filtersApplyOnGlobalSearch()) doReturn true
         whenever(repositoryKt.getExcludeValues()) doReturn HashSet<String>()
         whenever(repositoryKt.saveSearchValuesAndGetAllowCache(any(), any())) doReturn true
-        viewModel =
+        viewModel = createViewModel(initialProgram)
+    }
+
+    private fun createViewModel(programUid: String?): SearchTEIViewModel {
+        val searchViewModel =
             SearchTEIViewModel(
-                initialProgram,
+                programUid,
                 initialQuery,
                 repository,
                 repositoryKt,
@@ -114,13 +117,13 @@ class SearchTEIViewModelTest {
                 },
                 mapStyleConfiguration,
                 resourceManager = resourceManager,
-                displayNameProvider = displayNameProvider,
                 filterManager = filterManager,
                 searchTrackedEntities = searchTrackedEntities,
                 fetchSearchParameters = fetchSearchParameters,
                 fetchOptionSetOptions = fetchOptionSetOptions,
             )
         testingDispatcher.scheduler.advanceUntilIdle()
+        return searchViewModel
     }
 
     @ExperimentalCoroutinesApi
@@ -189,6 +192,32 @@ class SearchTEIViewModelTest {
 
         val screenState = viewModel.screenState.value
         assertTrue(screenState is SearchList)
+    }
+
+    @Test
+    fun `Should allow sync when a program is selected`() {
+        viewModel.setListScreen()
+        assertTrue((viewModel.screenState.value as SearchList).canSync)
+
+        viewModel.setMapScreen()
+        assertTrue((viewModel.screenState.value as SearchList).canSync)
+
+        viewModel.setSearchScreen()
+        assertTrue((viewModel.screenState.value as SearchList).canSync)
+    }
+
+    @Test
+    fun `Should not allow sync when no program is selected`() {
+        val viewModelWithoutProgram = createViewModel(null)
+
+        viewModelWithoutProgram.setListScreen()
+        assertFalse((viewModelWithoutProgram.screenState.value as SearchList).canSync)
+
+        viewModelWithoutProgram.setMapScreen()
+        assertFalse((viewModelWithoutProgram.screenState.value as SearchList).canSync)
+
+        viewModelWithoutProgram.setSearchScreen()
+        assertFalse((viewModelWithoutProgram.screenState.value as SearchList).canSync)
     }
 
     @Test
@@ -404,6 +433,53 @@ class SearchTEIViewModelTest {
             testingProgram(),
             viewModel.queryDataAsMap(),
         )
+    }
+
+    @Test
+    fun `Should refresh search results when there is an active query`() {
+        mockTrackerMapData()
+        setCurrentProgram(testingProgram(displayFrontPageList = false))
+        viewModel.setMapScreen()
+        viewModel.onValueChange(
+            fieldUid = "testingUid",
+            value = "testingValue",
+        )
+
+        viewModel.refreshData()
+        testingDispatcher.scheduler.advanceUntilIdle()
+
+        verify(mapDataRepository).getTrackerMapData(
+            testingProgram(displayFrontPageList = false),
+            viewModel.queryDataAsMap(),
+        )
+    }
+
+    @Test
+    fun `Should not refresh search results without front page list nor active query`() {
+        mockTrackerMapData()
+        setCurrentProgram(testingProgram(displayFrontPageList = false))
+        viewModel.setMapScreen()
+
+        viewModel.refreshData()
+        testingDispatcher.scheduler.advanceUntilIdle()
+
+        verify(mapDataRepository, never()).getTrackerMapData(anyOrNull(), any(), any())
+    }
+
+    private fun mockTrackerMapData() {
+        whenever(mapDataRepository.getTrackerMapData(anyOrNull(), any(), any())) doReturn
+            TrackerMapData(
+                EventsByProgramStage("tag", mapOf()),
+                mutableListOf(),
+                hashMapOf(),
+                BoundingBox.fromLngLats(
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                ),
+                mutableMapOf(),
+            )
     }
 
     @Test
@@ -787,7 +863,6 @@ class SearchTEIViewModelTest {
                     },
                 mapStyleConfig = mapStyleConfiguration,
                 resourceManager = resourceManager,
-                displayNameProvider = displayNameProvider,
                 filterManager = filterManager,
                 searchTrackedEntities = searchTrackedEntities,
                 fetchSearchParameters = fetchSearchParameters,
@@ -836,7 +911,6 @@ class SearchTEIViewModelTest {
                         on { getString(R.string.navigation_list_view) } doReturn "List"
                         on { getString(R.string.navigation_map_view) } doReturn "Map"
                     },
-                displayNameProvider = displayNameProvider,
                 filterManager = filterManager,
                 searchTrackedEntities = searchTrackedEntities,
                 fetchSearchParameters = fetchSearchParameters,

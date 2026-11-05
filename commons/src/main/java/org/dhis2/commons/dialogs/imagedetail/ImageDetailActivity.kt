@@ -9,6 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.core.content.FileProvider
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 import org.dhis2.commons.R
 import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.mobile.commons.extensions.toImageBitmap
@@ -34,7 +37,7 @@ class ImageDetailActivity : AppCompatActivity() {
             }
     }
 
-    private val fileHandler = FileHandlerImpl()
+    private val fileHandler by lazy { FileHandlerImpl(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,15 +55,28 @@ class ImageDetailActivity : AppCompatActivity() {
                 title = title.orEmpty(),
                 onDismiss = { finish() },
                 onDownloadButtonClick = {
-                    fileHandler.copyAndOpen(
-                        File(imagePath),
-                    ) {
-                        Toast
-                            .makeText(
-                                this,
-                                getString(R.string.file_downloaded),
-                                Toast.LENGTH_SHORT,
-                            ).show()
+                    lifecycleScope.launch {
+                        try {
+                            fileHandler.copyAndOpen(
+                                File(imagePath),
+                            ) {
+                                Toast
+                                    .makeText(
+                                        this@ImageDetailActivity,
+                                        getString(R.string.file_downloaded),
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
+                            }
+                        } catch (e: CancellationException) {
+                            throw e
+                        } catch (_: Exception) {
+                            Toast
+                                .makeText(
+                                    this@ImageDetailActivity,
+                                    getString(R.string.file_download_error),
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                        }
                     }
                 },
                 onShareButtonClick = { shareImage(imagePath) },

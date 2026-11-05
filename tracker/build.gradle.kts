@@ -48,6 +48,7 @@ kotlin {
             implementation(libs.androidx.compose.paging)
 
             // Koin
+            api(project.dependencies.platform(libs.koin.bom))
             api(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.composeVM)
@@ -64,6 +65,7 @@ kotlin {
         }
 
         androidMain.dependencies {
+            implementation(project.dependencies.platform(libs.androidx.compose.bom))
             implementation(libs.androidx.compose.preview)
             implementation(libs.dhis2.android.sdk)
             // Koin support for Android

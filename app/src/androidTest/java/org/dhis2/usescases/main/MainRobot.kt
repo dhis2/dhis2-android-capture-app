@@ -173,9 +173,44 @@ class MainRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             matches(
                 atPosition(
                     itemPosition,
-                    hasDescendant(
-                        not(allOf(withId(R.id.error_data_icon), withEffectiveVisibility(Visibility.VISIBLE))),
+                    not(
+                        hasDescendant(
+                            allOf(withId(R.id.error_data_icon), withEffectiveVisibility(Visibility.VISIBLE)),
+                        ),
                     ),
+                ),
+            ),
+        )
+    }
+
+    fun checkChartHasData(itemPosition: Int, entryCount: Int) {
+        onView(withId(R.id.analytics_recycler)).check(
+            matches(
+                atPosition(
+                    itemPosition,
+                    hasDescendant(ChartMatchers.hasChartData(entryCount)),
+                ),
+            ),
+        )
+    }
+
+    fun checkTableHasNoEmptyValues(itemPosition: Int) {
+        onView(withId(R.id.analytics_recycler)).check(
+            matches(
+                atPosition(
+                    itemPosition,
+                    hasDescendant(ChartMatchers.hasNoEmptyTableCell()),
+                ),
+            ),
+        )
+    }
+
+    fun checkTableHasValue(itemPosition: Int, value: String) {
+        onView(withId(R.id.analytics_recycler)).check(
+            matches(
+                atPosition(
+                    itemPosition,
+                    hasDescendant(ChartMatchers.hasTableCellWithText(value)),
                 ),
             ),
         )

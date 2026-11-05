@@ -207,6 +207,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                             compulsoryDataElements = emptyList(),
                             allDataSetElements = listOf(),
                             greyedOutFields = emptyList(),
+                            blockedCategoryOptionCombos = emptyList(),
                             editable = true,
                         ),
                     dataSetInstanceSectionConfiguration =

@@ -48,7 +48,7 @@ interface SearchRepositoryKt {
 
     fun trackerValueTypeToSDKValueType(trackerInputType: TrackerInputType): ValueType?
 
-    fun mapTrackedEntitySearchItemResultToSearchTeiModel(
+    suspend fun mapTrackedEntitySearchItemResultToSearchTeiModel(
         searchItemResult: TrackedEntitySearchItemResult,
         sortingItem: SortingItem?,
     ): SearchTeiModel
