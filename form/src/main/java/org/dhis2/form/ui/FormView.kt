@@ -25,14 +25,18 @@ import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.journeyapps.barcodescanner.ScanOptions
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.Constants
 import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.dialogs.AlertBottomDialog
-import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle
@@ -48,7 +52,6 @@ import org.dhis2.form.data.toMessage
 import org.dhis2.form.di.Injector
 import org.dhis2.form.model.FormRepositoryRecords
 import org.dhis2.form.model.FormSection
-import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.exception.RepositoryRecordsException
@@ -63,12 +66,14 @@ import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.maps.views.MapSelectorActivity.Companion.DATA_EXTRA
 import org.dhis2.maps.views.MapSelectorActivity.Companion.FIELD_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
+import org.dhis2.mobile.commons.extensions.fileResourcePath
 import org.dhis2.mobile.commons.files.FileHandlerImpl
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import timber.log.Timber
 import java.io.File
+import java.io.FileNotFoundException
 
 class FormView : Fragment() {
     private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
@@ -76,6 +81,8 @@ class FormView : Fragment() {
     private var onLoadingListener: ((loading: Boolean) -> Unit)? = null
     private var onFocused: (() -> Unit)? = null
     private var onFinishDataEntry: (() -> Unit)? = null
+    private var pendingLeaveCallback: (() -> Unit)? = null
+    private var discardingChanges = false
     private var onActivityForResult: (() -> Unit)? = null
     private var completionListener: ((percentage: Float) -> Unit)? = null
     private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
@@ -120,8 +127,8 @@ class FormView : Fragment() {
             ActivityResultContracts.RequestPermission(),
         ) { granted ->
             if (granted) {
-                downloadFile(viewModel.filePath)
-                viewModel.filePath = null
+                downloadFile(viewModel.fileUid)
+                viewModel.fileUid = null
             } else {
                 Toast
                     .makeText(
@@ -176,7 +183,7 @@ class FormView : Fragment() {
     var scrollCallback: ((Boolean) -> Unit)? = null
     private var displayConfErrors = true
 
-    private val fileHandler = FileHandlerImpl()
+    private val fileHandler by lazy { FileHandlerImpl(requireContext()) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -202,7 +209,7 @@ class FormView : Fragment() {
                     viewModel.actionsChannel.collect { action ->
                         when (action) {
                             FormViewModel.FormActions.OnFinish ->
-                                onFinishDataEntry?.invoke()
+                                leaveForm()
 
                             is FormViewModel.FormActions.ShowResultDialog ->
                                 resultDialogData = action
@@ -224,24 +231,12 @@ class FormView : Fragment() {
                         model = it.model,
                         allowDiscard = it.allowDiscard,
                         fieldsWithIssues = it.fieldsWithIssues,
-                        onPrimaryButtonClick = {
-                            when (it.model.mainButton) {
-                                DialogButtonStyle.CompleteButton -> {
-                                    viewModel.completeEvent()
-                                    onFinishDataEntry?.invoke()
-                                }
-
-                                else -> {
-                                    // Do nothing
-                                }
-                            }
-                        },
-                        onSecondaryButtonClick = {
-                            onFinishDataEntry?.invoke()
-                        },
-                        onDiscardChanges = viewModel::discardChanges,
+                        onPrimaryButtonClick = { onResultDialogMainButtonClick(it.model.mainButton) },
+                        onSecondaryButtonClick = ::onResultDialogSecondaryButtonClick,
+                        onDiscardChanges = ::onDiscardChanges,
                         onDismiss = {
                             resultDialogData = null
+                            onResultDialogDismissed()
                         },
                     )
                 }
@@ -288,29 +283,11 @@ class FormView : Fragment() {
             viewLifecycleOwner,
         ) { onFocused?.invoke() }
 
-        viewModel.showInfo.observe(
-            viewLifecycleOwner,
-        ) { infoUiModel ->
-            showInfoDialog(infoUiModel)
-        }
-
         viewModel.completionPercentage.observe(
             viewLifecycleOwner,
         ) { percentage ->
             completionListener?.invoke(percentage)
         }
-    }
-
-    private fun showInfoDialog(infoUiModel: InfoUiModel) {
-        CustomDialog(
-            requireContext(),
-            requireContext().getString(infoUiModel.title),
-            requireContext().getString(infoUiModel.description),
-            requireContext().getString(R.string.action_close),
-            null,
-            Constants.DESCRIPTION_DIALOG,
-            null,
-        ).show()
     }
 
     private fun uiEventHandler(uiEvent: RecyclerViewUiEvents) {
@@ -410,32 +387,50 @@ class FormView : Fragment() {
                                     currentValue.value.toUri()
                                 }
                         }
-
-                        Intent.ACTION_SEND -> {
-                            val contentUri =
-                                FileProvider.getUriForFile(
-                                    requireContext(),
-                                    FormFileProvider.fileProviderAuthority,
-                                    File(currentValue.value),
-                                )
-                            setDataAndType(
-                                contentUri,
-                                requireContext().contentResolver.getType(contentUri),
-                            )
-                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            putExtra(Intent.EXTRA_STREAM, contentUri)
-                        }
                     }
                 }
 
-            val title = resources.getString(R.string.open_with)
-            val chooser = Intent.createChooser(intent, title)
-
-            try {
-                startActivity(chooser)
-            } catch (_: ActivityNotFoundException) {
-                Timber.e("No activity found that can handle this action")
+            if (uiEvent.action == Intent.ACTION_SEND) {
+                shareFile(intent, currentValue.value)
+            } else {
+                startChooser(intent)
             }
+        }
+    }
+
+    private fun shareFile(
+        intent: Intent,
+        fileUid: String,
+    ) {
+        lifecycleScope.launch {
+            val filePath =
+                withContext(Dispatchers.IO) { fileUid.fileResourcePath() } ?: return@launch
+            val contentUri =
+                FileProvider.getUriForFile(
+                    requireContext(),
+                    FormFileProvider.fileProviderAuthority,
+                    File(filePath),
+                )
+            intent.apply {
+                setDataAndType(
+                    contentUri,
+                    requireContext().contentResolver.getType(contentUri),
+                )
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                putExtra(Intent.EXTRA_STREAM, contentUri)
+            }
+            startChooser(intent)
+        }
+    }
+
+    private fun startChooser(intent: Intent) {
+        val title = resources.getString(R.string.open_with)
+        val chooser = Intent.createChooser(intent, title)
+
+        try {
+            startActivity(chooser)
+        } catch (_: ActivityNotFoundException) {
+            Timber.e("No activity found that can handle this action")
         }
     }
 
@@ -484,23 +479,40 @@ class FormView : Fragment() {
     }
 
     private fun openFile(event: RecyclerViewUiEvents.OpenFile) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
-            downloadFile(event.field.displayName)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            downloadFile(event.field.value)
         } else {
-            viewModel.filePath = event.field.displayName
+            viewModel.fileUid = event.field.value
             requestStoragePermissions.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
     }
 
-    private fun downloadFile(fileName: String?) {
-        fileName?.let { filePath ->
-            fileHandler.copyAndOpen(File(filePath)) {
-                Toast
-                    .makeText(
-                        requireContext(),
-                        getString(R.string.file_downloaded),
-                        Toast.LENGTH_SHORT,
-                    ).show()
+    private fun downloadFile(fileUid: String?) {
+        fileUid?.let {
+            // Fragment scope: this can also run from the permission result, before the view exists
+            lifecycleScope.launch {
+                try {
+                    val filePath =
+                        withContext(Dispatchers.IO) { fileUid.fileResourcePath() }
+                            ?: throw FileNotFoundException("File resource $fileUid not found")
+                    fileHandler.copyAndOpen(File(filePath)) {
+                        Toast
+                            .makeText(
+                                requireContext(),
+                                getString(R.string.file_downloaded),
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    Toast
+                        .makeText(
+                            requireContext(),
+                            getString(R.string.file_download_error),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                }
             }
         }
     }
@@ -561,8 +573,51 @@ class FormView : Fragment() {
         }
     }
 
-    fun onBackPressed() {
-        viewModel.runDataIntegrityCheck(backButtonPressed = true)
+    /**
+     * Runs the form validation flow before [onReadyToLeave]. With [allowDiscard] set to false the
+     * flow behaves as saving: the user can only continue when the validation strategy allows it.
+     */
+    fun onBackPressed(
+        onReadyToLeave: (() -> Unit)? = null,
+        allowDiscard: Boolean = true,
+    ) {
+        pendingLeaveCallback = onReadyToLeave
+        viewModel.runDataIntegrityCheck(backButtonPressed = allowDiscard, forNavigationAway = onReadyToLeave != null)
+    }
+
+    private fun onResultDialogMainButtonClick(mainButton: DialogButtonStyle?) {
+        when (mainButton) {
+            DialogButtonStyle.CompleteButton -> {
+                viewModel.completeEvent()
+                leaveForm()
+            }
+
+            else -> {
+                // Do nothing, user must review: pending navigation is cancelled
+                pendingLeaveCallback = null
+            }
+        }
+    }
+
+    private fun onResultDialogSecondaryButtonClick() {
+        // When discarding, the form is left once the changes are reverted
+        if (!discardingChanges) leaveForm()
+    }
+
+    private fun onDiscardChanges() {
+        discardingChanges = true
+        viewModel.discardChanges()
+    }
+
+    private fun onResultDialogDismissed() {
+        if (!discardingChanges) pendingLeaveCallback = null
+    }
+
+    private fun leaveForm() {
+        val callback = pendingLeaveCallback
+        pendingLeaveCallback = null
+        discardingChanges = false
+        (callback ?: onFinishDataEntry)?.invoke()
     }
 
     fun onSaveClick() {

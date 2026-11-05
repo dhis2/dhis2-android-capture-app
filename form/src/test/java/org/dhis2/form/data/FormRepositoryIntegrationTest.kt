@@ -3,12 +3,12 @@ package org.dhis2.form.data
 import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.model.EnrollmentMode
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
 import org.dhis2.form.ui.provider.AutoCompleteProvider
-import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
 import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.KeyboardActionProvider
@@ -26,6 +26,7 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -51,7 +52,7 @@ class FormRepositoryIntegrationTest {
         }
     private val metadataIconProvider: MetadataIconProvider = mock()
     private val customIntentRepository: CustomIntentRepository = Mockito.mock()
-
+    private val resourceManager: ResourceManager = mock()
     private val program: Program =
         mock {
             on { uid() } doReturn "programUid"
@@ -92,7 +93,7 @@ class FormRepositoryIntegrationTest {
                 on { fieldMask() } doReturn null
             }
         whenever(conf.trackedEntityAttribute("teAttributeUid")) doReturn teAttribute
-        whenever(conf.attributeValue(any())) doReturn null
+        whenever(conf.getValue(any())) doReturn null
         whenever(conf.conflicts()) doReturn emptyList()
         whenever(conf.program()) doReturn program
         whenever(conf.trackedEntityType()) doReturn teType
@@ -152,6 +153,29 @@ class FormRepositoryIntegrationTest {
             )
         }
 
+    @Test
+    fun shouldKeepStoredValueForCoordinateAttribute() =
+        runTest {
+            mockCompletedEnrollment()
+            whenever(conf.disableCollapsableSectionsInProgram(any())) doReturn false
+            val coordinateAttribute: TrackedEntityAttribute =
+                mock {
+                    on { uid() } doReturn "teAttributeUid"
+                    on { valueType() } doReturn ValueType.COORDINATE
+                    on { optionSet() } doReturn null
+                    on { generated() } doReturn false
+                    on { style() } doReturn ObjectStyle.builder().build()
+                    on { fieldMask() } doReturn null
+                }
+            whenever(conf.trackedEntityAttribute("teAttributeUid")) doReturn coordinateAttribute
+            whenever(conf.getValue("teAttributeUid")) doReturn "[-11.5,8.4]"
+
+            val repository = mockFormRepository(EnrollmentMode.CHECK)
+
+            val fields = repository.fetchFormItems()
+            assertEquals("[-11.5,8.4]", fields.first { it.uid == "teAttributeUid" }.value)
+        }
+
     private fun mockUncompletedEnrollment() {
         val enrollment: Enrollment =
             mock {
@@ -172,7 +196,6 @@ class FormRepositoryIntegrationTest {
 
     private fun mockFormRepository(enrollmentMode: EnrollmentMode = EnrollmentMode.NEW): FormRepositoryImpl {
         val hintProvider: HintProvider = mock()
-        val displayNameProvider: DisplayNameProvider = mock()
         val uiEventTypesProvider: UiEventTypesProvider = mock()
         val keyboardActionProvider: KeyboardActionProvider = mock()
         val legendValueProvider: LegendValueProvider = mock()
@@ -181,7 +204,6 @@ class FormRepositoryIntegrationTest {
         val fieldFactory =
             FieldViewModelFactoryImpl(
                 hintProvider,
-                displayNameProvider,
                 uiEventTypesProvider,
                 keyboardActionProvider,
                 legendValueProvider,
@@ -201,13 +223,13 @@ class FormRepositoryIntegrationTest {
         return FormRepositoryImpl(
             formValueStore,
             fieldErrorMessageProvider,
-            displayNameProvider,
             dataEntryRepository,
             ruleEngineHelper,
             rulesUtilsProvider,
             legendValueProvider,
             false,
             preferenceProvider = preferenceProvider,
+            resourceManager = resourceManager,
         )
     }
 }

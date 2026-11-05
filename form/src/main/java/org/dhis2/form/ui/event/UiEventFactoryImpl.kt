@@ -40,7 +40,7 @@ class UiEventFactoryImpl(
                     SHARE_IMAGE ->
                         RecyclerViewUiEvents.OpenChooserIntent(
                             Intent.ACTION_SEND,
-                            fieldUiModel.displayName,
+                            fieldUiModel.value,
                             uid,
                         )
 

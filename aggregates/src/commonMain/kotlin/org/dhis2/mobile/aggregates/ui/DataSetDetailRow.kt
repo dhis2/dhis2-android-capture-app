@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountTree
@@ -39,6 +38,7 @@ import org.dhis2.mobile.aggregates.model.TextAlignment
 import org.hisp.dhis.mobile.ui.designsystem.component.AssistChip
 import org.hisp.dhis.mobile.ui.designsystem.component.Tag
 import org.hisp.dhis.mobile.ui.designsystem.component.TagType
+import org.hisp.dhis.mobile.ui.designsystem.component.layout.FadingLazyRow
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
@@ -130,7 +130,7 @@ internal fun DataSetDetails(
                 }
             }
 
-            LazyRow(
+            FadingLazyRow(
                 modifier = Modifier.padding(horizontal = Spacing.Spacing16),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = rowContentAlignment,

@@ -88,9 +88,8 @@ jobs:
         packageName: com.dhis2
         releaseFiles: ${{ env.main_project_module }}/build/outputs/apk/dhis2PlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk
         track: production
-        status: inProgress
+        status: completed
         whatsNewDirectory: whatsnew
-        userFraction: 0.99
 
     - name: Upload to Github
       if: ${{ inputs.github_release }}

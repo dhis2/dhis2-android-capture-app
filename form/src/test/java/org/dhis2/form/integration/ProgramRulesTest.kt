@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.DataEntryRepository
 import org.dhis2.form.data.FormRepository
@@ -77,6 +78,7 @@ class ProgramRulesTest {
     private val testingDispatcher = StandardTestDispatcher()
 
     private val resultDialogUiProvider: FormResultDialogProvider = mock()
+    private val resourceManager: ResourceManager = mock()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
@@ -121,13 +123,13 @@ class ProgramRulesTest {
             FormRepositoryImpl(
                 formValueStore = formValueStore,
                 fieldErrorMessageProvider = mock(),
-                displayNameProvider = mock(),
                 dataEntryRepository = dataEntryRepository,
                 ruleEngineRepository = ruleEngineHelper,
                 rulesUtilsProvider = rulesUtilsProvider,
                 legendValueProvider = mock(),
                 useCompose = true,
                 preferenceProvider = preferenceProvider,
+                resourceManager = resourceManager,
             )
 
         whenever(repository.getDateFormatConfiguration()) doReturn "ddMMyyyy"
@@ -181,6 +183,8 @@ class ProgramRulesTest {
                 )
 
             formViewModel.items.test {
+                // Skip the form list replayed from the initial load
+                skipItems(1)
                 formViewModel.submitIntent(intent)
                 val items = awaitItem()
 
@@ -215,6 +219,8 @@ class ProgramRulesTest {
                 )
 
             formViewModel.items.test {
+                // Skip the form list replayed from the initial load
+                skipItems(1)
                 formViewModel.submitIntent(intent)
                 val sections = awaitItem()
 
@@ -255,6 +261,8 @@ class ProgramRulesTest {
                 )
 
             formViewModel.items.test {
+                // Skip the form list replayed from the initial load
+                skipItems(1)
                 formViewModel.submitIntent(intent)
                 val sections = awaitItem()
 
@@ -307,6 +315,8 @@ class ProgramRulesTest {
                 )
 
             formViewModel.items.test {
+                // Skip the form list replayed from the initial load
+                skipItems(1)
                 formViewModel.submitIntent(intent)
 
                 val sections = awaitItem()
@@ -353,6 +363,8 @@ class ProgramRulesTest {
                 )
 
             formViewModel.items.test {
+                // Skip the form list replayed from the initial load
+                skipItems(1)
                 formViewModel.submitIntent(intent)
                 val sections = awaitItem()
                 assertTrue(sections.size == 1)

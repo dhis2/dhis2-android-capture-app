@@ -11,6 +11,7 @@ import org.dhis2.mobile.login.main.domain.usecase.GetDeviceEnrollmentUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.GetOAuthLogoutUrl
+import org.dhis2.mobile.login.main.domain.usecase.GetRecoveryUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetSessionRenewalUrl
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
 import org.dhis2.mobile.login.main.domain.usecase.IsUserLoggedIn
@@ -97,6 +98,10 @@ internal val mainLoginModule =
         }
 
         factory { params ->
+            GetRecoveryUrl(get { parametersOf(params.get()) })
+        }
+
+        factory { params ->
             ProcessDeviceEnrollment(get { parametersOf(params.get()) })
         }
 
@@ -178,6 +183,7 @@ internal val mainLoginModule =
                 credentialsResourceProvider = get(),
                 getSessionRenewalUrl = get { parametersOf(context) },
                 autoStartRenewal = autoStartRenewal,
+                getRecoveryUrl = get { parametersOf(context) },
                 isUserLoggedIn = get { parametersOf(context) },
             )
         }

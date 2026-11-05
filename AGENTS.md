@@ -206,15 +206,22 @@ the skills offer to clone them if missing.
 - **`/sentry-triage`** — Resolves the latest production release (and the SDK /
   design-system versions it pinned), queries the configured Sentry project for top
   unresolved issues, attributes each to its owning repo, scores Impact (1-5) and
-  Effort (1-5), and outputs a prioritized impact/effort quadrant report. Requires the
+  Effort (1-5), and outputs a prioritized impact/effort quadrant report. It then offers
+  to create Jira Bugs (ANDROAPP / ANDROSDK) for the chosen quadrants and link them to
+  their Sentry issues — tickets only, no PRs, left unassigned. Requires the
   `sentry@claude-plugins-official` plugin installed locally in `~/.claude/settings.json`.
 
-- **`/sentry-fix <issue-id> [--repo <slug>]`** — Fetches the full Sentry event and stack
-  trace, re-verifies ownership, reads the relevant sources at the shipped version, and
-  implements the fix **in the owning repo**: app fixes follow these AGENTS.md guidelines;
-  library fixes run in an isolated git worktree of the sibling clone (never disturbing
-  its checked-out branch), follow that repo's own conventions, and open the draft PR
-  there. Usable standalone or from a `/sentry-triage` report.
+- **`/sentry-fix <issue-id | jira-key> [--repo <slug>]`** — Finds the issue's Jira ticket
+  through its Sentry link (or creates one) and claims it for whoever runs it, then
+  fetches the full Sentry event and stack trace, re-verifies ownership, reads the
+  relevant sources at the shipped version, and implements the fix **in the owning
+  repo**: app fixes follow these AGENTS.md guidelines; library fixes run in an isolated
+  git worktree of the sibling clone (never disturbing its checked-out branch), follow
+  that repo's own conventions, and open the draft PR there.
+
+Jira tickets are linked to their Sentry issue through Sentry's Jira integration, so
+the Sentry issue resolves when the ticket reaches Done. Shared procedures live in
+`.claude/skills/sentry-triage/references/` (`jira-ticket.md`, `sentry-setup.md`).
 
 Stack traces are deobfuscated (ProGuard mappings are uploaded on every release build),
 so library frames carry real class names. Sentry org and project are resolved

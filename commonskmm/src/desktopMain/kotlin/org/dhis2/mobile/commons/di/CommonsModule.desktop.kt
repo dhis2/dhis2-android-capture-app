@@ -44,6 +44,15 @@ actual val commonsModule: Module
                             isBooleanType = false,
                         )
 
+                    override suspend fun valueAsOptionExists(
+                        optionSetUid: String,
+                        value: String,
+                    ) = true
+
+                    override suspend fun valueAsOrgUnitExists(value: String) = false
+
+                    override suspend fun valueAsFileExists(value: String) = false
+
                     override suspend fun valueFromMultiTextAsOptionNames(
                         optionSetUid: String,
                         value: String,
@@ -58,9 +67,13 @@ actual val commonsModule: Module
 
                     override suspend fun valueToFileName(value: String) = value
 
+                    override suspend fun valueToFilePath(value: String): String? = null
+
                     override suspend fun valueFromCoordinateAsLatLong(value: String) = value
 
                     override suspend fun valueFromBooleanType(value: String) = value
+
+                    override suspend fun valueFromTrueOnlyType(value: String) = value
                 }
             }
         }

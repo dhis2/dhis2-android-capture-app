@@ -224,6 +224,17 @@
         <item quantity="one">Relation</item>
         <item quantity="other">Relations</item>
     </plurals>
+    <!-- Fallbacks for locales without plural rules in Compose resources 1.10 (e.g. rw, tet, tg) -->
+    <string name="enrollment_one">enrollment</string>
+    <string name="enrollment_other">enrollments</string>
+    <string name="org_unit_one">organisation unit</string>
+    <string name="org_unit_other">organisation units</string>
+    <string name="tei_one">tei</string>
+    <string name="tei_other">teis</string>
+    <string name="event_one">event</string>
+    <string name="event_other">events</string>
+    <string name="relationship_one">Relation</string>
+    <string name="relationship_other">Relations</string>
     <!--*******************
     Info bar labels
     **********************-->

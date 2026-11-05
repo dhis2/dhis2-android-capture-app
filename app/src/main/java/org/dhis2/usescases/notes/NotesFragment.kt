@@ -47,6 +47,8 @@ import org.dhis2.usescases.notes.noteDetail.NoteDetailActivity
 import org.hisp.dhis.android.core.note.Note
 import javax.inject.Inject
 
+private const val ARG_ENROLLMENT_UID = "enrollmentUid"
+
 class NotesFragment :
     FragmentGlobalAbstract(),
     NotesView,
@@ -80,12 +82,14 @@ class NotesFragment :
         fun newTrackerInstance(
             programUid: String,
             teiUid: String,
+            enrollmentUid: String,
         ): NotesFragment {
             val instance = NotesFragment()
             val args = Bundle()
             args.putString(Constants.PROGRAM_UID, programUid)
             args.putString(Constants.UID, teiUid)
             args.putSerializable(Constants.NOTE_TYPE, NoteType.ENROLLMENT)
+            args.putString(ARG_ENROLLMENT_UID, enrollmentUid)
             instance.arguments = args
             return instance
         }
@@ -96,9 +100,10 @@ class NotesFragment :
         programUid = arguments?.getString(Constants.PROGRAM_UID)
         uid = arguments?.getString(Constants.UID) as String
         noteType = arguments?.getSerializable(Constants.NOTE_TYPE) as NoteType
+        val enrollmentUid = arguments?.getString(ARG_ENROLLMENT_UID)
         (context.applicationContext as App)
             .userComponent()!!
-            .plus(NotesModule(this, programUid!!, uid, noteType))
+            .plus(NotesModule(this, programUid!!, uid, noteType, enrollmentUid))
             .inject(this)
     }
 

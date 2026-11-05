@@ -90,4 +90,8 @@ interface FormRepository {
     fun isEvent(): Boolean
 
     fun isEventEditable(): Boolean?
+
+    fun updateFieldIsUnique(fieldUid: String)
+
+    fun updateFieldIsNotUnique(fieldUid: String)
 }

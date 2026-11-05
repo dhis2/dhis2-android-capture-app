@@ -21,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.core.view.isGone
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -57,6 +58,7 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity
 import org.dhis2.usescases.teiDashboard.DashboardViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.FETCH_EVENTS
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataActivityContract
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment.Companion.newInstance
 import org.dhis2.usescases.teiDashboard.ui.RelationshipTopBarIcon
@@ -150,7 +152,9 @@ class EventCaptureActivity :
         showProgress()
         presenter.initNoteCounter()
         presenter.init()
-        binding.syncButton.setOnClickListener { showSyncDialog(EVENT_SYNC) }
+        binding.syncButton.setOnClickListener {
+            runIfCurrentEventCanBeSynced { showSyncDialog(EVENT_SYNC) }
+        }
 
         if (intent.shouldLaunchSyncDialog()) {
             showSyncDialog(EVENT_SYNC)
@@ -251,6 +255,7 @@ class EventCaptureActivity :
     private fun updateLandscapeViewsOnEventChange(newEventUid: String) {
         if (newEventUid != this.eventUid) {
             this.eventUid = newEventUid
+            this.eventMode = EventMode.CHECK
             setUpEventCaptureComponent(newEventUid)
             setUpViewPagerAdapter()
             setUpNavigationBar()
@@ -262,6 +267,54 @@ class EventCaptureActivity :
     }
 
     private fun areTeiUidAndEnrollmentUidNotNull(): Boolean = teiUid != null && enrollmentUid != null
+
+    fun attemptNavigationAwayFromCurrentEvent(onReady: () -> Unit) {
+        if (!isLandscape()) {
+            onReady()
+            return
+        }
+        if (eventMode === EventMode.NEW) {
+            val bottomSheetDialogUiModel =
+                BottomSheetDialogUiModel(
+                    title = getString(R.string.title_delete_go_back),
+                    message = getString(R.string.discard_go_back),
+                    iconResource = R.drawable.ic_error_outline,
+                    mainButton = MainButton(R.string.keep_editing),
+                    secondaryButton = DiscardButton(),
+                )
+            val dialog =
+                BottomSheetDialog(
+                    bottomSheetDialogUiModel,
+                    {
+                        // Keep editing: cancel the pending navigation
+                    },
+                    {
+                        presenter.deleteEvent {
+                            supportFragmentManager.setFragmentResult(FETCH_EVENTS, Bundle())
+                            onReady()
+                        }
+                    },
+                    showTopDivider = true,
+                )
+            dialog.show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
+            return
+        }
+        val formFragment = supportFragmentManager.findFragmentById(R.id.event_form) as? EventCaptureFormFragment
+        if (formFragment != null) {
+            formFragment.checkFormCanBeClosed(onReady)
+        } else {
+            onReady()
+        }
+    }
+
+    private fun runIfCurrentEventCanBeSynced(onAllowed: () -> Unit) {
+        // The form fragment lives in R.id.event_form (landscape) or in the view pager (portrait)
+        supportFragmentManager.fragments
+            .filterIsInstance<EventCaptureFormFragment>()
+            .firstOrNull()
+            ?.checkFormCanBeClosed(onAllowed, allowDiscard = false)
+            ?: onAllowed()
+    }
 
     fun openDetails() {
         presenter.onNavigationPageChanged(NavigationPage.DETAILS)
@@ -302,11 +355,10 @@ class EventCaptureActivity :
     }
 
     private fun finishEditMode() {
-        if (binding.navigationBar.visibility == View.GONE) {
-            showNavigationBar()
-        } else {
-            attemptFinish()
-        }
+        val navigationBarHidden = binding.navigationBar.isGone
+        if (navigationBarHidden) showNavigationBar()
+        // In landscape the navigation bar is not part of the form, so back must not stop at showing it
+        if (!navigationBarHidden || isLandscape()) attemptFinish()
     }
 
     private fun attemptFinish() {

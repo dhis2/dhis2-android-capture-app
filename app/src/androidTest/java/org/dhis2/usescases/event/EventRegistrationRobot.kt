@@ -4,6 +4,8 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
@@ -119,10 +121,11 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
         composeTestRule.onAllNodesWithTag(SECONDARY_BUTTON_TAG).assertCountEquals(0)
     }
 
-    /** Taps the mandatory sheet's only action ("Review") to return to the form. */
+    /** Taps the mandatory sheet's only action ("Review") and waits until the sheet is gone. */
+    @OptIn(ExperimentalTestApi::class)
     fun dismissMandatoryBlockSheet() {
         composeTestRule.onNodeWithTag(MAIN_BUTTON_TAG).performClick()
-        composeTestRule.waitForIdle()
+        composeTestRule.waitUntilDoesNotExist(hasTestTag(MAIN_BUTTON_TAG), TIMEOUT)
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -149,6 +152,45 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
         composeTestRule.onNodeWithTag(FIRST_DROPDOWN_ITEM_TAG).performClick()
         composeTestRule.waitForIdle()
     }
+
+    /** Taps the reset (x) button of the dropdown field titled [label], leaving it empty. */
+    fun clearDropdown(label: String) {
+        scrollFormTo(hasText(label, substring = true))
+        composeTestRule.onNode(dropdownResetButton(label), useUnmergedTree = true).performClick()
+        composeTestRule.waitForIdle()
+    }
+
+    /** The reset button is only rendered while the dropdown has a selected value. */
+    fun checkDropdownHasValue(label: String) {
+        scrollFormTo(hasText(label, substring = true))
+        composeTestRule.waitUntil(TIMEOUT) {
+            composeTestRule
+                .onAllNodes(dropdownResetButton(label), useUnmergedTree = true)
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        }
+    }
+
+    /**
+     * Presses back until the not-saved sheet shows up, then taps "Discard". A previous back can
+     * be consumed first: it clears the focused field and, in portrait, shows the navigation bar.
+     */
+    @OptIn(ExperimentalTestApi::class)
+    fun pressBackAndDiscardChanges() {
+        val discardButton = hasTestTag(SECONDARY_BUTTON_TAG)
+        repeat(MAX_BACK_PRESSES) {
+            if (composeTestRule.onAllNodes(discardButton).fetchSemanticsNodes().isEmpty()) {
+                pressBack()
+                runCatching { composeTestRule.waitUntilAtLeastOneExists(discardButton, BACK_PRESS_TIMEOUT) }
+            }
+        }
+        composeTestRule.onNode(discardButton).performClick()
+        composeTestRule.waitForIdle()
+    }
+
+    private fun dropdownResetButton(label: String) =
+        hasTestTag("INPUT_DROPDOWN_RESET_BUTTON") and
+            hasAnyAncestor(hasTestTag("INPUT_DROPDOWN") and hasAnyDescendant(hasText(label, substring = true)))
 
     @OptIn(ExperimentalTestApi::class)
     fun waitForSaveBottomSheet() {
@@ -198,5 +240,7 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
     companion object {
         private const val DATE_PICKER_CONFIRM_TEXT = "OK"
         private const val FIRST_DROPDOWN_ITEM_TAG = "INPUT_DROPDOWN_MENU_ITEM_0"
+        private const val MAX_BACK_PRESSES = 3
+        private const val BACK_PRESS_TIMEOUT = 3_000L
     }
 }

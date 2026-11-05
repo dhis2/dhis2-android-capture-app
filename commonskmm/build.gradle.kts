@@ -21,7 +21,9 @@ kotlin {
         minSdk = libs.versions.minSdk.get().toInt()
         compilerOptions { jvmTarget.set(JvmTarget.JVM_17) }
         androidResources { enable = true }
-        withHostTestBuilder {}.configure {}
+        withHostTestBuilder {}.configure {
+            isReturnDefaultValues = true
+        }
         withDeviceTestBuilder {}.configure {
             instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
@@ -40,6 +42,7 @@ kotlin {
             implementation(libs.lifecycle.runtime.compose)
 
             // Koin
+            api(project.dependencies.platform(libs.koin.bom))
             api(libs.koin.core)
             implementation(libs.ktxml)
             implementation(libs.koin.compose)
@@ -68,6 +71,7 @@ kotlin {
         }
 
         androidMain.dependencies {
+            implementation(project.dependencies.platform(libs.androidx.compose.bom))
             implementation(libs.dhis2.android.sdk)
             implementation(libs.androidx.exifinterface)
             implementation(libs.test.espresso.idlingresource)
@@ -81,6 +85,11 @@ kotlin {
         }
 
         getByName("androidHostTest") {
+            // Compose resources are packaged as Android assets, which host tests can't read.
+            // Expose them on the classpath so tests can resolve real strings.
+            resources.srcDir(
+                provider { tasks.getByName("copyAndroidMainComposeResourcesToAndroidAssets").outputs.files },
+            )
             dependencies {
             }
         }

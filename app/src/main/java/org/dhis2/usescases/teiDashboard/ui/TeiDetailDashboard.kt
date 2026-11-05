@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,6 +18,7 @@ import org.dhis2.usescases.teiDashboard.ui.model.TimelineEventsHeaderModel
 import org.hisp.dhis.mobile.ui.designsystem.component.AssistChip
 import org.hisp.dhis.mobile.ui.designsystem.component.CardDetail
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
+import org.hisp.dhis.mobile.ui.designsystem.component.layout.FadingLazyRow
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 
 @Composable
@@ -82,10 +82,11 @@ fun TeiDetailDashboard(
 @Composable
 private fun QuickActionsRow(quickActions: List<QuickActionUiModel>) {
     if (quickActions.isNotEmpty()) {
-        LazyRow(
+        FadingLazyRow(
             modifier = Modifier.padding(bottom = Spacing.Spacing16),
             horizontalArrangement = Arrangement.spacedBy(Spacing.Spacing8),
             contentPadding = PaddingValues(horizontal = Spacing.Spacing16),
+            edgeWidth = Spacing.Spacing24,
         ) {
             items(quickActions) {
                 AssistChip(

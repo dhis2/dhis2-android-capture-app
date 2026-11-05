@@ -5,265 +5,180 @@ description: >
   attributes each issue to its owning repo (capture app, DHIS2 Android SDK,
   or mobile design system), scores it on Impact (1-5) and Effort (1-5), and
   outputs a prioritized impact/effort quadrant report with ready-to-run
-  /sentry-fix commands. Use when you want to decide what to fix next.
+  /sentry-fix commands. Then offers to create the Jira Bugs for the chosen
+  quadrants (ANDROAPP / ANDROSDK) and link them to their Sentry issues — no
+  PRs. Use when you want to decide what to fix next.
 ---
 
-# Sentry Triage Skill
+# Sentry Triage
 
-Stack traces are deobfuscated (ProGuard mappings uploaded on release builds), so
-library frames carry real class names. Crashes may originate in DHIS2-owned
-libraries shipped inside the APK — `references/repo-map.md` is the single source
-of truth for package→repo attribution and per-repo facts. Load it before Step 4.
+## Flow at a glance
 
----
+1. Setup — plugin, org, project (`references/sentry-setup.md`)
+2. Resolve the production release and the library versions it shipped
+3. Fetch the top 10 unresolved issues for that release
+4. Read each issue's latest event
+5. Attribute each issue to its owning repo and read the crash-site code
+6. Score Impact and Effort, place in a quadrant
+7. Look up existing Jira tickets, then output the report
+8. Offer to create Jira tickets for the chosen issues
 
-## Prerequisites — Sentry MCP plugin
-
-This skill requires the `sentry@claude-plugins-official` plugin. Before running any step,
-verify the plugin is available by checking whether `mcp__plugin_sentry_sentry__find_organizations`
-is listed as an available tool.
-
-Tool names vary across plugin versions: newer versions expose a small core set
-plus a catalog — discover anything not listed (releases, issue events, …) with
-`mcp__plugin_sentry_sentry__search_sentry_tools` and run it with
-`mcp__plugin_sentry_sentry__execute_sentry_tool`.
-
-If the plugin is **not installed**, stop and tell the user:
-
-> The Sentry MCP plugin is not enabled in this session. To install it locally, run:
-> ```
-> /config
-> ```
-> Then navigate to **Extensions → Plugins**, find **Sentry**, and enable it. Alternatively,
-> add the following to your `~/.claude/settings.json` (user-level, not committed to the repo):
-> ```json
-> {
->   "enabledPlugins": {
->     "sentry@claude-plugins-official": true
->   }
-> }
-> ```
-> Once enabled, restart the session and run `/sentry-triage` again.
+References: `references/repo-map.md` (attribution, per-repo facts) and
+`references/jira-ticket.md` (ticket lookup, creation, Sentry link).
 
 ---
 
-## Step 0 — Discover Sentry org and project
+## 1. Setup
 
-Call `mcp__plugin_sentry_sentry__find_organizations` to list accessible orgs. If there is
-only one, use it. If there are multiple, pick the one whose slug matches the GitHub org of
-the current repo (run `gh repo view --json owner -q .owner.login` to get it).
+Follow `references/sentry-setup.md` — plugin check, then `ORG_SLUG`,
+`REGION_URL`, `PROJECT_SLUG`.
 
-Store the result as `ORG_SLUG` and the org's `regionUrl` as `REGION_URL`.
+## 2. Production release
 
-Then call `mcp__plugin_sentry_sentry__find_projects` with `organizationSlug: ORG_SLUG`.
-Match the project whose slug or name most closely corresponds to this Android app (look for
-`android`, `capture`, or the repo name). Store this as `PROJECT_SLUG`.
+Never read `gradle/libs.versions.toml` on the working branch — it is ahead of
+what shipped.
 
----
+1. List the project's releases (`search_sentry_tools("list releases")`),
+   environment `production`, newest first → `PROD_VERSION` (full string, e.g.
+   `com.dhis2@3.4.1+156`).
+2. No result → newest non-prerelease from `gh release list --limit 5`, leading
+   `v` stripped.
 
-## Step 1 — Resolve the latest production version
-
-Do **not** read `gradle/libs.versions.toml` — the working branch is always ahead of what is
-shipped. Determine the last production release using one of these methods, in order:
-
-1. Query the project's releases (tool `find_releases` if listed, else discover it
-   via `search_sentry_tools(query: "list releases")` and run it with
-   `execute_sentry_tool`) for `PROJECT_SLUG`, filter by environment `production`,
-   sort by `date` descending, take the first entry's `version` string.
-2. If that returns no results, run:
-   ```
-   gh repo view --json nameWithOwner -q .nameWithOwner | xargs -I{} gh release list --repo {} --limit 5
-   ```
-   and pick the most recent non-prerelease tag. Strip a leading `v` if present.
-
-Store this as `PROD_VERSION` for use in all subsequent queries.
-
-Then resolve the library versions that release shipped: find the git tag matching
-`PROD_VERSION` (strip any `+<build>` metadata) and run
+Then pin the libraries that release shipped, from its git tag (drop any
+`+<build>`):
 
 ```bash
 git show <tag>:gradle/libs.versions.toml | grep -E "dhis2sdk|designSystem"
 ```
 
-Store `SDK_VERSION` and `DESIGN_SYSTEM_VERSION` — they go in the report header
-and pin the diagnosis ref when reading library code (repo-map §5).
+→ `SDK_VERSION`, `DESIGN_SYSTEM_VERSION` (report header, and the diagnosis ref
+for library code — repo-map §5).
 
----
+## 3. Top unresolved issues
 
-## Step 2 — Query top unresolved issues
+`search_issues` with `organizationSlug`, `regionUrl`, `projectSlug`, `limit: 10`,
+`sort: "user"` (singular), and
+`query: "is:unresolved release:<PROD_VERSION> !is:ignored"`.
 
-Call `mcp__plugin_sentry_sentry__search_issues` with:
-- `organizationSlug`: `ORG_SLUG`
-- `regionUrl`: `REGION_URL`
-- `projectSlug`: `PROJECT_SLUG`
-- `query`: `is:unresolved release:<PROD_VERSION> !is:ignored`
-- `sort`: `user` (the enum is `date` | `freq` | `new` | `user` — note: singular `user`, not `users`)
-- `limit`: 10
+Zero results → try the `<versionName>+<versionCode>` form seen in the release
+list; still zero → drop the `release:` filter and say so in the report.
 
-Note: `PROD_VERSION` is the full release string including the package and build,
-e.g. `com.dhis2@3.4.1+156`. The `sort: user` window is release-scoped, so the
-returned order can differ from each issue's all-release user total shown in the
-issue detail — use the per-issue `Users Impacted` for Impact scoring and note the
-distinction.
+`sort: user` ranks by users *in this release*; score Impact on each issue's own
+`Users Impacted` and note the difference.
 
-If 0 results come back, retry in this order:
-1. Try `release:<PROD_VERSION>+<build-number>` — the Sentry Gradle plugin sometimes uploads
-   releases in `<vName>+<vCode>` format. Inspect the first few Sentry releases to find the
-   matching string.
-2. If still 0, remove the `release:` filter entirely. Note in the report that the filter was
-   relaxed and which version was targeted.
+## 4. Latest event per issue
 
----
+`get_sentry_resource` on each short ID (add `resourceType: "breadcrumbs"` for
+the trail). Extract the frames of the innermost exception, the last 10
+breadcrumbs, `user` (note if absent), and the `release` / `environment` /
+`screen` tags.
 
-## Step 3 — Fetch latest event per issue
+If the issue looks like several bugs grouped together, fetch up to 3 more
+events (`search_sentry_tools("issue events")`); differing top frames → say so
+in the Scoring Detail.
 
-For each issue, fetch its latest event with
-`mcp__plugin_sentry_sentry__get_sentry_resource` (issue short ID; add
-`resourceType: "breadcrumbs"` for the breadcrumb trail). If you need more than
-the latest event, discover the issue-events tool via
-`search_sentry_tools(query: "issue events")` and fetch up to 3. From the most
-recent event extract:
-- `exception.values[0].stacktrace.frames` — full frame list
-- `breadcrumbs.values` — last 10 entries (reveals the user flow)
-- `user` — for uniqueness; note if absent (unauthenticated session)
-- `tags` — look for `release`, `environment`, `screen`, `flow`
+## 5. Attribute and read code
 
-If events vary significantly across the 3 fetched (different top frames), note it in the
-Scoring Detail — it means the issue aggregates multiple distinct bugs.
+Apply repo-map §1 (classification) and §2 (heuristic) → **Owner**,
+**Thrown in**, **Confidence**, one-clause reason. Low confidence → add "verify
+ownership during fix".
 
----
+Read the top 3–5 owned files from the crash site upward:
+- **App** — module table in repo-map §3.
+- **Library** — `git -C ../<repo> show <diagnosis-ref>:<path>` (repo-map §5).
+  Sibling clone missing → attribute by package only and say so; never clone
+  during triage.
 
-## Step 4 — Attribute each issue to an owning repo and map frames
+Skip frames whose file is `SourceFile:N`.
 
-Load `references/repo-map.md` (classification table §1, attribution heuristic §2,
-per-repo facts §3).
+## 6. Score and classify
 
-Walk the innermost exception's frames from the crash site outward, classifying
-each frame by package prefix (app / SDK / design system / rule engine /
-expression parser / platform). Apply the attribution heuristic to determine
-**Thrown in**, **Owner**, and **Confidence**, with a one-clause reason.
+### Impact (1–5) — highest matching row, then modifiers
 
-- `org.hisp.dhis.rules.*` / `org.hisp.dhis.lib.expression.*` → attribute and
-  mark "external DHIS2 lib — no automated fix flow".
-- Low confidence → add "verify ownership during fix" to the issue entry.
+| Score | Criteria |
+|---|---|
+| 5 | Crash (unhandled exception / ANR), ≥ 100 users |
+| 4 | Crash, 10–99 users |
+| 3 | Non-crash degradation (wrong data, feature disabled, blank screen), ≥ 50 users |
+| 2 | Non-crash, 10–49 users — or crash, < 10 users |
+| 1 | Non-crash, < 10 users — or cosmetic |
 
-Then read the **top 3-5 owned files** starting from the crash site upward in the
-call chain:
+Modifiers (cap 5): **+1** crash site in login or sync
+(`org.dhis2.usescases.login`, `org.dhis2.mobile.login`, `org.dhis2.mobile.sync`,
+`org.dhis2.usescases.sync`) · **+1** in data entry / enrollment / forms
+(`org.dhis2.form`, `org.dhis2.usescases.eventsWithoutRegistration`,
+`org.dhis2.usescases.enrollment`) · **+1** events/users > 5.
 
-- **App-owned frames**: map with the app module table in repo-map §3.
-- **Library-owned frames**: read from the sibling clone at the shipped version —
-  `git -C ../<repo> show <diagnosis-ref>:<path>` (ref resolution: repo-map §5,
-  using `SDK_VERSION` / `DESIGN_SYSTEM_VERSION` from Step 1). If the sibling
-  clone is missing, attribute by package only and note it — do not clone during
-  triage.
+### Effort (1–5) — highest matching row, then modifiers
 
-If a frame's `absPath` or `filename` is `SourceFile:N` (unresolved), skip it and
-continue to the next frame.
+Library bugs are fixed in their own repo, so score them like app code.
 
----
+| Score | Criteria |
+|---|---|
+| 5 | Spans two repos, breaks public SDK API (`:core:apiCheck`), or needs a new UseCase + Repository + ViewModel |
+| 4 | 3–4 files, `androidMain`-only with no `commonMain` path, or RxJava that would need migrating |
+| 3 | 2 files, mixed source sets, or a new UseCase only |
+| 2 | 1–2 files with a known pattern (null guard, default value, missing catch) |
+| 1 | Single-line fix |
 
-## Step 5 — Score each issue
+Modifiers (cap 5): **+1** owned stack depth > 10 frames · **+1** library-owned
+(ships only via a library release — repo-map §7).
 
-### Impact (1–5)
+### Quadrant
 
-Take the **highest** matching base score, then apply modifiers:
+| | Effort ≤ 2 | Effort ≥ 3 |
+|---|---|---|
+| **Impact ≥ 4** | Q1 — Fix ASAP | Q2 — Plan carefully |
+| **Impact ≤ 3** | Q3 — Quick wins | Q4 — Defer |
 
-| Score | Base criteria |
-|-------|---------------|
-| 5 | Crash (unhandled exception / ANR) affecting ≥ 100 unique users |
-| 4 | Crash affecting 10–99 unique users |
-| 3 | Non-crash degradation (wrong data, feature disabled, blank screen) affecting ≥ 50 users |
-| 2 | Non-crash affecting 10–49 users OR crash affecting < 10 users |
-| 1 | Non-crash < 10 users OR cosmetic / UI glitch |
+## 7. Jira lookup and report
 
-**Modifiers** (cap total at 5):
-- +1 if the crash site is in the login flow (`org.dhis2.usescases.login`, `org.dhis2.mobile.login`)
-  or sync flow (`org.dhis2.mobile.sync`, `org.dhis2.usescases.sync`)
-- +1 if the crash site is in data-entry/enrollment/form flow (`org.dhis2.form`,
-  `org.dhis2.usescases.eventsWithoutRegistration`, `org.dhis2.usescases.enrollment`)
-- +1 if `times_seen / users_seen` ratio > 5 (the same users are hitting it repeatedly)
-
-### Effort (1–5)
-
-SDK and design-system bugs are fixed **directly in their repos** (see
-`/sentry-fix`), so score them on the same complexity criteria as app code — the
-old "SDK = workaround only" penalty no longer applies.
-
-Take the **highest** matching base score, then apply modifiers:
-
-| Score | Base criteria |
-|-------|---------------|
-| 5 | Fix spans two repos (lib fix + app adaptation), or breaks a public SDK API (`:core:apiCheck`), or needs a new full arch layer (UseCase + Repository + ViewModel) |
-| 4 | 3–4 source files OR `androidMain`-only change with no `commonMain` path OR crash site uses RxJava that would need migration |
-| 3 | 2 files, mixed source sets, or new UseCase only (no repo change) — in whichever repo owns the fix |
-| 2 | 1–2 files, known pattern (null guard, default value, missing catch), in the owning repo |
-| 1 | Single-line fix in any file |
-
-**Modifiers** (cap total at 5):
-- +1 if owned stack depth > 10 frames (deep call chains require careful tracing)
-- +1 if the owner is a library repo — the fix only reaches users after a library
-  release plus an app version bump (record a "Ships via" line in the Scoring Detail)
-
----
-
-## Step 6 — Classify into quadrants
-
-| Quadrant | Condition | Label |
-|----------|-----------|-------|
-| Q1 | Impact ≥ 4 AND Effort ≤ 2 | Fix ASAP |
-| Q2 | Impact ≥ 4 AND Effort ≥ 3 | Plan carefully |
-| Q3 | Impact ≤ 3 AND Effort ≤ 2 | Quick wins |
-| Q4 | Impact ≤ 3 AND Effort ≥ 3 | Defer |
-
----
-
-## Step 7 — Output the triage report
-
-Produce a markdown report with this structure:
+For every issue that could get a ticket (not attribute-only), run the lookup in
+`references/jira-ticket.md` §1 — all searches in one parallel batch. It is
+read-only; record the key and status, or "none".
 
 ```
 ## Sentry Triage Report — <PROJECT_SLUG>
 Production release: <PROD_VERSION> (SDK <SDK_VERSION>, design system <DESIGN_SYSTEM_VERSION>)
-Generated: <today's date>
-[Note if release filter was relaxed and why]
+Generated: <date>   [release filter relaxed: <why>]
 
-### Q1: Fix ASAP (High Impact, Low Effort)
-| Issue ID | Title | Impact | Effort | Owner | Crash site | To fix |
-|----------|-------|--------|--------|-------|------------|--------|
-| SENTRY-X | ...   | 5      | 1      | app   | Foo.kt:42  | `/sentry-fix SENTRY-X` |
-| SENTRY-Y | ...   | 4      | 2      | SDK   | Bar.kt:99  | `/sentry-fix SENTRY-Y --repo dhis2/dhis2-android-sdk` |
+### Q1: Fix ASAP
+| Issue | Title | Impact | Effort | Owner | Crash site | Jira | To fix |
+|---|---|---|---|---|---|---|---|
+| SENTRY-X | … | 5 | 1 | app | Foo.kt:42 | ANDROAPP-123 (Open) | `/sentry-fix SENTRY-X` |
+| SENTRY-Y | … | 4 | 2 | SDK | Bar.kt:99 | — | `/sentry-fix SENTRY-Y --repo dhis2/dhis2-android-sdk` |
 
-### Q2: Plan Carefully (High Impact, High Effort)
-...
+### Q2: Plan carefully …   ### Q3: Quick wins …   ### Q4: Defer …
 
-### Q3: Quick Wins (Low Impact, Low Effort)
-...
-
-### Q4: Defer (Low Impact, High Effort)
-...
-
----
-
-### Scoring Detail
-
+### Scoring detail
 #### SENTRY-X — <title>
-- **Impact**: X/5 — <one-sentence rationale>
-- **Effort**: X/5 — <one-sentence rationale>
-- **Owner**: <repo> (thrown in <repo>; confidence high|medium|low — <one-clause reason>)
-- **Crash site**: `ClassName.kt:lineN`
-- **Flow**: <login | sync | data-entry | tracker | dashboard | settings | other>
-- **Users affected**: <count>
-- **Events**: <count> (ratio <times_seen/users_seen>)
-- **Root cause hint**: <one sentence from reading the crash-site file>
-- **Shipped lib version**: <only for library-owned issues, e.g. SDK 1.14.1>
-- **Ships via**: <only for library-owned issues: lib release → libs.versions.toml bump → app release; note if an app-side defensive guard is worth a companion fix>
-- **To fix**: `/sentry-fix SENTRY-X [--repo <slug>]`
+- **Impact** X/5 — <why> · **Effort** X/5 — <why>
+- **Owner** <repo> (thrown in <repo>; confidence <level> — <reason>)
+- **Crash site** `File.kt:N` · **Flow** <login | sync | data-entry | tracker | dashboard | settings | other>
+- **Users** <n> · **Events** <n> (ratio <events/users>)
+- **Root cause hint** <one sentence from the crash-site code>
+- **Library only**: shipped version, and the Ships via line (repo-map §7)
 ```
 
-The `--repo` hint is advisory — `/sentry-fix` re-verifies ownership against real
-code and may override it. Issues owned by attribute-only libs (rule engine,
-expression parser) get a "manual upstream fix" note instead of a `/sentry-fix`
-command.
+Attribute-only owners get "manual upstream fix" instead of a `/sentry-fix`
+command. No issues even after relaxing the filter → name the org and project
+used so the user can check them.
 
-If no issues were found even after relaxing the filter, state clearly which org and project
-were resolved in Step 0, and suggest the user verify they are correct.
+## 8. Offer Jira tickets
+
+Ask with AskUserQuestion which issues should get a ticket now — no PRs are
+opened:
+- **Q1 only** (recommended)
+- **Q1 + Q2**
+- **Let me choose** — then ask for the issue IDs
+- **No tickets**
+
+For the chosen issues, apply `references/jira-ticket.md` in stages, sending each
+stage's calls in parallel in one message: the §1 result is already known
+(reuse open tickets, handle Done/linked cases as it says) → §3 create the
+missing ones → §4 link every ticket to its Sentry issue. Do not claim tickets
+(§2): they stay **Open and unassigned** so whoever picks one up runs
+`/sentry-fix <JIRA_KEY>` and owns the PR.
+
+Finish with one line per issue: `SENTRY-X → ANDROAPP-123 (new | existing |
+regression of ANDROAPP-99) · Sentry link: linked | failed (<reason>)`.

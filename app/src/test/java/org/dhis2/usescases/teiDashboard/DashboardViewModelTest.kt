@@ -7,13 +7,16 @@ import io.reactivex.Observable
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobile.commons.providers.CustomLabelProvider
+import org.dhis2.tracker.TEIDashboardItems
 import org.dhis2.utils.analytics.ACTIVE_FOLLOW_UP
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.FOLLOW_UP
@@ -23,6 +26,8 @@ import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemData
 import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -96,6 +101,31 @@ class DashboardViewModelTest {
                     assertTrue(dashboardViewModel.state.value == null)
                 }
             }
+        }
+
+    @Test
+    fun shouldExposeTrackedEntityTypeName() =
+        runTest {
+            mockGrouping(false)
+            whenever(repository.getTETypeName()) doReturn "Person"
+
+            val dashboardViewModel = getViewModel()
+
+            assertEquals("Person", dashboardViewModel.teTypeName.first { it != null })
+        }
+
+    @Test
+    fun shouldKeepTrackedEntityTypeNameNullIfItCannotBeResolved() =
+        runTest {
+            mockGrouping(false)
+            whenever(repository.getTETypeName()) doReturn null
+
+            val dashboardViewModel = getViewModel()
+
+            advanceUntilIdle()
+
+            verify(repository).getTETypeName()
+            assertNull(dashboardViewModel.teTypeName.value)
         }
 
     @Test
@@ -216,7 +246,58 @@ class DashboardViewModelTest {
             }
         }
 
-    private fun getViewModel() =
+    @Test
+    fun shouldNotOfferNotesInLandscapeWhenNoProgramIsSelected() =
+        runTest {
+            mockGrouping(false)
+            mockNavigationBar(displayNotes = false)
+
+            val viewModel = getViewModel(isPortrait = false)
+
+            viewModel.navigationBarUIState.test {
+                testingDispatcher.scheduler.advanceUntilIdle()
+                with(expectMostRecentItem()) {
+                    assertTrue(items.none { it.id == TEIDashboardItems.NOTES })
+                    assertNull(selectedItem)
+                }
+            }
+        }
+
+    @Test
+    fun shouldSelectDetailsInPortraitWhenNoProgramIsSelected() =
+        runTest {
+            mockGrouping(false)
+            mockNavigationBar(displayNotes = false)
+
+            val viewModel = getViewModel(isPortrait = true)
+
+            viewModel.navigationBarUIState.test {
+                testingDispatcher.scheduler.advanceUntilIdle()
+                with(expectMostRecentItem()) {
+                    assertEquals(listOf(TEIDashboardItems.DETAILS), items.map { it.id })
+                    assertEquals(TEIDashboardItems.DETAILS, selectedItem)
+                }
+            }
+        }
+
+    @Test
+    fun shouldSelectNotesInLandscapeWhenItIsTheOnlyItem() =
+        runTest {
+            mockGrouping(false)
+            mockNavigationBar(displayNotes = true)
+
+            val viewModel = getViewModel(isPortrait = false)
+
+            viewModel.navigationBarUIState.test {
+                testingDispatcher.scheduler.advanceUntilIdle()
+                with(expectMostRecentItem()) {
+                    assertEquals(listOf(TEIDashboardItems.NOTES), items.map { it.id })
+                    assertEquals(TEIDashboardItems.NOTES, selectedItem)
+                }
+            }
+        }
+
+    private fun getViewModel(isPortrait: Boolean = true) =
         DashboardViewModel(
             repository,
             analyticsHelper,
@@ -231,6 +312,7 @@ class DashboardViewModelTest {
             pageConfigurator,
             resourcesManager,
             customLabelProvider,
+            isPortrait = { isPortrait },
         ).also {
             testingDispatcher.scheduler.advanceUntilIdle()
         }
@@ -242,6 +324,13 @@ class DashboardViewModelTest {
 
     private suspend fun mockTeiModel() {
         whenever(repository.getDashboardModel()) doReturn mockedTeiModel
+    }
+
+    private suspend fun mockNavigationBar(displayNotes: Boolean) {
+        whenever(repository.programHasAnalytics()) doReturn false
+        whenever(pageConfigurator.displayRelationships()) doReturn false
+        whenever(pageConfigurator.displayNotes()) doReturn displayNotes
+        whenever(resourcesManager.getString(any<Int>())) doReturn "label"
     }
 
     private fun mockGrouping(group: Boolean) {

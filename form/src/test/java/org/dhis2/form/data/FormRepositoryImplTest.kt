@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.form.R
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.EventCategory
 import org.dhis2.form.model.FieldUiModel
@@ -15,7 +17,6 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
-import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.dhis2.mobileProgramRules.RuleEngineHelper
@@ -39,6 +40,7 @@ import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -49,8 +51,11 @@ class FormRepositoryImplTest {
     private val formValueStore: FormValueStore = mock()
     private val preferenceProvider: PreferenceProvider = mock()
     private val fieldErrorMessageProvider: FieldErrorMessageProvider = mock()
-    private val displayNameProvider: DisplayNameProvider = mock()
     private val legendValueProvider: LegendValueProvider = mock()
+    private val resourceManager: ResourceManager =
+        mock {
+            on { getString(R.string.unique_warning) } doReturn "Not unique"
+        }
     private lateinit var repository: FormRepositoryImpl
 
     @Before
@@ -90,13 +95,13 @@ class FormRepositoryImplTest {
                 FormRepositoryImpl(
                     formValueStore,
                     fieldErrorMessageProvider,
-                    displayNameProvider,
                     dataEntryRepository,
                     ruleEngineHelper,
                     rulesUtilsProvider,
                     legendValueProvider,
                     false,
                     preferenceProvider,
+                    resourceManager,
                 )
             repository.fetchFormItems()
         }
@@ -129,7 +134,9 @@ class FormRepositoryImplTest {
     fun `Should process user action ON_TEXT_CHANGE`() =
         runBlocking {
             repository.updateValueOnList("uid001", "valueChanged", ValueType.TEXT)
-            assertTrue(repository.composeList().find { it.uid == "uid001" }?.value == "valueChanged")
+            assertTrue(
+                repository.composeList().find { it.uid == "uid001" }?.value == "valueChanged",
+            )
         }
 
     @Test
@@ -176,7 +183,9 @@ class FormRepositoryImplTest {
             ) doReturn "errorMessage"
 
             // Then item should not be saved
-            assertTrue(repository.composeList().find { it.uid == "uid001" }?.error == "errorMessage")
+            assertTrue(
+                repository.composeList().find { it.uid == "uid001" }?.error == "errorMessage",
+            )
         }
 
     @Test
@@ -266,6 +275,98 @@ class FormRepositoryImplTest {
                 any(),
             )
         }
+
+    @Test
+    fun `Should keep a field hidden when it also has an option rule effect`(): Unit =
+        runBlocking {
+            whenever(ruleEngineHelper.evaluate()) doReturn
+                listOf(
+                    RuleEffect(
+                        "hideOptionRule",
+                        RuleAction(
+                            "option1",
+                            ProgramRuleActionType.HIDEOPTION.name,
+                            mutableMapOf(Pair("field", "uid004")),
+                        ),
+                    ),
+                    RuleEffect(
+                        "hideFieldRule",
+                        RuleAction(
+                            null,
+                            ProgramRuleActionType.HIDEFIELD.name,
+                            mutableMapOf(Pair("field", "uid004")),
+                        ),
+                    ),
+                )
+            whenever(dataEntryRepository.isEvent()) doReturn true
+            whenever(
+                rulesUtilsProvider.applyRuleEffects(any(), any(), any(), any()),
+            ).thenAnswer { invocationOnMock ->
+                // HIDEFIELD removes the field from the map, as RulesUtilsProviderImpl does
+                invocationOnMock.getArgument<MutableMap<String, FieldUiModel>>(1).remove("uid004")
+                ruleEffectsResultWithOptionsToHide(fieldUid = "uid004")
+            }
+            whenever(dataEntryRepository.options(any(), any(), any(), any())) doReturn
+                Pair(MutableStateFlow(""), emptyFlow())
+
+            val result = repository.composeList()
+
+            assertTrue(result.none { it.uid == "uid004" })
+        }
+
+    @Test
+    fun `Should keep rule effects on a field that also has an option rule effect`(): Unit =
+        runBlocking {
+            whenever(ruleEngineHelper.evaluate()) doReturn
+                listOf(
+                    RuleEffect(
+                        "hideOptionRule",
+                        RuleAction(
+                            "option1",
+                            ProgramRuleActionType.HIDEOPTION.name,
+                            mutableMapOf(Pair("field", "uid004")),
+                        ),
+                    ),
+                    RuleEffect(
+                        "warningRule",
+                        RuleAction(
+                            "Warning",
+                            ProgramRuleActionType.SHOWWARNING.name,
+                            mutableMapOf(Pair("field", "uid004")),
+                        ),
+                    ),
+                )
+            whenever(dataEntryRepository.isEvent()) doReturn true
+            whenever(
+                rulesUtilsProvider.applyRuleEffects(any(), any(), any(), any()),
+            ).thenAnswer { invocationOnMock ->
+                // SHOWWARNING updates the field in the map, as RulesUtilsProviderImpl does
+                val fieldMap = invocationOnMock.getArgument<MutableMap<String, FieldUiModel>>(1)
+                fieldMap["uid004"] = fieldMap.getValue("uid004").setWarning("Warning")
+                ruleEffectsResultWithOptionsToHide(fieldUid = "uid004")
+            }
+            whenever(dataEntryRepository.options(any(), any(), any(), any())) doReturn
+                Pair(MutableStateFlow(""), emptyFlow())
+
+            val result = repository.composeList()
+
+            assertEquals("Warning", result.find { it.uid == "uid004" }?.warning)
+        }
+
+    private fun ruleEffectsResultWithOptionsToHide(fieldUid: String) =
+        RuleUtilsProviderResult(
+            canComplete = true,
+            messageOnComplete = null,
+            fieldsWithErrors = emptyList(),
+            fieldsWithWarnings = emptyList(),
+            unsupportedRules = emptyList(),
+            fieldsToUpdate = emptyList(),
+            configurationErrors = emptyList(),
+            stagesToHide = emptyList(),
+            optionsToHide = mapOf(fieldUid to listOf("option1")),
+            optionGroupsToHide = emptyMap(),
+            optionGroupsToShow = emptyMap(),
+        )
 
     @Test
     fun `Should remove sections with no fields`() =
@@ -459,6 +560,75 @@ class FormRepositoryImplTest {
         listOf(
             "section1",
         )
+
+    @Test
+    fun `Should keep an emptied mandatory value in memory only for ON_UPDATE_AND_INSERT events`(): Unit =
+        runBlocking {
+            givenAFormWithAMandatoryField()
+            whenever(dataEntryRepository.isEvent()) doReturn true
+            whenever(dataEntryRepository.validationStrategy()) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
+
+            val result = repository.save("mandatoryUid", null, null)
+
+            assertEquals(ValueStoreResult.VALUE_HAS_NOT_CHANGED, result.valueStoreResult)
+            verify(formValueStore, never()).save("mandatoryUid", null, null)
+        }
+
+    @Test
+    fun `Should store values of mandatory fields and emptied optional fields`(): Unit =
+        runBlocking {
+            givenAFormWithAMandatoryField()
+            whenever(dataEntryRepository.isEvent()) doReturn true
+            whenever(dataEntryRepository.validationStrategy()) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
+
+            repository.save("mandatoryUid", "value", null)
+            repository.save("uid001", null, null)
+
+            verify(formValueStore).save("mandatoryUid", "value", null)
+            verify(formValueStore).save("uid001", null, null)
+        }
+
+    @Test
+    fun `Should store an emptied mandatory value when validation strategy is ON_COMPLETE`(): Unit =
+        runBlocking {
+            givenAFormWithAMandatoryField()
+            whenever(dataEntryRepository.isEvent()) doReturn true
+            whenever(dataEntryRepository.validationStrategy()) doReturn ValidationStrategy.ON_COMPLETE
+
+            repository.save("mandatoryUid", null, null)
+
+            verify(formValueStore).save("mandatoryUid", null, null)
+        }
+
+    @Test
+    fun `Should store an emptied mandatory value in enrollment forms`(): Unit =
+        runBlocking {
+            givenAFormWithAMandatoryField()
+            whenever(dataEntryRepository.isEvent()) doReturn false
+
+            repository.save("mandatoryUid", null, null)
+
+            verify(formValueStore).save("mandatoryUid", null, null)
+        }
+
+    private suspend fun givenAFormWithAMandatoryField() {
+        val mandatoryField =
+            FieldUiModelImpl(
+                uid = "mandatoryUid",
+                value = "value",
+                label = "mandatory",
+                valueType = ValueType.TEXT,
+                mandatory = true,
+                programStageSection = "section1",
+                uiEventFactory = null,
+                optionSetConfiguration = null,
+                autocompleteList = null,
+            )
+        whenever(dataEntryRepository.list()) doReturn Flowable.just(provideItemList() + mandatoryField)
+        whenever(formValueStore.save(any(), anyOrNull(), anyOrNull())) doReturn
+            StoreResult("uid", ValueStoreResult.VALUE_CHANGED)
+        repository.fetchFormItems()
+    }
 
     private fun provideItemList() =
         listOf<FieldUiModel>(

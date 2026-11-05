@@ -1,8 +1,8 @@
 package org.dhis2.tracker.relationships.data
 
-import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.date.toUi
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.mobile.commons.extensions.userFriendlyValue
 import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.mobile.tracker.R
 import org.dhis2.mobile.tracker.resources.Res
@@ -120,7 +120,7 @@ abstract class RelationshipsRepository(
                         .trackedEntityAttributeValues()
                         .value(attributeUid, teiUid!!)
                         .blockingGet()
-                        ?.userFriendlyValue(d2)
+                        ?.userFriendlyValue()
                 if (fieldName != null && value != null) {
                     Pair(fieldName, value)
                 } else {
@@ -204,7 +204,7 @@ abstract class RelationshipsRepository(
                     event
                         ?.trackedEntityDataValues()
                         ?.find { it.dataElement() == dataElementUid }
-                        .userFriendlyValue(d2)
+                        .userFriendlyValue()
                 if (formName != null && value != null) {
                     Pair(formName, value)
                 } else {

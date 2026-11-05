@@ -38,19 +38,16 @@ class SplashPresenter internal constructor(
                     ) { userLogged: Boolean, needsOfflinePin: Boolean -> Pair(userLogged, needsOfflinePin) }
                     .delay(2000, TimeUnit.MILLISECONDS, schedulerProvider.io())
                     .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
+                    // Must stay upstream of observeOn(ui): these SDK reads block on the database.
+                    .map { (userLogged, needsOfflinePin) ->
+                        Triple(userLogged, needsOfflinePin, trackingInfoFor(userManager, userLogged))
+                    }.observeOn(schedulerProvider.ui())
                     .subscribe(
-                        { (userLogged, needsOfflinePin) ->
-                            if (userLogged && trackingPermissionGranted()) {
-                                val systemInfo =
-                                    userManager
-                                        .d2
-                                        .systemInfoModule()
-                                        .systemInfo()
-                                        .blockingGet()
+                        { (userLogged, needsOfflinePin, trackingInfo) ->
+                            trackingInfo?.let {
                                 trackUserInfo(
-                                    serverUrl = systemInfo?.contextPath() ?: "",
-                                    serverVersion = systemInfo?.version() ?: "",
+                                    serverUrl = it.serverUrl,
+                                    serverVersion = it.serverVersion,
                                 )
                             }
                             view.goToNextScreen(
@@ -82,13 +79,30 @@ class SplashPresenter internal constructor(
         )
     }
 
-    private fun trackingPermissionGranted(): Boolean =
-        userManager
-            ?.d2
-            ?.dataStoreModule()
-            ?.localDataStore()
-            ?.value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
-            ?.blockingGet()
+    private fun trackingInfoFor(
+        userManager: UserManager,
+        userLogged: Boolean,
+    ): TrackingInfo? =
+        if (userLogged && trackingPermissionGranted(userManager)) {
+            val systemInfo =
+                userManager.d2
+                    .systemInfoModule()
+                    .systemInfo()
+                    .blockingGet()
+            TrackingInfo(
+                serverUrl = systemInfo?.contextPath() ?: "",
+                serverVersion = systemInfo?.version() ?: "",
+            )
+        } else {
+            null
+        }
+
+    private fun trackingPermissionGranted(userManager: UserManager): Boolean =
+        userManager.d2
+            .dataStoreModule()
+            .localDataStore()
+            .value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
+            .blockingGet()
             ?.value() == true.toString()
 
     private fun trackUserInfo(
@@ -105,4 +119,18 @@ class SplashPresenter internal constructor(
             ?.accountManager()
             ?.getAccounts()
             ?.count() ?: 0
+
+    fun clearSingleProgramNavigation() {
+        userManager
+            ?.d2
+            ?.dataStoreModule()
+            ?.localDataStore()
+            ?.value(Preference.IS_SINGLE_NAVIGATION_DONE)
+            ?.blockingDelete()
+    }
+
+    private data class TrackingInfo(
+        val serverUrl: String,
+        val serverVersion: String,
+    )
 }

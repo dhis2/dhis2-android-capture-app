@@ -42,7 +42,7 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
             UiActionHandlerImpl(
                 context = this,
                 dataSetUid = intent.getStringExtra(INTENT_EXTRA_DATA_SET_UID) ?: "",
-                fileHandler = FileHandlerImpl(),
+                fileHandler = FileHandlerImpl(this),
             )
 
         setContent {

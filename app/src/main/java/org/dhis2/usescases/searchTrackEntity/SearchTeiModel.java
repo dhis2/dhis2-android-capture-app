@@ -28,6 +28,11 @@ public class SearchTeiModel{
     @Nullable
     public D2ErrorCode onlineErrorCode;
 
+    @Nullable
+    private String enrollmentLabel;
+    @Nullable
+    private String followUpLabel;
+
     public SearchTeiModel() {
         this.tei = null;
         this.attributeValues = new LinkedHashMap<>();
@@ -138,6 +143,24 @@ public class SearchTeiModel{
 
     public String getSortingValue() {
         return sortingValue;
+    }
+
+    @Nullable
+    public String getEnrollmentLabel() {
+        return enrollmentLabel;
+    }
+
+    public void setEnrollmentLabel(@Nullable String enrollmentLabel) {
+        this.enrollmentLabel = enrollmentLabel;
+    }
+
+    @Nullable
+    public String getFollowUpLabel() {
+        return followUpLabel;
+    }
+
+    public void setFollowUpLabel(@Nullable String followUpLabel) {
+        this.followUpLabel = followUpLabel;
     }
 
 
