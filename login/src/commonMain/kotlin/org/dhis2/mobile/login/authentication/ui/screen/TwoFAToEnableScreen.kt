@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Key
@@ -69,7 +68,7 @@ const val TURN_ON_BUTTON_TEST_TAG = "turn_on_button_test_tag"
 fun TwoFAToEnableScreen(
     enableUiState: TwoFAUiState.Enable,
     onAuthenticatorButtonClicked: () -> Unit,
-    onCopyCodeButtonClicked: (String) -> Unit,
+    onCopyCodeButtonClicked: () -> Unit,
     onEnableButtonClicked: (String) -> Unit,
 ) {
     Column(
@@ -147,7 +146,7 @@ fun TwoFAAuthStepOne(onAuthenticatorButtonClicked: () -> Unit) {
 @Composable
 fun TwoFAAuthStepTwo(
     secretCode: String,
-    onCopyCodeButtonClicked: (String) -> Unit,
+    onCopyCodeButtonClicked: () -> Unit,
 ) {
     Column(
         modifier =
@@ -177,18 +176,17 @@ fun TwoFAAuthStepTwo(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = CenterVertically,
                 ) {
-                    SelectionContainer(modifier = Modifier.weight(1f, fill = false)) {
-                        Text(
-                            text = secretCode,
-                            style =
-                                MaterialTheme.typography.titleMedium.copy(
-                                    color = TextColor.OnPrimaryContainer,
-                                    fontWeight = FontWeight.Bold,
-                                    lineHeight = 24.sp,
-                                    letterSpacing = 0.15.sp,
-                                ),
-                        )
-                    }
+                    Text(
+                        modifier = Modifier.weight(1f, fill = false),
+                        text = secretCode,
+                        style =
+                            MaterialTheme.typography.titleMedium.copy(
+                                color = TextColor.OnPrimaryContainer,
+                                fontWeight = FontWeight.Bold,
+                                lineHeight = 24.sp,
+                                letterSpacing = 0.15.sp,
+                            ),
+                    )
 
                     IconButton(
                         style = IconButtonStyle.STANDARD,
@@ -200,7 +198,7 @@ fun TwoFAAuthStepTwo(
                             )
                         },
                         onClick = {
-                            onCopyCodeButtonClicked(secretCode)
+                            onCopyCodeButtonClicked()
                         },
                     )
                 }
