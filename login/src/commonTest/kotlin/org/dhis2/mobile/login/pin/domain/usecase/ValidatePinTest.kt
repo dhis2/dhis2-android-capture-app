@@ -3,21 +3,23 @@ package org.dhis2.mobile.login.pin.domain.usecase
 import kotlinx.coroutines.test.runTest
 import org.dhis2.mobile.login.pin.data.SessionRepository
 import org.dhis2.mobile.login.pin.domain.model.PinError
+import org.dhis2.mobile.login.pin.domain.model.PinVerification
 import org.dhis2.mobile.login.pin.domain.model.ValidatePinInput
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
-class ValidatePinUseCaseTest {
-    private lateinit var useCase: ValidatePinUseCase
+class ValidatePinTest {
+    private lateinit var useCase: ValidatePin
     private val repository: SessionRepository = mock()
 
     @BeforeTest
     fun setUp() {
-        useCase = ValidatePinUseCase(repository)
+        useCase = ValidatePin(repository)
     }
 
     @Test
@@ -25,8 +27,7 @@ class ValidatePinUseCaseTest {
         runTest {
             // Given
             val pin = "1234"
-            val storedPin = "1234"
-            whenever(repository.getStoredPin()).thenReturn(storedPin)
+            whenever(repository.verifyPin(pin)).thenReturn(PinVerification.Match)
 
             // When
             val result = useCase(ValidatePinInput(pin, 0))
@@ -40,8 +41,7 @@ class ValidatePinUseCaseTest {
         runTest {
             // Given
             val pin = "0000"
-            val storedPin = "1234"
-            whenever(repository.getStoredPin()).thenReturn(storedPin)
+            whenever(repository.verifyPin(pin)).thenReturn(PinVerification.Mismatch)
 
             // When - First attempt
             val result = useCase(ValidatePinInput(pin, 0))
@@ -58,8 +58,7 @@ class ValidatePinUseCaseTest {
         runTest {
             // Given
             val pin = "0000"
-            val storedPin = "1234"
-            whenever(repository.getStoredPin()).thenReturn(storedPin)
+            whenever(repository.verifyPin(pin)).thenReturn(PinVerification.Mismatch)
 
             // When - Third attempt (last one)
             val result = useCase(ValidatePinInput(pin, 2))
@@ -74,7 +73,7 @@ class ValidatePinUseCaseTest {
     fun `invoke returns NoPinStored when no PIN is configured`() =
         runTest {
             // Given
-            whenever(repository.getStoredPin()).thenReturn(null)
+            whenever(repository.verifyPin("1234")).thenReturn(PinVerification.NoPinStored)
 
             // When
             val result = useCase(ValidatePinInput("1234", 0))
@@ -90,8 +89,7 @@ class ValidatePinUseCaseTest {
         runTest {
             // Given
             val pin = "0000"
-            val storedPin = "1234"
-            whenever(repository.getStoredPin()).thenReturn(storedPin)
+            whenever(repository.verifyPin(pin)).thenReturn(PinVerification.Mismatch)
 
             // When - Second attempt
             val result = useCase(ValidatePinInput(pin, 1))
@@ -101,5 +99,19 @@ class ValidatePinUseCaseTest {
             val err = result.exceptionOrNull()
             assertTrue(err is PinError.Failed)
             assertEquals(1, err.attemptsLeft)
+        }
+
+    @Test
+    fun `invoke returns the failure when the PIN cannot be verified`() =
+        runTest {
+            // Given
+            val error = IllegalStateException("Keystore unavailable")
+            whenever(repository.verifyPin("1234")).thenThrow(error)
+
+            // When
+            val result = useCase(ValidatePinInput("1234", 0))
+
+            // Then
+            assertSame(error, result.exceptionOrNull())
         }
 }
