@@ -118,7 +118,7 @@ fun SearchColumnInput(
                     inputTextValue = textValue,
                     onInputChanged = { textValue = it },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                    onSearchClicked = {
+                    onImeActionClick = {
                         onSearch(textValue?.text)
                     },
                 )
