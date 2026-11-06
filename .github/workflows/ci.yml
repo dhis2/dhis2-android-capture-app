@@ -78,7 +78,7 @@ jobs:
 
       - name: Upload JaCoCo Report
         if: ${{ !contains(github.event.pull_request.title, '[skip unitTest]') && !contains(github.event.pull_request.body, '[skip unitTest]') }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: jacoco-report
           path: '**/build/coverage-report/**'
@@ -110,7 +110,7 @@ jobs:
             --no-daemon
 
       - name: Upload APKs
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: test-apks
           path: |
@@ -120,7 +120,7 @@ jobs:
       # The exact classes packaged in the APK, per module, so code-quality reports
       # instrumented coverage against them instead of a recompilation.
       - name: Upload instrumented classes
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: instrumented-classes
           path: app/build/coverage-classes/
@@ -159,7 +159,7 @@ jobs:
 
       - name: Upload BrowserStack coverage
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: browserstack-coverage-portrait
           path: browserstack-coverage/**
@@ -199,7 +199,7 @@ jobs:
 
       - name: Upload BrowserStack coverage
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: browserstack-coverage-landscape
           path: browserstack-coverage/**
