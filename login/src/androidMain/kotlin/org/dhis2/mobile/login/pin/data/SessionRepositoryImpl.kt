@@ -8,17 +8,18 @@ import org.dhis2.mobile.commons.providers.PreferenceProvider
 import org.dhis2.mobile.login.pin.domain.model.PinVerification
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.maintenance.D2Error
-import java.security.MessageDigest
 
 /**
  * Android implementation of SessionRepository using DHIS2 SDK.
  * Handles PIN storage and session management using D2 dataStore and preferences.
+ * The PIN is stored as a hash produced by [PinHasher], never in plaintext.
  */
 class SessionRepositoryImpl(
     private val d2: D2,
     private val preferenceProvider: PreferenceProvider,
     private val domainErrorMapper: DomainErrorMapper,
     private val dispatcher: Dispatcher,
+    private val pinHasher: PinHasher,
 ) : SessionRepository {
     companion object {
         private const val PIN_KEY = "pin"
@@ -27,21 +28,15 @@ class SessionRepositoryImpl(
 
     override suspend fun savePin(pin: String) =
         withContext(dispatcher.io) {
-            try {
-                d2
-                    .dataStoreModule()
-                    .localDataStore()
-                    .value(PIN_KEY)
-                    .blockingSet(pin)
-            } catch (d2Error: D2Error) {
-                throw domainErrorMapper.mapToDomainError(d2Error)
+            domainErrorMapper.withDomainErrors {
+                storePinHash(pin)
             }
         }
 
     override suspend fun verifyPin(pin: String): PinVerification =
         withContext(dispatcher.io) {
             domainErrorMapper.withDomainErrors {
-                val storedPin =
+                val storedValue =
                     d2
                         .dataStoreModule()
                         .localDataStore()
@@ -50,13 +45,27 @@ class SessionRepositoryImpl(
                         ?.value()
                         ?: return@withDomainErrors PinVerification.NoPinStored
 
-                if (MessageDigest.isEqual(pin.encodeToByteArray(), storedPin.encodeToByteArray())) {
-                    PinVerification.Match
-                } else {
-                    PinVerification.Mismatch
+                when (val verification = pinHasher.verify(pin, storedValue)) {
+                    is PinHasher.Verification.Match -> {
+                        if (verification.needsUpgrade) {
+                            storePinHash(pin)
+                        }
+                        PinVerification.Match
+                    }
+
+                    PinHasher.Verification.Mismatch -> PinVerification.Mismatch
+                    PinHasher.Verification.KeyMissing -> PinVerification.NoPinStored
                 }
             }
         }
+
+    private fun storePinHash(pin: String) {
+        d2
+            .dataStoreModule()
+            .localDataStore()
+            .value(PIN_KEY)
+            .blockingSet(pinHasher.hash(pin))
+    }
 
     override suspend fun deletePin() =
         withContext(dispatcher.io) {

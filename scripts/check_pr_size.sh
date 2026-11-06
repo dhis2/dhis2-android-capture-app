@@ -40,25 +40,36 @@ if ! git show-ref --verify --quiet "refs/heads/$TARGET_BRANCH"; then
     fi
 fi
 
-# Find the merge base (common ancestor) between target branch and HEAD
-MERGE_BASE=$(git merge-base "$TARGET_BRANCH" HEAD)
+# Measure the PR head, not HEAD. On a pull_request event HEAD is GitHub's merge
+# ref, and for a PR in a stack that ref is built on top of the PRs below it merged
+# into the stack's trunk, so diffing it against the PR's own base also counts
+# everything the trunk gained since the base branched.
+PR_HEAD="${PR_HEAD_SHA:-HEAD}"
+if ! git cat-file -e "$PR_HEAD^{commit}" 2>/dev/null; then
+    echo "PR head $PR_HEAD not available locally. Fetching..."
+    git fetch --no-tags origin "$PR_HEAD"
+fi
+
+# Find the merge base (common ancestor) between target branch and the PR head
+MERGE_BASE=$(git merge-base "$TARGET_BRANCH" "$PR_HEAD")
 
 if [[ -z "$MERGE_BASE" ]]; then
-    echo "ERROR: Could not find merge base between $TARGET_BRANCH and HEAD"
+    echo "ERROR: Could not find merge base between $TARGET_BRANCH and $PR_HEAD"
     exit 1
 fi
 
+echo "PR head: $PR_HEAD"
 echo "Merge base: $MERGE_BASE"
 
 # Define the files to exclude
 EXCLUDE_PATTERN="**/verification-metadata.xml"
 
-# Print the diff statistics from merge base to HEAD (only your changes)
-echo "Diff statistics from merge base to HEAD (PR changes only), excluding $EXCLUDE_PATTERN:"
-git diff --stat "$MERGE_BASE"..HEAD -- . ":(exclude)$EXCLUDE_PATTERN"
+# Print the diff statistics from merge base to the PR head (only your changes)
+echo "Diff statistics from merge base to PR head (PR changes only), excluding $EXCLUDE_PATTERN:"
+git diff --stat "$MERGE_BASE".."$PR_HEAD" -- . ":(exclude)$EXCLUDE_PATTERN"
 
 # Get the total number of lines changed in the PR from the merge base
-CHANGED_LINES=$(git diff --numstat "$MERGE_BASE"..HEAD -- . ":(exclude)$EXCLUDE_PATTERN" | awk '{s+=$1; s+=$2} END {print s}')
+CHANGED_LINES=$(git diff --numstat "$MERGE_BASE".."$PR_HEAD" -- . ":(exclude)$EXCLUDE_PATTERN" | awk '{s+=$1; s+=$2} END {print s}')
 
 # Handle cases where no changes are detected
 if [[ -z "$CHANGED_LINES" ]]; then

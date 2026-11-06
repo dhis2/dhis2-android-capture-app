@@ -8,7 +8,7 @@ import org.dhis2.mobile.login.pin.domain.model.PinVerification
  */
 interface SessionRepository {
     /**
-     * Saves a PIN to secure storage.
+     * Saves a PIN to secure storage. Only a salted hash of it is stored, never the PIN itself.
      * @param pin The PIN to save.
      */
     suspend fun savePin(pin: String)

@@ -33,6 +33,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
           GIT_BRANCH_DEST: ${{ github.base_ref || '' }}
         run: |
