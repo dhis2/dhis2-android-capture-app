@@ -9,9 +9,10 @@ on:
       - 'release/**'
   schedule:
     - cron: '0 0 * * *'
-  # Merge queue groups on develop. They run lint, unit tests and the build only: the UI
-  # tests and the Sonar analysis already passed on the PR, and are skipped here (a
-  # skipped job satisfies a required check).
+  # Merge queue groups on develop. They run the full test suite, UI tests included,
+  # against the merged result. Only code-quality is skipped (a skipped job satisfies a
+  # required check): the quality gate already passed on the PR, and the push build on
+  # develop analyses the merged code.
   merge_group:
     types: [ checks_requested ]
 
@@ -123,7 +124,6 @@ jobs:
     permissions:
       contents: read
     needs: build-test-apks
-    if: ${{ github.event_name != 'merge_group' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
@@ -155,7 +155,6 @@ jobs:
     permissions:
       contents: read
     needs: build-test-apks
-    if: ${{ github.event_name != 'merge_group' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
