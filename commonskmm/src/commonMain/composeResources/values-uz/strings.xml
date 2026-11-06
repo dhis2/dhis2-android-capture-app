@@ -88,4 +88,7 @@
     <string name="marked_follow_up">Кузатув учун белгиланган</string>
     <string name="remove_follow_up">Олиб ташлаш</string>
     <string name="program_stage">Дастур босқичи</string>
-    </resources>
+    <string name="http_error_conflict">Номутаносиблик</string>
+    <string name="http_error_internal_server_error">Сервердаги ички хатолик</string>
+    <string name="http_error_unknown">Аниқланмаган хатолик</string>
+</resources>

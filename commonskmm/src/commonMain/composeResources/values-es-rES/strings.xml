@@ -156,4 +156,7 @@
     <string name="sync_error">Error en sincronizacion</string>
     <string name="remove_follow_up">Eliminar</string>
     <string name="stage">Etapa</string>
-</resources>
+
+    <string name="http_error_conflict">Conflicto</string>
+    <string name="http_error_internal_server_error">Error interno</string>
+    </resources>

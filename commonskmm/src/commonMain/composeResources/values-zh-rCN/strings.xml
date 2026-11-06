@@ -194,4 +194,7 @@
     <string name="remove_follow_up">移除</string>
     <string name="program_stage">项目阶段</string>
     <string name="stage">阶段</string>
-</resources>
+
+    <string name="http_error_conflict">冲突</string>
+    <string name="http_error_internal_server_error">服务器内部错误</string>
+    </resources>

@@ -192,4 +192,6 @@
     <string name="marked_follow_up">Отмечено для последующего наблюдения</string>
     <string name="remove_follow_up">Убрать</string>
     <string name="program_stage">Этап программы</string>
+    <string name="http_error_conflict">Конфликт</string>
+    <string name="http_error_internal_server_error">Внутренняя ошибка сервера</string>
     </resources>

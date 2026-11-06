@@ -75,4 +75,7 @@
     <string name="remove_follow_up">Hapus</string>
     <string name="program_stage">Tahapan program</string>
     <string name="stage">Tahapan</string>
-</resources>
+
+    <string name="http_error_conflict">Konflik</string>
+    <string name="http_error_internal_server_error">Kesalahan internal server</string>
+    </resources>

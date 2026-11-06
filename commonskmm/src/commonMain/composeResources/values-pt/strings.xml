@@ -186,4 +186,8 @@
     <string name="remove_follow_up">Remover</string>
     <string name="program_stage">Estagio de programa</string>
     <string name="stage">estágio</string>
+
+    <string name="http_error_conflict">Conflito</string>
+    <string name="http_error_internal_server_error">Erro do Servidor Interno</string>
+    <string name="http_error_unknown">Erro desconhecido</string>
 </resources>

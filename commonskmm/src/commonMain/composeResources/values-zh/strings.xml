@@ -238,4 +238,19 @@
     <string name="program_stage">项目阶段</string>
     <string name="group_by_stage_label">按%s分组</string>
     <string name="stage">阶段</string>
+
+    <string name="http_error_bad_request">请求错误</string>
+    <string name="http_error_unauthorized">未经授权</string>
+    <string name="http_error_forbidden">禁止</string>
+    <string name="http_error_not_found">未找到</string>
+    <string name="http_error_method_not_allowed">方法不允许</string>
+    <string name="http_error_request_timeout">请求超时</string>
+    <string name="http_error_conflict">冲突</string>
+    <string name="http_error_unprocessable_entity">无法处理的实体</string>
+    <string name="http_error_too_many_requests">请求过多</string>
+    <string name="http_error_internal_server_error">服务器内部错误</string>
+    <string name="http_error_bad_gateway">网关错误</string>
+    <string name="http_error_service_unavailable">服务不可用</string>
+    <string name="http_error_gateway_timeout">网关超时</string>
+    <string name="http_error_unknown">未知错误</string>
 </resources>

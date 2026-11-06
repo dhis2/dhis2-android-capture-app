@@ -201,4 +201,9 @@
     <string name="remove_follow_up">Odstranit</string>
     <string name="program_stage">Programová fáze</string>
     <string name="stage">fáze</string>
+
+    <string name="http_error_not_found">Nenalezeno</string>
+    <string name="http_error_conflict">Konflikt</string>
+    <string name="http_error_internal_server_error">Interní chyba serveru</string>
+    <string name="http_error_unknown">Neznámá chyba</string>
 </resources>

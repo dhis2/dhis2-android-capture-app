@@ -197,4 +197,6 @@
     <string name="marked_follow_up">Đã đánh dấu để theo dõi</string>
     <string name="remove_follow_up">Bỏ ra</string>
     <string name="program_stage">Giai Đoạn Chương Trình</string>
+    <string name="http_error_conflict">Xung đột</string>
+    <string name="http_error_internal_server_error">Lỗi máy chủ nội bộ</string>
     </resources>
