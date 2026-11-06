@@ -13,4 +13,8 @@ jobs:
   relay:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Review on PR #${{ github.event.pull_request.number }} submitted."
+      - name: Relay
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          echo "Review on PR #$PR_NUMBER submitted."
