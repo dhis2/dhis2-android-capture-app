@@ -1,0 +1,47 @@
+name: Enqueue ready PR
+
+# Dispatched by the Jira Automation rule when an ANDROAPP ticket moves to
+# "Ready to Merge". Re-runs the ticket's PR `jira-ready` check and enables auto-merge,
+# so the PR joins the merge queue once approved and green.
+on:
+  workflow_dispatch:
+    inputs:
+      jira_key:
+        description: 'Jira ticket that reached Ready to Merge (e.g. ANDROAPP-1234)'
+        required: true
+        type: string
+
+permissions: { }
+
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.jira_key }}
+  cancel-in-progress: false
+
+jobs:
+  enqueue:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      # A GitHub App token rather than GITHUB_TOKEN: events caused by GITHUB_TOKEN do not
+      # start other workflows, so a PR it queued would get no CI on its merge group.
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.MERGE_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.MERGE_BOT_PRIVATE_KEY }}
+          permission-actions: write
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Enqueue PRs
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          JIRA_KEY: ${{ inputs.jira_key }}
+          BASE_BRANCH: develop
+        run: |
+          chmod +x ./scripts/check_jira_ready.sh ./scripts/enqueue_ready_pr.sh
+          ./scripts/enqueue_ready_pr.sh
