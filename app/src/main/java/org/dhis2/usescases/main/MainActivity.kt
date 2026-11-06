@@ -12,7 +12,6 @@ import android.provider.Settings
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
 import android.view.View
-import android.webkit.MimeTypeMap
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.compose.setContent
@@ -21,6 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.NotificationCompat
+import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -52,12 +52,14 @@ import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import java.io.File
 
 private const val FRAGMENT = "Fragment"
 private const val INIT_DATA_SYNC = "INIT_DATA_SYNC"
 private const val WIPE_NOTIFICATION = "wipe_notification"
 private const val RESTART = "Restart"
 const val AVOID_SYNC = "AvoidSync"
+private const val APK_MIME_TYPE = "application/vnd.android.package-archive"
 
 class MainActivity : ActivityGlobalAbstract() {
     private lateinit var binding: ActivityMainBinding
@@ -81,19 +83,7 @@ class MainActivity : ActivityGlobalAbstract() {
     private val filtersAdapter: FiltersAdapter = FiltersAdapter()
 
     private var backDropActive = false
-    private val requestWritePermissions =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R || granted) {
-                onDownloadNewVersion()
-            } else {
-                Toast
-                    .makeText(
-                        context,
-                        getString(R.string.storage_denied),
-                        Toast.LENGTH_LONG,
-                    ).show()
-            }
-        }
+    private var pendingUpdateApk: File? = null
 
     private val navigationLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
@@ -159,6 +149,13 @@ class MainActivity : ActivityGlobalAbstract() {
                             is HomeEffect.PeriodFilterRequest -> showPeriodRequest(effect.periodRequest)
                             HomeEffect.ShowDeleteNotification -> showProgressDeleteNotification()
                             HomeEffect.ShowGranularSync -> showGranularSync()
+                            HomeEffect.NewVersionDownloadFailed ->
+                                Toast
+                                    .makeText(
+                                        context,
+                                        getString(R.string.new_version_download_failed),
+                                        Toast.LENGTH_LONG,
+                                    ).show()
                             is HomeEffect.SingleProgramNavigation ->
                                 navigationLauncher.navigateTo(
                                     this@MainActivity,
@@ -456,13 +453,7 @@ class MainActivity : ActivityGlobalAbstract() {
         NewVersionDialog(
             newVersion = version,
             onRemindMeLater = mainViewModel::remindLaterAlertNewVersion,
-            onDownloadVersion = {
-                if (hasPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE))) {
-                    onDownloadNewVersion()
-                } else {
-                    requestWritePermissions.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                }
-            },
+            onDownloadVersion = ::onDownloadNewVersion,
         ).show(supportFragmentManager)
     }
 
@@ -473,26 +464,21 @@ class MainActivity : ActivityGlobalAbstract() {
         )
     }
 
-    private fun installAPK(apkUri: Uri) {
-        when {
-            hasNoPermissionToInstall() ->
-                manageUnknownSources.launch(
-                    Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
-                        .setData(String.format("package:%s", packageName).toUri()),
-                )
-
-            !hasPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)) && Build.VERSION.SDK_INT < Build.VERSION_CODES.R ->
-                requestReadStoragePermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-
-            else ->
-                Intent(Intent.ACTION_VIEW).apply {
-                    val mime = MimeTypeMap.getSingleton()
-                    val ext = apkUri.path?.substringAfterLast(("."))
-                    val type: String? = mime.getMimeTypeFromExtension(ext)
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    setDataAndType(apkUri, type)
-                    startActivity(this)
-                }
+    private fun installAPK(apkFile: File) {
+        if (hasNoPermissionToInstall()) {
+            pendingUpdateApk = apkFile
+            manageUnknownSources.launch(
+                Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
+                    .setData(String.format("package:%s", packageName).toUri()),
+            )
+        } else {
+            pendingUpdateApk = null
+            val apkUri = FileProvider.getUriForFile(this, "$packageName.provider", apkFile)
+            Intent(Intent.ACTION_VIEW).apply {
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                setDataAndType(apkUri, APK_MIME_TYPE)
+                startActivity(this)
+            }
         }
     }
 
@@ -510,23 +496,7 @@ class MainActivity : ActivityGlobalAbstract() {
                         Toast.LENGTH_LONG,
                     ).show()
             } else {
-                onDownloadNewVersion()
-            }
-        }
-
-    private val requestReadStoragePermission =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                onDownloadNewVersion()
-            } else if (granted) {
-                onDownloadNewVersion()
-            } else {
-                Toast
-                    .makeText(
-                        context,
-                        getString(R.string.storage_denied),
-                        Toast.LENGTH_LONG,
-                    ).show()
+                pendingUpdateApk?.let(::installAPK) ?: onDownloadNewVersion()
             }
         }
 

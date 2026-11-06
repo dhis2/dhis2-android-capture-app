@@ -58,6 +58,7 @@ import org.dhis2.usescases.main.ui.model.defaultHomeScreenState
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import timber.log.Timber
+import java.io.File
 
 class MainViewModel(
     private val preferences: PreferenceProvider,
@@ -384,7 +385,7 @@ class MainViewModel(
 
     context(context: Context)
     fun downloadVersion(
-        onDownloadCompleted: (Uri) -> Unit,
+        onDownloadCompleted: (File) -> Unit,
         onLaunchUrl: (Uri) -> Unit,
     ) {
         launchUseCase(dispatcher.io()) {
@@ -396,7 +397,7 @@ class MainViewModel(
             downloadNewVersion(context).fold(
                 onSuccess = { result ->
                     when (result) {
-                        is DownloadMethod.File -> onDownloadCompleted(result.path.toUri())
+                        is DownloadMethod.File -> onDownloadCompleted(File(result.path))
                         is DownloadMethod.Url -> onLaunchUrl(result.url.toUri())
                     }
                     _homeScreenState.update {
@@ -405,7 +406,15 @@ class MainViewModel(
                         )
                     }
                 },
-                onFailure = Timber::e,
+                onFailure = { error ->
+                    Timber.e(error)
+                    _homeScreenState.update {
+                        it.copy(
+                            versionToUpdate = VersionToUpdateState.None,
+                        )
+                    }
+                    _homeEffects.send(HomeEffect.NewVersionDownloadFailed)
+                },
             )
         }
     }

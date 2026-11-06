@@ -251,6 +251,23 @@ class MainViewModelTest {
         }
 
     @Test
+    fun `Should reset version state and notify when the new version download fails`() =
+        runTest {
+            val context: Context = mock()
+            whenever(downloadNewVersion(context)) doReturn Result.failure(Exception("download failed"))
+
+            viewModel.homeEffects.test {
+                with(context) {
+                    viewModel.downloadVersion(
+                        onDownloadCompleted = {},
+                        onLaunchUrl = {},
+                    )
+                }
+                assertTrue(awaitItem() == HomeEffect.NewVersionDownloadFailed)
+            }
+        }
+
+    @Test
     fun `Should open drawer when menu is clicked`() =
         runTest {
             viewModel.homeEffects.test {

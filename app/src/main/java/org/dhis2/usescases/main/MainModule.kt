@@ -9,6 +9,9 @@ import org.dhis2.commons.resources.LocaleSelector
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.data.service.AndroidApkDownloader
+import org.dhis2.data.service.ApkDownloader
+import org.dhis2.data.service.ApkUpdateRepository
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkManagerControllerImpl
@@ -65,6 +68,8 @@ val mainModule =
             FilterManager.getInstance()
         }
         singleOf(::VersionRepository)
+        factory<ApkDownloader> { AndroidApkDownloader(androidContext()) }
+        factoryOf(::ApkUpdateRepository)
         factoryOf(::ResourceManager)
         factory { params ->
             MainNavigator(
