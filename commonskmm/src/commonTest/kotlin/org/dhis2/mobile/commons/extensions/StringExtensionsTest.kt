@@ -29,7 +29,8 @@ class StringExtensionsTest : KoinTest {
     private val expectedPath = "path"
     private val expectedPercentage = "10%"
     private val expectedValue = "Mary"
-    private val expectedBooleanValue = "yes"
+    private val expectedBooleanValue = "Yes"
+    private val expectedTrueOnlyValue = "Yes"
 
     @Before
     fun setUp() =
@@ -53,12 +54,16 @@ class StringExtensionsTest : KoinTest {
                     defaultValueInfo,
                     percentageValueInfo,
                     booleanValueInfo,
+                    trueOnlyValueInfo,
+                    trueOnlyValueInfo,
                 )
 
             whenever(valueParser.valueFromOptionSetAsOptionName(optionSetUid, "optionCode")) doReturn expectedOptionName
             whenever(valueParser.valueFromOrgUnitAsOrgUnitName("orgUnitUid")) doReturn expectedOrgUnitName
             whenever(valueParser.valueToFileName("fileUid")) doReturn expectedPath
-            whenever(valueParser.valueFromBooleanType("true")) doReturn expectedBooleanValue
+            whenever(valueParser.valueFromBooleanType("true")) doReturn "yes"
+            whenever(valueParser.valueFromTrueOnlyType("true")) doReturn "yes"
+            whenever(valueParser.valueFromTrueOnlyType("false")) doReturn ""
         }
 
     @After
@@ -95,7 +100,15 @@ class StringExtensionsTest : KoinTest {
             )
             assertEquals(
                 expected = expectedBooleanValue,
-                actual = "yes".userFriendlyValue(dataElementUid),
+                actual = "true".userFriendlyValue(dataElementUid),
+            )
+            assertEquals(
+                expected = expectedTrueOnlyValue,
+                actual = "true".userFriendlyValue(dataElementUid),
+            )
+            assertEquals(
+                expected = "",
+                actual = "false".userFriendlyValue(dataElementUid),
             )
         }
 
@@ -211,6 +224,24 @@ class StringExtensionsTest : KoinTest {
             valueIsAValidOrgUnit = false,
             valueIsAValidFile = false,
             isCoordinate = false,
+            isBooleanType = true,
+        )
+
+    private val trueOnlyValueInfo =
+        ValueInfo(
+            isDateTime = false,
+            isDate = false,
+            isTime = false,
+            isPercentage = false,
+            isFile = false,
+            isOrganisationUnit = false,
+            isMultiText = false,
+            optionSetUid = null,
+            valueIsValidOption = false,
+            valueIsAValidOrgUnit = false,
+            valueIsAValidFile = false,
+            isCoordinate = false,
             isBooleanType = false,
+            isTrueOnlyType = true,
         )
 }

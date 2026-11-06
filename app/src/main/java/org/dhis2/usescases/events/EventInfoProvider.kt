@@ -8,8 +8,8 @@ import androidx.compose.material.icons.outlined.SyncDisabled
 import androidx.compose.material.icons.outlined.SyncProblem
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.Icon
+import kotlinx.coroutines.runBlocking
 import org.dhis2.R
-import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.bindings.fromCache
 import org.dhis2.commons.bindings.tei
@@ -19,6 +19,7 @@ import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.maps.model.RelatedInfo
+import org.dhis2.mobile.commons.extensions.userFriendlyValue
 import org.dhis2.mobile.commons.model.AvatarProviderConfiguration
 import org.dhis2.tracker.data.ProfilePictureProvider
 import org.hisp.dhis.android.core.D2
@@ -195,29 +196,31 @@ class EventInfoProvider(
                 }
 
         return if (displayInListDataElements.isNotEmpty()) {
-            displayInListDataElements.mapNotNull {
-                val valueRepo =
-                    d2
-                        .trackedEntityModule()
-                        .trackedEntityDataValues()
-                        .value(eventUid, it)
-                val de =
-                    d2
-                        .dataElementModule()
-                        .dataElements()
-                        .uid(it)
-                        .blockingGet()
-                if (isAcceptedValueType(de?.valueType())) {
-                    Pair(
-                        de?.displayFormName() ?: de?.displayName() ?: "-",
-                        if (valueRepo.blockingExists()) {
-                            valueRepo.blockingGet().userFriendlyValue(d2) ?: "-"
-                        } else {
-                            "-"
-                        },
-                    )
-                } else {
-                    null
+            runBlocking {
+                displayInListDataElements.mapNotNull {
+                    val valueRepo =
+                        d2
+                            .trackedEntityModule()
+                            .trackedEntityDataValues()
+                            .value(eventUid, it)
+                    val de =
+                        d2
+                            .dataElementModule()
+                            .dataElements()
+                            .uid(it)
+                            .blockingGet()
+                    if (isAcceptedValueType(de?.valueType())) {
+                        Pair(
+                            de?.displayFormName() ?: de?.displayName() ?: "-",
+                            if (valueRepo.blockingExists()) {
+                                valueRepo.blockingGet().userFriendlyValue() ?: "-"
+                            } else {
+                                "-"
+                            },
+                        )
+                    } else {
+                        null
+                    }
                 }
             }
         } else {

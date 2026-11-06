@@ -25,9 +25,11 @@ class EventCaptureFormPresenterTest {
     private val d2: D2 = mock()
     private val eventUid: String = "random_ID"
     private val nonEditableMessage = "Blocked by completion message"
+    private val eventNotFoundMessage = "Event not found message"
     private val resourceManager: ResourceManager =
         mock {
             on { getString(R.string.blocked_by_completion) } doReturn nonEditableMessage
+            on { getString(R.string.edition_event_not_found) } doReturn eventNotFoundMessage
         }
     private val customLabelProvider: CustomLabelProvider = mock()
     private val reOpenUseCase: ReOpenEventUseCase = mock()
@@ -84,5 +86,22 @@ class EventCaptureFormPresenterTest {
 
         verify(view).hideSaveButton()
         verify(view).showNonEditableMessage(nonEditableMessage, false)
+    }
+
+    @Test
+    fun `Should show event not found message when event does not exist`() {
+        val editableStatus =
+            EventEditableStatus.NonEditable(EventNonEditableReason.EVENT_NOT_FOUND)
+        whenever(d2.eventModule()) doReturn mock()
+        whenever(d2.eventModule().eventService()) doReturn mock()
+        whenever(d2.eventModule().eventService().rxGetEditableStatus(eventUid)) doReturn
+            Single.just(
+                editableStatus,
+            )
+
+        presenter.showOrHideSaveButton()
+
+        verify(view).hideSaveButton()
+        verify(view).showNonEditableMessage(eventNotFoundMessage, false)
     }
 }

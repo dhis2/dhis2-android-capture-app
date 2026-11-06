@@ -85,6 +85,9 @@ class EventCaptureFormPresenter(
                                 keepConfiguredCase = true,
                             ),
                         ) to false
+
+                    EventNonEditableReason.EVENT_NOT_FOUND ->
+                        resourceManager.getString(R.string.edition_event_not_found) to false
                 }
             view.showNonEditableMessage(reason, canBeReOpened)
         }

@@ -11,6 +11,7 @@ import org.dhis2.mobile.commons.data.ValueParser
 import org.dhis2.mobile.commons.dates.dateFormat
 import org.dhis2.mobile.commons.dates.dateTimeFormat
 import org.dhis2.mobile.commons.dates.timeFormat
+import org.dhis2.mobile.commons.model.internal.ValueInfo
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.TimeUnitValues
@@ -24,10 +25,18 @@ expect fun String.toImageBitmap(): ImageBitmap?
 suspend fun String.userFriendlyValue(
     uid: String,
     addPercentageSymbol: Boolean = true,
+): String = toUserFriendlyValue(addPercentageSymbol) { value -> getValueInfo(uid, value) }
+
+/**
+ * Formats this value for display, using [getValueInfo] to describe the field it belongs to.
+ */
+internal suspend fun String.toUserFriendlyValue(
+    addPercentageSymbol: Boolean,
+    getValueInfo: suspend ValueParser.(value: String) -> ValueInfo,
 ): String {
     return try {
         val valueParser = getKoin().get<ValueParser>()
-        val valueInfo = valueParser.getValueInfo(uid, this)
+        val valueInfo = valueParser.getValueInfo(this)
 
         return when {
             valueInfo.isMultiText ->
@@ -62,6 +71,12 @@ suspend fun String.userFriendlyValue(
                     .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             }
 
+            valueInfo.isTrueOnlyType -> {
+                valueParser
+                    .valueFromTrueOnlyType(this)
+                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            }
+
             valueInfo.isCoordinate ->
                 valueParser.valueFromCoordinateAsLatLong(this)
 
@@ -71,6 +86,12 @@ suspend fun String.userFriendlyValue(
         this
     }
 }
+
+/**
+ * Returns the local path of the file resource whose uid is this string,
+ * or null if it is not stored locally.
+ */
+suspend fun String.fileResourcePath(): String? = getKoin().get<ValueParser>().valueToFilePath(this)
 
 private fun String.toDateTimeFormat(crashReportController: CrashReportController = getKoin().get<CrashReportController>()) =
     try {

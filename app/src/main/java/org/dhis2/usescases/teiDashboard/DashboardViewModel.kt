@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -69,6 +70,7 @@ class DashboardViewModel(
     private val pageConfigurator: NavigationPageConfigurator,
     private val resourcesManager: ResourceManager,
     private val customLabelProvider: CustomLabelProvider,
+    private val isPortrait: () -> Boolean = ::isPortrait,
 ) : ViewModel() {
     private val eventUid = MutableLiveData<String>()
 
@@ -99,6 +101,15 @@ class DashboardViewModel(
             }.stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(5000L),
+                null,
+            )
+
+    val teTypeName: StateFlow<String?> =
+        flow { emit(repository.getTETypeName()) }
+            .flowOn(dispatcher.io())
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
                 null,
             )
 
@@ -293,6 +304,7 @@ class DashboardViewModel(
                 } else {
                     _noEnrollmentSelected.postValue(true)
                 }
+                loadNavigationBarItems()
             } catch (e: Exception) {
                 Timber.e(e)
             } finally {
@@ -344,22 +356,23 @@ class DashboardViewModel(
                     )
                 }
 
-                enrollmentItems.add(
-                    NavigationBarItem(
-                        id = TEIDashboardItems.NOTES,
-                        icon = Icons.AutoMirrored.Outlined.StickyNote2,
-                        selectedIcon = Icons.AutoMirrored.Filled.StickyNote2,
-                        label = resourcesManager.getString(R.string.navigation_notes),
-                    ),
-                )
+                if (pageConfigurator.displayNotes()) {
+                    enrollmentItems.add(
+                        NavigationBarItem(
+                            id = TEIDashboardItems.NOTES,
+                            icon = Icons.AutoMirrored.Outlined.StickyNote2,
+                            selectedIcon = Icons.AutoMirrored.Filled.StickyNote2,
+                            label = resourcesManager.getString(R.string.navigation_notes),
+                        ),
+                    )
+                }
 
                 _navigationBarUIState.update {
                     it.copy(items = enrollmentItems)
                 }
 
                 if (enrollmentItems.none { it.id == _navigationBarUIState.value.selectedItem }) {
-                    val selectedItem = enrollmentItems.first()
-                    onNavigationItemSelected(selectedItem.id)
+                    enrollmentItems.firstOrNull()?.let { onNavigationItemSelected(it.id) }
                 }
             } finally {
                 CoroutineTracker.unconditionalDecrement()
@@ -503,7 +516,7 @@ class DashboardViewModel(
         )
     }
 
-    private fun MutableList<MenuItemData<EnrollmentMenuItem>>.addDeleteTeiMenuItem() {
+    private suspend fun MutableList<MenuItemData<EnrollmentMenuItem>>.addDeleteTeiMenuItem() {
         if (repository.checkIfDeleteTeiIsPossible()) {
             add(
                 MenuItemData(

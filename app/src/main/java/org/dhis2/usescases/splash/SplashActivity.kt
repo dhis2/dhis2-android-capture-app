@@ -157,6 +157,7 @@ class SplashActivity :
                 )
             }
             isUserLogged && !initialSyncDone && !needsOfflineCredentials -> {
+                presenter.clearSingleProgramNavigation()
                 startActivity(
                     SyncActivity::class.java,
                     null,
@@ -172,6 +173,7 @@ class SplashActivity :
     }
 
     private fun goToMain(launchDataSync: Boolean) {
+        presenter.clearSingleProgramNavigation()
         startActivity(
             MainActivity::class.java,
             MainActivity.bundle(launchDataSync = launchDataSync),

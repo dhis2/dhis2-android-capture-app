@@ -122,12 +122,13 @@ class SyncManagerModule(
     @Provides
     @PerFragment
     fun provideExportDatabase(
+        context: Context,
         settingsRepository: SettingsRepository,
         settingsMessages: SettingsMessages,
         resourceManager: ResourceManager,
     ) = ExportDatabase(
         settingsRepository = settingsRepository,
-        fileHandler = FileHandlerImpl(),
+        fileHandler = FileHandlerImpl(context),
         settingsMessages = settingsMessages,
         resourceManager = resourceManager,
     )

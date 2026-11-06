@@ -98,24 +98,23 @@
 -dontwarn org.openjsse.net.ssl.OpenJSSE
 -dontwarn org.slf4j.impl.StaticLoggerBinder
 
-#AndroidX
--dontwarn com.google.android.material.**
--keep class com.google.android.material.** { *; }
-
--dontwarn androidx.**
--keep class androidx.** { *; }
--keep interface androidx.* { *; }
-
 #Data binding
 -keep class * extends androidx.databinding.DataBinderMapper { *; }
--dontwarn androidx.databinding.**
--keep class androidx.databinding.** { *; }
 -keep class * extends androidx.databinding.DataBinderMapper
 
 ##---------------Begin: proguard configuration for Gson  ----------
 # Gson uses generic type information stored in a class file when working with fields. Proguard
 # removes such information by default, so configure it to keep all of it.
 -keepattributes Signature
+
+# BaseMapManager builds the MapLibre style JSON at runtime via Gson.toJson() on these
+# plain data classes (no @SerializedName), so their field names ARE the style JSON keys
+# (version, sources, layers, glyphs...). Full -keep (not -keepclassmembers): these classes
+# are only ever touched via Gson reflection, so R8's class-level optimizations (merging,
+# class inlining) need to be off the table too, not just member renaming/removal.
+-keep class org.dhis2.maps.layer.basemaps.BaseMapStyle { *; }
+-keep class org.dhis2.maps.layer.basemaps.RasterTiles { *; }
+-keep class org.dhis2.maps.layer.basemaps.StyleLayers { *; }
 
 # For using GSON @Expose annotation
 -keepattributes *Annotation*
@@ -240,14 +239,14 @@
 
 #-keep class org.dhis2.usescases.login.auth.AuthServiceModel
 -dontwarn org.hisp.dhis.**
--keep class org.hisp.dhis.** {*;}
 -dontwarn org.cache2k.**
--keep class org.cache2k.** {*;}
+# cache2k resolves several internal providers (e.g. CacheConfigurationProvider) via its own
+# SingleProviderResolver, which instantiates a class looked up by name from a resource file --
+# invisible to R8's reachability analysis. -keepnames (allowshrinking) let R8 strip the
+# provider impl entirely, causing a runtime LinkageError. Full -keep: cache2k ships no
+# consumer rules of its own and is a negligible share of the app's kept surface anyway.
+-keep class org.cache2k.** { *; }
 
 # Please add these rules to your existing keep rules in order to suppress warnings.
 # This is generated automatically by the Android Gradle plugin.
 -dontwarn javax.management.InstanceNotFoundException
-
--keep class org.dhis2.maps.** { *; }
--keep interface org.dhis2.maps.** { *; }
--keep enum org.dhis2.maps.** { *; }

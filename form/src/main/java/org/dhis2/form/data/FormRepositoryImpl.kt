@@ -2,11 +2,14 @@ package org.dhis2.form.data
 
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.commons.dialogs.bottomsheet.IssueType
 import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.form.R
 import org.dhis2.form.data.EnrollmentRepository.Companion.ENROLLMENT_DATE_UID
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
@@ -14,8 +17,9 @@ import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.StoreResult
-import org.dhis2.form.ui.provider.DisplayNameProvider
+import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.provider.LegendValueProvider
+import org.dhis2.mobile.commons.extensions.userFriendlyValue
 import org.dhis2.mobile.commons.model.CustomIntentRequestArgumentModel
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.dhis2.mobileProgramRules.RuleEngineHelper
@@ -28,17 +32,18 @@ import org.hisp.dhis.rules.models.RuleEffect
 class FormRepositoryImpl(
     private val formValueStore: FormValueStore,
     private val fieldErrorMessageProvider: FieldErrorMessageProvider,
-    private val displayNameProvider: DisplayNameProvider,
     private val dataEntryRepository: DataEntryRepository,
     private val ruleEngineRepository: RuleEngineHelper?,
     private val rulesUtilsProvider: RulesUtilsProvider,
     private val legendValueProvider: LegendValueProvider,
     private val useCompose: Boolean,
     private val preferenceProvider: PreferenceProvider,
+    private val resourceManager: ResourceManager,
 ) : FormRepository {
     private var completionPercentage: Float = 0f
     private val itemsWithError: MutableList<RowAction> = mutableListOf()
     private val mandatoryItemsWithoutValue: MutableMap<String, String> = mutableMapOf()
+    private var mandatoryFieldUids: Set<String> = emptySet()
     private var openedSectionUid: String? = null
     private var itemList: List<FieldUiModel> = emptyList()
     private var focusedItemId: String? = null
@@ -502,8 +507,7 @@ class FormRepositoryImpl(
 
         fieldsWithOptionEffects.forEach { field ->
             field.optionSet?.let { optionSetUid ->
-                fetchOptions(field.uid, optionSetUid)
-                fieldMap[field.uid] = itemList.first { it.uid == field.uid }
+                fieldMap.refreshOptions(field.uid, optionSetUid)
             }
         }
 
@@ -514,14 +518,29 @@ class FormRepositoryImpl(
 
             item?.let { field ->
                 field.optionSet?.let { optionSetUid ->
-                    fetchOptions(field.uid, optionSetUid)
-                    fieldMap[field.uid] = itemList.first { it.uid == field.uid }
+                    fieldMap.refreshOptions(field.uid, optionSetUid)
                 }
                 fieldsWithOptionEffects.add(field)
             }
         }
 
         return ArrayList(fieldMap.values)
+    }
+
+    /**
+     * Reloads the options of [fieldUid] and applies them to the field already in the map, so the
+     * other rule effects on it (warnings, errors, mandatory) are kept. A field hidden by a rule is
+     * no longer in the map and must not be added back.
+     */
+    private fun MutableMap<String, FieldUiModel>.refreshOptions(
+        fieldUid: String,
+        optionSetUid: String,
+    ) {
+        fetchOptions(fieldUid, optionSetUid)
+        val ruleField = this[fieldUid] ?: return
+        itemList.first { it.uid == fieldUid }.optionSetConfiguration?.let { optionSetConfiguration ->
+            this[fieldUid] = ruleField.setOptionSetConfiguration(optionSetConfiguration)
+        }
     }
 
     private fun List<FieldUiModel>.setFocusedItem(): List<FieldUiModel> =
@@ -679,12 +698,13 @@ class FormRepositoryImpl(
                             item
                                 .setValue(value)
                                 .setDisplayName(
-                                    displayNameProvider.provideDisplayName(
-                                        valueType,
-                                        value,
-                                        item.optionSet,
-                                        item.periodSelector?.type,
-                                    ),
+                                    runBlocking {
+                                        value?.userFriendlyValue(
+                                            item.valueType,
+                                            item.optionSet,
+                                            item.valueType != ValueType.PERCENTAGE,
+                                        )
+                                    },
                                 ).setLegend(
                                     legendValueProvider.provideLegendValue(
                                         item.uid,
@@ -758,6 +778,12 @@ class FormRepositoryImpl(
 
     private suspend fun List<FieldUiModel>.mergeListWithErrorFields(fieldsWithError: List<RowAction>): List<FieldUiModel> {
         mandatoryItemsWithoutValue.clear()
+        mandatoryFieldUids =
+            filter {
+                it.mandatory &&
+                    it.programStageSection != EventRepository.EVENT_DETAILS_SECTION_UID &&
+                    it.programStageSection != EventRepository.EVENT_CATEGORY_COMBO_SECTION_UID
+            }.map { it.uid }.toSet()
         val mergedList =
             this.map { item ->
                 if (hasMandatoryWarnings(item)) {
@@ -772,11 +798,10 @@ class FormRepositoryImpl(
                         .setValue(action.value)
                         .setError(error)
                         .setDisplayName(
-                            displayNameProvider.provideDisplayName(
-                                action.valueType,
-                                action.value,
+                            action.value?.userFriendlyValue(
+                                item.valueType,
                                 item.optionSet,
-                                item.periodSelector?.type,
+                                item.valueType != ValueType.PERCENTAGE,
                             ),
                         )
                 } ?: item
@@ -796,11 +821,27 @@ class FormRepositoryImpl(
         }
     }
 
+    /**
+     * An emptied mandatory field is only kept in memory when the stage validation strategy is
+     * ON_UPDATE_AND_INSERT, so the stored event is never left without its mandatory values.
+     */
+    private fun keepsEmptyMandatoryValueInMemory(
+        uid: String,
+        value: String?,
+    ): Boolean =
+        value.isNullOrEmpty() &&
+            uid in mandatoryFieldUids &&
+            dataEntryRepository.isEvent() &&
+            dataEntryRepository.validationStrategy() == ValidationStrategy.ON_UPDATE_AND_INSERT
+
     override fun save(
         id: String,
         value: String?,
         extraData: String?,
     ): StoreResult {
+        if (keepsEmptyMandatoryValueInMemory(id, value)) {
+            return StoreResult(id, ValueStoreResult.VALUE_HAS_NOT_CHANGED)
+        }
         val result = formValueStore.save(id, value, extraData)
         if (result.contextDataChanged()) ruleEngineRepository?.refreshContext()
         return result
@@ -904,4 +945,32 @@ class FormRepositoryImpl(
     override fun isEvent(): Boolean = dataEntryRepository.isEvent()
 
     override fun isEventEditable(): Boolean? = dataEntryRepository.isEventEditable()
+
+    override fun updateFieldIsUnique(fieldUid: String) {
+        itemList
+            .find { item ->
+                item.uid == fieldUid
+            }?.let { item ->
+                if (item.error == resourceManager.getString(R.string.unique_warning)) {
+                    itemList =
+                        itemList.updated(
+                            itemList.indexOf(item),
+                            item.setError(null),
+                        )
+                }
+            }
+    }
+
+    override fun updateFieldIsNotUnique(fieldUid: String) {
+        itemList
+            .find { item ->
+                item.uid == fieldUid
+            }?.let { item ->
+                itemList =
+                    itemList.updated(
+                        itemList.indexOf(item),
+                        item.setError(resourceManager.getString(R.string.unique_warning)),
+                    )
+            }
+    }
 }

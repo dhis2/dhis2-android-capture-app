@@ -1,6 +1,5 @@
 package org.dhis2.mobile.commons.data
 
-import org.dhis2.mobile.commons.model.internal.ValueInfo
 import org.dhis2.mobile.commons.resources.Res
 import org.dhis2.mobile.commons.resources.no
 import org.dhis2.mobile.commons.resources.yes
@@ -8,7 +7,6 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
-import org.hisp.dhis.android.core.common.ValueType
 import org.jetbrains.compose.resources.getString
 
 internal class ValueParserImpl(
@@ -18,21 +16,7 @@ internal class ValueParserImpl(
         uid: String,
         value: String,
     ) = getValueTypeAndOptionSetUid(uid).let { (valueType, optionSetUid) ->
-        ValueInfo(
-            optionSetUid = optionSetUid,
-            valueIsValidOption = valueAsOptionExists(value, optionSetUid.orEmpty()),
-            isMultiText = valueType == ValueType.MULTI_TEXT,
-            isOrganisationUnit = valueType == ValueType.ORGANISATION_UNIT,
-            valueIsAValidOrgUnit = valueAsOrgUnitExist(value),
-            isFile = (valueType == ValueType.IMAGE) or (valueType == ValueType.FILE_RESOURCE),
-            valueIsAValidFile = valueAsFileExists(value),
-            isPercentage = valueType == ValueType.PERCENTAGE,
-            isDate = (valueType == ValueType.DATE) or (valueType == ValueType.AGE),
-            isDateTime = valueType == ValueType.DATETIME,
-            isTime = valueType == ValueType.TIME,
-            isCoordinate = valueType == ValueType.COORDINATE,
-            isBooleanType = valueType == ValueType.BOOLEAN,
-        )
+        getValueInfo(valueType, optionSetUid, value)
     }
 
     override suspend fun valueFromMultiTextAsOptionNames(
@@ -84,6 +68,8 @@ internal class ValueParserImpl(
     override suspend fun valueFromBooleanType(value: String): String =
         if (value == "true") getString(Res.string.yes) else getString(Res.string.no)
 
+    override suspend fun valueFromTrueOnlyType(value: String): String = if (value == "true") getString(Res.string.yes) else ""
+
     override suspend fun valueFromOrgUnitAsOrgUnitName(value: String) =
         d2
             .organisationUnitModule()
@@ -100,6 +86,14 @@ internal class ValueParserImpl(
             .blockingGet()
             ?.name() ?: value
 
+    override suspend fun valueToFilePath(value: String) =
+        d2
+            .fileResourceModule()
+            .fileResources()
+            .uid(value)
+            .blockingGet()
+            ?.path()
+
     private fun getValueTypeAndOptionSetUid(uid: String) =
         trackedEntityAttribute(uid)
             ?.let { Pair(it.valueType(), it.optionSet()?.uid()) }
@@ -107,9 +101,9 @@ internal class ValueParserImpl(
                 ?.let { Pair(it.valueType(), it.optionSet()?.uid()) }
             ?: Pair(null, null)
 
-    private fun valueAsOptionExists(
-        value: String,
+    override suspend fun valueAsOptionExists(
         optionSetUid: String,
+        value: String,
     ): Boolean {
         val optionByCodeExist =
             d2
@@ -148,7 +142,7 @@ internal class ValueParserImpl(
             .uid(uid)
             .blockingGet()
 
-    private fun valueAsFileExists(value: String): Boolean =
+    override suspend fun valueAsFileExists(value: String): Boolean =
         d2
             .fileResourceModule()
             .fileResources()
@@ -157,7 +151,7 @@ internal class ValueParserImpl(
             .one()
             .blockingExists()
 
-    private fun valueAsOrgUnitExist(value: String): Boolean =
+    override suspend fun valueAsOrgUnitExists(value: String): Boolean =
         d2
             .organisationUnitModule()
             .organisationUnits()

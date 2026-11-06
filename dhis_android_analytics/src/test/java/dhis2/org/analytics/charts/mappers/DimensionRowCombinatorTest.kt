@@ -13,11 +13,10 @@ class DimensionRowCombinatorTest {
 
     @Test
     fun shouldCombineRows() {
-        val finalList = mutableListOf<String>()
-        dimensionRowCombinator.combineWithNextItem(
-            gridAnalyticsResponse = testGridAnalyticsResponse(),
-            currentList = finalList,
-        )
+        val finalList =
+            dimensionRowCombinator.combinedRow(
+                gridAnalyticsResponse = testGridAnalyticsResponse(),
+            )
 
         assertTrue(
             finalList.size == 12,
@@ -38,12 +37,10 @@ class DimensionRowCombinatorTest {
 
     @Test
     fun shouldNotCombineIfThereAreNoRows() {
-        val finalList = mutableListOf<String>()
-        dimensionRowCombinator.combineWithNextItem(
-            gridAnalyticsResponse = testGridAnalyticsResponse(emptyList()),
-            currentList = finalList,
-            hasMoreRows = false,
-        )
+        val finalList =
+            dimensionRowCombinator.combinedRow(
+                gridAnalyticsResponse = testGridAnalyticsResponse(emptyList()),
+            )
 
         assertTrue(
             finalList.isEmpty(),
@@ -83,8 +80,21 @@ class DimensionRowCombinatorTest {
                 GridHeaderItem(row21.uid(), 2),
                 GridHeaderItem(row22.uid(), 2),
                 GridHeaderItem(row23.uid(), 2),
+                GridHeaderItem(row21.uid(), 2),
+                GridHeaderItem(row22.uid(), 2),
+                GridHeaderItem(row23.uid(), 2),
             ),
             listOf(
+                GridHeaderItem(row31.uid(), 1),
+                GridHeaderItem(row32.uid(), 1),
+                GridHeaderItem(row31.uid(), 1),
+                GridHeaderItem(row32.uid(), 1),
+                GridHeaderItem(row31.uid(), 1),
+                GridHeaderItem(row32.uid(), 1),
+                GridHeaderItem(row31.uid(), 1),
+                GridHeaderItem(row32.uid(), 1),
+                GridHeaderItem(row31.uid(), 1),
+                GridHeaderItem(row32.uid(), 1),
                 GridHeaderItem(row31.uid(), 1),
                 GridHeaderItem(row32.uid(), 1),
             ),

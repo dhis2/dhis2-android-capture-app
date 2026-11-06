@@ -41,7 +41,6 @@ kotlin {
 dependencies {
     implementation(project(":commons"))
     testImplementation(libs.test.mockitoCore)
-    testImplementation(libs.test.mockitoInline)
     testImplementation(libs.test.mockitoKotlin)
     testImplementation(libs.test.kotlinCoroutines)
     coreLibraryDesugaring(libs.desugar)
