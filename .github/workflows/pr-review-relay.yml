@@ -1,0 +1,20 @@
+name: PR review relay
+
+# Does nothing but complete, so merge-automation (via workflow_run) re-evaluates the PR
+# when a review is submitted. A pull_request_review workflow runs with the PR's code, so
+# it is kept free of tokens and secrets; the work happens in the workflow_run.
+on:
+  pull_request_review:
+    types: [ submitted ]
+
+permissions: { }
+
+jobs:
+  relay:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Relay
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          echo "Review on PR #$PR_NUMBER submitted."
