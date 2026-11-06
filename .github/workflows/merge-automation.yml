@@ -1,0 +1,59 @@
+name: Merge automation
+
+# Moves PRs into the develop merge queue once their ANDROAPP tickets are in
+# "Ready to Merge", and collapses stacked PRs first so each stack lands on develop as a
+# single commit. See scripts/merge_automation.py.
+#
+# workflow_dispatch and workflow_run only fire for workflow files on the default branch.
+on:
+  # From the Jira Automation rule on the transition to "Ready to Merge".
+  workflow_dispatch:
+    inputs:
+      jira_key:
+        description: 'Jira ticket that reached Ready to Merge (e.g. ANDROAPP-1234)'
+        required: true
+        type: string
+  # Re-evaluates the PR's stack whenever one of its conditions may have become true.
+  # Runs with the default branch's code, so the App token never meets PR code.
+  workflow_run:
+    workflows: [ CI, Jira ready, PR review relay ]
+    types: [ completed ]
+
+permissions: { }
+
+# One evaluation at a time: two runs collapsing the same stack would race.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  merge-automation:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       contains(fromJSON('["pull_request", "pull_request_review"]'), github.event.workflow_run.event))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      # A GitHub App token rather than GITHUB_TOKEN: events caused by GITHUB_TOKEN do not
+      # start other workflows, so a PR it queued or collapsed would get no CI.
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.MERGE_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.MERGE_BOT_PRIVATE_KEY }}
+          permission-actions: write
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Evaluate and merge
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          JIRA_KEY: ${{ inputs.jira_key }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          BASE_BRANCH: develop
+        run: python3 scripts/merge_automation.py
