@@ -1,5 +1,6 @@
 package org.dhis2.mobile.aggregates.data
 
+import okio.Path.Companion.toPath
 import org.dhis2.bindings.FILE_NOT_FOUND
 import org.dhis2.commons.bindings.dataElement
 import org.dhis2.commons.periods.data.PeriodLabelProvider
@@ -48,7 +49,6 @@ import org.hisp.dhis.android.core.dataset.SectionPivotMode
 import org.hisp.dhis.android.core.dataset.TabsDirection
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.validation.engine.ValidationResultViolation
-import java.io.File
 import java.util.Locale
 
 internal class DataSetInstanceRepositoryImpl(
@@ -1334,7 +1334,7 @@ internal class DataSetInstanceRepositoryImpl(
         return try {
             val fileResourceUid =
                 d2.fileResourceModule().fileResources().blockingProcessAndAdd(
-                    File(path),
+                    path.toPath(),
                     fileContext,
                 )
             deleteStagedFile(path)

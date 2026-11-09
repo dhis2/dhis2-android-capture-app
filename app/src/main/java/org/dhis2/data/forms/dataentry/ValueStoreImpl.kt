@@ -4,6 +4,7 @@ import io.reactivex.Flowable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
+import okio.Path.Companion.toPath
 import org.dhis2.bindings.blockingSetCheck
 import org.dhis2.bindings.withValueTypeCheck
 import org.dhis2.commons.data.EntryMode
@@ -23,7 +24,6 @@ import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.datavalue.LegacyDataValueApi
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
-import java.io.File
 
 @OptIn(LegacyDataValueApi::class)
 class ValueStoreImpl(
@@ -267,7 +267,7 @@ class ValueStoreImpl(
             }
 
         val fileResourceUid =
-            d2.fileResourceModule().fileResources().blockingProcessAndAdd(File(path), fileContext)
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(path.toPath(), fileContext)
 
         deleteStagedFile(path)
 

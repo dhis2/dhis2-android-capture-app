@@ -1,6 +1,7 @@
 package org.dhis2.form.data
 
 import io.reactivex.Flowable
+import okio.Path.Companion.toPath
 import org.dhis2.bindings.blockingSetCheck
 import org.dhis2.bindings.withValueTypeCheck
 import org.dhis2.commons.data.EntryMode
@@ -28,7 +29,6 @@ import org.hisp.dhis.android.core.event.EventObjectRepository
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.maintenance.D2Error
 import timber.log.Timber
-import java.io.File
 
 class FormValueStore(
     private val d2: D2,
@@ -607,7 +607,7 @@ class FormValueStore(
             }
 
         val fileResourceUid =
-            d2.fileResourceModule().fileResources().blockingProcessAndAdd(File(path), fileContext)
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(path.toPath(), fileContext)
 
         deleteStagedFile(path)
 
