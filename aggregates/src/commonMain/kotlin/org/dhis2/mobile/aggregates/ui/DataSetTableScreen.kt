@@ -83,6 +83,7 @@ import org.dhis2.mobile.aggregates.ui.inputs.ResizeAction
 import org.dhis2.mobile.aggregates.ui.snackbar.DataSetSnackbarHost
 import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
 import org.dhis2.mobile.aggregates.ui.states.CellSelectionState
+import org.dhis2.mobile.aggregates.ui.states.DataSetBodyState
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
@@ -305,7 +306,18 @@ fun DataSetInstanceScreen(
                     .padding(paddingValues),
             propagateMinConstraints = true,
         ) {
-            if (allowTwoPane) {
+            val loadedState = dataSetScreenState as? DataSetScreenState.Loaded
+            val bodyState = loadedState?.body
+            if (bodyState is DataSetBodyState.Replaced) {
+                bodyState.body.Content(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = fabSizeDp),
+                    editable = loadedState.isEditable,
+                    reloadKey = bodyState.reloadKey,
+                    saveValue = dataSetTableViewModel::saveBodyValue,
+                    onFailed = dataSetTableViewModel::onBodyFailed,
+                )
+            } else if (allowTwoPane) {
                 TwoPaneLayout(
                     modifier =
                         Modifier

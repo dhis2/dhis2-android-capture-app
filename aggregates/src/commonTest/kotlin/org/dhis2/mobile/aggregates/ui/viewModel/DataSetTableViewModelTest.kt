@@ -51,6 +51,7 @@ import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.MANDATORY
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.NONE
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.OPTIONAL
 import org.dhis2.mobile.aggregates.model.ValidationRulesResult
+import org.dhis2.mobile.aggregates.ui.body.DataSetInstanceBody
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
 import org.dhis2.mobile.aggregates.ui.inputs.TableId
@@ -61,6 +62,7 @@ import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.states.ButtonAction
 import org.dhis2.mobile.aggregates.ui.states.CellSelectionState
 import org.dhis2.mobile.aggregates.ui.states.CellSelectionState.InputDataUiState
+import org.dhis2.mobile.aggregates.ui.states.DataSetBodyState
 import org.dhis2.mobile.aggregates.ui.states.DataSetModalDialogUIState
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
@@ -89,6 +91,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
@@ -122,6 +125,10 @@ internal class DataSetTableViewModelTest : KoinTest {
 
     private lateinit var viewModel: DataSetTableViewModel
 
+    /** What the DataSetInstanceBodyProvider seam answers; null keeps the native tables. */
+    private var replacementBody: DataSetInstanceBody? = null
+    private var bodyResolutions = 0
+
     @Before
     fun setUp() =
         runTest {
@@ -148,6 +155,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                 whenever(runBlocking { defaultHeaderLabel() }) doReturn "HeaderLabel"
                 whenever(runBlocking { totalsHeader() }) doReturn "TotalsHeader"
                 whenever(runBlocking { provideSaved() }) doReturn "saved"
+                whenever(runBlocking { provideBodyFailedMessage() }) doReturn "custom form failed"
             }
             dispatcher = declareMock<Dispatcher>()
             checkValidationRulesConfiguration = declareMock<CheckValidationRulesConfiguration>()
@@ -290,7 +298,87 @@ internal class DataSetTableViewModelTest : KoinTest {
                     inputDataUiStateMapper = get(),
                     fieldErrorMessageProvider = get(),
                     computeResizeAction = get(),
+                    resolveBody = {
+                        bodyResolutions++
+                        replacementBody
+                    },
                 )
+        }
+
+    private val fakeBody = DataSetInstanceBody { _, _, _, _, _, _ -> }
+
+    @Test
+    fun `a replaced body skips the tables and two pane layout`() =
+        runTest {
+            replacementBody = fakeBody
+            viewModel.dataSetScreenState.test {
+                assertTrue(awaitItem() is DataSetScreenState.Loading)
+                val loaded = awaitItem() as DataSetScreenState.Loaded
+                assertEquals(DataSetBodyState.Replaced(fakeBody, reloadKey = 0), loaded.body)
+                assertEquals(false, loaded.dataSetSectionTable.loading)
+                assertEquals(false, loaded.allowTwoPane(canUseTwoPane = true))
+                expectNoEvents()
+            }
+            verify(getDataSetSectionData, never()).invoke(any())
+        }
+
+    @Test
+    fun `a reload re-reads values without asking the provider again`() =
+        runTest {
+            replacementBody = fakeBody
+            viewModel.dataSetScreenState.test {
+                awaitItem()
+                awaitItem()
+                viewModel.loadDataSet()
+                val reloaded = awaitItem() as DataSetScreenState.Loaded
+                assertEquals(1, (reloaded.body as DataSetBodyState.Replaced).reloadKey)
+                assertEquals(1, bodyResolutions)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `a failed body switches to the native form, which loads the tables`() =
+        runTest {
+            replacementBody = fakeBody
+            viewModel.dataSetScreenState.test {
+                awaitItem()
+                awaitItem()
+                viewModel.onBodyFailed()
+                val native = awaitItem() as DataSetScreenState.Loaded
+                assertEquals(DataSetBodyState.Native, native.body)
+                assertTrue(native.dataSetSectionTable.loading)
+                assertEquals(false, (awaitItem() as DataSetScreenState.Loaded).dataSetSectionTable.loading)
+                cancelAndIgnoreRemainingEvents()
+            }
+            verify(getDataSetSectionData).invoke(any())
+        }
+
+    @Test
+    fun `a replaced body saves through the same use case as a table cell`() =
+        runTest {
+            replacementBody = fakeBody
+            whenever(setDataValue("dataElement", "coc", "5")) doReturn Result.success(Unit)
+            viewModel.dataSetScreenState.test {
+                awaitItem()
+                awaitItem()
+                assertEquals(null, viewModel.saveBodyValue("dataElement", "coc", "5"))
+                cancelAndIgnoreRemainingEvents()
+            }
+            verify(setDataValue).invoke("dataElement", "coc", "5")
+        }
+
+    @Test
+    fun `section selection is ignored while the body is replaced`() =
+        runTest {
+            replacementBody = fakeBody
+            viewModel.dataSetScreenState.test {
+                awaitItem()
+                awaitItem()
+                viewModel.onSectionSelected("otherSection")
+                expectNoEvents()
+                cancelAndIgnoreRemainingEvents()
+            }
         }
 
     @After

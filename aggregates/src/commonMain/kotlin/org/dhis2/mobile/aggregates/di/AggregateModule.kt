@@ -14,6 +14,8 @@ import org.dhis2.mobile.aggregates.domain.ReopenDataSet
 import org.dhis2.mobile.aggregates.domain.RunValidationRules
 import org.dhis2.mobile.aggregates.domain.SetDataValue
 import org.dhis2.mobile.aggregates.domain.UploadFile
+import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
+import org.dhis2.mobile.aggregates.ui.body.DataSetInstanceBodyProvider
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
@@ -180,6 +182,15 @@ internal val featureModule =
             val openErrorLocation = params.getOrNull<Boolean>() ?: false
             val onClose = params.get<() -> Unit>()
             val uiActionHandler = params.get<UiActionHandler>()
+            val bodyProvider = getOrNull<DataSetInstanceBodyProvider>()
+            val instanceParameters =
+                DataSetInstanceParameters(
+                    dataSetUid = dataSetUid,
+                    periodId = periodId,
+                    organisationUnitUid = orgUnitUid,
+                    attributeOptionComboUid = attrOptionComboUid,
+                    openErrorLocation = openErrorLocation,
+                )
 
             DataSetTableViewModel(
                 onClose = onClose,
@@ -244,6 +255,7 @@ internal val featureModule =
                     get {
                         parametersOf(dataSetUid)
                     },
+                resolveBody = { bodyProvider?.bodyFor(instanceParameters) },
             )
         }
     }

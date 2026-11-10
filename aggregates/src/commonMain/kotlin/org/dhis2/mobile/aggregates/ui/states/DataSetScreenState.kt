@@ -3,6 +3,7 @@ package org.dhis2.mobile.aggregates.ui.states
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataSetSection
+import org.dhis2.mobile.aggregates.ui.body.DataSetInstanceBody
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 
 internal sealed class DataSetScreenState {
@@ -15,8 +16,13 @@ internal sealed class DataSetScreenState {
         val selectedCellInfo: CellSelectionState,
         val modalDialog: DataSetModalDialogUIState? = null,
         val validationBar: ValidationBarUiState? = null,
+        val body: DataSetBodyState = DataSetBodyState.Native,
     ) : DataSetScreenState() {
-        override fun allowTwoPane(canUseTwoPane: Boolean) = dataSetSections.isNotEmpty() && canUseTwoPane && renderingConfig.useVerticalTabs
+        override fun allowTwoPane(canUseTwoPane: Boolean) =
+            body is DataSetBodyState.Native && dataSetSections.isNotEmpty() && canUseTwoPane && renderingConfig.useVerticalTabs
+
+        val isEditable: Boolean
+            get() = dataSetDetails.edition.editable && !dataSetDetails.isCompleted
 
         override fun currentSection(): String? = dataSetSectionTable.id
 
@@ -50,3 +56,13 @@ internal data class OverwrittenDimension(
     val overwrittenRowHeaderWidth: Map<String, Float> = emptyMap(),
     val overwrittenColumnWidth: Map<String, Map<Int, Float>> = emptyMap(),
 )
+
+/** Who draws the body of the instance screen. */
+internal sealed interface DataSetBodyState {
+    data object Native : DataSetBodyState
+
+    data class Replaced(
+        val body: DataSetInstanceBody,
+        val reloadKey: Int,
+    ) : DataSetBodyState
+}
