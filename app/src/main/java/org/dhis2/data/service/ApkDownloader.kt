@@ -3,7 +3,12 @@ package org.dhis2.data.service
 import java.io.File
 
 /**
- * Downloads app update APKs through the platform download service into app-specific storage.
+ * Downloads app update APKs through the platform download service.
+ *
+ * The download service runs in another process and can only write to external storage, so the
+ * download lands in app-specific external storage first. That folder is writable by other apps
+ * holding `WRITE_EXTERNAL_STORAGE` on API 23–29, so a finished download is moved into internal
+ * storage with [moveToPrivateStorage] before it is handed to the installer.
  *
  * Kept as a seam so the download flow in [ApkUpdateRepository] can be unit tested without the
  * Android framework.
@@ -25,8 +30,12 @@ interface ApkDownloader {
     /** Cancels the download identified by [downloadId] and deletes any partial file. */
     fun remove(downloadId: Long)
 
-    /** Location where [fileName] is stored once downloaded. */
-    fun downloadedFile(fileName: String): File
+    /**
+     * Moves the finished download [fileName] into internal storage, deleting the external copy.
+     *
+     * @return the APK in internal storage, or `null` if the download file does not exist.
+     */
+    fun moveToPrivateStorage(fileName: String): File?
 
     /**
      * Starts listening for download completion broadcasts. [onComplete] receives the id carried by

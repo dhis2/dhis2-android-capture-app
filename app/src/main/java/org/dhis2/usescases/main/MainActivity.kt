@@ -473,7 +473,13 @@ class MainActivity : ActivityGlobalAbstract() {
             )
         } else {
             pendingUpdateApk = null
-            val apkUri = FileProvider.getUriForFile(this, "$packageName.provider", apkFile)
+            val apkUri =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    FileProvider.getUriForFile(this, "$packageName.provider", apkFile)
+                } else {
+                    // The installer only accepts file:// URIs before API 24.
+                    Uri.fromFile(apkFile)
+                }
             Intent(Intent.ACTION_VIEW).apply {
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 setDataAndType(apkUri, APK_MIME_TYPE)

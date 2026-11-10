@@ -1,10 +1,12 @@
 package org.dhis2.data.service
 
+import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import java.io.File
@@ -13,8 +15,9 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * [ApkDownloader] backed by [DownloadManager].
  *
- * Updates are written to the app-specific external directory `updates/`, which no other app can
- * write to on any supported API level and which needs no storage permission.
+ * Downloads land in the app-specific external directory `updates/` (the only place the download
+ * service can write to that needs no storage permission) and are then moved to `updates/` in
+ * internal storage, which no other app can read or write on any API level.
  */
 class AndroidApkDownloader(
     context: Context,
@@ -27,7 +30,8 @@ class AndroidApkDownloader(
         url: String,
         fileName: String,
     ): Long {
-        updatesDir().listFiles()?.forEach { it.delete() }
+        externalUpdatesDir().listFiles()?.forEach { it.delete() }
+        privateUpdatesDir().listFiles()?.forEach { it.delete() }
         val request =
             DownloadManager
                 .Request(url.toUri())
@@ -66,7 +70,21 @@ class AndroidApkDownloader(
         downloadManager.remove(downloadId)
     }
 
-    override fun downloadedFile(fileName: String): File = File(updatesDir(), fileName)
+    @SuppressLint("SetWorldReadable")
+    override fun moveToPrivateStorage(fileName: String): File? {
+        val downloaded = File(externalUpdatesDir(), fileName)
+        if (!downloaded.exists()) return null
+        val privateDir = privateUpdatesDir().apply { mkdirs() }
+        val apk = downloaded.copyTo(File(privateDir, fileName), overwrite = true)
+        downloaded.delete()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            // Before API 24 the installer only accepts file:// URIs, so it must be able to read
+            // the APK directly. filesDir itself is already traversable by other users.
+            privateDir.setExecutable(true, false)
+            apk.setReadable(true, false)
+        }
+        return apk
+    }
 
     override fun listenForCompletion(onComplete: (downloadId: Long) -> Unit): () -> Unit {
         val receiver =
@@ -96,7 +114,9 @@ class AndroidApkDownloader(
         }
     }
 
-    private fun updatesDir(): File {
+    private fun privateUpdatesDir(): File = File(appContext.filesDir, UPDATES_DIR)
+
+    private fun externalUpdatesDir(): File {
         val externalFilesDir =
             checkNotNull(appContext.getExternalFilesDir(null)) {
                 "App-specific external storage is not available"

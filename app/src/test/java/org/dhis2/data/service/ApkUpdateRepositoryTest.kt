@@ -10,6 +10,7 @@ import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.mobile.commons.error.DomainErrorMapper
 import org.dhis2.usescases.main.domain.model.DownloadMethod
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -75,6 +76,7 @@ class ApkUpdateRepositoryTest {
 
             assertTrue(download.isActive)
             assertEquals(1, apkDownloader.registeredListeners)
+            assertEquals(0, apkDownloader.movedToPrivateStorage)
 
             apkDownloader.broadcast(DOWNLOAD_ID)
 
@@ -89,30 +91,35 @@ class ApkUpdateRepositoryTest {
 
             val download = async(UnconfinedTestDispatcher(testScheduler)) { repository.downloadLatestVersion() }
             apkDownloader.status = ApkDownloadStatus.Failed(reason = 404)
+            apkDownloader.createDownloadedFile()
             apkDownloader.broadcast(DOWNLOAD_ID)
 
             assertTrue(download.await().exceptionOrNull() is DomainError.UnexpectedError)
             assertEquals(0, apkDownloader.registeredListeners)
+            assertEquals(0, apkDownloader.movedToPrivateStorage)
         }
 
     @Test
-    fun `should return the downloaded apk and stop listening when the download succeeded`() =
+    fun `should move the downloaded apk to private storage and stop listening when the download succeeded`() =
         runTest {
             val repository = repository()
             whenever(versionRepository.getUrl()).thenReturn(APK_URL)
 
             val download = async(UnconfinedTestDispatcher(testScheduler)) { repository.downloadLatestVersion() }
             apkDownloader.status = ApkDownloadStatus.Successful
-            val apk = apkDownloader.createDownloadedFile()
+            val downloaded = apkDownloader.createDownloadedFile()
             apkDownloader.broadcast(DOWNLOAD_ID)
 
-            assertEquals(DownloadMethod.File(apk.absolutePath), download.await().getOrNull())
+            val privateApk = apkDownloader.privateFile(APK_NAME)
+            assertEquals(DownloadMethod.File(privateApk.absolutePath), download.await().getOrNull())
+            assertTrue(privateApk.exists())
+            assertFalse(downloaded.exists())
             assertEquals(listOf(APK_URL to APK_NAME), apkDownloader.enqueued)
             assertEquals(0, apkDownloader.registeredListeners)
         }
 
     @Test
-    fun `should fail when the successful download is missing`() =
+    fun `should fail and stop listening when the successful download cannot be moved`() =
         runTest {
             val repository = repository()
             whenever(versionRepository.getUrl()).thenReturn(APK_URL)
@@ -131,11 +138,14 @@ class ApkUpdateRepositoryTest {
             val repository = repository()
             whenever(versionRepository.getUrl()).thenReturn(APK_URL)
             apkDownloader.status = ApkDownloadStatus.Successful
-            val apk = apkDownloader.createDownloadedFile()
+            apkDownloader.createDownloadedFile()
 
             val result = repository.downloadLatestVersion()
 
-            assertEquals(DownloadMethod.File(apk.absolutePath), result.getOrNull())
+            assertEquals(
+                DownloadMethod.File(apkDownloader.privateFile(APK_NAME).absolutePath),
+                result.getOrNull(),
+            )
             assertEquals(0, apkDownloader.registeredListeners)
         }
 
@@ -168,8 +178,12 @@ class ApkUpdateRepositoryTest {
         }
 
     private class FakeApkDownloader(
-        private val dir: File,
+        root: File,
     ) : ApkDownloader {
+        private val externalDir = File(root, "external").apply { mkdirs() }
+        private val privateDir = File(root, "private").apply { mkdirs() }
+        var movedToPrivateStorage = 0
+            private set
         var status: ApkDownloadStatus = ApkDownloadStatus.Running
         val enqueued = mutableListOf<Pair<String, String>>()
         val removed = mutableListOf<Long>()
@@ -191,7 +205,16 @@ class ApkUpdateRepositoryTest {
             removed += downloadId
         }
 
-        override fun downloadedFile(fileName: String): File = File(dir, fileName)
+        override fun moveToPrivateStorage(fileName: String): File? {
+            val downloaded = File(externalDir, fileName)
+            if (!downloaded.exists()) return null
+            movedToPrivateStorage++
+            return downloaded.copyTo(File(privateDir, fileName), overwrite = true).also {
+                downloaded.delete()
+            }
+        }
+
+        fun privateFile(fileName: String): File = File(privateDir, fileName)
 
         override fun listenForCompletion(onComplete: (downloadId: Long) -> Unit): () -> Unit {
             listeners += onComplete
@@ -210,7 +233,7 @@ class ApkUpdateRepositoryTest {
             listeners.toList().forEach { it(downloadId) }
         }
 
-        fun createDownloadedFile(): File = downloadedFile(APK_NAME).apply { writeText("apk") }
+        fun createDownloadedFile(): File = File(externalDir, APK_NAME).apply { writeText("apk") }
     }
 
     private companion object {

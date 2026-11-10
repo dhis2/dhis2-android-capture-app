@@ -6,7 +6,7 @@
     <external-path
         name="external_files"
         path="." />
-    <external-files-path
+    <files-path
         name="updates"
         path="updates/" />
 </paths>

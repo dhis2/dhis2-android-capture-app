@@ -38,7 +38,12 @@ class ApkUpdateRepository(
                     )
             val fileName = url.substringAfterLast("/")
             if (fileName.endsWith(APK_EXTENSION, ignoreCase = true)) {
-                awaitDownload(url, fileName)
+                // The completion callback runs on the main thread, so the APK is only moved into
+                // internal storage once execution is back on the io dispatcher.
+                awaitDownload(url, fileName).fold(
+                    onSuccess = { moveToPrivateStorage(fileName) },
+                    onFailure = { Result.failure(it) },
+                )
             } else {
                 Result.success(DownloadMethod.Url(url))
             }
@@ -47,13 +52,13 @@ class ApkUpdateRepository(
     private suspend fun awaitDownload(
         url: String,
         fileName: String,
-    ): Result<DownloadMethod> =
+    ): Result<Unit> =
         suspendCancellableCoroutine { continuation ->
             val downloadId = AtomicLong(NO_DOWNLOAD)
             val finished = AtomicBoolean(false)
             lateinit var stopListening: () -> Unit
 
-            fun finish(result: Result<DownloadMethod>) {
+            fun finish(result: Result<Unit>) {
                 if (finished.compareAndSet(false, true)) {
                     stopListening()
                     continuation.resume(result)
@@ -63,7 +68,7 @@ class ApkUpdateRepository(
             fun checkStatus(id: Long) {
                 when (val status = apkDownloader.status(id)) {
                     ApkDownloadStatus.Running -> Unit
-                    ApkDownloadStatus.Successful -> finish(downloadedApk(fileName))
+                    ApkDownloadStatus.Successful -> finish(Result.success(Unit))
                     is ApkDownloadStatus.Failed ->
                         finish(
                             Result.failure(
@@ -105,14 +110,10 @@ class ApkUpdateRepository(
             }
         }
 
-    private fun downloadedApk(fileName: String): Result<DownloadMethod> {
-        val apk = apkDownloader.downloadedFile(fileName)
-        return if (apk.exists()) {
+    private fun moveToPrivateStorage(fileName: String): Result<DownloadMethod> =
+        apkDownloader.moveToPrivateStorage(fileName)?.let { apk ->
             Result.success(DownloadMethod.File(apk.absolutePath))
-        } else {
-            Result.failure(DomainError.DataNotFoundError("Downloaded app update not found"))
-        }
-    }
+        } ?: Result.failure(DomainError.DataNotFoundError("Downloaded app update not found"))
 
     private companion object {
         const val APK_EXTENSION = ".apk"
