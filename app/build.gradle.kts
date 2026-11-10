@@ -334,6 +334,7 @@ dependencies {
     implementation(project(":commonskmm"))
     implementation(project(":login"))
     implementation(project(":sync"))
+    implementation(project(":extension-host"))
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(platform(libs.koin.bom))
