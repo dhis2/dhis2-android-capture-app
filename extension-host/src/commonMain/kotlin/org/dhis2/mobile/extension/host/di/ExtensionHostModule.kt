@@ -3,6 +3,7 @@ package org.dhis2.mobile.extension.host.di
 import org.dhis2.mobile.extension.host.domain.LegacyApiScan
 import org.dhis2.mobile.extension.host.domain.ResolveCustomForm
 import org.dhis2.mobile.extension.host.reporting.ExtensionFailureReporter
+import org.dhis2.mobile.extension.host.reporting.SentryExtensionFailureReporter
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -12,11 +13,7 @@ import org.koin.dsl.module
 val extensionHostModule =
     module {
         includes(extensionHostPlatformModule)
-        // Log only; the Sentry reporter replaces this binding.
-        factory<ExtensionFailureReporter> {
-            val log = get<ExtensionHostConfig>().log
-            ExtensionFailureReporter { extension, reason -> log("extension ${extension.id} failed: $reason") }
-        }
+        factory<ExtensionFailureReporter> { SentryExtensionFailureReporter(get(), get<ExtensionHostConfig>().log) }
         factory {
             ResolveCustomForm(
                 repository = get(),
