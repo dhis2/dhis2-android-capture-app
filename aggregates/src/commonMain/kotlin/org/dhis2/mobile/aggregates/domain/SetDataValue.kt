@@ -18,7 +18,16 @@ internal class SetDataValue(
         val dataElementUid = checkOnlyOneDataElementIsProvided(rowIds, columnIds)
         val categoryOptionComboUid = checkedCategoryOptionCombos(dataSetUid, dataElementUid, rowIds, columnIds)
 
-        return repository.updateValue(
+        return invoke(dataElementUid, categoryOptionComboUid, value)
+    }
+
+    /** The save every body uses: a table cell (above) or a replaced body such as a custom form. */
+    suspend operator fun invoke(
+        dataElementUid: String,
+        categoryOptionComboUid: String,
+        value: String?,
+    ): Result<Unit> =
+        repository.updateValue(
             periodId = periodId,
             orgUnitUid = orgUnitUid,
             attrOptionComboUid = attrOptionComboUid,
@@ -27,5 +36,4 @@ internal class SetDataValue(
             value = value,
             sourceDataSetUid = dataSetUid,
         )
-    }
 }

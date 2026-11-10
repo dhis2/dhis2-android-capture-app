@@ -4,6 +4,7 @@ import org.dhis2.mobile.aggregates.resources.Res
 import org.dhis2.mobile.aggregates.resources.action_can_not_be_performed
 import org.dhis2.mobile.aggregates.resources.action_done
 import org.dhis2.mobile.aggregates.resources.action_next
+import org.dhis2.mobile.aggregates.resources.custom_form_failed
 import org.dhis2.mobile.aggregates.resources.dataset_saved_completed
 import org.dhis2.mobile.aggregates.resources.default_column_label
 import org.dhis2.mobile.aggregates.resources.error
@@ -40,6 +41,8 @@ internal class ResourceManager {
     suspend fun provideSavedAndCompleted() = getString(Res.string.dataset_saved_completed)
 
     suspend fun provideErrorOnCompleteDataset() = getString(Res.string.error_on_complete_dataset)
+
+    suspend fun provideBodyFailedMessage() = getString(Res.string.custom_form_failed)
 
     suspend fun provideAskRunValidations() = getString(Res.string.run_validation_rules)
 

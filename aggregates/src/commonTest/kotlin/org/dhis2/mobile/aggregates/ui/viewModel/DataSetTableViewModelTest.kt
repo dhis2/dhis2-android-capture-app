@@ -51,6 +51,7 @@ import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.MANDATORY
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.NONE
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.OPTIONAL
 import org.dhis2.mobile.aggregates.model.ValidationRulesResult
+import org.dhis2.mobile.aggregates.ui.body.DataSetInstanceBody
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
 import org.dhis2.mobile.aggregates.ui.inputs.TableId
@@ -58,9 +59,11 @@ import org.dhis2.mobile.aggregates.ui.inputs.TableIdType
 import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.IdsProvider
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
+import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
 import org.dhis2.mobile.aggregates.ui.states.ButtonAction
 import org.dhis2.mobile.aggregates.ui.states.CellSelectionState
 import org.dhis2.mobile.aggregates.ui.states.CellSelectionState.InputDataUiState
+import org.dhis2.mobile.aggregates.ui.states.DataSetBodyState
 import org.dhis2.mobile.aggregates.ui.states.DataSetModalDialogUIState
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
@@ -70,6 +73,7 @@ import org.dhis2.mobile.commons.input.InputExtra
 import org.dhis2.mobile.commons.input.InputType
 import org.dhis2.mobile.commons.input.UiAction
 import org.dhis2.mobile.commons.input.UiActionHandler
+import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
@@ -89,6 +93,8 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
@@ -104,6 +110,7 @@ internal class DataSetTableViewModelTest : KoinTest {
     private lateinit var setDataValue: SetDataValue
     private lateinit var uploadFile: UploadFile
     private lateinit var computeResizeAction: ComputeResizeAction
+    private lateinit var fieldErrorMessageProvider: FieldErrorMessageProvider
 
     private lateinit var dispatcher: Dispatcher
     private lateinit var testDispatcher: TestDispatcher
@@ -121,6 +128,10 @@ internal class DataSetTableViewModelTest : KoinTest {
     private val modalDialog: DataSetModalDialogUIState = mock()
 
     private lateinit var viewModel: DataSetTableViewModel
+
+    /** What the DataSetInstanceBodyProvider seam answers; null keeps the native tables. */
+    private var replacementBody: DataSetInstanceBody? = null
+    private var bodyResolutions = 0
 
     @Before
     fun setUp() =
@@ -148,6 +159,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                 whenever(runBlocking { defaultHeaderLabel() }) doReturn "HeaderLabel"
                 whenever(runBlocking { totalsHeader() }) doReturn "TotalsHeader"
                 whenever(runBlocking { provideSaved() }) doReturn "saved"
+                whenever(runBlocking { provideBodyFailedMessage() }) doReturn "custom form failed"
             }
             dispatcher = declareMock<Dispatcher>()
             checkValidationRulesConfiguration = declareMock<CheckValidationRulesConfiguration>()
@@ -159,6 +171,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             uiActionHandler = declareMock<UiActionHandler>()
             inputDataUiStateMapper = declareMock<InputDataUiStateMapper>()
             computeResizeAction = declareMock<ComputeResizeAction>()
+            fieldErrorMessageProvider = declareMock<FieldErrorMessageProvider>()
 
             whenever(dispatcher.io).thenReturn { testDispatcher }
             whenever(dispatcher.main).thenReturn { testDispatcher }
@@ -290,7 +303,227 @@ internal class DataSetTableViewModelTest : KoinTest {
                     inputDataUiStateMapper = get(),
                     fieldErrorMessageProvider = get(),
                     computeResizeAction = get(),
+                    resolveBody = {
+                        bodyResolutions++
+                        replacementBody
+                    },
                 )
+        }
+
+    private val fakeBody = DataSetInstanceBody { _, _, _, _, _, _, _, _ -> }
+
+    @Test
+    fun `a replaced body skips the tables and two pane layout`() =
+        runTest {
+            replacementBody = fakeBody
+            viewModel.dataSetScreenState.test {
+                assertTrue(awaitItem() is DataSetScreenState.Loading)
+                val loaded = awaitItem() as DataSetScreenState.Loaded
+                assertEquals(DataSetBodyState.Replaced(fakeBody, reloadKey = 0), loaded.body)
+                assertEquals(false, loaded.dataSetSectionTable.loading)
+                assertEquals(false, loaded.allowTwoPane(canUseTwoPane = true))
+                expectNoEvents()
+            }
+            verify(getDataSetSectionData, never()).invoke(any())
+        }
+
+    @Test
+    fun `a reload re-reads values without asking the provider again`() =
+        runTest {
+            replacementBody = fakeBody
+            viewModel.dataSetScreenState.test {
+                awaitItem()
+                awaitItem()
+                viewModel.loadDataSet()
+                val reloaded = awaitItem() as DataSetScreenState.Loaded
+                assertEquals(1, (reloaded.body as DataSetBodyState.Replaced).reloadKey)
+                assertEquals(1, bodyResolutions)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `a failed body switches to the native form, which loads the tables`() =
+        runTest {
+            replacementBody = fakeBody
+            viewModel.dataSetScreenState.test {
+                awaitItem()
+                awaitItem()
+                viewModel.onBodyFailed()
+                val native = awaitItem() as DataSetScreenState.Loaded
+                assertEquals(DataSetBodyState.Native, native.body)
+                assertTrue(native.dataSetSectionTable.loading)
+                assertEquals(false, (awaitItem() as DataSetScreenState.Loaded).dataSetSectionTable.loading)
+                cancelAndIgnoreRemainingEvents()
+            }
+            verify(getDataSetSectionData).invoke(any())
+        }
+
+    @Test
+    fun `a replaced body saves through the same use case as a table cell`() =
+        runTest {
+            replacementBody = fakeBody
+            whenever(setDataValue("dataElement", "coc", "5")) doReturn Result.success(Unit)
+            viewModel.dataSetScreenState.test {
+                awaitItem()
+                awaitItem()
+                assertEquals(null, viewModel.saveBodyValue("dataElement", "coc", "5"))
+                cancelAndIgnoreRemainingEvents()
+            }
+            verify(setDataValue).invoke("dataElement", "coc", "5")
+        }
+
+    @Test
+    fun `a value a replaced body cannot save is explained in a snackbar`() =
+        runTest {
+            replacementBody = fakeBody
+            val error = IllegalArgumentException("invalid email")
+            whenever(setDataValue("dataElement", "coc", "notanemail")) doReturn Result.failure(error)
+            whenever(fieldErrorMessageProvider.getFriendlyErrorMessage(error)) doReturn "Not a valid email"
+            viewModel.dataSetScreenState.test {
+                awaitItem()
+                awaitItem()
+                SnackbarController.events.test {
+                    assertEquals("Not a valid email", viewModel.saveBodyValue("dataElement", "coc", "notanemail"))
+                    // SnackbarController is one channel for the whole process: events other tests
+                    // sent can arrive first.
+                    var message = awaitItem().message
+                    while (message != "Not a valid email") message = awaitItem().message
+                    cancelAndIgnoreRemainingEvents()
+                }
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    private val bodyFieldCellId =
+        CellIdGenerator.generateId(
+            rowIds = listOf(TableId("dataElemen1", TableIdType.DataElement)),
+            columnIds = listOf(TableId("catOptCom01", TableIdType.CategoryOptionCombo)),
+        )
+
+    private val bodyFieldInfo =
+        CellInfo(
+            label = "Allergies",
+            value = null,
+            displayValue = null,
+            inputType = InputType.Text,
+            inputExtra = null,
+            supportingText = emptyList(),
+            errors = emptyList(),
+            warnings = emptyList(),
+            legendColor = null,
+            legendLabel = null,
+            isRequired = false,
+        )
+
+    private suspend fun givenTheBodyFieldInput(): InputDataUiState {
+        val inputData = mock(InputDataUiState::class.java)
+        whenever(getDataValueInput(any(), any(), any())) doReturn bodyFieldInfo
+        whenever(
+            inputDataUiStateMapper.map(
+                cellId = any(),
+                cellInfo = any(),
+                validationError = anyOrNull(),
+                valueWithError = anyOrNull(),
+                currentCell = anyOrNull(),
+                isLastCell = any(),
+            ),
+        ) doReturn inputData
+        return inputData
+    }
+
+    private val secondBodyFieldCellId =
+        CellIdGenerator.generateId(
+            rowIds = listOf(TableId("dataElemen2", TableIdType.DataElement)),
+            columnIds = listOf(TableId("catOptCom01", TableIdType.CategoryOptionCombo)),
+        )
+
+    private val bodyFieldOrder = listOf("dataElemen1" to "catOptCom01", "dataElemen2" to "catOptCom01")
+
+    @Test
+    fun `a replaced body opens the native input of its last field, which ends there`() =
+        runTest {
+            replacementBody = fakeBody
+            val inputData = givenTheBodyFieldInput()
+            viewModel.dataSetScreenState.test {
+                awaitItem()
+                awaitItem()
+                viewModel.openBodyInput("dataElemen1", "catOptCom01", listOf("dataElemen1" to "catOptCom01"))
+                assertEquals(inputData, (awaitItem() as DataSetScreenState.Loaded).selectedCellInfo)
+                cancelAndIgnoreRemainingEvents()
+            }
+            verify(getDataValueInput).invoke("dataElemen1", Pair("catOptCom01", emptyList()), false)
+            verify(inputDataUiStateMapper).map(
+                cellId = eq(bodyFieldCellId),
+                cellInfo = eq(bodyFieldInfo),
+                validationError = anyOrNull(),
+                valueWithError = anyOrNull(),
+                currentCell = anyOrNull(),
+                isLastCell = eq(true),
+            )
+        }
+
+    @Test
+    fun `the native input of a replaced body's field goes on to the next one in the body's order`() =
+        runTest {
+            replacementBody = fakeBody
+            givenTheBodyFieldInput()
+            viewModel.dataSetScreenState.test {
+                awaitItem()
+                awaitItem()
+                viewModel.openBodyInput("dataElemen1", "catOptCom01", bodyFieldOrder)
+                awaitItem()
+                viewModel.onInputAction(bodyFieldCellId, isActionDone = false)
+                testDispatcher.scheduler.advanceUntilIdle()
+                cancelAndIgnoreRemainingEvents()
+            }
+            verify(inputDataUiStateMapper).map(
+                cellId = eq(bodyFieldCellId),
+                cellInfo = any(),
+                validationError = anyOrNull(),
+                valueWithError = anyOrNull(),
+                currentCell = anyOrNull(),
+                isLastCell = eq(false),
+            )
+            verify(getDataValueInput).invoke("dataElemen2", Pair("catOptCom01", emptyList()), false)
+            verify(inputDataUiStateMapper).map(
+                cellId = eq(secondBodyFieldCellId),
+                cellInfo = any(),
+                validationError = anyOrNull(),
+                valueWithError = anyOrNull(),
+                currentCell = anyOrNull(),
+                isLastCell = eq(true),
+            )
+        }
+
+    @Test
+    fun `a value saved from the native input tells the replaced body to refresh its values`() =
+        runTest {
+            replacementBody = fakeBody
+            givenTheBodyFieldInput()
+            whenever(setDataValue(any<List<TableId>>(), any<List<TableId>>(), anyOrNull())) doReturn Result.success(Unit)
+            viewModel.dataSetScreenState.test {
+                awaitItem()
+                awaitItem()
+                viewModel.onUiAction(UiAction.OnValueChanged(bodyFieldCellId, "Penicillin"))
+                testDispatcher.scheduler.advanceUntilIdle()
+                val body = (viewModel.dataSetScreenState.value as DataSetScreenState.Loaded).body
+                assertEquals(1, (body as DataSetBodyState.Replaced).valuesKey)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `section selection is ignored while the body is replaced`() =
+        runTest {
+            replacementBody = fakeBody
+            viewModel.dataSetScreenState.test {
+                awaitItem()
+                awaitItem()
+                viewModel.onSectionSelected("otherSection")
+                expectNoEvents()
+                cancelAndIgnoreRemainingEvents()
+            }
         }
 
     @After

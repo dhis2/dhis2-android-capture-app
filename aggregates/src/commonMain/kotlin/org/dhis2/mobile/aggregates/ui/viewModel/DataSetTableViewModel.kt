@@ -41,10 +41,13 @@ import org.dhis2.mobile.aggregates.model.Violation
 import org.dhis2.mobile.aggregates.model.mapper.toTableModel
 import org.dhis2.mobile.aggregates.model.mapper.updateValue
 import org.dhis2.mobile.aggregates.model.mapper.withTotalsRow
+import org.dhis2.mobile.aggregates.ui.body.DataSetInstanceBody
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
 import org.dhis2.mobile.aggregates.ui.inputs.ResizeAction
+import org.dhis2.mobile.aggregates.ui.inputs.TableId
+import org.dhis2.mobile.aggregates.ui.inputs.TableIdType
 import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.IdsProvider.getCategoryOptionCombo
 import org.dhis2.mobile.aggregates.ui.provider.IdsProvider.getDataElementUid
@@ -52,6 +55,7 @@ import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
 import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarEvent
 import org.dhis2.mobile.aggregates.ui.states.CellSelectionState
+import org.dhis2.mobile.aggregates.ui.states.DataSetBodyState
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.states.OverwrittenDimension
@@ -90,8 +94,16 @@ internal class DataSetTableViewModel(
     private val uiActionHandler: UiActionHandler,
     private val inputDataUiStateMapper: InputDataUiStateMapper,
     private val fieldErrorMessageProvider: FieldErrorMessageProvider,
+    /** Asks the DataSetInstanceBodyProvider seam, if one is bound. Null keeps the native tables. */
+    private val resolveBody: suspend () -> DataSetInstanceBody? = { null },
 ) : ViewModel() {
     private var sectionChangeJob: Job? = null
+
+    /** Resolved once per screen: a reload (sync) re-reads values, it doesn't switch forms. */
+    private var body: DataSetBodyState? = null
+
+    /** The replaced body's fields the host's input fills, in the body's order, as cell ids. */
+    private var bodyFieldOrder: List<String> = emptyList()
 
     private val _dataSetScreenState =
         MutableStateFlow<DataSetScreenState>(DataSetScreenState.Loading)
@@ -107,6 +119,7 @@ internal class DataSetTableViewModel(
     fun loadDataSet() {
         launchUseCase(dispatcher.io()) {
             val dataSetInstanceData = getDataSetInstanceData(this)
+            val bodyState = nextBodyState()
             val initialSection = dataSetInstanceData.initialSectionToLoad
 
             val dataSetSectionTitle =
@@ -124,27 +137,38 @@ internal class DataSetTableViewModel(
             val initialDimensions = overwrittenWidths(sectionToLoad)
             withContext(dispatcher.main()) {
                 _dataSetScreenState.value =
-                    DataSetScreenState.Loaded(
-                        dataSetDetails =
-                            dataSetInstanceData.dataSetDetails.copy(
-                                customTitle =
-                                    dataSetInstanceData.dataSetDetails.customTitle.copy(
-                                        header = dataSetSectionTitle,
-                                    ),
-                            ),
-                        dataSetSections = dataSetInstanceData.dataSetSections,
-                        renderingConfig = dataSetInstanceData.dataSetRenderingConfig,
-                        dataSetSectionTable =
-                            DataSetSectionTable(
-                                sectionToLoad,
-                                emptyList(),
-                                overridingDimensions = initialDimensions,
-                                loading = true,
-                            ),
-                        initialSection = dataSetInstanceData.initialSectionToLoad,
-                        selectedCellInfo = CellSelectionState.Default(TableSelection.Unselected()),
-                    )
+                    DataSetScreenState
+                        .Loaded(
+                            dataSetDetails =
+                                dataSetInstanceData.dataSetDetails.copy(
+                                    customTitle =
+                                        dataSetInstanceData.dataSetDetails.customTitle.copy(
+                                            header = dataSetSectionTitle,
+                                        ),
+                                ),
+                            dataSetSections = dataSetInstanceData.dataSetSections,
+                            renderingConfig = dataSetInstanceData.dataSetRenderingConfig,
+                            dataSetSectionTable =
+                                DataSetSectionTable(
+                                    sectionToLoad,
+                                    emptyList(),
+                                    overridingDimensions = initialDimensions,
+                                    loading = true,
+                                ),
+                            initialSection = dataSetInstanceData.initialSectionToLoad,
+                            selectedCellInfo = CellSelectionState.Default(TableSelection.Unselected()),
+                            body = bodyState,
+                        ).let { loaded ->
+                            if (bodyState is DataSetBodyState.Native) {
+                                loaded
+                            } else {
+                                loaded.copy(dataSetSectionTable = loaded.dataSetSectionTable.copy(loading = false))
+                            }
+                        }
             }
+
+            // Nothing renders the tables, so they are not built.
+            if (bodyState !is DataSetBodyState.Native) return@launchUseCase
 
             val tableModels = sectionData(sectionToLoad)
 
@@ -171,7 +195,91 @@ internal class DataSetTableViewModel(
         }
     }
 
+    private suspend fun nextBodyState(): DataSetBodyState {
+        val current = body
+        val next =
+            when (current) {
+                null -> resolveBody()?.let { DataSetBodyState.Replaced(it, reloadKey = 0) } ?: DataSetBodyState.Native
+                is DataSetBodyState.Replaced -> current.copy(reloadKey = current.reloadKey + 1)
+                else -> current
+            }
+        body = next
+        return next
+    }
+
+    /**
+     * The replaced body could not render: switch to the native tables for the rest of this
+     * screen and tell the user. Saved values are shared, so they are kept; the failure is
+     * reported by the body. Opening the data set again tries the replaced body again.
+     */
+    fun onBodyFailed() {
+        body = DataSetBodyState.Native
+        loadDataSet()
+        viewModelScope.launch { showSnackbar(resourceManager.provideBodyFailedMessage()) }
+    }
+
+    /**
+     * A replaced body saves through the same path as a table cell. Returns null when saved,
+     * otherwise the message a table cell would show. The message is also shown in a snackbar: a
+     * replaced body (a custom form in a WebView) has no reliable way to show it next to the field.
+     */
+    suspend fun saveBodyValue(
+        dataElementUid: String,
+        categoryOptionComboUid: String,
+        value: String?,
+    ): String? {
+        val editable = (_dataSetScreenState.value as? DataSetScreenState.Loaded)?.isEditable == true
+        if (!editable) return resourceManager.actionCantBePerformed()
+        return withContext(dispatcher.io()) {
+            setDataValue(dataElementUid, categoryOptionComboUid, value)
+        }.fold(
+            onSuccess = { null },
+            onFailure = { error ->
+                fieldErrorMessageProvider.getFriendlyErrorMessage(error).also(::showSnackbar)
+            },
+        )
+    }
+
+    /**
+     * A replaced body asks for the host's input for one of its fields: the same input a table cell
+     * opens. [fieldOrder] is every field the host's input fills, in the body's order: its "next"
+     * action opens the following one, and the last one gets the "done" action.
+     */
+    fun openBodyInput(
+        dataElementUid: String,
+        categoryOptionComboUid: String,
+        fieldOrder: List<Pair<String, String>>,
+    ) {
+        bodyFieldOrder = fieldOrder.map { (dataElement, categoryOptionCombo) -> bodyCellId(dataElement, categoryOptionCombo) }
+        launchUseCase {
+            updateSelectedCell(bodyCellId(dataElementUid, categoryOptionComboUid))
+        }
+    }
+
+    private fun bodyCellId(
+        dataElementUid: String,
+        categoryOptionComboUid: String,
+    ) = CellIdGenerator.generateId(
+        rowIds = listOf(TableId(dataElementUid, TableIdType.DataElement)),
+        columnIds = listOf(TableId(categoryOptionComboUid, TableIdType.CategoryOptionCombo)),
+    )
+
+    /** The field after [cellId] in the replaced body's order; null for the last one. */
+    private fun nextBodyCell(cellId: String): String? =
+        bodyFieldOrder.indexOf(cellId).takeIf { it >= 0 }?.let { bodyFieldOrder.getOrNull(it + 1) }
+
+    /** A value was saved through the host's input: a replaced body re-reads its values. */
+    private fun onValueSavedFromInput() {
+        val replaced = body as? DataSetBodyState.Replaced ?: return
+        val next = replaced.copy(valuesKey = replaced.valuesKey + 1)
+        body = next
+        _dataSetScreenState.update {
+            (it as? DataSetScreenState.Loaded)?.copy(body = next) ?: it
+        }
+    }
+
     fun onSectionSelected(sectionUid: String) {
+        if (body !is DataSetBodyState.Native) return
         if (_dataSetScreenState.value.currentSection() == sectionUid) return
         sectionChangeJob?.takeIf { it.isActive }?.cancel()
         sectionChangeJob =
@@ -390,6 +498,10 @@ internal class DataSetTableViewModel(
                 }
 
                 is UiAction.OnNextClick -> {
+                    if (body is DataSetBodyState.Replaced) {
+                        nextBodyCell(uiAction.id)?.let { updateSelectedCell(it) }
+                        return@launch
+                    }
                     findCell(
                         cellId = uiAction.id,
                         findNextEditable = true,
@@ -421,6 +533,7 @@ internal class DataSetTableViewModel(
                         }
                     result.fold(
                         onSuccess = {
+                            onValueSavedFromInput()
                             val selectedCellInfo =
                                 (_dataSetScreenState.value as? DataSetScreenState.Loaded)
                                     ?.selectedCellInfo
@@ -672,6 +785,7 @@ internal class DataSetTableViewModel(
     }
 
     private fun isLastCell(cellId: String): Boolean {
+        if (body is DataSetBodyState.Replaced) return nextBodyCell(cellId) == null
         val tables =
             (dataSetScreenState.value as DataSetScreenState.Loaded).dataSetSectionTable.tableModels
 
