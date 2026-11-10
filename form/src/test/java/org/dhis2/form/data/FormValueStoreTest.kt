@@ -230,7 +230,7 @@ class FormValueStoreTest {
             d2.fileResourceModule().fileResources(),
         ) doReturn mock()
         whenever(
-            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any(), any()),
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any<File>(), any()),
         ) doReturn generatedUid
         val result =
             deValueStore.storeFile(
@@ -257,13 +257,13 @@ class FormValueStoreTest {
         ) doReturn mockedDataElement
         whenever(d2.fileResourceModule().fileResources()) doReturn mock()
         whenever(
-            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any(), any()),
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any<File>(), any()),
         ) doReturn "fileResourceUid"
 
         deValueStore.storeFile(uid = "uid", filePath = "filePath")
 
         verify(d2.fileResourceModule().fileResources()).blockingProcessAndAdd(
-            any(),
+            any<File>(),
             argThat { this is ResourceContext.FileContext },
         )
     }
@@ -283,13 +283,13 @@ class FormValueStoreTest {
         ) doReturn mockedAttribute
         whenever(d2.fileResourceModule().fileResources()) doReturn mock()
         whenever(
-            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any(), any()),
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any<File>(), any()),
         ) doReturn "fileResourceUid"
 
         attrValueStore.storeFile(uid = "uid", filePath = "filePath")
 
         verify(d2.fileResourceModule().fileResources()).blockingProcessAndAdd(
-            any(),
+            any<File>(),
             argThat { this is ResourceContext.FileContext },
         )
     }
@@ -316,13 +316,13 @@ class FormValueStoreTest {
         whenever(enrollmentRepository.blockingGet()) doReturn mockedEnrollment
         whenever(d2.fileResourceModule().fileResources()) doReturn mock()
         whenever(
-            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any(), any()),
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any<File>(), any()),
         ) doReturn generatedUid
 
         val result = attrValueStore.storeFile(uid = "uid", filePath = "filePath")
 
         verify(d2.fileResourceModule().fileResources()).blockingProcessAndAdd(
-            any(),
+            any<File>(),
             argThat {
                 (this as? ResourceContext.ImageContext.ProgramImageContext)?.let {
                     it.programUid == programUid && it.resourceUid == "uid"
@@ -355,13 +355,13 @@ class FormValueStoreTest {
         whenever(eventRepository.blockingGet()) doReturn mockedEvent
         whenever(d2.fileResourceModule().fileResources()) doReturn mock()
         whenever(
-            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any(), any()),
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any<File>(), any()),
         ) doReturn generatedUid
 
         val result = deValueStore.storeFile(uid = "uid", filePath = "filePath")
 
         verify(d2.fileResourceModule().fileResources()).blockingProcessAndAdd(
-            any(),
+            any<File>(),
             argThat {
                 (this as? ResourceContext.ImageContext.ProgramImageContext)?.let {
                     it.programUid == programUid && it.resourceUid == "uid"
