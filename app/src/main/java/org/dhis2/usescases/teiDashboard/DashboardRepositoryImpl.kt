@@ -14,6 +14,8 @@ import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.data.dhislogic.AUTH_ALL
 import org.dhis2.data.dhislogic.AUTH_ENROLLMENT_CASCADE_DELETE
 import org.dhis2.data.dhislogic.AUTH_TEI_CASCADE_DELETE
+import org.dhis2.mobile.commons.category.data.toDomain
+import org.dhis2.mobile.commons.category.domain.isReadOnlySelection
 import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.utils.ValueUtils
@@ -730,6 +732,24 @@ class DashboardRepositoryImpl(
             .uid(enrollmentUid)
             .blockingGet()!!
             .status()
+
+    override fun isEnrollmentCategoryComboReadOnly(enrollmentUid: String?): Boolean =
+        d2
+            .enrollmentModule()
+            .enrollments()
+            .uid(enrollmentUid)
+            .blockingGet()
+            ?.attributeOptionCombo()
+            ?.let { attributeOptionComboUid ->
+                d2
+                    .categoryModule()
+                    .categoryOptionCombos()
+                    .withCategoryOptions()
+                    .uid(attributeOptionComboUid)
+                    .blockingGet()
+            }?.categoryOptions()
+            ?.map { it.toDomain() }
+            ?.isReadOnlySelection() == true
 
     override fun updateEnrollmentStatus(
         enrollmentUid: String,
