@@ -67,6 +67,9 @@ sonar {
             property("sonar.pullrequest.base", targetBranch)
             property("sonar.pullrequest.branch", branch)
             property("sonar.pullrequest.key", pullRequestId)
+            // Fail code-quality when the PR misses the quality gate, so that job can gate
+            // the merge instead of the SonarCloud app check.
+            property("sonar.qualitygate.wait", true)
         }
     }
 }

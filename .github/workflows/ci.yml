@@ -9,6 +9,12 @@ on:
       - 'release/**'
   schedule:
     - cron: '0 0 * * *'
+  # Merge queue groups on develop. They run the full test suite, UI tests included,
+  # against the merged result. Only code-quality is skipped (a skipped job satisfies a
+  # required check): the quality gate already passed on the PR, and the push build on
+  # develop analyses the merged code.
+  merge_group:
+    types: [ checks_requested ]
 
 permissions: { }
 
@@ -29,7 +35,7 @@ jobs:
           fetch-depth: 0
 
       - name: Check PR Size
-        if: ${{ !contains(github.event.pull_request.title, '[skip size]') && !contains(github.event.pull_request.body, '[skip size]') }}
+        if: ${{ github.event_name != 'merge_group' && !contains(github.event.pull_request.title, '[skip size]') && !contains(github.event.pull_request.body, '[skip size]') }}
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -215,7 +221,7 @@ jobs:
     # !cancelled() rather than success(): the device jobs upload whatever coverage they
     # retrieved even when a test fails, so the analysis should still consume it.
     needs: [ unit-tests, run-ui-portrait, run-ui-landscape ]
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() || (github.event_name != 'merge_group') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -280,8 +286,10 @@ jobs:
     needs: [ setup, lint-check, unit-tests, build-test-apks, run-ui-portrait, run-ui-landscape, code-quality ]
     if: always() && github.event_name != 'pull_request'
     steps:
+      # Merge queue runs only report failures: a passing group is followed by the push
+      # build on develop, which reports its own result.
       - name: Notify Slack on Success
-        if: ${{ !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
+        if: ${{ github.event_name != 'merge_group' && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
         uses: slackapi/slack-github-action@dcb1066f776dd043e64d0e8ba94ca15cc7e1875d # v4.0.0
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -295,8 +303,10 @@ jobs:
               }]
             }
 
+      # The queue cancels a group whenever a PR ahead of it fails or leaves the queue, so
+      # cancelled merge group runs are expected and not reported.
       - name: Notify Slack on Failure
-        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        if: ${{ contains(needs.*.result, 'failure') || (github.event_name != 'merge_group' && contains(needs.*.result, 'cancelled')) }}
         uses: slackapi/slack-github-action@dcb1066f776dd043e64d0e8ba94ca15cc7e1875d # v4.0.0
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
