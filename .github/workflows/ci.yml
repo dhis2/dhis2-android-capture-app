@@ -221,7 +221,7 @@ jobs:
     # !cancelled() rather than success(): the device jobs upload whatever coverage they
     # retrieved even when a test fails, so the analysis should still consume it.
     needs: [ unit-tests, run-ui-portrait, run-ui-landscape ]
-    if: ${{ !cancelled() || (github.event_name != 'merge_group') }}
+    if: ${{ !cancelled() && github.event_name != 'merge_group' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:

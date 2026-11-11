@@ -9,6 +9,7 @@
 #   PR_TITLE              Title to read the ticket keys from. When empty, the title is
 #                         looked up from PR_NUMBER or MERGE_GROUP_HEAD_REF.
 #   PR_NUMBER             Pull request number (optional).
+#   EVENT_BASE_REF        Base branch the pull_request event reports (optional).
 #   MERGE_GROUP_HEAD_REF  merge_group head ref, refs/heads/gh-readonly-queue/<base>/pr-<n>-<sha>.
 #   GITHUB_REPOSITORY     owner/repo, set by GitHub Actions; needed for the PR lookup.
 #   GH_TOKEN              Token for the gh CLI; needed for the PR lookup.
@@ -16,6 +17,11 @@
 #
 # A title without an ANDROAPP key (dependabot, Transifex, ...) passes with a notice:
 # those PRs are added to the merge queue by hand.
+#
+# A PR stacked on another PR passes with a notice too: GitHub reports the stack's trunk
+# as the event's base branch, so the workflow's branch filter lets it through, but it
+# never enters the merge queue itself. Its tickets are checked by merge_automation.py,
+# and again by this check on the stack's root PR.
 #
 # The Jira project is world-readable, so no credentials are used. A ticket that is not
 # publicly visible cannot be verified and fails the check.
@@ -26,12 +32,22 @@ READY_STATUS="Ready to Merge"
 JIRA_URL="${JIRA_URL:-https://dhis2.atlassian.net}"
 PR_TITLE="${PR_TITLE:-}"
 PR_NUMBER="${PR_NUMBER:-}"
+EVENT_BASE_REF="${EVENT_BASE_REF:-}"
 
 summary() {
     if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
         echo "$1" >> "$GITHUB_STEP_SUMMARY"
     fi
 }
+
+if [[ -n "$PR_NUMBER" && -n "$EVENT_BASE_REF" ]]; then
+    BASE_REF=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json baseRefName --jq .baseRefName)
+    if [[ "$BASE_REF" != "$EVENT_BASE_REF" ]]; then
+        echo "::notice::Stacked on $BASE_REF: not gated here. Its tickets are checked on the stack's root PR into $EVENT_BASE_REF."
+        summary "Stacked on \`$BASE_REF\`: not gated here, its tickets are checked on the stack's root PR."
+        exit 0
+    fi
+fi
 
 if [[ -z "$PR_TITLE" ]]; then
     if [[ -z "$PR_NUMBER" && -n "${MERGE_GROUP_HEAD_REF:-}" ]]; then
