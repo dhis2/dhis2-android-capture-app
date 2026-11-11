@@ -1,0 +1,36 @@
+name: Jira ready
+
+# Backs the required `jira-ready` check: a PR may only be merged once its ANDROAPP
+# ticket is in "Ready to Merge". A separate workflow from CI so that a title edit or a
+# re-run after a Jira transition is cheap and never cancels the CI run.
+on:
+  pull_request:
+    branches:
+      - develop
+    types: [ opened, edited, reopened, synchronize ]
+  merge_group:
+    types: [ checks_requested ]
+
+permissions: { }
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  jira-ready:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Check Jira ticket status
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          MERGE_GROUP_HEAD_REF: ${{ github.event.merge_group.head_ref }}
+        run: |
+          chmod +x ./scripts/check_jira_ready.sh
+          ./scripts/check_jira_ready.sh
