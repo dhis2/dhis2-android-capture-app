@@ -7,6 +7,7 @@ import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasAnyDescendant
+import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
@@ -69,9 +70,7 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun openNextSearchParameter(parameterValue: String) {
         closeKeyboard()
         composeTestRule.waitForIdle()
-        composeTestRule
-            .onNodeWithTag(SEARCH_PARAMETERS_LIST_TAG)
-            .performScrollToNode(hasText(parameterValue))
+        scrollToSearchParameter(parameterValue)
         composeTestRule.waitUntilAtLeastOneExists(hasText(parameterValue), TIMEOUT)
         composeTestRule.onNodeWithText(parameterValue).performClick()
     }
@@ -174,7 +173,21 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     @OptIn(ExperimentalTestApi::class)
+    fun checkSearchParametersAreDisplayed() {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag(SEARCH_PARAMETERS_LIST_TAG), TIMEOUT)
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SEARCH_PARAM_ITEM"), TIMEOUT)
+    }
+
     fun typeOnSearchParameter(label: String, value: String) {
+        typeOnSearchField(label, value, "INPUT_TEXT_FIELD")
+    }
+
+    fun typeOnNumberSearchParameter(label: String, value: String) {
+        typeOnSearchField(label, value, "INPUT_NUMBER_FIELD")
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    private fun typeOnSearchField(label: String, value: String, fieldTag: String) {
         // Dismiss the keyboard first so the LazyColumn recomposes and exposes all field labels.
         // Without this, items scrolled behind an open keyboard are dropped from composition and
         // waitUntilAtLeastOneExists(hasText(label)) times out on the next field.
@@ -183,18 +196,78 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         // Any focus jump caused by the IMM dismiss is immediately overridden by clicking the label.
         closeKeyboard()
         composeTestRule.waitForIdle()
-        // Scroll the LazyColumn to ensure the target field is in composition before clicking.
-        composeTestRule
-            .onNodeWithTag(SEARCH_PARAMETERS_LIST_TAG)
-            .performScrollToNode(hasText(label))
+        scrollToSearchParameter(label)
         composeTestRule.waitUntilAtLeastOneExists(hasText(label), TIMEOUT)
         composeTestRule.onNodeWithText(label).performClick()
-        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("INPUT_TEXT_FIELD"), TIMEOUT)
-        composeTestRule.onAllNodesWithTag("INPUT_TEXT_FIELD").onLast().performTextInput(value)
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag(fieldTag), TIMEOUT)
+        composeTestRule.onAllNodesWithTag(fieldTag).onLast().performTextInput(value)
+    }
+
+    // Exact match on an editable node, so the label and the search bar can't satisfy it
+    @OptIn(ExperimentalTestApi::class)
+    fun checkSearchParameterHasValue(label: String, value: String) {
+        closeKeyboard()
+        composeTestRule.waitForIdle()
+        scrollToSearchParameter(label)
+        composeTestRule.waitUntilAtLeastOneExists(hasText(value) and hasSetTextAction(), TIMEOUT)
+    }
+
+    // Scrolls first so the field is composed and the check can't pass vacuously
+    @OptIn(ExperimentalTestApi::class)
+    fun checkSearchParameterIsEmpty(label: String, previousValue: String) {
+        scrollToSearchParameter(label)
+        composeTestRule.waitUntilDoesNotExist(
+            hasText(previousValue) and hasSetTextAction(),
+            TIMEOUT,
+        )
     }
 
     @OptIn(ExperimentalTestApi::class)
-    fun clickOnClearSearch() {
+    fun clickOnClearSearchButton() {
+        closeKeyboard()
+        composeTestRule.waitForIdle()
+        // "Clear search" is the last item of the LazyColumn
+        scrollToSearchParameter("Clear search")
+        composeTestRule.waitUntilAtLeastOneExists(hasText("Clear search"), TIMEOUT)
+        composeTestRule.onNodeWithText("Clear search").performClick()
+    }
+
+    // Program dashboard search bar, shown once a search has values
+    @OptIn(ExperimentalTestApi::class)
+    fun checkSearchBarShowsQuery(vararg values: String) {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SEARCH_INPUT"), TIMEOUT)
+        values.forEach { value ->
+            composeTestRule
+                .onNodeWithTag("SEARCH_INPUT")
+                .assert(hasText(value, substring = true))
+        }
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun clickOnSearchBar() {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SEARCH_INPUT"), TIMEOUT)
+        composeTestRule.onNodeWithTag("SEARCH_INPUT").performClick()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun clickOnResetSearchBar() {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("CANCEL_BUTTON"), TIMEOUT)
+        composeTestRule.onNodeWithTag("CANCEL_BUTTON").performClick()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun checkSearchBarIsCleared() {
+        composeTestRule.waitUntilDoesNotExist(hasTestTag("SEARCH_INPUT"), TIMEOUT)
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun clickOnSearchOutsideProgram(buttonText: String) {
+        composeTestRule.waitUntilAtLeastOneExists(hasText(buttonText), TIMEOUT)
+        composeTestRule.onNodeWithText(buttonText).performClick()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun clickOnEachFieldResetButton() {
         closeKeyboard()
         composeTestRule.waitForIdle()
         val count = composeTestRule
@@ -215,7 +288,6 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         }
     }
 
-
     @OptIn(ExperimentalTestApi::class)
     fun checkFocusedFieldShowsOperatorSupportingText() {
         composeTestRule.waitUntilAtLeastOneExists(
@@ -234,9 +306,7 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             // Scroll the LazyColumn to compose the target field before asserting.
             // Off-screen items are dropped from composition on slow CI devices, causing
             // waitUntilAtLeastOneExists to time out even though the error is present.
-            composeTestRule
-                .onNodeWithTag(SEARCH_PARAMETERS_LIST_TAG)
-                .performScrollToNode(hasText(label))
+            scrollToSearchParameter(label)
             composeTestRule.waitForIdle()
 
             val containerMatcher =
@@ -260,5 +330,11 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun checkSearchResultDisplayed(teiName: String) {
         composeTestRule.waitUntilAtLeastOneExists(hasText(teiName, substring = true), TIMEOUT)
         composeTestRule.onNodeWithText(teiName, substring = true).assertIsDisplayed()
+    }
+
+    private fun scrollToSearchParameter(text: String) {
+        composeTestRule
+            .onNodeWithTag(SEARCH_PARAMETERS_LIST_TAG)
+            .performScrollToNode(hasText(text))
     }
 }
