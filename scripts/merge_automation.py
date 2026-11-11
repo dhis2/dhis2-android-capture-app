@@ -10,8 +10,13 @@ develop as a single squash commit:
    fast-forwarding each base branch to the top PR's head. No commit is created, so the
    authors' signatures are kept, and GitHub marks the upper PRs as merged.
 2. The root PR, now carrying the whole stack, gets "[skip size]" in its body (each part
-   was reviewed within the size limit) and auto-merge, so it joins the merge queue once
-   its own checks pass.
+   was reviewed within the size limit). Moving its branch restarts its CI, and the run
+   that follows that CI finds it as a stack of one.
+
+A stack of one is added to the merge queue once its tickets are ready and it has the
+required approvals and checks. It is enqueued through the asynchronous merge REST API:
+GitHub refuses auto-merge and the GraphQL enqueue for any PR that is part of a stack,
+even one whose upper PRs are already merged.
 
 A PR into develop that is part of a stack is never enqueued on its own. PRs without an
 ANDROAPP ticket are never touched: they are merged manually.
@@ -52,8 +57,11 @@ JIRA_WORKFLOW = "jira-ready.yml"
 SKIP_SIZE = "[skip size]"
 COLLAPSED_MARKER = "<!-- merge-automation:collapsed -->"
 DIVERGED_MARKER = "<!-- merge-automation:diverged:{sha} -->"
-PR_FIELDS = "number,title,body,baseRefName,headRefName,headRefOid,isDraft,isCrossRepository,autoMergeRequest"
+PR_FIELDS = "number,title,body,baseRefName,headRefName,headRefOid,isDraft,isCrossRepository"
 PASSING = {"SUCCESS", "SKIPPED", "NEUTRAL"}
+# 200: already merged or in the queue. 202: accepted. 409: a merge request is already pending.
+ENQUEUED = {200, 202, 409}
+HTTP_STATUS = re.compile(r"^HTTP/\S+ (\d{3})")
 
 
 def log(level, message):
@@ -61,7 +69,11 @@ def log(level, message):
 
 
 def gh(*args, parse=True):
-    result = subprocess.run(["gh", *args], check=True, capture_output=True, text=True)
+    result = subprocess.run(["gh", *args], capture_output=True, text=True)
+    if result.returncode != 0:
+        # Without this, a failure leaves only a traceback and GitHub's reason is lost.
+        log("error", f"gh {args[0]} {args[1]} failed: {(result.stderr or result.stdout).strip()}")
+        raise subprocess.CalledProcessError(result.returncode, result.args, result.stdout, result.stderr)
     if not parse:
         return result.stdout
     return json.loads(result.stdout) if result.stdout.strip() else None
@@ -183,14 +195,31 @@ def rerun_failed_jira_check(pr):
 
 
 def enqueue(pr):
-    if pr["autoMergeRequest"]:
-        log("", f"#{pr['number']}: auto-merge already enabled.")
+    """Adds the PR to the merge queue. Only the asynchronous merge REST API accepts a PR
+    that is part of a stack; `gh pr merge` and the GraphQL enqueue are refused for them."""
+    description = f"#{pr['number']}: adding it to the merge queue."
+    if DRY_RUN:
+        log("notice", f"[dry run] {description}")
         return
-    # On a branch with a merge queue, --auto queues the PR once its requirements are met.
-    mutate(
-        f"#{pr['number']}: enabling auto-merge, it joins the merge queue once approved and green.",
-        "pr", "merge", str(pr["number"]), "--repo", REPO, "--auto", "--squash",
+    log("", description)
+    # Not through gh(): a 409 is a non-zero exit for gh, but means the PR is already queued.
+    result = subprocess.run(
+        [
+            "gh", "api", "--include", "--method", "PUT", f"repos/{REPO}/pulls/{pr['number']}/merge-async",
+            "-f", "merge_action=merge_queue",
+            # The merge is cancelled if the branch moves before it runs.
+            "-f", f"sha={pr['headRefOid']}",
+        ],
+        capture_output=True, text=True,
     )
+    match = HTTP_STATUS.match(result.stdout)
+    status = int(match.group(1)) if match else None
+    body = re.split(r"\r?\n\r?\n", result.stdout, maxsplit=1)[-1].strip()
+    if status in ENQUEUED:
+        log("", f"#{pr['number']}: HTTP {status} {body}")
+        return
+    log("error", f"#{pr['number']}: merge-async answered HTTP {status}: {body or result.stderr.strip()}")
+    raise subprocess.CalledProcessError(result.returncode, result.args, result.stdout, result.stderr)
 
 
 def comment_once(pr, marker, text):
@@ -209,7 +238,15 @@ def process_single(pr):
     if pr["isDraft"]:
         log("notice", f"#{pr['number']} is a draft.")
         return
+    # A jira-ready that failed before the ticket moved is re-run; its completion
+    # triggers the next evaluation, which enqueues the PR.
     rerun_failed_jira_check(pr)
+    # merge-async does not wait for the requirements, so they are checked here. Each CI,
+    # jira-ready and review completion re-evaluates the PR until they are met.
+    blockers = pr_blockers(pr, required_checks(), ignored=set())
+    if blockers:
+        log("", f"#{pr['number']} not ready: {'; '.join(blockers)}.")
+        return
     enqueue(pr)
 
 
@@ -218,13 +255,8 @@ def process_stack(stack):
     numbers = " <- ".join(f"#{pr['number']}" for pr in stack)
     log("", f"Stack {numbers}")
 
-    # The stack must reach develop as one commit: never let its root merge alone.
-    if root["autoMergeRequest"]:
-        mutate(
-            f"#{root['number']}: disabling auto-merge until the stack is collapsed.",
-            "pr", "merge", str(root["number"]), "--repo", REPO, "--disable-auto",
-        )
-
+    # The root is never enqueued while it has PRs on top, so the stack reaches develop as
+    # one commit. GitHub also refuses auto-merge on stacked PRs, so nobody can turn it on.
     keys = jira_keys(stack)
     if not keys:
         log("notice", f"Stack {numbers} has no ANDROAPP ticket. Merged manually.")
@@ -279,7 +311,9 @@ def process_stack(stack):
             "-f", f"sha={top['headRefOid']}", "-F", "force=false",
         )
 
-    enqueue(dict(root, autoMergeRequest=None))
+    # Not enqueued yet: the branch moved, so its CI starts again. The run that follows a
+    # green CI finds the root as a stack of one and enqueues it.
+    log("", f"#{root['number']}: stack collapsed, it joins the merge queue once its CI is green.")
 
 
 def main():
