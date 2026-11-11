@@ -16,10 +16,13 @@ import org.dhis2.usescases.flow.teiFlow.teiFlowRobot
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.robot.filterRobot
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
+import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.hisp.dhis.android.core.mockwebserver.ResponseController
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
+import java.text.SimpleDateFormat
+import java.util.Calendar
 
 class SearchTETest : BaseTest() {
 
@@ -52,6 +55,32 @@ class SearchTETest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         filterRobot(composeTestRule) {
+            waitUntilActivityVisible<SearchTEActivity>()
+            openFilters()
+            clickOnSortByField(CHILD_ENROLLMENT_DATE_LABEL)
+            openFilters()
+        }
+
+        searchTeiRobot(composeTestRule) {
+            // ANDROAPP-2431: sorting by enrolment date puts the earliest enrolment first
+            checkFirstTEIInList(CHILD_FIRST_BY_ENROLLMENT)
+
+            // ANDROAPP-864: the card shows display-in-list attributes only
+            checkTEICardShows(CHILD_FIRST_BY_ENROLLMENT, CHILD_FIRST_BY_ENROLLMENT_LAST_NAME)
+            checkTEICardDoesNotShow(CHILD_FIRST_BY_ENROLLMENT, CHILD_ATTR_NOT_IN_LIST)
+        }
+
+        filterRobot(composeTestRule) {
+            openFilters()
+            clickOnSortByField(CHILD_ENROLLMENT_DATE_LABEL)
+            openFilters()
+        }
+        searchTeiRobot(composeTestRule) {
+            // ANDROAPP-2431: sorting again reverses the order
+            checkFirstTEIInList(CHILD_LAST_BY_ENROLLMENT)
+        }
+
+        filterRobot(composeTestRule) {
             openFilters()
             clickOnFilterBy(enrollmentStatusFilter)
             clickOnFilterCompletedOption()
@@ -76,6 +105,7 @@ class SearchTETest : BaseTest() {
             API_EVENTS_EMPTY_RESPONSE,
         )
         val eventStatusFilter = context.getString(R.string.filters_title_event_status)
+        val notSynced = context.getString(R.string.not_synced)
         val totalCount = "1"
         val registerTeiDetails = createRegisterTEI()
 
@@ -83,15 +113,19 @@ class SearchTETest : BaseTest() {
         prepareTestAdultWomanProgrammeIntentAndLaunchActivity(rule)
 
         teiFlowRobot(composeTestRule) {
-            // prepareTestAdultWomanProgrammeIntentAndLaunchActivity() above starts
-            // SearchTEActivity; wait for it to be visible before the first Espresso
-            // interaction, otherwise the click races the Activity transition.
             waitUntilActivityVisible<SearchTEActivity>()
-            registerTEI(registerTeiDetails)
+            // LMP yesterday makes the auto-generated ANC 1st visit overdue by one day
+            registerTEI(registerTeiDetails, incidentDate = yesterday())
             composeTestRule.waitForIdle()
             pressBack()
         }
         composeTestRule.waitForIdle()
+
+        searchTeiRobot(composeTestRule) {
+            // ANDROAPP-7327: the new TEI shows its overdue status in the list right away
+            checkTEICardShows(registerTeiDetails.name, OVERDUE_LABEL, notSynced)
+        }
+
         filterRobot(composeTestRule) {
             openFilters()
             clickOnFilterBy(eventStatusFilter)
@@ -99,6 +133,37 @@ class SearchTETest : BaseTest() {
             closeFilterRowAtField(eventStatusFilter)
             checkFilterCounter(totalCount)
             checkCountAtFilter(eventStatusFilter, totalCount)
+            openFilters()
+        }
+
+        searchTeiRobot(composeTestRule) {
+            // ANDROAPP-2431: the overdue filter keeps the overdue TEI in the list
+            checkTEICardShows(registerTeiDetails.name, OVERDUE_LABEL, notSynced)
+        }
+
+        filterRobot(composeTestRule) {
+            openFilters()
+            clickOnClearFilters()
+            openFilters()
+        }
+
+        searchTeiRobot(composeTestRule) {
+            // Albert's overdue events are over a year old, outside the overdue filter's window
+            clickOnClearSearchButton()
+            typeOnSearchParameter(OVERDUE_SEARCH_ATTR_LAST_NAME, OVERDUE_SYNCED_TEI_LAST_NAME)
+            clickOnSearch()
+
+            // ANDROAPP-7327: a synced overdue TEI shows the overdue status and isn't flagged for sync
+            checkTEICardShows(OVERDUE_SYNCED_TEI, OVERDUE_LABEL)
+            checkTEICardDoesNotShow(OVERDUE_SYNCED_TEI, notSynced)
+
+            // ANDROAPP-7327: opening the TEI without changes doesn't flag it for sync
+            clickOnTEI(OVERDUE_SYNCED_TEI)
+            waitUntilActivityVisible<TeiDashboardMobileActivity>()
+            pressBack()
+            waitUntilActivityVisible<SearchTEActivity>()
+            checkTEICardShows(OVERDUE_SYNCED_TEI, OVERDUE_LABEL)
+            checkTEICardDoesNotShow(OVERDUE_SYNCED_TEI, notSynced)
         }
     }
 
@@ -225,24 +290,12 @@ class SearchTETest : BaseTest() {
     private fun createRegisterTEI() = RegisterTEIUIModel(
         "Claire",
         "Jones",
-        dateRegistration,
-        dateEnrollment,
+        DateRegistrationUIModel(2016, 1, 9),
+        DateRegistrationUIModel(2020, 9, 30),
     )
 
-    private fun createFirstSpecificDate() = DateRegistrationUIModel(
-        2016,
-        1,
-        9,
-    )
-
-    private fun createEnrollmentDate() = DateRegistrationUIModel(
-        2020,
-        9,
-        30,
-    )
-
-    private val dateRegistration = createFirstSpecificDate()
-    private val dateEnrollment = createEnrollmentDate()
+    private fun yesterday(): String =
+        SimpleDateFormat("ddMMyyyy").format(Calendar.getInstance().apply { add(Calendar.DATE, -1) }.time)
 
     companion object {
         const val PROGRAM_UID = "PROGRAM_UID"
@@ -250,6 +303,19 @@ class SearchTETest : BaseTest() {
 
         const val CHILD_TE_TYPE_VALUE = "nEenWmSyUEp"
         const val CHILD_TE_TYPE = "TRACKED_ENTITY_UID"
+
+        // Child Programme list test constants
+        const val CHILD_ENROLLMENT_DATE_LABEL = "Date of enrollment"
+        const val CHILD_ATTR_NOT_IN_LIST = "Gender"
+        const val CHILD_FIRST_BY_ENROLLMENT = "Ruth"
+        const val CHILD_FIRST_BY_ENROLLMENT_LAST_NAME = "Hanson"
+        const val CHILD_LAST_BY_ENROLLMENT = "Andrea"
+
+        // Adult Woman overdue test constants
+        const val OVERDUE_LABEL = "overdue"
+        const val OVERDUE_SYNCED_TEI = "Albert"
+        const val OVERDUE_SEARCH_ATTR_LAST_NAME = "Last name"
+        const val OVERDUE_SYNCED_TEI_LAST_NAME = "Barnes"
 
         // TB Program search flow test constants
         const val TB_IDENTIFIER_LABEL = "TB identifier"

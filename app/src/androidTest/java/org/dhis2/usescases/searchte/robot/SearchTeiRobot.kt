@@ -1,6 +1,7 @@
 package org.dhis2.usescases.searchte.robot
 
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
@@ -21,7 +22,9 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -33,6 +36,8 @@ import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+
+private const val TEI_CARD_TITLE_PREFIX = "First name: "
 
 fun searchTeiRobot(
     composeTestRule: ComposeTestRule,
@@ -46,7 +51,7 @@ fun searchTeiRobot(
 class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnTEI(teiName: String) {
-        composeTestRule.onNodeWithText("First name: $teiName", true).performClick()
+        composeTestRule.onNodeWithText("$TEI_CARD_TITLE_PREFIX$teiName", true).performClick()
     }
 
     fun checkTEIsDelete(teiName: String, teiLastName: String) {
@@ -330,6 +335,51 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun checkSearchResultDisplayed(teiName: String) {
         composeTestRule.waitUntilAtLeastOneExists(hasText(teiName, substring = true), TIMEOUT)
         composeTestRule.onNodeWithText(teiName, substring = true).assertIsDisplayed()
+    }
+
+    // --- Methods for the TEI list cards ---
+
+    fun checkFirstTEIInList(teiName: String) {
+        onView(withId(R.id.scrollView)).perform(scrollToPosition<RecyclerView.ViewHolder>(0))
+        composeTestRule.waitUntil(TIMEOUT) {
+            composeTestRule.onAllNodes(hasText(TEI_CARD_TITLE_PREFIX, substring = true))
+                .fetchSemanticsNodes()
+                .minByOrNull { it.positionInWindow.y }
+                ?.texts()
+                ?.any { it.contains("$TEI_CARD_TITLE_PREFIX$teiName") } == true
+        }
+    }
+
+    fun checkTEICardShows(teiName: String, vararg texts: String) {
+        val card = texts.fold(teiCard(teiName)) { matcher, text ->
+            matcher and hasText(text, substring = true)
+        }
+        scrollListToCard(card)
+    }
+
+    fun checkTEICardDoesNotShow(teiName: String, text: String) {
+        scrollListToCard(teiCard(teiName))
+        composeTestRule.onNode(teiCard(teiName)).assert(!hasText(text, substring = true))
+    }
+
+    private fun teiCard(teiName: String) = hasText("$TEI_CARD_TITLE_PREFIX$teiName", substring = true)
+
+    private fun scrollListToCard(card: SemanticsMatcher) {
+        composeTestRule.waitUntil(TIMEOUT) { listItemCount() > 0 }
+        val found = (0 until listItemCount()).any { position ->
+            onView(withId(R.id.scrollView)).perform(scrollToPosition<RecyclerView.ViewHolder>(position))
+            composeTestRule.waitForIdle()
+            composeTestRule.onAllNodes(card).fetchSemanticsNodes().isNotEmpty()
+        }
+        assertTrue("No TEI card matches ${card.description}", found)
+    }
+
+    private fun listItemCount(): Int {
+        var count = 0
+        onView(withId(R.id.scrollView)).check { view, _ ->
+            count = (view as RecyclerView).adapter?.itemCount ?: 0
+        }
+        return count
     }
 
     private fun scrollToSearchParameter(text: String) {
