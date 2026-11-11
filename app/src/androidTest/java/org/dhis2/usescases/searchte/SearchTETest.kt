@@ -142,8 +142,11 @@ class SearchTETest : BaseTest() {
         }
 
         filterRobot(composeTestRule) {
+            // Untick Overdue: the landscape layout has no reset-filters button
             openFilters()
-            clickOnClearFilters()
+            clickOnFilterBy(eventStatusFilter)
+            clickOnFilterOverdueOption()
+            closeFilterRowAtField(eventStatusFilter)
             openFilters()
         }
 
