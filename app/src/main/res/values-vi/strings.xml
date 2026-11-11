@@ -187,7 +187,6 @@
     <string name="qr_attributes">Thuộc Tính</string>
     <string name="qr_enrollment">Đăng ký</string>
     <string name="qr_events">Sự kiện</string>
-    <string name="qr_relationships">Mối quan hệ</string>
     <string name="read_more_qr">Đọc mã QR tiếp theo để lấy thêm thông tin</string>
     <string name="save_qr">Ngừng đọc và lưu dữ liệu</string>
     <string name="qr_no_data">không có dữ liệu</string>
@@ -411,7 +410,6 @@
     <string name="navigation_tasks">Các nhiệm vụ</string>
     <string name="navigation_programs">Chương trình</string>
     <string name="navigation_charts">Biểu Đồ</string>
-    <string name="navigation_relationships">Các mối quan hệ</string>
     <string name="navigation_notes">Ghi Chú</string>
     <string name="navigation_data_entry">Nhập dữ liệu</string>
     <string name="navigation_form">Biểu nhập</string>
@@ -451,7 +449,7 @@
     <string name="filter_period_last_n_biweeks">%d 2-Tuần trước</string>
     <string name="section_feedback">Phản hồi</string>
     <string name="section_indicators">Chỉ Số</string>
-    <string name="camera_permission_denied">Quyền mở máy ảnh bị từ chối.\n Bạn cần bật tính năng máy ảnh để sử dụng chức năng này</string>
+    <string name="camera_permission_denied">Quyền mở máy ảnh bị từ chối..\nBạn cần bật tính năng máy ảnh để sử dụng chức năng này.</string>
     <string name="section_charts_indicators">Biểu đồ và Chỉ số</string>
     <string name="take_photo">Chụp ảnh</string>
     <string name="break_glass_dialog_title">Chương trình này đã được bảo vệ</string>
@@ -476,7 +474,7 @@
     <string name="troubleshooting_pass_rule_validation">Không tìm thấy cảnh báo</string>
     <string name="troobleshooting_pass_rule_validation_title">Mọi thứ đều ổn</string>
     <string name="not_saved">Chưa lưu</string>
-    <string name="review_message">Một số trường dữ liệu cần bạn chú ý.\n Bạn có muốn xem xét biểu nhập không?</string>
+    <string name="review_message">Một số trường dữ liệu cần bạn chú ý.\nBạn có muốn xem xét biểu nhập không\?</string>
     <string name="search_loading_more">Đang tải thêm kết quả</string>
     <string name="search_no_results_in_program">Không còn kết quả nào khác cho %s</string>
     <string name="search_outside_action">Tìm kiếm ngoài chương trình này</string>
@@ -490,10 +488,10 @@
     <string name="init_search">Mở trang tìm kiếm để tìm bất cứ %snào</string>
     <string name="search_or_create">Bạn có thể tìm kiếm hoặc tạo một %smới</string>
     <string name="missing_warning_fields_completed_events">Bạn có một số tin nhắn cảnh báo.</string>
-    <string name="missing_warning_fields_events">Bạn có một số tin nhắn cảnh báo. \n Bạn có muốn đánh dấu biểu nhập này là hoàn tất không?</string>
-    <string name="missing_error_fields_events">Một số trường dữ liệu có lỗi và chưa được lưu. \n Bạn có muốn xem xét biểu nhập không?</string>
+    <string name="missing_warning_fields_events">Bạn có một số tin nhắn cảnh báo..\nBạn có muốn đánh dấu biểu nhập này là hoàn tất không\?</string>
+    <string name="missing_error_fields_events">Một số trường dữ liệu có lỗi và chưa được lưu. \nBạn có muốn xem lại biểu nhập không\?</string>
     <string name="event_can_be_completed">Bạn có muốn đánh dấu biểu nhập này là hoàn tất không?</string>
-    <string name="event_error_on_complete">Bạn có một số tin nhắn lỗi.\n Bạn có muốn xem xét không?</string>
+    <string name="event_error_on_complete">Bạn có một số tin nhắn lỗi.\nBạn có muốn xem không\?</string>
     <string name="re_opened">Đã Mở-lại</string>
     <string name="account_disable_title">Tài khoản đã bị vô hiệu hóa</string>
     <string name="account_disable_message">Tài khoản của bạn đã bị vô hiệu hóa bởi quản lý chương trình.</string>
@@ -532,8 +530,6 @@
     <string name="download_now">Tải xuống ngay</string>
     <string name="check_for_updates">Kiểm tra các cập nhật</string>
     <string name="no_updates">Không có cập nhật mới</string>
-    <string name="unknow_sources_denied">Quyền nguồn không xác định bị từ chối.\n Bạn cần cho phép nó để cài đặt.</string>
-    <string name="storage_denied">Quyền lưu trữ bị từ chối. \n Bạn cần cho phép để cài phiên bản.</string>
     <string name="app_version">Phiên bản ứng dụng</string>
     <string name="error_applying_rule_effects">Có lỗi trong cấu hình chương trình, chúng tôi không thể tải sự kiện này. Xin vui lòng liên hệ quản trị hệ thống của bạn.</string>
     <string name="dashboard_menu_delete_person">Xóa người</string>
@@ -552,7 +548,6 @@
     <string name="sync_warning">Cảnh báo đồng bộ</string>
     <string name="sync_error">Lỗi đồng bộ</string>
     <string name="coordinates">Toạ độ</string>
-    <string name="no_data_access">Bạn không có quyền truy cập dữ liệu.\n Liên lạc quản trị của bạn.</string>
     <string name="sync_offline_check_connection">Dường như bạn đang ngoại tuyến. Xin vui lòng kiểm tra kết nối mạng</string>
     <string name="delete_tei_dialog_title">Xóa %s này?</string>
     <string name="delete_tei_dialog_message">%snày và tất cả dữ liệu của nó giữa tất cả chương trình sẽ bị xóa. Hành động này không thể hồi phục.</string>

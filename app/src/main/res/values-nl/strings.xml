@@ -170,7 +170,6 @@
     <string name="qr_attributes">attributen</string>
     <string name="qr_enrollment">Inschrijvingen</string>
     <string name="qr_events">Gebeurtenissen</string>
-    <string name="qr_relationships">Relaties</string>
     <string name="read_more_qr">Lees de volgende QR voor meer informatie.</string>
     <string name="save_qr">Stop met lezen en sla gegevens op</string>
     <string name="qr_no_data">geen gegevens</string>
@@ -455,7 +454,6 @@
     <string name="troubleshooting_pass_rule_validation">Geen waarschuwingen gevonden</string>
     <string name="troobleshooting_pass_rule_validation_title">Alles ziet er geweldig uit</string>
     <string name="not_saved">Niet opgeslagen</string>
-    <string name="review_message">Sommige velden hebben uw aandacht nodig.\Wilt u het formulier bekijken?</string>
     <string name="search_loading_more">Meer resultaten laden</string>
     <string name="search_no_results_in_program">Geen resultaten meer voor %s</string>
     <string name="search_outside_action">Zoek buiten dit programma</string>
@@ -467,8 +465,6 @@
     <string name="action_ok">OK</string>
     <string name="init_search">Start een zoekopdracht om een %s</string>
     <string name="search_or_create">U kunt zoeken of een nieuwe creëren %s</string>
-    <string name="missing_warning_fields_events">U heeft enkele waarschuwingsberichten.\nWilt u dit formulier als voltooid markeren?</string>
-    <string name="missing_error_fields_events">Sommige velden bevatten fouten en worden niet opgeslagen. \nWilt u het formulier bekijken?</string>
     <string name="event_can_be_completed">Wilt u dit formulier als voltooid markeren?</string>
     <string name="event_error_on_complete">U heeft een aantal foutmeldingen.\nWilt u deze bekijken?</string>
     <string name="re_opened">heropend</string>
@@ -506,8 +502,6 @@
     <string name="download_now">Download nu</string>
     <string name="check_for_updates">Controleer op updates</string>
     <string name="no_updates">Er zijn geen nieuwe updates</string>
-    <string name="unknow_sources_denied">Onbekende bronnen toestemming is geweigerd.\nU moet deze inschakelen om de versie te installeren.</string>
-    <string name="storage_denied">Opslagtoestemming is geweigerd.\nU moet deze inschakelen om de versie te installeren.</string>
     <string name="app_version">App versie</string>
     <string name="error_applying_rule_effects">Er is iets misgegaan met de programmaconfiguratie, we kunnen dit evenement niet laden. Neem contact op met uw systeembeheerder.</string>
     <string name="view_only">Alleen bekijken</string>

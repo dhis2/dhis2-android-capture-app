@@ -186,7 +186,6 @@
     <string name="qr_attributes">属性</string>
     <string name="qr_enrollment">注册</string>
     <string name="qr_events">事件</string>
-    <string name="qr_relationships">关系</string>
     <string name="read_more_qr">读取下一个二维码获取更多信息</string>
     <string name="save_qr">停止读取并保存数据</string>
     <string name="qr_no_data">无数据</string>
@@ -412,7 +411,6 @@
     <string name="navigation_tasks">任务</string>
     <string name="navigation_programs">项目</string>
     <string name="navigation_charts">可视化图表应用</string>
-    <string name="navigation_relationships">关系</string>
     <string name="navigation_notes">笔记</string>
     <string name="navigation_data_entry">数据输入</string>
     <string name="navigation_form">表单</string>
@@ -477,7 +475,6 @@
     <string name="troubleshooting_pass_rule_validation">未发现任何警告</string>
     <string name="troobleshooting_pass_rule_validation_title">一切看起来都很棒</string>
     <string name="not_saved">未保存</string>
-    <string name="review_message">有些字段需要您注意。\n您要复查表单吗？</string>
     <string name="search_loading_more">加载更多结果</string>
     <string name="search_no_results_in_program">%s 没有更多结果</string>
     <string name="search_outside_action">在此项目之外搜索</string>
@@ -491,8 +488,6 @@
     <string name="init_search">开始搜索以找到任何 %s</string>
     <string name="search_or_create">您可以搜索或创建一个新的 %s</string>
     <string name="missing_warning_fields_completed_events">您收到了一些警告信息。</string>
-    <string name="missing_warning_fields_events">您有一些警告消息。\n您想将此表单标记为完成吗？</string>
-    <string name="missing_error_fields_events">一些字段有错误并且它们没有被保存。 \n您要查看表单吗？</string>
     <string name="event_can_be_completed">您想将此表单标记为已完成吗？</string>
     <string name="event_error_on_complete">您有一些错误消息。\n您要查看它们吗？</string>
     <string name="re_opened">重新开放</string>
@@ -533,8 +528,6 @@
     <string name="download_now">现在下载</string>
     <string name="check_for_updates">检查更新</string>
     <string name="no_updates">没有新的更新</string>
-    <string name="unknow_sources_denied">未知来源权限被拒绝。\n您需要启用它才能安装版本。</string>
-    <string name="storage_denied">存储权限被拒绝。\n您需要启用它才能安装版本。</string>
     <string name="app_version">应用版本</string>
     <string name="error_applying_rule_effects">程序配置出了问题，我们无法加载此事件。请联系您的系统管理员。</string>
     <string name="dashboard_menu_delete_person">删除人员</string>
@@ -553,7 +546,6 @@
     <string name="sync_warning">同步警告</string>
     <string name="sync_error">同步错误</string>
     <string name="coordinates">坐标</string>
-    <string name="no_data_access">您无权访问数据。\n请与您的管理员联系。</string>
     <string name="sync_offline_check_connection">您似乎已离线。请检查您的连接</string>
     <string name="delete_tei_dialog_title">删除此%s？</string>
     <string name="delete_tei_dialog_message">此 %s 及其所有程序中的所有数据都将被删除。此操作无法撤消。</string>
