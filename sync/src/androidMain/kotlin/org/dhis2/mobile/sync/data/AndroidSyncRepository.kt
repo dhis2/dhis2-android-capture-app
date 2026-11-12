@@ -25,6 +25,7 @@ import org.dhis2.mobile.commons.providers.SYNC_RESULT
 import org.dhis2.mobile.commons.providers.TEI_MAX
 import org.dhis2.mobile.commons.providers.TEI_MAX_DEFAULT
 import org.dhis2.mobile.commons.reporting.AnalyticActions
+import org.dhis2.mobile.commons.resources.UserLanguageCache
 import org.dhis2.mobile.sync.model.DataSyncProgressStatus
 import org.dhis2.mobile.sync.model.SMSConfigResult
 import org.dhis2.mobile.sync.model.SyncResult
@@ -37,6 +38,7 @@ import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.fileresource.FileResourceDomainType
 import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.settings.LimitScope
+import timber.log.Timber
 import kotlin.math.ceil
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -47,6 +49,7 @@ internal class AndroidSyncRepository(
     private val analyticsHelper: AnalyticActions,
     private val domainErrorMapper: DomainErrorMapper,
     private val dispatcher: Dispatcher,
+    private val userLanguageCache: UserLanguageCache,
 ) : SyncRepository {
     private suspend fun <T> execute(block: suspend () -> Result<T>): Result<T> =
         withContext(dispatcher.io) {
@@ -296,6 +299,7 @@ internal class AndroidSyncRepository(
             d2.metadataModule().download().blockingForEach { progress ->
                 onProgressUpdate(ceil(progress.percentage() ?: 0.0).toInt())
             }
+            refreshUserLanguage()
             Result.success(Unit)
         }
 
@@ -451,7 +455,7 @@ internal class AndroidSyncRepository(
                 .limitByOrgunit(limitByOrgUnit)
                 .limitByProgram(limitByProgram)
                 .downloadFileResources(true)
-                .download()
+                .rxDownload()
                 .blockingForEach { progress ->
                     val progressData =
                         progress
@@ -516,7 +520,7 @@ internal class AndroidSyncRepository(
                 .limitByOrgunit(limitByOrgUnit)
                 .downloadFileResources(true)
                 .limitByProgram(limitByProgram)
-                .download()
+                .rxDownload()
                 .blockingForEach { progress ->
                     val progressData =
                         progress
@@ -538,7 +542,7 @@ internal class AndroidSyncRepository(
             d2
                 .aggregatedModule()
                 .data()
-                .download()
+                .rxDownload()
                 .blockingForEach { progress ->
                     val progressData =
                         progress.dataSets().mapValues { (_, dataSetProgress) ->
@@ -556,7 +560,7 @@ internal class AndroidSyncRepository(
                 .fileResourceDownloader()
                 .byDomainType()
                 .eq(FileResourceDomainType.DATA_VALUE)
-                .download()
+                .rxDownload()
                 .blockingForEach { progress ->
                     onProgressUpdate(progress.percentage())
                 }
@@ -575,7 +579,7 @@ internal class AndroidSyncRepository(
             d2
                 .trackedEntityModule()
                 .reservedValueManager()
-                .downloadAllReservedValues(maxNumberOfValuesToFillUp)
+                .rxDownloadAllReservedValues(maxNumberOfValuesToFillUp)
                 .blockingForEach { progress ->
                     onProgressUpdate(progress.percentage())
                 }
@@ -590,4 +594,13 @@ internal class AndroidSyncRepository(
             syncStatus == D2ProgressSyncStatus.PARTIAL_ERROR -> DataSyncProgressStatus.PartiallyFailed
             else -> DataSyncProgressStatus.None
         }
+
+
+    private fun refreshUserLanguage() {
+        try {
+            userLanguageCache.refresh()
+        } catch (e: Exception) {
+            Timber.w(e, "Could not refresh the cached user language after metadata sync")
+        }
+    }
 }
