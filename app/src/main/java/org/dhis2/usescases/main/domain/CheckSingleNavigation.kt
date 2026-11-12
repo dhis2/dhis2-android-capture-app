@@ -1,5 +1,6 @@
 package org.dhis2.usescases.main.domain
 
+import kotlinx.coroutines.CancellationException
 import org.dhis2.mobile.commons.domain.UseCase
 import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.usescases.main.HomeItemData
@@ -16,7 +17,11 @@ class CheckSingleNavigation(
             } else {
                 Result.failure(DomainError.ConfigurationError("Expected exactly one home item"))
             }
+        } catch (cancellation: CancellationException) {
+            throw cancellation
         } catch (domainError: DomainError) {
             Result.failure(domainError)
+        } catch (error: Exception) {
+            Result.failure(error)
         }
 }
