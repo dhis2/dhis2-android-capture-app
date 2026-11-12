@@ -595,7 +595,6 @@ internal class AndroidSyncRepository(
             else -> DataSyncProgressStatus.None
         }
 
-
     private fun refreshUserLanguage() {
         try {
             userLanguageCache.refresh()
