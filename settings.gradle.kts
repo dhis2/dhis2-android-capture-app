@@ -14,7 +14,11 @@ dependencyResolutionManagement {
     @Suppress("UnstableApiUsage")
     repositories {
         mavenLocal()
-        maven("https://central.sonatype.com/repository/maven-snapshots")
+        maven("https://central.sonatype.com/repository/maven-snapshots") {
+            // Only DHIS2 snapshots (SDK, design system) live here. Without this filter every
+            // dependency is looked up here first, and a 429 from Sonatype fails the build.
+            content { includeGroupAndSubgroups("org.hisp.dhis") }
+        }
         google()
         mavenCentral()
         maven("https://jitpack.io")
