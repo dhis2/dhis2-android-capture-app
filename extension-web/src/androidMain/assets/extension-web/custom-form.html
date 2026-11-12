@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>DHIS2 Custom Form</title>
+    <style>
+        html, body { margin: 0; padding: 0; background: #ffffff; }
+        body { font-family: Roboto, Arial, sans-serif; font-size: 14px; color: #212934; }
+        #contentDiv { padding: 8px; width: max-content; min-width: 100%; box-sizing: border-box; }
+        #contentDiv input, #contentDiv select, #contentDiv textarea { font-size: 14px; box-sizing: border-box; }
+        #contentDiv input[disabled], #contentDiv select[disabled], #contentDiv textarea[disabled] { background-color: #f3f5f7; }
+        #contentDiv .dhis2-unsupported { background-color: #e8edf2; }
+        #formMessage { padding: 16px; color: #891515; }
+    </style>
+    <script src="./jquery-3.2.1.min.js"></script>
+    <script src="./custom-form.js"></script>
+</head>
+<body>
+    <!-- The selection the legacy Data Entry app showed above the form; forms read the context from it. -->
+    <div style="display: none">
+        <select id="selectedDataSetId"></select>
+        <select id="selectedPeriodId"></select>
+        <input id="selectedOrganisationUnitId">
+        <select id="attributeOptionComboId"></select>
+    </div>
+    <div id="contentDiv"></div>
+</body>
+</html>

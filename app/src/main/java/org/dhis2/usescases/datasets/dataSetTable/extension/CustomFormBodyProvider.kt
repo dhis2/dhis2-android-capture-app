@@ -1,16 +1,10 @@
 package org.dhis2.usescases.datasets.dataSetTable.extension
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.ui.body.DataSetInstanceBody
 import org.dhis2.mobile.aggregates.ui.body.DataSetInstanceBodyProvider
 import org.dhis2.mobile.extension.host.domain.ResolveCustomForm
 import org.dhis2.mobile.extension.host.model.DataSetInstanceRef
-import org.dhis2.mobile.extension.host.model.FailureReason
 import org.dhis2.mobile.extension.host.renderer.CustomFormRenderer
 import org.dhis2.mobile.extension.host.reporting.ExtensionFailureReporter
 import org.koin.dsl.module
@@ -51,33 +45,8 @@ class CustomFormBodyProvider(
     }
 }
 
-/**
- * SPIKE: stands in for the WebView renderer (`extension-web`) so the seam can be wired and
- * seen end to end. Never shipped.
- */
-class PlaceholderCustomFormRenderer : CustomFormRenderer {
-    override fun deviceSupport(): FailureReason? = null
-
-    @Composable
-    override fun Render(
-        html: String,
-        instance: DataSetInstanceRef,
-        modifier: Modifier,
-        contentPadding: PaddingValues,
-        editable: Boolean,
-        reloadKey: Int,
-        saveValue: suspend (dataElementUid: String, categoryOptionComboUid: String, value: String?) -> String?,
-        onFailed: (FailureReason) -> Unit,
-    ) {
-        Text(
-            modifier = modifier.padding(contentPadding),
-            text = "Custom form of ${instance.dataSetUid}: ${html.length} chars, editable=$editable, reload=$reloadKey",
-        )
-    }
-}
-
+/** The renderer comes from `extension-web` (`extensionWebModule`). */
 val customFormBodyModule =
     module {
-        factory<CustomFormRenderer> { PlaceholderCustomFormRenderer() }
         factory<DataSetInstanceBodyProvider> { CustomFormBodyProvider(get(), get(), get()) }
     }
