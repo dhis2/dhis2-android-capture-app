@@ -21,6 +21,7 @@ val extensionHostModule =
                 rules = listOf(LegacyApiScan()),
                 reporter = get(),
                 allowHttp = get<ExtensionHostConfig>().allowHttp,
+                onSurveyed = { dataSetUid, survey -> get<ExtensionHostConfig>().log("Custom form of $dataSetUid: $survey") },
             )
         }
     }
