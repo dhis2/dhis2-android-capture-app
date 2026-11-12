@@ -98,11 +98,13 @@ fun MainScreen(
         }
     }
 
-    LaunchedEffect(screenState) {
-        onNewState(screenState)
+    var layoutReady by remember { mutableStateOf(false) }
+
+    LaunchedEffect(screenState, layoutReady) {
+        if (layoutReady) onNewState(screenState)
     }
-    LaunchedEffect(screenState.currentScreen) {
-        onNewScreen(screenState.currentScreen)
+    LaunchedEffect(screenState.currentScreen, layoutReady) {
+        if (layoutReady) onNewScreen(screenState.currentScreen)
     }
 
     Scaffold(
@@ -159,8 +161,10 @@ fun MainScreen(
             factory = { context ->
                 ActivityMainBinding
                     .inflate(LayoutInflater.from(context))
-                    .also { onLayoutInflated(it) }
-                    .root
+                    .also {
+                        onLayoutInflated(it)
+                        layoutReady = true
+                    }.root
             },
         )
         if (showPinDialog) {
