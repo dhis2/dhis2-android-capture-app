@@ -1,9 +1,10 @@
 #!/bin/bash
 #
 # Passes only when every ANDROAPP ticket named in a pull request title is in the
-# "Ready to Merge" Jira status. Backs the required `jira-ready` check, which runs
+# "Ready to Merge" Jira status, or "TO_AUTOMATE" for a Zephyr Test ticket, whose
+# workflow has no "Ready to Merge". Backs the required `jira-ready` check, which runs
 # both on the pull request and on its merge queue group, so a ticket moved back
-# out of "Ready to Merge" also ejects the PR from the queue.
+# out of its ready status also ejects the PR from the queue.
 #
 # Input (environment):
 #   PR_TITLE              Title to read the ticket keys from. When empty, the title is
@@ -29,6 +30,10 @@
 set -euo pipefail
 
 READY_STATUS="Ready to Merge"
+# Zephyr Test tickets follow their own workflow (TO_AUTOMATE -> AUTOMATED_TEST) and are
+# mergeable while being automated.
+TEST_ISSUE_TYPE="Test"
+TEST_READY_STATUS="TO_AUTOMATE"
 JIRA_URL="${JIRA_URL:-https://dhis2.atlassian.net}"
 PR_TITLE="${PR_TITLE:-}"
 PR_NUMBER="${PR_NUMBER:-}"
@@ -77,17 +82,22 @@ FAILED=0
 for KEY in "${KEYS[@]}"; do
     HTTP_CODE=$(curl -sS -o "$BODY" -w '%{http_code}' \
         -H 'Accept: application/json' \
-        "$JIRA_URL/rest/api/3/issue/$KEY?fields=status") || HTTP_CODE="000"
+        "$JIRA_URL/rest/api/3/issue/$KEY?fields=status,issuetype") || HTTP_CODE="000"
 
     case "$HTTP_CODE" in
         200)
             STATUS=$(jq -r '.fields.status.name' "$BODY")
-            if [[ "$STATUS" == "$READY_STATUS" ]]; then
+            ISSUE_TYPE=$(jq -r '.fields.issuetype.name' "$BODY")
+            EXPECTED="$READY_STATUS"
+            if [[ "$ISSUE_TYPE" == "$TEST_ISSUE_TYPE" ]]; then
+                EXPECTED="$TEST_READY_STATUS"
+            fi
+            if [[ "$STATUS" == "$EXPECTED" ]]; then
                 echo "$KEY is in \"$STATUS\"."
                 summary "- ✅ $KEY: $STATUS"
             else
-                echo "::error::$KEY is in \"$STATUS\", not \"$READY_STATUS\"."
-                summary "- ❌ $KEY: $STATUS (needs $READY_STATUS)"
+                echo "::error::$KEY ($ISSUE_TYPE) is in \"$STATUS\", not \"$EXPECTED\"."
+                summary "- ❌ $KEY: $STATUS (needs $EXPECTED)"
                 FAILED=1
             fi
             ;;
