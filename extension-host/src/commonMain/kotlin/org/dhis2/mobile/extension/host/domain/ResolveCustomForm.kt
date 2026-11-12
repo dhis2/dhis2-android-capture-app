@@ -26,6 +26,8 @@ class ResolveCustomForm(
     private val reporter: ExtensionFailureReporter,
     /** SPIKE ONLY: debug builds skip the https rule. Not part of the real development. */
     private val allowHttp: Boolean = false,
+    /** PoC: told what each opened form uses, to collect the survey from logcat. */
+    private val onSurveyed: (dataSetUid: String, survey: CustomFormSurvey) -> Unit = { _, _ -> },
 ) {
     suspend operator fun invoke(dataSetUid: String): ResolvedCustomForm? {
         val extension = Extension.customForm(dataSetUid)
@@ -39,6 +41,8 @@ class ResolveCustomForm(
                 reporter.report(extension, FailureReason.CONTENT_UNREADABLE)
                 return null
             }
+
+        if (html.isNotBlank()) onSurveyed(dataSetUid, surveyCustomForm(html))
 
         val failure =
             when {

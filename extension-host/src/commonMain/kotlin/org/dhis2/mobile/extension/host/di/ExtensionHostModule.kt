@@ -23,6 +23,7 @@ val extensionHostModule =
                 rules = if (config.legacyShim) listOf(LegacyApiScan()) else listOf(NoFormScripts(), LegacyApiScan()),
                 reporter = get(),
                 allowHttp = config.allowHttp,
+                onSurveyed = { dataSetUid, survey -> config.log("Custom form of $dataSetUid: $survey") },
             )
         }
     }
