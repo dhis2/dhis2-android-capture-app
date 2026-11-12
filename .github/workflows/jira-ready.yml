@@ -1,7 +1,7 @@
 name: Jira ready
 
 # Backs the required `jira-ready` check: a PR may only be merged once its ANDROAPP
-# ticket is in "Ready to Merge". A separate workflow from CI so that a title edit or a
+# ticket is in "Ready to Merge" ("TO_AUTOMATE" for Zephyr Test tickets). A separate workflow from CI so that a title edit or a
 # re-run after a Jira transition is cheap and never cancels the CI run.
 on:
   pull_request:

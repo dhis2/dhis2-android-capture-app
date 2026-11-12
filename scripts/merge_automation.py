@@ -5,7 +5,8 @@ A PR into develop is a stack of one. A stacked PR (one whose base is another ope
 branch) belongs to the stack rooted at the PR into develop, and every stack lands on
 develop as a single squash commit:
 
-1. Once every PR of the stack has its ANDROAPP tickets in "Ready to Merge", the
+1. Once every PR of the stack has its ANDROAPP tickets in "Ready to Merge" (or
+   "TO_AUTOMATE" for Zephyr Test tickets, whose workflow has no "Ready to Merge"), the
    required approvals and a green CI, the stack is collapsed top-down by
    fast-forwarding each base branch to the top PR's head. No commit is created, so the
    authors' signatures are kept, and GitHub marks the upper PRs as merged.
@@ -51,6 +52,9 @@ JIRA_URL = os.environ.get("JIRA_URL", "https://dhis2.atlassian.net")
 DRY_RUN = os.environ.get("DRY_RUN", "").lower() == "true"
 
 READY_STATUS = "Ready to Merge"
+# Zephyr Test tickets follow their own workflow (TO_AUTOMATE -> AUTOMATED_TEST) and are
+# mergeable while being automated.
+READY_STATUS_BY_TYPE = {"Test": "TO_AUTOMATE"}
 KEY_PATTERN = re.compile(r"\bANDROAPP-\d+\b")
 JIRA_CHECK = "jira-ready"
 JIRA_WORKFLOW = "jira-ready.yml"
@@ -92,23 +96,26 @@ def jira_keys(prs):
 
 
 def jira_status(key):
+    """Returns (status, status the ticket needs to be ready)."""
     request = urllib.request.Request(
-        f"{JIRA_URL}/rest/api/3/issue/{key}?fields=status",
+        f"{JIRA_URL}/rest/api/3/issue/{key}?fields=status,issuetype",
         headers={"Accept": "application/json"},
     )
     try:
         with urllib.request.urlopen(request, timeout=30) as response:
-            return json.load(response)["fields"]["status"]["name"]
+            fields = json.load(response)["fields"]
     except urllib.error.HTTPError as error:
-        return f"HTTP {error.code}"
+        return f"HTTP {error.code}", READY_STATUS
+    expected = READY_STATUS_BY_TYPE.get(fields["issuetype"]["name"], READY_STATUS)
+    return fields["status"]["name"], expected
 
 
 def tickets_ready(keys):
     ready = True
     for key in keys:
-        status = jira_status(key)
-        if status != READY_STATUS:
-            log("", f"{key} is in \"{status}\", not \"{READY_STATUS}\".")
+        status, expected = jira_status(key)
+        if status != expected:
+            log("", f"{key} is in \"{status}\", not \"{expected}\".")
             ready = False
     return ready
 
