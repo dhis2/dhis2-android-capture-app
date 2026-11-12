@@ -1,0 +1,133 @@
+# Web plugins (PoC)
+
+> Status: proof of concept on `poc/web-plugins` (ANDROAPP-7835). It replaces the dex-based
+> approach, which Google Play policy does not allow (ANDROAPP-7830).
+
+The app runs **unmodified DHIS2 Capture form field plugins**: the same App Hub apps, placed with the
+same configuration the web Capture app uses. They keep working **offline**.
+
+## Configuration: the web Capture app's own
+
+There is no Android-specific plugin configuration. Placement is read from the `capture` dataStore
+namespace, which the **Tracker Plugin Configurator** writes:
+
+- `capture/dataEntryForms` is keyed by form: a program stage for event forms, a program for
+  registration forms.
+- A `plugin` element gives:
+  - `pluginSource`: `{server}/api/apps/{key}/plugin.html`, an app installed on the server.
+  - `fieldMap`: the fields the plugin may use. `IdFromApp` is the field uid; `IdFromPlugin` is the
+    alias the plugin knows it by.
+
+Writing the `capture` namespace needs the `F_CAPTURE_DATASTORE_UPDATE` authority.
+
+## How a plugin gets onto the device (`LoadPlugins`, on opening Home)
+
+```
+capture/dataEntryForms ─► placements ─► app keys from pluginSource
+for each key:
+  server /api/apps?key=…            installed name + version (+ app_hub_id when the author set one)
+  already installed that version?   ─► use it, no network
+  App Hub /api/v2/apps…             by app_hub_id, else by exact name; pick the installed version
+  download the zip                  SDK client, external request, no DHIS2 credentials sent
+  verify                            entry module script (content-hashed) == the one the server serves
+  extract                           filesDir/web-plugins/{key}-{version}/
+offline: cached config + last installed bundle
+```
+
+`plugin.html` cannot be compared, because the server rewrites it to inject its base URL. The script
+it loads is served byte-identical.
+
+## How it renders (`Form` + `withLayout`)
+
+- A form is resolved to its `dataEntryForms` key: an event to its program stage, an enrollment to its
+  program.
+- **Sections and fields keep the SDK order.** Maintenance owns the order; the Tracker Plugin
+  Configurator cannot change it and saves only a snapshot of it.
+- **Plugins** go right after the nearest field before them in their configured section that the
+  form shows; fields hidden by program rules are skipped. With no such field they go before the
+  nearest field after them, and with neither at the end of the section.
+- The configuration is refreshed when Home opens online; until then the cached one is used.
+- **No field is hidden.** The Configurator keeps every native field, so the web shows them next to
+  the plugin too.
+- Plugins get **stored** values from the SDK (option codes, raw values). The form's own field values
+  are display values (option names, formatted numbers).
+- Props match the web Capture app. `values`, `errors`, `warnings` and `fieldsMetadata` are keyed by
+  alias; option sets carry `options[{id, code, value, text, name}]`.
+- `setFieldValue({fieldId: alias})` maps back to the uid and saves through `FormIntent.OnSave`, so the
+  form validates it and program rules run. Writes to fields outside the field map are refused.
+- Transport: the WebView loads only local content (`WebViewAssetLoader`). Every `/api/` call is
+  answered by `PluginApiRouter` from the SDK, over the `dhis2Native` message bridge, through
+  `api-shim.js`. See below.
+
+## Verified on a device (DHIS2 2.43, Sierra Leone demo, airplane mode)
+
+**Matrix Select 1.0.2** from the App Hub, on "First antenatal care visit" (4 allergy fields sharing
+the "Yes NoneKnown" option set):
+1. The plugin is resolved by name on the App Hub (no `app_hub_id`), verified against the server, and
+   installed.
+2. Offline, it renders the matrix from SDK metadata.
+3. Selections are saved as `TO_POST`, and the native fields show them.
+4. After sync, the server has the values.
+
+## Web API available offline (for plugins that fetch their own data)
+
+| Endpoint | Methods |
+|---|---|
+| `me`, `system/info`, `userSettings`, `systemSettings` | GET |
+| `dataStore/{namespace}` | GET (keys) |
+| `dataStore/{namespace}/{key}` | GET, PUT, POST, DELETE |
+| `dataValueSets` | POST (`dataSet` required; option combos only defaulted from default category combos) |
+
+Anything else answers `501` and is logged. Enrollment plugins such as the WHO Growth Chart need
+tracker and metadata endpoints added here.
+
+## Data set custom forms (spike)
+
+The same WebView host renders **data set custom forms**, the HTML the web Data Entry app shows,
+instead of the native tables.
+
+- The SDK does not sync custom forms. `CustomFormRepository` downloads the `CUSTOM` ones from
+  `/api/dataSets` when Home opens online and caches them under `filesDir/custom-forms/`.
+- `custom-form.html` + `custom-form.js` recreate the legacy environment forms rely on:
+  - jQuery 3.2.1;
+  - `dhis2.util.on`, `dhis2.de.event.*` and `dhis2.de.current*`;
+  - the hidden `#selectedPeriodId`-style context elements.
+- Fields `{dataElement}-{categoryOptionCombo}-val` are rendered by value type (options, booleans,
+  dates, numeric keypad). They read and write through the SDK with the native table's validation.
+- Totals are summed in the page. Indicators come from the SDK's `dataSetIndicatorEngine`.
+- Completion, validation and sync stay native.
+
+Verified on EPI Stock (Sierra Leone), online and in airplane mode:
+- the form's script ran (`formReady`, `dataValueSaved`);
+- values were saved and synced;
+- indicators were recalculated;
+- the form became read-only when completed.
+
+Limits:
+- wide desktop tables need horizontal scrolling;
+- forms that call other endpoints only work for what `PluginApiRouter` emulates;
+- file, image, coordinate and org unit fields are disabled;
+- the form's scripts run in the bridge page.
+
+## Known limits
+
+- Section counts are the native ones, so they include fields a plugin represents.
+- Only form field plugins; enrollment plugins (`enrollment*Layout` keys) are not read yet.
+- Plugins uploaded manually, without an App Hub release, cannot be fetched: the server has no
+  endpoint that serves an installed app's bundle.
+- **SDK:** DHIS2 2.43 returns import conflicts with `objects`, which SDK `1.16.0-20261002` cannot
+  parse, so one rejected data value aborts the whole data sync.
+- A swipe that starts on a plugin does not scroll the screen around it.
+
+## Code
+
+- `plugin/`
+  - `data/`: capture config, server apps, App Hub, bundle verifier and installer, field metadata,
+    form context
+  - `domain/LoadPlugins`
+  - `registry/`
+  - `web/`: `FormFieldPluginSlot`, `WebPlugin`, `PluginBridgeSession`, props
+  - `api/PluginApiRouter`
+  - `assets/dhis2-plugin-host/`: `bridge.html`, `api-shim.js`, post-robot 10.0.46
+- `form/.../ui/Form.kt`: the slot, and field states and writes
+- `sync/`: data sync uploads the server dataStore

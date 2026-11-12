@@ -336,6 +336,7 @@ dependencies {
     implementation(project(":sync"))
     implementation(project(":extension-host"))
     implementation(project(":extension-web"))
+    implementation(project(":plugin"))
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(platform(libs.koin.bom))

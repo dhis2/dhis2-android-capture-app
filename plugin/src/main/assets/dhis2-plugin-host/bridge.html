@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+    <title>DHIS2 Plugin Host</title>
+    <style>
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
+        iframe { width: 100%; height: 100%; border: none; display: block; background: transparent; }
+    </style>
+    <script src="./post-robot.min.js"></script>
+</head>
+<body>
+    <iframe id="plugin-frame" title="DHIS2 Plugin"></iframe>
+    <script>
+    /*
+     * The parent page an unmodified DHIS2 web plugin expects. It speaks the app-platform plugin
+     * protocol (post-robot `getPropsFromParent` / `updated`) to the plugin iframe, and relays
+     * between it and the app over the `dhis2Native` message bridge.
+     */
+    (function () {
+        'use strict';
+
+        var bridge = window.dhis2Native;
+        var frame = document.getElementById('plugin-frame');
+        var currentProps = {};
+
+        if (typeof postRobot === 'undefined' || !bridge) {
+            console.error('[PluginHost] post-robot or the native bridge is missing');
+            return;
+        }
+
+        function callback(name) {
+            return function (args) {
+                bridge.postMessage(JSON.stringify({ type: 'callback', name: name, args: args === undefined ? null : args }));
+            };
+        }
+
+        // Functions travel to the plugin as post-robot proxies; calling one lands back here.
+        function propsWithCallbacks() {
+            var props = Object.assign({}, currentProps);
+            props.setFieldValue = callback('setFieldValue');
+            props.setContextFieldValue = callback('setContextFieldValue');
+            props.setPluginHeight = callback('setPluginHeight');
+            props.onError = callback('onError');
+            return props;
+        }
+
+        postRobot.on('getPropsFromParent', function () {
+            return propsWithCallbacks();
+        });
+
+        // DHIS2 plugins expect the Capture web shell to size html/body; standalone they collapse.
+        frame.addEventListener('load', function () {
+            try {
+                var style = frame.contentDocument.createElement('style');
+                style.textContent = 'html,body{margin:0!important;padding:0!important;}';
+                frame.contentDocument.head.appendChild(style);
+            } catch (e) {
+                console.error('[PluginHost] stylesheet injection failed', e);
+            }
+        });
+
+        bridge.addEventListener('message', function (event) {
+            var message;
+            try {
+                message = JSON.parse(event.data);
+            } catch (e) {
+                return;
+            }
+            if (message.type === 'config') {
+                currentProps = message.props || {};
+                frame.src = message.pluginUrl;
+            } else if (message.type === 'props') {
+                currentProps = message.props || {};
+                if (frame.contentWindow) {
+                    postRobot.send(frame.contentWindow, 'updated', propsWithCallbacks())
+                        .catch(function (err) { console.warn('[PluginHost] "updated" failed', err); });
+                }
+            }
+        });
+
+        bridge.postMessage(JSON.stringify({ type: 'ready' }));
+    })();
+    </script>
+</body>
+</html>

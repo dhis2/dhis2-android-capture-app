@@ -64,6 +64,8 @@ dependencies {
     implementation(project(":dhis2_android_maps"))
     implementation(project(":dhis2-mobile-program-rules"))
     implementation(platform(libs.androidx.compose.bom))
+    implementation(project(":plugin"))
+    implementation(libs.kotlin.serialization.json)
     implementation(libs.dhis2.expressionparser)
     implementation(libs.androidx.activity.compose)
     testImplementation(libs.bundles.form.test)
