@@ -24,6 +24,9 @@
 # hide the original source file name.
 -renamesourcefileattribute SourceFile
 
+# Renamed classes go into a named package: stack frames of package-less classes
+-repackageclasses 'r8'
+
 # Keep Hilt-generated components and entry points
 -keep class dagger.** { *; }
 -keep class hilt.** { *; }
