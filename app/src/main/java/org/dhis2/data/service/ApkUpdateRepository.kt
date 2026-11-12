@@ -41,7 +41,7 @@ class ApkUpdateRepository(
                 // The completion callback runs on the main thread, so the APK is only moved into
                 // internal storage once execution is back on the io dispatcher.
                 awaitDownload(url, fileName).fold(
-                    onSuccess = { moveToPrivateStorage(fileName) },
+                    onSuccess = { downloadId -> moveToPrivateStorage(downloadId, fileName) },
                     onFailure = { Result.failure(it) },
                 )
             } else {
@@ -52,13 +52,13 @@ class ApkUpdateRepository(
     private suspend fun awaitDownload(
         url: String,
         fileName: String,
-    ): Result<Unit> =
+    ): Result<Long> =
         suspendCancellableCoroutine { continuation ->
             val downloadId = AtomicLong(NO_DOWNLOAD)
             val finished = AtomicBoolean(false)
             lateinit var stopListening: () -> Unit
 
-            fun finish(result: Result<Unit>) {
+            fun finish(result: Result<Long>) {
                 if (finished.compareAndSet(false, true)) {
                     stopListening()
                     continuation.resume(result)
@@ -68,7 +68,7 @@ class ApkUpdateRepository(
             fun checkStatus(id: Long) {
                 when (val status = apkDownloader.status(id)) {
                     ApkDownloadStatus.Running -> Unit
-                    ApkDownloadStatus.Successful -> finish(Result.success(Unit))
+                    ApkDownloadStatus.Successful -> finish(Result.success(id))
                     is ApkDownloadStatus.Failed ->
                         finish(
                             Result.failure(
@@ -110,8 +110,11 @@ class ApkUpdateRepository(
             }
         }
 
-    private fun moveToPrivateStorage(fileName: String): Result<DownloadMethod> =
-        apkDownloader.moveToPrivateStorage(fileName)?.let { apk ->
+    private fun moveToPrivateStorage(
+        downloadId: Long,
+        fileName: String,
+    ): Result<DownloadMethod> =
+        apkDownloader.moveToPrivateStorage(downloadId, fileName)?.let { apk ->
             Result.success(DownloadMethod.File(apk.absolutePath))
         } ?: Result.failure(DomainError.DataNotFoundError("Downloaded app update not found"))
 

@@ -1,23 +1,26 @@
 package org.dhis2.data.service
 
-import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
+import android.os.ParcelFileDescriptor
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import timber.log.Timber
 import java.io.File
+import java.io.FileNotFoundException
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * [ApkDownloader] backed by [DownloadManager].
  *
- * Downloads land in the app-specific external directory `updates/` (the only place the download
- * service can write to that needs no storage permission) and are then moved to `updates/` in
- * internal storage, which no other app can read or write on any API level.
+ * No destination is set on the request, so the download service keeps the file in its own private
+ * cache, which no app can access directly. Once finished, the file is read by its download id and
+ * copied to `updates/` in internal storage, which no other app can read or write on any API level.
+ * External storage is never used.
  */
 class AndroidApkDownloader(
     context: Context,
@@ -30,8 +33,11 @@ class AndroidApkDownloader(
         url: String,
         fileName: String,
     ): Long {
-        externalUpdatesDir().listFiles()?.forEach { it.delete() }
-        privateUpdatesDir().listFiles()?.forEach { it.delete() }
+        val privateDir = privateUpdatesDir()
+        if (privateDir.exists() && !privateDir.deleteRecursively()) {
+            // Not fatal: the new download overwrites a file with the same name.
+            Timber.w("Could not delete the previously downloaded app update")
+        }
         val request =
             DownloadManager
                 .Request(url.toUri())
@@ -42,7 +48,6 @@ class AndroidApkDownloader(
                     DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED,
                 ).setAllowedOverMetered(true)
                 .setAllowedOverRoaming(false)
-                .setDestinationInExternalFilesDir(appContext, null, "$UPDATES_DIR/$fileName")
         return downloadManager.enqueue(request)
     }
 
@@ -70,18 +75,33 @@ class AndroidApkDownloader(
         downloadManager.remove(downloadId)
     }
 
-    @SuppressLint("SetWorldReadable")
-    override fun moveToPrivateStorage(fileName: String): File? {
-        val downloaded = File(externalUpdatesDir(), fileName)
-        if (!downloaded.exists()) return null
-        val privateDir = privateUpdatesDir().apply { mkdirs() }
-        val apk = downloaded.copyTo(File(privateDir, fileName), overwrite = true)
-        downloaded.delete()
+    override fun moveToPrivateStorage(
+        downloadId: Long,
+        fileName: String,
+    ): File? {
+        val download =
+            try {
+                downloadManager.openDownloadedFile(downloadId)
+            } catch (notFound: FileNotFoundException) {
+                Timber.w(notFound, "The download service has no file for the app update")
+                return null
+            }
+        val privateDir = privateUpdatesDir()
+        check(privateDir.isDirectory || privateDir.mkdirs()) {
+            "Could not create the app update directory"
+        }
+        val apk = File(privateDir, fileName)
+        ParcelFileDescriptor.AutoCloseInputStream(download).use { input ->
+            apk.outputStream().use { output -> input.copyTo(output) }
+        }
+        // Frees the download service's copy and dismisses its notification.
+        downloadManager.remove(downloadId)
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             // Before API 24 the installer only accepts file:// URIs, so it must be able to read
             // the APK directly. filesDir itself is already traversable by other users.
-            privateDir.setExecutable(true, false)
-            apk.setReadable(true, false)
+            check(privateDir.setExecutable(true, false) && apk.setReadable(true, false)) {
+                "Could not make the app update readable by the package installer"
+            }
         }
         return apk
     }
@@ -115,14 +135,6 @@ class AndroidApkDownloader(
     }
 
     private fun privateUpdatesDir(): File = File(appContext.filesDir, UPDATES_DIR)
-
-    private fun externalUpdatesDir(): File {
-        val externalFilesDir =
-            checkNotNull(appContext.getExternalFilesDir(null)) {
-                "App-specific external storage is not available"
-            }
-        return File(externalFilesDir, UPDATES_DIR)
-    }
 
     private companion object {
         const val UPDATES_DIR = "updates"

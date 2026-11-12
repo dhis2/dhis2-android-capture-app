@@ -180,7 +180,7 @@ class ApkUpdateRepositoryTest {
     private class FakeApkDownloader(
         root: File,
     ) : ApkDownloader {
-        private val externalDir = File(root, "external").apply { mkdirs() }
+        private val downloadServiceDir = File(root, "download-service").apply { mkdirs() }
         private val privateDir = File(root, "private").apply { mkdirs() }
         var movedToPrivateStorage = 0
             private set
@@ -205,12 +205,15 @@ class ApkUpdateRepositoryTest {
             removed += downloadId
         }
 
-        override fun moveToPrivateStorage(fileName: String): File? {
-            val downloaded = File(externalDir, fileName)
+        override fun moveToPrivateStorage(
+            downloadId: Long,
+            fileName: String,
+        ): File? {
+            val downloaded = File(downloadServiceDir, downloadId.toString())
             if (!downloaded.exists()) return null
             movedToPrivateStorage++
             return downloaded.copyTo(File(privateDir, fileName), overwrite = true).also {
-                downloaded.delete()
+                check(downloaded.delete())
             }
         }
 
@@ -233,7 +236,7 @@ class ApkUpdateRepositoryTest {
             listeners.toList().forEach { it(downloadId) }
         }
 
-        fun createDownloadedFile(): File = File(externalDir, APK_NAME).apply { writeText("apk") }
+        fun createDownloadedFile(): File = File(downloadServiceDir, DOWNLOAD_ID.toString()).apply { writeText("apk") }
     }
 
     private companion object {

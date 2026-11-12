@@ -5,10 +5,10 @@ import java.io.File
 /**
  * Downloads app update APKs through the platform download service.
  *
- * The download service runs in another process and can only write to external storage, so the
- * download lands in app-specific external storage first. That folder is writable by other apps
- * holding `WRITE_EXTERNAL_STORAGE` on API 23–29, so a finished download is moved into internal
- * storage with [moveToPrivateStorage] before it is handed to the installer.
+ * The download service runs in another process and cannot write to this app's internal storage,
+ * so the download is kept in the download service's own private storage and copied into internal
+ * storage with [moveToPrivateStorage] once it has finished. External storage, which other apps can
+ * write to on API 23–29, is never used.
  *
  * Kept as a seam so the download flow in [ApkUpdateRepository] can be unit tested without the
  * Android framework.
@@ -31,11 +31,15 @@ interface ApkDownloader {
     fun remove(downloadId: Long)
 
     /**
-     * Moves the finished download [fileName] into internal storage, deleting the external copy.
+     * Copies the finished download [downloadId] into internal storage as [fileName] and removes it
+     * from the download service.
      *
-     * @return the APK in internal storage, or `null` if the download file does not exist.
+     * @return the APK in internal storage, or `null` if the download service has no file for it.
      */
-    fun moveToPrivateStorage(fileName: String): File?
+    fun moveToPrivateStorage(
+        downloadId: Long,
+        fileName: String,
+    ): File?
 
     /**
      * Starts listening for download completion broadcasts. [onComplete] receives the id carried by
