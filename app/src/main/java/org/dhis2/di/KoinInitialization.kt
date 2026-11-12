@@ -12,6 +12,7 @@ import org.dhis2.data.biometric.biometricModule
 import org.dhis2.mobile.aggregates.di.aggregatesModule
 import org.dhis2.mobile.commons.di.commonsModule
 import org.dhis2.mobile.extension.host.di.extensionHostModule
+import org.dhis2.mobile.extension.web.di.extensionWebModule
 import org.dhis2.mobile.login.main.di.loginModule
 import org.dhis2.mobile.sync.di.syncModule
 import org.dhis2.tracker.search.di.trackerSearchModule
@@ -68,6 +69,7 @@ object KoinInitialization {
                 syncModule,
                 chartsModule,
                 extensionHostModule,
+                extensionWebModule,
                 customFormBodyModule,
             )
         }
