@@ -6,7 +6,8 @@ name: Merge automation
 #
 # workflow_dispatch and workflow_run only fire for workflow files on the default branch.
 on:
-  # From the Jira Automation rule on the transition to "Ready to Merge".
+  # From the Jira Automation rule on the transition to "Ready to Merge". Zephyr Test
+  # tickets are ready while in "TO_AUTOMATE", so their PRs are picked up by workflow_run.
   workflow_dispatch:
     inputs:
       jira_key:
