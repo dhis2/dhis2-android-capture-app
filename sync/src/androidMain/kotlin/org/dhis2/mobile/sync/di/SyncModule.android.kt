@@ -57,7 +57,7 @@ actual val syncModule =
                 get(),
                 get(),
                 get(),
-                UserLanguageCache(get(), get())
+                UserLanguageCache(get(), get()),
             )
         }
 
