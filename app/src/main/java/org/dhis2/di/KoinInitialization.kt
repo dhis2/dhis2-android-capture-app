@@ -13,6 +13,7 @@ import org.dhis2.mobile.aggregates.di.aggregatesModule
 import org.dhis2.mobile.commons.di.commonsModule
 import org.dhis2.mobile.login.main.di.loginModule
 import org.dhis2.mobile.sync.di.syncModule
+import org.dhis2.tracker.dashboard.di.dashboardModule
 import org.dhis2.tracker.search.di.trackerSearchModule
 import org.dhis2.usescases.datasets.di.dataSetModules
 import org.dhis2.usescases.searchTrackEntity.di.searchTEKoinModule
@@ -65,6 +66,7 @@ object KoinInitialization {
                 matomoModule,
                 syncModule,
                 chartsModule,
+                dashboardModule,
             )
         }
     }

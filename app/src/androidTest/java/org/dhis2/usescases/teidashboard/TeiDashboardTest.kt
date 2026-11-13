@@ -88,6 +88,33 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
+    // [ANDROAPP-7897] Non-default enrollment combo: the AOC is shown on the TEI card.
+    @Test
+    fun shouldShowEnrollmentAOCForNonDefaultCategoryCombo() {
+        val enrollment = attributeRmnchEnrollmentToNonDefaultAOC()
+
+        startTeiDashboardActivity(
+            programUID = enrollment.programUid,
+            teiUID = enrollment.teiUid,
+            enrollmentUID = enrollment.enrollmentUid,
+            rule = rule,
+        )
+
+        teiDashboardRobot(composeTestRule) {
+            checkEnrollmentAOCIsShown(enrollment.categoryOptionComboName)
+        }
+    }
+
+    // [ANDROAPP-7897] Default enrollment combo: no AOC information is shown.
+    @Test
+    fun shouldNotShowEnrollmentAOCForDefaultCategoryCombo() {
+        prepareTeiOpenedProgrammeAndLaunchActivity(rule)
+
+        teiDashboardRobot(composeTestRule) {
+            checkEnrollmentAOCIsNotShown(DEFAULT_CATEGORY_COMBO_NAME)
+        }
+    }
+
     @Test
     fun shouldReactivateTEIWhenClickReOpenWithProgramCompletedEvents() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)

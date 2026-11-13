@@ -3,6 +3,7 @@ package org.dhis2.usescases.teiDashboard.ui.mapper
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobile.commons.model.MetadataIconData
+import org.dhis2.tracker.dashboard.domain.model.EnrollmentAOC
 import org.dhis2.usescases.teiDashboard.DashboardEnrollmentModel
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.State
@@ -15,6 +16,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doReturn
@@ -69,7 +71,82 @@ class TEIDetailMapperTest {
         assertEquals(result.additionalInfo[4].value, model.orgUnits.first().displayName())
     }
 
-    private fun createFakeModel(ownerOrgUnit: OrganisationUnit = orgUnit()): DashboardEnrollmentModel {
+    @Test
+    fun shouldShowEnrollmentAOCAfterOrgUnitInfoForNonDefaultCategoryCombo() {
+        val enrollmentAOC = EnrollmentAOC(label = "TB case type", value = "Index, Global Fund")
+        val model = createFakeModel(enrollmentAOC = enrollmentAOC)
+
+        val result =
+            mapper.map(
+                dashboardModel = model,
+                phoneCallback = {},
+                emailCallback = {},
+                programsCallback = {},
+                onImageClick = {},
+            )
+
+        val aocItem = result.additionalInfo[4]
+        assertEquals("TB case type", aocItem.key)
+        assertEquals("Index, Global Fund", aocItem.value)
+        assertTrue(aocItem.isConstantItem)
+    }
+
+    @Test
+    fun shouldShowEnrollmentAOCAfterEnrolledInWhenOwnerDiffers() {
+        val enrollmentAOC = EnrollmentAOC(label = "TB case type", value = "Contact")
+        val model = createFakeModel(ownerOrgUnit = otherOrgUnit(), enrollmentAOC = enrollmentAOC)
+
+        val result =
+            mapper.map(
+                dashboardModel = model,
+                phoneCallback = {},
+                emailCallback = {},
+                programsCallback = {},
+                onImageClick = {},
+            )
+
+        assertEquals(model.orgUnits.first().displayName(), result.additionalInfo[4].value)
+        assertEquals("TB case type", result.additionalInfo[5].key)
+        assertEquals("Contact", result.additionalInfo[5].value)
+    }
+
+    @Test
+    fun shouldNotShowEnrollmentAOCForDefaultCategoryCombo() {
+        val model = createFakeModel(enrollmentAOC = null)
+
+        val result =
+            mapper.map(
+                dashboardModel = model,
+                phoneCallback = {},
+                emailCallback = {},
+                programsCallback = {},
+                onImageClick = {},
+            )
+
+        val withAOC =
+            mapper.map(
+                dashboardModel =
+                    createFakeModel(
+                        enrollmentAOC =
+                            EnrollmentAOC(
+                                "TB case type",
+                                "Index",
+                            ),
+                    ),
+                phoneCallback = {},
+                emailCallback = {},
+                programsCallback = {},
+                onImageClick = {},
+            )
+
+        assertEquals(withAOC.additionalInfo.size - 1, result.additionalInfo.size)
+        assertTrue(result.additionalInfo.none { it.key == "TB case type" })
+    }
+
+    private fun createFakeModel(
+        ownerOrgUnit: OrganisationUnit = orgUnit(),
+        enrollmentAOC: EnrollmentAOC? = null,
+    ): DashboardEnrollmentModel {
         val attributeValues =
             listOf(
                 Pair(getTEA("uid1", "First Name"), getTEAValue("Jonah")),
@@ -90,6 +167,7 @@ class TEIDetailMapperTest {
                 ownerOrgUnit,
                 emptyList(),
                 "Marked for follow-up",
+                enrollmentAOC,
             )
 
         return model

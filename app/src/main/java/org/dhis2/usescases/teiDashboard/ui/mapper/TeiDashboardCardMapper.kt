@@ -158,7 +158,10 @@ class TeiDashboardCardMapper(
                         if (item.currentProgram()?.displayIncidentDate() == true) {
                             addIncidentDate(
                                 list,
-                                incidentDateLabel = item.currentProgram()?.displayIncidentDateLabel(),
+                                incidentDateLabel =
+                                    item
+                                        .currentProgram()
+                                        ?.displayIncidentDateLabel(),
                                 incidentDate = item.currentEnrollment.incidentDate(),
                             )
                         }
@@ -180,6 +183,14 @@ class TeiDashboardCardMapper(
                             addEnrollIn(
                                 list,
                                 item.getCurrentOrgUnit(),
+                            )
+                        }
+                    }.also { list ->
+                        item.enrollmentAOC?.let {
+                            addEnrollmentAOC(
+                                list = list,
+                                enrollmentAOCLabel = item.enrollmentAOC.label,
+                                enrollmentAOCValue = item.enrollmentAOC.value,
                             )
                         }
                     }.also { list ->
@@ -221,6 +232,20 @@ class TeiDashboardCardMapper(
             AdditionalInfoItem(
                 key = resourceManager.getString(R.string.enrolledIn),
                 value = currentOrgUnit?.displayName() ?: "-",
+                isConstantItem = true,
+            ),
+        )
+    }
+
+    private fun addEnrollmentAOC(
+        list: MutableList<AdditionalInfoItem>,
+        enrollmentAOCLabel: String,
+        enrollmentAOCValue: String,
+    ) {
+        list.add(
+            AdditionalInfoItem(
+                key = enrollmentAOCLabel,
+                value = enrollmentAOCValue,
                 isConstantItem = true,
             ),
         )

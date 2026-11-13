@@ -20,6 +20,7 @@ import org.dhis2.usescases.enrollment.DateEditionWarningHandler
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.D2
+import org.koin.mp.KoinPlatform
 
 @Module
 class TeiDashboardModule(
@@ -91,6 +92,7 @@ class TeiDashboardModule(
             metadataIconProvider,
             programConfigurationRepository,
             customLabelProvider,
+            KoinPlatform.getKoin().get(),
         )
 
     @Provides

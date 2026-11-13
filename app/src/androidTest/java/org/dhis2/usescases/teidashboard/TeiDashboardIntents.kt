@@ -6,10 +6,15 @@ import org.dhis2.LazyActivityScenarioRule
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.SearchTETest
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
+import org.hisp.dhis.android.core.D2Manager
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 
 private const val PROGRAM_UID = "PROGRAM_UID"
 private const val CHILD_PROGRAM_UID_VALUE = "IpHINAT79UW"
 private const val TB_PROGRAM_UID = "ur1Edk5Oe2n"
+private const val RMNCH_PROGRAM_UID = "WSGAb5XwJ3Y"
+private const val RMNCH_ORG_UNIT_UID = "WAjjFMDJKcx"
+const val DEFAULT_CATEGORY_COMBO_NAME = "default"
 private const val TEI_UID = "TEI_UID"
 private const val ENROLLMENT_UID = "ENROLLMENT_UID"
 private const val TEI_UID_VALUE_COMPLETED = "vOxUH373fy5"
@@ -101,6 +106,67 @@ fun prepareTeiForAnalyticsAndLaunchActivity(
         TEI_UID_VALUE_ANALYTICS,
         ENROLLMENT_UID_VALUE_ANALYTICS,
         rule
+    )
+}
+
+data class EnrollmentWithAOC(
+    val programUid: String,
+    val teiUid: String,
+    val enrollmentUid: String,
+    val categoryComboName: String,
+    val categoryOptionComboName: String,
+)
+
+/**
+ * Attributes an active WHO RMNCH Tracker enrollment — whose program uses the non-default
+ * enrollment category combo "HIV age+gender" — to one of that combo's option combos.
+ * The demo enrollments all carry the default option combo, so the fixture is seeded here
+ * and resolved at runtime instead of relying on a hardcoded enrollment.
+ */
+fun attributeRmnchEnrollmentToNonDefaultAOC(): EnrollmentWithAOC {
+    val d2 = D2Manager.getD2()
+    val program = d2.programModule().programs().uid(RMNCH_PROGRAM_UID).blockingGet()!!
+    val categoryCombo =
+        d2
+            .categoryModule()
+            .categoryCombos()
+            .uid(program.enrollmentCategoryCombo().uid())
+            .blockingGet()!!
+    val categoryOptionCombo =
+        d2
+            .categoryModule()
+            .categoryOptionCombos()
+            .byCategoryComboUid()
+            .eq(categoryCombo.uid())
+            .blockingGet()
+            .first()
+    val enrollment =
+        d2
+            .enrollmentModule()
+            .enrollments()
+            .byProgram()
+            .eq(RMNCH_PROGRAM_UID)
+            .byOrganisationUnit()
+            .eq(RMNCH_ORG_UNIT_UID)
+            .byStatus()
+            .eq(EnrollmentStatus.ACTIVE)
+            .byDeleted()
+            .eq(false)
+            .blockingGet()
+            .first()
+
+    d2
+        .enrollmentModule()
+        .enrollments()
+        .uid(enrollment.uid())
+        .setAttributeOptionComboUid(categoryOptionCombo.uid())
+
+    return EnrollmentWithAOC(
+        programUid = RMNCH_PROGRAM_UID,
+        teiUid = enrollment.trackedEntityInstance()!!,
+        enrollmentUid = enrollment.uid(),
+        categoryComboName = categoryCombo.displayName()!!,
+        categoryOptionComboName = categoryOptionCombo.displayName()!!,
     )
 }
 

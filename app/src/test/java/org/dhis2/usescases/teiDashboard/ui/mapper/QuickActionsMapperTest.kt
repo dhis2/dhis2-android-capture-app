@@ -149,6 +149,7 @@ class QuickActionsMapperTest {
                 null,
                 quickActions,
                 markedForFollowUpLabel = "marked for follow up",
+                enrollmentAOC = null,
             )
         return model
     }
