@@ -125,6 +125,7 @@ class InfoBarMapperTest {
                 null,
                 emptyList(),
                 "Marked for follow up",
+                enrollmentAOC = null,
             )
 
         return model

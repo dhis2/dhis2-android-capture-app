@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard
 
 import org.dhis2.mobile.commons.model.MetadataIconData
+import org.dhis2.tracker.dashboard.domain.model.EnrollmentAOC
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -40,6 +41,7 @@ data class DashboardEnrollmentModel(
     override val ownerOrgUnit: OrganisationUnit?,
     val quickActions: List<String>,
     val markedForFollowUpLabel: String,
+    val enrollmentAOC: EnrollmentAOC?,
 ) : DashboardModel(
         trackedEntityInstance,
         trackedEntityAttributeValues,
