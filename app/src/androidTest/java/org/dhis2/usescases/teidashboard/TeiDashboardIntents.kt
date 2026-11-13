@@ -26,6 +26,8 @@ private const val TEI_UID_VALUE_TO_ENROLL = "tIJu6iqQxNV"
 private const val ENROLLMENT_VALUE_TO_ENROLL = "CCBLMntFuzb"
 private const val TEI_UID_VALUE_ANALYTICS = "wsk89u7zquT"
 private const val ENROLLMENT_UID_VALUE_ANALYTICS = "ITyaPVATEwc"
+private const val TEI_UID_VALUE_OWNERSHIP = "J8KD01PshMC"
+private const val ENROLLMENT_UID_VALUE_OWNERSHIP = "UNNfIq11NKH"
 
 fun prepareTeiCompletedProgrammeAndLaunchActivity(
     rule: LazyActivityScenarioRule<TeiDashboardMobileActivity>
@@ -100,6 +102,17 @@ fun prepareTeiForAnalyticsAndLaunchActivity(
         TB_PROGRAM_UID,
         TEI_UID_VALUE_ANALYTICS,
         ENROLLMENT_UID_VALUE_ANALYTICS,
+        rule
+    )
+}
+
+fun prepareTeiForOwnershipAndLaunchActivity(
+    rule: LazyActivityScenarioRule<TeiDashboardMobileActivity>
+) {
+    startTeiDashboardActivity(
+        TB_PROGRAM_UID,
+        TEI_UID_VALUE_OWNERSHIP,
+        ENROLLMENT_UID_VALUE_OWNERSHIP,
         rule
     )
 }

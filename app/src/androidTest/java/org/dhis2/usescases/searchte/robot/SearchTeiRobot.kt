@@ -23,17 +23,12 @@ import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
-import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.tracker.search.ui.screen.SEARCH_PARAMETERS_LIST_TAG
-import org.hamcrest.CoreMatchers.allOf
-import org.hamcrest.CoreMatchers.not
+import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 
@@ -50,25 +45,17 @@ fun searchTeiRobot(
 
 class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
+    @OptIn(ExperimentalTestApi::class)
     fun clickOnTEI(teiName: String) {
+        closeKeyboard()
+        composeTestRule.waitUntilExactlyOneExists(hasText("$TEI_CARD_TITLE_PREFIX$teiName", true), TIMEOUT)
         composeTestRule.onNodeWithText("$TEI_CARD_TITLE_PREFIX$teiName", true).performClick()
     }
 
-    fun checkTEIsDelete(teiName: String, teiLastName: String) {
-        onView(withId(R.id.scrollView))
-            .check(
-                matches(
-                    not(
-                        hasItem(
-                            allOf(
-                                hasDescendant(withText(teiName)), hasDescendant(
-                                    withText(teiLastName)
-                                )
-                            )
-                        )
-                    )
-                )
-            )
+    @OptIn(ExperimentalTestApi::class)
+    fun checkTEIsDelete(teiName: String) {
+        waitUntilActivityVisible<SearchTEActivity>()
+        composeTestRule.waitUntilDoesNotExist(hasText("$TEI_CARD_TITLE_PREFIX$teiName", true), TIMEOUT)
     }
 
     @OptIn(ExperimentalTestApi::class)

@@ -47,7 +47,8 @@ class TeiFlowTest : BaseTest() {
             API_TRACKED_ENTITY_EMPTY_RESPONSE,
         )
 
-        val totalEventsPerEnrollment = 3
+        // Position 3 is the "Past" header
+        val pastEnrollmentPosition = 4
         val enrollmentListDetails = createEnrollmentList()
         val registerTeiDetails = createRegisterTEI()
 
@@ -61,7 +62,7 @@ class TeiFlowTest : BaseTest() {
             composeTestRule.waitForIdle()
             enrollToProgram(ADULT_WOMAN_PROGRAM, enrollmentListDetails)
             checkActiveAndPastEnrollmentDetails(enrollmentListDetails)
-            checkPastEventsAreClosed(totalEventsPerEnrollment)
+            checkPastEventsAreClosed(pastEnrollmentPosition)
         }
     }
 
