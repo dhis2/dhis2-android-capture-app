@@ -209,6 +209,8 @@ ktxml = { module = "org.kobjects.ktxml:core", version.ref = "ktxml" }
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "commonsText" }
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil"}
 coil-network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil"}
+coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil"}
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 compose-runtime = { group = "org.jetbrains.compose.runtime", name = "runtime", version.ref = "composePluginVersion" }
 compose-foundation = { group = "org.jetbrains.compose.foundation", name = "foundation", version.ref = "composePluginVersion" }
 compose-ui = { group = "org.jetbrains.compose.ui", name = "ui", version.ref = "composePluginVersion" }
