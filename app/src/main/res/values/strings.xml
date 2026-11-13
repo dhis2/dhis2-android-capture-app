@@ -564,6 +564,7 @@
     <string name="software_update">Software update</string>
     <string name="remind_me_later">Later</string>
     <string name="download_now">Download now</string>
+    <string name="new_version_download_failed">The new version could not be downloaded. Please try again.</string>
     <string name="check_for_updates">Check for updates</string>
     <string name="no_updates">There are no new updates</string>
     <string name="unknow_sources_denied">Unknown sources permission is denied.\nYou need to enable it to install version.</string>

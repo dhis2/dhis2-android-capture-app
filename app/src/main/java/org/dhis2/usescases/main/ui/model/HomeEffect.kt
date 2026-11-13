@@ -20,6 +20,8 @@ sealed interface HomeEffect {
 
     data object ShowGranularSync : HomeEffect
 
+    data object NewVersionDownloadFailed : HomeEffect
+
     data object BlockSession : HomeEffect
 
     data object PinCreated : HomeEffect
