@@ -2,6 +2,7 @@ package org.dhis2.usescases.teidashboard.robot
 
 import android.content.Context
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasTestTag
@@ -29,8 +30,6 @@ import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
-import org.dhis2.mobile.commons.resources.Res
-import org.dhis2.mobile.commons.resources.group_by_stage_label
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.dhis2.usescases.teiDashboard.ui.INFO_BAR_TEST_TAG
@@ -224,6 +223,43 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
             onNodeWithText(enrollmentUIModel.name).assertIsDisplayed()
         }
+    }
+
+    /**
+     * Asserts the TEI card shows the enrollment AOC row (ANDROAPP-7897). The row is a
+     * constant card item, so it is rendered without expanding "Show more". The key can
+     * be trimmed to fit ("HIV age...: "), so the row is matched on its untrimmed value.
+     */
+    fun checkEnrollmentAOCIsShown(categoryOptionComboName: String) {
+        val aocRow = hasText(categoryOptionComboName, substring = true)
+        composeTestRule.waitUntil(ACTIVITY_LAUNCH_TIMEOUT) {
+            composeTestRule
+                .onAllNodes(aocRow, useUnmergedTree = true)
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        }
+        composeTestRule.onAllNodes(aocRow, useUnmergedTree = true)[0].assertExists()
+    }
+
+    /**
+     * Asserts the TEI card has no AOC row for an enrollment in a program with the
+     * default enrollment category combo, whose label and value would both read [defaultName].
+     * Waits first for the always-present "Owned by" row, so the card is known to be rendered.
+     */
+    fun checkEnrollmentAOCIsNotShown(defaultName: String) {
+        val ownedByRow = hasText(getString(R.string.ownedBy), substring = true)
+        composeTestRule.waitUntil(ACTIVITY_LAUNCH_TIMEOUT) {
+            composeTestRule
+                .onAllNodes(ownedByRow, useUnmergedTree = true)
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        }
+        composeTestRule
+            .onAllNodes(
+                hasText(defaultName, substring = true, ignoreCase = true),
+                useUnmergedTree = true
+            )
+            .assertCountEquals(0)
     }
 
     fun clickOnScheduleNew() {

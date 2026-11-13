@@ -16,6 +16,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.mobile.commons.providers.CustomLabelProvider
+import org.dhis2.tracker.dashboard.domain.GetEnrollmentAOC
 import org.dhis2.ui.ThemeManager
 import org.dhis2.usescases.teiDashboard.DashboardRepositoryImpl
 import org.dhis2.usescases.teiDashboard.DashboardViewModel
@@ -55,6 +56,7 @@ class TeiDashboardMobileActivityTest {
     private val preferences: PreferenceProvider = mock()
     private val programConfigurationRepository: ProgramConfigurationRepository = mock()
     private val customLabelProvider: CustomLabelProvider = mock()
+    private val getEnrollmentAOC: GetEnrollmentAOC = mock()
 
     private val metadataIconProvider: MetadataIconProvider = mock {
         on { invoke(any()) }doReturn MetadataIconData.defaultIcon()
@@ -129,6 +131,7 @@ class TeiDashboardMobileActivityTest {
             metadataIconProvider,
             programConfigurationRepository,
             customLabelProvider,
+            getEnrollmentAOC,
         )
     }
 
