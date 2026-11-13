@@ -2,7 +2,8 @@
 
 This is a **Kotlin Multiplatform (KMP)** Android project migrating to Compose Multiplatform.
 KMP modules target **Android and Desktop**; Desktop is being added to every KMP module to ease
-future targets. **iOS is not implemented.** The app uses MVVM + Repository + Use Case architecture.
+future targets. **iOS is not implemented**: only `commonskmm` compiles for iOS, with stubs, so
+other modules can add the target later. The app uses MVVM + Repository + Use Case architecture.
 
 ---
 
@@ -81,6 +82,24 @@ modulekmm/src/
 `androidHostTest` **depends on** `commonTest`, so a test dependency declared in
 `commonTest` is already on its compile classpath — no need to declare it twice.
 Both source sets are run by the same `testAndroidHostTest` task.
+
+**Modules with an iOS target** (`commonskmm` so far) add two source sets:
+- `jvmCommonMain` holds code shared by Android and Desktop that uses JVM APIs (`java.*`,
+  `javax.*`, `String.format`). Never put such code in `commonMain`: it breaks the iOS
+  compilation. Modules that target only Android and Desktop still see it from their `commonMain`.
+- `iosMain` holds the iOS `actual`s and Koin bindings, stubs for now.
+- Check with `./gradlew :commonskmm:compileKotlinIosSimulatorArm64 --dependency-verification lenient`.
+  It needs Xcode, and iOS artifacts are not in `verification-metadata.xml`.
+
+**Platform code: interfaces first.** The DHIS2 SDK will become multiplatform, and repository
+implementations will then move from `androidMain` to `commonMain`. Write code so that move only
+changes a binding:
+- **Repositories and platform services with state or dependencies** (biometrics, network status,
+  files, error messages): an interface in `commonMain` and one Koin binding per platform, a stub
+  where a platform lacks the service. They can be faked in `commonTest` without Mockito.
+- **`expect`/`actual`:** only for small functions with no dependencies and Compose helpers that
+  tests never replace (`logDebug`, `getWindowSizeClass`, `getDrawableResource`). Avoid new
+  `expect class` declarations.
 
 ---
 

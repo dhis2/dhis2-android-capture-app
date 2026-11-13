@@ -2,6 +2,7 @@ package org.dhis2.mobile.commons.coroutine
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 
 data class Dispatcher(
     val io: CoroutineDispatcher = Dispatchers.IO,
