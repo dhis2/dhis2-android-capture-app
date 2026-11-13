@@ -29,9 +29,9 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun registerTEI(
         registrationModel: RegisterTEIUIModel,
+        incidentDate: String = getCurrentDate(),
     ) {
         val registrationDate = registrationModel.firstSpecificDate
-        val incidentDate = getCurrentDate()
         val orgUnit = "Ngelehun CHC"
 
         searchTeiRobot(composeTestRule) {

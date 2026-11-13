@@ -1,12 +1,14 @@
 package org.dhis2.usescases.searchte.robot
 
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasAnyDescendant
+import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
@@ -20,7 +22,9 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -32,6 +36,8 @@ import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+
+private const val TEI_CARD_TITLE_PREFIX = "First name: "
 
 fun searchTeiRobot(
     composeTestRule: ComposeTestRule,
@@ -45,7 +51,7 @@ fun searchTeiRobot(
 class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnTEI(teiName: String) {
-        composeTestRule.onNodeWithText("First name: $teiName", true).performClick()
+        composeTestRule.onNodeWithText("$TEI_CARD_TITLE_PREFIX$teiName", true).performClick()
     }
 
     fun checkTEIsDelete(teiName: String, teiLastName: String) {
@@ -69,9 +75,7 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun openNextSearchParameter(parameterValue: String) {
         closeKeyboard()
         composeTestRule.waitForIdle()
-        composeTestRule
-            .onNodeWithTag(SEARCH_PARAMETERS_LIST_TAG)
-            .performScrollToNode(hasText(parameterValue))
+        scrollToSearchParameter(parameterValue)
         composeTestRule.waitUntilAtLeastOneExists(hasText(parameterValue), TIMEOUT)
         composeTestRule.onNodeWithText(parameterValue).performClick()
     }
@@ -174,7 +178,21 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     @OptIn(ExperimentalTestApi::class)
+    fun checkSearchParametersAreDisplayed() {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag(SEARCH_PARAMETERS_LIST_TAG), TIMEOUT)
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SEARCH_PARAM_ITEM"), TIMEOUT)
+    }
+
     fun typeOnSearchParameter(label: String, value: String) {
+        typeOnSearchField(label, value, "INPUT_TEXT_FIELD")
+    }
+
+    fun typeOnNumberSearchParameter(label: String, value: String) {
+        typeOnSearchField(label, value, "INPUT_NUMBER_FIELD")
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    private fun typeOnSearchField(label: String, value: String, fieldTag: String) {
         // Dismiss the keyboard first so the LazyColumn recomposes and exposes all field labels.
         // Without this, items scrolled behind an open keyboard are dropped from composition and
         // waitUntilAtLeastOneExists(hasText(label)) times out on the next field.
@@ -183,18 +201,78 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         // Any focus jump caused by the IMM dismiss is immediately overridden by clicking the label.
         closeKeyboard()
         composeTestRule.waitForIdle()
-        // Scroll the LazyColumn to ensure the target field is in composition before clicking.
-        composeTestRule
-            .onNodeWithTag(SEARCH_PARAMETERS_LIST_TAG)
-            .performScrollToNode(hasText(label))
+        scrollToSearchParameter(label)
         composeTestRule.waitUntilAtLeastOneExists(hasText(label), TIMEOUT)
         composeTestRule.onNodeWithText(label).performClick()
-        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("INPUT_TEXT_FIELD"), TIMEOUT)
-        composeTestRule.onAllNodesWithTag("INPUT_TEXT_FIELD").onLast().performTextInput(value)
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag(fieldTag), TIMEOUT)
+        composeTestRule.onAllNodesWithTag(fieldTag).onLast().performTextInput(value)
+    }
+
+    // Exact match on an editable node, so the label and the search bar can't satisfy it
+    @OptIn(ExperimentalTestApi::class)
+    fun checkSearchParameterHasValue(label: String, value: String) {
+        closeKeyboard()
+        composeTestRule.waitForIdle()
+        scrollToSearchParameter(label)
+        composeTestRule.waitUntilAtLeastOneExists(hasText(value) and hasSetTextAction(), TIMEOUT)
+    }
+
+    // Scrolls first so the field is composed and the check can't pass vacuously
+    @OptIn(ExperimentalTestApi::class)
+    fun checkSearchParameterIsEmpty(label: String, previousValue: String) {
+        scrollToSearchParameter(label)
+        composeTestRule.waitUntilDoesNotExist(
+            hasText(previousValue) and hasSetTextAction(),
+            TIMEOUT,
+        )
     }
 
     @OptIn(ExperimentalTestApi::class)
-    fun clickOnClearSearch() {
+    fun clickOnClearSearchButton() {
+        closeKeyboard()
+        composeTestRule.waitForIdle()
+        // "Clear search" is the last item of the LazyColumn
+        scrollToSearchParameter("Clear search")
+        composeTestRule.waitUntilAtLeastOneExists(hasText("Clear search"), TIMEOUT)
+        composeTestRule.onNodeWithText("Clear search").performClick()
+    }
+
+    // Program dashboard search bar, shown once a search has values
+    @OptIn(ExperimentalTestApi::class)
+    fun checkSearchBarShowsQuery(vararg values: String) {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SEARCH_INPUT"), TIMEOUT)
+        values.forEach { value ->
+            composeTestRule
+                .onNodeWithTag("SEARCH_INPUT")
+                .assert(hasText(value, substring = true))
+        }
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun clickOnSearchBar() {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SEARCH_INPUT"), TIMEOUT)
+        composeTestRule.onNodeWithTag("SEARCH_INPUT").performClick()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun clickOnResetSearchBar() {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("CANCEL_BUTTON"), TIMEOUT)
+        composeTestRule.onNodeWithTag("CANCEL_BUTTON").performClick()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun checkSearchBarIsCleared() {
+        composeTestRule.waitUntilDoesNotExist(hasTestTag("SEARCH_INPUT"), TIMEOUT)
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun clickOnSearchOutsideProgram(buttonText: String) {
+        composeTestRule.waitUntilAtLeastOneExists(hasText(buttonText), TIMEOUT)
+        composeTestRule.onNodeWithText(buttonText).performClick()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun clickOnEachFieldResetButton() {
         closeKeyboard()
         composeTestRule.waitForIdle()
         val count = composeTestRule
@@ -215,7 +293,6 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         }
     }
 
-
     @OptIn(ExperimentalTestApi::class)
     fun checkFocusedFieldShowsOperatorSupportingText() {
         composeTestRule.waitUntilAtLeastOneExists(
@@ -234,9 +311,7 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             // Scroll the LazyColumn to compose the target field before asserting.
             // Off-screen items are dropped from composition on slow CI devices, causing
             // waitUntilAtLeastOneExists to time out even though the error is present.
-            composeTestRule
-                .onNodeWithTag(SEARCH_PARAMETERS_LIST_TAG)
-                .performScrollToNode(hasText(label))
+            scrollToSearchParameter(label)
             composeTestRule.waitForIdle()
 
             val containerMatcher =
@@ -260,5 +335,56 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun checkSearchResultDisplayed(teiName: String) {
         composeTestRule.waitUntilAtLeastOneExists(hasText(teiName, substring = true), TIMEOUT)
         composeTestRule.onNodeWithText(teiName, substring = true).assertIsDisplayed()
+    }
+
+    // --- Methods for the TEI list cards ---
+
+    fun checkFirstTEIInList(teiName: String) {
+        onView(withId(R.id.scrollView)).perform(scrollToPosition<RecyclerView.ViewHolder>(0))
+        composeTestRule.waitUntil(TIMEOUT) {
+            composeTestRule.onAllNodes(hasText(TEI_CARD_TITLE_PREFIX, substring = true))
+                .fetchSemanticsNodes()
+                .minByOrNull { it.positionInWindow.y }
+                ?.texts()
+                ?.any { it.contains("$TEI_CARD_TITLE_PREFIX$teiName") } == true
+        }
+    }
+
+    fun checkTEICardShows(teiName: String, vararg texts: String) {
+        val card = texts.fold(teiCard(teiName)) { matcher, text ->
+            matcher and hasText(text, substring = true)
+        }
+        scrollListToCard(card)
+    }
+
+    fun checkTEICardDoesNotShow(teiName: String, text: String) {
+        scrollListToCard(teiCard(teiName))
+        composeTestRule.onNode(teiCard(teiName)).assert(!hasText(text, substring = true))
+    }
+
+    private fun teiCard(teiName: String) = hasText("$TEI_CARD_TITLE_PREFIX$teiName", substring = true)
+
+    private fun scrollListToCard(card: SemanticsMatcher) {
+        composeTestRule.waitUntil(TIMEOUT) { listItemCount() > 0 }
+        val found = (0 until listItemCount()).any { position ->
+            onView(withId(R.id.scrollView)).perform(scrollToPosition<RecyclerView.ViewHolder>(position))
+            composeTestRule.waitForIdle()
+            composeTestRule.onAllNodes(card).fetchSemanticsNodes().isNotEmpty()
+        }
+        assertTrue("No TEI card matches ${card.description}", found)
+    }
+
+    private fun listItemCount(): Int {
+        var count = 0
+        onView(withId(R.id.scrollView)).check { view, _ ->
+            count = (view as RecyclerView).adapter?.itemCount ?: 0
+        }
+        return count
+    }
+
+    private fun scrollToSearchParameter(text: String) {
+        composeTestRule
+            .onNodeWithTag(SEARCH_PARAMETERS_LIST_TAG)
+            .performScrollToNode(hasText(text))
     }
 }
