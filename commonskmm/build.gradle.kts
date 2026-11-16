@@ -7,7 +7,6 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.kotlin.compose.compiler)
-    alias(libs.plugins.kotlin.atomicfu)
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -70,9 +69,6 @@ kotlin {
 
             //dates
             implementation(libs.kotlinx.datetime)
-
-            // Atomicfu
-            implementation(libs.atomicfu)
 
             //Coil
             api(libs.coil)

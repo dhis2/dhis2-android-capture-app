@@ -78,7 +78,6 @@ maplibregeogson = "6.0.1"
 material3WindowSizeCompose = "1.8.2"
 koinBom = "4.2.2"
 ktxml = "1.0.0"
-atomicfu = "0.29.0"
 playservicesauth = "21.4.0"
 playservicesphone = "18.0.2" #Can not be updated to latest due minSDK requirement of 23
 ksp = "2.3.12"
@@ -204,7 +203,6 @@ koin-composeVM = { module = "io.insert-koin:koin-compose-viewmodel" }
 koin-work = { module = "io.insert-koin:koin-androidx-workmanager" }
 koin-test = { module = "io.insert-koin:koin-test" }
 koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4" }
-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 ktxml = { module = "org.kobjects.ktxml:core", version.ref = "ktxml" }
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "commonsText" }
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil"}
@@ -228,7 +226,6 @@ kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.
 kotlin-serialization = { id = "kotlinx-serialization" }
 compose = { id = "org.jetbrains.compose", version.ref = "composePluginVersion" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-kotlin-atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
 legacy-kapt = { id = "com.android.legacy-kapt", version.ref = "gradle" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }

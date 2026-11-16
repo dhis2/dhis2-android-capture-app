@@ -19,7 +19,10 @@ other modules can add the target later. The app uses MVVM + Repository + Use Cas
 # Run all unit tests (debug + KMP host tests)
 ./gradlew testDebugUnitTest testDhis2DebugUnitTest testAndroidHostTest
 
-# Shortcut: lint + all unit tests (mirrors CI)
+# Compile the KMP modules for desktop and run their commonTest on the desktop JVM (one task)
+./gradlew desktopTest
+
+# Shortcut: lint + all unit tests + desktop (mirrors CI)
 ./run_tests.sh
 
 # Run a single test class (KMP commonTest)
@@ -43,8 +46,9 @@ other modules can add the target later. The app uses MVVM + Repository + Use Cas
 - KMP modules (`login`, `sync`, `aggregates`, `commonskmm`, `tracker`) — **both** the
   `commonTest` and `androidHostTest` source sets: `testAndroidHostTest`
 
-`testAndroidDebugUnitTest` is **not a task in this repo**, and there is no
-`desktopTest` source set in any module despite the desktop targets.
+`testAndroidDebugUnitTest` is **not a task in this repo**. No module has a `desktopTest`
+source set, but every KMP module has a `desktopTest` **task**: it runs `commonTest` on the
+desktop JVM, and CI runs it, so a common test must pass there too, not only on Android.
 
 ---
 

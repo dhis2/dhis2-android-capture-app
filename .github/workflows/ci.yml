@@ -83,6 +83,11 @@ jobs:
         if: ${{ !contains(github.event.pull_request.title, '[skip unitTest]') && !contains(github.event.pull_request.body, '[skip unitTest]') }}
         run: ./gradlew testDebugUnitTest testDhis2DebugUnitTest testAndroidHostTest jacocoReport --stacktrace --no-daemon
 
+      # KMP modules also target desktop: compile it and run commonTest on the desktop JVM.
+      - name: Desktop Build & Tests
+        if: ${{ !contains(github.event.pull_request.title, '[skip unitTest]') && !contains(github.event.pull_request.body, '[skip unitTest]') }}
+        run: ./gradlew desktopTest --stacktrace --no-daemon
+
       - name: Upload JaCoCo Report
         if: ${{ !contains(github.event.pull_request.title, '[skip unitTest]') && !contains(github.event.pull_request.body, '[skip unitTest]') }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
