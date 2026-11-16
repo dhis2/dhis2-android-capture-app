@@ -160,7 +160,7 @@ class GranularSyncPresenter(
                     )
                 }
 
-                DATA_VALUES ->
+                DATA_VALUES -> {
                     with(syncContext as SyncContext.DataSetInstance) {
                         syncBackgroundJobAction.launchDataValueGranularSync(
                             uid = recordUid(),
@@ -170,6 +170,7 @@ class GranularSyncPresenter(
                             catOptionCombo = getDataSetCatOptCombos(),
                         )
                     }
+                }
 
                 ALL -> { // Do nothing
                     syncBackgroundJobAction.launchDataSync(0)
@@ -183,10 +184,15 @@ class GranularSyncPresenter(
             when (syncContext.conflictType()) {
                 // Matches the unique work name enqueued by launchDataSync(0) in initGranularSync
                 ALL -> DATA_SYNC_NOW
+
                 PROGRAM -> GRANULAR_SYNC_PROGRAM_NAME
+
                 TEI -> GRANULAR_SYNC_TEI_NAME
+
                 EVENT -> GRANULAR_SYNC_EVENT_NAME
+
                 DATA_SET -> GRANULAR_SYNC_DATASET_NAME
+
                 DATA_VALUES -> GRANULAR_SYNC_DATAVALUE_NAME
             },
         )
@@ -427,7 +433,7 @@ class GranularSyncPresenter(
         return catOptionComboUidList
     }
 
-    fun onDettach() {
+    fun onDetach() {
         disposable.clear()
     }
 
@@ -444,18 +450,20 @@ class GranularSyncPresenter(
 
             org.dhis2.mobile.sync.model.SyncStatus.Cancelled,
             org.dhis2.mobile.sync.model.SyncStatus.Failed,
-            ->
+            -> {
                 if (syncStarted) {
                     awaitingSyncResult = false
                     loadSyncInfo()
                 }
+            }
 
-            org.dhis2.mobile.sync.model.SyncStatus.Succeed ->
+            org.dhis2.mobile.sync.model.SyncStatus.Succeed -> {
                 if (syncStarted) {
                     awaitingSyncResult = false
                     loadSyncInfo()
                     sendDisplaySuccessMessage()
                 }
+            }
         }
     }
 

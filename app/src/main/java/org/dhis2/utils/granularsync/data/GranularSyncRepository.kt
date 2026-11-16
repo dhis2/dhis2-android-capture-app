@@ -78,11 +78,12 @@ class GranularSyncRepository(
 
     private fun getState(): State =
         when (syncContext.conflictType()) {
-            ConflictType.PROGRAM ->
+            ConflictType.PROGRAM -> {
                 d2
                     .program(syncContext.recordUid())
                     ?.let { dhisProgramUtils.getProgramState(it) }
                     ?: throw missingSyncTargetException()
+            }
 
             ConflictType.TEI -> {
                 val enrollment = d2.enrollment(syncContext.recordUid())
@@ -92,8 +93,9 @@ class GranularSyncRepository(
                     ?: throw missingSyncTargetException()
             }
 
-            ConflictType.EVENT ->
+            ConflictType.EVENT -> {
                 d2.event(syncContext.recordUid())?.aggregatedSyncState() ?: throw missingSyncTargetException()
+            }
 
             ConflictType.DATA_SET -> {
                 d2.dataSet(syncContext.recordUid()) ?: throw missingSyncTargetException()
@@ -105,7 +107,7 @@ class GranularSyncRepository(
                 )
             }
 
-            ConflictType.DATA_VALUES ->
+            ConflictType.DATA_VALUES -> {
                 with(syncContext as SyncContext.DataSetInstance) {
                     val dataSetInstances =
                         d2
@@ -131,8 +133,11 @@ class GranularSyncRepository(
                             .toMutableList(),
                     )
                 }
+            }
 
-            ConflictType.ALL -> dhisProgramUtils.getServerState()
+            ConflictType.ALL -> {
+                dhisProgramUtils.getServerState()
+            }
         }
 
     private fun getLastSynced(returnEmpty: Boolean = true): SyncDate =
@@ -140,8 +145,9 @@ class GranularSyncRepository(
             SyncDate(null)
         } else {
             when (syncContext.conflictType()) {
-                ConflictType.PROGRAM ->
+                ConflictType.PROGRAM -> {
                     SyncDate(d2.program(syncContext.recordUid())?.lastUpdated())
+                }
 
                 ConflictType.TEI -> {
                     val enrollment = d2.enrollment(syncContext.recordUid())
@@ -152,13 +158,15 @@ class GranularSyncRepository(
                     )
                 }
 
-                ConflictType.EVENT ->
+                ConflictType.EVENT -> {
                     SyncDate(d2.event(syncContext.recordUid())?.lastUpdated())
+                }
 
-                ConflictType.DATA_SET ->
+                ConflictType.DATA_SET -> {
                     SyncDate(d2.dataSet(syncContext.recordUid())?.lastUpdated())
+                }
 
-                ConflictType.DATA_VALUES ->
+                ConflictType.DATA_VALUES -> {
                     with(syncContext as SyncContext.DataSetInstance) {
                         SyncDate(
                             d2
@@ -177,9 +185,11 @@ class GranularSyncRepository(
                                 .minOrNull(),
                         )
                     }
+                }
 
-                ConflictType.ALL ->
+                ConflictType.ALL -> {
                     SyncDate(preferenceProvider.lastSync())
+                }
             }
         }
 
@@ -187,62 +197,82 @@ class GranularSyncRepository(
         when (state) {
             State.TO_POST,
             State.TO_UPDATE,
-            -> getContentItems(State.TO_POST, State.TO_UPDATE)
+            -> {
+                getContentItems(State.TO_POST, State.TO_UPDATE)
+            }
 
-            State.ERROR ->
+            State.ERROR -> {
                 getContentItems(
                     State.ERROR,
                     State.WARNING,
                     State.TO_UPDATE,
                     State.TO_POST,
                 )
+            }
 
-            State.WARNING -> getContentItems(State.WARNING, State.TO_POST, State.TO_UPDATE)
+            State.WARNING -> {
+                getContentItems(State.WARNING, State.TO_POST, State.TO_UPDATE)
+            }
+
             State.UPLOADING,
             State.RELATIONSHIP,
             State.SYNCED,
             State.SENT_VIA_SMS,
             State.SYNCED_VIA_SMS,
-            -> emptyList()
+            -> {
+                emptyList()
+            }
         }
 
     private fun getContentItems(vararg states: State): List<SyncStatusItem> =
         when (syncContext) {
-            is SyncContext.DataSet ->
+            is SyncContext.DataSet -> {
                 getDataSetItemsWithStates(syncContext.dataSetUid, *states)
+            }
 
-            is SyncContext.DataSetInstance ->
+            is SyncContext.DataSetInstance -> {
                 getDataSetInstanceItemsWithStates(syncContext.dataSetUid)
+            }
 
-            is SyncContext.Enrollment ->
+            is SyncContext.Enrollment -> {
                 getEnrollmentItemsWithStates(syncContext.enrollmentUid, *states)
+            }
 
-            is SyncContext.EnrollmentEvent ->
+            is SyncContext.EnrollmentEvent -> {
                 getEventItemsWithStates(syncContext.eventUid, *states)
+            }
 
-            is SyncContext.Event ->
+            is SyncContext.Event -> {
                 getEventItemsWithStates(syncContext.eventUid, *states)
+            }
 
-            is SyncContext.EventProgram ->
+            is SyncContext.EventProgram -> {
                 getProgramItemsWithStates(syncContext.programUid, *states)
+            }
 
-            is SyncContext.Global ->
+            is SyncContext.Global -> {
                 getHomeItemsWithStates(*states)
+            }
 
-            is SyncContext.GlobalDataSet ->
+            is SyncContext.GlobalDataSet -> {
                 getDataSetItemsForGlobalContext(syncContext.dataSetUid)
+            }
 
-            is SyncContext.GlobalEventProgram ->
+            is SyncContext.GlobalEventProgram -> {
                 getProgramItemsForGlobalContext(syncContext.programUid, *states)
+            }
 
-            is SyncContext.GlobalTrackerProgram ->
+            is SyncContext.GlobalTrackerProgram -> {
                 getProgramItemsForGlobalContext(syncContext.programUid, *states)
+            }
 
-            is SyncContext.TrackerProgram ->
+            is SyncContext.TrackerProgram -> {
                 getProgramItemsWithStates(syncContext.programUid, *states)
+            }
 
-            is SyncContext.TrackerProgramTei ->
+            is SyncContext.TrackerProgramTei -> {
                 getTeiItemWithStates(syncContext.enrollmentUid)
+            }
         }
 
     private fun getHomeItemsWithStates(vararg states: State): List<SyncStatusItem> {
@@ -255,8 +285,11 @@ class GranularSyncRepository(
                     SyncStatusItem(
                         type =
                             when (program.programType()) {
-                                ProgramType.WITHOUT_REGISTRATION -> SyncStatusType.EventProgram(program.uid())
-                                ProgramType.WITH_REGISTRATION ->
+                                ProgramType.WITHOUT_REGISTRATION -> {
+                                    SyncStatusType.EventProgram(program.uid())
+                                }
+
+                                ProgramType.WITH_REGISTRATION -> {
                                     if (d2.isStockProgram(program.uid())) {
                                         SyncStatusType.StockProgram(
                                             programUid = program.uid(),
@@ -268,11 +301,13 @@ class GranularSyncRepository(
                                             trackedEntityTypeUid = program.trackedEntityType()!!.uid(),
                                         )
                                     }
+                                }
 
-                                null ->
+                                null -> {
                                     throw NullPointerException(
                                         "Program ${program.uid()}: program type can't be null",
                                     )
+                                }
                             },
                         displayName = program.displayName() ?: program.uid(),
                         description = resourceManager.getString(R.string.tap_to_explore_action),
@@ -370,17 +405,21 @@ class GranularSyncRepository(
             "$errorLabel, $warningLabel"
         }
 
-        errorCount == 0 && warningCount > 0 ->
+        errorCount == 0 && warningCount > 0 -> {
             resourceManager
                 .getPlural(R.plurals.warning_count_label, warningCount)
                 .format(warningCount)
+        }
 
-        errorCount > 0 && warningCount == 0 ->
+        errorCount > 0 && warningCount == 0 -> {
             resourceManager
                 .getPlural(R.plurals.error_count_label, errorCount)
                 .format(errorCount)
+        }
 
-        else -> resourceManager.getString(R.string.tap_to_explore_action)
+        else -> {
+            resourceManager.getString(R.string.tap_to_explore_action)
+        }
     }
 
     private fun getDataSetItemsForGlobalContext(dataSetUid: String): List<SyncStatusItem> {
@@ -457,10 +496,13 @@ class GranularSyncRepository(
 
                 State.TO_POST,
                 State.TO_UPDATE,
-                ->
+                -> {
                     resourceManager.getString(R.string.tap_to_explore_action)
+                }
 
-                else -> ""
+                else -> {
+                    ""
+                }
             }
 
         val trackedEntityTypeName =
@@ -514,10 +556,13 @@ class GranularSyncRepository(
                     )
                 }
 
-                State.TO_POST, State.TO_UPDATE ->
+                State.TO_POST, State.TO_UPDATE -> {
                     resourceManager.getString(R.string.tap_to_explore_action)
+                }
 
-                else -> ""
+                else -> {
+                    ""
+                }
             }
         val hasNullDataElementConflict = eventConflicts.any { it.dataElement() == null }
 
@@ -641,7 +686,9 @@ class GranularSyncRepository(
                                 )
                             }
 
-                            else -> null
+                            else -> {
+                                null
+                            }
                         }
                     }
             } else {
@@ -808,49 +855,37 @@ class GranularSyncRepository(
                 )
             }
 
-        return conflicts.mapNotNull { dataValueConflict ->
-            when {
-                dataValueConflict.dataElement() != null -> {
-                    val dataElement = d2.dataElement(dataValueConflict.dataElement()!!)
-                    val catOptComboLabel =
-                        dataValueConflict.categoryOptionCombo()?.let { catOptComboUid ->
-                            d2.categoryOptionCombo(catOptComboUid)?.displayName() ?: catOptComboUid
-                        }
-                    val dataElementLabel = dataElement?.displayFormName() ?: dataElement?.uid()
-                    SyncStatusItem(
-                        type =
-                            SyncStatusType.DataSetInstance(
-                                dataSetUid = dataSetUid,
-                                orgUnitUid = dataValueConflict.orgUnit()!!,
-                                periodId = dataValueConflict.period()!!,
-                                attrOptComboUid = dataValueConflict.attributeOptionCombo()!!,
-                            ),
-                        displayName = "$dataElementLabel | $catOptComboLabel",
-                        description = dataValueConflict.displayDescription() ?: "",
-                        state = dataValueConflict.status()?.toState() ?: State.ERROR,
-                    )
-                }
+        return conflicts.map { dataValueConflict ->
 
-                dataValueConflict.categoryOptionCombo() != null -> {
-                    val catOptCombo =
-                        d2.categoryOptionCombo(dataValueConflict.categoryOptionCombo()!!)
-                    val catOptComboLabel = catOptCombo?.displayName() ?: catOptCombo?.uid() ?: ""
-                    SyncStatusItem(
-                        type =
-                            SyncStatusType.DataSetInstance(
-                                dataSetUid = dataSetUid,
-                                orgUnitUid = dataValueConflict.orgUnit()!!,
-                                periodId = dataValueConflict.period()!!,
-                                attrOptComboUid = dataValueConflict.attributeOptionCombo()!!,
-                            ),
-                        displayName = catOptComboLabel,
-                        description = dataValueConflict.displayDescription() ?: "",
-                        state = dataValueConflict.status()?.toState() ?: State.ERROR,
-                    )
-                }
-
-                else -> null
-            }
+            val dataElement = d2.dataElement(dataValueConflict.dataElement())
+            val catOptComboLabel =
+                d2.categoryOptionCombo(dataValueConflict.categoryOptionCombo()) ?.displayName()
+                    ?: dataValueConflict.categoryOptionCombo()
+            val dataElementLabel = dataElement?.displayFormName() ?: dataElement?.uid()
+            SyncStatusItem(
+                type =
+                    SyncStatusType.DataSetInstance(
+                        dataSetUid = dataSetUid,
+                        orgUnitUid = dataValueConflict.orgUnit(),
+                        periodId = dataValueConflict.period(),
+                        attrOptComboUid = dataValueConflict.attributeOptionCombo(),
+                    ),
+                displayName = "$dataElementLabel | $catOptComboLabel",
+                description = dataValueConflict.displayDescription() ?: "",
+                state = dataValueConflict.status()?.toState() ?: State.ERROR,
+            )
+            SyncStatusItem(
+                type =
+                    SyncStatusType.DataSetInstance(
+                        dataSetUid = dataSetUid,
+                        orgUnitUid = dataValueConflict.orgUnit(),
+                        periodId = dataValueConflict.period(),
+                        attrOptComboUid = dataValueConflict.attributeOptionCombo(),
+                    ),
+                displayName = catOptComboLabel,
+                description = dataValueConflict.displayDescription() ?: "",
+                state = dataValueConflict.status()?.toState() ?: State.ERROR,
+            )
         }
     }
 
@@ -887,18 +922,28 @@ class GranularSyncRepository(
         }
 
         return when {
-            stateCandidates.contains(State.ERROR) -> State.ERROR
-            stateCandidates.contains(State.WARNING) -> State.WARNING
+            stateCandidates.contains(State.ERROR) -> {
+                State.ERROR
+            }
+
+            stateCandidates.contains(State.WARNING) -> {
+                State.WARNING
+            }
+
             stateCandidates.contains(State.SENT_VIA_SMS) ||
-                stateCandidates.contains(State.SYNCED_VIA_SMS) ->
+                stateCandidates.contains(State.SYNCED_VIA_SMS) -> {
                 State.SENT_VIA_SMS
+            }
 
             stateCandidates.contains(State.TO_POST) ||
                 stateCandidates.contains(State.UPLOADING) ||
-                stateCandidates.contains(State.TO_UPDATE) ->
+                stateCandidates.contains(State.TO_UPDATE) -> {
                 State.TO_UPDATE
+            }
 
-            else -> State.SYNCED
+            else -> {
+                State.SYNCED
+            }
         }
     }
 
@@ -909,11 +954,17 @@ class GranularSyncRepository(
             -> SyncStatus.NOT_SYNCED
 
             State.ERROR -> SyncStatus.ERROR
+
             State.WARNING -> SyncStatus.WARNING
+
             State.SYNCED -> SyncStatus.SYNCED
+
             State.RELATIONSHIP -> SyncStatus.RELATIONSHIP
+
             State.UPLOADING -> SyncStatus.UPLOADING
+
             State.SENT_VIA_SMS -> SyncStatus.SENT_VIA_SMS
+
             State.SYNCED_VIA_SMS -> SyncStatus.SYNCED_VIA_SMS
         }
 
@@ -921,12 +972,16 @@ class GranularSyncRepository(
 
     private fun getTitle(): String =
         when (syncContext.conflictType()) {
-            ConflictType.ALL -> ""
-            ConflictType.PROGRAM ->
+            ConflictType.ALL -> {
+                ""
+            }
+
+            ConflictType.PROGRAM -> {
                 d2
                     .program(syncContext.recordUid())
                     ?.displayName()
                     ?: syncContext.recordUid()
+            }
 
             ConflictType.TEI -> {
                 val enrollment =
@@ -938,18 +993,20 @@ class GranularSyncRepository(
                     ?: syncContext.recordUid()
             }
 
-            ConflictType.EVENT ->
+            ConflictType.EVENT -> {
                 d2
                     .event(syncContext.recordUid())
                     ?.programStage()
                     ?.let { d2.programStage(it)?.displayName() }
                     ?: syncContext.recordUid()
+            }
 
-            ConflictType.DATA_SET, ConflictType.DATA_VALUES ->
+            ConflictType.DATA_SET, ConflictType.DATA_VALUES -> {
                 d2
                     .dataSet(syncContext.recordUid())
                     ?.displayName()
                     ?: syncContext.recordUid()
+            }
         }
 
     suspend fun checkServerAvailability() =
@@ -973,6 +1030,7 @@ fun SyncStatusItem.priority(): Int =
         -> 1
 
         is SyncStatusType.Enrollment -> 2
+
         is SyncStatusType.DataSetInstance,
         is SyncStatusType.Event,
         is SyncStatusType.TrackedEntity,
@@ -986,7 +1044,9 @@ fun State.priority(): Int =
         -> 3
 
         State.ERROR -> 1
+
         State.WARNING -> 2
+
         State.SYNCED,
         State.UPLOADING,
         State.RELATIONSHIP,

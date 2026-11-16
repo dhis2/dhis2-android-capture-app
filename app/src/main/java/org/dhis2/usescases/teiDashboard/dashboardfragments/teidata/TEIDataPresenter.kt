@@ -2,7 +2,6 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -97,8 +96,13 @@ class TEIDataPresenter(
             val sectionFlowable =
                 view
                     .observeStageSelection(program)
-                    .startWith(StageSection("", false, false))
-                    .map { (stageUid, showOptions, showAllEvents) ->
+                    .startWith(
+                        StageSection(
+                            stageUid = "",
+                            showOptions = false,
+                            showAllEvents = false,
+                        ),
+                    ).map { (stageUid, showOptions, showAllEvents) ->
                         currentStage = if (stageUid == currentStage && !showOptions) "" else stageUid
                         StageSection(currentStage, showOptions, showAllEvents)
                     }
@@ -303,10 +307,7 @@ class TEIDataPresenter(
         }
     }
 
-    fun onScheduleSelected(
-        uid: String?,
-        sharedView: View?,
-    ) {
+    fun onScheduleSelected(uid: String?) {
         uid?.let {
             view.displayEnterEvent(
                 eventUid = it,
@@ -365,7 +366,7 @@ class TEIDataPresenter(
         }
     }
 
-    fun onDettach() {
+    fun onDetach() {
         compositeDisposable.clear()
     }
 
@@ -409,7 +410,7 @@ class TEIDataPresenter(
     ) {
         if (stage != null) {
             when (eventCreationType) {
-                EventCreationType.ADDNEW ->
+                EventCreationType.ADDNEW -> {
                     programUid?.let { program ->
                         CoroutineScope(dispatcher.io()).launch {
                             val enrollmentOrgUnitUid = d2.enrollment(enrollmentUid)?.organisationUnit()
@@ -421,6 +422,7 @@ class TEIDataPresenter(
                             }
                         }
                     }
+                }
 
                 EventCreationType.SCHEDULE -> {
                     view.displayScheduleEvent(
@@ -430,7 +432,9 @@ class TEIDataPresenter(
                     )
                 }
 
-                else -> view.goToEventInitial(eventCreationType, stage)
+                else -> {
+                    view.goToEventInitial(eventCreationType, stage)
+                }
             }
         } else {
             when (eventCreationType) {
