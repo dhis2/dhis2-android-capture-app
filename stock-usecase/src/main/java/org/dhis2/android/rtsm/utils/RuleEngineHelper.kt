@@ -26,7 +26,7 @@ class RuleEngineHelper {
                     ruleVariables,
                     supplementaryData,
                     constants,
-                    TriggerEnvironment.ANDROIDCLIENT
+                    TriggerEnvironment.ANDROIDCLIENT,
                 )
 
             return RuleEngineContextData(
