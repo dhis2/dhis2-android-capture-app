@@ -96,10 +96,9 @@ Both source sets are run by the same `testAndroidHostTest` task.
 - `commonTest` also runs on iOS, so it cannot use Mockito, JUnit or `java.*`: write fakes and use
   `kotlin.test`. Tests of `jvmCommonMain` code go in `jvmCommonTest`; Mockito is available only in
   `androidHostTest`. Backtick test names cannot contain `,` (Kotlin/Native rejects them).
-- Check with `./gradlew :commonskmm:iosSimulatorArm64Test` (needs Xcode); CI runs it in the
-  `ios-tests` job on macOS. The metadata bot records the iOS artifacts in a macOS job of its own;
-  on a fork PR, run `./gradlew --write-verification-metadata sha256 :commonskmm:iosSimulatorArm64Test`
-  on a Mac and commit the result.
+- Check locally with `./gradlew :commonskmm:iosSimulatorArm64Test --dependency-verification lenient`
+  (needs Xcode). CI does not run iOS yet, and nothing keeps the iOS artifacts in
+  `verification-metadata.xml` up to date.
 
 **Platform code: interfaces first.** The DHIS2 SDK will become multiplatform, and repository
 implementations will then move from `androidMain` to `commonMain`. Write code so that move only
