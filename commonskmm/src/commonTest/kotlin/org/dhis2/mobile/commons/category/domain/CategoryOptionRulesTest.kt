@@ -51,7 +51,7 @@ class CategoryOptionRulesTest {
     }
 
     @Test
-    fun `option is selectable only with write access, in the org unit and on the date`() {
+    fun `option is selectable only with write access in the org unit and on the date`() {
         assertTrue(option().isSelectable(orgUnit, date))
         assertFalse(option(canWrite = false).isSelectable(orgUnit, date))
         assertFalse(restrictedTo("other").isSelectable(orgUnit, date))

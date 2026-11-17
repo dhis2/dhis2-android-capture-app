@@ -84,7 +84,6 @@ kotlin {
             implementation(kotlin("test"))
             implementation(libs.koin.test)
             implementation(libs.test.kotlinCoroutines)
-            implementation(libs.test.mockitoKotlin)
         }
 
         androidMain.dependencies {
@@ -108,6 +107,8 @@ kotlin {
                 provider { tasks.getByName("copyAndroidMainComposeResourcesToAndroidAssets").outputs.files },
             )
             dependencies {
+                // Mockito is JVM-only, so it stays out of commonTest, which also compiles for iOS.
+                implementation(libs.test.mockitoKotlin)
             }
         }
 

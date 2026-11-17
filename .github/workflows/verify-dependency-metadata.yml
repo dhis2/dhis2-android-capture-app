@@ -99,3 +99,60 @@ jobs:
           message: 'chore: update dependency verification metadata'
           ref: ${{ github.head_ref }}
           token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
+
+  # Linux never downloads the iOS artifacts (the macOS Kotlin/Native compiler, iOS klibs and
+  # resources) that the ios-tests CI job verifies, so they are recorded here on macOS. It runs
+  # after the Linux job so the two never push at the same time; Gradle keeps existing entries,
+  # so each job only adds what its own platform resolves.
+  verify-ios-dependency-metadata:
+    runs-on: macos-15
+    needs: verify-dependency-metadata
+
+    steps:
+      # The branch head, so a commit the Linux job just pushed is included.
+      - name: Checkout PR branch
+        uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+          token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
+
+      - name: Set Up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+
+      - name: Regenerate iOS verification metadata
+        run: |
+          ./gradlew --write-verification-metadata sha256 --no-daemon \
+            :commonskmm:iosSimulatorArm64Test
+
+      - name: Check if metadata changed
+        id: check-diff
+        run: |
+          if git diff --quiet gradle/verification-metadata.xml; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "✅ iOS entries in verification-metadata.xml are up to date."
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Fail for fork PRs with outdated metadata
+        if: steps.check-diff.outputs.changed == 'true' && github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo "⚠️ Fork PR: the iOS entries in verification-metadata.xml are out of date but cannot be auto-committed."
+          echo "Please run './gradlew --write-verification-metadata sha256 :commonskmm:iosSimulatorArm64Test' on a Mac and commit the result."
+          exit 1
+
+      - name: Commit updated metadata
+        if: steps.check-diff.outputs.changed == 'true' && github.event.pull_request.head.repo.full_name == github.repository
+        uses: flex-development/gh-commit@177be4b5bca1b102400ca7220932d9ff7980fddb
+        with:
+          message: 'chore: update iOS dependency verification metadata'
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}

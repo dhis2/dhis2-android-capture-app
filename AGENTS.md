@@ -91,9 +91,15 @@ Both source sets are run by the same `testAndroidHostTest` task.
 - `jvmCommonMain` holds code shared by Android and Desktop that uses JVM APIs (`java.*`,
   `javax.*`, `String.format`). Never put such code in `commonMain`: it breaks the iOS
   compilation. Modules that target only Android and Desktop still see it from their `commonMain`.
-- `iosMain` holds the iOS `actual`s and Koin bindings, stubs for now.
-- Check with `./gradlew :commonskmm:compileKotlinIosSimulatorArm64 --dependency-verification lenient`.
-  It needs Xcode, and iOS artifacts are not in `verification-metadata.xml`.
+- `iosMain` holds the iOS `actual`s. Desktop and iOS share their Koin bindings: `sharedCommonsModule`
+  (no platform API) and `sdklessCommonsModule` (stubs until the SDK is multiplatform).
+- `commonTest` also runs on iOS, so it cannot use Mockito, JUnit or `java.*`: write fakes and use
+  `kotlin.test`. Tests of `jvmCommonMain` code go in `jvmCommonTest`; Mockito is available only in
+  `androidHostTest`. Backtick test names cannot contain `,` (Kotlin/Native rejects them).
+- Check with `./gradlew :commonskmm:iosSimulatorArm64Test` (needs Xcode); CI runs it in the
+  `ios-tests` job on macOS. The metadata bot records the iOS artifacts in a macOS job of its own;
+  on a fork PR, run `./gradlew --write-verification-metadata sha256 :commonskmm:iosSimulatorArm64Test`
+  on a Mac and commit the result.
 
 **Platform code: interfaces first.** The DHIS2 SDK will become multiplatform, and repository
 implementations will then move from `androidMain` to `commonMain`. Write code so that move only
