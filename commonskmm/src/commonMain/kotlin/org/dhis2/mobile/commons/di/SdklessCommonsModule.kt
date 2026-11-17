@@ -10,12 +10,11 @@ import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.koin.dsl.module
 
 /**
- * Stand-ins for the SDK-backed bindings, used by the platforms the DHIS2 SDK does not support yet
- * (desktop and iOS). Replace each one with a real implementation once the SDK is multiplatform.
+ * Used by the platforms the DHIS2 SDK does not support yet (desktop and iOS).
+ * Replace each one with a real implementation once the SDK is multiplatform.
  */
 internal val sdklessCommonsModule =
     module {
-        // TODO: Observe the real connection status (NWPathMonitor on iOS).
         single<NetworkStatusProvider> {
             object : NetworkStatusProvider {
                 override val connectionStatus = flowOf(true)
