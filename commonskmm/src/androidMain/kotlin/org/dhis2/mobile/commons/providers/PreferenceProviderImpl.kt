@@ -159,15 +159,6 @@ class PreferenceProviderImpl(
         pass?.let { secureValue(SECURE_PASS, it) }
     }
 
-    override fun saveUserCredentialsAndCipher(
-        serverUrl: String,
-        userName: String,
-        ciphertextWrapper: CiphertextWrapper,
-    ) {
-        saveUserCredentials(serverUrl, userName, null)
-        saveAsJson(BIOMETRIC_CREDENTIALS, ciphertextWrapper)
-    }
-
     override fun getBiometricCredentials(): CiphertextWrapper? =
         getObjectFromJson(
             BIOMETRIC_CREDENTIALS,

@@ -57,8 +57,7 @@ internal actual val accountModule =
         factory<LoginRepository> { _ ->
             LoginRepositoryImpl(
                 d2 = get(),
-                authenticator = get(),
-                cryptographyManager = get(),
+                biometrics = get(),
                 preferences = get(),
                 d2ErrorMessageProvider = get(),
                 crashReportController = get(),

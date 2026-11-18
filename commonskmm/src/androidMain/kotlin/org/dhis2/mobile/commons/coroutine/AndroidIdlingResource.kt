@@ -6,29 +6,35 @@ object AndroidIdlingResource : CoroutineIdlingResource {
     private const val RESOURCE = "MULTIPLATFORM_IDLING_RESOURCE"
     private val countingIdlingResource = CountingIdlingResource(RESOURCE)
 
-    override fun increment() {
-        if (countingIdlingResource.isIdleNow) {
+    private val lock = Any()
+
+    override fun increment() =
+        synchronized(lock) {
+            if (countingIdlingResource.isIdleNow) {
+                countingIdlingResource.increment()
+            }
+            countingIdlingResource.dumpStateToLogs()
+        }
+
+    override fun unconditionalIncrement() =
+        synchronized(lock) {
             countingIdlingResource.increment()
+            countingIdlingResource.dumpStateToLogs()
         }
-        countingIdlingResource.dumpStateToLogs()
-    }
 
-    override fun unconditionalIncrement() {
-        countingIdlingResource.increment()
-        countingIdlingResource.dumpStateToLogs()
-    }
+    override fun decrement() =
+        synchronized(lock) {
+            if (!countingIdlingResource.isIdleNow) {
+                countingIdlingResource.decrement()
+            }
+            countingIdlingResource.dumpStateToLogs()
+        }
 
-    override fun decrement() {
-        if (!countingIdlingResource.isIdleNow) {
+    override fun unconditionalDecrement() =
+        synchronized(lock) {
             countingIdlingResource.decrement()
+            countingIdlingResource.dumpStateToLogs()
         }
-        countingIdlingResource.dumpStateToLogs()
-    }
-
-    override fun unconditionalDecrement() {
-        countingIdlingResource.decrement()
-        countingIdlingResource.dumpStateToLogs()
-    }
 
     fun getIdlingResource() = countingIdlingResource
 }

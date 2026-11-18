@@ -2,25 +2,17 @@ package org.dhis2.mobile.commons.extensions
 
 import kotlinx.coroutines.test.runTest
 import org.dhis2.mobile.commons.data.ValueParser
-import org.dhis2.mobile.commons.di.commonsModule
 import org.dhis2.mobile.commons.model.internal.ValueInfo
 import org.dhis2.mobile.commons.reporting.CrashReportController
-import org.junit.After
-import org.junit.Before
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.test.KoinTest
-import org.koin.test.mock.MockProvider
-import org.koin.test.mock.declareMock
-import org.mockito.Mockito.mock
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.doReturnConsecutively
-import org.mockito.kotlin.whenever
+import org.koin.dsl.module
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class StringExtensionsTest : KoinTest {
+class StringExtensionsTest {
     private val dataElementUid = "dataElementUid"
     private val optionSetUid = "optionSetUid"
     private val expectedDateTime = "28/04/2024 - 23:10"
@@ -32,41 +24,39 @@ class StringExtensionsTest : KoinTest {
     private val expectedBooleanValue = "Yes"
     private val expectedTrueOnlyValue = "Yes"
 
-    @Before
-    fun setUp() =
-        runTest {
-            startKoin {
-                modules(commonsModule)
-                MockProvider.register {
-                    mock(it.java)
-                }
-            }
-
-            val valueParser = declareMock<ValueParser>()
-            val crashReportController = declareMock<CrashReportController>()
-
-            whenever(valueParser.getValueInfo(any(), any())) doReturnConsecutively
-                listOf(
-                    dateTimeValueInfo,
-                    optionSetValueInfo,
-                    orgUnitValueInfo,
-                    fileValueInfo,
-                    defaultValueInfo,
-                    percentageValueInfo,
-                    booleanValueInfo,
-                    trueOnlyValueInfo,
-                    trueOnlyValueInfo,
-                )
-
-            whenever(valueParser.valueFromOptionSetAsOptionName(optionSetUid, "optionCode")) doReturn expectedOptionName
-            whenever(valueParser.valueFromOrgUnitAsOrgUnitName("orgUnitUid")) doReturn expectedOrgUnitName
-            whenever(valueParser.valueToFileName("fileUid")) doReturn expectedPath
-            whenever(valueParser.valueFromBooleanType("true")) doReturn "yes"
-            whenever(valueParser.valueFromTrueOnlyType("true")) doReturn "yes"
-            whenever(valueParser.valueFromTrueOnlyType("false")) doReturn ""
+    @BeforeTest
+    fun setUp() {
+        val valueParser =
+            FakeValueParser(
+                valueInfos =
+                    listOf(
+                        dateTimeValueInfo,
+                        optionSetValueInfo,
+                        orgUnitValueInfo,
+                        fileValueInfo,
+                        defaultValueInfo,
+                        percentageValueInfo,
+                        booleanValueInfo,
+                        trueOnlyValueInfo,
+                        trueOnlyValueInfo,
+                    ),
+                optionNames = mapOf((optionSetUid to "optionCode") to expectedOptionName),
+                orgUnitNames = mapOf("orgUnitUid" to expectedOrgUnitName),
+                fileNames = mapOf("fileUid" to expectedPath),
+                booleanValues = mapOf("true" to "yes"),
+                trueOnlyValues = mapOf("true" to "yes", "false" to ""),
+            )
+        startKoin {
+            modules(
+                module {
+                    single<ValueParser> { valueParser }
+                    single<CrashReportController> { NoOpCrashReportController }
+                },
+            )
         }
+    }
 
-    @After
+    @AfterTest
     fun tearDown() {
         stopKoin()
     }
@@ -244,4 +234,70 @@ class StringExtensionsTest : KoinTest {
             isBooleanType = false,
             isTrueOnlyType = true,
         )
+
+    /** Answers [getValueInfo] with [valueInfos] in order, one per call. */
+    private class FakeValueParser(
+        valueInfos: List<ValueInfo>,
+        private val optionNames: Map<Pair<String, String>, String>,
+        private val orgUnitNames: Map<String, String>,
+        private val fileNames: Map<String, String>,
+        private val booleanValues: Map<String, String>,
+        private val trueOnlyValues: Map<String, String>,
+    ) : ValueParser {
+        private val pendingValueInfos = ArrayDeque(valueInfos)
+
+        override suspend fun getValueInfo(
+            uid: String,
+            value: String,
+        ) = pendingValueInfos.removeFirst()
+
+        override suspend fun valueFromOptionSetAsOptionName(
+            optionSetUid: String,
+            value: String,
+        ) = optionNames.getValue(optionSetUid to value)
+
+        override suspend fun valueFromOrgUnitAsOrgUnitName(value: String) = orgUnitNames.getValue(value)
+
+        override suspend fun valueToFileName(value: String) = fileNames.getValue(value)
+
+        override suspend fun valueFromBooleanType(value: String) = booleanValues.getValue(value)
+
+        override suspend fun valueFromTrueOnlyType(value: String) = trueOnlyValues.getValue(value)
+
+        override suspend fun valueAsOptionExists(
+            optionSetUid: String,
+            value: String,
+        ) = error("Not used")
+
+        override suspend fun valueAsOrgUnitExists(value: String) = error("Not used")
+
+        override suspend fun valueAsFileExists(value: String) = error("Not used")
+
+        override suspend fun valueFromMultiTextAsOptionNames(
+            optionSetUid: String,
+            value: String,
+        ) = error("Not used")
+
+        override suspend fun valueToFilePath(value: String) = error("Not used")
+
+        override suspend fun valueFromCoordinateAsLatLong(value: String) = error("Not used")
+    }
+
+    private object NoOpCrashReportController : CrashReportController {
+        override fun init() = Unit
+
+        override fun close() = Unit
+
+        override fun trackServer(serverDhisVersion: String?) = Unit
+
+        override fun trackError(
+            exception: Exception,
+            message: String?,
+        ) = Unit
+
+        override fun addBreadCrumb(
+            category: String,
+            message: String,
+        ) = Unit
+    }
 }

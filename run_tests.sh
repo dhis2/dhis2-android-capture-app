@@ -8,4 +8,7 @@ echo "Running Ktlint check..."
 echo "Running Unit Tests..."
 ./gradlew testDebugUnitTest testDhis2DebugUnitTest testAndroidHostTest
 
+echo "Running Desktop Build & Tests..."
+./gradlew desktopTest
+
 echo "All tasks completed!"

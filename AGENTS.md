@@ -2,7 +2,8 @@
 
 This is a **Kotlin Multiplatform (KMP)** Android project migrating to Compose Multiplatform.
 KMP modules target **Android and Desktop**; Desktop is being added to every KMP module to ease
-future targets. **iOS is not implemented.** The app uses MVVM + Repository + Use Case architecture.
+future targets. **iOS is not implemented**: only `commonskmm` compiles for iOS, with stubs, so
+other modules can add the target later. The app uses MVVM + Repository + Use Case architecture.
 
 ---
 
@@ -18,7 +19,10 @@ future targets. **iOS is not implemented.** The app uses MVVM + Repository + Use
 # Run all unit tests (debug + KMP host tests)
 ./gradlew testDebugUnitTest testDhis2DebugUnitTest testAndroidHostTest
 
-# Shortcut: lint + all unit tests (mirrors CI)
+# Compile the KMP modules for desktop and run their commonTest on the desktop JVM (one task)
+./gradlew desktopTest
+
+# Shortcut: lint + all unit tests + desktop (mirrors CI)
 ./run_tests.sh
 
 # Run a single test class (KMP commonTest)
@@ -42,8 +46,9 @@ future targets. **iOS is not implemented.** The app uses MVVM + Repository + Use
 - KMP modules (`login`, `sync`, `aggregates`, `commonskmm`, `tracker`) — **both** the
   `commonTest` and `androidHostTest` source sets: `testAndroidHostTest`
 
-`testAndroidDebugUnitTest` is **not a task in this repo**, and there is no
-`desktopTest` source set in any module despite the desktop targets.
+`testAndroidDebugUnitTest` is **not a task in this repo**. No module has a `desktopTest`
+source set, but every KMP module has a `desktopTest` **task**: it runs `commonTest` on the
+desktop JVM, and CI runs it, so a common test must pass there too, not only on Android.
 
 ---
 
@@ -81,6 +86,29 @@ modulekmm/src/
 `androidHostTest` **depends on** `commonTest`, so a test dependency declared in
 `commonTest` is already on its compile classpath — no need to declare it twice.
 Both source sets are run by the same `testAndroidHostTest` task.
+
+**Modules with an iOS target** (`commonskmm` so far) add two source sets:
+- `jvmCommonMain` holds code shared by Android and Desktop that uses JVM APIs (`java.*`,
+  `javax.*`, `String.format`). Never put such code in `commonMain`: it breaks the iOS
+  compilation. Modules that target only Android and Desktop still see it from their `commonMain`.
+- `iosMain` holds the iOS `actual`s. Desktop and iOS share their Koin bindings: `sharedCommonsModule`
+  (no platform API) and `sdklessCommonsModule` (stubs until the SDK is multiplatform).
+- `commonTest` also runs on iOS, so it cannot use Mockito, JUnit or `java.*`: write fakes and use
+  `kotlin.test`. Tests of `jvmCommonMain` code go in `jvmCommonTest`; Mockito is available only in
+  `androidHostTest`. Backtick test names cannot contain `,` (Kotlin/Native rejects them).
+- Check locally with `./gradlew :commonskmm:iosSimulatorArm64Test --dependency-verification lenient`
+  (needs Xcode). CI does not run iOS yet, and nothing keeps the iOS artifacts in
+  `verification-metadata.xml` up to date.
+
+**Platform code: interfaces first.** The DHIS2 SDK will become multiplatform, and repository
+implementations will then move from `androidMain` to `commonMain`. Write code so that move only
+changes a binding:
+- **Repositories and platform services with state or dependencies** (biometrics, network status,
+  files, error messages): an interface in `commonMain` and one Koin binding per platform, a stub
+  where a platform lacks the service. They can be faked in `commonTest` without Mockito.
+- **`expect`/`actual`:** only for small functions with no dependencies and Compose helpers that
+  tests never replace (`logDebug`, `getWindowSizeClass`, `getDrawableResource`). Avoid new
+  `expect class` declarations.
 
 ---
 

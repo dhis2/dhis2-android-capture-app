@@ -78,7 +78,7 @@ internal val mainLoginModule =
                 get { parametersOf(params.get()) },
                 get { parametersOf(params.get()) },
                 get { parametersOf(params.get()) },
-                get { parametersOf(params.get()) },
+                get(),
             )
         }
         factory { params ->
