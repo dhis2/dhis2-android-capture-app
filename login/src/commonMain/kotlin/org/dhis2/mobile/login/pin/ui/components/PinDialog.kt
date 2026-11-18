@@ -78,13 +78,16 @@ fun PinDialog(
     modifier: Modifier = Modifier,
     windowSizeClass: WindowSizeClass = getWindowSizeClass(),
 ) {
-    val viewModel: PinViewModel = koinViewModel { parametersOf(mode) }
+    val viewModel: PinViewModel = koinViewModel(key = "PinViewModel_${mode.ordinal}") { parametersOf(mode) }
     val uiState by viewModel.uiState.collectAsState()
     val isLandscape = deviceIsInLandscapeMode()
 
     LaunchedEffect(uiState.isSuccess, uiState.isDismissed, uiState.isTooManyAttempts) {
         when {
-            uiState.isSuccess -> onSuccess()
+            uiState.isSuccess -> {
+                onSuccess()
+                viewModel.resetState()
+            }
             uiState.isTooManyAttempts -> viewModel.onForgotPin()
             uiState.isDismissed -> {
                 viewModel.resetAttempts()
@@ -381,7 +384,7 @@ private fun PinInputBlock(
 }
 
 @Composable
-private fun VerticalButtonBlock(
+fun VerticalButtonBlock(
     primaryButton: @Composable () -> Unit,
     secondaryButton: (@Composable () -> Unit)?,
 ) {

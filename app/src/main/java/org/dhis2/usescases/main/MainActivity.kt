@@ -139,6 +139,7 @@ class MainActivity : ActivityGlobalAbstract() {
                             HomeEffect.BlockSession -> finish()
                             HomeEffect.PinAlreadyCreated,
                             HomeEffect.PinCreated,
+                            HomeEffect.PinDeleted,
                             -> { // handled in composable
                             }
                             is HomeEffect.GoToLogin ->
@@ -257,6 +258,15 @@ class MainActivity : ActivityGlobalAbstract() {
             .findViewById<TextView>(R.id.user_info)
             .text = screenState.userName
 
+        val pinTitle =
+            if (screenState.pinAlreadyCreated) {
+                getString(R.string.manage_pin)
+            } else {
+                getString(R.string.set_pin)
+            }
+        binding.navView.menu
+            .findItem(R.id.manage_pin)
+            .title = pinTitle
         if (screenState.homeFilters.isNotEmpty()) {
             filtersAdapter.submitList(screenState.homeFilters)
         }
@@ -402,7 +412,7 @@ class MainActivity : ActivityGlobalAbstract() {
             R.id.menu_about ->
                 mainViewModel.onChangeScreen(MainScreenType.About)
 
-            R.id.block_button ->
+            R.id.manage_pin ->
                 mainViewModel.onBlockSession()
 
             R.id.logout_button ->
