@@ -9,16 +9,19 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import coil3.PlatformContext
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.dhis2.R
 import org.dhis2.mobile.commons.biometrics.BiometricActions
 import org.dhis2.mobile.commons.biometrics.CiphertextWrapper
-import org.dhis2.mobile.commons.biometrics.CryptographicActions
+import org.dhis2.mobile.commons.providers.BIOMETRIC_CREDENTIALS
+import org.dhis2.mobile.commons.providers.PreferenceProvider
 import java.nio.charset.Charset
 import java.security.KeyStore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
+import kotlin.coroutines.resume
 
 private const val ANDROID_KEYSTORE = "AndroidKeyStore"
 private const val KEY_SIZE_BITS = 256
@@ -27,33 +30,61 @@ private const val ENCRYPTION_PADDING = KeyProperties.ENCRYPTION_PADDING_NONE
 private const val ENCRYPTION_ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
 const val KEY_NAME = "DHIS2_BIOMETRIC_KEY"
 
+/**
+ * Android [BiometricActions]: the secret is encrypted with a Keystore key that only the biometric
+ * prompt can unlock, and the ciphertext is kept in the preferences.
+ */
 class BiometricAuthenticator(
-    private val context: Context,
+    private val appContext: Context,
+    private val cryptographyManager: CryptographyManager,
+    private val preferences: PreferenceProvider,
 ) : BiometricActions {
     override fun hasBiometric(): Boolean {
-        val biometricManager = BiometricManager.from(context)
+        val biometricManager = BiometricManager.from(appContext)
         return when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
             BiometricManager.BIOMETRIC_SUCCESS -> true
             else -> false
         }
     }
 
+    override fun hasProtectedSecret(): Boolean = cryptographyManager.isKeyReady()
+
     context(context: PlatformContext)
-    override fun authenticate(
-        cipher: Cipher,
-        callback: (Cipher) -> Unit,
-    ) {
-        val cryptoObject = BiometricPrompt.CryptoObject(cipher)
-        authenticate(
-            context as FragmentActivity,
-            {
-                it.cryptoObject?.cipher?.let { cipher -> callback(cipher) }
-            },
-            cryptoObject,
-        )
+    override suspend fun protectSecret(secret: String): Result<Unit> =
+        authenticateWith(cryptographyManager.getInitializedCipherForEncryption()).map { cipher ->
+            preferences.saveAsJson(BIOMETRIC_CREDENTIALS, cryptographyManager.encryptData(secret, cipher))
+        }
+
+    context(context: PlatformContext)
+    override suspend fun readSecret(): Result<String> {
+        val ciphertextWrapper =
+            preferences.getBiometricCredentials()
+                ?: return Result.failure(Exception("No biometrics found"))
+        val cipher = cryptographyManager.getInitializedCipherForDecryption(ciphertextWrapper.initializationVector)
+        return authenticateWith(cipher).map { authenticatedCipher ->
+            cryptographyManager.decryptData(ciphertextWrapper.ciphertext, authenticatedCipher)
+        }
     }
 
-    fun authenticate(
+    override fun deleteSecret() {
+        preferences.removeValue(BIOMETRIC_CREDENTIALS)
+        cryptographyManager.deleteInvalidKey()
+    }
+
+    /** Resumes only when the user authenticates; a dismissed prompt leaves the caller waiting. */
+    context(context: PlatformContext)
+    private suspend fun authenticateWith(cipher: Cipher): Result<Cipher> =
+        suspendCancellableCoroutine { continuation ->
+            authenticate(
+                context as FragmentActivity,
+                { result ->
+                    result.cryptoObject?.cipher?.let { continuation.resume(Result.success(it)) }
+                },
+                BiometricPrompt.CryptoObject(cipher),
+            )
+        }
+
+    private fun authenticate(
         fragmentActivity: FragmentActivity,
         onSuccess: (BiometricPrompt.AuthenticationResult) -> Unit,
         cryptoObject: BiometricPrompt.CryptoObject? = null,
@@ -62,7 +93,7 @@ class BiometricAuthenticator(
         val biometricPrompt =
             BiometricPrompt(
                 fragmentActivity,
-                ContextCompat.getMainExecutor(context),
+                ContextCompat.getMainExecutor(appContext),
                 object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         super.onAuthenticationSucceeded(result)
@@ -74,9 +105,9 @@ class BiometricAuthenticator(
         val promptInfo =
             BiometricPrompt.PromptInfo
                 .Builder()
-                .setTitle(context.getString(R.string.biometric_title))
+                .setTitle(appContext.getString(R.string.biometric_title))
                 .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
-                .setNegativeButtonText(context.getString(R.string.use_password))
+                .setNegativeButtonText(appContext.getString(R.string.use_password))
                 .build()
         if (cryptoObject == null) {
             biometricPrompt.authenticate(promptInfo)
@@ -86,27 +117,27 @@ class BiometricAuthenticator(
     }
 }
 
-class CryptographyManager : CryptographicActions {
+class CryptographyManager {
     private val keyStore =
         KeyStore.getInstance(ANDROID_KEYSTORE).apply {
             load(null)
         }
 
-    override fun getInitializedCipherForEncryption(): Cipher {
+    fun getInitializedCipherForEncryption(): Cipher {
         val cipher = getCipher()
         val secretKey = getOrCreateSecretKey()
         cipher.init(Cipher.ENCRYPT_MODE, secretKey)
         return cipher
     }
 
-    override fun getInitializedCipherForDecryption(initializationVector: ByteArray): Cipher {
+    fun getInitializedCipherForDecryption(initializationVector: ByteArray): Cipher {
         val cipher = getCipher()
         val secretKey = getOrCreateSecretKey()
         cipher.init(Cipher.DECRYPT_MODE, secretKey, GCMParameterSpec(128, initializationVector))
         return cipher
     }
 
-    override fun encryptData(
+    fun encryptData(
         plaintext: String,
         cipher: Cipher,
     ): CiphertextWrapper {
@@ -114,7 +145,7 @@ class CryptographyManager : CryptographicActions {
         return CiphertextWrapper(ciphertext, cipher.iv)
     }
 
-    override fun decryptData(
+    fun decryptData(
         ciphertext: ByteArray,
         cipher: Cipher,
     ): String {
@@ -157,9 +188,9 @@ class CryptographyManager : CryptographicActions {
         return keyGenerator.generateKey()
     }
 
-    override fun isKeyReady(): Boolean = keyStore.getKey(KEY_NAME, null) != null
+    fun isKeyReady(): Boolean = keyStore.getKey(KEY_NAME, null) != null
 
-    override fun deleteInvalidKey() {
+    fun deleteInvalidKey() {
         if (isKeyReady()) {
             keyStore.deleteEntry(KEY_NAME)
         }

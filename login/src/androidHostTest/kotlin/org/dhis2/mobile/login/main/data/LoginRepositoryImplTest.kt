@@ -1,5 +1,6 @@
 package org.dhis2.mobile.login.main.data
 
+import coil3.PlatformContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -8,7 +9,6 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.mobile.commons.biometrics.BiometricActions
-import org.dhis2.mobile.commons.biometrics.CryptographicActions
 import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.mobile.commons.error.DomainErrorMapper
@@ -49,6 +49,7 @@ class LoginRepositoryImplTest {
     private val domainErrorMapper: DomainErrorMapper = mock()
     private val loginErrorMessageProvider: LoginErrorMessageProvider = mock()
     private val d2ErrorMessageProvider: D2ErrorMessageProvider = mock()
+    private val biometrics: BiometricActions = mock()
     private val testDispatcher = StandardTestDispatcher()
 
     private val serverUrl = "https://test.server.org"
@@ -62,8 +63,7 @@ class LoginRepositoryImplTest {
     private val repository =
         LoginRepositoryImpl(
             d2 = d2,
-            authenticator = mock<BiometricActions>(),
-            cryptographyManager = mock<CryptographicActions>(),
+            biometrics = biometrics,
             preferences = mock<PreferenceProvider>(),
             d2ErrorMessageProvider = d2ErrorMessageProvider,
             crashReportController = mock<CrashReportController>(),
@@ -350,4 +350,35 @@ class LoginRepositoryImplTest {
         }
         fail("Expected a DomainError to be thrown")
     }
+
+    @Test
+    fun `GIVEN a protected password WHEN logging in with biometrics THEN the password read with biometrics is returned`() =
+        runTest {
+            val platformContext = mock<PlatformContext>()
+            whenever(with(platformContext) { biometrics.readSecret() }) doReturn kotlin.Result.success("password")
+
+            val result = with(platformContext) { repository.loginWithBiometric() }
+
+            assertEquals("password", result.getOrThrow())
+        }
+
+    @Test
+    fun `GIVEN the biometric check fails WHEN logging in with biometrics THEN the failure is returned`() =
+        runTest {
+            val platformContext = mock<PlatformContext>()
+            whenever(with(platformContext) { biometrics.readSecret() }) doReturn
+                kotlin.Result.failure(Exception("No biometrics found"))
+
+            val result = with(platformContext) { repository.loginWithBiometric() }
+
+            assertTrue(result.isFailure)
+        }
+
+    @Test
+    fun `GIVEN biometric credentials WHEN they are deleted THEN the protected password is forgotten`() =
+        runTest {
+            repository.deleteBiometricCredentials()
+
+            verify(biometrics).deleteSecret()
+        }
 }
