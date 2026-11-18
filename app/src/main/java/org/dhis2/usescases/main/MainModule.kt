@@ -15,6 +15,7 @@ import org.dhis2.data.service.ApkUpdateRepository
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkManagerControllerImpl
+import org.dhis2.mobile.login.pin.domain.usecase.DeletePinUseCase
 import org.dhis2.mobile.home.data.HomeRepository
 import org.dhis2.mobile.home.domain.CheckSingleNavigation
 import org.dhis2.mobile.home.domain.GetLockAction
@@ -95,6 +96,7 @@ val mainModule =
         factoryOf(::UpdateInitialSyncStatus)
         factoryOf(::CheckSingleNavigation)
         factoryOf(::LaunchInitialSync)
+        factoryOf(::DeletePinUseCase)
         factory {
             ScheduleNewVersionAlert(
                 workManagerController = get(),
@@ -128,6 +130,7 @@ val mainModule =
                 syncBackgroundJobAction = get(),
                 initialScreen = initialScreen,
                 dispatcher = dispatcher,
+                deletePin = get(),
             )
         }
 

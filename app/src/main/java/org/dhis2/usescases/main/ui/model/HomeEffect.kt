@@ -30,6 +30,8 @@ sealed interface HomeEffect {
 
     data object ShowPinDialog : HomeEffect
 
+    data object PinDeleted : HomeEffect
+
     data class PeriodFilterRequest(
         val periodRequest: FilterManager.PeriodRequest,
     ) : HomeEffect
