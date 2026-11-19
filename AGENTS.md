@@ -314,6 +314,10 @@ The rules that hold everywhere:
   [Conventional Commits](https://www.conventionalcommits.org/) specification, with the ticket
   key at the start of the description.
 
+The skill lives in `.claude/skills/open-pr/`. If your agent does not load skills from
+`.claude/skills/`, read and follow `.claude/skills/open-pr/SKILL.md` whenever you are asked to
+open, create or submit a PR, or to split a branch into stacked PRs.
+
 ---
 
 ## Sentry Skills
