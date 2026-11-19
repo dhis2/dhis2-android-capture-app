@@ -4,8 +4,8 @@ import kotlinx.coroutines.test.runTest
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.error.DomainError
+import org.dhis2.mobile.home.data.HomeRepository
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
-import org.dhis2.usescases.main.data.HomeRepository
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test

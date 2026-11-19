@@ -1,10 +1,10 @@
-package org.dhis2.usescases.main.domain
+package org.dhis2.mobile.home.domain
 
 import kotlinx.coroutines.test.runTest
 import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.error.DomainError
-import org.dhis2.usescases.main.data.HomeRepository
-import org.hisp.dhis.android.core.user.User
+import org.dhis2.mobile.home.data.HomeRepository
+import org.dhis2.mobile.home.domain.model.HomeUser
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -27,11 +27,7 @@ class GetUserNameTest {
     @Test
     fun `should return full name if user exists`() =
         runTest {
-            val user: User =
-                mock {
-                    on { firstName() } doReturn "Peter"
-                    on { surname() } doReturn "Jones"
-                }
+            val user = HomeUser(firstName = "Peter", surname = "Jones")
             whenever(homeRepository.user()) doReturn user
 
             val result = getUserName()
@@ -43,11 +39,7 @@ class GetUserNameTest {
     @Test
     fun `should return surname if first name is null`() =
         runTest {
-            val user: User =
-                mock {
-                    on { firstName() } doReturn null
-                    on { surname() } doReturn "Jones"
-                }
+            val user = HomeUser(firstName = null, surname = "Jones")
             whenever(homeRepository.user()) doReturn user
 
             val result = getUserName()
@@ -59,11 +51,7 @@ class GetUserNameTest {
     @Test
     fun `should return first name if surname is null`() =
         runTest {
-            val user: User =
-                mock {
-                    on { firstName() } doReturn "Peter"
-                    on { surname() } doReturn null
-                }
+            val user = HomeUser(firstName = "Peter", surname = null)
             whenever(homeRepository.user()) doReturn user
 
             val result = getUserName()

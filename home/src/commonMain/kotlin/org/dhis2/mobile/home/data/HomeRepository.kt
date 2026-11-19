@@ -1,11 +1,10 @@
-package org.dhis2.usescases.main.data
+package org.dhis2.mobile.home.data
 
-import org.dhis2.usescases.main.HomeItemData
-import org.hisp.dhis.android.core.user.User
-import java.io.File
+import org.dhis2.mobile.home.domain.model.HomeItemData
+import org.dhis2.mobile.home.domain.model.HomeUser
 
 interface HomeRepository {
-    suspend fun user(): User?
+    suspend fun user(): HomeUser?
 
     suspend fun logOut(): Result<Unit>
 
@@ -21,7 +20,7 @@ interface HomeRepository {
 
     suspend fun singleHomeItemData(): HomeItemData
 
-    suspend fun clearCache(cache: File): Boolean
+    suspend fun clearCache(cachePath: String): Boolean
 
     suspend fun clearPreferences()
 

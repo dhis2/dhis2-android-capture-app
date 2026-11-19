@@ -3,8 +3,8 @@ package org.dhis2.usescases.main.domain
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.mobile.commons.domain.UseCase
 import org.dhis2.mobile.commons.error.DomainError
+import org.dhis2.mobile.home.data.HomeRepository
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
-import org.dhis2.usescases.main.data.HomeRepository
 import timber.log.Timber
 
 class LaunchInitialSync(

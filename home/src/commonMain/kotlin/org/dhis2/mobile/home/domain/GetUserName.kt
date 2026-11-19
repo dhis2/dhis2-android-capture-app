@@ -1,8 +1,8 @@
-package org.dhis2.usescases.main.domain
+package org.dhis2.mobile.home.domain
 
 import org.dhis2.mobile.commons.domain.UseCase
 import org.dhis2.mobile.commons.error.DomainError
-import org.dhis2.usescases.main.data.HomeRepository
+import org.dhis2.mobile.home.data.HomeRepository
 
 class GetUserName(
     private val homeRepository: HomeRepository,
@@ -10,8 +10,8 @@ class GetUserName(
     override suspend operator fun invoke(input: Unit) =
         try {
             val user = homeRepository.user()
-            val firstName = user?.firstName()
-            val surname = user?.surname()
+            val firstName = user?.firstName
+            val surname = user?.surname
             val userName = listOfNotNull(firstName, surname).joinToString(" ")
             Result.success(userName)
         } catch (domainError: DomainError) {

@@ -22,7 +22,6 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven("https://jitpack.io")
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
 
@@ -38,3 +37,4 @@ include(":aggregates")
 include(":commonskmm")
 include(":login")
 include(":sync")
+include(":home")
