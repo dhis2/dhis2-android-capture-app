@@ -5,21 +5,26 @@ description: >
   when it exceeds the PR size limit (400 changed lines), splits the work into stacked PRs of
   at most 400 lines each with the gh-stack extension. Runs a code review of every PR, lets the
   user decide which findings to fix (and why not, for the rest), and writes the review result
-  and those decisions into each PR description. Makes sure the PR review gate hook is installed
-  first. Use whenever the user asks to open, create, submit or send a PR / pull request, or to
-  split a branch into stacked PRs. Invoke as /open-pr [--base <branch>].
+  and those decisions into each PR description. Use whenever the user asks to open, create,
+  submit or send a PR / pull request, or to split a branch into stacked PRs.
+  Invoke as /open-pr [--base <branch>].
 ---
 
 # Open PR
 
 Opens one PR, or a stack of PRs, for the current branch. Every PR gets a code review the user
-has evaluated, and the review outcome is recorded in its description.
+has evaluated, and the review outcome is recorded in its description. No PR is opened before the
+user has seen its review and approved opening it: this skill is the only gate, so do not skip or
+shorten any step.
 
 Talk to the user in their language; write commits, PR titles and PR descriptions in English.
 
-**Never type the literal PR-creation command in a command that does not open a PR** (a grep, an
-echo, a test): the review gate hook matches the command text and denies it. Write PR bodies to a
-file in the scratchpad and pass them with `--body-file`.
+Whenever this skill says **ask the user**, stop and wait for an explicit answer. Offer the
+choices as a short list when your environment has a way to present options, and always accept a
+free-text answer.
+
+Keep temporary files (PR bodies, notes) in a temporary directory outside the repository, never
+in the working tree.
 
 ---
 
@@ -28,72 +33,24 @@ file in the scratchpad and pass them with `--body-file`.
 Run these checks and stop with a clear message if one fails.
 
 1. **gh is installed and authenticated**: `gh --version` and `gh auth status`. If gh is missing,
-   tell the user to install the GitHub CLI; if it is not authenticated, suggest they run
-   `! gh auth login` themselves (it is interactive).
+   tell the user to install the GitHub CLI; if it is not authenticated, ask them to run
+   `gh auth login` themselves (it is interactive).
 2. **Repository state**: `git status --short`. If there are uncommitted changes, ask the user
-   whether they belong in the PR (then commit them following the commit conventions below) or
-   should stay out (then leave them alone and work from the committed head).
+   whether they belong in the PR (then commit them following the conventions in
+   [section 7](#7-commit-and-pr-title-conventions)) or should stay out (then leave them alone
+   and work from the committed head).
 3. **Base branch**: use `--base` when given. Otherwise propose the branch the work was started
    from: compare `git merge-base HEAD origin/<candidate>` for `develop`, `main` and the
-   `release/*` branches and pick the most recent one; confirm it with the user if more than one
+   `release/*` branches and pick the most recent one; ask the user to confirm if more than one
    is plausible. Run `git fetch origin <base>` and always measure against `origin/<base>`, never
    the local copy, which may be stale.
-4. **Ticket key**: take it from the branch name (`ANDROAPP-1234…`). If there is none, ask for it.
-5. **Review gate hook**: follow [section 2](#2-review-gate-hook).
+4. **Ticket key**: take it from the branch name (`ANDROAPP-1234…`). If there is none, ask the
+   user for it, or whether the PR has no ticket.
 
 The gh-stack extension is only needed if the PR has to be split; it is checked in
-[section 3](#3-measure-and-decide).
+[section 2](#2-measure-and-decide).
 
-## 2. Review gate hook
-
-The gate is a `PreToolUse` hook that denies PR creation until a marker file exists for the head
-commit of each new PR (`<git-dir>/claude-pr-review/<sha>`). This skill writes those markers only
-after the user has evaluated the review, so the hook is a backstop if the flow is skipped. The
-hook fails closed: when it cannot tell which commits a command would open PRs for (a failing
-`gh stack view`, several `cd`s, a branch with no local ref), it denies. It needs Python to read
-JSON; without it, `gh stack submit` is always denied.
-
-**Detect it.** Look for a hook command containing `pr-review-gate` in, in this order:
-`.claude/settings.json`, `.claude/settings.local.json` (repo) and `~/.claude/settings.json`
-(user). For the first match, check that the script it points to exists, and compare it with the
-bundled copy `scripts/pr-review-gate.sh` in this skill's directory (`cmp`).
-
-- **Installed and identical**: continue.
-- **Installed but different**: check that it handles stacks
-  (`grep -qF 'stack[[:space:]]+submit' <script>`). If it does not, or the user wants the bundled
-  version, offer to replace it. Do not overwrite it without asking: the user may have local
-  changes.
-- **Not installed**: ask the user (AskUserQuestion) where to install it:
-  - **Repository** (shared with the team through git): copy the script to
-    `.claude/hooks/pr-review-gate.sh` and merge this entry into `.claude/settings.json`,
-    keeping every existing key:
-    ```json
-    "hooks": {
-      "PreToolUse": [
-        {
-          "matcher": "Bash|PowerShell",
-          "hooks": [
-            {
-              "type": "command",
-              "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/pr-review-gate.sh\"",
-              "timeout": 15,
-              "statusMessage": "Checking PR review gate..."
-            }
-          ]
-        }
-      ]
-    }
-    ```
-    These two files are a change to the repo: they go in their own commit, and the user decides
-    whether that commit is part of this PR.
-  - **User only** (`~/.claude`): copy the script to `~/.claude/hooks/pr-review-gate.sh` and
-    merge the same entry into `~/.claude/settings.json`, with the command
-    `bash ~/.claude/hooks/pr-review-gate.sh` (use the absolute path on Windows).
-
-  Validate the JSON after editing it. Tell the user that a newly installed hook may only take
-  effect in a new session; the flow below applies either way.
-
-## 3. Measure and decide
+## 2. Measure and decide
 
 Measure the diff with the bundled script, which counts like CI (`scripts/check_pr_size.sh`):
 added + deleted lines since the merge base, renames detected, `verification-metadata.xml`
@@ -107,13 +64,17 @@ The first line is `<total> <limit>`. With `--files`, one tab-separated line per 
 largest first: `<added> <deleted> <path>`, plus `<old-path>` for a rename. Exit code: 0 within the
 limit, 1 over it, 2 on an error (bad ref, no merge base): never treat 2 as "over the limit".
 
-- **Within the limit**: one PR. Go to [section 5](#5-code-review-of-each-pr).
-- **Over the limit**: it must be split into stacked PRs, each within the limit.
-  1. Check the extension: `gh extension list` must list `gh stack` (`github/gh-stack`). If it is
-     missing, ask the user before running `gh extension install github/gh-stack`.
-  2. Plan the split ([section 4](#4-split-into-stacked-prs)).
+- **Within the limit**: one PR. Go to [section 4](#4-code-review-of-each-pr).
+- **Over the limit**: ask the user how to proceed:
+  - **Split into stacked PRs** (the default), each within the limit. Check the extension first:
+    `gh extension list` must list `gh stack` (`github/gh-stack`). If it is missing, ask the user
+    before running `gh extension install github/gh-stack`. Then plan the split
+    ([section 3](#3-split-into-stacked-prs)).
+  - **Keep one PR and skip the size check**: only when the size is justified (for example, all
+    new files that only make sense together). CI skips the check when the PR title or body
+    contains `[skip size]`; add it to the title and say why in the description.
 
-## 4. Split into stacked PRs
+## 3. Split into stacked PRs
 
 ### Plan
 
@@ -143,60 +104,60 @@ each, and the branch names. Name the bottom branch after the current branch and 
 3. For each layer, on its branch: bring in that layer's files from the backup head
    (`git restore --source=backup/<current-branch> --staged --worktree -- <paths>`, `git rm` for
    deletions, and `git mv` for moves so renames are kept). Files split across layers need their
-   intermediate state written by hand. Commit with the commit conventions below.
-   If the current branch must be reset to become the bottom layer, confirm it with the user
-   first and only after the backup exists.
+   intermediate state written by hand. Commit following [section 7](#7-commit-and-pr-title-conventions).
+   If the current branch must be reset to become the bottom layer, ask the user first, and only
+   after the backup exists.
 4. Verify:
    - `git diff backup/<current-branch> <top-branch>` is empty: nothing was lost or added;
    - each layer is within the limit: `pr_size.sh <parent-branch> <branch>` (the trunk is
      `origin/<base>`);
    - each layer builds and passes lint and the tests of the modules it touches, using the
-     commands in AGENTS.md / CLAUDE.md (`ktlintCheck`, the unit test tasks of each module type).
-     Confirm the tests ran, as AGENTS.md describes.
+     commands documented in the repository (AGENTS.md: `ktlintCheck`, the unit test tasks of
+     each module type). Confirm the tests ran, as AGENTS.md describes.
 
-## 5. Code review of each PR
+## 4. Code review of each PR
 
 Review each PR separately, bottom to top, against its own base: the trunk for a single PR or the
-bottom layer, the branch below it for the others.
+bottom layer, the branch below it for the others. The scope is exactly
+`git diff <base>...<branch>` (with `origin/<base>` for the trunk).
 
-1. Run the `code-review` skill on the branch. State the scope in the arguments: only
-   `git diff <base>...<branch>` (with `origin/<base>` for the trunk). Use the effort level the
-   user asks for; otherwise the skill's default. Discard any finding outside that diff.
-2. Present the findings to the user, numbered, with severity, `file:line` and a one-line summary.
-   Ask (AskUserQuestion, multiSelect) which ones to fix. If there are no findings, say so and
-   move on.
-3. For each finding the user does **not** want fixed, ask why (AskUserQuestion with options such
-   as "False positive", "Intended behaviour", "Out of scope, follow-up", plus free text). Record
-   the user's reason; never write one on their behalf. If the user declines to give one, record
-   "No reason given".
+1. Review that diff for correctness bugs, security problems, regressions, missing or wrong
+   tests, and violations of the repository conventions (AGENTS.md). If your environment provides
+   a dedicated code-review tool or command, use it on that scope, at the effort level the user
+   asks for; otherwise review the diff yourself, reading the surrounding code where a change
+   depends on it. Drop any finding outside the diff, and anything you cannot point to a
+   concrete failure for.
+2. Present the findings to the user, numbered, with severity (High / Medium / Low), `file:line`
+   and a one-line summary, and ask which ones to fix (any number of them). If there are no
+   findings, say so and move on.
+3. For each finding the user does **not** want fixed, ask why, suggesting reasons such as
+   "False positive", "Intended behaviour" or "Out of scope, follow-up", and accepting any other.
+   Record the user's reason; never write one on their behalf. If the user declines to give one,
+   record "No reason given".
 4. Apply the fixes the user chose, run lint and the affected tests, and commit them on that
    branch (one commit per review round, `fix: [KEY] address code review findings`). Record the
    commit sha for each fixed finding. In a stack, rebase the branches above with
    `gh stack rebase` and re-check their sizes and builds.
-5. A fix can push a layer over the limit. Re-measure; if it does, tell the user and move the
-   overflow into a new or existing layer before going on.
+5. A fix can push a PR over the limit. Re-measure; if it does, tell the user and go back to the
+   choice in [section 2](#2-measure-and-decide) for that PR.
 
-Keep a record per PR: head sha, base, review effort level, and each finding with its decision
-(fixed in `<sha>` / not fixed + reason). It feeds the PR description.
+Keep a record per PR: head sha, base, how it was reviewed (tool or manual, effort level), and
+each finding with its decision (fixed in `<sha>` / not fixed + reason). It feeds the PR
+description.
 
-## 6. Approval and markers
+## 5. Approval
 
 Show the user the final summary: one row per PR with branch, base, size and review outcome
-(found / fixed / not fixed). Ask (AskUserQuestion):
+(found / fixed / not fixed). Ask:
 
 - whether to open the PRs now;
 - as **draft** or **ready for review**.
 
-Only after an explicit yes, write a marker for the head of each PR that is about to be created:
+Do not open anything without an explicit yes. If a branch's head changed after its review for
+any reason other than the fix commit recorded in [section 4](#4-code-review-of-each-pr) (a new
+commit, a rebase that brought new changes), review the new changes before asking.
 
-```bash
-d="$(git rev-parse --absolute-git-dir)/claude-pr-review"; mkdir -p "$d" && touch "$d/<sha>"
-```
-
-A head that changed after its review (a new commit, a rebase) needs a new review: check that each
-branch's current sha is the one that was reviewed before writing its marker.
-
-## 7. Open the PRs
+## 6. Open the PRs
 
 ### PR description
 
@@ -208,7 +169,7 @@ Then append:
 ```markdown
 ## Code review
 
-Reviewed with `/code-review <level>` at <reviewed-sha> against `<base>`.
+Reviewed at <reviewed-sha> against `<base>` (<tool or "manual review">, <effort level if any>).
 
 | # | Severity | Finding | Location | Decision |
 |---|---|---|---|---|
@@ -216,22 +177,21 @@ Reviewed with `/code-review <level>` at <reviewed-sha> against `<base>`.
 | 2 | Low | <one-line summary> | `path/Other.kt:10` | Not fixed: <user's reason> |
 ```
 
-With no findings, replace the table with "No findings." Write the body to a file in the
-scratchpad.
+With no findings, replace the table with "No findings." Write the body to a temporary file.
 
 ### Single PR
 
 ```bash
 git push -u origin HEAD
-gh pr create --base <base> --title "<type>: [<KEY>] <summary>" --body-file <file> [--draft]
+gh pr create --base <base> --title "<title>" --body-file <file> [--draft]
 ```
 
 ### Stack
 
 1. `gh stack submit --auto` pushes every branch and creates the PRs (as drafts, with
    auto-generated titles) and the stack on GitHub.
-2. For each PR: `gh pr edit <number> --title "<type>: [<KEY>] <summary>" --body-file <file>`,
-   now with the links between the PRs of the stack.
+2. For each PR: `gh pr edit <number> --title "<title>" --body-file <file>`, now with the links
+   between the PRs of the stack.
 3. If the user chose ready for review: `gh pr ready <numbers…>`.
 
 ### Check
@@ -239,10 +199,24 @@ gh pr create --base <base> --title "<type>: [<KEY>] <summary>" --body-file <file
 `gh pr view <number> --json title,baseRefName,isDraft,url` for each PR, and `gh stack view` for a
 stack. Report the URLs, base of each PR and the stack URL.
 
-## Commit and PR conventions
+## 7. Commit and PR title conventions
 
-- Commits and PR titles: `<type>: [<KEY>] <summary>` (`feat`, `fix`, `refactor`, `chore`,
-  `test`, `docs`), as in `git log`.
-- No AI attribution in commits or PRs (the repo's `.claude/settings.json` disables it).
-- Commit or push only within this flow: never amend or force-push commits that are already
-  on the remote without asking.
+Commit messages and PR titles follow [Conventional Commits](https://www.conventionalcommits.org/),
+with this repository's ticket key at the start of the description:
+
+```
+<type>[optional scope][!]: [<KEY>] <description>
+```
+
+- **Read the current specification before choosing a type**, instead of relying on a fixed list:
+  open https://www.conventionalcommits.org/, follow it to the latest version of the
+  specification, and use the types it defines and the ones it points to as recommended. Note the
+  version you used. If the site cannot be reached, use the types already present in
+  `git log --oneline -50` and tell the user the specification could not be checked.
+- Mark breaking changes the way the specification says (`!` before the colon, or a
+  `BREAKING CHANGE:` footer).
+- Without a ticket, leave out `[<KEY>]`.
+- Do not add AI, agent or tool attribution (co-author trailers, "generated with" lines) to
+  commits or PRs.
+- Commit or push only within this flow, and never amend or force-push commits that are already
+  on the remote without asking the user.

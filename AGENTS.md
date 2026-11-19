@@ -310,8 +310,9 @@ The rules that hold everywhere:
   over the CI size limit (400 lines, `scripts/check_pr_size.sh`), it splits the work into
   stacked PRs with the `gh-stack` extension, each within the limit. Every PR gets a code review;
   the user picks which findings to fix and gives the reason for the rest, and the outcome is
-  written into the PR description. It installs the `pr-review-gate` hook (repo or user level)
-  if it is missing.
+  written into the PR description. Commit messages and PR titles follow the current
+  [Conventional Commits](https://www.conventionalcommits.org/) specification, with the ticket
+  key at the start of the description.
 
 ---
 
