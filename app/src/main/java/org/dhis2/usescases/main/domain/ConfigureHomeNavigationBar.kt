@@ -6,7 +6,7 @@ import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobile.commons.domain.UseCase
 import org.dhis2.mobile.commons.error.DomainError
-import org.dhis2.usescases.main.data.HomeRepository
+import org.dhis2.mobile.home.data.HomeRepository
 import org.dhis2.usescases.main.ui.Form
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem

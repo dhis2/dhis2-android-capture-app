@@ -1,4 +1,4 @@
-package org.dhis2.usescases.main.domain.model
+package org.dhis2.mobile.home.domain.model
 
 sealed interface LockAction {
     data object CreatePin : LockAction

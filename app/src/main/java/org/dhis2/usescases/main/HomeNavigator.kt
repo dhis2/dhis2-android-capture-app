@@ -6,37 +6,12 @@ import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import org.dhis2.android.rtsm.ui.home.HomeActivity
 import org.dhis2.commons.Constants
+import org.dhis2.mobile.home.domain.model.HomeItemData
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.main.program.ProgramUiModel
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.hisp.dhis.android.core.program.ProgramType
-
-sealed class HomeItemData(
-    open val uid: String,
-    open val label: String,
-    open val accessDataWrite: Boolean,
-) {
-    data class TrackerProgram(
-        override val uid: String,
-        override val label: String,
-        override val accessDataWrite: Boolean,
-        val trackedEntityType: String,
-        val isStockUseCase: Boolean,
-    ) : HomeItemData(uid, label, accessDataWrite)
-
-    data class EventProgram(
-        override val uid: String,
-        override val label: String,
-        override val accessDataWrite: Boolean,
-    ) : HomeItemData(uid, label, accessDataWrite)
-
-    data class DataSet(
-        override val uid: String,
-        override val label: String,
-        override val accessDataWrite: Boolean,
-    ) : HomeItemData(uid, label, accessDataWrite)
-}
 
 fun ProgramUiModel.toHomeItemData(): HomeItemData =
     when (programType) {

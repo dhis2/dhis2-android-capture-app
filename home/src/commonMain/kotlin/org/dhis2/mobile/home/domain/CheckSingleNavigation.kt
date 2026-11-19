@@ -1,9 +1,9 @@
-package org.dhis2.usescases.main.domain
+package org.dhis2.mobile.home.domain
 
 import org.dhis2.mobile.commons.domain.UseCase
 import org.dhis2.mobile.commons.error.DomainError
-import org.dhis2.usescases.main.HomeItemData
-import org.dhis2.usescases.main.data.HomeRepository
+import org.dhis2.mobile.home.data.HomeRepository
+import org.dhis2.mobile.home.domain.model.HomeItemData
 
 class CheckSingleNavigation(
     private val homeRepository: HomeRepository,

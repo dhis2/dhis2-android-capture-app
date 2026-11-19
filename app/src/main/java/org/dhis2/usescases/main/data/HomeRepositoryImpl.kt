@@ -12,8 +12,10 @@ import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.error.DomainErrorMapper
 import org.dhis2.mobile.commons.providers.PreferenceProvider
+import org.dhis2.mobile.home.data.HomeRepository
+import org.dhis2.mobile.home.domain.model.HomeItemData
+import org.dhis2.mobile.home.domain.model.HomeUser
 import org.dhis2.mobile.sync.domain.SyncStatusController
-import org.dhis2.usescases.main.HomeItemData
 import org.dhis2.usescases.settings.deleteCache
 import org.dhis2.usescases.sync.WAS_INITIAL_SYNC_DONE
 import org.dhis2.utils.TRUE
@@ -44,7 +46,11 @@ class HomeRepositoryImpl(
 
     override suspend fun user() =
         execute {
-            d2.userModule().user().blockingGet()
+            d2
+                .userModule()
+                .user()
+                .blockingGet()
+                ?.let { HomeUser(it.firstName(), it.surname()) }
         }
 
     override suspend fun setInitialSyncDone() =
@@ -171,9 +177,9 @@ class HomeRepositoryImpl(
             }
         }
 
-    override suspend fun clearCache(cache: File) =
+    override suspend fun clearCache(cachePath: String) =
         execute {
-            deleteCache(cache)
+            deleteCache(File(cachePath))
         }
 
     override suspend fun clearPreferences() =
