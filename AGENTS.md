@@ -304,6 +304,17 @@ The rules that hold everywhere:
 
 ---
 
+## Opening PRs
+
+- **`/open-pr [--base <branch>]`** — Opens the PR(s) for the current branch. When the diff is
+  over the CI size limit (400 lines, `scripts/check_pr_size.sh`), it splits the work into
+  stacked PRs with the `gh-stack` extension, each within the limit. Every PR gets a code review;
+  the user picks which findings to fix and gives the reason for the rest, and the outcome is
+  written into the PR description. It installs the `pr-review-gate` hook (repo or user level)
+  if it is missing.
+
+---
+
 ## Sentry Skills
 
 Two custom skills for Sentry error triage and remediation. They are **multi-repo**:
