@@ -26,7 +26,8 @@ jobs:
             "aggregates/src/commonMain/composeResources" \
             "commonskmm/src/commonMain/composeResources" \
             "login/src/commonMain/composeResources" \
-            "sync/src/commonMain/composeResources"; do
+            "sync/src/commonMain/composeResources" \
+            "home/src/commonMain/composeResources"; do
             if [ -d "$dir" ]; then
               find "$dir" -name "*.xml" -exec sed -i 's/\\?/?/g' {} \;
             fi
