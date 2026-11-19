@@ -68,7 +68,7 @@ fun MainScreen(
     onNewScreen: (MainScreenType) -> Unit,
     onLayoutInflated: (ActivityMainBinding) -> Unit,
 ) {
-    var pinAction by remember { mutableStateOf<PinAction?>(null) }
+    var pinAction by remember { mutableStateOf<PinAction>(PinAction.None) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val pinCreatedMessage = stringResource(R.string.pin_created)
@@ -183,7 +183,7 @@ fun MainScreen(
                     onSuccess = {
                         pinAction = PinAction.ManagePin
                     },
-                    onDismiss = { pinAction = null },
+                    onDismiss = { pinAction = PinAction.None },
                 )
             }
 
@@ -194,9 +194,9 @@ fun MainScreen(
                     },
                     onRemoveClick = {
                         onAction(HomeAction.DeletePin)
-                        pinAction = null
+                        pinAction = PinAction.None
                     },
-                    onDismiss = { pinAction = null },
+                    onDismiss = { pinAction = PinAction.None },
                 )
             }
 
@@ -205,13 +205,15 @@ fun MainScreen(
                     mode = PinMode.SET,
                     onSuccess = {
                         onAction(HomeAction.PinSet)
-                        pinAction = null
+                        pinAction = PinAction.None
                     },
-                    onDismiss = { pinAction = null },
+                    onDismiss = { pinAction = PinAction.None },
                 )
             }
 
-            null -> {}
+            PinAction.None -> {
+                // no-op
+            }
         }
     }
 }

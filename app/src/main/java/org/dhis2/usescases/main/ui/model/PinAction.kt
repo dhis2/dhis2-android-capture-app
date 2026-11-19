@@ -6,4 +6,6 @@ sealed interface PinAction {
     data object AskPin : PinAction
 
     data object ManagePin : PinAction
+
+    data object None : PinAction
 }
