@@ -1,8 +1,8 @@
 package org.dhis2.usescases.datasets.dataSetTable
 
 import org.dhis2.usescases.datasets.CellData
-import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.headerTestTag
-import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.rowHeaderTestTag
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.semantics.headerTestTag
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.semantics.rowHeaderTestTag
 
 internal data class PivotTestingData(
     val sectionIndex: Int,

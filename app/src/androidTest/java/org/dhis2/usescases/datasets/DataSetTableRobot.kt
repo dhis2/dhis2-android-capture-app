@@ -52,12 +52,12 @@ import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_COMPLETE_ANYWA
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_REVIEW_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_VIOLATION_TEST_TAG
 import org.dhis2.mobile.commons.extensions.toColor
-import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.CellSelected
-import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.RowBackground
-import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.TEST_TAG_COLUMN_HEADERS
-import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.cellTestTag
-import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.headersTestTag
-import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.rowHeaderTestTag
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.semantics.CellSelected
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.semantics.RowBackground
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.semantics.TEST_TAG_COLUMN_HEADERS
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.semantics.cellTestTag
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.semantics.headersTestTag
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.semantics.rowHeaderTestTag
 
 internal fun dataSetTableRobot(
     composeTestRule: ComposeContentTestRule,
