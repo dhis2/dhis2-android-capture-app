@@ -48,7 +48,10 @@ The gh-stack extension is only needed if the PR has to be split; it is checked i
 
 The gate is a `PreToolUse` hook that denies PR creation until a marker file exists for the head
 commit of each new PR (`<git-dir>/claude-pr-review/<sha>`). This skill writes those markers only
-after the user has evaluated the review, so the hook is a backstop if the flow is skipped.
+after the user has evaluated the review, so the hook is a backstop if the flow is skipped. The
+hook fails closed: when it cannot tell which commits a command would open PRs for (a failing
+`gh stack view`, several `cd`s, a branch with no local ref), it denies. It needs Python to read
+JSON; without it, `gh stack submit` is always denied.
 
 **Detect it.** Look for a hook command containing `pr-review-gate` in, in this order:
 `.claude/settings.json`, `.claude/settings.local.json` (repo) and `~/.claude/settings.json`
@@ -100,7 +103,9 @@ excluded:
 bash <skill-dir>/scripts/pr_size.sh origin/<base> HEAD --files
 ```
 
-The first line is `<total> <limit>`; the exit code is 0 when `total <= limit`.
+The first line is `<total> <limit>`. With `--files`, one tab-separated line per file follows,
+largest first: `<added> <deleted> <path>`, plus `<old-path>` for a rename. Exit code: 0 within the
+limit, 1 over it, 2 on an error (bad ref, no merge base): never treat 2 as "over the limit".
 
 - **Within the limit**: one PR. Go to [section 5](#5-code-review-of-each-pr).
 - **Over the limit**: it must be split into stacked PRs, each within the limit.
