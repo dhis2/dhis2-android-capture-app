@@ -49,7 +49,7 @@ class HomeRepositoryImpl(
             d2
                 .userModule()
                 .user()
-                .blockingGet()
+                .suspendGet()
                 ?.let { HomeUser(it.firstName(), it.surname()) }
         }
 
