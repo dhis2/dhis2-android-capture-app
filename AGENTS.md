@@ -304,6 +304,22 @@ The rules that hold everywhere:
 
 ---
 
+## Opening PRs
+
+- **`/open-pr [--base <branch>]`** — Opens the PR(s) for the current branch. When the diff is
+  over the CI size limit (400 lines, `scripts/check_pr_size.sh`), it splits the work into
+  stacked PRs with the `gh-stack` extension, each within the limit. Every PR gets a code review;
+  the user picks which findings to fix and gives the reason for the rest, and the outcome is
+  written into the PR description. Commit messages and PR titles follow the current
+  [Conventional Commits](https://www.conventionalcommits.org/) specification, with the ticket
+  key at the start of the description.
+
+The skill lives in `.claude/skills/open-pr/`. If your agent does not load skills from
+`.claude/skills/`, read and follow `.claude/skills/open-pr/SKILL.md` whenever you are asked to
+open, create or submit a PR, or to split a branch into stacked PRs.
+
+---
+
 ## Sentry Skills
 
 Two custom skills for Sentry error triage and remediation. They are **multi-repo**:
