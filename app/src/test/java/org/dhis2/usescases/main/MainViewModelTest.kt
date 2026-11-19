@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
 import app.cash.turbine.test
+import app.cash.turbine.turbineScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,6 +30,7 @@ import org.dhis2.mobile.home.domain.GetLockAction
 import org.dhis2.mobile.home.domain.GetUserName
 import org.dhis2.mobile.home.domain.UpdateInitialSyncStatus
 import org.dhis2.mobile.home.domain.model.LockAction
+import org.dhis2.mobile.login.pin.domain.usecase.DeletePin
 import org.dhis2.mobile.sync.data.METADATA_SYNC_NOW
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.domain.SyncStatusController
@@ -51,6 +53,8 @@ import org.dhis2.utils.MainCoroutineScopeRule
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -92,6 +96,7 @@ class MainViewModelTest {
     private val launchInitialSync: LaunchInitialSync = mock()
     private val scheduleNewVersionAlert: ScheduleNewVersionAlert = mock()
     private val syncBackgroundJobAction: SyncBackgroundJobAction = mock()
+    private val deletePin: DeletePin = mock()
 
     private lateinit var viewModel: MainViewModel
 
@@ -143,6 +148,7 @@ class MainViewModelTest {
                     launchInitialSync = launchInitialSync,
                     scheduleNewVersionAlert = scheduleNewVersionAlert,
                     syncBackgroundJobAction = syncBackgroundJobAction,
+                    deletePin = deletePin,
                     initialScreen = MainScreenType.Home(HomeScreen.Programs),
                     dispatcher =
                         object : DispatcherProvider {
@@ -388,4 +394,61 @@ class MainViewModelTest {
                 assertTrue(awaitItem() is HomeEffect.PinCreated)
             }
         }
+
+    @Test
+    fun `Should show set PIN dialog when blocking session without PIN`() =
+        runTest {
+            whenever(getLockAction()) doReturn Result.success(LockAction.CreatePin)
+
+            viewModel.homeEffects.test {
+                viewModel.onBlockSession()
+                assertEquals(HomeEffect.ShowPinDialog, awaitItem())
+            }
+        }
+
+    @Test
+    fun `Should notify PIN created and mark it as created when PIN is set`() =
+        runTest {
+            stubHomeData(lockAction = Result.success(LockAction.CreatePin))
+
+            turbineScope {
+                val state = viewModel.homeScreenState.testIn(backgroundScope)
+                val effects = viewModel.homeEffects.testIn(backgroundScope)
+                state.awaitItem()
+                assertFalse(state.awaitItem().pinAlreadyCreated)
+
+                viewModel.onAction(HomeAction.PinSet)
+
+                assertEquals(HomeEffect.PinCreated, effects.awaitItem())
+                assertTrue(state.awaitItem().pinAlreadyCreated)
+            }
+        }
+
+    @Test
+    fun `Should notify PIN deleted and mark it as not created when PIN is removed`() =
+        runTest {
+            stubHomeData(lockAction = Result.success(LockAction.PinAlreadyCreated))
+            whenever(deletePin()) doReturn Result.success(Unit)
+
+            turbineScope {
+                val state = viewModel.homeScreenState.testIn(backgroundScope)
+                val effects = viewModel.homeEffects.testIn(backgroundScope)
+                state.awaitItem()
+                assertTrue(state.awaitItem().pinAlreadyCreated)
+
+                viewModel.onAction(HomeAction.DeletePin)
+
+                assertEquals(HomeEffect.PinDeleted, effects.awaitItem())
+                assertFalse(state.awaitItem().pinAlreadyCreated)
+                verify(deletePin).invoke()
+            }
+        }
+
+    private suspend fun stubHomeData(lockAction: Result<LockAction>) {
+        whenever(getUserName()) doReturn Result.success("user")
+        whenever(configureHomeNavigationBar()) doReturn Result.success(emptyList())
+        whenever(getHomeFilters()) doReturn Result.success(emptyList())
+        whenever(filterManager.totalFilters) doReturn 0
+        whenever(getLockAction()) doReturn lockAction
+    }
 }

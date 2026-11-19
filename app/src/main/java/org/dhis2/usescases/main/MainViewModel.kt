@@ -35,7 +35,7 @@ import org.dhis2.mobile.home.domain.GetLockAction
 import org.dhis2.mobile.home.domain.GetUserName
 import org.dhis2.mobile.home.domain.UpdateInitialSyncStatus
 import org.dhis2.mobile.home.domain.model.LockAction
-import org.dhis2.mobile.login.pin.domain.usecase.DeletePinUseCase
+import org.dhis2.mobile.login.pin.domain.usecase.DeletePin
 import org.dhis2.mobile.sync.data.METADATA_SYNC_NOW
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.domain.SyncStatusController
@@ -80,7 +80,7 @@ class MainViewModel(
     private val scheduleNewVersionAlert: ScheduleNewVersionAlert,
     private val syncBackgroundJobAction: SyncBackgroundJobAction,
     private val initialScreen: MainScreenType,
-    private val deletePin: DeletePinUseCase,
+    private val deletePin: DeletePin,
     private val dispatcher: DispatcherProvider,
 ) : ViewModel() {
     private val _homeScreenState = MutableStateFlow(defaultHomeScreenState)
