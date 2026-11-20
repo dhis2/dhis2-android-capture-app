@@ -18,6 +18,8 @@ import org.dhis2.mobile.commons.category.data.toDomain
 import org.dhis2.mobile.commons.category.domain.isReadOnlySelection
 import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.mobile.commons.providers.CustomLabelProvider
+import org.dhis2.tracker.dashboard.domain.GetEnrollmentAOC
+import org.dhis2.tracker.dashboard.domain.model.EnrollmentData
 import org.dhis2.utils.ValueUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
@@ -55,6 +57,7 @@ class DashboardRepositoryImpl(
     private val metadataIconProvider: MetadataIconProvider,
     private val programConfigurationRepository: ProgramConfigurationRepository,
     private val customLabelProvider: CustomLabelProvider,
+    private val getEnrollmentAOC: GetEnrollmentAOC,
 ) : DashboardRepository {
     override fun getTeiHeader(): String? =
         d2
@@ -559,8 +562,9 @@ class DashboardRepositoryImpl(
                 getOwnerOrgUnit(teiUid),
             )
         } else {
+            val enrollment = getEnrollment().blockingFirst()
             DashboardEnrollmentModel(
-                getEnrollment().blockingFirst(),
+                enrollment,
                 getProgramStages(programUid).blockingFirst(),
                 getTrackedEntityInstance(teiUid).blockingFirst(),
                 getAttributesMap(programUid, teiUid).blockingFirst(),
@@ -572,6 +576,17 @@ class DashboardRepositoryImpl(
                 getOwnerOrgUnit(teiUid),
                 getQuickActions(programUid),
                 markedForFollowUpLabel(programUid),
+                enrollmentAOC =
+                    enrollmentUid?.let { enrollmentUid ->
+                        getEnrollmentAOC(
+                            input =
+                                EnrollmentData(
+                                    enrollmentUid = enrollmentUid,
+                                    programUid = programUid,
+                                    attributeOptionCombo = enrollment.attributeOptionCombo,
+                                ),
+                        ).getOrNull()
+                    },
             )
         }
 

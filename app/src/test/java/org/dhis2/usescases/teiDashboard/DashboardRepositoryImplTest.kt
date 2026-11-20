@@ -8,6 +8,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobile.commons.providers.CustomLabelProvider
+import org.dhis2.tracker.dashboard.domain.GetEnrollmentAOC
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.filters.internal.StringFilterConnector
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
@@ -51,6 +52,7 @@ class DashboardRepositoryImplTest {
     private val metadataIconProvider: MetadataIconProvider = mock()
     private val programConfigurationRepository: ProgramConfigurationRepository = mock()
     private val customLabelProvider: CustomLabelProvider = mock()
+    private val getEnrollmentAOC: GetEnrollmentAOC = mock()
 
     @Before
     fun setUp() {
@@ -66,6 +68,7 @@ class DashboardRepositoryImplTest {
                 metadataIconProvider,
                 programConfigurationRepository,
                 customLabelProvider,
+                getEnrollmentAOC,
             )
     }
 
