@@ -104,7 +104,7 @@ Every SDK operation exists as `suspendX()` (the real implementation), `rxX()`, `
 | `.blockingDownload()` on event / TEI / aggregated / file resource / datastore downloaders | `.flowDownload()` (collect it) |
 | `.blockingUpload()` | `.flowUpload()` (collect it) |
 | paging with Rx | `.getPagingData(pageSize)` |
-| `service.blockingX(...)` | `service.suspendX(...)`: `DataSetInstanceService`, `EventService`, `EnrollmentService`, `OrganisationUnitService`, `CategoryOptionComboService.suspendHasAccess`, `OptionService.suspendSearchForOptions`, `ValidationEngine.suspendValidate`, analytics `suspendEvaluate`, `ReservedValueManager`, `OwnershipManager`, `UserModule.suspendLogIn/LogOut/IsLogged`, `DHISVersionManager` |
+| `service.blockingX(...)` | `service.suspendX(...)`: `DataSetInstanceService`, `EventService`, `EnrollmentService`, `OrganisationUnitService`, `CategoryOptionComboService.suspendHasAccess`, `OptionService.suspendSearchForOptions`, `ValidationEngine.suspendValidate`, analytics `suspendEvaluate`, `TrackedEntityAttributeReservedValueManager.suspendGetValue/suspendCount` (downloads: `flowDownloadReservedValues`), `OwnershipManager`, `UserModule.suspendLogIn/LogOut/IsLogged` |
 
 **No suspend version yet.** Call the blocking form inside `withContext(dispatcher.io)` and the
 error wrapper, and do not switch to its Rx form:
@@ -120,10 +120,13 @@ error wrapper, and do not switch to its Rx form:
   `blockingBuildEnrollmentUrl`, `blockingHandleEnrollmentResponse`, `blockingBuildLogoutUrl`
   (the `suspendSetPin`/`suspendChangePin` ones do exist).
 - `WipeModule.wipeEverything/wipeData/wipeMetadata`.
+- `DHISVersionManager.isVersion/getPatchVersion/getSmsVersion/getBypassVersion` (plain functions;
+  `getVersion`, `isGreaterThan` and `isGreaterOrEqualThan` have `suspend` forms).
 
-`scripts/check_conventions.py` allows these names. If you find another operation with no suspend
-form, check the SDK sources before using the blocking one, and add it to this list and to the
-script's allowlist in the same PR.
+`scripts/check_conventions.py` flags every `.blockingX(` call, so end each of these lines with
+`// conventions:allow <reason>` (for example `// conventions:allow no suspend metadata download`).
+If you find another operation with no suspend form, check the SDK sources before using the
+blocking one, and add it to this list in the same PR.
 
 `suspendGet` relies on the SDK's database dispatcher but is not guaranteed main-safe, so keep the
 `withContext(dispatcher.io)` around it.
@@ -170,7 +173,8 @@ class SavePin(private val repository: SessionRepository) : UseCase<String, Unit>
 - Catch order: rethrow `CancellationException`, then `Exception`. `DomainError` extends
   `Exception`, so mapped SDK errors are covered.
 - A separate `catch (error: DomainError)` before `Exception` only when domain errors need their
-  own handling (`SyncData` signals network loss and session renewal). To react to one error and
+  own handling (for example to signal network loss or session renewal). `SyncData` does this but
+  does not rethrow `CancellationException` first: do not copy its catch block. To react to one error and
   otherwise pass it on, check inside the `Exception` catch, as the sync use cases do with
   `sessionRenewalNotifier.notifyIfRequired(error)`.
 - Catching only `DomainError` (letting other exceptions escape) breaks "use cases never throw".
@@ -237,7 +241,8 @@ composables with `koinViewModel()`. `DomainErrorMapper` and `Dispatcher` already
   implementations move to `commonMain` unchanged once the SDK is multiplatform, and lets
   `commonTest` use fakes.
 - **`expect`/`actual`** only for small dependency-free functions and Compose helpers tests never
-  replace (`logDebug`, `getWindowSizeClass`, `getDrawableResource`). No new `expect class`.
+  replace (`logDebug`, `getWindowSizeClass`, `getDrawableResource`), and for `expect val` Koin
+  modules that hold the per-platform bindings (see Dependency injection). No new `expect class`.
 - Code that needs JVM APIs and is shared by Android and Desktop goes in `jvmCommonMain` in modules
   with iOS. In modules without iOS do not call `commonskmm`'s `jvmCommonMain` functions from
   `commonMain`: that compiles today and breaks the day the module gets iOS.
