@@ -17,14 +17,14 @@ class DashboardRepositoryImpl(
                 .programModule()
                 .programs()
                 .uid(programUid)
-                .blockingGet()
+                .suspendGet()
                 ?.enrollmentCategoryCombo
                 ?.let { categoryCombo ->
                     d2
                         .categoryModule()
                         .categoryCombos()
                         .uid(categoryCombo.uid)
-                        .blockingGet()
+                        .suspendGet()
                         ?.takeIf { it.isDefault == false }
                         ?.displayName
                 }
@@ -36,7 +36,7 @@ class DashboardRepositoryImpl(
                 .categoryModule()
                 .categoryOptionCombos()
                 .uid(enrollmentAttributeOptionCombo)
-                .blockingGet()
+                .suspendGet()
                 ?.displayName
                 ?: ""
         }

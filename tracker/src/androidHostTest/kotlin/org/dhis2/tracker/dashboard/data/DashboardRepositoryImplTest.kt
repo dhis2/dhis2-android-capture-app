@@ -70,7 +70,7 @@ class DashboardRepositoryImplTest {
                     .programModule()
                     .programs()
                     .uid(PROGRAM_UID)
-                    .blockingGet(),
+                    .suspendGet(),
             ) doReturn null
 
             assertNull(repository.enrollmentCategoryComboLabel(PROGRAM_UID))
@@ -85,7 +85,7 @@ class DashboardRepositoryImplTest {
                     .categoryModule()
                     .categoryCombos()
                     .uid(any())
-                    .blockingGet(),
+                    .suspendGet(),
             ) doReturn null
 
             assertNull(repository.enrollmentCategoryComboLabel(PROGRAM_UID))
@@ -99,7 +99,7 @@ class DashboardRepositoryImplTest {
                     .categoryModule()
                     .categoryOptionCombos()
                     .uid(AOC_UID)
-                    .blockingGet(),
+                    .suspendGet(),
             ) doReturn
                 CategoryOptionCombo
                     .builder()
@@ -121,14 +121,14 @@ class DashboardRepositoryImplTest {
                     .categoryModule()
                     .categoryOptionCombos()
                     .uid(AOC_UID)
-                    .blockingGet(),
+                    .suspendGet(),
             ) doReturn null
 
             assertEquals("", repository.enrollmentCategoryOptionComboLabel(AOC_UID))
         }
 
     @Test
-    fun `should map an SDK error wrapped by a blocking call to a domain error`() =
+    fun `should map a wrapped SDK error to a domain error`() =
         runTest {
             val d2Error =
                 D2Error
@@ -143,7 +143,7 @@ class DashboardRepositoryImplTest {
                     .categoryModule()
                     .categoryOptionCombos()
                     .uid(AOC_UID)
-                    .blockingGet(),
+                    .suspendGet(),
             ) doThrow RuntimeException(d2Error)
             whenever(domainErrorMapper.mapToDomainError(d2Error)) doReturn domainError
 
@@ -153,13 +153,13 @@ class DashboardRepositoryImplTest {
             assertEquals(domainError, error)
         }
 
-    private fun mockProgram(enrollmentCategoryComboUid: String) {
+    private suspend fun mockProgram(enrollmentCategoryComboUid: String) {
         whenever(
             d2
                 .programModule()
                 .programs()
                 .uid(PROGRAM_UID)
-                .blockingGet(),
+                .suspendGet(),
         ) doReturn
             Program
                 .builder()
@@ -169,7 +169,7 @@ class DashboardRepositoryImplTest {
                 .build()
     }
 
-    private fun mockCategoryCombo(
+    private suspend fun mockCategoryCombo(
         uid: String,
         displayName: String,
         isDefault: Boolean,
@@ -179,7 +179,7 @@ class DashboardRepositoryImplTest {
                 .categoryModule()
                 .categoryCombos()
                 .uid(uid)
-                .blockingGet(),
+                .suspendGet(),
         ) doReturn
             CategoryCombo
                 .builder()
