@@ -48,6 +48,10 @@ The last row is the trap: a module **without** iOS sees `commonskmm`'s `jvmCommo
    `commonskmm` and `home` (it is copy-pasted, there is no convention plugin yet):
 
    ```kotlin
+   // at the top of the file, if the module does not import them yet:
+   import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+   import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+
    iosArm64()
    iosSimulatorArm64()
 
@@ -64,8 +68,9 @@ The last row is the trap: a module **without** iOS sees `commonskmm`'s `jvmCommo
    }
    ```
 
-   Remove `mockitoKotlin` and `koin.test.junit4` from `commonTest.dependencies` (keep Mockito in
-   `androidHostTest`), and add `-Xexpect-actual-classes` only if the module has `expect class`.
+   Move `mockitoKotlin` and `koin.test.junit4` from `commonTest.dependencies` to the
+   `getByName("androidHostTest") { dependencies { … } }` block (add the block if the module has
+   none, as in `aggregates`, or its Mockito tests stop compiling; `home` shows it), and add `-Xexpect-actual-classes` only if the module has `expect class`.
 2. Fix the `commonMain` blockers (tables above). Move JVM-only code shared by Android and Desktop to
    `src/jvmCommonMain`.
 3. Add an `iosMain` `actual` for every `expect` in the module. Koin bindings on iOS follow Desktop:
