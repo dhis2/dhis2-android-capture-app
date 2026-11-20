@@ -1,405 +1,179 @@
 # DHIS2 Android Capture App - Agent Guidelines
 
-This is a **Kotlin Multiplatform (KMP)** Android project migrating to Compose Multiplatform.
-KMP modules target **Android and Desktop**; Desktop is being added to every KMP module to ease
-future targets. **iOS is not implemented**: only `commonskmm` and `home` compile for iOS, so
-other modules can add the target later. The app uses MVVM + Repository + Use Case architecture.
+A **Kotlin Multiplatform (KMP)** Android project migrating to Compose Multiplatform, built as
+MVVM + Repository + Use Case. KMP modules target **Android and Desktop**; iOS is being added
+module by module (see the module table). Legacy AGP modules are not migrated as drive-by changes.
+
+This file is loaded in every session, so it holds only what must always hold. The how-to lives
+in skills. **Read the matching skill before starting**; if your agent does not load
+`.claude/skills/` itself, open the file:
+
+| Before you… | Read |
+|---|---|
+| write or review production code | `.claude/skills/kmp-architecture/SKILL.md` |
+| write, fix or review a test | `.claude/skills/android-testing/SKILL.md` |
+| add the iOS target to a module, or fix an iOS compile error | `.claude/skills/kmp-ios/SKILL.md` |
+| open a PR or split a branch into stacked PRs | `.claude/skills/open-pr/SKILL.md` |
 
 ---
 
-## Build & Lint Commands
+## Commands
 
 ```bash
-# Full lint check (ktlint 1.7.1, ktlint_official style)
-./gradlew ktlintCheck
-
-# Auto-format all sources
-./gradlew ktlintFormat
-
-# Run all unit tests (debug + KMP host tests)
-./gradlew testDebugUnitTest testDhis2DebugUnitTest testAndroidHostTest
-
-# Compile the KMP modules for desktop and run their commonTest on the desktop JVM (one task)
-./gradlew desktopTest
-
-# Shortcut: lint + all unit tests + desktop (mirrors CI)
-./run_tests.sh
-
-# Run a single test class (KMP commonTest)
+./gradlew ktlintFormat ktlintCheck          # ktlint_official style; must pass before committing
+./run_tests.sh                              # conventions + harness checks, lint, all unit tests, desktop
+./gradlew testDebugUnitTest testDhis2DebugUnitTest testAndroidHostTest   # all unit tests
+./gradlew desktopTest                       # commonTest of every KMP module on the desktop JVM
 ./gradlew :login:testAndroidHostTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest"
-
-# Run a single test method (KMP commonTest)
-./gradlew :login:testAndroidHostTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest.initial screen is set correctly when starting"
-
-# Build debug APK
-./gradlew assembleDhis2Debug
-
-# Build all modules
-./gradlew assemble
+./gradlew assembleDhis2Debug                # debug APK
+scripts/check_conventions.py                # the agreements below, on the lines your branch adds*
+scripts/check_harness.py                    # AGENTS.md / skills still match the repo (paths, modules)
+git config core.hooksPath scripts/git-hooks # once per clone: ktlint + conventions before each commit
 ```
 
-**Gradle task naming by module type:**
-- `app`: `testDhis2DebugUnitTest` (it has flavours; the others do not)
-- Other AGP modules (`form`, `commons`, `compose-table`, `stock-usecase`,
-  `dhis_android_analytics`, `dhis2_android_maps`, `dhis2-mobile-program-rules`):
-  `testDebugUnitTest`
-- KMP modules (`login`, `sync`, `aggregates`, `commonskmm`, `home`, `tracker`) — **both** the
-  `commonTest` and `androidHostTest` source sets: `testAndroidHostTest`
+\* Measured from the branch your work started from (`develop`, `main` or `release/*`, detected
+from the merge bases); pass `--base origin/<branch>` when the detection is wrong.
 
-`testAndroidDebugUnitTest` is **not a task in this repo**. No module has a `desktopTest`
-source set, but every KMP module has a `desktopTest` **task**: it runs `commonTest` on the
-desktop JVM, and CI runs it, so a common test must pass there too, not only on Android.
+Test task by module type: `app` → `testDhis2DebugUnitTest` (flavoured); other AGP modules →
+`testDebugUnitTest`; KMP modules → `testAndroidHostTest` (runs both `commonTest` and
+`androidHostTest`) and `desktopTest` (runs `commonTest` on the desktop JVM; CI runs it, so a
+common test must pass there too). `testAndroidDebugUnitTest` does not exist in this repo.
+
+**Before you finish a change**, run `./run_tests.sh` (or, for a quick pass, the two `scripts/`
+checks, `ktlintCheck` and the test tasks of the modules you touched) and fix what it reports.
+CI does not run the convention or harness checks; `/open-pr` runs them again before a PR opens.
+
+**Confirm a test actually ran**: check `build/test-results/<task>/TEST-<FQCN>.xml` for
+`tests="N"`. A class that was never collected produces no file and the build still goes green.
 
 ---
 
-## Project Structure
+## Modules
 
-```
-root/
-├── app/                    # Main Android application
-├── commonskmm/             # KMP shared utilities, base classes, DI helpers
-├── home/                   # KMP home screen domain (Android, Desktop, iOS)
-├── login/                  # KMP login feature (Android + Desktop)
-├── sync/                   # KMP sync feature
-├── aggregates/             # KMP aggregate data feature
-├── tracker/                # KMP tracker feature
-├── form/                   # Android form module
-├── commons/                # Android shared utilities (legacy)
-├── compose-table/          # Compose table component
-├── stock-usecase/          # Android stock management feature
-├── dhis_android_analytics/ # Android analytics/charts
-├── dhis2_android_maps/     # Android maps
-├── dhis2-mobile-program-rules/ # Android (com.android.library) program rules engine
-└── gradle/libs.versions.toml   # Central dependency catalog
-```
+| Module | Type | Desktop | iOS | Notes |
+|---|---|---|---|---|
+| `app` | Android app | – | – | Legacy; flavours `dhis2`, `dhis2PlayServices`, `dhis2Training`; Dagger + Koin |
+| `commonskmm` | KMP | ✓ | ✓ | Shared base: `UseCase`, `Dispatcher`, `DomainError`, `launchUseCase`, DI helpers |
+| `home` | KMP | ✓ | ✓ | Home screen domain; its repository implementation still lives in `app` |
+| `login` | KMP | ✓ | – | Uses multiplatform Compose Navigation |
+| `sync` | KMP | ✓ | – | Easiest module to add iOS to |
+| `aggregates` | KMP | ✓ | – | Data set entry |
+| `tracker` | KMP | ✓ | – | Tracker search, relationships |
+| `form`, `commons`, `compose-table`, `stock-usecase`, `dhis_android_analytics`, `dhis2_android_maps`, `dhis2-mobile-program-rules` | AGP library | – | – | Legacy (`commons` re-exports `commonskmm`) |
 
-**KMP module source sets:**
-```
-modulekmm/src/
-├── commonMain/kotlin/      # Shared business logic, interfaces, use cases
-├── commonTest/kotlin/      # Shared unit tests (kotlin-test + mockito-kotlin + turbine)
-├── androidMain/kotlin/     # Android implementations, SDK access
-├── androidHostTest/kotlin/ # Unit tests that need androidMain (e.g. mock D2)
-├── desktopMain/kotlin/     # Desktop implementations
-└── composeResources/       # Shared Compose resources (strings, images)
-```
-
-`androidHostTest` **depends on** `commonTest`, so a test dependency declared in
-`commonTest` is already on its compile classpath — no need to declare it twice.
-Both source sets are run by the same `testAndroidHostTest` task.
-
-**Modules with an iOS target** (`commonskmm` and `home`) add two source sets:
-- `jvmCommonMain` holds code shared by Android and Desktop that uses JVM APIs (`java.*`,
-  `javax.*`, `String.format`). Never put such code in `commonMain`: it breaks the iOS
-  compilation. Modules that target only Android and Desktop still see it from their `commonMain`.
-- `iosMain` holds the iOS `actual`s. Desktop and iOS share their Koin bindings: `sharedCommonsModule`
-  (no platform API) and `sdklessCommonsModule` (stubs until the SDK is multiplatform).
-- `commonTest` also runs on iOS, so it cannot use Mockito, JUnit or `java.*`: write fakes and use
-  `kotlin.test`. Tests of `jvmCommonMain` code go in `jvmCommonTest`; Mockito is available only in
-  `androidHostTest`. Backtick test names cannot contain `,` (Kotlin/Native rejects them).
-- Check locally with `./gradlew :commonskmm:iosSimulatorArm64Test --dependency-verification lenient`
-  (needs Xcode). CI does not run iOS yet, and nothing keeps the iOS artifacts in
-  `verification-metadata.xml` up to date.
-
-**Platform code: interfaces first.** The DHIS2 SDK will become multiplatform, and repository
-implementations will then move from `androidMain` to `commonMain`. Write code so that move only
-changes a binding:
-- **Repositories and platform services with state or dependencies** (biometrics, network status,
-  files, error messages): an interface in `commonMain` and one Koin binding per platform, a stub
-  where a platform lacks the service. They can be faked in `commonTest` without Mockito.
-- **`expect`/`actual`:** only for small functions with no dependencies and Compose helpers that
-  tests never replace (`logDebug`, `getWindowSizeClass`, `getDrawableResource`). Avoid new
-  `expect class` declarations.
+KMP source sets: `commonMain`, `commonTest`, `androidMain`, `androidHostTest` (depends on
+`commonTest`), `desktopMain`, `composeResources`. Modules with iOS add `jvmCommonMain` (code
+shared by Android and Desktop that uses JVM APIs) and `iosMain`. No module has a `desktopTest`
+source set.
 
 ---
 
-## Code Style (enforced by ktlint 1.7.1)
+## Architectural agreements
 
-Config in `.editorconfig`:
-- **Style**: `ktlint_official`
-- **No wildcard imports** (`ktlint_standard_no-wildcard-imports = enabled`)
-- **No unused imports** (`ktlint_standard_no-unused-imports = enabled`)
-- **Trailing commas required** on both call and declaration sites
-- **Ordered imports** (`ktlint_standard_import-ordering = enabled`)
-- **Function naming**: standard rule disabled — composables may use PascalCase per Compose conventions
+These hold for **all new code** in every module. `scripts/check_conventions.py` enforces most of
+them on the lines a branch adds. Patterns, examples and exceptions: `kmp-architecture` skill.
 
-**General Kotlin conventions:**
-- JVM target: Java 17 (`sourceCompatibility = JavaVersion.VERSION_17`)
-- Prefer `data class` over plain class for models
-- Use `sealed class` / `sealed interface` for UI state
-- Use `object` for singletons, companion objects for constants
-- Prefer expression bodies for single-expression functions
-- Document public APIs with KDoc
+A line that must break a rule on purpose (an SDK call with no suspend version) ends with
+`// conventions:allow <reason>`. When you change AGENTS.md or a skill, keep
+`scripts/check_harness.py` green, and when you add an agreement, add its check.
 
----
-
-## Architecture Patterns
-
-### Layer structure (per feature module)
-```
-domain/
-  model/          # Domain models: pure data classes / sealed types, no SDK types
-  usecase/        # Business logic, implements UseCase<R, T>
-data/             # Repository interfaces (commonMain) and their implementations,
-                  # one per target (androidMain, desktopMain)
-ui/
-  state/          # UiState and other UI models
-  viewmodel/      # ViewModels (expose StateFlow<UiState>)
-  screen/         # @Composable screens
-  component/      # Reusable composables
-di/               # Koin module definitions
-```
-
-Domain models go in `domain/model/`, UI models in `ui/state/`. Do not add new top-level
-`model/` packages.
-
-### UseCase interface (commonskmm)
-New use cases implement `UseCase<in R, out T>` from
-`commonskmm/src/commonMain/kotlin/org/dhis2/mobile/commons/domain/UseCase.kt`:
-
-```kotlin
-// Interface definition
-fun interface UseCase<in R, out T> {
-    suspend operator fun invoke(input: R): Result<T>
-}
-// Parameterless convenience extension
-suspend operator fun <T> UseCase<Unit, T>.invoke() = this(Unit)
-```
-
-It is the dominant pattern already — 33 implementations across `app` (14), `sync` (9),
-`login` (6), `tracker` (3) and `commonskmm` (1). Where it is not used, a plain
-`suspend operator fun invoke` returning `Result<T>` is accepted.
-
-**Naming:** name use cases as an action, **without** the `UseCase` suffix (`SavePin`,
-`SyncDataSet`, `FetchSearchParameters`). Existing `…UseCase` classes are renamed when touched.
-
-Implementation pattern:
-```kotlin
-class SavePin(private val repo: SessionRepository) : UseCase<String, Unit> {
-    override suspend fun invoke(input: String): Result<Unit> =
-        try {
-            repo.savePin(input)
-            Result.success(Unit)
-        } catch (cancellation: CancellationException) {
-            throw cancellation
-        } catch (error: Exception) {
-            Result.failure(error)
-        }
-}
-```
-
-**A use case never throws; catch in this order:**
-1. Rethrow `CancellationException`, as coroutine convention requires.
-2. Catch `Exception` for everything else. `DomainError` is declared
-   `sealed class DomainError : Exception()`, so this also covers mapped SDK errors.
-
-Add a separate `catch (error: DomainError)` before `catch (Exception)` only when domain
-errors need handling of their own (e.g. `SyncData` signals network loss and session renewal
-but saves other failures as sync errors). If you only need to react to one domain error,
-check it inside the `Exception` catch instead, as the sync use cases do with
-`sessionRenewalNotifier.notifyIfRequired(error)`.
-
-Do not catch `Throwable` (it turns JVM `Error`s such as `OutOfMemoryError` into a `Result`)
-and do not use `runCatching` (it swallows `CancellationException`).
-
-### ViewModel pattern
-- Use `launchUseCase { }` (not `viewModelScope.launch`) — it wraps `CoroutineTracker`
-  which integrates with Espresso's `IdlingResource` for reliable UI tests.
-  **Required** in KMP-module ViewModels and in any ViewModel with instrumented
-  coverage. The ~140 existing `viewModelScope.launch` sites in legacy modules are
-  not being migrated; do not "fix" them as drive-by changes
-- Repositories are main-safe, so `launchUseCase` usually needs no dispatcher. If the
-  ViewModel itself does heavy work, pass the **injected** `Dispatcher` from `commonskmm`:
-  `launchUseCase(dispatcher.default) { }`. Never use `Dispatchers.*` directly, so tests can
-  replace it
-- Expose state via `StateFlow`; collect in composables with `collectAsState()`
-
-### Repository pattern (Android implementations)
-The repository interface is declared in `data/` in `commonMain`; each target implements it in
-its own source set.
-
-**The repository implementation owns the dispatcher.** Switch to `dispatcher.io` (the injected
-`org.dhis2.mobile.commons.coroutine.Dispatcher`) for SDK calls so every repository function is
-main-safe; use cases and ViewModels do not switch dispatchers for I/O. New code uses only the
-`commonskmm` `Dispatcher` — not the legacy `commons` `DispatcherProvider` nor the `aggregates`
-`Dispatcher`.
-
-Wrap SDK calls in `withDomainErrors { }` / `withDomainErrorsAsResult { }` from
-`org.dhis2.mobile.commons.error` rather than catching `D2Error` inline:
-
-They are extension functions on `DomainErrorMapper`, so call them on the injected
-mapper:
-
-```kotlin
-override suspend fun downloadFileResources(): Result<Unit> =
-    withContext(dispatcher.io) {
-        domainErrorMapper.withDomainErrorsAsResult {
-            d2
-                .fileResourceModule()
-                .fileResourceDownloader()
-                .byDomainType()
-                .eq(FileResourceDomainType.ICON)
-                .blockingDownload()
-            Result.success(Unit)
-        }
-    }
-```
-
-Why: the SDK's blocking RxJava operators rewrap the checked `D2Error` in a
-`RuntimeException`, so an inline `catch (d2Error: D2Error)` misses every blocking
-call. The wrappers walk the cause chain (`Throwable.asD2Error()`, depth 5, with a
-self-reference guard) before mapping, so both shapes are handled.
-
-`AndroidSyncRepository` is a worked example: its private `execute { }` helper combines
-`withContext(dispatcher.io)` and `withDomainErrorsAsResult`. Use `withDomainErrors { }`
-when the call throws instead of returning a `Result`.
-
-### Dependency Injection (Koin 4.x)
-```kotlin
-val featureModule = module {
-    single<MyRepository> { MyRepositoryImpl(get(), get()) }
-    factory { MyAction(get()) }  // use case, no `UseCase` suffix
-    viewModel { MyViewModel(get()) }
-}
-```
-- Define modules in `commonMain` where possible; use `expect`/`actual` for platform DI
-- Inject ViewModels in composables with `koinViewModel()`
+1. **KMP first, iOS-ready.** Business logic goes in `commonMain`, written so it compiles for iOS:
+   no `java.*`, `javax.*` or `android.*` imports and no `String.format` there (use
+   kotlinx-datetime and Compose `stringResource(res, arg)`). When you touch a KMP module that
+   has no iOS target, propose adding it (`kmp-ios` skill).
+2. **SDK access uses suspend or Flow APIs**: `suspendGet`, `suspendGetUids`, `suspendCount`,
+   `suspendExists`, `suspendAdd`, `suspendSet`, `suspendDelete`, `flowDownload`, `flowUpload`
+   and the `suspend*` service methods. Not `blocking*`, `rx*`, deprecated Rx `get()`, or RxJava.
+   A blocking call is allowed only where the SDK has no suspend version (list in the skill).
+3. **Repositories own the dispatcher.** Every repository function is main-safe: its body runs in
+   `withContext(dispatcher.io)`, and a returned Flow ends with `flowOn(dispatcher.io)`. Use cases
+   and ViewModels never switch dispatchers for I/O; `dispatcher.default` only for CPU-heavy work
+   they do themselves. Always inject the `commonskmm` `org.dhis2.mobile.commons.coroutine.Dispatcher`.
+   Never `Dispatchers.*`, the legacy `commons` `DispatcherProvider` or the `aggregates` `Dispatcher`.
+4. **SDK errors become `DomainError` at the repository boundary, in every module**, through
+   `domainErrorMapper.withDomainErrors { }` / `withDomainErrorsAsResult { }`. Never an inline
+   `catch (e: D2Error)`: the SDK rewraps `D2Error` in a `RuntimeException`, which the wrappers
+   unwrap and an inline catch misses. Nothing above the data layer sees an SDK type.
+5. **Use cases never throw.** Implement `UseCase<R, T>` (`commonskmm/.../domain/UseCase.kt`),
+   name them as an action without the `UseCase` suffix (`SavePin`), rethrow
+   `CancellationException`, then catch `Exception`. Never `runCatching` (it swallows
+   cancellation) and never `catch (Throwable)`.
+6. **ViewModels** launch work with `launchUseCase { }`, never `viewModelScope.launch` (it feeds
+   the Espresso idling resource), and expose `StateFlow<UiState>`. Leave existing
+   `viewModelScope.launch` sites as they are unless the task is to migrate them.
+7. **Platform code: interfaces first.** Repositories and stateful platform services are an
+   interface in `commonMain` plus one Koin binding per platform (a stub where a platform lacks
+   it). `expect`/`actual` only for small dependency-free functions, Compose helpers and the
+   `expect val` Koin modules that hold those per-platform bindings; no new `expect class`.
+8. **Other rules:** Koin for DI in new code; DHIS2 design system components
+   (`org.hisp.dhis.mobile.ui.designsystem.*`) inside `DHIS2Theme { }` over Material; no RxJava in
+   new code; no direct network or database access (use the DHIS2 SDK); offline-first; domain
+   models in `domain/model/`, UI models in `ui/state/`, no new top-level `model/` packages.
+9. **Tests:** mockito-kotlin only, never MockK; JUnit4 / `kotlin.test` only (Jupiter is excluded
+   and fails the build); mock `D2` with `RETURNS_DEEP_STUBS`; never `Thread.sleep()`. In modules
+   with an iOS target, `commonTest` uses fakes and `kotlin.test` only (no Mockito, JUnit or
+   `java.*`); Mockito goes in `androidHostTest`.
 
 ---
 
-## UI Guidelines
+## Code style
 
-- **Always prefer** DHIS2 design system components (`org.hisp.dhis.mobile.ui.designsystem.*`)
-  over Material components
-- Wrap screens in `DHIS2Theme { }` from `org.hisp.dhis.mobile.ui.designsystem.theme`
-- Place shared Compose resources in `commonMain/composeResources/`
-- Use multiplatform Compose Navigation (`org.jetbrains.androidx.navigation:navigation-compose`)
-- Add `@Preview` annotations to validate composables in isolation
-
----
-
-## Testing
-
-Load the **android-testing** skill (`.claude/skills/android-testing/SKILL.md`) before
-writing any test; it has the patterns, examples and common mistakes.
-
-The rules that hold everywhere:
-- **mockito-kotlin only** (`mock()`, `whenever()`, `verify()`). Never MockK
-- **JUnit4 / `kotlin.test` annotations only** — `org.junit.jupiter` is excluded from
-  every test configuration and a Jupiter `@Test` fails the build
-- **`D2` must be mocked with `RETURNS_DEEP_STUBS`** — its call chains NPE otherwise
-- **Never `Thread.sleep()`** or any hard-coded delay
-- **Confirm the test actually ran** — check `build/test-results/<task>/TEST-<FQCN>.xml`
-  for `tests="N"`. A class that was never collected produces no file, and the build
-  still goes green
+ktlint with `ktlint_official` (`.editorconfig`): no wildcard imports, no unused imports,
+ordered imports, trailing commas on call and declaration sites, PascalCase allowed for
+composables. Prefer `data class` for models, `sealed` types for UI state, expression
+bodies for single expressions, KDoc on public APIs. Backtick test names cannot contain `,` in
+modules with iOS (Kotlin/Native rejects them).
 
 ---
 
-## Key Constraints
+## CI and merging
 
-1. **Never create direct network or database calls** — use the DHIS2 Android SDK (`org.hisp.dhis.android.core.*`)
-2. **Offline-first**: design features to work without connectivity; let the SDK handle sync
-3. **KMP first**: put business logic in `commonMain`; keep `androidMain` to SDK/platform specifics
-4. **No RxJava in new code**: migrate to Coroutines/Flow; wrap existing RxJava at boundaries
-5. **ktlint must pass** before committing — run `./gradlew ktlintFormat` then `ktlintCheck`
-
----
-
-## Opening PRs
-
-- **`/open-pr [--base <branch>]`** — Opens the PR(s) for the current branch. When the diff is
-  over the CI size limit (400 lines, `scripts/check_pr_size.sh`), it splits the work into
-  stacked PRs with the `gh-stack` extension, each within the limit. Every PR gets a code review;
-  the user picks which findings to fix and gives the reason for the rest, and the outcome is
-  written into the PR description. Commit messages and PR titles follow the current
-  [Conventional Commits](https://www.conventionalcommits.org/) specification, with the ticket
-  key at the start of the description.
-
-The skill lives in `.claude/skills/open-pr/`. If your agent does not load skills from
-`.claude/skills/`, read and follow `.claude/skills/open-pr/SKILL.md` whenever you are asked to
-open, create or submit a PR, or to split a branch into stacked PRs.
+- **On every PR** (`.github/workflows/ci.yml`): PR size (max 400 changed lines, counted by
+  `scripts/check_pr_size.sh`, `verification-metadata.xml` excluded), `ktlintCheck`, unit tests +
+  `desktopTest` + JaCoCo, test APKs, BrowserStack UI tests in **portrait and landscape**,
+  SonarQube.
+- **Title markers:** `[skip size]` (justified large PR, e.g. a test DB), `[skip unitTest]`,
+  `[skip ci]`. Put them in the title or body.
+- **PRs to `develop`** also need every ANDROAPP key in the title to be in "Ready to Merge"
+  (`jira-ready.yml`). Merge automation queues a PR once it has 2 approvals and green checks.
+- **Titles and commits:** Conventional Commits with the ticket key first in the description:
+  `fix: [ANDROAPP-1234] short description`. No AI or tool attribution in commits or PRs.
+  PR body from `.github/pull_request_template.md`.
+- **Dependency changes:** a bot commits regenerated `gradle/verification-metadata.xml` to your
+  branch (`verify-dependency-metadata.yml`); pull before pushing again.
 
 ---
 
-## Sentry Skills
+## Build environment
 
-Two custom skills for Sentry error triage and remediation. They are **multi-repo**:
-crashes are attributed to the repo that owns the bug — this app, the DHIS2 Android SDK
-(`dhis2/dhis2-android-sdk`), or the mobile design system (`dhis2/dhis2-mobile-ui`) —
-using `.claude/skills/sentry-triage/references/repo-map.md` as the single source of
-truth (package→repo attribution, per-repo commands, PR conventions). The two library
-repos are expected as sibling clones (`../dhis2-android-sdk`, `../dhis2-mobile-ui`);
-the skills offer to clone them if missing.
-
-- **`/sentry-triage`** — Resolves the latest production release (and the SDK /
-  design-system versions it pinned), queries the configured Sentry project for top
-  unresolved issues, attributes each to its owning repo, scores Impact (1-5) and
-  Effort (1-5), and outputs a prioritized impact/effort quadrant report. It then offers
-  to create Jira Bugs (ANDROAPP / ANDROSDK) for the chosen quadrants and link them to
-  their Sentry issues — tickets only, no PRs, left unassigned. Requires the
-  `sentry@claude-plugins-official` plugin installed locally in `~/.claude/settings.json`.
-
-- **`/sentry-fix <issue-id | jira-key> [--repo <slug>]`** — Finds the issue's Jira ticket
-  through its Sentry link (or creates one) and claims it for whoever runs it, then
-  fetches the full Sentry event and stack trace, re-verifies ownership, reads the
-  relevant sources at the shipped version, and implements the fix **in the owning
-  repo**: app fixes follow these AGENTS.md guidelines; library fixes run in an isolated
-  git worktree of the sibling clone (never disturbing its checked-out branch), follow
-  that repo's own conventions, and open the draft PR there.
-
-Jira tickets are linked to their Sentry issue through Sentry's Jira integration, so
-the Sentry issue resolves when the ticket reaches Done. Shared procedures live in
-`.claude/skills/sentry-triage/references/` (`jira-ticket.md`, `sentry-setup.md`).
-
-Stack traces are deobfuscated (ProGuard mappings are uploaded on every release build),
-so library frames carry real class names. Sentry org and project are resolved
-dynamically from the plugin at runtime.
+- `ANDROID_HOME` must be exported in a git worktree (worktrees have no `local.properties`).
+- `mavenLocal()` comes first. The design system is a `-SNAPSHOT` version, so a locally published
+  one silently replaces the remote one. The SDK is pinned to a timestamped snapshot in
+  `gradle/libs.versions.toml`: to test a local SDK build, publish it and point `dhis2sdk` at its
+  `-SNAPSHOT` version.
+- `app` still uses **Dagger** (KSP and kapt) next to Koin; Koin starts in
+  `app/src/main/java/org/dhis2/di/KoinInitialization.kt`. Flavour-specific classes exist in
+  `app/src/dhis2*` source sets (e.g. `DownloadNewVersion`): change every copy.
+- Strings: edit only the default `values/strings.xml` / `composeResources/values/strings.xml`;
+  translations come from Transifex.
+- A release build needs CI signing secrets. To check R8 locally run
+  `./gradlew :app:minifyDhis2ReleaseWithR8`.
+- After a `compileSdk` bump also run `./gradlew assembleDhis2DebugAndroidTest`: new `@Nullable`
+  platform APIs break instrumented test sources.
+- Tasks for the iOS targets need `--dependency-verification lenient` locally (the metadata has no
+  iOS artifacts yet).
 
 ---
 
-## Team Metrics Skill
+## Skills
 
-- **`/team-metrics`** — Generates the monthly Android team metrics report and publishes it
-  as a draft Confluence page under
-  [Android Metrics](https://dhis2.atlassian.net/wiki/spaces/MOB/pages/1948057602/Android+Metrics)
-  in the MOB space. Combines Jira ANDROAPP changelogs (intake / delivery / post-merge
-  times, throughput, where work queues), Sentry (production stability and per-release
-  regressions), SonarCloud (quality trend on `develop`) and GitHub (PR and CI health),
-  comparing a rolling 90-day window against the preceding one. Four of the findings are
-  drawn as charts by `.claude/skills/team-metrics/scripts/charts.py` and attached to the page — the journey
-  breakdown, stage shares, the SonarCloud trend and per-release Sentry regressions — each
-  with its numbers kept underneath in a collapsed table, since a figure that exists only
-  inside a PNG is invisible to Confluence search and to next month's edition. It also reads
-  the previous edition, looks for evidence that each recommendation was addressed — commits,
-  merged PRs and tickets on `develop`, `main` and every open `release/*` branch — and reports
-  whether it was and whether it actually moved the numbers. Recommendations are a plain list,
-  not checkboxes.
+- **`/open-pr [--base <branch>]`**: opens the PR(s) for the branch, splitting into stacked PRs
+  over 400 lines, with a code review whose outcome goes into the PR description.
+- **`/sentry-triage`**, **`/sentry-fix <id>`**: rank production crashes and fix one in the repo
+  that owns it (this app, `../dhis2-android-sdk` or `../dhis2-mobile-ui`).
+- **`/team-metrics`**: the monthly team metrics report on Confluence.
+- **`test-flow-architect`** agent (with `zephyr-test-fetcher`, `confluence-workflow-reader`,
+  `test-flow-planner`): plan and implement UI test automation from Zephyr test cases.
+- **`kmp-architecture`**, **`kmp-ios`**, **`android-testing`**: see the table at the top.
 
-**The whole report runs with zero credentials**, except the crash-free rate: the Sentry MCP cannot read release health, so `.claude/skills/team-metrics/scripts/sentry_health.py` needs an `org:read` Sentry token (`SENTRY_METRICS_TOKEN`) and the report says "not fetched" without one. Jira is world-readable over the REST API,
-changelogs included; Confluence reading and publishing go through the Atlassian connector's
-per-user OAuth, so it works in a worktree, in a cloud session, and for any teammate who has
-the connector but no local checkout of anything but this repo.
-
-`JIRA_AUTH=<email>:<api-token>` in `local.properties` (gitignored, and a worktree inherits
-the main checkout's file) is optional, and buys exactly two things: attaching the four chart
-PNGs — the only step the connector cannot do, since it has no attachment-upload tool — and
-covering permission-restricted Jira issues, which are invisible anonymously. Without it the
-report publishes with the chart data as expanded tables instead, which is a supported
-outcome rather than a failure.
-
-Prefer a **scoped** token (`Create API token with scopes`) over a classic one, and grant
-only `read:content-details:confluence` + `write:attachment:confluence` — no Jira scopes.
-(Not `read:attachment:confluence`: it grants the v2 attachment reads, and v2 has no upload
-operation at all.) A classic token is a full impersonation credential across every project
-and space. The two look
-identical as strings and only differ in how they authenticate, so run
-`python3 .claude/skills/team-metrics/scripts/metrics.py --preflight` to see which you have and what it can do,
-and `--token-help` for the details. Attach with
-`python3 .claude/skills/team-metrics/scripts/attach_charts.py <pageId>` after the page is published.
-
-Definitions, the status taxonomy and the data-quality traps live in
-`.claude/skills/team-metrics/references/metrics-reference.md`. Two worth knowing before
-reading any number: flow metrics cover **Feature, Task and Bug only** (`Story` is retired,
-`Epic` is a container, Zephyr `Test` issues count as Done with no resolution), and **every
-one of the project's 38 statuses must stay classified** — unclassified time is dropped
-silently and inflates flow efficiency.
+Each skill documents its own requirements (plugins, tokens, sibling clones) in its `SKILL.md`.
