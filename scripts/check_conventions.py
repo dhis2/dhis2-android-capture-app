@@ -7,10 +7,15 @@ not make you fix it, but nothing new may break the agreements.
 Usage:
   scripts/check_conventions.py                 # lines added since the merge base with the base branch
   scripts/check_conventions.py --base origin/main
+  scripts/check_conventions.py --staged        # lines added in the index vs HEAD (pre-commit)
   scripts/check_conventions.py --files a.kt b.kt   # lines added vs HEAD (whole file if untracked)
   scripts/check_conventions.py --full a.kt     # every line of the given files
 
-Base branch: --base, else $CONVENTIONS_BASE, else origin/develop.
+Base branch: --base, else $CONVENTIONS_BASE, else the branch the work started from: whichever of
+origin/develop, origin/main and origin/release/* has the fewest commits between its merge base and
+HEAD (develop on a tie).
+
+Moved and renamed files count only their changed lines (git rename detection).
 
 A line that must break a rule on purpose (for example an SDK call with no suspend version) can be
 allowed with a trailing comment that gives the reason:  // conventions:allow <reason>
@@ -80,12 +85,11 @@ class Source:
         return not self.is_test and "/src/" in self.path
 
     @property
-    def is_data_layer(self) -> bool:
+    def is_upper_layer(self) -> bool:
+        """ViewModels, UI and domain (use cases): the layers that must not switch to io."""
         name = self.path.rsplit("/", 1)[-1]
-        return (
-            "/data/" in self.path
-            or "/di/" in self.path
-            or any(k in name for k in ("Repository", "DataSource", "Service", "Dispatcher"))
+        return "ViewModel" in name or any(
+            f"/{part}/" in self.path for part in ("ui", "presentation", "domain")
         )
 
 
@@ -106,7 +110,7 @@ SDK_OPS = r"(Get|GetUids|Count|IsEmpty|Exists|Add|Set|Delete|DeleteIfExist|Downl
 RULES: list[Rule] = [
     Rule(
         "sdk-blocking",
-        rx(rf"\.blocking{SDK_OPS}\("),
+        rx(r"\.blocking[A-Z]\w*\("),
         "use the SDK suspend/flow API (suspendGet, suspendSet, flowDownload, flowUpload…); "
         "blocking only where no suspend version exists (kmp-architecture skill), marked with "
         "// conventions:allow <reason>",
@@ -148,7 +152,7 @@ RULES: list[Rule] = [
         "dispatcher-layer",
         rx(r"\b(withContext|flowOn)\(\s*[\w.]*\.io\b"),
         "repositories own the I/O dispatcher; use cases and ViewModels do not switch to io",
-        lambda s: s.is_main and not s.is_data_layer,
+        lambda s: s.is_main and s.is_upper_layer,
     ),
     Rule(
         "launch-usecase-io",
@@ -169,9 +173,7 @@ RULES: list[Rule] = [
         "viewmodel-scope-launch",
         rx(r"\bviewModelScope\.launch\b"),
         "use launchUseCase { } so the Espresso idling resource tracks the coroutine",
-        lambda s: s.is_main
-        and s.module in KMP_MODULES
-        and not s.path.endswith("/ViewModelExtensions.kt"),
+        lambda s: s.is_main and not s.path.endswith("/ViewModelExtensions.kt"),
     ),
     Rule(
         "mockk",
@@ -215,8 +217,21 @@ RULES: list[Rule] = [
 
 def git(*args: str) -> str:
     return subprocess.run(
-        ["git", *args], cwd=ROOT, capture_output=True, text=True, check=True
+        ["git", "-c", "core.quotepath=off", *args], cwd=ROOT, capture_output=True, text=True, check=True
     ).stdout
+
+
+# Fixed diff format whatever the user's git config says (prefixes, external diff, renames).
+DIFF = ("diff", "-U0", "--no-color", "--no-ext-diff", "-M", "--src-prefix=a/", "--dst-prefix=b/")
+
+
+def diff_path(target: str) -> str | None:
+    target = target.rstrip("\t")  # git appends a tab to paths that contain spaces
+    if target.startswith('"') and target.endswith('"'):  # quoted: `"`, `\` or control characters
+        target = target[1:-1].replace('\\"', '"').replace("\\\\", "\\")
+    if target == "/dev/null":
+        return None
+    return target[2:] if target.startswith("b/") else target
 
 
 def parse_added_lines(diff: str) -> dict[str, list[tuple[int, str]]]:
@@ -225,8 +240,7 @@ def parse_added_lines(diff: str) -> dict[str, list[tuple[int, str]]]:
     line_no = 0
     for raw in diff.splitlines():
         if raw.startswith("+++ "):
-            target = raw[4:]
-            path = None if target == "/dev/null" else target[2:] if target.startswith("b/") else target
+            path = diff_path(raw[4:])
             continue
         if raw.startswith("@@"):
             match = re.search(r"\+(\d+)", raw)
@@ -252,33 +266,58 @@ def untracked_kotlin() -> list[str]:
 
 
 def resolve_base(cli_base: str | None) -> str:
-    return cli_base or os.environ.get("CONVENTIONS_BASE") or "origin/develop"
+    if cli_base or os.environ.get("CONVENTIONS_BASE"):
+        return cli_base or os.environ["CONVENTIONS_BASE"]
+    candidates = ["origin/develop", "origin/main"] + sorted(
+        git("for-each-ref", "--format=%(refname:short)", "refs/remotes/origin/release/").split()
+    )
+    distances = []
+    for order, ref in enumerate(candidates):
+        try:
+            merge_base = git("merge-base", ref, "HEAD").strip()
+            distances.append((int(git("rev-list", "--count", f"{merge_base}..HEAD")), order, ref))
+        except subprocess.CalledProcessError:
+            continue
+    if not distances:
+        raise SystemExit("check_conventions: no origin/develop, origin/main or origin/release/*; pass --base")
+    return min(distances)[2]
 
 
 def lines_since_base(base: str) -> dict[str, list[tuple[int, str]]]:
     merge_base = git("merge-base", base, "HEAD").strip()
     # Against the working tree, so uncommitted edits are checked too.
-    added = parse_added_lines(git("diff", "-U0", "--no-color", "--diff-filter=AMR", merge_base, "--", "*.kt"))
+    added = parse_added_lines(git(*DIFF, "--diff-filter=AMR", merge_base))
     for path in untracked_kotlin():
         added[path] = whole_file(path)
     return added
 
 
+def staged_lines() -> dict[str, list[tuple[int, str]]]:
+    return parse_added_lines(git(*DIFF, "--cached", "--diff-filter=AMR", "HEAD"))
+
+
 def lines_of_files(files: Iterable[str], full: bool) -> dict[str, list[tuple[int, str]]]:
     tracked = set(git("ls-files").splitlines())
-    added: dict[str, list[tuple[int, str]]] = {}
+    wanted = []
     for file in files:
         absolute = Path(file).resolve()
         try:
-            path = absolute.relative_to(ROOT).as_posix()
+            path = absolute.relative_to(ROOT.resolve()).as_posix()
         except ValueError:
             continue
-        if not path.endswith(".kt") or not absolute.is_file():
-            continue
+        if path.endswith(".kt") and absolute.is_file():
+            wanted.append(path)
+    added: dict[str, list[tuple[int, str]]] = {}
+    to_diff = []
+    for path in wanted:
         if full or path not in tracked:
             added[path] = whole_file(path)
         else:
-            added.update(parse_added_lines(git("diff", "-U0", "--no-color", "HEAD", "--", path)))
+            to_diff.append(path)
+    if to_diff:
+        # Diff the whole tree, not just these paths, so a moved file pairs with its old path.
+        changed = parse_added_lines(git(*DIFF, "--diff-filter=AMR", "HEAD"))
+        added.update({path: changed[path] for path in to_diff if path in changed})
     return added
 
 
@@ -301,6 +340,7 @@ def check(added: dict[str, list[tuple[int, str]]]) -> list[str]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--base", help="base ref to diff against (default: see above)")
+    parser.add_argument("--staged", action="store_true", help="check lines added in the index vs HEAD")
     parser.add_argument("--files", nargs="+", help="check lines added to these files vs HEAD")
     parser.add_argument("--full", nargs="+", help="check every line of these files")
     args = parser.parse_args()
@@ -308,6 +348,8 @@ def main() -> int:
     try:
         if args.full:
             added = lines_of_files(args.full, full=True)
+        elif args.staged:
+            added = staged_lines()
         elif args.files:
             added = lines_of_files(args.files, full=False)
         else:
