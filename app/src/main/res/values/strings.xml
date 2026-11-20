@@ -116,7 +116,7 @@
     <string name="every_12_hours">12h</string>
     <string name="Manual">Manual</string>
     <string name="a_week">1 Week</string>
-    <string name="delete_account_message">Your account stays on the server.\n Unsynced data will be lost.</string>
+    <string name="delete_account_message">Your account stays on the server.\nUnsynced data will be lost.</string>
     <string name="SYNC_DATA">SYNC Data Now</string>
     <string name="SYNC_META">SYNC Configuration Now</string>
     <string name="SYNC_MANAGER">Settings</string>

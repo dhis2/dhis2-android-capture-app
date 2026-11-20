@@ -79,7 +79,6 @@ fun DeleteLocalDataDialog(
                     state =
                         ButtonState(
                             text = stringResource(R.string.cancel),
-                            textColor = MaterialTheme.colorScheme.surface,
                             style = ButtonStyle.OUTLINED,
                         ),
                     onClick = onDismissRequest,
