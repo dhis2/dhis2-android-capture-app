@@ -12,9 +12,9 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.Constants
-import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobile.commons.domain.invoke
+import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.authentication.domain.model.TwoFAStatus
 import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
 import org.dhis2.usescases.settings.domain.CheckVersionUpdate
@@ -54,7 +54,7 @@ class SyncManagerPresenterTest {
     val instantExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var presenter: SyncManagerPresenter
-    private val networkUtils: NetworkUtils = mock()
+    private val networkUtils: NetworkStatusProvider = mock()
     private val testingDispatcher = UnconfinedTestDispatcher()
     private val dispatcherProvider: DispatcherProvider =
         mock {

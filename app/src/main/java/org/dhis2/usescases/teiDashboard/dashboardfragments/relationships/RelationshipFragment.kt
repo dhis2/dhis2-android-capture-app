@@ -148,8 +148,11 @@ class RelationshipFragment :
                     val showDeleteConfirmation by relationShipsViewModel.showDeleteConfirmation.collectAsState()
 
                     when (showMap) {
-                        true -> RelationshipMapScreen(savedInstanceState)
-                        else ->
+                        true -> {
+                            RelationshipMapScreen(savedInstanceState)
+                        }
+
+                        else -> {
                             RelationShipsScreen(
                                 uiState = uiState,
                                 relationshipSelectionState = relationshipSelectionState,
@@ -168,6 +171,7 @@ class RelationshipFragment :
                                 },
                                 onRelationShipSelected = relationShipsViewModel::updateSelectedList,
                             )
+                        }
                     }
 
                     if (showDeleteConfirmation) {
@@ -176,8 +180,8 @@ class RelationshipFragment :
                                 relationships =
                                     relationshipSelectionState.selectedItems.map { selectedUid ->
                                         state.data
-                                            .first {
-                                                it.relationships.any { it.uid == selectedUid }
+                                            .first { relationshipState ->
+                                                relationshipState.relationships.any { it.uid == selectedUid }
                                             }.title
                                     },
                                 onDelete = {
@@ -274,8 +278,8 @@ class RelationshipFragment :
                 }
             },
             actionButtons = {
-                mapDataFinishedLoading?.let {
-                    if (it.value) {
+                mapDataFinishedLoading?.let { loadingState ->
+                    if (loadingState.value) {
                         IconButton(
                             style = IconButtonStyle.TONAL,
                             icon = {
@@ -340,21 +344,24 @@ class RelationshipFragment :
                                     val config =
                                         item.avatarProviderConfiguration
                                 ) {
-                                    is AvatarProviderConfiguration.MainValueLabel ->
+                                    is AvatarProviderConfiguration.MainValueLabel -> {
                                         AvatarStyleData.Text(
                                             config.firstMainValue.firstOrNull()?.toString()
                                                 ?: "?",
                                         )
+                                    }
 
-                                    is AvatarProviderConfiguration.Metadata ->
+                                    is AvatarProviderConfiguration.Metadata -> {
                                         AvatarStyleData.Metadata(
                                             imageCardData = config.metadataIconData.imageCardData,
                                             avatarSize = config.size,
                                             tintColor = config.metadataIconData.color,
                                         )
+                                    }
 
-                                    is AvatarProviderConfiguration.ProfilePic ->
+                                    is AvatarProviderConfiguration.ProfilePic -> {
                                         AvatarStyleData.Image(buildPainterForFile(config.profilePicturePath).painter)
+                                    }
                                 },
                             onImageClick =
                                 when (
@@ -363,7 +370,9 @@ class RelationshipFragment :
                                 ) {
                                     is AvatarProviderConfiguration.Metadata,
                                     is AvatarProviderConfiguration.MainValueLabel,
-                                    -> null
+                                    -> {
+                                        null
+                                    }
 
                                     is AvatarProviderConfiguration.ProfilePic -> {
                                         { launchImageDetail(config.profilePicturePath) }

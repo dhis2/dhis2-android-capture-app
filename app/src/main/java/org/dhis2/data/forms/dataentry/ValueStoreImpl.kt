@@ -367,7 +367,7 @@ class ValueStoreImpl(
                     .blockingGet()
                     ?.optionSetUid() != null
             }.forEach {
-                saveDataElement(it.dataElement()!!, null)
+                saveDataElement(it.dataElement(), null)
             }
     }
 
@@ -389,7 +389,7 @@ class ValueStoreImpl(
                     ?.optionSet()
                     ?.uid() != null
             }.forEach {
-                saveAttribute(it.trackedEntityAttribute()!!, null)
+                saveAttribute(it.trackedEntityAttribute(), null)
             }
     }
 

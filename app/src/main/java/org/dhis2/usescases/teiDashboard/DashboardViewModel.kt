@@ -136,8 +136,8 @@ class DashboardViewModel(
 
     /**
      * Derived from every piece of state the menu depends on, so it is rebuilt whenever the grouping
-     * preference is toggled, the follow up bar changes or the dashboard model is reloaded, instead
-     * of being snapshotted once with values that have not been resolved yet.
+     * preference is toggled, the follow-up bar changes or the dashboard model is reloaded, instead
+     * of being snapshot once with values that have not been resolved yet.
      */
     val moreOptionsMenu: StateFlow<List<MenuItemData<EnrollmentMenuItem>>> =
         combine(

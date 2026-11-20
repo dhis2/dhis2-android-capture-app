@@ -25,7 +25,7 @@ class UniqueAttributeController(
             val hasValue =
                 getTrackedEntityAttributeValues(attributeUid, attributeValue, teiUid)
                     .map {
-                        getOrgUnit(it.trackedEntityInstance()!!)
+                        getOrgUnit(it.trackedEntityInstance())
                     }.all { it != enrollingOrgUnit }
             hasValue
         }
@@ -47,7 +47,7 @@ class UniqueAttributeController(
                     attributeValue,
                 )
 
-            if (teiList.isNullOrEmpty()) {
+            if (teiList.isEmpty()) {
                 return true
             }
 

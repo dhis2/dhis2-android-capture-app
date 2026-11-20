@@ -58,7 +58,7 @@ val stockModule =
         }
 
         factory<Charts> {
-            DhisAnalyticCharts.Provider.get(get())
+            DhisAnalyticCharts.get(get())
         }
 
         factory<BaseSchedulerProvider> {
