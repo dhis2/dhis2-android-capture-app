@@ -2,7 +2,7 @@
 
 This is a **Kotlin Multiplatform (KMP)** Android project migrating to Compose Multiplatform.
 KMP modules target **Android and Desktop**; Desktop is being added to every KMP module to ease
-future targets. **iOS is not implemented**: only `commonskmm` compiles for iOS, with stubs, so
+future targets. **iOS is not implemented**: only `commonskmm` and `home` compile for iOS, so
 other modules can add the target later. The app uses MVVM + Repository + Use Case architecture.
 
 ---
@@ -43,7 +43,7 @@ other modules can add the target later. The app uses MVVM + Repository + Use Cas
 - Other AGP modules (`form`, `commons`, `compose-table`, `stock-usecase`,
   `dhis_android_analytics`, `dhis2_android_maps`, `dhis2-mobile-program-rules`):
   `testDebugUnitTest`
-- KMP modules (`login`, `sync`, `aggregates`, `commonskmm`, `tracker`) — **both** the
+- KMP modules (`login`, `sync`, `aggregates`, `commonskmm`, `home`, `tracker`) — **both** the
   `commonTest` and `androidHostTest` source sets: `testAndroidHostTest`
 
 `testAndroidDebugUnitTest` is **not a task in this repo**. No module has a `desktopTest`
@@ -58,6 +58,7 @@ desktop JVM, and CI runs it, so a common test must pass there too, not only on A
 root/
 ├── app/                    # Main Android application
 ├── commonskmm/             # KMP shared utilities, base classes, DI helpers
+├── home/                   # KMP home screen domain (Android, Desktop, iOS)
 ├── login/                  # KMP login feature (Android + Desktop)
 ├── sync/                   # KMP sync feature
 ├── aggregates/             # KMP aggregate data feature
@@ -87,7 +88,7 @@ modulekmm/src/
 `commonTest` is already on its compile classpath — no need to declare it twice.
 Both source sets are run by the same `testAndroidHostTest` task.
 
-**Modules with an iOS target** (`commonskmm` so far) add two source sets:
+**Modules with an iOS target** (`commonskmm` and `home`) add two source sets:
 - `jvmCommonMain` holds code shared by Android and Desktop that uses JVM APIs (`java.*`,
   `javax.*`, `String.format`). Never put such code in `commonMain`: it breaks the iOS
   compilation. Modules that target only Android and Desktop still see it from their `commonMain`.

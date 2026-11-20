@@ -14,3 +14,6 @@
 .kotlin/
 __pycache__/
 *.pyc
+# Agent runtime state (keep committed: .claude/settings.json, .claude/skills, .claude/agents)
+.claude/worktrees/
+.claude/settings.local.json
