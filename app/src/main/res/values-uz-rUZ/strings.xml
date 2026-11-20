@@ -146,12 +146,6 @@
     <string name="permission_denied">Ushbu amalni bajarish uchun sizda zaruriy ruxsat yoʼq</string>
 
     <string name="period">davr</string>
-    <string name="tuto_main_1">DHIS2 ga Xush kelibsiz</string>
-    <string name="tuto_main_2">Bu yerda щz faoliyatingizni kuzatishingiz mumkin</string>
-    <string name="tuto_main_3">Filtrni щzgartirishingiz mumkin</string>
-    <string name="tuto_main_4">... davrni oʼzgartirish va sanalarni tanlash orqali ...</string>
-    <string name="tuto_main_5">... yoki filtrlanadi, Tashkiliy boʼlim orqali</string>
-    <string name="tuto_main_6">Аsosiy menyudan boshqa harakatlarni tekshirish</string>
 
     <!-- RELATIONSHIPS -->
     <string name="next">Кейинги</string>
@@ -203,13 +197,6 @@
 
     <string name="menu_home">Бош саҳифа</string>
     <string name="appwidget_text">MISOL</string>
-    <string name="showHelp">Yordam bering</string>
-    <string name="tuto_dashboard_1">Bu shaxs-obʼektlarni boshqaruv paneli</string>
-    <string name="tuto_dashboard_2">Shaxs-obʼektlarning profil maʼlumotlarini koʼring...</string>
-    <string name="tuto_dashboard_6">Bu yerda siz barcha hodisa/tadbirlarni koʼrasiz. Hodisa/tadbir tafsilotlarini koʼrish uchun bosing.</string>
-    <string name="tuto_dashboard_7">Oʼzaro munosabatlarni qoʼshish, koʼrsatgichlarni koʼrish yoki yozuvlarni yozish uchun menyu boʼylab harakatlananing.</string>
-    <string name="tuto_event_initial_new_1">Hodisa/tadbir yaratish uchun barcha maʼlumotlarni kiriting</string>
-    <string name="tuto_event_initial_1">Hodisa/tadbirning tugash holatini tekshirish uchun, bosing.</string>
     <string name="qr_data_values">Maʼlumotlarning qiymatlari</string>
     <string name="info">Аxborot</string>
     <string name="qr_no_id_error">ID oʼqib boʼlmadi</string>
@@ -223,7 +210,6 @@
     <string name="unique_warning">Qiymat noyob boʼlishi lozim, bir biriga oʼxshash topildi. U saqlanmadi. Iltimos, tekshirib koʼrish.</string>
     <string name="please_wait">Iltimos, kuting</string>
     <string name="skip">Oʼtkazib yuborish</string>
-    <string name="no_intructions">Ushbu ekrandagi haqida maʼlumot yoʼq</string>
     <string name="delete_local_data_message">Sinxronizatsiya qilinmagan maʼlumotlar yoʼqoladi. Haqiqatdan ham davom ettirishni xoxlaysizmi?</string>
     <string name="delete_local_data_error">Maʼlumotlarni oʼchirib boʼlmadi. Iltimos, qayta urinib koʼring.</string>
     <string name="delete_local_data_done">Lokal maʼlumotlarni oʼchirish muvaffaqiyatli yakunlandi.</string>
@@ -233,7 +219,6 @@
     <string name="state_warning">Ogohlantirish</string>
     <string name="state_relationship">Oʼzaro aloqa</string>
     <string name="action_close">Yopmoq</string>
-    <string name="tuto_main_11">Endi siz shu tugmaga bosish orqali sinxronizatsiya maʼlumotlarini tekshirishingiz mumkin</string>
     <string name="relationship_error_recursive">Yozuvni oʼzaro aloqalar bilan bogʼlab boʼlmadi</string>
     <string name="change_calendar_view">Taqvim koʼrinishini oʼzgartirish</string>
     <string name="relationship_without_enrollment">Siz kirib koʼrmoqchi boʼlgan yozuv qayd etilmagan. Siz boshqaruv paneliga kira olmaysiz</string>

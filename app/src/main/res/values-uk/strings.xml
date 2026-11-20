@@ -162,12 +162,6 @@
     <string name="permission_denied">Ви не маєте необхідного дозволу для виконання цієї дії</string>
 
     <string name="period">Період</string>
-    <string name="tuto_main_1">Ласкаво просимо до dhis2</string>
-    <string name="tuto_main_2">Тут Ви можете бачити свою активність</string>
-    <string name="tuto_main_3">Ви можете застосувати фільтр…</string>
-    <string name="tuto_main_4">...змінюючи період і обираючи дати...</string>
-    <string name="tuto_main_5">…або фільтруючи за Організаційним підрозділом</string>
-    <string name="tuto_main_6">Перевірте інші дії в головному меню</string>
 
     <!-- RELATIONSHIPS -->
     <string name="next">Наступне</string>
@@ -219,13 +213,6 @@
 
     <string name="menu_home">Головна</string>
     <string name="appwidget_text">ПРИКЛАД</string>
-    <string name="showHelp">Показати допомогу</string>
-    <string name="tuto_dashboard_1">Це інформаційна панель об\'єкту, який відстежується</string>
-    <string name="tuto_dashboard_2">Переглянути інформацію про профіль об\'єкту, який відстежується…</string>
-    <string name="tuto_dashboard_6">Тут Ви побачите усі випадки. Натисніть, щоб переглянути деталі випадку.</string>
-    <string name="tuto_dashboard_7">Скористайтесь меню, щоб додати зв’язки, переглянути індикатори або написати примітки.</string>
-    <string name="tuto_event_initial_new_1">Введіть усі дані для створення випадку</string>
-    <string name="tuto_event_initial_1">Натисніть, щоб перевірити статус завершення випадку.</string>
     <string name="relationships">зв\'язки</string>
     <string name="qr_data_values">Значення даних</string>
     <string name="info">Інформація</string>
@@ -240,7 +227,6 @@
     <string name="unique_warning">Значення має бути унікальним, знайдено збіг. Значення не збереглось. Будь ласка, перевірте це.</string>
     <string name="please_wait">Будь ласка, почекайте</string>
     <string name="skip">Пропустити</string>
-    <string name="no_intructions">Для цієї частини немає інформації</string>
     <string name="delete_local_data_message">Несинхронізовані дані буде втрачено. Ви дійсно хочете продовжити?</string>
     <string name="delete_local_data_error">Не вдалося видалити дані. Будь ласка, повторіть спробу.</string>
     <string name="delete_local_data_done">Видалення локальних даних успішно завершено.</string>
@@ -252,7 +238,6 @@
     <string name="state_relationship">Зв\'язок</string>
     <string name="sent_by_sms">Надіслано через SMS</string>
     <string name="action_close">Закрити</string>
-    <string name="tuto_main_11">Тепер Ви можете перевірити інформацію про синхронізацію, натиснувши тут</string>
     <string name="relationship_error_recursive">Ви не можете пов\'язати запис із самим собою</string>
     <string name="change_calendar_view">Змінити вид календаря</string>
     <string name="relationship_without_enrollment">Запис, до якого Ви намагаєтеся отримати доступ, не зареєстрований. Ви не можете отримати доступ до інформаційної панелі.</string>

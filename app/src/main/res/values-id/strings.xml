@@ -148,12 +148,6 @@
     <string name="permission_denied">Anda tidak memiliki izin yang dibutuhkan untuk melakukan tindakan ini</string>
 
     <string name="period">Periode</string>
-    <string name="tuto_main_1">Selamat datang di dhis2</string>
-    <string name="tuto_main_2">Di sini Anda dapat melihat aktivitas Anda</string>
-    <string name="tuto_main_3">Anda dapat menerapkan filter…</string>
-    <string name="tuto_main_4">…dengan mengubah periode dan memilih tanggal…</string>
-    <string name="tuto_main_5">…atau filter berdasarkan Unit Organisasi</string>
-    <string name="tuto_main_6">Periksa tindakan lain di menu utama</string>
 
     <!-- RELATIONSHIPS -->
     <string name="next">Se;lanjutnya</string>
@@ -205,13 +199,6 @@
 
     <string name="menu_home">Beranda</string>
     <string name="appwidget_text">CONTOH</string>
-    <string name="showHelp">Tampilkan bantuan</string>
-    <string name="tuto_dashboard_1">Ini adalah dasbor entitas</string>
-    <string name="tuto_dashboard_2">Lihat informasi profil entitas…</string>
-    <string name="tuto_dashboard_6">Di sini Anda akan melihat semua even. Klik untuk melihat detail even.</string>
-    <string name="tuto_dashboard_7">Navigasikan menu untuk menambahkan hubungan, melihat indikator, atau menulis catatan.</string>
-    <string name="tuto_event_initial_new_1">Masukkan semua data untuk membuat even</string>
-    <string name="tuto_event_initial_1">Klik untuk memeriksa status penyelesaian even.</string>
     <string name="relationships">hubungan</string>
     <string name="qr_data_values">Nilai data</string>
     <string name="info">Info</string>
@@ -226,7 +213,6 @@
     <string name="unique_warning">Nilai harus unik, kebetulan telah ditemukan. Itu belum disimpan. Tolong diperiksa.</string>
     <string name="please_wait">Mohon tunggu</string>
     <string name="skip">Lewati</string>
-    <string name="no_intructions">Tidak ada informasi untuk layar ini</string>
     <string name="delete_local_data_message">Data yang belum tersinkron akan hilang. Apakah Anda akan melanjutkan?</string>
     <string name="delete_local_data_error">Data tidak dapat dihapus. Silakan coba lagi.</string>
     <string name="delete_local_data_done">Hapus data lokal berhasil diselesaikan.</string>
@@ -238,7 +224,6 @@
     <string name="state_relationship">Hubungan</string>
     <string name="sent_by_sms">Dikirim melalui sms</string>
     <string name="action_close">Tutup</string>
-    <string name="tuto_main_11">Anda bisa melihat hasil sinkronisasi dengan klik bagian ini</string>
     <string name="relationship_error_recursive">Anda tidak dapat menghubungkan rekaman dengan dirinya sendiri</string>
     <string name="change_calendar_view">Ubah tampilan kalender</string>
     <string name="relationship_without_enrollment">Catatan yang Anda coba akses tidak memiliki pendaftaran. Anda tidak dapat mengakses dasbor.</string>

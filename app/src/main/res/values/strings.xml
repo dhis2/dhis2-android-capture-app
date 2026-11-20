@@ -180,12 +180,6 @@
     <string name="permission_denied">You don\'t have the required permission to perform this action</string>
 
     <string name="period">Period</string>
-    <string name="tuto_main_1">Welcome to dhis2</string>
-    <string name="tuto_main_2">Here you can see your activities</string>
-    <string name="tuto_main_3">You can apply a filter…</string>
-    <string name="tuto_main_4">…by changing the period and selecting dates…</string>
-    <string name="tuto_main_5">…or filter by Organisation Unit</string>
-    <string name="tuto_main_6">Check other actions on the main menu</string>
 
     <!-- RELATIONSHIPS -->
     <string name="next">Next</string>
@@ -238,13 +232,6 @@
 
     <string name="menu_home">Home</string>
     <string name="appwidget_text">EXAMPLE</string>
-    <string name="showHelp">Show help</string>
-    <string name="tuto_dashboard_1">This is the entity dashboard</string>
-    <string name="tuto_dashboard_2">See entities profile information…</string>
-    <string name="tuto_dashboard_6">Here you will see all events. Click to see an event detail.</string>
-    <string name="tuto_dashboard_7">Navigate through the menu to add relationships, see indicators or write notes.</string>
-    <string name="tuto_event_initial_new_1">Enter all data to create the event</string>
-    <string name="tuto_event_initial_1">Click to check the event completion status.</string>
     <string name="relationships">relationships</string>
     <!--empty_tracker_events will be formatted with the custom or default label for event-->
     <string name="empty_tracker_events">There are no %s registered, click \"+\" to add a new one.</string>
@@ -261,7 +248,6 @@
     <string name="unique_warning">The value should be unique, a coincidence has been found. It has not been saved. Please check it.</string>
     <string name="please_wait">Please wait</string>
     <string name="skip">Skip</string>
-    <string name="no_intructions">There is no information for this screen</string>
     <string name="delete_local_data_message">Non synchronized data will be lost. Do you really want to continue?</string>
     <string name="delete_local_data_error">Data could not be deleted. Please retry.</string>
     <string name="delete_local_data_done">Delete local data finished successfully.</string>
@@ -273,7 +259,6 @@
     <string name="state_relationship">Relationship</string>
     <string name="sent_by_sms">Sent by sms</string>
     <string name="action_close">Close</string>
-    <string name="tuto_main_11">Now you can check sync information by clicking here</string>
     <string name="relationship_error_recursive">You can\'t relate a record with itself</string>
     <string name="change_calendar_view">Change calendar view</string>
     <string name="relationship_without_enrollment">The record you are trying to access has no enrollment. You can\'t access the dashboard.</string>

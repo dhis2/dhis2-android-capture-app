@@ -180,12 +180,6 @@
     <string name="permission_denied">你没有执行该操作的权限</string>
 
     <string name="period">周期</string>
-    <string name="tuto_main_1">欢迎来到DHIS2</string>
-    <string name="tuto_main_2">你可以在这里查看你的活动</string>
-    <string name="tuto_main_3">你可以应用一个过滤器</string>
-    <string name="tuto_main_4">通过改变期间和选择日期</string>
-    <string name="tuto_main_5">或按机构过滤</string>
-    <string name="tuto_main_6">在主菜单上的选择其他操作</string>
 
     <!-- RELATIONSHIPS -->
     <string name="next">下一步</string>
@@ -238,13 +232,6 @@
 
     <string name="menu_home">主页</string>
     <string name="appwidget_text">例子</string>
-    <string name="showHelp">显示帮助</string>
-    <string name="tuto_dashboard_1">这是实体仪表盘</string>
-    <string name="tuto_dashboard_2">查看实体概要信息</string>
-    <string name="tuto_dashboard_6">这里你将看到所有的事件。点击查看事件详情。</string>
-    <string name="tuto_dashboard_7">通过菜单添加关系、查看指标或写笔记。</string>
-    <string name="tuto_event_initial_new_1">输入所有数据创建事件</string>
-    <string name="tuto_event_initial_1">点击检查事件完成状态</string>
     <string name="relationships">关系</string>
     <!--empty_tracker_events will be formatted with the custom or default label for event-->
     <string name="empty_tracker_events">没有注册%s ，点击 \"+\"可添加新的 。</string>
@@ -261,7 +248,6 @@
     <string name="unique_warning">值应该唯一，发现相同的。还没有保存，请检查。</string>
     <string name="please_wait">请等待.....</string>
     <string name="skip">跳过</string>
-    <string name="no_intructions">该屏没有信息</string>
     <string name="delete_local_data_message">没有同步的数据不会丢失，你真想要继续</string>
     <string name="delete_local_data_error">数据不能删除，请重试</string>
     <string name="delete_local_data_done">删除本地数据成功完成</string>
@@ -273,7 +259,6 @@
     <string name="state_relationship">关系</string>
     <string name="sent_by_sms">通过短信发送</string>
     <string name="action_close">关闭</string>
-    <string name="tuto_main_11">点击这里检查同步信息。</string>
     <string name="relationship_error_recursive">你不能关联记录到自身。</string>
     <string name="change_calendar_view">改变日历视图。</string>
     <string name="relationship_without_enrollment">你试图访问的记录还没有注册。你不能访问仪表盘。</string>

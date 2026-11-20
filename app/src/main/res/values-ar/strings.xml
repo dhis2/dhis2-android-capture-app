@@ -162,12 +162,6 @@
     <string name="permission_denied">ليس لديك الإذن المطلوب للقيام بهذا الإجراء</string>
 
     <string name="period">الفترة الزمنية</string>
-    <string name="tuto_main_1">مرحباً بكم في dhis2</string>
-    <string name="tuto_main_2">هنا يمكنك رؤية أنشطتك</string>
-    <string name="tuto_main_3">يمكنك تطبيق عامل تصفية...</string>
-    <string name="tuto_main_4">...عن طريق تغيير الفترة و تحديد التاريخ...</string>
-    <string name="tuto_main_5">أو تصفية حسب الوحدة التنظيمية</string>
-    <string name="tuto_main_6">الق نظرة على الإجراءات الأخرى في القائمة الرئيسية</string>
 
     <!-- RELATIONSHIPS -->
     <string name="next">التالي</string>
@@ -220,13 +214,6 @@
 
     <string name="menu_home">الرئيسية</string>
     <string name="appwidget_text">مثال</string>
-    <string name="showHelp">إظهار المساعدة</string>
-    <string name="tuto_dashboard_1">هذه لوحة معلومات الكيان المسجل</string>
-    <string name="tuto_dashboard_2">الإطلاع على المعلومات الخاصة بالكيانات...</string>
-    <string name="tuto_dashboard_6">هنا سترى جميع الأحداث. انقر لرؤية تفاصيل حدث.</string>
-    <string name="tuto_dashboard_7">تنقل خلال القائمة لإضافة العلاقات أو مشاهدة المؤشرات أو كتابة الملاحظات.</string>
-    <string name="tuto_event_initial_new_1">أدخل جميع البيانات لإنشاء الحدث</string>
-    <string name="tuto_event_initial_1">انقر للتحقق من حالة إكتمال الحدث</string>
     <string name="relationships">العلاقات</string>
     <string name="qr_data_values">قيم البيانات</string>
     <string name="info">معلومات</string>
@@ -241,7 +228,6 @@
     <string name="unique_warning">يجب أن تكون القيمة فريدة، يوجد تعارض تكرار لنفس القيمة. لم يتم الحفظ. يرجى التحقق.</string>
     <string name="please_wait">الرجاء الانتظار</string>
     <string name="skip">تخطى</string>
-    <string name="no_intructions">لا توجد معلومات عن هذه الشاشة</string>
     <string name="delete_local_data_message">سيتم فقدان البيانات التي لم يتم مزامنتها. هل تريد حقاً المتابعة؟</string>
     <string name="delete_local_data_error">تعذر حذف البيانات. يرجى اعادة المحاولة.</string>
     <string name="delete_local_data_done">انتهاء عملية حذف البيانات المحلية بنجاح.</string>
@@ -253,7 +239,6 @@
     <string name="state_relationship">العلاقة</string>
     <string name="sent_by_sms">مرسل عن طريق sms</string>
     <string name="action_close">إغلاق</string>
-    <string name="tuto_main_11">الآن يمكنك التحقق من معلومات المزامنة بالضغط هنا</string>
     <string name="relationship_error_recursive">لا يمكنك ربط سجل مع نفسه</string>
     <string name="change_calendar_view">تغيير طريقة عرض التقويم</string>
     <string name="relationship_without_enrollment">السجل الذي تحاول الوصول إليه ليس لديه تسجيل. لا يمكنك الوصول إلى لوحة المعلومات.</string>

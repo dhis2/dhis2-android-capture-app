@@ -376,10 +376,6 @@ class ProgramEventDetailActivity :
             .show(supportFragmentManager, "OUTreeFragment")
     }
 
-    override fun showTutorial(shaked: Boolean) {
-        setTutorial()
-    }
-
     override fun navigateToEvent(
         eventId: String,
         orgUnit: String,

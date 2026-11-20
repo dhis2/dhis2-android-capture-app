@@ -2,12 +2,8 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.SparseBooleanArray
 import android.view.View
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.runtime.getValue
@@ -36,12 +32,10 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDe
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui.EventDetailsFragment
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity
-import org.dhis2.utils.HelpManager
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.CREATE_EVENT
 import org.dhis2.utils.analytics.DATA_CREATION
 import org.dhis2.utils.analytics.DELETE_EVENT
-import org.dhis2.utils.analytics.SHOW_HELP
 import org.dhis2.utils.customviews.MoreOptionsWithDropDownMenuButton
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -317,16 +311,6 @@ class EventInitialActivity :
         startActivity(intent)
     }
 
-    override fun setTutorial() {
-        Handler(Looper.getMainLooper()).postDelayed({
-            val stepConditions = SparseBooleanArray()
-            stepConditions.put(0, eventUid == null)
-            HelpManager
-                .getInstance()
-                .show(activity, HelpManager.TutorialName.EVENT_INITIAL, stepConditions)
-        }, 500)
-    }
-
     private fun setupMoreOptionsMenu() {
         binding.moreOptions.setContent {
             var expanded by remember { mutableStateOf(false) }
@@ -337,11 +321,6 @@ class EventInitialActivity :
                 onMenuToggle = { expanded = it },
             ) { itemId ->
                 when (itemId) {
-                    EventInitialMenuItem.SHOW_HELP -> {
-                        analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP)
-                        setTutorial()
-                    }
-
                     EventInitialMenuItem.SHARE -> presenter.onShareClick()
                     EventInitialMenuItem.DELETE -> confirmDeleteEvent()
                 }
@@ -351,13 +330,6 @@ class EventInitialActivity :
 
     private fun getMenuItems(): List<MenuItemData<EventInitialMenuItem>> =
         buildList {
-            add(
-                MenuItemData(
-                    id = EventInitialMenuItem.SHOW_HELP,
-                    label = getString(R.string.showHelp),
-                    leadingElement = MenuLeadingElement.Icon(icon = Icons.AutoMirrored.Outlined.HelpOutline),
-                ),
-            )
             if (eventUid != null) {
                 add(
                     MenuItemData(
@@ -471,7 +443,6 @@ class EventInitialActivity :
 }
 
 enum class EventInitialMenuItem {
-    SHOW_HELP,
     SHARE,
     DELETE,
 }

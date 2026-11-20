@@ -163,12 +163,6 @@
     <string name="permission_denied">У Вас нет необходимых полномочий для выполнения этого действия</string>
 
     <string name="period">Период</string>
-    <string name="tuto_main_1">Добро пожаловать в dhis2</string>
-    <string name="tuto_main_2">Здесь Вы можете увидеть свою деятельность</string>
-    <string name="tuto_main_3">Вы можете применить фильтр...</string>
-    <string name="tuto_main_4">...меняя период и выбирая даты...</string>
-    <string name="tuto_main_5">...или отфильтровать по Организационной единице</string>
-    <string name="tuto_main_6">Проверьте другие действия в главном меню</string>
 
     <!-- RELATIONSHIPS -->
     <string name="next">Следующая</string>
@@ -220,11 +214,6 @@
 
     <string name="menu_home">Главная</string>
     <string name="appwidget_text">ПРИМЕР</string>
-    <string name="showHelp">Показать помощь</string>
-    <string name="tuto_dashboard_6">Здесь вы увидите все события. Нажмите, чтобы просмотреть подробности события.</string>
-    <string name="tuto_dashboard_7">Перемещайтесь по меню, чтобы добавить связи, посмотреть индикаторы или написать заметки.</string>
-    <string name="tuto_event_initial_new_1">Введите все данные для создания событие</string>
-    <string name="tuto_event_initial_1">Нажмите, чтобы проверить состояние завершения события.</string>
     <string name="relationships">связи</string>
     <!--empty_tracker_events will be formatted with the custom or default label for event-->
     <string name="empty_tracker_events">Нет зарегистрированных %s, нажмите \"+\", чтобы добавить новый.</string>
@@ -241,7 +230,6 @@
     <string name="unique_warning">Значение должно быть уникальным, совпадение найдено. Оно не было сохранено. Пожалуйста, проверьте его.</string>
     <string name="please_wait">Пожалуйста, подождите</string>
     <string name="skip">Пропустить</string>
-    <string name="no_intructions">Информация для этого экрана отсутствует</string>
     <string name="delete_local_data_message">Не синхронизированные данные будут потеряны. Вы действительно хотите продолжить?</string>
     <string name="delete_local_data_error">Данные не удалось удалить. Пожалуйста, повторите попытку.</string>
     <string name="delete_local_data_done">Удаление локальных данных успешно завершено.</string>
@@ -253,7 +241,6 @@
     <string name="state_relationship">Зависимость</string>
     <string name="sent_by_sms">Отправлено по SMS</string>
     <string name="action_close">Закрыть</string>
-    <string name="tuto_main_11">Теперь Вы можете проверить информацию о синхронизации, нажав здесь</string>
     <string name="relationship_error_recursive">Вы не можете связать запись с самой собой</string>
     <string name="change_calendar_view">Изменить вид календаря</string>
     <string name="relationship_without_enrollment">Запись, к которой Вы пытаетесь получить доступ, не зарегистрирована. Вы не можете получить доступ к инфопанели.</string>

@@ -150,12 +150,6 @@
     <string name="permission_denied">Du har ikke tilstrekkelig tillatelse for å utføre denne handlingen</string>
 
     <string name="period">Periode</string>
-    <string name="tuto_main_1">Velkommen til dhis2</string>
-    <string name="tuto_main_2">Her kan du se dine aktiviteter</string>
-    <string name="tuto_main_3">Du kan bruke et filter...</string>
-    <string name="tuto_main_4">... ved å endre periode og velge datoer...</string>
-    <string name="tuto_main_5">...eller filtrere etter organisasjonsenhet</string>
-    <string name="tuto_main_6">Sjekk andre handlinger i hovedmenyen</string>
 
     <!-- RELATIONSHIPS -->
     <string name="next">Neste</string>
@@ -207,13 +201,6 @@
 
     <string name="menu_home">Hjem</string>
     <string name="appwidget_text">EKSEMPEL</string>
-    <string name="showHelp">Vis hjelp</string>
-    <string name="tuto_dashboard_1">Dette er dashbord for forekomster</string>
-    <string name="tuto_dashboard_2">Se forekomstprofil informasjon...</string>
-    <string name="tuto_dashboard_6">Her vil du se alle hendelser. Klikk for å se en hendelsedetalj.</string>
-    <string name="tuto_dashboard_7">Naviger gjennom menyen for å legge til relasjoner, se indikatorer eller skrive notater.</string>
-    <string name="tuto_event_initial_new_1">Fyll inn all data for å opprette hendelsen</string>
-    <string name="tuto_event_initial_1">Klikk for å sjekke status for fullføring av hendelsen.</string>
     <string name="relationships">relasjoner</string>
     <string name="qr_data_values">Dataverdier</string>
     <string name="info">Info</string>
@@ -228,7 +215,6 @@
     <string name="unique_warning">Verdien skal være unik, et sammentreff ble funnet. Det har ikke blitt lagret. Vennligst sjekk det.</string>
     <string name="please_wait">Vennligst vent</string>
     <string name="skip">Hopp over</string>
-    <string name="no_intructions">Det er ingen informasjon for denne skjermen</string>
     <string name="delete_local_data_message">Ikke synkroniserte data vil bli bort. Vil du virkelig fortsette?</string>
     <string name="delete_local_data_error">Data kunne ikke slettes. Vennligst prøv på nytt.</string>
     <string name="delete_local_data_done">Lokal data ble slettet.</string>
@@ -238,7 +224,6 @@
     <string name="state_warning">Advarsel</string>
     <string name="state_relationship">Relasjon</string>
     <string name="action_close">Lukk</string>
-    <string name="tuto_main_11">Nå kan du sjekke synk informasjon ved å klikke her.</string>
     <string name="relationship_error_recursive">Du kan ikke relatere en oppføring med seg selv</string>
     <string name="change_calendar_view">Endre kalendervisning</string>
     <string name="relationship_without_enrollment">Oppføringen du prøver å gå inn på har ingen registrering. Du kan ikke gå til dashbord.</string>
