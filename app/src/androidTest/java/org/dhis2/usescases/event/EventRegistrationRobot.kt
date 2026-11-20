@@ -1,5 +1,6 @@
 package org.dhis2.usescases.event
 
+import androidx.compose.ui.test.ComposeTimeoutException
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertCountEquals
@@ -31,6 +32,7 @@ import org.dhis2.common.BaseRobot
 import org.dhis2.commons.dialogs.bottomsheet.MAIN_BUTTON_TAG
 import org.dhis2.commons.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
+import org.junit.Assert.assertTrue
 
 fun eventRegistrationRobot(
     composeTestRule: ComposeTestRule,
@@ -81,6 +83,25 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
 
     fun clickSyncButton() {
         waitForView(withId(R.id.syncButton)).perform(click())
+    }
+
+    fun clickSyncButtonAndWaitForSaveBottomSheet() = clickUntilSaveBottomSheetOpens(R.id.syncButton)
+
+    fun clickSaveButtonAndWaitForSaveBottomSheet() = clickUntilSaveBottomSheetOpens(R.id.actionButton)
+
+    // The CI tablet can drop a tap that Espresso reports as done (ANDROAPP-7993), so tap again.
+    @OptIn(ExperimentalTestApi::class)
+    private fun clickUntilSaveBottomSheetOpens(viewId: Int) {
+        val sheetOpened = (1..MAX_SHEET_TAPS).any {
+            waitForView(withId(viewId)).perform(click())
+            try {
+                composeTestRule.waitUntilAtLeastOneExists(hasTestTag(MAIN_BUTTON_TAG), TIMEOUT)
+                true
+            } catch (_: ComposeTimeoutException) {
+                false
+            }
+        }
+        assertTrue("The save sheet did not open after $MAX_SHEET_TAPS taps", sheetOpened)
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -242,5 +263,6 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
         private const val FIRST_DROPDOWN_ITEM_TAG = "INPUT_DROPDOWN_MENU_ITEM_0"
         private const val MAX_BACK_PRESSES = 3
         private const val BACK_PRESS_TIMEOUT = 3_000L
+        private const val MAX_SHEET_TAPS = 3
     }
 }

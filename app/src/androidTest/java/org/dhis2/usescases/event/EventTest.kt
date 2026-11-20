@@ -82,7 +82,7 @@ class EventTest : BaseTest() {
         }
 
         eventRegistrationRobot(composeTestRule) {
-            clickSyncButton()
+            clickSyncButtonAndWaitForSaveBottomSheet()
         }
         // [ANDROAPP-7676] Syncing runs the save validation: ON_COMPLETE + ACTIVE allows "Not now".
         eventRobot(composeTestRule) {
@@ -98,8 +98,10 @@ class EventTest : BaseTest() {
         }
 
         // ON_COMPLETE positive leg: Save → "Not now" saves ACTIVE, no block.
+        eventRegistrationRobot(composeTestRule) {
+            clickSaveButtonAndWaitForSaveBottomSheet()
+        }
         eventRobot(composeTestRule) {
-            clickOnFormFabButton()
             clickOnNotNow()
         }
         composeTestRule.waitForIdle()
@@ -108,8 +110,10 @@ class EventTest : BaseTest() {
         }
 
         // [ANDROAPP-3832] Complete is blocked while the mandatory DE is empty.
+        eventRegistrationRobot(composeTestRule) {
+            clickSaveButtonAndWaitForSaveBottomSheet()
+        }
         eventRobot(composeTestRule) {
-            clickOnFormFabButton()
             clickOnCompleteButton()
         }
         eventRegistrationRobot(composeTestRule) {
@@ -123,8 +127,10 @@ class EventTest : BaseTest() {
         }
         composeTestRule.waitForIdle()
 
+        eventRegistrationRobot(composeTestRule) {
+            clickSaveButtonAndWaitForSaveBottomSheet()
+        }
         eventRobot(composeTestRule) {
-            clickOnFormFabButton()
             clickOnCompleteButton()
         }
         composeTestRule.waitForIdle()
