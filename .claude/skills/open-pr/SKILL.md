@@ -46,6 +46,19 @@ Run these checks and stop with a clear message if one fails.
    the local copy, which may be stale.
 4. **Ticket key**: take it from the branch name (`ANDROAPP-1234…`). If there is none, ask the
    user for it, or whether the PR has no ticket.
+5. **Repository checks** (CI does not run them, so this is the gate): after the fetch, run
+   `python3 scripts/check_conventions.py --base origin/<base>` and
+   `python3 scripts/check_harness.py`. Both read the working tree, so if the user left changes out
+   of the PR, run them with those changes stashed (`git stash push --include-untracked`, then
+   `git stash pop`).
+   - Conventions findings are lines this PR adds: show them and ask the user whether to fix them
+     now (then commit the fixes per [section 7](#7-commit-and-pr-title-conventions)) or to keep a
+     line on purpose, which needs a trailing `// conventions:allow <reason>` comment.
+   - Harness findings cover the whole repository. They block the PR only when it changes
+     `AGENTS.md`, `CLAUDE.md`, `.claude/` or `scripts/check_*.py`; otherwise they are drift that
+     is already on the base branch: show them, suggest a separate fix, and continue.
+
+   Do not open a PR with unresolved findings that block it.
 
 The gh-stack extension is only needed if the PR has to be split; it is checked in
 [section 2](#2-measure-and-decide).
@@ -117,16 +130,33 @@ each, and the branch names. Name the bottom branch after the current branch and 
 
 ## 4. Code review of each PR
 
-Review each PR separately, bottom to top, against its own base: the trunk for a single PR or the
-bottom layer, the branch below it for the others. The scope is exactly
-`git diff <base>...<branch>` (with `origin/<base>` for the trunk).
+Review each PR separately against its own base: the trunk for a single PR or the bottom layer,
+the branch below it for the others. The scope is exactly `git diff <base>...<branch>` (with
+`origin/<base>` for the trunk). In a stack the reviews can run in parallel, but decide and apply
+fixes bottom to top (steps 2 to 4), so each fix reaches the layers above it before they change.
 
-1. Review that diff for correctness bugs, security problems, regressions, missing or wrong
-   tests, and violations of the repository conventions (AGENTS.md). If your environment provides
-   a dedicated code-review tool or command, use it on that scope, at the effort level the user
-   asks for; otherwise review the diff yourself, reading the surrounding code where a change
-   depends on it. Drop any finding outside the diff, and anything you cannot point to a
-   concrete failure for.
+1. Have the diff reviewed by an **independent reviewer**: a subagent or separate session that
+   did not write the code and does not share this conversation. The author's context anchors a
+   review on what the code was meant to do instead of what it does. Give the reviewer only:
+   - the scope (`git diff <base>...<branch>`, the repository path, the base);
+   - that the review is read-only: the reviewers share your working tree, so they read other
+     branches with `git show <branch>:<path>` and `git diff`, never `git checkout`, `stash`,
+     commits or edits, and they judge each PR by the `AGENTS.md` and skills on that PR's branch.
+     A reviewer that needs to run code does it in its own `git worktree add --detach` under a
+     temporary directory, removed afterwards;
+   - what the change is for, taken from the ticket or commit messages, not from your own
+     account of the implementation, and no list of what you consider already correct;
+   - the task: find correctness bugs, security problems, regressions, missing or wrong tests,
+     and violations of the repository conventions (AGENTS.md and the skills it points to),
+     reading the surrounding code where a change depends on it; report each finding with
+     `file:line`, severity and the concrete failure.
+
+   If your environment provides a dedicated code-review tool or command, the reviewer uses it on
+   that scope, at the effort level the user asks for. In a stack, one reviewer per PR. Only when your environment cannot start an independent reviewer, review
+   the diff yourself, tell the user so, and record it.
+
+   Check each returned finding against the code before presenting it: drop any finding outside
+   the diff, and anything you cannot point to a concrete failure for.
 2. Present the findings to the user, numbered, with severity (High / Medium / Low), `file:line`
    and a one-line summary, and ask which ones to fix (any number of them). If there are no
    findings, say so and move on.
@@ -137,11 +167,13 @@ bottom layer, the branch below it for the others. The scope is exactly
 4. Apply the fixes the user chose, run lint and the affected tests, and commit them on that
    branch (one commit per review round, `fix: [KEY] address code review findings`). Record the
    commit sha for each fixed finding. In a stack, rebase the branches above with
-   `gh stack rebase` and re-check their sizes and builds.
+   `gh stack rebase` and re-check their sizes and builds; if a fix changed the diff of a PR
+   above, have that change reviewed too.
 5. A fix can push a PR over the limit. Re-measure; if it does, tell the user and go back to the
    choice in [section 2](#2-measure-and-decide) for that PR.
 
-Keep a record per PR: head sha, base, how it was reviewed (tool or manual, effort level), and
+Keep a record per PR: head sha, base, how it was reviewed (independent reviewer or same session,
+tool or manual, effort level), and
 each finding with its decision (fixed in `<sha>` / not fixed + reason). It feeds the PR
 description.
 
@@ -169,7 +201,7 @@ Then append:
 ```markdown
 ## Code review
 
-Reviewed at <reviewed-sha> against `<base>` (<tool or "manual review">, <effort level if any>).
+Reviewed at <reviewed-sha> against `<base>` (<"independent reviewer" or "same-session review">, <tool or "manual review">, <effort level if any>).
 
 | # | Severity | Finding | Location | Decision |
 |---|---|---|---|---|
