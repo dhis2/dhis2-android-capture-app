@@ -59,7 +59,15 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
-          cache: 'gradle'
+
+      # Restores Gradle User Home, build cache included, so tasks whose inputs did not
+      # change come FROM-CACHE. Only develop writes the cache; PRs and merge groups read
+      # the entries develop saved.
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+        with:
+          cache-provider: basic
+          cache-read-only: ${{ github.ref != 'refs/heads/develop' }}
 
       - name: Lint Check
         run: ./gradlew ktlintCheck
@@ -77,7 +85,15 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
-          cache: 'gradle'
+
+      # Restores Gradle User Home, build cache included, so tasks whose inputs did not
+      # change come FROM-CACHE. Only develop writes the cache; PRs and merge groups read
+      # the entries develop saved.
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+        with:
+          cache-provider: basic
+          cache-read-only: ${{ github.ref != 'refs/heads/develop' }}
 
       - name: Unit Tests
         if: ${{ !contains(github.event.pull_request.title, '[skip unitTest]') && !contains(github.event.pull_request.body, '[skip unitTest]') }}
@@ -101,7 +117,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    needs: [ unit-tests, lint-check ]
+    # Not after unit-tests: the APKs do not use their output, and the device jobs below
+    # wait for both, so BrowserStack still never runs when unit tests fail.
+    needs: lint-check
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
@@ -110,7 +128,15 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
-          cache: 'gradle'
+
+      # Restores Gradle User Home, build cache included, so tasks whose inputs did not
+      # change come FROM-CACHE. Only develop writes the cache; PRs and merge groups read
+      # the entries develop saved.
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+        with:
+          cache-provider: basic
+          cache-read-only: ${{ github.ref != 'refs/heads/develop' }}
 
       - name: Build Test APKs
         run: |
@@ -142,7 +168,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    needs: build-test-apks
+    needs: [ build-test-apks, unit-tests ]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
@@ -182,7 +208,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    needs: build-test-apks
+    needs: [ build-test-apks, unit-tests ]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
@@ -237,7 +263,15 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
-          cache: 'gradle'
+
+      # Restores Gradle User Home, build cache included, so tasks whose inputs did not
+      # change come FROM-CACHE. Only develop writes the cache; PRs and merge groups read
+      # the entries develop saved.
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+        with:
+          cache-provider: basic
+          cache-read-only: ${{ github.ref != 'refs/heads/develop' }}
 
       # Unit test coverage is reported by unit-tests against the classes it compiled.
       # Missing when unit tests failed or were skipped; the analysis still runs.
