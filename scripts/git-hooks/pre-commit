@@ -1,0 +1,22 @@
+#!/bin/sh
+# Pre-commit hook: ktlint and the AGENTS.md conventions on the staged Kotlin files.
+# Install once per clone:  git config core.hooksPath scripts/git-hooks
+set -e
+
+CHANGED_FILES="$(git --no-pager diff --name-only --no-color --cached --diff-filter=d -- '*.kt' '*.kts')"
+
+if [ -z "$CHANGED_FILES" ]; then
+    exit 0
+fi
+
+echo "Running ktlint over the staged Kotlin files..."
+if ! ./gradlew --quiet --continue ktlintCheck -PinternalKtlintGitFilter="$CHANGED_FILES"; then
+    echo "ktlint found problems: run ./gradlew ktlintFormat, re-stage, and commit again."
+    exit 1
+fi
+
+KT_FILES="$(echo "$CHANGED_FILES" | grep '\.kt$' || true)"
+if [ -n "$KT_FILES" ]; then
+    # shellcheck disable=SC2086
+    python3 scripts/check_conventions.py --files $KT_FILES
+fi
