@@ -9,21 +9,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.rememberLottieComposition
 import org.dhis2.R
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonState
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 
@@ -35,33 +34,22 @@ fun DeleteLocalDataDialog(
     onDeleteLocalData: () -> Unit,
     onDismissRequest: () -> Unit,
 ) {
-    val composition by rememberLottieComposition(
-        LottieCompositionSpec.RawRes(R.raw.warning),
-    )
     AlertDialog(
         onDismissRequest = onDismissRequest,
         title = {
             Text(
+                modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.delete_local_data),
-                textAlign = TextAlign.Center,
+                textAlign = TextAlign.Start,
             )
         },
         text = {
             Column {
                 Text(
-                    text = stringResource(R.string.delete_local_data_message),
+                    text = stringResource(R.string.delete_local_data_message_v2),
                 )
                 Spacer(modifier = Modifier.size(16.dp))
-                if (!isDeletingLocalData) {
-                    LottieAnimation(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .height(200.dp),
-                        composition = composition,
-                        iterations = LottieConstants.IterateForever,
-                    )
-                } else {
+                if (isDeletingLocalData) {
                     Row(
                         modifier =
                             Modifier
@@ -82,17 +70,32 @@ fun DeleteLocalDataDialog(
             }
         },
         confirmButton = {
-            Button(
-                text = stringResource(R.string.delete_local_data),
-                modifier = Modifier.testTag(CONFIRM_BUTTON_TAG),
-                onClick = onDeleteLocalData,
-            )
-        },
-        dismissButton = {
-            Button(
-                text = stringResource(R.string.cancel),
-                onClick = onDismissRequest,
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Button(
+                    state =
+                        ButtonState(
+                            text = stringResource(R.string.cancel),
+                            textColor = MaterialTheme.colorScheme.surface,
+                            style = ButtonStyle.OUTLINED,
+                        ),
+                    onClick = onDismissRequest,
+                )
+                Button(
+                    modifier = Modifier.testTag(CONFIRM_BUTTON_TAG),
+                    state =
+                        ButtonState(
+                            text = stringResource(R.string.delete_data),
+                            textColor = MaterialTheme.colorScheme.onPrimary,
+                            style = ButtonStyle.FILLED,
+                            colorStyle = ColorStyle.ERROR,
+                        ),
+                    onClick = onDeleteLocalData,
+                )
+            }
         },
     )
 }

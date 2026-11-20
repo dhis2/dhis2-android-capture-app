@@ -116,9 +116,7 @@
     <string name="every_12_hours">12h</string>
     <string name="Manual">Manual</string>
     <string name="a_week">1 Week</string>
-    <string name="wipe_data_meesage">Database will be deleted.\nYou will be asked to log in again.</string>
-    <string name="wipe_data_ok">Accept</string>
-    <string name="wipe_data_no">Cancel</string>
+    <string name="delete_account_message">Your account stays on the server.\n Unsynced data will be lost.</string>
     <string name="SYNC_DATA">SYNC Data Now</string>
     <string name="SYNC_META">SYNC Configuration Now</string>
     <string name="SYNC_MANAGER">Settings</string>
@@ -252,6 +250,7 @@
     <string name="info">Info</string>
     <string name="qr_no_id_error">Could not read this Id</string>
     <string name="delete_local_data">Delete local data</string>
+    <string name="delete_data">Delete data</string>
     <string name="dashboard_overview">Overview</string>
     <string name="empty_indicators">There are no indicators for this program.</string>
     <string name="unselect_enrollment">All enrollments</string>
@@ -262,7 +261,7 @@
     <string name="please_wait">Please wait</string>
     <string name="skip">Skip</string>
     <string name="no_intructions">There is no information for this screen</string>
-    <string name="delete_local_data_message">Non synchronized data will be lost. Do you really want to continue?</string>
+    <string name="delete_local_data_message_v2">You’ll stay logged in. Unsynced data will be lost.</string>
     <string name="delete_local_data_error">Data could not be deleted. Please retry.</string>
     <string name="delete_local_data_done">Delete local data finished successfully.</string>
     <string name="resource_not_found">%s not found</string>
@@ -495,7 +494,9 @@
     <string name="edition_no_catcombo_access">You do not have permission to edit this data</string>
     <string name="edition_orgunit_user_scope">You cannot edit data from this %s</string>
     <string name="error_tei_online_search_title">The online search returned the following message:</string>
-    <string name="delete_account">Delete Account</string>
+    <string name="remove_account_from_device">Remove account from device</string>
+    <string name="remove_account_from_device_question">Remove account from this device?</string>
+    <string name="remove_account">Remove account</string>
     <string name="main_menu_troubleshooting">Configuration troubleshooting</string>
     <string name="troubleshooting_language_title">Language</string>
     <string name="troubleshooting_language_description">Tap here to change the language of the application</string>
