@@ -160,7 +160,7 @@ fun D2.teiMainAttributes(
             .blockingGet()
     val attributeUids =
         if (programUid == null) {
-            trackedEntityTypeMainAttributes(teiUid).mapNotNull { it.trackedEntityAttribute()?.uid() }
+            trackedEntityTypeMainAttributes(teiUid).map { it.trackedEntityAttribute().uid() }
         } else {
             programMainAttributes(programUid).mapNotNull { it.trackedEntityAttribute()?.uid() }
         }

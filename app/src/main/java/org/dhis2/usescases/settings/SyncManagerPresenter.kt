@@ -12,10 +12,10 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.extensions.launchUseCase
+import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
 import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
@@ -43,7 +43,7 @@ class SyncManagerPresenter(
     private val checkVersionUpdate: CheckVersionUpdate,
     private val launchSync: LaunchSync,
     private val dispatcherProvider: DispatcherProvider,
-    private val networkUtils: NetworkUtils,
+    networkUtils: NetworkStatusProvider,
     private val settingsMessages: SettingsMessages,
     private val twoFaStatus: GetTwoFAStatus,
 ) : ViewModel() {
@@ -213,10 +213,11 @@ class SyncManagerPresenter(
                 }
 
             when (val result = updateSmsResponse(setting)) {
-                UpdateSmsResponse.UpdateSmsResponseResult.Success ->
+                UpdateSmsResponse.UpdateSmsResponseResult.Success -> {
                     loadData()
+                }
 
-                is UpdateSmsResponse.UpdateSmsResponseResult.ValidationError ->
+                is UpdateSmsResponse.UpdateSmsResponseResult.ValidationError -> {
                     _settingsState.update {
                         it?.copy(
                             smsSettingsViewModel =
@@ -225,6 +226,7 @@ class SyncManagerPresenter(
                                 ),
                         )
                     }
+                }
             }
         }
     }
@@ -236,10 +238,11 @@ class SyncManagerPresenter(
             when (result) {
                 UpdateSmsModule.EnableSmsResult.Success,
                 UpdateSmsModule.EnableSmsResult.Error,
-                ->
+                -> {
                     loadData()
+                }
 
-                is UpdateSmsModule.EnableSmsResult.ValidationError ->
+                is UpdateSmsModule.EnableSmsResult.ValidationError -> {
                     _settingsState.update {
                         it?.copy(
                             smsSettingsViewModel =
@@ -248,6 +251,7 @@ class SyncManagerPresenter(
                                 ),
                         )
                     }
+                }
             }
         }
     }
@@ -258,10 +262,11 @@ class SyncManagerPresenter(
             when (result) {
                 UpdateSmsModule.EnableSmsResult.Success,
                 UpdateSmsModule.EnableSmsResult.Error,
-                ->
+                -> {
                     loadData()
+                }
 
-                is UpdateSmsModule.EnableSmsResult.ValidationError ->
+                is UpdateSmsModule.EnableSmsResult.ValidationError -> {
                     _settingsState.update {
                         it?.copy(
                             smsSettingsViewModel =
@@ -270,13 +275,14 @@ class SyncManagerPresenter(
                                 ),
                         )
                     }
+                }
             }
         }
     }
 
     fun saveTimeout(timeout: Int) {
         viewModelScope.launch(dispatcherProvider.io()) {
-            val result = updateSmsModule(UpdateSmsModule.SmsSetting.SaveTimeout(timeout))
+            updateSmsModule(UpdateSmsModule.SmsSetting.SaveTimeout(timeout))
         }
     }
 
@@ -297,10 +303,11 @@ class SyncManagerPresenter(
             when (result) {
                 UpdateSmsModule.EnableSmsResult.Success,
                 UpdateSmsModule.EnableSmsResult.Error,
-                ->
+                -> {
                     loadData()
+                }
 
-                is UpdateSmsModule.EnableSmsResult.ValidationError ->
+                is UpdateSmsModule.EnableSmsResult.ValidationError -> {
                     _settingsState.update {
                         it?.copy(
                             smsSettingsViewModel =
@@ -309,6 +316,7 @@ class SyncManagerPresenter(
                                 ),
                         )
                     }
+                }
             }
         }
     }
@@ -355,7 +363,10 @@ class SyncManagerPresenter(
     private fun exportDB(exportType: ExportDatabase.ExportType) {
         viewModelScope.launch(context = dispatcherProvider.io()) {
             when (val result = exportDatabase(exportType)) {
-                is ExportDatabase.ExportResult.Share -> _fileToShareChannel.send(result.db)
+                is ExportDatabase.ExportResult.Share -> {
+                    _fileToShareChannel.send(result.db)
+                }
+
                 else -> {
                     // do nothing
                 }

@@ -65,7 +65,7 @@ class EventCaptureRepositoryImpl(
             .programModule()
             .programStages()
             .uid(this.currentEvent.programStage())
-            .get()
+            .rxGet()
             .map { programStage -> programStage.displayName() ?: programStage.uid() }
             .toFlowable()
 
@@ -85,7 +85,7 @@ class EventCaptureRepositoryImpl(
             .eventModule()
             .events()
             .uid(eventUid)
-            .delete()
+            .rxDelete()
             .andThen(Observable.just(true))
 
     override fun updateEventStatus(status: EventStatus): Observable<Boolean> =
@@ -154,7 +154,7 @@ class EventCaptureRepositoryImpl(
         d2
             .eventModule()
             .eventService()
-            .getEditableStatus(eventUid)
+            .rxGetEditableStatus(eventUid)
             .map { editionStatus ->
                 if (editionStatus is EventEditableStatus.NonEditable) {
                     editionStatus.reason == EventNonEditableReason.EXPIRED
@@ -178,7 +178,7 @@ class EventCaptureRepositoryImpl(
                 .notes()
                 .byEventUid()
                 .eq(eventUid)
-                .count()
+                .rxCount()
 
     override fun showCompletionPercentage(): Boolean {
         if (d2.settingModule().appearanceSettings().blockingExists()) {

@@ -4,7 +4,6 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.di.dagger.PerFragment
-import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -49,7 +48,7 @@ class SyncManagerModule(
         checkVersionUpdate: CheckVersionUpdate,
         launchSync: LaunchSync,
         dispatcherProvider: DispatcherProvider,
-        networkUtils: NetworkUtils,
+        networkUtils: NetworkStatusProvider,
         settingsMessages: SettingsMessages,
         twoFaStatus: GetTwoFAStatus,
     ) = SettingsViewModelFactory(

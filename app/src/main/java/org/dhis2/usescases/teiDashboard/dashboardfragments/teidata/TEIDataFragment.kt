@@ -306,9 +306,9 @@ class TEIDataFragment :
                     }
 
                 val card =
-                    dashboardModel?.let {
+                    dashboardModel?.let { model ->
                         teiDashboardCardMapper.map(
-                            dashboardModel = it,
+                            dashboardModel = model,
                             onImageClick = { fileToShow ->
                                 val intent =
                                     ImageDetailActivity.intent(
@@ -452,7 +452,7 @@ class TEIDataFragment :
     }
 
     override fun onPause() {
-        presenter.onDettach()
+        presenter.onDetach()
         super.onPause()
     }
 

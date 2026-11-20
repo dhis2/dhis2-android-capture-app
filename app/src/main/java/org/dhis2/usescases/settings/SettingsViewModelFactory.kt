@@ -2,8 +2,8 @@ package org.dhis2.usescases.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
 import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
@@ -26,7 +26,7 @@ class SettingsViewModelFactory(
     private val checkVersionUpdate: CheckVersionUpdate,
     private val launchSync: LaunchSync,
     private val dispatcherProvider: DispatcherProvider,
-    private val networkUtils: NetworkUtils,
+    private val networkUtils: NetworkStatusProvider,
     private val settingsMessages: SettingsMessages,
     private val twoFaStatus: GetTwoFAStatus,
 ) : ViewModelProvider.Factory {
