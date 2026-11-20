@@ -26,10 +26,13 @@ in skills. **Read the matching skill before starting**; if your agent does not l
 ./gradlew desktopTest                       # commonTest of every KMP module on the desktop JVM
 ./gradlew :login:testAndroidHostTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest"
 ./gradlew assembleDhis2Debug                # debug APK
-scripts/check_conventions.py                # the agreements below, on the lines your branch adds
+scripts/check_conventions.py                # the agreements below, on the lines your branch adds*
 scripts/check_harness.py                    # AGENTS.md / skills still match the repo (paths, modules)
 git config core.hooksPath scripts/git-hooks # once per clone: ktlint + conventions before each commit
 ```
+
+\* Measured from the branch your work started from (`develop`, `main` or `release/*`, detected
+from the merge bases); pass `--base origin/<branch>` when the detection is wrong.
 
 Test task by module type: `app` → `testDhis2DebugUnitTest` (flavoured); other AGP modules →
 `testDebugUnitTest`; KMP modules → `testAndroidHostTest` (runs both `commonTest` and
@@ -96,12 +99,12 @@ A line that must break a rule on purpose (an SDK call with no suspend version) e
    `CancellationException`, then catch `Exception`. Never `runCatching` (it swallows
    cancellation) and never `catch (Throwable)`.
 6. **ViewModels** launch work with `launchUseCase { }`, never `viewModelScope.launch` (it feeds
-   the Espresso idling resource), and expose `StateFlow<UiState>`. Existing
-   `viewModelScope.launch` sites are migrated only when the file is touched for other reasons.
+   the Espresso idling resource), and expose `StateFlow<UiState>`. Leave existing
+   `viewModelScope.launch` sites as they are unless the task is to migrate them.
 7. **Platform code: interfaces first.** Repositories and stateful platform services are an
    interface in `commonMain` plus one Koin binding per platform (a stub where a platform lacks
-   it). `expect`/`actual` only for small dependency-free functions and Compose helpers; no new
-   `expect class`.
+   it). `expect`/`actual` only for small dependency-free functions, Compose helpers and the
+   `expect val` Koin modules that hold those per-platform bindings; no new `expect class`.
 8. **Other rules:** Koin for DI in new code; DHIS2 design system components
    (`org.hisp.dhis.mobile.ui.designsystem.*`) inside `DHIS2Theme { }` over Material; no RxJava in
    new code; no direct network or database access (use the DHIS2 SDK); offline-first; domain
@@ -144,8 +147,10 @@ modules with iOS (Kotlin/Native rejects them).
 ## Build environment
 
 - `ANDROID_HOME` must be exported in a git worktree (worktrees have no `local.properties`).
-- The DHIS2 SDK and design system are **SNAPSHOT** versions and `mavenLocal()` comes first, so a
-  locally published SDK silently replaces the remote one.
+- `mavenLocal()` comes first. The design system is a `-SNAPSHOT` version, so a locally published
+  one silently replaces the remote one. The SDK is pinned to a timestamped snapshot in
+  `gradle/libs.versions.toml`: to test a local SDK build, publish it and point `dhis2sdk` at its
+  `-SNAPSHOT` version.
 - `app` still uses **Dagger** (KSP and kapt) next to Koin; Koin starts in
   `app/src/main/java/org/dhis2/di/KoinInitialization.kt`. Flavour-specific classes exist in
   `app/src/dhis2*` source sets (e.g. `DownloadNewVersion`): change every copy.
