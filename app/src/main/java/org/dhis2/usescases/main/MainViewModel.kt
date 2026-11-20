@@ -35,6 +35,7 @@ import org.dhis2.mobile.home.domain.GetLockAction
 import org.dhis2.mobile.home.domain.GetUserName
 import org.dhis2.mobile.home.domain.UpdateInitialSyncStatus
 import org.dhis2.mobile.home.domain.model.LockAction
+import org.dhis2.mobile.login.pin.domain.usecase.DeletePin
 import org.dhis2.mobile.sync.data.METADATA_SYNC_NOW
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.domain.SyncStatusController
@@ -79,6 +80,7 @@ class MainViewModel(
     private val scheduleNewVersionAlert: ScheduleNewVersionAlert,
     private val syncBackgroundJobAction: SyncBackgroundJobAction,
     private val initialScreen: MainScreenType,
+    private val deletePin: DeletePin,
     private val dispatcher: DispatcherProvider,
 ) : ViewModel() {
     private val _homeScreenState = MutableStateFlow(defaultHomeScreenState)
@@ -172,6 +174,7 @@ class MainViewModel(
             val userName = getUserName().getOrDefault("")
             val navigationBarItems = configureHomeNavigationBar().getOrDefault(emptyList())
             val homeFilters = getHomeFilters().getOrDefault(emptyList())
+            val getLockAction = getLockAction().getOrDefault(LockAction.CreatePin)
 
             _homeScreenState.update { current ->
                 HomeScreenState(
@@ -184,6 +187,7 @@ class MainViewModel(
                     bottomNavigationBarVisible = initialScreen.isHome() && navigationBarItems.size > 1,
                     syncButtonVisible = initialScreen.isHome(),
                     currentScreen = initialScreen,
+                    pinAlreadyCreated = getLockAction == LockAction.PinAlreadyCreated,
                 )
             }
             withContext(dispatcher.ui()) {
@@ -508,6 +512,17 @@ class MainViewModel(
     private fun onPinSet() {
         launchUseCase(dispatcher.io()) {
             _homeEffects.send(HomeEffect.PinCreated)
+            _homeScreenState.update { it.copy(pinAlreadyCreated = true) }
+        }
+    }
+
+    private fun removePin() {
+        launchUseCase(dispatcher.io()) {
+            deletePin()
+                .onSuccess {
+                    _homeEffects.send(HomeEffect.PinDeleted)
+                    _homeScreenState.update { it.copy(pinAlreadyCreated = false) }
+                }.onFailure { Timber.e(it) }
         }
     }
 
@@ -519,6 +534,7 @@ class MainViewModel(
             HomeAction.FilterClicked -> showFilter()
             is HomeAction.ScreenChanged -> onChangeScreen(action.screen)
             HomeAction.PinSet -> onPinSet()
+            HomeAction.DeletePin -> removePin()
         }
     }
 }

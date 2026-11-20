@@ -25,6 +25,8 @@ import org.dhis2.mobile.home.domain.GetUserName
 import org.dhis2.mobile.home.domain.UpdateInitialSyncStatus
 import org.dhis2.mobile.home.domain.model.HomeItemData
 import org.dhis2.mobile.home.domain.model.HomeUser
+import org.dhis2.mobile.login.pin.data.SessionRepository
+import org.dhis2.mobile.login.pin.domain.usecase.DeletePin
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.dhis2.mobile.sync.model.SyncJobStatus
@@ -71,6 +73,7 @@ class MainViewModelIntegrationTest {
     // --- Repository mocks (boundary under test) ---
     private val homeRepository: HomeRepository = mock()
     private val filterRepository: FilterRepository = mock()
+    private val sessionRepository: SessionRepository = mock()
 
     // --- Infrastructure mocks ---
     private val filterManager: FilterManager = mock()
@@ -98,6 +101,7 @@ class MainViewModelIntegrationTest {
     private lateinit var logOutUser: LogoutUser
     private lateinit var deleteAccount: DeleteAccount
     private lateinit var updateInitialSyncStatus: UpdateInitialSyncStatus
+    private lateinit var deletePin: DeletePin
 
     private lateinit var viewModel: MainViewModel
 
@@ -114,6 +118,7 @@ class MainViewModelIntegrationTest {
             updateInitialSyncStatus = UpdateInitialSyncStatus(homeRepository)
             logOutUser = LogoutUser(homeRepository, syncBackgroundJobAction, syncStatusController, filterManager)
             deleteAccount = DeleteAccount(filterManager, homeRepository)
+            deletePin = DeletePin(sessionRepository)
             // skipSync = true avoids triggering a background sync in every test
             launchInitialSync =
                 LaunchInitialSync(
@@ -135,6 +140,7 @@ class MainViewModelIntegrationTest {
 
             // Default: multiple programs → CheckSingleNavigation fails silently, no effect emitted
             whenever(homeRepository.homeItemCount()) doReturn 2
+            whenever(homeRepository.isPinStored()) doReturn false
         }
 
     // ------------------------------------------------------------------ helpers
@@ -154,6 +160,7 @@ class MainViewModelIntegrationTest {
                 logOutUser = logOutUser,
                 deleteAccount = deleteAccount,
                 getLockAction = getLockAction,
+                deletePin = deletePin,
                 updateInitialSyncStatus = updateInitialSyncStatus,
                 checkSingleNavigation = checkSingleNavigation,
                 launchInitialSync = launchInitialSync,

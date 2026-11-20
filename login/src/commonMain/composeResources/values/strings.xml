@@ -84,4 +84,8 @@
     <string name="offline_credential_forgot_code_description">To set a new CODE you need to log in with your username and password. This requires an internet connection.</string>
     <string name="login_online">Login online</string>
     <string name="cancel">Cancel</string>
+    <string name="manage_pin">Manage PIN</string>
+    <string name="manage_pin_description">Update your PIN or remove it for this account.</string>
+    <string name="update_pin">Update PIN</string>
+    <string name="remove_pin">Remove PIN</string>
 </resources>
