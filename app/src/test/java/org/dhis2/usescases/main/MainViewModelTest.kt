@@ -47,10 +47,12 @@ import org.dhis2.usescases.main.ui.Form
 import org.dhis2.usescases.main.ui.model.HomeAction
 import org.dhis2.usescases.main.ui.model.HomeEffect
 import org.dhis2.usescases.main.ui.model.VersionToUpdateState
+import org.dhis2.usescases.settings.models.DeleteDataState
 import org.dhis2.utils.MainCoroutineScopeRule
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -320,6 +322,54 @@ class MainViewModelTest {
                 verify(syncBackgroundJobAction).cancelAll()
                 assertTrue(awaitItem() == HomeEffect.GoToLogin(1, true))
             }
+        }
+
+    @Test
+    fun `Should open and dismiss the delete account dialog`() =
+        runTest {
+            assertEquals(DeleteDataState.None, viewModel.deleteAccountState.value)
+
+            viewModel.onDeleteAccountClick()
+            assertEquals(DeleteDataState.Opened, viewModel.deleteAccountState.value)
+
+            viewModel.onDismissDeleteAccount()
+            assertEquals(DeleteDataState.None, viewModel.deleteAccountState.value)
+        }
+
+    @Test
+    fun `Should keep the delete account dialog open while deleting and close it on success`() =
+        runTest {
+            whenever(deleteAccount(any())) doReturn Result.success(1)
+            val mockedContext = mock<Context>()
+            whenever(mockedContext.cacheDir) doReturn File("random")
+
+            viewModel.onDeleteAccountClick()
+            with(mockedContext) {
+                viewModel.onDeleteAccount()
+            }
+            assertEquals(DeleteDataState.Deleting, viewModel.deleteAccountState.value)
+
+            viewModel.onDismissDeleteAccount()
+            assertEquals(DeleteDataState.Deleting, viewModel.deleteAccountState.value)
+
+            advanceUntilIdle()
+            assertEquals(DeleteDataState.None, viewModel.deleteAccountState.value)
+        }
+
+    @Test
+    fun `Should close the delete account dialog when deletion fails`() =
+        runTest {
+            whenever(deleteAccount(any())) doReturn Result.failure(Exception("delete failed"))
+            val mockedContext = mock<Context>()
+            whenever(mockedContext.cacheDir) doReturn File("random")
+
+            viewModel.onDeleteAccountClick()
+            with(mockedContext) {
+                viewModel.onDeleteAccount()
+            }
+            advanceUntilIdle()
+
+            assertEquals(DeleteDataState.None, viewModel.deleteAccountState.value)
         }
 
     @Test
