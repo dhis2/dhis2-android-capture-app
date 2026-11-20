@@ -155,12 +155,6 @@
     <string name="permission_denied">Vous n\'êtes pas autorisé à effectuer cette action</string>
 
     <string name="period">Période</string>
-    <string name="tuto_main_1">Bienvenue à dhis2</string>
-    <string name="tuto_main_2">Ici vous pouvez voir vos activités</string>
-    <string name="tuto_main_3">Vous pouvez appliquer un filtre...</string>
-    <string name="tuto_main_4">...en changeant la période et en choisissant la date...</string>
-    <string name="tuto_main_5">..ou filtrer par l´unité d´organisation</string>
-    <string name="tuto_main_6">Vérifiez les autres actions dans le menu principal</string>
 
     <!-- RELATIONSHIPS -->
     <string name="next">Suivant</string>
@@ -212,13 +206,6 @@
 
     <string name="menu_home">Accueil</string>
     <string name="appwidget_text">Exemple</string>
-    <string name="showHelp">Montrer l´aide</string>
-    <string name="tuto_dashboard_1">C\'est le tableau de bord de l\'entité</string>
-    <string name="tuto_dashboard_2">Voir les informations sur le profil des entités</string>
-    <string name="tuto_dashboard_6">Ici, vous verrez tous les événements. Cliquez pour voir un détail de l\'événement.</string>
-    <string name="tuto_dashboard_7">Naviguer dans le menu pour ajouter des relations, voir des indicateurs ou écrire des notes</string>
-    <string name="tuto_event_initial_new_1">Entrez toutes les données pour créer l\'événement</string>
-    <string name="tuto_event_initial_1">Cliquez ici pour vérifier l\'état d\'achèvement de l\'événement</string>
     <string name="relationships">Relation</string>
     <string name="qr_data_values">Valeurs de données</string>
     <string name="info">Info</string>
@@ -233,7 +220,6 @@
     <string name="unique_warning">La valeur doit être unique, une coincidence a été trouvée. Elle n\'a pas été sauvegardée. Veuillez vérifier. </string>
     <string name="please_wait">Veuillez patienter</string>
     <string name="skip">Ignorer</string>
-    <string name="no_intructions">Il n\'y a pas d\'information pour cet écran</string>
     <string name="delete_local_data_message">Les données non synchronisées seront perdues. Voulez-vous vraiment continuer? </string>
     <string name="delete_local_data_error">Les données n\'ont pu être supprimées. Veuillez ressayer. </string>
     <string name="delete_local_data_done">Suppression des données locales terminée avec succès. </string>
@@ -245,7 +231,6 @@
     <string name="state_relationship">Relation</string>
     <string name="sent_by_sms">Envoyé par sms</string>
     <string name="action_close">Fermer</string>
-    <string name="tuto_main_11">Maintenant vous pouvez vérifier l\'information de synchronisation en cliquant ici</string>
     <string name="relationship_error_recursive">Vous ne pouvez pas établir de relation une donnée avec elle-même</string>
     <string name="change_calendar_view">Changer de vue calendrier</string>
     <string name="relationship_without_enrollment">La donnée à laquelle vous essayer d\'acceéer n\'a pas d\'enrôlement. Vous ne pouvez pas accéder au tableau de bord.</string>

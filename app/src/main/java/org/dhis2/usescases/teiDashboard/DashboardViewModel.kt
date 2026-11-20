@@ -4,7 +4,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.automirrored.filled.StickyNote2
 import androidx.compose.material.icons.automirrored.outlined.Assignment
-import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.automirrored.outlined.StickyNote2
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Hub
@@ -176,7 +175,6 @@ class DashboardViewModel(
             addTransferMenuItem()
             addFollowUpMenuItem(showFollowUpBar)
             addStagesViewMenuItem(groupByStage)
-            addHelpMenuItem()
             addMoreEnrollmentsMenuItem()
             addShareMenuItem()
             addChangeEnrollmentStatusMenuItem()
@@ -562,16 +560,6 @@ class DashboardViewModel(
                 label = resourcesManager.getString(R.string.share),
                 showDivider = true,
                 leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Share),
-            ),
-        )
-    }
-
-    private fun MutableList<MenuItemData<EnrollmentMenuItem>>.addHelpMenuItem() {
-        add(
-            MenuItemData(
-                id = EnrollmentMenuItem.HELP,
-                label = resourcesManager.getString(R.string.showHelp),
-                leadingElement = MenuLeadingElement.Icon(icon = Icons.AutoMirrored.Outlined.HelpOutline),
             ),
         )
     }

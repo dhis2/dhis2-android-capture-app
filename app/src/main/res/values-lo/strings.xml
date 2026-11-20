@@ -159,12 +159,6 @@
     <string name="permission_denied">ທ່ານບໍ່ໄດ້ຮັບອະນຸຍາດໃນການດໍາເນີນການໜ້າວຽກນີ້</string>
 
     <string name="period">ໄລຍະ ເວລາ</string>
-    <string name="tuto_main_1">ຍີນດີຕ້ອນຮັບເຂົ້າສູ່ ລະບົບ DHIS2</string>
-    <string name="tuto_main_2">ທີ່ນີ້, ທ່ານສາມາດເບີ່ງກິດຈະກໍາ ຂອງທ່ານໄດ້</string>
-    <string name="tuto_main_3">ທ່ານສາມາດນໍາໃຊ້ເຄື່ອງມືຄັດຈ້ອນ...</string>
-    <string name="tuto_main_4">...ໂດຍການປ່ຽນໄລຍະເວລາ ແລະ ເລືອກວັນທີ...</string>
-    <string name="tuto_main_5">... ຫຼື ຄັດຈ້ອນຕາມສະຖານທີ່</string>
-    <string name="tuto_main_6">ກວດເບີ່ງໜ້າວຽກອື່ນໆໃນລາຍການຫຼັກ</string>
 
     <!-- RELATIONSHIPS -->
     <string name="next">ຕໍ່ໄປ</string>
@@ -215,13 +209,6 @@
 
     <string name="menu_home">ໜ້າຫຼັກ</string>
     <string name="appwidget_text">ຕົວຢ່າງ</string>
-    <string name="showHelp">ຊ່ວຍເຫຼືອ</string>
-    <string name="tuto_dashboard_1">ນີ້ແມ່ນກະດານຂ່າວສໍາລັບຂໍ້ມູນສ່ວນຕົວ</string>
-    <string name="tuto_dashboard_2">ເບີ່ງຂໍ້ມູນກ່ຽວກັບປະຫັວດສ່ວນຕົວ</string>
-    <string name="tuto_dashboard_6">ທີ່ນີ້, ທ່ານຈະເຫັນກໍລະນີທັງໝົດ. ກົດເພື່ອເບີ່ງລາຍລະອຽດ</string>
-    <string name="tuto_dashboard_7">ຊອກຜ່ານລາຍການເພື່ອເພີ່ມສາຍພົວພັນເຂົ້າ, ເບີ່ງຄ່າຕົວປ່ຽນ ຫຼື ບັນທຶກໄວ້</string>
-    <string name="tuto_event_initial_new_1">ປ້ອນຂໍ້ມູນທັງໝົດເຂົ້າເພື່ອສ້າງເປັນກໍລະນີ</string>
-    <string name="tuto_event_initial_1">ກົດເພື່ອກວດເບີ່ງການເຮັດສໍາເລັດການບັນທຶກກໍລະນີ</string>
     <string name="relationships">ສາຍພົວພັນ</string>
     <string name="qr_data_values">Data values</string>
     <string name="info">ຂໍ້ມູນ</string>
@@ -236,7 +223,6 @@
     <string name="unique_warning">ຄ່າບໍໍຄວນຊ້ຳກັນ ບັງເອີນໄດ້ຖຶກພົບເຫັນ. ມັນບໍໄດ້ບັນທຶກ. ກະລຸນາກວດສອບ</string>
     <string name="please_wait">ກະລຸນາລໍຖ້າ</string>
     <string name="skip">ຂ້າມ</string>
-    <string name="no_intructions">ບໍ່ມີຂໍ້ມູນສຳລັບໜ້າຈໍນີ້</string>
     <string name="delete_local_data_message">ຂໍ້ມູນທີ່ບໍ່ໄດ້ຮັບການຊິ້ງຈະສູນເສຍໄປ. ທ່ານຕ້ອງການສືບຕໍ່ຫຼືບໍ?</string>
     <string name="delete_local_data_error">ບໍ່ສາມາດລົບຂໍ້ມູນໄດ້ ກະລຸນາລອງໃໝ່ອີກຄັ້ງ</string>
     <string name="delete_local_data_done">ລົບຂໍ້ມູນໃນເຄື່ອງຮຽບຮ້ອຍແລ້ວ</string>
@@ -248,7 +234,6 @@
     <string name="state_relationship">ຄວາມສໍາພັນ</string>
     <string name="sent_by_sms">ສົ່ງຂໍ້ຄວາມ</string>
     <string name="action_close">ປິດ</string>
-    <string name="tuto_main_11">ຕອນນີ້ທ່ານສາມາດກວດສອບການຊິ້ງຂອງຂໍ້ມູນ ໂດຍການກົດໃສ່</string>
     <string name="relationship_error_recursive">ທ່ານບໍ່ສາມາດເຊື່ອມໂຍງບັນທຶກກັບຕົວມັນເອງໄດ້</string>
     <string name="change_calendar_view">ປ່ຽນຮູບແບບປະຕິທິນ</string>
     <string name="relationship_without_enrollment">ບັນທຶກທີ່ທ່ານພະຍາຍາມເຂົ້າບໍ່ມີການລົງທະບຽນ. ທ່ານບໍສາມາດເຂົ້າເຖີງໜ້າກະດານຂ່າວໄດ້</string>

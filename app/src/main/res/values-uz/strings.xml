@@ -150,12 +150,6 @@
     <string name="permission_denied">Ушбу амални бажариш учун сизда зарурий рухсат йўқ</string>
 
     <string name="period">давр</string>
-    <string name="tuto_main_1">DHIS2 га Хуш келибсиз</string>
-    <string name="tuto_main_2">Бу ерда щз фаолиятингизни кузатишингиз мумкин</string>
-    <string name="tuto_main_3">Фильтрни щзгартиришингиз мумкин</string>
-    <string name="tuto_main_4">... даврни ўзгартириш ва саналарни танлаш орқали ...</string>
-    <string name="tuto_main_5">... ёки фильтрланади, Ташкилий бўлим орқали</string>
-    <string name="tuto_main_6">Асосий менюдан бошқа ҳаракатларни текшириш</string>
 
     <!-- RELATIONSHIPS -->
     <string name="next">Кейинги</string>
@@ -207,13 +201,6 @@
 
     <string name="menu_home">Бош саҳифа</string>
     <string name="appwidget_text">МИСОЛ</string>
-    <string name="showHelp">Ёрдам беринг</string>
-    <string name="tuto_dashboard_1">Бу шахс-объектларни бошқарув панели</string>
-    <string name="tuto_dashboard_2">Шахс-объектларнинг профиль маълумотларини кўринг...</string>
-    <string name="tuto_dashboard_6">Бу ерда сиз барча ҳодиса/тадбирларни кўрасиз. Ҳодиса/тадбир тафсилотларини кўриш учун босинг.</string>
-    <string name="tuto_dashboard_7">Ўзаро муносабатларни қўшиш, кўрсатгичларни кўриш ёки ёзувларни ёзиш учун меню бўйлаб ҳаракатлананинг.</string>
-    <string name="tuto_event_initial_new_1">Ҳодиса/тадбир яратиш учун барча маълумотларни киритинг</string>
-    <string name="tuto_event_initial_1">Ҳодиса/тадбирнинг тугаш ҳолатини текшириш учун, босинг.</string>
     <string name="relationships">ўзаро алоқалар</string>
     <string name="qr_data_values">Маълумотларнинг қийматлари</string>
     <string name="info">Ахборот</string>
@@ -228,7 +215,6 @@
     <string name="unique_warning">Қиймат ноёб бўлиши лозим, бир бирига ўхшаш топилди. У сақланмади. Илтимос, текшириб кўриш.</string>
     <string name="please_wait">Илтимос, кутинг</string>
     <string name="skip">Ўтказиб юбориш</string>
-    <string name="no_intructions">Ушбу экрандаги ҳақида маълумот йўқ</string>
     <string name="delete_local_data_message">Синхронизация қилинмаган маълумотлар йўқолади. Ҳақиқатдан ҳам давом эттиришни хохлайсизми?</string>
     <string name="delete_local_data_error">Маълумотларни ўчириб бўлмади. Илтимос, қайта уриниб кўринг. </string>
     <string name="delete_local_data_done">Локал маълумотларни ўчириш муваффақиятли якунланди.</string>
@@ -240,7 +226,6 @@
     <string name="state_relationship">Ўзаро алоқа</string>
     <string name="sent_by_sms">СМС орқали юборилган</string>
     <string name="action_close">Ёпмоқ</string>
-    <string name="tuto_main_11">Энди сиз шу тугмага босиш орқали синхронизация маълумотларини текширишингиз мумкин</string>
     <string name="relationship_error_recursive">Ёзувни ўзаро алоқалар билан боғлаб бўлмади</string>
     <string name="change_calendar_view">Тақвим кўринишини ўзгартириш</string>
     <string name="relationship_without_enrollment">Сиз кириб кўрмоқчи бўлган ёзув қайд этилмаган. Сиз бошқарув панелига кира олмайсиз</string>

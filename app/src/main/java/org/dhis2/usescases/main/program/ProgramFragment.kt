@@ -2,9 +2,6 @@ package org.dhis2.usescases.main.program
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,12 +22,10 @@ import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.main.navigateTo
 import org.dhis2.usescases.main.toHomeItemData
-import org.dhis2.utils.HelpManager
 import org.dhis2.utils.analytics.SELECT_PROGRAM
 import org.dhis2.utils.analytics.TYPE_PROGRAM_SELECTED
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.koin.android.ext.android.inject
-import timber.log.Timber
 import javax.inject.Inject
 
 class ProgramFragment :
@@ -102,32 +97,6 @@ class ProgramFragment :
     }
 
     //endregion
-
-    override fun setTutorial() {
-        try {
-            if (context != null && isAdded) {
-                Handler(Looper.getMainLooper()).postDelayed(
-                    {
-                        if (abstractActivity != null) {
-                            val stepCondition = SparseBooleanArray()
-                            stepCondition.put(
-                                7,
-                                (programViewModel.programs.value?.size ?: 0) > 0,
-                            )
-                            HelpManager.getInstance().show(
-                                abstractActivity,
-                                HelpManager.TutorialName.PROGRAM_FRAGMENT,
-                                stepCondition,
-                            )
-                        }
-                    },
-                    500,
-                )
-            }
-        } catch (e: Exception) {
-            Timber.e(e)
-        }
-    }
 
     override fun navigateTo(program: ProgramUiModel) {
         abstractActivity.analyticsHelper.setEvent(

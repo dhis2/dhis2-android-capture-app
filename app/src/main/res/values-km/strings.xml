@@ -109,12 +109,6 @@
     <string name="permission_denied">អ្នកមិនមានសិទ្ធិគ្រប់គ្រាន់ដើម្បីដំណើរការផ្នែកនេះទេ</string>
 
     <string name="period">កំឡុងពេល</string>
-    <string name="tuto_main_1">សូមស្វាគមន៏មកកាន់ប្រព័ន្ធ DHIS2</string>
-    <string name="tuto_main_2">នៅទីនេះអ្នកអាចឃើញសកម្មភាពរបស់អ្នក</string>
-    <string name="tuto_main_3">អ្នកអាចអនុវត្តការច្រោះទិន្នន័យ​</string>
-    <string name="tuto_main_4">ដោយធ្វើការផ្លាស់ប្ដូររយៈពេល និង ជ្រើសរើសថ្ងៃខែឆ្នាំ​</string>
-    <string name="tuto_main_5">រឺច្រោះមើលទិន្នន័យតាមរយៈអង្គភាព</string>
-    <string name="tuto_main_6">ពិនិត្យមើលសកម្មភាពផ្សេងទៀតនៅផ្ទាំងបញ្ជីដើម</string>
 
     <!-- RELATIONSHIPS -->
     <string name="next">បន្ទាប់</string>
@@ -163,13 +157,6 @@
 
     <string name="menu_home">ផ្ទាំងដើម</string>
     <string name="appwidget_text">ឧទាហរណ៏</string>
-    <string name="showHelp">បង្ហាញជំនួយ</string>
-    <string name="tuto_dashboard_1">នេះគឺជាផ្ទាំងបង្ហាញព៌ត័មានរបស់អង្គភាព</string>
-    <string name="tuto_dashboard_2">មើលព័ត៌មានប្រវត្តិរូបរបស់អង្គភាព...</string>
-    <string name="tuto_dashboard_6">ទីនេះអ្នកនឹងឃើញគ្រប់ព្រឹត្តិការណ៏ទាំងអស់, ចុចដើម្បីពិនិត្យមើលលំអិតពីព្រឹត្តិការណ៏</string>
-    <string name="tuto_dashboard_7">ចុចលើផ្ទាំង Menu ដើម្បីបន្ថែមទំនាក់ទំនង, មើលសូចនាករ រឺ សរសេរកំណត់ត្រា</string>
-    <string name="tuto_event_initial_new_1">បញ្ចូលគ្រប់ទិន្នន័យទាំងអស់ដើម្បីបង្កើតព្រឹត្តិការណ៏ថ្មី</string>
-    <string name="tuto_event_initial_1">ចុចដើម្បីពិនិត្យពីស្ថានភាពនៃការបញ្ចប់របស់ព្រឹត្តិការណ៍</string>
     <string name="relationships">ទំនាក់ទំនង</string>
     <string name="dashboard_overview">ទិដ្ឋភាពទូទៅ</string>
     <string name="state_warning">ព្រមាន</string>

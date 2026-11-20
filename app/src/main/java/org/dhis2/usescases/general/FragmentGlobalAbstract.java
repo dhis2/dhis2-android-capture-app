@@ -78,14 +78,6 @@ public abstract class FragmentGlobalAbstract extends SessionManagerFragment impl
     }
 
     @Override
-    public void setTutorial() {
-    }
-
-    @Override
-    public void showTutorial(boolean shacked) {
-    }
-
-    @Override
     public void showDescription(String description) {
         getAbstractActivity().showDescription(description);
     }

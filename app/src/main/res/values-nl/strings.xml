@@ -152,12 +152,6 @@
     <string name="permission_denied">U heeft niet de vereiste rechten om deze actie uit te voeren</string>
 
     <string name="period">Periode</string>
-    <string name="tuto_main_1">Welkom bij dhis2</string>
-    <string name="tuto_main_2">Hier kunt u uw activiteiten zien</string>
-    <string name="tuto_main_3">U kunt een filter toepassen...</string>
-    <string name="tuto_main_4">…door de periode te wijzigen en data te selecteren…</string>
-    <string name="tuto_main_5">…of filter op organisatie-eenheid</string>
-    <string name="tuto_main_6">Controleer andere acties in het hoofdmenu</string>
 
     <!-- RELATIONSHIPS -->
     <string name="next">Volgende</string>
@@ -209,13 +203,6 @@
 
     <string name="menu_home">Thuis</string>
     <string name="appwidget_text">VOORBEELD</string>
-    <string name="showHelp">Hulp laten zien</string>
-    <string name="tuto_dashboard_1">Dit is het entiteitsdashboard</string>
-    <string name="tuto_dashboard_2">Profielgegevens van entiteiten bekijken...</string>
-    <string name="tuto_dashboard_6">Hier zie je alle evenementen. Klik om een gebeurtenisdetail te zien.</string>
-    <string name="tuto_dashboard_7">Navigeer door het menu om relaties toe te voegen, indicatoren te zien of notities te schrijven.</string>
-    <string name="tuto_event_initial_new_1">Voer alle gegevens in om het evenement aan te maken</string>
-    <string name="tuto_event_initial_1">Klik om de voltooiingsstatus van het evenement te controleren.</string>
     <string name="relationships">relaties</string>
     <string name="qr_data_values">Gegevens waarden</string>
     <string name="info">Info</string>
@@ -230,7 +217,6 @@
     <string name="unique_warning">De waarde moet uniek zijn, er is een toeval gevonden. Het is niet opgeslagen. Controleer het alstublieft.</string>
     <string name="please_wait">Even geduld alstublieft</string>
     <string name="skip">Overslaan</string>
-    <string name="no_intructions">Er is geen informatie voor dit scherm</string>
     <string name="delete_local_data_message">Niet-gesynchroniseerde gegevens gaan verloren. Wil je echt doorgaan?</string>
     <string name="delete_local_data_error">Gegevens konden niet worden verwijderd. Probeer het opnieuw.</string>
     <string name="delete_local_data_done">Verwijderen van lokale gegevens is voltooid.</string>
@@ -242,7 +228,6 @@
     <string name="state_relationship">Relatie</string>
     <string name="sent_by_sms">Per sms verzonden</string>
     <string name="action_close">Sluit</string>
-    <string name="tuto_main_11">Nu kunt u de synchronisatie-informatie controleren door hier te klikken</string>
     <string name="relationship_error_recursive">U kunt een record niet met zichzelf in verband brengen</string>
     <string name="change_calendar_view">Agendaweergave wijzigen</string>
     <string name="relationship_without_enrollment">Het record dat u probeert te openen heeft geen inschrijving. U heeft geen toegang tot het dashboard.</string>

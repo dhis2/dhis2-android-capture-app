@@ -30,10 +30,6 @@ public class AbstractActivityContracts {
 
         void showInfoDialog(String title, String message, OnDialogClickListener dialogListener);
 
-        void setTutorial();
-
-        void showTutorial(boolean shaked);
-
         void hideKeyboard();
 
         void showToast(String message);

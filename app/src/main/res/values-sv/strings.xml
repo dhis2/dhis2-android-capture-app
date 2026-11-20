@@ -107,12 +107,6 @@
     <string name="permission_denied">Du har antagligen inte den nödvändiga behörigheten för att utföra åtgärden.</string>
 
     <string name="period">Period</string>
-    <string name="tuto_main_1">Välkommen till DHIS2</string>
-    <string name="tuto_main_2">Här kan du se dina program</string>
-    <string name="tuto_main_3">Du kan använda ett filter...</string>
-    <string name="tuto_main_4">...genom att ändra perioden och välja datum...</string>
-    <string name="tuto_main_5">...eller filtrera efter organisationsenhet</string>
-    <string name="tuto_main_6">Kontrollera andra åtgärder i huvudmenyn</string>
 
     <!-- RELATIONSHIPS -->
     <string name="next">Nästa</string>

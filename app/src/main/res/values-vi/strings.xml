@@ -169,12 +169,6 @@
     <string name="permission_denied">Bạn không có quyền thực hiện hành động này</string>
 
     <string name="period">Thời điểm</string>
-    <string name="tuto_main_1">Chào mừng đến với dhis2</string>
-    <string name="tuto_main_2">Bạn có thể xem các hoạt động của mình tại đây</string>
-    <string name="tuto_main_3">Bạn có thể áp dụng bộ lọc...</string>
-    <string name="tuto_main_4">...bằng cách thay đổi thời điểm và chọn ngày</string>
-    <string name="tuto_main_5">...hoặc lọc theo Đơn vị</string>
-    <string name="tuto_main_6">Xem các hoạt động khác ở trình đơn chính</string>
 
     <!-- RELATIONSHIPS -->
     <string name="next">Tiếp tục</string>
@@ -227,13 +221,6 @@
 
     <string name="menu_home">Trang chủ</string>
     <string name="appwidget_text">VÍ DỤ</string>
-    <string name="showHelp">Hiện trợ giúp</string>
-    <string name="tuto_dashboard_1">Đây là bản trình bày dữ liệu của đối tượng theo dõi</string>
-    <string name="tuto_dashboard_2">Xem thông tin hồ sơ của các đối tượng theo dõi...</string>
-    <string name="tuto_dashboard_6">Tại đây bạn sẽ thấy tất cả các sự kiện. Bấm để xem chi tiết một sự kiện.</string>
-    <string name="tuto_dashboard_7">Thao tác điều hướng trong trình đơn để Thêm mối quan hệ, Xem chỉ số hoặc Viết ghi chú</string>
-    <string name="tuto_event_initial_new_1">Nhập tất cả dữ liệu để tạo sự kiện</string>
-    <string name="tuto_event_initial_1">Bấm để kiểm tra trạng thái hoàn tất sự kiện</string>
     <string name="relationships">mối quan hệ</string>
     <string name="qr_data_values">Giá trị dữ liệu</string>
     <string name="info">Thông tin</string>
@@ -248,7 +235,6 @@
     <string name="unique_warning">Giá trị phải là duy nhất, có một giá trị bị trùng. Nó chưa được lưu lại. Xin vui lòng kiểm tra. </string>
     <string name="please_wait">Xin vui lòng đợi</string>
     <string name="skip">Bỏ qua</string>
-    <string name="no_intructions">Không có thông tin cho màn hình này</string>
     <string name="delete_local_data_message">Dữ liệu đã đồng bộ sẽ không bị mất. Bạn có muốn tiếp tục không?</string>
     <string name="delete_local_data_error">Không thể xóa dữ liệu. Vui lòng thử lại.</string>
     <string name="delete_local_data_done">Đã xóa dữ liệu cục bộ thành công</string>
@@ -260,7 +246,6 @@
     <string name="state_relationship">Mối quan hệ</string>
     <string name="sent_by_sms">Đã gửi bằng SMS</string>
     <string name="action_close">Đóng</string>
-    <string name="tuto_main_11">Bây giờ bạn có thể kiểm tra thông tin đồng bộ bằng cách bấm vào đây</string>
     <string name="relationship_error_recursive">Bạn không thể liên kết một hồ sơ với chính nó</string>
     <string name="change_calendar_view">Thay đổi xem lịch</string>
     <string name="relationship_without_enrollment">Hồ sơ bạn đang truy suất không có đăng ký. Bạn không thể mở bảng trình bày dữ liệu</string>

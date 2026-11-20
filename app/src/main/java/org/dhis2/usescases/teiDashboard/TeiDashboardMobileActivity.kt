@@ -4,8 +4,6 @@ import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.TypedValue
 import android.view.View
 import android.view.WindowManager
@@ -74,10 +72,7 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragme
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity
 import org.dhis2.usescases.teiDashboard.ui.RelationshipTopBarIcon
 import org.dhis2.usescases.teiDashboard.ui.setButtonContent
-import org.dhis2.utils.HelpManager
-import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.SHARE_TEI
-import org.dhis2.utils.analytics.SHOW_HELP
 import org.dhis2.utils.analytics.TYPE_QR
 import org.dhis2.utils.analytics.TYPE_SHARE
 import org.dhis2.utils.customviews.MoreOptionsWithDropDownMenuButton
@@ -619,30 +614,6 @@ class TeiDashboardMobileActivity :
         teiProgramListLauncher.launch(intent)
     }
 
-    override fun setTutorial() {
-        Handler(Looper.getMainLooper()).postDelayed({
-            if (abstractActivity != null) {
-                HelpManager.getInstance().show(
-                    activity,
-                    HelpManager.TutorialName.TEI_DASHBOARD,
-                    null,
-                )
-            }
-        }, 500)
-    }
-
-    override fun showTutorial(shaked: Boolean) {
-        if (this.isLandscape()) {
-            setTutorial()
-        } else {
-            if (binding.editButton?.visibility == View.VISIBLE) {
-                setTutorial()
-            } else {
-                showToast(getString(R.string.no_intructions))
-            }
-        }
-    }
-
     private fun setProgramColor(programUid: String?) {
         themeManager.getThemePrimaryColor(
             programUid,
@@ -889,11 +860,6 @@ class TeiDashboardMobileActivity :
                         dashboardViewModel.setGrouping(false)
                     }
 
-                    EnrollmentMenuItem.HELP -> {
-                        analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP)
-                        showTutorial(true)
-                    }
-
                     EnrollmentMenuItem.ENROLLMENTS -> {
                         presenter.onEnrollmentSelectorClick()
                     }
@@ -939,7 +905,6 @@ enum class EnrollmentMenuItem {
     FOLLOW_UP,
     GROUP_BY_STAGE,
     VIEW_TIMELINE,
-    HELP,
     ENROLLMENTS,
     SHARE,
     ACTIVATE,

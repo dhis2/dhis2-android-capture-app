@@ -12,7 +12,6 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.runtime.getValue
@@ -64,7 +63,6 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragme
 import org.dhis2.usescases.teiDashboard.ui.RelationshipTopBarIcon
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_EVENT
-import org.dhis2.utils.analytics.SHOW_HELP
 import org.dhis2.utils.customviews.MoreOptionsWithDropDownMenuButton
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
@@ -455,11 +453,6 @@ class EventCaptureActivity :
                 onMenuToggle = { expanded = it },
             ) { itemId ->
                 when (itemId) {
-                    EventCaptureMenuItem.SHOW_HELP -> {
-                        analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP)
-                        showTutorial(false)
-                    }
-
                     EventCaptureMenuItem.DELETE -> confirmDeleteEvent()
                     EventCaptureMenuItem.SHARE -> openShareEvent()
                 }
@@ -469,13 +462,6 @@ class EventCaptureActivity :
 
     private fun getMenuItems(): List<MenuItemData<EventCaptureMenuItem>> =
         buildList {
-            add(
-                MenuItemData(
-                    id = EventCaptureMenuItem.SHOW_HELP,
-                    label = getString(R.string.showHelp),
-                    leadingElement = MenuLeadingElement.Icon(icon = Icons.AutoMirrored.Outlined.HelpOutline),
-                ),
-            )
             add(
                 MenuItemData(
                     id = EventCaptureMenuItem.SHARE,
@@ -494,10 +480,6 @@ class EventCaptureActivity :
                 )
             }
         }
-
-    override fun showTutorial(shaked: Boolean) {
-        showToast(getString(R.string.no_intructions))
-    }
 
     private fun confirmDeleteEvent() {
         presenter.programStage().let {
@@ -713,7 +695,6 @@ class EventCaptureActivity :
 }
 
 enum class EventCaptureMenuItem {
-    SHOW_HELP,
     DELETE,
     SHARE,
 }
