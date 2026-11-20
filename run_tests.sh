@@ -2,6 +2,10 @@
 # This will make exit immediately if any command fails
 set -e
 
+echo "Running harness and conventions checks..."
+python3 scripts/check_harness.py
+python3 scripts/check_conventions.py
+
 echo "Running Ktlint check..."
 ./gradlew ktlintCheck
 
