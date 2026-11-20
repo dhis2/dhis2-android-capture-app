@@ -3,20 +3,27 @@
 # Install once per clone:  git config core.hooksPath scripts/git-hooks
 set -e
 
-CHANGED_FILES="$(git --no-pager diff --name-only --no-color --cached --diff-filter=d -- '*.kt' '*.kts')"
+CHANGED_FILES="$(git -c core.quotepath=off --no-pager diff --name-only --no-color --cached --diff-filter=d -- '*.kt' '*.kts')"
 
 if [ -z "$CHANGED_FILES" ]; then
     exit 0
 fi
 
+# ktlint-gradle matches the filter against native paths: on Windows they use backslashes.
+case "$(uname -s)" in
+    MINGW* | MSYS* | CYGWIN*) KTLINT_FILTER="$(echo "$CHANGED_FILES" | sed 's/\//\\/g')" ;;
+    *) KTLINT_FILTER="$CHANGED_FILES" ;;
+esac
+
 echo "Running ktlint over the staged Kotlin files..."
-if ! ./gradlew --quiet --continue ktlintCheck -PinternalKtlintGitFilter="$CHANGED_FILES"; then
+if ! ./gradlew --quiet --continue ktlintCheck -PinternalKtlintGitFilter="$KTLINT_FILTER"; then
     echo "ktlint found problems: run ./gradlew ktlintFormat, re-stage, and commit again."
     exit 1
 fi
 
-KT_FILES="$(echo "$CHANGED_FILES" | grep '\.kt$' || true)"
-if [ -n "$KT_FILES" ]; then
-    # shellcheck disable=SC2086
-    python3 scripts/check_conventions.py --files $KT_FILES
+# Concluding a merge stages the other branch's changes too; those are not this commit's lines.
+if git rev-parse -q --verify MERGE_HEAD >/dev/null; then
+    exit 0
 fi
+
+python3 scripts/check_conventions.py --staged
