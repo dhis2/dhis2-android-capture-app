@@ -85,17 +85,22 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
         waitForView(withId(R.id.syncButton)).perform(click())
     }
 
+    /** Taps the form's sync button and waits for the save validation sheet to open. */
     fun clickSyncButtonAndWaitForSaveBottomSheet() = clickUntilSaveBottomSheetOpens(R.id.syncButton)
 
+    /** Taps the form's Save button and waits for the save validation sheet to open. */
     fun clickSaveButtonAndWaitForSaveBottomSheet() = clickUntilSaveBottomSheetOpens(R.id.actionButton)
 
     // The CI tablet can drop a tap that Espresso reports as done (ANDROAPP-7993), so tap again.
     @OptIn(ExperimentalTestApi::class)
     private fun clickUntilSaveBottomSheetOpens(viewId: Int) {
-        val sheetOpened = (1..MAX_SHEET_TAPS).any {
+        val sheetButton = hasTestTag(MAIN_BUTTON_TAG)
+        val sheetOpened = (1..MAX_SHEET_TAPS).any { tap ->
+            val openedAfterLastWait = tap > 1 && composeTestRule.onAllNodes(sheetButton).fetchSemanticsNodes().isNotEmpty()
+            if (openedAfterLastWait) return@any true
             waitForView(withId(viewId)).perform(click())
             try {
-                composeTestRule.waitUntilAtLeastOneExists(hasTestTag(MAIN_BUTTON_TAG), TIMEOUT)
+                composeTestRule.waitUntilAtLeastOneExists(sheetButton, TIMEOUT)
                 true
             } catch (_: ComposeTimeoutException) {
                 false
