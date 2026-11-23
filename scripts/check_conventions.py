@@ -71,7 +71,7 @@ class Source:
     @property
     def compiles_for_ios(self) -> bool:
         return self.module in IOS_MODULES and (
-            self.source_set.startswith("common") or self.source_set.startswith("ios")
+            self.source_set.startswith(("common", "native", "apple", "ios"))
         )
 
     @property
@@ -196,7 +196,7 @@ RULES: list[Rule] = [
     ),
     Rule(
         "ios-test-name-comma",
-        rx(r"\bfun\s+`[^`]*,[^`]*`"),
+        rx(r"\bfun\s+(<[^>]*>\s*)?([\w.<>?]+\.)?`[^`]*,[^`]*`"),
         "Kotlin/Native rejects `,` in backtick names, and CI does not build iOS (kmp-ios skill)",
         lambda s: s.is_test and s.compiles_for_ios,
     ),
