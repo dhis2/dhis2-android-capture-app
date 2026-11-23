@@ -174,7 +174,8 @@ class SavePin(private val repository: SessionRepository) : UseCase<String, Unit>
 }
 ```
 
-- Name as an action with no `UseCase` suffix. Rename an existing `…UseCase` class when you touch it.
+- Name as an action with no `UseCase` suffix. Rename an existing `…UseCase` class only when the task
+  is about it.
 - Catch order: rethrow `CancellationException`, then `Exception`. `DomainError` extends
   `Exception`, so mapped SDK errors are covered.
 - A separate `catch (error: DomainError)` before `Exception` only when domain errors need their

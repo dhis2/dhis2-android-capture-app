@@ -4,8 +4,9 @@ description: >
   Keep KMP code iOS-compliant and add the iOS target (iosArm64, iosSimulatorArm64) to a KMP module
   of the DHIS2 Android Capture App: the jvmCommon source set hierarchy, which commonMain and
   commonTest constructs break Kotlin/Native, rewriting Mockito tests as fakes, Koin bindings and
-  dependency verification for iOS, and how to compile and test the iOS target locally. Load when adding iOS to a module, when an
-  iOS compilation fails, or when unsure whether commonMain code is iOS-safe.
+  dependency verification for iOS, and how to compile and test the iOS target locally. Load when
+  adding iOS to a module, when an iOS compilation fails, or when unsure whether commonMain code is
+  iOS-safe.
 ---
 
 # KMP iOS
@@ -76,7 +77,9 @@ The last row is the trap: a module **without** iOS sees `commonskmm`'s `jvmCommo
    `src/jvmCommonMain`.
 3. Add an `iosMain` `actual` for every `expect` in the module. Koin bindings on iOS follow Desktop:
    stubs until the SDK is multiplatform. `commonskmm`'s iOS `commonsModule` includes
-   `sharedCommonsModule` (no platform API) and `sdklessCommonsModule` (stubs).
+   `sharedCommonsModule` (no platform API) and `sdklessCommonsModule` (stubs). Existing `iosMain`
+   files in a module without iOS have never been compiled: check them too (for example
+   `aggregates`' `ui/ScreenWidth.kt` uses Android-only APIs; copy the desktop version).
 4. Move JVM-bound tests out of `commonTest` (or rewrite them with fakes).
 5. Verify:
    ```bash
