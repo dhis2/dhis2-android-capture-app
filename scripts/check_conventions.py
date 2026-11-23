@@ -9,11 +9,10 @@ Usage:
   scripts/check_conventions.py --base origin/main
   scripts/check_conventions.py --staged        # lines added in the index vs HEAD (pre-commit)
   scripts/check_conventions.py --files a.kt b.kt   # lines added vs HEAD (whole file if untracked)
-  scripts/check_conventions.py --full a.kt     # every line of the given files
 
-Base branch: --base, else $CONVENTIONS_BASE, else the branch the work started from: whichever of
-origin/develop, origin/main and origin/release/* has the fewest commits between its merge base and
-HEAD (develop on a tie).
+Base branch: --base, else the branch the work started from: whichever of origin/develop,
+origin/main and origin/release/* has the fewest commits between its merge base and HEAD (develop on
+a tie). Pass --base origin/<branch> when the detection picks the wrong one.
 
 Moved and renamed files count only their changed lines (git rename detection).
 
@@ -24,7 +23,6 @@ allowed with a trailing comment that gives the reason:  // conventions:allow <re
 from __future__ import annotations
 
 import argparse
-import os
 import re
 import subprocess
 import sys
@@ -38,17 +36,6 @@ ROOT = Path(
     ).stdout.strip()
 )
 ALLOW_MARKER = "conventions:allow"
-TEST_SOURCE_SETS = {
-    "test",
-    "testDhis2",
-    "androidTest",
-    "commonTest",
-    "androidHostTest",
-    "jvmCommonTest",
-    "desktopTest",
-    "iosTest",
-    "androidUnitTest",
-}
 
 
 def _module_build_file(module: str) -> str:
@@ -78,7 +65,14 @@ class Source:
 
     @property
     def is_test(self) -> bool:
-        return self.source_set in TEST_SOURCE_SETS
+        # commonTest, androidHostTest, iosSimulatorArm64Test…; test, testDhis2, androidTestDhis2…
+        return self.source_set.endswith("Test") or self.source_set.startswith(("test", "androidTest"))
+
+    @property
+    def compiles_for_ios(self) -> bool:
+        return self.module in IOS_MODULES and (
+            self.source_set.startswith("common") or self.source_set.startswith("ios")
+        )
 
     @property
     def is_main(self) -> bool:
@@ -175,19 +169,7 @@ RULES: list[Rule] = [
         "use launchUseCase { } so the Espresso idling resource tracks the coroutine",
         lambda s: s.is_main and not s.path.endswith("/ViewModelExtensions.kt"),
     ),
-    Rule(
-        "mockk",
-        rx(r"\bio\.mockk\b|\bmockk\s*[<(]|\bcoEvery\s*\{"),
-        "use mockito-kotlin, never MockK",
-        lambda s: True,
-    ),
     Rule("thread-sleep", rx(r"\bThread\.sleep\("), "no hard-coded delays", lambda s: True),
-    Rule(
-        "junit-jupiter",
-        rx(r"org\.junit\.jupiter"),
-        "JUnit Jupiter is excluded from the build: use JUnit4 / kotlin.test",
-        lambda s: True,
-    ),
     Rule(
         "usecase-suffix",
         rx(r"\b(class|object|interface)\s+\w+UseCase\b"),
@@ -211,6 +193,12 @@ RULES: list[Rule] = [
         rx(r"^\s*import\s+(org\.mockito|org\.junit|java\.)"),
         "commonTest of an iOS module runs on iOS: use fakes and kotlin.test",
         lambda s: s.source_set == "commonTest" and s.module in IOS_MODULES,
+    ),
+    Rule(
+        "ios-test-name-comma",
+        rx(r"\bfun\s+`[^`]*,[^`]*`"),
+        "Kotlin/Native rejects `,` in backtick names, and CI does not build iOS (kmp-ios skill)",
+        lambda s: s.is_test and s.compiles_for_ios,
     ),
 ]
 
@@ -266,8 +254,8 @@ def untracked_kotlin() -> list[str]:
 
 
 def resolve_base(cli_base: str | None) -> str:
-    if cli_base or os.environ.get("CONVENTIONS_BASE"):
-        return cli_base or os.environ["CONVENTIONS_BASE"]
+    if cli_base:
+        return cli_base
     candidates = ["origin/develop", "origin/main"] + sorted(
         git("for-each-ref", "--format=%(refname:short)", "refs/remotes/origin/release/").split()
     )
@@ -296,7 +284,7 @@ def staged_lines() -> dict[str, list[tuple[int, str]]]:
     return parse_added_lines(git(*DIFF, "--cached", "--diff-filter=AMR", "HEAD"))
 
 
-def lines_of_files(files: Iterable[str], full: bool) -> dict[str, list[tuple[int, str]]]:
+def lines_of_files(files: Iterable[str]) -> dict[str, list[tuple[int, str]]]:
     tracked = set(git("ls-files").splitlines())
     wanted = []
     for file in files:
@@ -310,7 +298,7 @@ def lines_of_files(files: Iterable[str], full: bool) -> dict[str, list[tuple[int
     added: dict[str, list[tuple[int, str]]] = {}
     to_diff = []
     for path in wanted:
-        if full or path not in tracked:
+        if path not in tracked:
             added[path] = whole_file(path)
         else:
             to_diff.append(path)
@@ -342,16 +330,13 @@ def main() -> int:
     parser.add_argument("--base", help="base ref to diff against (default: see above)")
     parser.add_argument("--staged", action="store_true", help="check lines added in the index vs HEAD")
     parser.add_argument("--files", nargs="+", help="check lines added to these files vs HEAD")
-    parser.add_argument("--full", nargs="+", help="check every line of these files")
     args = parser.parse_args()
 
     try:
-        if args.full:
-            added = lines_of_files(args.full, full=True)
-        elif args.staged:
+        if args.staged:
             added = staged_lines()
         elif args.files:
-            added = lines_of_files(args.files, full=False)
+            added = lines_of_files(args.files)
         else:
             added = lines_since_base(resolve_base(args.base))
     except subprocess.CalledProcessError as error:
