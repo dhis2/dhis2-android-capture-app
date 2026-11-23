@@ -46,11 +46,11 @@ Run these checks and stop with a clear message if one fails.
    the local copy, which may be stale.
 4. **Ticket key**: take it from the branch name (`ANDROAPP-1234…`). If there is none, ask the
    user for it, or whether the PR has no ticket.
-5. **Repository checks** (CI does not run them, so this is the gate): after the fetch, run
-   `python3 scripts/check_conventions.py --base origin/<base>` and
-   `python3 scripts/check_harness.py`. Both read the working tree, so if the user left changes out
-   of the PR, run them with those changes stashed (`git stash push --include-untracked`, then
-   `git stash pop`).
+5. **Repository checks** (CI does not run them, so this is the gate): after the fetch, run both
+   on the committed head only, in a throwaway worktree, so the user's uncommitted work is neither
+   checked nor touched: `git worktree add --detach <tmp> HEAD`, then in `<tmp>` run
+   `python3 scripts/check_conventions.py --base origin/<base>` and `python3 scripts/check_harness.py`,
+   then `git worktree remove <tmp>`.
    - Conventions findings are lines this PR adds: show them and ask the user whether to fix them
      now (then commit the fixes per [section 7](#7-commit-and-pr-title-conventions)) or to keep a
      line on purpose, which needs a trailing `// conventions:allow <reason>` comment.
@@ -110,8 +110,9 @@ each, and the branch names. Name the bottom branch after the current branch and 
 
 ### Build the stack
 
-1. Create a backup ref of the current head and tell the user its name:
-   `git branch backup/<current-branch> HEAD`.
+1. If there are uncommitted changes, ask the user to commit or set them aside first: building the
+   stack switches branches and would carry them along. Then create a backup ref of the current
+   head and tell the user its name: `git branch backup/<current-branch> HEAD`.
 2. Create the branches with `gh stack init --base <base> <branch-1> <branch-2> …` (it adopts
    existing branches and creates the missing ones, each on top of the previous one).
 3. For each layer, on its branch: bring in that layer's files from the backup head
