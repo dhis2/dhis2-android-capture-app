@@ -25,6 +25,7 @@ in skills. **Read the matching skill before starting**; if your agent does not l
 ./gradlew testDebugUnitTest testDhis2DebugUnitTest testAndroidHostTest   # all unit tests
 ./gradlew desktopTest                       # commonTest of every KMP module on the desktop JVM
 ./gradlew :login:testAndroidHostTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest"
+./gradlew :login:testAndroidHostTest --tests "*.LoginViewModelTest.initial screen is set correctly when starting"
 ./gradlew assembleDhis2Debug                # debug APK
 scripts/check_conventions.py                # the agreements below, on the lines your branch adds
 scripts/check_harness.py                    # AGENTS.md / skills still match the repo (paths, modules)
@@ -74,32 +75,38 @@ break a rule on purpose ends with `// conventions:allow <reason>`.
 
 1. **KMP first, iOS-ready:** business logic in `commonMain`, with no `java.*`, `javax.*`,
    `android.*` or `String.format`. When you touch a KMP module without iOS, propose adding it.
-2. **SDK access through suspend or Flow APIs** (`suspendGet`, `flowDownload`…), never
-   `blocking*`, `rx*` or RxJava, except where the SDK has no suspend version.
+2. **SDK access through suspend or Flow APIs** (`suspendGet`, `flowDownload`…); no `rx*` or
+   RxJava, and `blocking*` only where the SDK has no suspend version.
 3. **Repositories own the dispatcher:** `withContext(dispatcher.io)` / `flowOn(dispatcher.io)`
    with the injected `commonskmm` `Dispatcher`; never `Dispatchers.*` or the legacy dispatchers.
 4. **SDK errors become `DomainError` at the repository boundary** through
    `withDomainErrors { }` / `withDomainErrorsAsResult { }`, never an inline `catch (e: D2Error)`.
 5. **Use cases never throw:** implement `UseCase<R, T>`, are named as an action (`SavePin`),
-   rethrow `CancellationException` and then catch `Exception`; no `runCatching`, no `Throwable`.
+   rethrow `CancellationException` and then catch `Exception`; no `runCatching`, no
+   `catch (Throwable)`.
 6. **ViewModels** expose `StateFlow<UiState>` and launch work with `launchUseCase { }`, never
    `viewModelScope.launch`.
-7. **Platform code:** an interface in `commonMain` plus one Koin binding per platform;
-   `expect`/`actual` only for small functions, Compose helpers and `expect val` Koin modules.
-8. **Koin, the DHIS2 design system** inside `DHIS2Theme { }`, **offline-first** through the SDK;
-   domain models in `domain/model/`, UI models in `ui/state/`.
+7. **Platform code:** repositories and stateful platform services are an interface in
+   `commonMain` plus one Koin binding per platform. `expect`/`actual` only for small functions,
+   Compose helpers and `expect val` Koin modules; no new `expect class`.
+8. **Koin for DI in new code** (not Dagger), DHIS2 design system components inside
+   `DHIS2Theme { }`, **offline-first** through the SDK; domain models in `domain/model/`, UI
+   models in `ui/state/`.
 9. **Tests:** mockito-kotlin and JUnit4 / `kotlin.test`; mock `D2` with `RETURNS_DEEP_STUBS`;
    no `Thread.sleep()`; in modules with iOS, `commonTest` uses fakes and Mockito goes in
    `androidHostTest`.
 
 When you change AGENTS.md or a skill, keep `scripts/check_harness.py` green; when you add an
-agreement, add its check.
+agreement, add its check. Task skills beyond the table above (Sentry triage and fixes, team
+metrics, UI test planning) live in `.claude/skills/<name>/SKILL.md`, each described at its top.
 
 ---
 
 ## Code style, commits and PRs
 
-- ktlint with `ktlint_official` (`.editorconfig`); run `./gradlew ktlintFormat`.
+- ktlint with `ktlint_official` (`.editorconfig`); run `./gradlew ktlintFormat`. Prefer `data class`
+  for models, `sealed` types for UI state, expression bodies for single expressions, and KDoc on
+  public APIs.
 - Commits and PR titles: Conventional Commits with the ticket key first,
   `fix: [ANDROAPP-1234] short description`. No AI or tool attribution in commits or PRs.
 - PRs are limited to 400 changed lines (`scripts/check_pr_size.sh`); `/open-pr` splits larger

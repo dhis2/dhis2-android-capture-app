@@ -253,3 +253,13 @@ with this repository's ticket key at the start of the description:
   commits or PRs.
 - Commit or push only within this flow, and never amend or force-push commits that are already
   on the remote without asking the user.
+
+What CI does with the PR (`.github/workflows/`), so the title and description are right first time:
+
+- Title or body markers: `[skip size]` (a justified PR over 400 lines), `[skip unitTest]`,
+  `[skip ci]`. They apply to the PR's own runs only: the merge queue always runs the full CI.
+- A PR to `develop` also needs every ANDROAPP key in its title to be in "Ready to Merge" in Jira
+  (`jira-ready.yml`).
+- Merge automation (`scripts/merge_automation.py`) queues a PR, or collapses a stack into its
+  root PR, once it is not a draft, has its tickets ready, 2 approvals, no "changes requested" and
+  green checks. A PR without an ANDROAPP ticket is never queued: it is merged by hand.

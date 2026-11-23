@@ -28,9 +28,10 @@ description: >
 
 Commands, the test task for each module type, and how to confirm a test ran: `AGENTS.md`, Commands.
 
-**UI instrumented tests** (`app/src/androidTest/`): read [references/ui-tests.md](references/ui-tests.md)
-before writing or fixing one. It covers the Robot pattern, test tags, design system inputs,
-fixtures and the CI device matrix (portrait and landscape).
+**Instrumented tests** (`src/androidTest/` in any module): read
+[references/ui-tests.md](references/ui-tests.md) before writing, fixing or reviewing one. It covers
+the Robot pattern, test tags, design system inputs, fixtures and the CI device matrix (portrait and
+landscape).
 
 ## Critical Rule: No Hard-Coded Delays
 
