@@ -3,17 +3,17 @@ name: kmp-ios
 description: >
   Keep KMP code iOS-compliant and add the iOS target (iosArm64, iosSimulatorArm64) to a KMP module
   of the DHIS2 Android Capture App: the jvmCommon source set hierarchy, which commonMain and
-  commonTest constructs break Kotlin/Native, per-module readiness (sync, login, aggregates,
-  tracker), rewriting Mockito tests as fakes, Koin bindings and dependency verification for iOS,
-  and how to compile and test the iOS target locally. Load when adding iOS to a module, when an
+  commonTest constructs break Kotlin/Native, rewriting Mockito tests as fakes, Koin bindings and
+  dependency verification for iOS, and how to compile and test the iOS target locally. Load when adding iOS to a module, when an
   iOS compilation fails, or when unsure whether commonMain code is iOS-safe.
 ---
 
 # KMP iOS
 
-The project is moving to KMP with iOS. `commonskmm` and `home` already compile for iOS; the other
-KMP modules target Android and Desktop only. iOS is not shipped yet: `iosMain` holds stubs, so
-modules can compile for it and catch platform leaks early.
+The project is moving to KMP with iOS; the module table in `AGENTS.md` says which modules compile
+for it. iOS is not shipped yet: `iosMain` holds stubs, so modules can compile for it and catch
+platform leaks early. CI does not compile iOS, so nothing but this skill and the conventions check
+catches an iOS break before someone builds it.
 
 ## What breaks iOS in `commonMain`
 
@@ -40,7 +40,8 @@ The last row is the trap: a module **without** iOS sees `commonskmm`'s `jvmCommo
   `assertEquals`). Turbine, `koin-test` and `kotlinx-coroutines-test` work on iOS.
 - Tests that need Mockito or a mocked `D2` go in `androidHostTest`. Tests of `jvmCommonMain` code
   go in `jvmCommonTest`.
-- Backtick test names cannot contain `,` (Kotlin/Native rejects them).
+- Backtick test names cannot contain `,` (Kotlin/Native rejects them; the conventions check flags
+  it).
 
 ## Adding iOS to a module
 
@@ -81,22 +82,10 @@ The last row is the trap: a module **without** iOS sees `commonskmm`'s `jvmCommo
    ```bash
    ./gradlew :<module>:compileKotlinIosSimulatorArm64 --dependency-verification lenient
    ./gradlew :<module>:iosSimulatorArm64Test --dependency-verification lenient   # needs Xcode
-   ./gradlew :<module>:desktopTest :<module>:testAndroidHostTest
    ```
+   plus the module's Android and Desktop tests (`AGENTS.md`, Commands).
    iOS compilation downloads Kotlin/Native toolchains; if the sandbox blocks the download, run it
    outside the sandbox. `--dependency-verification lenient` is needed because
    `gradle/verification-metadata.xml` has no iOS artifacts yet (`designsystem-iosarm64`,
-   `paging-compose-iosarm64`, `navigation-compose-uikitarm64`, …). CI does not compile iOS yet.
-6. Update the module table in `AGENTS.md` (iOS ✓) and the readiness table below.
-
-## Module readiness (as of 2026-11)
-
-No module uses an Android-only library in `commonMain`: Compose Multiplatform, Koin, navigation,
-lifecycle, paging-compose, ktor, kotlinx-datetime, coil3 and the design system all publish iOS.
-
-| Module | `commonMain` blockers | `expect`s needing iOS actuals | `commonTest` files on Mockito/JUnit | Effort |
-|---|---|---|---|---|
-| `sync` | `model/GranularSyncType.kt` `"…%s".format(name)` | 2 (`platform()`, `syncModule`) | 8 of 8 | Easy, the next candidate |
-| `login` | none | 7 (DI modules, `WebAuthenticator`, `WebRecovery`, `FilePicker`, `ServerQRReader`) | 20 of 22 | Easy main code, large test rewrite |
-| `aggregates` | `SortedMap` (`GetDataSetSectionIndicators`, `DataSetInstanceRepository`), `java.io.File` and `jvmCommon` calls in `ui/inputs/InputProvider.kt`, `.format` in `ValidationRulesResult` and `DataSetTableScreen`, `Dispatchers.IO` import in `AggregateModule` | 2 (`platformModule`, `getScreenWidth`) | 6 of 6 (one uses `KoinTestRule`) | Medium. Also replace the broken `src/iosMain/.../ScreenWidth.kt` with the desktop version |
-| `tracker` | `java.util.Date` in `relationships/model/RelationshipModel.kt` (the change reaches `androidMain` and `app`), `.format` in `RelationshipsScreen` | 1 (`trackerSearchRepositoryModule`) | 8 of 8 | Medium |
+   `paging-compose-iosarm64`, `navigation-compose-uikitarm64`, …).
+6. Mark the module with iOS ✓ in the module table in `AGENTS.md`.

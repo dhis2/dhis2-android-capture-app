@@ -33,6 +33,10 @@ di/               # Koin modules
 Data flows one way: ViewModel → use case → repository interface → platform implementation → SDK.
 Only the repository implementation knows about `D2`, `D2Error` and dispatchers for I/O.
 
+The app is offline-first: data comes from the SDK's local database, and the SDK does all network
+and database access, so new code never opens either directly. No new top-level `model/` packages:
+domain models go in `domain/model/`, UI models in `ui/state/`.
+
 ## Repository
 
 The repository implementation owns three things: **the dispatcher**, **the SDK call**, and
@@ -126,7 +130,8 @@ error wrapper, and do not switch to its Rx form:
 `scripts/check_conventions.py` flags every `.blockingX(` call, so end each of these lines with
 `// conventions:allow <reason>` (for example `// conventions:allow no suspend metadata download`).
 If you find another operation with no suspend form, check the SDK sources before using the
-blocking one, and add it to this list in the same PR.
+blocking one, and add it to this list in the same PR. Re-check the list whenever `dhis2sdk` is
+bumped: drop the entries that gained a suspend form.
 
 `suspendGet` relies on the SDK's database dispatcher but is not guaranteed main-safe, so keep the
 `withContext(dispatcher.io)` around it.
@@ -203,7 +208,8 @@ class PinViewModel(
 ```
 
 - `launchUseCase` (`commonskmm/.../extensions/ViewModelExtensions.kt`) wraps `CoroutineTracker`,
-  which Espresso's idling resource waits on. `viewModelScope.launch` makes UI tests flaky.
+  which Espresso's idling resource waits on. `viewModelScope.launch` makes UI tests flaky. Leave
+  existing `viewModelScope.launch` sites as they are unless the task is to migrate them.
 - Show errors from `DomainError.message`: it is already localised by `DomainErrorMapper`. Do not
   parse SDK errors in the UI (`D2ErrorUtils`, `ResourceManager.parseD2Error` are legacy).
 - Collect state in composables with `collectAsState()`.
@@ -270,5 +276,4 @@ composables with `koinViewModel()`. `DomainErrorMapper` and `Dispatcher` already
 8. Screen with design system components, test tags, previews.
 9. Tests (`android-testing` skill): use case and ViewModel in `commonTest`, repository with a deep
    stubbed `D2` in `androidHostTest`.
-10. `./gradlew ktlintFormat ktlintCheck`, the module's test tasks, `desktopTest`, and
-    `scripts/check_conventions.py`.
+10. The checks and test tasks under Commands in `AGENTS.md`.
