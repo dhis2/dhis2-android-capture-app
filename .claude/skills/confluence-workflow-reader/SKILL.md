@@ -6,7 +6,7 @@ description: >
   house FORMAT of a flow write-up, and contextual knowledge of what has already
   been planned or automated so a duplicate flow is not proposed. Never a source of
   coding standards. Read-only by default; only writes when the test-flow-architect
-  agent has explicit "approved, publish" permission from the user.
+  skill has explicit "approved, publish" permission from the user.
 ---
 
 # Confluence Workflow Reader
