@@ -172,7 +172,7 @@ modules with iOS (Kotlin/Native rejects them).
 - **`/sentry-triage`**, **`/sentry-fix <id>`**: rank production crashes and fix one in the repo
   that owns it (this app, `../dhis2-android-sdk` or `../dhis2-mobile-ui`).
 - **`/team-metrics`**: the monthly team metrics report on Confluence.
-- **`test-flow-architect`** agent (with `zephyr-test-fetcher`, `confluence-workflow-reader`,
+- **`/test-flow-architect`** (with `zephyr-test-fetcher`, `confluence-workflow-reader`,
   `test-flow-planner`): plan and implement UI test automation from Zephyr test cases.
 - **`kmp-architecture`**, **`kmp-ios`**, **`android-testing`**: see the table at the top.
 
