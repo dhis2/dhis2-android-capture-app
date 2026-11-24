@@ -9,6 +9,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -55,6 +57,7 @@ import org.dhis2.usescases.main.ui.model.HomeEffect
 import org.dhis2.usescases.main.ui.model.HomeScreenState
 import org.dhis2.usescases.main.ui.model.VersionToUpdateState
 import org.dhis2.usescases.main.ui.model.defaultHomeScreenState
+import org.dhis2.usescases.settings.models.DeleteDataState
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import timber.log.Timber
@@ -84,6 +87,9 @@ class MainViewModel(
     private val _homeScreenState = MutableStateFlow(defaultHomeScreenState)
 
     private var metadataSyncObserverJob: Job? = null
+
+    private val _deleteAccountState = MutableStateFlow<DeleteDataState>(DeleteDataState.None)
+    val deleteAccountState: StateFlow<DeleteDataState> = _deleteAccountState.asStateFlow()
 
     private val _homeEffects = Channel<HomeEffect>(Channel.BUFFERED)
     val homeEffects = _homeEffects.receiveAsFlow()
@@ -299,18 +305,31 @@ class MainViewModel(
         }
     }
 
+    fun onDeleteAccountClick() {
+        _deleteAccountState.value = DeleteDataState.Opened
+    }
+
+    fun onDismissDeleteAccount() {
+        if (_deleteAccountState.value !is DeleteDataState.Deleting) {
+            _deleteAccountState.value = DeleteDataState.None
+        }
+    }
+
     context(context: Context)
     fun onDeleteAccount() {
         metadataSyncObserverJob?.cancel()
+        _deleteAccountState.value = DeleteDataState.Deleting
         launchUseCase(dispatcher.io()) {
             _homeEffects.send(HomeEffect.ShowDeleteNotification)
             deleteAccount(context.cacheDir).fold(
                 onSuccess = { accountCount ->
                     syncBackgroundJobAction.cancelAll()
+                    _deleteAccountState.value = DeleteDataState.None
                     _homeEffects.send(HomeEffect.GoToLogin(accountCount, true))
                 },
                 onFailure = {
                     Timber.e(it)
+                    _deleteAccountState.value = DeleteDataState.None
                     observeMetadataSyncJob()
                 },
             )
