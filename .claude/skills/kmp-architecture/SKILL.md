@@ -94,20 +94,28 @@ inline `D2Error` handling to it.
 ## DHIS2 SDK: suspend and Flow APIs
 
 The SDK is moving every operation to coroutines. An operation can have a `suspend` form
-(`suspendGet`, `suspendSet`, `suspendDelete`…), a form that returns a `Flow` (`flowDownload`,
-`flowUpload`, `getPagingData`), a `blocking*` wrapper of the suspend one, an `rx*` form and a
-deprecated plain form. In new code:
+(`suspendGet`, `suspendSet`, `suspendIsGreaterThan`…), a form that returns a `Flow`
+(`flowDownload`, `flowUpload`, `getPagingData`), a blocking form and an Rx form. In new code:
 
 1. Call the `suspend` form, or the one that returns a `Flow` (collect it; `flowOn(dispatcher.io)`
    on a Flow you return).
 2. Only if the operation has neither, call its blocking form inside `withContext(dispatcher.io)` and
-   the error wrapper, and end the line with `// conventions:allow no suspend <operation>`. Look in
-   the SDK version pinned in `gradle/libs.versions.toml` first (IDE completion on the repository or
-   service, or `../dhis2-android-sdk` at that version): suspend forms are added with each release.
-3. Never the `rx*` or deprecated plain form, even when there is no suspend form.
+   the error wrapper. A blocking form is any non-`suspend` call that returns data or `Unit`, with
+   or without the `blocking` prefix (`blockingGet()`, but also `DHISVersionManager.getVersion()` or
+   the `set*` setters of object repositories). The check flags only the `blocking*` ones: end that
+   line, and only that line, with `// conventions:allow no suspend <operation>`, because the marker
+   turns off every rule on its line.
+3. Never a form that returns `Single`, `Observable`, `Completable` or `Flowable`, whatever its name
+   (`rxGet()`, the deprecated `get()`, `download()`). The one exception: an operation whose
+   progress is only exposed as Rx, such as `d2.metadataModule().download()`, is consumed with
+   `.blockingForEach { }` inside `withContext(dispatcher.io)`, as `AndroidSyncRepository` does.
 
-When you touch an existing `conventions:allow no suspend` line and the SDK now has a suspend form,
-switch to it.
+Before concluding that an operation has no `suspend` or `Flow` form, read it in the sources of the
+SDK version pinned as `dhis2sdk` in `gradle/libs.versions.toml`, from
+`~/.gradle/caches/modules-2/files-2.1/org.hisp.dhis/android-core/<dhis2sdk>/*/android-core-<dhis2sdk>-sources.jar`
+(`unzip -l` to find the file, `unzip -p` to read it). A newer SDK clone may have forms the pinned
+version lacks. When bumping `dhis2sdk`, `git grep "conventions:allow no suspend"` and switch every
+line whose operation gained a `suspend` or `Flow` form.
 
 `suspendGet` relies on the SDK's database dispatcher but is not guaranteed main-safe, so keep the
 `withContext(dispatcher.io)` around it.
