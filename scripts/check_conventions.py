@@ -3,7 +3,9 @@
 
 Only added lines are checked, so legacy code never fails the check: touching a legacy file does
 not make you fix it, but nothing new may break the agreements. repository-io is the one rule that
-reads the whole function: it checks each repository override whose declaration line was added.
+reads the whole function: it checks each repository function whose declaration line was added (so
+editing that line of an existing function brings it under the rule). With --staged it reads the
+index, otherwise the working tree.
 
 Usage:
   scripts/check_conventions.py                 # lines added since the merge base with the base branch
@@ -29,7 +31,7 @@ import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Iterable
+from typing import Callable, Iterable, NamedTuple
 
 ROOT = Path(
     subprocess.run(
@@ -204,39 +206,41 @@ RULES: list[Rule] = [
 ]
 
 
-# repository-io: a new suspend or Flow override in a repository implementation must switch to io,
+# repository-io: a new suspend or Flow function of a repository implementation must switch to io,
 # directly or through a helper of the same class that does. It needs the whole function, so it reads
 # the file instead of the added lines.
-CLASS_HEADER = re.compile(r"\bclass\s+\w+\s*(<[^>]*>)?\s*")
+CLASS_HEADER = re.compile(r"\bclass\s+(\w+)")
 FUNCTION = re.compile(
-    r"^(\s*)((?:(?:override|private|internal|protected|public|open)\s+)*)(suspend\s+)?"
-    r"fun\s+(?:<[^>]*>\s*)?(\w+)"
+    r"^(\s*)(?:@\w+(?:\([^)]*\))?\s+|context\([^)]*\)\s+)*((?:[a-z]+\s+)*)fun\s+(?:<.*?>\s+)?"
+    r"([\w.<>?, ]+\.)?(\w+)\s*\("
 )
-SWITCHES_TO_IO = re.compile(r"\b(withContext|flowOn)\(\s*[\w.]*\.io\b")
+SWITCHES_TO_IO = re.compile(r"\b(withContext|flowOn)\([^)]*\bio\b")
 RETURNS_FLOW = re.compile(r"\)\s*:\s*(kotlinx\.coroutines\.flow\.)?Flow<")
+# Bodies with nothing to make main-safe: a call to another (main-safe) repository, or a constant.
+TRIVIAL_BODY = re.compile(
+    r"=\s*(\w*[Rr]epository\.\w+\(.*\)|emptyFlow\(\)|flowOf\(.*\)|empty(List|Map|Set)\(\)"
+    r"|true|false|null|-?\d+[\dL.]*|\"[^\"]*\")\s*$"
+)
+SCOPE_FUNCTIONS = {"run", "let", "apply", "also", "with", "use"}  # never helpers, even if shadowed
 NO_IO_SOURCE_SETS = ("desktop", "ios", "native", "apple")  # stubs with no blocking calls
 BODY_CONTINUES = ("}", ")", ".", "?:")
 
 
-def implements_repository(text: str) -> bool:
-    for match in CLASS_HEADER.finditer(text):
-        rest = re.sub(r"^(@\w+\s*)*(\w+\s+)*constructor\s*", "", text[match.end():])
-        if rest.startswith("("):  # skip the primary constructor
-            depth = 0
-            for end, char in enumerate(rest):
-                depth += {"(": 1, ")": -1}.get(char, 0)
-                if depth == 0:
-                    break
-            rest = rest[end + 1:]
-        rest = rest.lstrip()
-        supertypes = re.split(r"\{|\n\s*\n", rest)[0]
-        if rest.startswith(":") and re.search(r"\b\w*Repository\b", supertypes):
-            return True
-    return False
+class Function(NamedTuple):
+    index: int  # 0-based line of the declaration
+    indent: int
+    modifiers: str
+    name: str
+    is_extension: bool
+    signature: str  # up to the line that opens the body
+    body: str  # declaration and body, comments removed
 
 
-def functions(lines: list[str]) -> list[tuple[int, str, bool, str, str, str]]:
-    """(index, modifiers, is_suspend, name, signature, body) of every function, by indentation."""
+def without_comments(text: str) -> str:
+    return re.sub(r"/\*.*?\*/", "", re.sub(r"(?<!:)//.*", "", text), flags=re.S)
+
+
+def functions(lines: list[str]) -> list[Function]:
     found = []
     for index, line in enumerate(lines):
         match = FUNCTION.match(line)
@@ -249,42 +253,99 @@ def functions(lines: list[str]) -> list[tuple[int, str, bool, str, str, str]]:
                 break
             body.append(text)
         signature = []
-        for text in body:  # up to the line that opens the body
+        for text in body:
             signature.append(text.strip())
             if re.search(r"[{=]\s*$", text):
                 break
-        modifiers, is_suspend, name = match.group(2), bool(match.group(3)), match.group(4)
-        found.append((index, modifiers, is_suspend, name, " ".join(signature), "\n".join(body)))
+        found.append(Function(
+            index, indent, match.group(2), match.group(4), bool(match.group(3)), " ".join(signature),
+            without_comments("\n".join(body)),
+        ))
     return found
 
 
-def repository_io_findings(source: Source, added_lines: set[int]) -> list[str]:
-    file = ROOT / source.path
-    if not source.is_main or source.source_set.startswith(NO_IO_SOURCE_SETS) or not file.is_file():
-        return []
-    text = file.read_text(encoding="utf-8", errors="replace")
-    if not implements_repository(text):
+def helper_calls(helpers: set[Function]) -> re.Pattern[str] | None:
+    """Calls of these helpers: `name(`, `name {` or `name<`, after a `.` only for extension functions."""
+    if not helpers:
+        return None
+    plain = "|".join(sorted({h.name for h in helpers if not h.is_extension}))
+    extension = "|".join(sorted({h.name for h in helpers if h.is_extension}))
+    alternatives = [rf"(?<![.\w])(?:{plain})"] if plain else []
+    alternatives += [rf"(?<!\w)(?:{extension})"] if extension else []
+    return re.compile(rf"(?:{'|'.join(alternatives)})\s*[({{<]")
+
+
+def repository_classes(text: str) -> list[tuple[int, int, bool]]:
+    """(first line, last line, implements a *Repository interface) of each repository class body."""
+    classes = []
+    for match in CLASS_HEADER.finditer(text):
+        rest, offset = text[match.end():], match.end()
+        constructor = re.match(r"\s*(<[^{]*?>)?\s*(@\w+\s*)*(\w+\s+)*(constructor\s*)?(?=\()", rest)
+        if constructor:  # skip the primary constructor
+            depth, start = 0, constructor.end()
+            for end in range(start, len(rest)):
+                depth += {"(": 1, ")": -1}.get(rest[end], 0)
+                if depth == 0:
+                    break
+            rest, offset = rest[end + 1:], offset + end + 1
+        opening = rest.find("{")
+        header = rest if opening < 0 else rest[:opening]
+        if re.search(r"\n\s*\n", header):  # a class with no body
+            continue
+        supertypes = header.lstrip()[1:] if header.lstrip().startswith(":") else ""
+        while re.search(r"<[^<>]*>|\([^()]*\)", supertypes):  # keep the type names only
+            supertypes = re.sub(r"<[^<>]*>|\([^()]*\)", "", supertypes)
+        implements = bool(re.search(r"\b\w*Repository\b", supertypes))
+        if opening < 0 or not (implements or re.search(r"Repository(Impl)?$", match.group(1))):
+            continue
+        depth, body_start = 0, offset + opening
+        for close in range(body_start, len(text)):
+            depth += {"{": 1, "}": -1}.get(text[close], 0)
+            if depth == 0:
+                break
+        classes.append((text.count("\n", 0, body_start), text.count("\n", 0, close), implements))
+    return classes
+
+
+def repository_io_findings(source: Source, added_lines: set[int], text: str | None) -> list[str]:
+    if text is None or not source.is_main or source.source_set.startswith(NO_IO_SOURCE_SETS):
         return []
     lines = text.splitlines()
     declared = functions(lines)
-    helpers = [
-        name for _, modifiers, _, name, _, body in declared
-        if "override" not in modifiers and SWITCHES_TO_IO.search(body)
-    ]
-    calls_helper = re.compile(rf"\b({'|'.join(helpers)})\s*[({{<]") if helpers else None
     findings = []
-    for index, modifiers, is_suspend, _, signature, body in declared:
-        if "override" not in modifiers or index + 1 not in added_lines or ALLOW_MARKER in lines[index]:
+    for first, last, implements in repository_classes(text):
+        inside = [f for f in declared if first < f.index < last]
+        if not inside:
             continue
-        if not (is_suspend or RETURNS_FLOW.search(signature)):
-            continue
-        if SWITCHES_TO_IO.search(body) or (calls_helper and calls_helper.search(body)):
-            continue
-        findings.append(
-            f"{source.path}:{index + 1}: [repository-io] repositories are main-safe: wrap the body in "
-            "withContext(dispatcher.io) or end the returned Flow with flowOn(dispatcher.io)"
-            f"\n    {lines[index].strip()}"
-        )
+        member_indent = min(f.indent for f in inside)
+        members = [f for f in inside if f.indent == member_indent]  # not nested classes or objects
+        helpers: set[Function] = set()
+        while True:  # helpers that switch, or call a helper that does
+            calls = helper_calls(helpers)
+            more = {
+                f for f in members
+                if "override" not in f.modifiers and f.name not in SCOPE_FUNCTIONS and f not in helpers
+                and (SWITCHES_TO_IO.search(f.body) or (calls and calls.search(f.body)))
+            }
+            if not more:
+                break
+            helpers |= more
+        for f in members:
+            public = not re.search(r"\b(private|protected)\b", f.modifiers)
+            checked = "override" in f.modifiers if implements else public
+            if not checked or f.index + 1 not in added_lines or ALLOW_MARKER in lines[f.index]:
+                continue
+            if "suspend" not in f.modifiers and not RETURNS_FLOW.search(f.signature):
+                continue
+            if "abstract" in f.modifiers or TRIVIAL_BODY.search(" ".join(f.body.split())):
+                continue
+            if SWITCHES_TO_IO.search(f.body) or (calls and calls.search(f.body)):
+                continue
+            findings.append(
+                f"{source.path}:{f.index + 1}: [repository-io] repositories are main-safe: wrap the body in "
+                "withContext(dispatcher.io) or end the returned Flow with flowOn(dispatcher.io)"
+                f"\n    {lines[f.index].strip()}"
+            )
     return findings
 
 
@@ -394,7 +455,21 @@ def lines_of_files(files: Iterable[str]) -> dict[str, list[tuple[int, str]]]:
     return added
 
 
-def check(added: dict[str, list[tuple[int, str]]]) -> list[str]:
+def working_tree_text(path: str) -> str | None:
+    file = ROOT / path
+    return file.read_text(encoding="utf-8", errors="replace") if file.is_file() else None
+
+
+def staged_text(path: str) -> str | None:
+    try:
+        return git("show", f":{path}")
+    except subprocess.CalledProcessError:
+        return None
+
+
+def check(
+    added: dict[str, list[tuple[int, str]]], read: Callable[[str], str | None] = working_tree_text
+) -> list[str]:
     findings = []
     for path, lines in sorted(added.items()):
         if not path.endswith(".kt") or path.startswith(".claude/") or "/build/" in path:
@@ -407,7 +482,8 @@ def check(added: dict[str, list[tuple[int, str]]]) -> list[str]:
             for rule in rules:
                 if rule.pattern.search(text):
                     findings.append(f"{path}:{line_no}: [{rule.id}] {rule.message}\n    {text.strip()}")
-        findings += repository_io_findings(source, {line_no for line_no, _ in lines})
+        if any("fun " in text for _, text in lines):
+            findings += repository_io_findings(source, {line_no for line_no, _ in lines}, read(path))
     return findings
 
 
@@ -429,7 +505,7 @@ def main() -> int:
         print(f"check_conventions: git failed: {error.stderr.strip()}", file=sys.stderr)
         return 2
 
-    findings = check(added)
+    findings = check(added, staged_text if args.staged else working_tree_text)
     if not findings:
         print("check_conventions: no violations in the added Kotlin lines.")
         return 0
