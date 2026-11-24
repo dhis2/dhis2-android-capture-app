@@ -192,7 +192,7 @@ BASE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 BRANCH="<JIRA_KEY>"   # fix/sentry-<short-id> only when there is no ticket
 git checkout -b "$BRANCH" "$BASE_BRANCH"
 git add <files>
-git commit -m "fix: [<JIRA_KEY>] <short description>"   # + harness Co-Authored-By trailer
+git commit -m "fix: [<JIRA_KEY>] <short description>"   # no Co-Authored-By / AI attribution
 git push -u origin "$BRANCH"
 gh pr create --draft --base "$BASE_BRANCH" --head "$BRANCH" \
   --title "fix: [<JIRA_KEY>] <short description>" --body "..."
@@ -205,7 +205,7 @@ gh pr create --draft --base "$BASE_BRANCH" --head "$BRANCH" \
   (`git -C <worktree> branch -m <JIRA_KEY>`). Design-system branches stay
   `fix/sentry-<short-id>`.
 - Commit trailers, push rights / fork fallback, and title/body style: repo-map
-  §3 and §4.6. (SDK commits carry **no** Co-Authored-By and no 🤖 footer.)
+  §3 and §4.6. (No repo gets a Co-Authored-By trailer or 🤖 footer.)
 - `gh pr create --repo dhis2/<name> --base develop --draft --title "…" --body "…"`
 - Keep the worktree for review and print its removal command (repo-map §4.5).
 

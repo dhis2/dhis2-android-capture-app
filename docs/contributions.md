@@ -17,7 +17,7 @@ in [Android app for DHIS2 project](https://dhis2.atlassian.net/jira/software/c/p
 * Your production code should be covered by unit or integration tests.
 * Test your changes and make sure they don't break the rest of the project.
 * Open a pull request from your **working branch** to **upstream:develop**.
-* The pull request title must be descriptive and reference the issue (ANDROAPP-XXX - Description).
+* The pull request title follows [Conventional Commits](https://www.conventionalcommits.org/) with the issue key at the start of the description, e.g. `fix: [ANDROAPP-1234] Description`.
 * Fill the pull request template with the link to the issue and the rest of checks.
 * All the checks in the pull request needs to pass in order to maintain the Continuous Integration.
 * The pull request needs to be **reviewed** and approved by the **core team**. 

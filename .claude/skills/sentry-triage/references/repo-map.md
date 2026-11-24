@@ -68,8 +68,8 @@ the evidence disagrees — and says so explicitly when that happens.
   only when there is no ticket. Name it before opening the PR — a pushed
   branch cannot be renamed (org rulesets) and an open PR cannot change its head.
 - PRs: **draft**, title `fix: [ANDROAPP-XXXX] <desc>` (`fix: <desc>` only when
-  there is no ticket), `## Sentry issue` section, and the harness-provided
-  `Co-Authored-By` trailer (never hardcode a model name). More than 400 changed
+  there is no ticket), `## Sentry issue` section, **no Co-Authored-By trailer and
+  no AI attribution** (the repo disables it in `.claude/settings.json`). More than 400 changed
   lines is rejected unless the title ends with `[skip size]`.
 - Jira: `ANDROAPP` — see `jira-ticket.md`.
 - Conventions, lint and per-module test tasks: `AGENTS.md` (`:app` has flavors:
@@ -140,7 +140,7 @@ the evidence disagrees — and says so explicitly when that happens.
   (`gh pr list --repo dhis2/dhis2-mobile-ui --state merged --limit 5 --json title,baseRefName`).
   Title style `fix: [ANDROAPP-XXXX] <desc>` (mobile-ui uses the app's Jira
   project); omit the code if there is no ticket. PR **draft**, `## Sentry issue`
-  section, standard Co-Authored-By trailer.
+  section, no Co-Authored-By trailer and no AI attribution.
 
 ---
 
