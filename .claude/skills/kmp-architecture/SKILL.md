@@ -81,7 +81,10 @@ internal class ProgramRepositoryImpl(
 - Never `catch (e: D2Error)` inline: blocking SDK calls wrap `D2Error` in a `RuntimeException`, so
   the inline catch silently misses them. The wrappers walk the cause chain (`Throwable.asD2Error()`).
 - `SyncProgramRepositoryImpl` in `sync` shows the right SDK and error calls but does not switch to
-  `dispatcher.io`: do not copy that omission.
+  `dispatcher.io`: do not copy that omission. The check flags a new `suspend` or `Flow` override in
+  a repository class that switches neither directly nor through a private helper of the class
+  (such as `execute { }`). A function that must stay on another dispatcher (biometrics on `main`)
+  ends its declaration line with `// conventions:allow <reason>`.
 
 ### AGP modules (app, form, stock-usecase, …)
 
