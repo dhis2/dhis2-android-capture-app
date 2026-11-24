@@ -2,10 +2,10 @@
 name: kmp-architecture
 description: >
   Architecture patterns for production code in the DHIS2 Android Capture App: layer structure,
-  UseCase, ViewModel and Repository patterns, which DHIS2 SDK suspend/Flow API replaces each
-  blocking or Rx call (and the few with no suspend version), where dispatchers belong, mapping SDK
-  errors to DomainError, Koin DI, platform code for Android/Desktop/iOS, and a new-feature
-  checklist. Load before writing, migrating or reviewing any non-test Kotlin code in this repo.
+  UseCase, ViewModel and Repository patterns, calling the DHIS2 SDK through its suspend/Flow
+  APIs instead of blocking or Rx calls, where dispatchers belong, mapping SDK errors to DomainError,
+  Koin DI, platform code for Android/Desktop/iOS, and a new-feature checklist. Load before
+  writing, migrating or reviewing any non-test Kotlin code in this repo.
 ---
 
 # KMP architecture patterns
@@ -93,45 +93,21 @@ inline `D2Error` handling to it.
 
 ## DHIS2 SDK: suspend and Flow APIs
 
-Every SDK operation exists as `suspendX()` (the real implementation), `rxX()`, `blockingX()`
-(`runBlockingOnIO { suspendX() }`) and a deprecated `X()`. New code calls the suspend or Flow form.
+The SDK is moving every operation to coroutines. An operation can have a `suspend` form
+(`suspendGet`, `suspendSet`, `suspendDelete`…), a form that returns a `Flow` (`flowDownload`,
+`flowUpload`, `getPagingData`), a `blocking*` wrapper of the suspend one, an `rx*` form and a
+deprecated plain form. In new code:
 
-| Instead of | Use |
-|---|---|
-| `.blockingGet()`, `.get()`, `.rxGet()` | `.suspendGet()` (collections → `List`, object repos → `M?`) |
-| `.blockingGetUids()` | `.suspendGetUids()` |
-| `.blockingCount()` / `.blockingIsEmpty()` | `.suspendCount()` / `.suspendIsEmpty()` |
-| `.blockingExists()` | `.suspendExists()` |
-| `.blockingAdd(o)` | `.suspendAdd(o)` |
-| `.blockingSet(value)` (data values, attribute values, local datastore) | `.suspendSet(value)` |
-| `.blockingDelete()` / `.blockingDeleteIfExist()` | `.suspendDelete()` / `.suspendDeleteIfExist()` |
-| `.blockingDownload()` on event / TEI / aggregated / file resource / datastore downloaders | `.flowDownload()` (collect it) |
-| `.blockingUpload()` | `.flowUpload()` (collect it) |
-| paging with Rx | `.getPagingData(pageSize)` |
-| `service.blockingX(...)` | `service.suspendX(...)`: `DataSetInstanceService`, `EventService`, `EnrollmentService`, `OrganisationUnitService`, `CategoryOptionComboService.suspendHasAccess`, `OptionService.suspendSearchForOptions`, `ValidationEngine.suspendValidate`, analytics `suspendEvaluate`, `TrackedEntityAttributeReservedValueManager.suspendGetValue/suspendCount` (downloads: `flowDownloadReservedValues`), `OwnershipManager`, `UserModule.suspendLogIn/LogOut/IsLogged` |
+1. Call the `suspend` form, or the one that returns a `Flow` (collect it; `flowOn(dispatcher.io)`
+   on a Flow you return).
+2. Only if the operation has neither, call its blocking form inside `withContext(dispatcher.io)` and
+   the error wrapper, and end the line with `// conventions:allow no suspend <operation>`. Look in
+   the SDK version pinned in `gradle/libs.versions.toml` first (IDE completion on the repository or
+   service, or `../dhis2-android-sdk` at that version): suspend forms are added with each release.
+3. Never the `rx*` or deprecated plain form, even when there is no suspend form.
 
-**No suspend version yet.** Call the blocking form inside `withContext(dispatcher.io)` and the
-error wrapper, and do not switch to its Rx form:
-
-- Field setters on object repositories: `EnrollmentObjectRepository.set*`,
-  `EventObjectRepository.set*`, `TrackedEntityInstanceObjectRepository.setOrganisationUnitUid/setGeometry`,
-  `DataValueObjectRepository.setFollowUp/setComment` (they are already blocking `Unit` functions).
-- Metadata sync: `d2.metadataModule().blockingDownload()`.
-- `TrackedEntityInstanceService.blockingInheritAttributes`, `DataSetIndicatorEngine.blockingEvaluate`,
-  `CategoryOptionComboService.blockingHasWriteAccess`, `RelationshipCollectionRepository.getByItem`,
-  `EventCollectionRepository.countTrackedEntityInstances`.
-- `OpenIDConnectHandler` / `OAuth2Handler` `blockingLogIn`, `blockingHandleLogInResponse`,
-  `blockingBuildEnrollmentUrl`, `blockingHandleEnrollmentResponse`, `blockingBuildLogoutUrl`
-  (the `suspendSetPin`/`suspendChangePin` ones do exist).
-- `WipeModule.wipeEverything/wipeData/wipeMetadata`.
-- `DHISVersionManager.isVersion/getPatchVersion/getSmsVersion/getBypassVersion` (plain functions;
-  `getVersion`, `isGreaterThan` and `isGreaterOrEqualThan` have `suspend` forms).
-
-`scripts/check_conventions.py` flags every `.blockingX(` call, so end each of these lines with
-`// conventions:allow <reason>` (for example `// conventions:allow no suspend metadata download`).
-If you find another operation with no suspend form, check the SDK sources before using the
-blocking one, and add it to this list in the same PR. Re-check the list whenever `dhis2sdk` is
-bumped: drop the entries that gained a suspend form.
+When you touch an existing `conventions:allow no suspend` line and the SDK now has a suspend form,
+switch to it.
 
 `suspendGet` relies on the SDK's database dispatcher but is not guaranteed main-safe, so keep the
 `withContext(dispatcher.io)` around it.
