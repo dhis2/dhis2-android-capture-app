@@ -40,7 +40,5 @@ sealed interface HomeEffect {
 
     data object OrgUnitFilterRequest : HomeEffect
 
-    data object ToggleSideMenu : HomeEffect
-
-    data object ToggleFilters : HomeEffect
+    data object OpenDeveloperOptions : HomeEffect
 }

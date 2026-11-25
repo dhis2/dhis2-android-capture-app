@@ -21,6 +21,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberWideNavigationRailState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -39,6 +40,8 @@ import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.databinding.ActivityMainBinding
 import org.dhis2.mobile.commons.extensions.ObserveAsEvents
+import org.dhis2.mobile.home.ui.HomeNavigationReelItem
+import org.dhis2.mobile.home.ui.ModalHomeNavigationRail
 import org.dhis2.mobile.login.pin.domain.model.PinMode
 import org.dhis2.mobile.login.pin.ui.components.ManagePinDialog
 import org.dhis2.mobile.login.pin.ui.components.PinDialog
@@ -65,8 +68,8 @@ fun MainScreen(
     onAction: (HomeAction) -> Unit,
     onEffect: (HomeEffect) -> Unit,
     onNewState: (HomeScreenState) -> Unit,
-    onNewScreen: (MainScreenType) -> Unit,
     onLayoutInflated: (ActivityMainBinding) -> Unit,
+    displayDeveloperOptions: Boolean,
 ) {
     var pinAction by remember { mutableStateOf<PinAction>(PinAction.None) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -122,15 +125,14 @@ fun MainScreen(
     LaunchedEffect(screenState) {
         onNewState(screenState)
     }
-    LaunchedEffect(screenState.currentScreen) {
-        onNewScreen(screenState.currentScreen)
-    }
+
+    val navigationRailState = rememberWideNavigationRailState()
 
     Scaffold(
         topBar = {
             HomeTopBar(
                 screenState = screenState,
-                onMenuClicked = { onAction(HomeAction.MenuClicked) },
+                onMenuClicked = { scope.launch { navigationRailState.expand() } },
                 onSyncClicked = { onAction(HomeAction.SyncClicked) },
                 onFilterClicked = { onAction(HomeAction.FilterClicked) },
             )
@@ -230,7 +232,40 @@ fun MainScreen(
             }
         }
     }
+    // The modal rail draws in its own dialog window, so it needs no Box to overlay the content.
+    ModalHomeNavigationRail(
+        serverName = screenState.serverName,
+        userName = screenState.userName,
+        displayDeveloperOptions = displayDeveloperOptions,
+        selectedItem = screenState.currentScreen.toNavigationItem(),
+        state = navigationRailState,
+        onItemSelected = { item -> onAction(item.toHomeAction()) },
+    )
 }
+
+/** The navigation menu item that leads to this screen, if any. */
+private fun MainScreenType.toNavigationItem(): HomeNavigationReelItem? =
+    when (this) {
+        is MainScreenType.Home -> HomeNavigationReelItem.Home
+        MainScreenType.QRScanner -> HomeNavigationReelItem.ImportSharedData
+        MainScreenType.Settings -> HomeNavigationReelItem.Settings
+        MainScreenType.TroubleShooting -> HomeNavigationReelItem.Troubleshooting
+        MainScreenType.About -> HomeNavigationReelItem.About
+        MainScreenType.Loading -> null
+    }
+
+private fun HomeNavigationReelItem.toHomeAction(): HomeAction =
+    when (this) {
+        HomeNavigationReelItem.Home -> HomeAction.GoToHome
+        HomeNavigationReelItem.ImportSharedData -> HomeAction.ScreenChanged(MainScreenType.QRScanner)
+        HomeNavigationReelItem.Settings -> HomeAction.ScreenChanged(MainScreenType.Settings)
+        HomeNavigationReelItem.PinManagement -> HomeAction.BlockSession
+        HomeNavigationReelItem.Logout -> HomeAction.LogOut
+        HomeNavigationReelItem.Troubleshooting -> HomeAction.ScreenChanged(MainScreenType.TroubleShooting)
+        HomeNavigationReelItem.DeveloperOptions -> HomeAction.OpenDeveloperOptions
+        HomeNavigationReelItem.About -> HomeAction.ScreenChanged(MainScreenType.About)
+        HomeNavigationReelItem.RemoveAccount -> HomeAction.DeleteAccount
+    }
 
 @Composable
 fun HomeTopBar(

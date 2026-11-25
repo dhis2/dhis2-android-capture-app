@@ -21,6 +21,7 @@ import org.dhis2.mobile.commons.providers.PreferenceProvider
 import org.dhis2.mobile.home.data.HomeRepository
 import org.dhis2.mobile.home.domain.CheckSingleNavigation
 import org.dhis2.mobile.home.domain.GetLockAction
+import org.dhis2.mobile.home.domain.GetServerName
 import org.dhis2.mobile.home.domain.GetUserName
 import org.dhis2.mobile.home.domain.UpdateInitialSyncStatus
 import org.dhis2.mobile.home.domain.model.HomeItemData
@@ -93,6 +94,7 @@ class MainViewModelIntegrationTest {
 
     // --- Real use cases (wired with mocked repos) ---
     private lateinit var getUserName: GetUserName
+    private lateinit var getServerName: GetServerName
     private lateinit var configureHomeNavigationBar: ConfigureHomeNavigationBar
     private lateinit var getHomeFilters: GetHomeFilters
     private lateinit var getLockAction: GetLockAction
@@ -111,6 +113,7 @@ class MainViewModelIntegrationTest {
             Dispatchers.setMain(testingDispatcher)
 
             getUserName = GetUserName(homeRepository)
+            getServerName = GetServerName(homeRepository)
             configureHomeNavigationBar = ConfigureHomeNavigationBar(homeRepository, resourceManager)
             getHomeFilters = GetHomeFilters(filterRepository)
             getLockAction = GetLockAction(homeRepository)
@@ -141,6 +144,7 @@ class MainViewModelIntegrationTest {
             // Default: multiple programs → CheckSingleNavigation fails silently, no effect emitted
             whenever(homeRepository.homeItemCount()) doReturn 2
             whenever(homeRepository.isPinStored()) doReturn false
+            whenever(homeRepository.serverName()) doReturn "server"
         }
 
     // ------------------------------------------------------------------ helpers
@@ -154,6 +158,7 @@ class MainViewModelIntegrationTest {
                 syncStatusController = syncStatusController,
                 mainNavigator = mainNavigator,
                 getUserName = getUserName,
+                getServerName = getServerName,
                 configureHomeNavigationBar = configureHomeNavigationBar,
                 getHomeFilters = getHomeFilters,
                 downloadNewVersion = downloadNewVersion,
