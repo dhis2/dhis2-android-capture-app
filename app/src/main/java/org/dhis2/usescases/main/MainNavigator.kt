@@ -91,9 +91,14 @@ class MainNavigator(
         currentFragment = fragment
         fragmentManager
             .beginTransaction()
-            .setReorderingAllowed(true)
             .apply {
-                sharedView?.let { addSharedElement(it, "contenttest") }
+                // Reordering is needed by the shared element transition, but it also makes the
+                // transaction wait for fragments that postpone their enter transition, such as
+                // GroupAnalyticsFragment, so it is only allowed when there is a shared element.
+                sharedView?.let {
+                    setReorderingAllowed(true)
+                    addSharedElement(it, "contenttest")
+                }
             }.replace(R.id.fragment_container, fragment, fragment::class.simpleName)
             .commitAllowingStateLoss()
     }
