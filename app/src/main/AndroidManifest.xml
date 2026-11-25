@@ -192,6 +192,12 @@
                 <data android:scheme="${openIdAuthScheme}" />
             </intent-filter>
         </activity>
+
+        <!-- Added by the Matomo SDK: exported with no permission, and Google Play stopped
+             sending INSTALL_REFERRER broadcasts in 2020, so it only accepts spoofed ones. -->
+        <receiver
+            android:name="org.matomo.sdk.extra.InstallReferrerReceiver"
+            tools:node="remove" />
     </application>
 
 </manifest>
