@@ -44,6 +44,7 @@ kotlin {
             implementation(libs.compose.material3.window)
             implementation(libs.compose.components.resources)
             implementation(project(":commonskmm"))
+            implementation(project(":extensibility"))
 
             // Koin
             api(project.dependencies.platform(libs.koin.bom))

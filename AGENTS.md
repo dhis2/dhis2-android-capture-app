@@ -53,6 +53,7 @@ CI does not run the convention or harness checks; `/open-pr` runs them again bef
 | `app` | Android app | – | – | Legacy; flavours `dhis2`, `dhis2PlayServices`, `dhis2Training`; Dagger + Koin |
 | `commonskmm` | KMP | ✓ | ✓ | Shared base: `UseCase`, `Dispatcher`, `DomainError`, `launchUseCase`, DI helpers |
 | `home` | KMP | ✓ | ✓ | Home screen domain; its repository implementation still lives in `app` |
+| `extensibility` | KMP | ✓ | ✓ | New; package `org.dhis2.mobile.extensibility` |
 | `login` | KMP | ✓ | – | Uses multiplatform Compose Navigation |
 | `sync` | KMP | ✓ | – | Easiest module to add iOS to |
 | `aggregates` | KMP | ✓ | – | Data set entry |
