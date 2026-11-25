@@ -104,7 +104,6 @@
     <!--DONE TASKS-->
     <string name="events">events</string>
     <string name="done_task">Home</string>
-    <string name="log_out">Log Out</string>
     <string name="show_more_events">Show %s more…</string>
     <string name="show_less_events">Show less…</string>
 
@@ -228,7 +227,6 @@
     <string name="complete_enrollment_message_V2">Would you like to complete the %s as well?</string>
     <string name="check_event">Check</string>
 
-    <string name="menu_home">Home</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="relationships">relationships</string>
     <!--empty_tracker_events will be formatted with the custom or default label for event-->
@@ -333,8 +331,6 @@
     <string name="sms_empty_gateway">SMS gateway can\'t be empty</string>
     <string name="granular_sync_enrollments_empty">There are no enrollments to upload</string>
     <string name="granular_sync_unsupported_task">This convertTask is not supported</string>
-    <string name="set_pin">Set PIN</string>
-    <string name="manage_pin">Manage PIN</string>
     <string name="pin_created">PIN created</string>
     <string name="pin_updated">PIN updated</string>
     <string name="pin_deleted">PIN deleted</string>
@@ -611,7 +607,6 @@
     <string name="complete_enrollment_label">Complete %s</string>
     <string name="deactivate_enrollment_label">Deactivate %s</string>
     <string name="reopen_enrollment_label">Re-open %s</string>
-    <string name="main_menu_developer_scree">Developer options</string>
 
     <plurals name="error_count_label">
         <item quantity="one">%s error</item>

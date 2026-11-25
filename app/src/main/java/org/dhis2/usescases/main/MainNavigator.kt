@@ -1,9 +1,10 @@
 package org.dhis2.usescases.main
 
-import android.transition.ChangeBounds
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.transition.ChangeBounds
+import com.google.android.material.transition.MaterialFadeThrough
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment
 import org.dhis2.R
 import org.dhis2.usescases.about.AboutFragment
@@ -77,48 +78,23 @@ class MainNavigator(
 
     fun openTroubleShooting(languageSelectorOpened: Boolean = false) {
         beginTransaction(
-            fragment = TroubleshootingFragment.instance(languageSelectorOpened),
-            useFadeInTransition = languageSelectorOpened,
+            TroubleshootingFragment.instance(languageSelectorOpened),
         )
     }
 
     private fun beginTransaction(
         fragment: Fragment,
         sharedView: View? = null,
-        useFadeInTransition: Boolean = false,
     ) {
+        fragmentManager.findFragmentById(R.id.fragment_container)?.exitTransition = MaterialFadeThrough()
+        fragment.enterTransition = MaterialFadeThrough()
         currentFragment = fragment
         fragmentManager
             .beginTransaction()
+            .setReorderingAllowed(true)
             .apply {
-                if (sharedView == null) {
-                    val (enterAnimation, exitAnimation) = getEnterExitAnimation(useFadeInTransition)
-                    val (enterPopAnimation, exitPopAnimation) = getEnterExitPopAnimation(useFadeInTransition)
-                    setCustomAnimations(
-                        enterAnimation,
-                        exitAnimation,
-                        enterPopAnimation,
-                        exitPopAnimation,
-                    )
-                } else {
-                    setReorderingAllowed(true)
-                    addSharedElement(sharedView, "contenttest")
-                }
+                sharedView?.let { addSharedElement(it, "contenttest") }
             }.replace(R.id.fragment_container, fragment, fragment::class.simpleName)
             .commitAllowingStateLoss()
     }
-
-    private fun getEnterExitPopAnimation(useFadeInTransition: Boolean): Pair<Int, Int> =
-        if (useFadeInTransition) {
-            Pair(android.R.anim.fade_in, android.R.anim.fade_out)
-        } else {
-            Pair(R.anim.fragment_enter_left, R.anim.fragment_exit_right)
-        }
-
-    private fun getEnterExitAnimation(useFadeInTransition: Boolean): Pair<Int, Int> =
-        if (useFadeInTransition) {
-            Pair(android.R.anim.fade_in, android.R.anim.fade_out)
-        } else {
-            Pair(R.anim.fragment_enter_right, R.anim.fragment_exit_left)
-        }
 }
