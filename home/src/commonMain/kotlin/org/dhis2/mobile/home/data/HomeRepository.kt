@@ -38,6 +38,9 @@ interface HomeRepository {
 
     suspend fun restoreSyncStatus()
 
-    /** URL of the server of the current account, or null when there is no current account. */
+    /**
+     * Name of the server of the current account: its Application title, or its URL when it has
+     * none. Null when there is no current account.
+     */
     suspend fun serverName(): String?
 }

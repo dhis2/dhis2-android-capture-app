@@ -215,6 +215,9 @@ class HomeRepositoryImpl(
                 .userModule()
                 .accountManager()
                 .getCurrentAccount()
-                ?.serverUrl()
+                ?.let {
+                    it.loginConfig?.applicationTitle?.takeUnless { title -> title.isBlank() }
+                        ?: it.serverUrl
+                }
         }
 }

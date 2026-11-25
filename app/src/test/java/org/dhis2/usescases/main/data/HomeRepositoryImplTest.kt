@@ -1,13 +1,16 @@
 package org.dhis2.usescases.main.data
 
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.mobile.commons.error.DomainErrorMapper
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.configuration.internal.DatabaseAccount
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
+import org.hisp.dhis.android.core.server.LoginConfig
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -16,6 +19,7 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.util.Date
 
 class HomeRepositoryImplTest {
     private val d2: D2 = mock(defaultAnswer = RETURNS_DEEP_STUBS)
@@ -33,20 +37,35 @@ class HomeRepositoryImplTest {
         )
 
     @Test
-    fun `serverName returns the server url of the current account`() =
+    fun `serverName returns the application title of the current account server`() =
         runTest {
-            whenever(
-                d2
-                    .userModule()
-                    .accountManager()
-                    .getCurrentAccount()
-                    ?.serverUrl(),
-            ) doReturn "https://play.dhis2.org"
+            givenCurrentAccount(LoginConfig(applicationTitle = "Training"))
 
-            val serverName =
-                repository(Dispatcher(io = UnconfinedTestDispatcher(testScheduler))).serverName()
+            assertEquals("Training", serverName())
+        }
 
-            assertEquals("https://play.dhis2.org", serverName)
+    @Test
+    fun `serverName returns the server url if the server has no application title`() =
+        runTest {
+            givenCurrentAccount(LoginConfig(applicationTitle = null))
+
+            assertEquals(SERVER_URL, serverName())
+        }
+
+    @Test
+    fun `serverName returns the server url if the application title is blank`() =
+        runTest {
+            givenCurrentAccount(LoginConfig(applicationTitle = " "))
+
+            assertEquals(SERVER_URL, serverName())
+        }
+
+    @Test
+    fun `serverName returns the server url if the login config is not downloaded yet`() =
+        runTest {
+            givenCurrentAccount(loginConfig = null)
+
+            assertEquals(SERVER_URL, serverName())
         }
 
     @Test
@@ -84,4 +103,27 @@ class HomeRepositoryImplTest {
 
             assertEquals(domainError, error)
         }
+
+    private suspend fun TestScope.serverName() = repository(Dispatcher(io = UnconfinedTestDispatcher(testScheduler))).serverName()
+
+    private fun givenCurrentAccount(loginConfig: LoginConfig?) {
+        val account =
+            DatabaseAccount(
+                username = "user",
+                serverUrl = SERVER_URL,
+                databaseName = "database",
+                databaseCreationDate = Date(),
+                lastAccessDate = null,
+                encrypted = false,
+                syncState = null,
+                importDB = null,
+                loginConfig = loginConfig,
+                authorizationType = null,
+            )
+        whenever(d2.userModule().accountManager().getCurrentAccount()) doReturn account
+    }
+
+    private companion object {
+        const val SERVER_URL = "https://play.dhis2.org"
+    }
 }
