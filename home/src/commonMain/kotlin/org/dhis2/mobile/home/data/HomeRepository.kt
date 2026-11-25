@@ -37,4 +37,6 @@ interface HomeRepository {
     suspend fun stopBackgroundSync()
 
     suspend fun restoreSyncStatus()
+
+    suspend fun serverName(): String
 }
