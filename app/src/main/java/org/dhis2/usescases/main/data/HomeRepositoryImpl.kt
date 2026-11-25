@@ -209,12 +209,12 @@ class HomeRepositoryImpl(
         syncStatusController.restore()
     }
 
-    override suspend fun serverName(): String =
-        withContext(dispatcher.io) {
+    override suspend fun serverName(): String? =
+        execute {
             d2
                 .userModule()
                 .accountManager()
                 .getCurrentAccount()
-                ?.serverUrl ?: "DHIS2"
+                ?.serverUrl()
         }
 }
