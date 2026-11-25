@@ -180,13 +180,14 @@ class MainViewModel(
     private fun loadData(initialScreen: MainScreenType) {
         launchUseCase(dispatcher.io()) {
             val userName = getUserName().getOrDefault("")
+            val serverName = getServerName().getOrDefault("")
             val navigationBarItems = configureHomeNavigationBar().getOrDefault(emptyList())
             val homeFilters = getHomeFilters().getOrDefault(emptyList())
             val getLockAction = getLockAction().getOrDefault(LockAction.CreatePin)
 
             _homeScreenState.update { current ->
                 HomeScreenState(
-                    serverName = getServerName().getOrDefault("DHIS2"),
+                    serverName = serverName,
                     userName = userName,
                     navigationBarItems = navigationBarItems,
                     homeFilters = homeFilters,
@@ -194,7 +195,8 @@ class MainViewModel(
                     versionToUpdate = current.versionToUpdate,
                     filterButtonVisible = initialScreen.isPrograms(),
                     filtersVisible = current.filtersVisible,
-                    bottomNavigationBarVisible = initialScreen.isHome() && navigationBarItems.size > 1,
+                    bottomNavigationBarVisible =
+                        !current.filtersVisible && initialScreen.isHome() && navigationBarItems.size > 1,
                     syncButtonVisible = initialScreen.isHome(),
                     currentScreen = initialScreen,
                     pinAlreadyCreated = getLockAction == LockAction.PinAlreadyCreated,
@@ -222,7 +224,7 @@ class MainViewModel(
                     it.copy(
                         filterButtonVisible = true,
                         bottomNavigationBarVisible =
-                            it.currentScreen.isHome() && it.navigationBarItems.size > 1,
+                            !it.filtersVisible && it.currentScreen.isHome() && it.navigationBarItems.size > 1,
                         syncButtonVisible = true,
                     )
                 }
@@ -277,7 +279,7 @@ class MainViewModel(
                                     filterButtonVisible = true,
                                     navigationBarItems = navigationBarItems,
                                     bottomNavigationBarVisible =
-                                        it.currentScreen.isHome() && navigationBarItems.size > 1,
+                                        !it.filtersVisible && it.currentScreen.isHome() && navigationBarItems.size > 1,
                                     syncButtonVisible = true,
                                 )
                             }

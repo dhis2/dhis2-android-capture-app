@@ -41,7 +41,7 @@ import org.dhis2.R
 import org.dhis2.databinding.ActivityMainBinding
 import org.dhis2.mobile.commons.extensions.ObserveAsEvents
 import org.dhis2.mobile.home.ui.HomeNavigationReelItem
-import org.dhis2.mobile.home.ui.ModalHomeNavigationRail
+import org.dhis2.mobile.home.ui.component.ModalHomeNavigationRail
 import org.dhis2.mobile.login.pin.domain.model.PinMode
 import org.dhis2.mobile.login.pin.ui.components.ManagePinDialog
 import org.dhis2.mobile.login.pin.ui.components.PinDialog
