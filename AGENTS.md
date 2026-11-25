@@ -69,7 +69,7 @@ source set.
 ## Architectural agreements
 
 These hold for **all new code** in every module; existing code is changed only when the task is
-about it. The `kmp-architecture` skill has the reasons, the API lists and the examples, and
+about it. The `kmp-architecture` skill has the reasons, the SDK rule and the examples, and
 `scripts/check_conventions.py` enforces most of them on the lines a branch adds. A line that must
 break a rule on purpose ends with `// conventions:allow <reason>`.
 
