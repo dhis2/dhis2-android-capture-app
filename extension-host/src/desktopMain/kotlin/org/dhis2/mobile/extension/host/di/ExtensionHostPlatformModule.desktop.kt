@@ -6,7 +6,7 @@ import org.koin.dsl.module
 
 internal actual val extensionHostPlatformModule: Module =
     module {
-        single { ExtensionHostConfig(allowHttp = false, log = {}) }
+        single { ExtensionHostConfig(allowHttp = false, log = {}, legacyShim = false) }
         factory<CustomFormRepository> {
             object : CustomFormRepository {
                 override suspend fun customFormHtml(dataSetUid: String): String? = null

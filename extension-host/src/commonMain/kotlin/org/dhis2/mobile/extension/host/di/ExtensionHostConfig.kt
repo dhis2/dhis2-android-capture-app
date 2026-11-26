@@ -9,4 +9,10 @@ class ExtensionHostConfig(
     val allowHttp: Boolean,
     /** Where a failure is logged, so a developer sees why the native form opened. */
     val log: (String) -> Unit,
+    /**
+     * Whether custom forms whose own scripts must run open, with the legacy shim of the renderer
+     * (ANDROAPP-8007). Off: they open with the native form (`NoFormScripts`), so a release can ship
+     * custom forms without scripts alone.
+     */
+    val legacyShim: Boolean,
 )

@@ -44,3 +44,22 @@ class LegacyApiScan(
             )
     }
 }
+
+/**
+ * While the legacy shim is off (`ExtensionHostConfig.legacyShim`), custom forms whose own scripts
+ * would run open with the native form: a form with a `<script>`, an inline event handler
+ * (`onclick=`…) or a `javascript:` link. The legacy shim (ANDROAPP-8007) runs them.
+ */
+class NoFormScripts : CompatibilityRule<String> {
+    override fun check(content: String): FailureReason? =
+        if (SCRIPTED.any { it.containsMatchIn(content) }) FailureReason.UNSUPPORTED_FEATURE else null
+
+    private companion object {
+        val SCRIPTED =
+            listOf(
+                Regex("""<script\b""", RegexOption.IGNORE_CASE),
+                Regex("""<[a-z][^>]*\son[a-z]+\s*=""", RegexOption.IGNORE_CASE),
+                Regex("""\bhref\s*=\s*["']?\s*javascript:""", RegexOption.IGNORE_CASE),
+            )
+    }
+}

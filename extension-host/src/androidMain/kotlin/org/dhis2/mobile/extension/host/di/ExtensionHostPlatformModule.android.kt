@@ -16,6 +16,7 @@ internal actual val extensionHostPlatformModule: Module =
             ExtensionHostConfig(
                 allowHttp = get<Context>().applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0,
                 log = { Timber.tag("ExtensionHost").w(it) },
+                legacyShim = false,
             )
         }
     }

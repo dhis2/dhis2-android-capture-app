@@ -1,6 +1,7 @@
 package org.dhis2.mobile.extension.host.di
 
 import org.dhis2.mobile.extension.host.domain.LegacyApiScan
+import org.dhis2.mobile.extension.host.domain.NoFormScripts
 import org.dhis2.mobile.extension.host.domain.ResolveCustomForm
 import org.dhis2.mobile.extension.host.reporting.ExtensionFailureReporter
 import org.dhis2.mobile.extension.host.reporting.SentryExtensionFailureReporter
@@ -15,12 +16,13 @@ val extensionHostModule =
         includes(extensionHostPlatformModule)
         factory<ExtensionFailureReporter> { SentryExtensionFailureReporter(get(), get<ExtensionHostConfig>().log) }
         factory {
+            val config = get<ExtensionHostConfig>()
             ResolveCustomForm(
                 repository = get(),
                 renderer = get(),
-                rules = listOf(LegacyApiScan()),
+                rules = if (config.legacyShim) listOf(LegacyApiScan()) else listOf(NoFormScripts(), LegacyApiScan()),
                 reporter = get(),
-                allowHttp = get<ExtensionHostConfig>().allowHttp,
+                allowHttp = config.allowHttp,
             )
         }
     }
