@@ -1,12 +1,16 @@
 package org.dhis2.mobile.login.pin.domain.usecase
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import org.dhis2.mobile.login.pin.data.SessionRepository
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 class DeletePinTest {
@@ -47,5 +51,17 @@ class DeletePinTest {
             // Then
             assertTrue(result.isFailure)
             verify(repository).deletePin()
+            verify(repository, never()).setSessionLocked(any())
+        }
+
+    @Test
+    fun `invoke rethrows cancellation`() =
+        runTest {
+            // Given
+            whenever(repository.deletePin()).thenThrow(CancellationException("cancelled"))
+
+            // When / Then
+            assertFailsWith<CancellationException> { useCase(Unit) }
+            verify(repository, never()).setSessionLocked(any())
         }
 }

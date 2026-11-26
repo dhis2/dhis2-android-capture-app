@@ -383,8 +383,15 @@ private fun PinInputBlock(
     }
 }
 
+/**
+ * Stacks the PIN sheets' buttons vertically, primary on top, with the bottom sheet's button
+ * paddings.
+ *
+ * @param primaryButton The main action.
+ * @param secondaryButton The optional secondary action, shown below the primary one.
+ */
 @Composable
-fun VerticalButtonBlock(
+internal fun VerticalButtonBlock(
     primaryButton: @Composable () -> Unit,
     secondaryButton: (@Composable () -> Unit)?,
 ) {

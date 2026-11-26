@@ -17,6 +17,7 @@ import org.dhis2.mobile.login.pin.domain.usecase.ValidatePin
 import org.dhis2.mobile.login.pin.ui.provider.PinResourceProvider
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -246,6 +247,28 @@ class PinViewModelTest {
             assertFalse(state.isSuccess)
             assertFalse(state.isDismissed)
             assertFalse(state.isTooManyAttempts)
+            assertFalse(state.primaryButtonIsEnabled)
+        }
+
+    @Test
+    fun `resetState drops the typed PIN so it is not submitted again`() =
+        runTest {
+            viewModel = createViewModel(PinMode.ASK)
+            val pin = "0000"
+            whenever(validatePin(any())).thenReturn(
+                Result.failure(PinError.Failed(attemptsLeft = 2)),
+            )
+            whenever(resourceProvider.getPinErrorIncorrect()).thenReturn("Incorrect PIN")
+            viewModel.onPinChanged(pin)
+            viewModel.onPinComplete()
+            advanceUntilIdle()
+
+            viewModel.resetState()
+            viewModel.onPinComplete()
+            advanceUntilIdle()
+
+            verify(validatePin).invoke(ValidatePinInput(pin, 0))
+            verify(validatePin).invoke(ValidatePinInput("", 1))
         }
 
     @Test

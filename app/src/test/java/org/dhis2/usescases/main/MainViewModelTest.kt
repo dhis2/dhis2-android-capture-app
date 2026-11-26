@@ -493,6 +493,27 @@ class MainViewModelTest {
             }
         }
 
+    @Test
+    fun `Should keep the PIN state and not notify when removing the PIN fails`() =
+        runTest {
+            stubHomeData(lockAction = Result.success(LockAction.PinAlreadyCreated))
+            whenever(deletePin()) doReturn Result.failure(Exception("delete failed"))
+
+            turbineScope {
+                val state = viewModel.homeScreenState.testIn(backgroundScope)
+                val effects = viewModel.homeEffects.testIn(backgroundScope)
+                state.awaitItem()
+                assertTrue(state.awaitItem().pinAlreadyCreated)
+
+                viewModel.onAction(HomeAction.DeletePin)
+                advanceUntilIdle()
+
+                verify(deletePin).invoke()
+                effects.expectNoEvents()
+                state.expectNoEvents()
+            }
+        }
+
     private suspend fun stubHomeData(lockAction: Result<LockAction>) {
         whenever(getUserName()) doReturn Result.success("user")
         whenever(configureHomeNavigationBar()) doReturn Result.success(emptyList())

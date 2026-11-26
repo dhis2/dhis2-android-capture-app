@@ -21,6 +21,14 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * Bottom sheet shown after the current PIN is validated, with the options to update or
+ * remove the PIN.
+ *
+ * @param onUpdateClick Invoked when the user chooses to set a new PIN.
+ * @param onRemoveClick Invoked when the user chooses to remove the PIN.
+ * @param onDismiss Invoked when the sheet is closed without choosing an option.
+ */
 @Composable
 fun ManagePinDialog(
     onUpdateClick: () -> Unit,
