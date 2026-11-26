@@ -1,4 +1,4 @@
-package org.dhis2.mobile.extensibility.model
+package org.dhis2.mobile.extensibility.host.model
 
 sealed interface ExtensionTarget {
     data class DataSet(
