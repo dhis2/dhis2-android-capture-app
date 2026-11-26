@@ -197,10 +197,8 @@ class EventTest : BaseTest() {
         }
 
         // ON_UPDATE_AND_INSERT: empty mandatory blocks the save outright.
-        eventRobot(composeTestRule) {
-            clickOnFormFabButton()
-        }
         eventRegistrationRobot(composeTestRule) {
+            clickSaveButtonAndWaitForSaveBottomSheet()
             checkImmediateMandatoryBlock()
         }
 
@@ -213,11 +211,8 @@ class EventTest : BaseTest() {
             selectFirstDropdownOption(FLOW_D_TREATMENT_LABEL)
         }
 
-        eventRobot(composeTestRule) {
-            clickOnFormFabButton()
-        }
         eventRegistrationRobot(composeTestRule) {
-            waitForSaveBottomSheet()
+            clickSaveButtonAndWaitForSaveBottomSheet()
         }
         // "Not now" stores the event as ACTIVE so it can be edited again.
         eventRobot(composeTestRule) {
@@ -234,7 +229,7 @@ class EventTest : BaseTest() {
             // [ANDROAPP-7676] Emptying a mandatory field is not stored under ON_UPDATE_AND_INSERT.
             clearDropdown(FLOW_D_GENDER_LABEL)
             // [ANDROAPP-7676] Sync runs the save validation: only "Review", nothing is synced.
-            clickSyncButton()
+            clickSyncButtonAndWaitForSaveBottomSheet()
             checkImmediateMandatoryBlock()
             dismissMandatoryBlockSheet()
         }
@@ -254,11 +249,8 @@ class EventTest : BaseTest() {
             checkDropdownHasValue(FLOW_D_GENDER_LABEL)
         }
 
-        eventRobot(composeTestRule) {
-            clickOnFormFabButton()
-        }
         eventRegistrationRobot(composeTestRule) {
-            waitForSaveBottomSheet()
+            clickSaveButtonAndWaitForSaveBottomSheet()
         }
         // Complete — the event ends COMPLETED.
         eventRobot(composeTestRule) {

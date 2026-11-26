@@ -81,10 +81,6 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
         composeTestRule.onAllNodesWithText("Update").assertCountEquals(0)
     }
 
-    fun clickSyncButton() {
-        waitForView(withId(R.id.syncButton)).perform(click())
-    }
-
     /** Taps the form's sync button and waits for the save validation sheet to open. */
     fun clickSyncButtonAndWaitForSaveBottomSheet() = clickUntilSaveBottomSheetOpens(R.id.syncButton)
 
@@ -217,11 +213,6 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
     private fun dropdownResetButton(label: String) =
         hasTestTag("INPUT_DROPDOWN_RESET_BUTTON") and
             hasAnyAncestor(hasTestTag("INPUT_DROPDOWN") and hasAnyDescendant(hasText(label, substring = true)))
-
-    @OptIn(ExperimentalTestApi::class)
-    fun waitForSaveBottomSheet() {
-        composeTestRule.waitUntilAtLeastOneExists(hasTestTag(SECONDARY_BUTTON_TAG), TIMEOUT)
-    }
 
     @OptIn(ExperimentalTestApi::class)
     private fun scrollFormTo(target: SemanticsMatcher) {
