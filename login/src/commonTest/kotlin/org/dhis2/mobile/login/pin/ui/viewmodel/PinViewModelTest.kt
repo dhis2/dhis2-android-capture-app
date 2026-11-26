@@ -17,6 +17,7 @@ import org.dhis2.mobile.login.pin.domain.usecase.ValidatePin
 import org.dhis2.mobile.login.pin.ui.provider.PinResourceProvider
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.AfterTest
@@ -268,7 +269,8 @@ class PinViewModelTest {
             advanceUntilIdle()
 
             verify(validatePin).invoke(ValidatePinInput(pin, 0))
-            verify(validatePin).invoke(ValidatePinInput("", 1))
+            verify(validatePin, never()).invoke(ValidatePinInput(pin, 1))
+            assertFalse(viewModel.uiState.value.primaryButtonIsEnabled)
         }
 
     @Test
