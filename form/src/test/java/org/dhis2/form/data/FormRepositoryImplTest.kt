@@ -576,18 +576,17 @@ class FormRepositoryImplTest {
             val categoryComboUid = "EVENT_CATEGORY_COMBO_UID-uid001"
             val error = "Index is not valid for the event date"
             // Given a report date change that clears the category combo
+            val dateChangeResult =
+                StoreResult(
+                    EventRepository.EVENT_REPORT_DATE_UID,
+                    ValueStoreResult.VALUE_CHANGED,
+                    invalidatedFieldErrors = mapOf(categoryComboUid to error),
+                )
             whenever(
                 formValueStore.save(EventRepository.EVENT_REPORT_DATE_UID, "2025-06-01", null),
-            ) doReturn
-                    StoreResult(
-                        EventRepository.EVENT_REPORT_DATE_UID,
-                        ValueStoreResult.VALUE_CHANGED,
-                        invalidatedFieldErrors = mapOf(categoryComboUid to error),
-                    )
+            ) doReturn dateChangeResult
             whenever(dataEntryRepository.list()) doReturn
-                    Flowable.just(
-                        provideMandatoryListWithCategoryCombo(""),
-                    )
+                Flowable.just(provideMandatoryListWithCategoryCombo(""))
 
             repository.save(EventRepository.EVENT_REPORT_DATE_UID, "2025-06-01", null)
             val clearedList = repository.fetchFormItems()
@@ -597,8 +596,8 @@ class FormRepositoryImplTest {
             assertTrue(repository.runDataIntegrityCheck(false) is MissingMandatoryResult)
 
             // When the user saves a new combo
-            whenever(formValueStore.save(categoryComboUid, "option1,option2", null)) doReturn
-                    StoreResult(categoryComboUid, ValueStoreResult.VALUE_CHANGED)
+            val comboResult = StoreResult(categoryComboUid, ValueStoreResult.VALUE_CHANGED)
+            whenever(formValueStore.save(categoryComboUid, "option1,option2", null)) doReturn comboResult
             whenever(
                 dataEntryRepository.list(),
             ) doReturn Flowable.just(provideMandatoryListWithCategoryCombo("option1,option2"))
