@@ -336,6 +336,7 @@
     <string name="set_pin">Set PIN</string>
     <string name="manage_pin">Manage PIN</string>
     <string name="pin_created">PIN created</string>
+    <string name="pin_updated">PIN updated</string>
     <string name="pin_deleted">PIN deleted</string>
     <string name="conflict">Conflict</string>
     <string name="change_event_date">Change date</string>

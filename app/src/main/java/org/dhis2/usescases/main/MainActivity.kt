@@ -139,6 +139,7 @@ class MainActivity : ActivityGlobalAbstract() {
                             HomeEffect.BlockSession -> finish()
                             HomeEffect.PinAlreadyCreated,
                             HomeEffect.PinCreated,
+                            HomeEffect.PinUpdated,
                             HomeEffect.PinDeleted,
                             -> { // handled in composable
                             }

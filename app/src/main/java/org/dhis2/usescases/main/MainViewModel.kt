@@ -530,7 +530,13 @@ class MainViewModel(
 
     private fun onPinSet() {
         launchUseCase(dispatcher.io()) {
-            _homeEffects.send(HomeEffect.PinCreated)
+            val effect =
+                if (_homeScreenState.value.pinAlreadyCreated) {
+                    HomeEffect.PinUpdated
+                } else {
+                    HomeEffect.PinCreated
+                }
+            _homeEffects.send(effect)
             _homeScreenState.update { it.copy(pinAlreadyCreated = true) }
         }
     }

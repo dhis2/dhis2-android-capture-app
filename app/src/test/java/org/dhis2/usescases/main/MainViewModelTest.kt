@@ -474,6 +474,23 @@ class MainViewModelTest {
         }
 
     @Test
+    fun `Should notify PIN updated when PIN is set and one already existed`() =
+        runTest {
+            stubHomeData(lockAction = Result.success(LockAction.PinAlreadyCreated))
+
+            turbineScope {
+                val state = viewModel.homeScreenState.testIn(backgroundScope)
+                val effects = viewModel.homeEffects.testIn(backgroundScope)
+                state.awaitItem()
+                assertTrue(state.awaitItem().pinAlreadyCreated)
+
+                viewModel.onAction(HomeAction.PinSet)
+
+                assertEquals(HomeEffect.PinUpdated, effects.awaitItem())
+            }
+        }
+
+    @Test
     fun `Should log out and go to login when PIN is forgotten`() =
         runTest {
             whenever(logOutUser()) doReturn Result.success(1)
