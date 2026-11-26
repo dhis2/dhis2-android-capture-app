@@ -30,17 +30,22 @@ class LegacyApiScan(
     companion object {
         private val CALL = Regex("""\b(dhis2\.(?:de|util)\.[A-Za-z_][\w.]*)""")
 
+        /** What `legacy-shim.js` in `extension-web` provides. Keep the two in step. */
         val DEFAULT_SUPPORTED =
             setOf(
                 "dhis2.util.on",
+                "dhis2.de.event.formLoaded",
+                "dhis2.de.event.dataValuesLoaded",
                 "dhis2.de.event.formReady",
                 "dhis2.de.event.dataValueSaved",
                 "dhis2.de.event.completed",
                 "dhis2.de.event.uncompleted",
+                "dhis2.de.event.validationSucces",
+                "dhis2.de.event.validationError",
                 "dhis2.de.currentDataSetId",
                 "dhis2.de.currentOrganisationUnitId",
                 "dhis2.de.currentPeriodId",
-                "dhis2.de.getCurrentOrganisationUnit",
+                "dhis2.de.currentAttributeOptionComboId",
             )
     }
 }

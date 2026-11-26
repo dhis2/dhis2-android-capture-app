@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<!-- A custom form whose scripts must run: the binding layer plus the legacy shim. -->
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>DHIS2 Custom Form</title>
+    <link rel="stylesheet" href="./custom-form.css">
+    <script src="./jquery-3.2.1.min.js"></script>
+    <script src="./custom-form-binding.js"></script>
+    <script src="./legacy-shim.js"></script>
+</head>
+<body>
+    <!-- The selection the old web Data Entry app showed above the form; forms read the context from it. -->
+    <div style="display: none">
+        <select id="selectedDataSetId"></select>
+        <select id="selectedPeriodId"></select>
+        <input id="selectedOrganisationUnitId">
+        <select id="attributeOptionComboId"></select>
+    </div>
+    <div id="contentDiv"></div>
+</body>
+</html>

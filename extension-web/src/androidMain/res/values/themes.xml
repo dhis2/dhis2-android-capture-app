@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Applied over the activity theme for the WebView that shows a custom form. The WebView opens
+        platform dialogs for date, time and select fields, and the app theme's white accent and grey
+        picker text make their buttons and digits unreadable.
+    -->
+    <style name="ExtensionWeb.FormPickers" parent="">
+        <item name="android:datePickerDialogTheme">@style/ExtensionWeb.PickerDialog</item>
+        <item name="android:timePickerDialogTheme">@style/ExtensionWeb.PickerDialog</item>
+        <item name="android:alertDialogTheme">@style/ExtensionWeb.PickerDialog</item>
+    </style>
+
+    <!--
+        The app's activities inflate the dialog's buttons as AppCompat/Material buttons, which read
+        the AppCompat colour attributes (white in the app theme) rather than the platform ones.
+    -->
+    <style name="ExtensionWeb.PickerDialog" parent="android:Theme.Material.Light.Dialog.Alert">
+        <item name="colorAccent">#FF2C6693</item>
+        <item name="colorPrimary">#FF2C6693</item>
+        <item name="android:colorAccent">#FF2C6693</item>
+        <item name="android:colorPrimary">#FF2C6693</item>
+        <item name="android:textColorPrimary">#FF212934</item>
+        <item name="android:textColorSecondary">#FF4A5768</item>
+        <item name="android:buttonBarButtonStyle">@style/ExtensionWeb.PickerButton</item>
+    </style>
+
+    <!--
+        The dialog layout gives its buttons this style explicitly, so its text colour wins over the
+        Material button's default (the app's colorOnPrimary, white).
+    -->
+    <style name="ExtensionWeb.PickerButton" parent="android:Widget.Material.Button.Borderless.Colored">
+        <item name="android:textColor">#FF2C6693</item>
+    </style>
+</resources>

@@ -1,5 +1,6 @@
 package org.dhis2.mobile.extension.web.customform
 
+import android.view.ContextThemeWrapper
 import android.webkit.WebView
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,24 +21,28 @@ import org.dhis2.mobile.extension.host.model.Extension
 import org.dhis2.mobile.extension.host.model.FailureReason
 import org.dhis2.mobile.extension.host.renderer.CustomFormRenderer
 import org.dhis2.mobile.extension.host.reporting.ExtensionFailureReporter
+import org.dhis2.mobile.extension.web.R
 import org.dhis2.mobile.extension.web.api.ExtensionApiRouter
-import org.dhis2.mobile.extension.web.host.HOST_PAGES_URL
 import org.dhis2.mobile.extension.web.host.WebViewSupport
 import org.dhis2.mobile.extension.web.host.hostWebView
 import timber.log.Timber
-
-/** The binding layer's page: forms without scripts. */
-private const val CUSTOM_FORM_URL = "$HOST_PAGES_URL/custom-form.html"
 
 /** How long the form has to finish loading before the native form is shown instead. */
 private const val RENDER_TIMEOUT_MILLIS = 10_000L
 
 /**
+ * Gives the dialogs the WebView opens for date, time and select fields a theme of their own: the
+ * app's theme leaves their buttons and digits unreadable.
+ */
+private val PICKER_THEME = R.style.ExtensionWeb_FormPickers
+
+/**
  * Runs a data set custom form, the HTML the web Data Entry app renders, in the WebView host.
  *
- * Only forms without scripts get here (forms with scripts open with the native form): the binding
- * layer (`custom-form-binding.js`) runs alone on `custom-form.html`, and native code saves and
- * validates every value. The form reads only its own instance, through
+ * A form without scripts opens on the plain page: only the binding layer (`custom-form-binding.js`)
+ * runs, and native code saves and validates every value. A form with scripts opens on the legacy
+ * page, which adds the legacy shim (`legacy-shim.js`, jQuery) its scripts expect; see
+ * [CustomFormPage]. Either way the form reads only its own instance, through
  * [CustomFormDataRepository]; it writes only through `saveValue`, the data set screen's save; and
  * its own `/api/` calls are refused (501), as custom forms may not read anything else.
  */
@@ -114,8 +119,8 @@ class WebViewCustomFormRenderer(
             modifier = modifier.fillMaxSize().padding(contentPadding),
             factory = { context ->
                 hostWebView(
-                    context = context,
-                    startUrl = CUSTOM_FORM_URL,
+                    context = ContextThemeWrapper(context, PICKER_THEME),
+                    startUrl = CustomFormPage.of(html).url,
                     onMessage = session::onMessage,
                     zoomable = true,
                     onRendererGone = { fail(FailureReason.RENDERER_CRASHED) },
