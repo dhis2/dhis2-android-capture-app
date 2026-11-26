@@ -1,5 +1,6 @@
 package org.dhis2.form.data
 
+import kotlinx.coroutines.test.runTest
 import okio.Path
 import okio.Path.Companion.toPath
 import org.dhis2.commons.data.EntryMode
@@ -25,6 +26,8 @@ import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.event.EventEditableStatus
+import org.hisp.dhis.android.core.event.EventNonEditableReason
 import org.hisp.dhis.android.core.event.EventObjectRepository
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
@@ -1543,6 +1546,75 @@ class FormValueStoreTest {
 
         verify(eventRepository, never()).setAttributeOptionComboUid(null)
         assertTrue(result.invalidatedFieldErrors.isEmpty())
+    }
+
+    @Test
+    fun `should report every reason when the options fail both the date and the org unit`() {
+        givenEventAttributeOptionCombo(
+            eventDate = date(2025, 6, 1),
+            orgUnitUid = "otherOrgUnitUid",
+            option =
+                categoryOption(
+                    startDate = date(2026, 1, 1),
+                    orgUnits = listOf(ObjectWithUid.create("orgUnitUid")),
+                ),
+        )
+        givenCategoryOptionErrors()
+
+        val result = deValueStore.save(EventRepository.EVENT_REPORT_DATE_UID, "2025-06-01", null)
+
+        assertEquals(
+            mapOf(CATEGORY_COMBO_FIELD_UID to "$DATE_ERROR\n$ORG_UNIT_ERROR"),
+            result.invalidatedFieldErrors,
+        )
+    }
+
+    @Test
+    fun `should recover an event locked by an attribute option combo that is no longer valid`() =
+        runTest {
+            givenEventAttributeOptionCombo(
+                eventDate = date(2025, 6, 1),
+                option = categoryOption(startDate = date(2026, 1, 1)),
+            )
+            givenCategoryOptionErrors()
+            givenEditableStatus(
+                EventEditableStatus.NonEditable(EventNonEditableReason.NO_CATEGORY_COMBO_ACCESS),
+            )
+
+            val errors = deValueStore.recoverInvalidAttributeOptionCombo()
+
+            verify(eventRepository).setAttributeOptionComboUid(null)
+            assertEquals(mapOf(CATEGORY_COMBO_FIELD_UID to DATE_ERROR), errors)
+        }
+
+    @Test
+    fun `should not recover an event that is locked for another reason`() =
+        runTest {
+            givenEventAttributeOptionCombo(
+                eventDate = date(2025, 6, 1),
+                option = categoryOption(startDate = date(2026, 1, 1)),
+            )
+            givenEditableStatus(EventEditableStatus.NonEditable(EventNonEditableReason.EXPIRED))
+
+            val errors = deValueStore.recoverInvalidAttributeOptionCombo()
+
+            verify(eventRepository, never()).setAttributeOptionComboUid(null)
+            assertTrue(errors.isEmpty())
+        }
+
+    private fun givenCategoryOptionErrors() {
+        whenever(
+            resourceManager.getString(R.string.event_category_option_not_valid_for_date, OPTION_NAME),
+        ) doReturn DATE_ERROR
+        whenever(
+            resourceManager.getString(R.string.category_option_not_in_org_unit, OPTION_NAME),
+        ) doReturn ORG_UNIT_ERROR
+    }
+
+    private fun givenEditableStatus(status: EventEditableStatus) {
+        wheneverBlocking {
+            d2.eventModule().eventService().suspendGetEditableStatus("recordUid")
+        } doReturn status
     }
 
     private fun givenEventAttributeOptionCombo(

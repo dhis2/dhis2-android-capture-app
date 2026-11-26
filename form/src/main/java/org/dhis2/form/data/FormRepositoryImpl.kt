@@ -58,6 +58,7 @@ class FormRepositoryImpl(
         dataEntryRepository.disableCollapsableSections()
 
     override suspend fun fetchFormItems(shouldOpenErrorLocation: Boolean): List<FieldUiModel> {
+        invalidatedFieldErrors.putAll(formValueStore.recoverInvalidAttributeOptionCombo())
         itemList = dataEntryRepository.list().blockingFirst() ?: emptyList()
         openedSectionUid = getInitialOpenedSection(shouldOpenErrorLocation)
         backupList = itemList
@@ -847,6 +848,9 @@ class FormRepositoryImpl(
         val result = formValueStore.save(id, value, extraData)
         if (result.valueStoreResult == ValueStoreResult.VALUE_CHANGED) {
             invalidatedFieldErrors.remove(id)
+            if (id == EventRepository.EVENT_REPORT_DATE_UID || id == EventRepository.EVENT_ORG_UNIT_UID) {
+                invalidatedFieldErrors.keys.removeAll { it.startsWith(EventRepository.EVENT_CATEGORY_COMBO_UID) }
+            }
         }
         invalidatedFieldErrors.putAll(result.invalidatedFieldErrors)
         if (result.contextDataChanged()) ruleEngineRepository?.refreshContext()
