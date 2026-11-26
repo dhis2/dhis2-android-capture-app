@@ -211,13 +211,27 @@ class MainActivity : ActivityGlobalAbstract() {
 
     private fun initBinding() {
         binding.navView.setNavigationItemSelectedListener { item ->
-            if (item.itemId == R.id.delete_account) {
-                // An action, not a screen: never make it the checked item, otherwise every
-                // later drawer close would reopen the dialog.
-                binding.mainDrawerLayout.closeDrawers()
-                mainViewModel.onDeleteAccountClick()
-            } else {
-                changeFragment(item.itemId)
+            // Actions, not screens: never make them the checked item, otherwise every
+            // later drawer close would reopen their dialog.
+            when (item.itemId) {
+                R.id.delete_account -> {
+                    binding.mainDrawerLayout.closeDrawers()
+                    mainViewModel.onDeleteAccountClick()
+                }
+
+                R.id.manage_pin -> {
+                    binding.mainDrawerLayout.closeDrawers()
+                    mainViewModel.onBlockSession()
+                }
+
+                R.id.menu_dev -> {
+                    binding.mainDrawerLayout.closeDrawers()
+                    startActivity(Intent(this, DevelopmentActivity::class.java))
+                }
+
+                else -> {
+                    changeFragment(item.itemId)
+                }
             }
             false
         }
@@ -412,9 +426,6 @@ class MainActivity : ActivityGlobalAbstract() {
             R.id.menu_about ->
                 mainViewModel.onChangeScreen(MainScreenType.About)
 
-            R.id.manage_pin ->
-                mainViewModel.onBlockSession()
-
             R.id.logout_button ->
                 mainViewModel.logOut()
 
@@ -423,9 +434,6 @@ class MainActivity : ActivityGlobalAbstract() {
 
             R.id.menu_troubleshooting ->
                 mainViewModel.onChangeScreen(MainScreenType.TroubleShooting)
-
-            R.id.menu_dev ->
-                startActivity(Intent(this, DevelopmentActivity::class.java))
         }
     }
 
