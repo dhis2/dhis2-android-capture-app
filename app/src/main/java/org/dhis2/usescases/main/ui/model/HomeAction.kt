@@ -21,4 +21,6 @@ sealed interface HomeAction {
     data object PinSet : HomeAction
 
     data object DeletePin : HomeAction
+
+    data object ForgotPin : HomeAction
 }

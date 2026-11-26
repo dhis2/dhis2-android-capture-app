@@ -184,6 +184,10 @@ fun MainScreen(
                         pinAction = PinAction.ManagePin
                     },
                     onDismiss = { pinAction = PinAction.None },
+                    onForgotPin = {
+                        pinAction = PinAction.None
+                        onAction(HomeAction.ForgotPin)
+                    },
                 )
             }
 

@@ -474,6 +474,18 @@ class MainViewModelTest {
         }
 
     @Test
+    fun `Should log out and go to login when PIN is forgotten`() =
+        runTest {
+            whenever(logOutUser()) doReturn Result.success(1)
+            viewModel.homeEffects.test {
+                viewModel.onAction(HomeAction.ForgotPin)
+                advanceUntilIdle()
+                verify(logOutUser).invoke(Unit)
+                assertEquals(HomeEffect.GoToLogin(1, false), awaitItem())
+            }
+        }
+
+    @Test
     fun `Should notify PIN deleted and mark it as not created when PIN is removed`() =
         runTest {
             stubHomeData(lockAction = Result.success(LockAction.PinAlreadyCreated))

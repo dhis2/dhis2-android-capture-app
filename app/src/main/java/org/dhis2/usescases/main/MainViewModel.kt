@@ -554,6 +554,7 @@ class MainViewModel(
             is HomeAction.ScreenChanged -> onChangeScreen(action.screen)
             HomeAction.PinSet -> onPinSet()
             HomeAction.DeletePin -> removePin()
+            HomeAction.ForgotPin -> logOut()
         }
     }
 }

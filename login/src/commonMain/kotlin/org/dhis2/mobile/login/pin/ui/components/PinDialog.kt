@@ -66,6 +66,9 @@ import org.koin.core.parameter.parametersOf
  * @param mode The PIN mode (SET for creation, ASK for verification).
  * @param onSuccess Callback invoked when PIN operation succeeds.
  * @param onDismiss Callback invoked when the bottom sheet is dismissed.
+ * @param onForgotPin When set, "Forgot your PIN?" and too many failed attempts call it instead
+ * of the default forgot-PIN flow (delete PIN, log out, dismiss), so the caller can log out and
+ * leave the screen itself.
  * @param modifier Optional modifier for customization.
  * @param windowSizeClass Window size class for layout adjustments.
  */
@@ -75,12 +78,23 @@ fun PinDialog(
     mode: PinMode,
     onSuccess: () -> Unit,
     onDismiss: () -> Unit,
+    onForgotPin: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     windowSizeClass: WindowSizeClass = getWindowSizeClass(),
 ) {
     val viewModel: PinViewModel = koinViewModel(key = "PinViewModel_${mode.ordinal}") { parametersOf(mode) }
     val uiState by viewModel.uiState.collectAsState()
     val isLandscape = deviceIsInLandscapeMode()
+    val forgotPin: () -> Unit =
+        if (onForgotPin != null) {
+            {
+                viewModel.resetAttempts()
+                viewModel.resetState()
+                onForgotPin()
+            }
+        } else {
+            viewModel::onForgotPin
+        }
 
     LaunchedEffect(uiState.isSuccess, uiState.isDismissed, uiState.isTooManyAttempts) {
         when {
@@ -88,7 +102,7 @@ fun PinDialog(
                 onSuccess()
                 viewModel.resetState()
             }
-            uiState.isTooManyAttempts -> viewModel.onForgotPin()
+            uiState.isTooManyAttempts -> forgotPin()
             uiState.isDismissed -> {
                 viewModel.resetAttempts()
                 viewModel.resetState()
@@ -104,7 +118,7 @@ fun PinDialog(
         windowSizeClass = windowSizeClass,
         onPinChanged = viewModel::onPinChanged,
         onPrimaryClick = viewModel::onPinComplete,
-        onSecondaryClick = viewModel::onForgotPin,
+        onSecondaryClick = forgotPin,
         onDismiss = {
             viewModel.resetAttempts()
             viewModel.resetState()
