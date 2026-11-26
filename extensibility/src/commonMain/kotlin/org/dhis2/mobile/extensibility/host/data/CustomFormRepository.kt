@@ -8,8 +8,7 @@ interface CustomFormRepository {
     /**
      * Whether the forms were downloaded over https. Over http a form could be altered in
      * transit, so it is not run. False when the server address is unknown.
-     * TODO consider renaming to isSecureServer?
      */
 
-    suspend fun serverUsesHttps(): Boolean
+    suspend fun isSecureServer(): Boolean
 }

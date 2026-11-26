@@ -3,7 +3,7 @@ package org.dhis2.mobile.extensibility.host.renderer
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import org.dhis2.mobile.extensibility.host.model.DataSetInstanceRef
+import org.dhis2.mobile.extensibility.host.model.DataSetInstance
 import org.dhis2.mobile.extensibility.host.model.FailureReason
 
 /**
@@ -17,13 +17,12 @@ import org.dhis2.mobile.extensibility.host.model.FailureReason
  * after the form has loaded is reported by the renderer and the form stays.
  */
 interface CustomFormRenderer {
-    /** Null when this device can run custom forms; otherwise why not (e.g. an old WebView). */
-    fun deviceSupport(): FailureReason?
+    fun deviceSupported(): Boolean
 
     @Composable
     fun Render(
         html: String,
-        instance: DataSetInstanceRef,
+        instance: DataSetInstance,
         modifier: Modifier,
         contentPadding: PaddingValues,
         editable: Boolean,

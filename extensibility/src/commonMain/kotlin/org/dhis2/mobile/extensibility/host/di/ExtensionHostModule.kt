@@ -23,7 +23,6 @@ val extensionHostModule =
                 renderer = get(),
                 rules = listOf(LegacyApiScan()),
                 reporter = get(),
-                allowHttp = get<ExtensionHostConfig>().allowHttp,
             )
         }
     }

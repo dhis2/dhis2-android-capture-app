@@ -24,34 +24,31 @@ class ResolveCustomForm(
     private val renderer: CustomFormRenderer,
     private val rules: List<CompatibilityRule<String>>,
     private val reporter: ExtensionFailureReporter,
-    /** SPIKE ONLY: debug builds skip the https rule. Not part of the real development. */
-    private val allowHttp: Boolean = false,
 ) {
     suspend operator fun invoke(dataSetUid: String): ResolvedCustomForm? {
         val extension = Extension.CustomForm(dataSetUid)
-        val (html, https) =
+        val html =
             try {
-                val html = repository.customFormHtml(dataSetUid) ?: return null
-                html to repository.serverUsesHttps()
+                repository.customFormHtml(dataSetUid)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                reporter.report(extension, FailureReason.CONTENT_UNREADABLE)
-                return null
+                null
             }
 
         val failure =
             when {
-                // TODO review if there is a simpler way to do this
+                html == null -> FailureReason.CONTENT_UNREADABLE
                 html.isBlank() -> FailureReason.EMPTY_CONTENT
-                !https && !allowHttp -> FailureReason.INSECURE_SERVER
-                else -> renderer.deviceSupport() ?: rules.firstNotNullOfOrNull { it.check(html) }
+                !repository.isSecureServer() -> FailureReason.INSECURE_SERVER
+                renderer.deviceSupported() -> FailureReason.UNSUPPORTED_FEATURE
+                else -> rules.firstNotNullOfOrNull { it.check(html) }
             }
-        if (failure != null) {
+        return if (failure != null) {
             reporter.report(extension, failure)
-            return null
+            null
+        } else {
+            html?.let { ResolvedCustomForm(extension, it) }
         }
-
-        return ResolvedCustomForm(extension, html)
     }
 }

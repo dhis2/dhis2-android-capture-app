@@ -33,7 +33,7 @@ class CustomFormRepositoryImpl(
                 .orEmpty()
         }
 
-    override suspend fun serverUsesHttps(): Boolean =
+    override suspend fun isSecureServer(): Boolean =
         withContext(io) {
             d2
                 .systemInfoModule()
