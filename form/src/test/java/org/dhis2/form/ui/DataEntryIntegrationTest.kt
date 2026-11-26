@@ -65,6 +65,7 @@ class DataEntryIntegrationTest {
 
     private val formValueStore: FormValueStore =
         mock {
+            onBlocking { recoverInvalidAttributeOptionCombo() } doReturn emptyMap()
             on {
                 save(
                     any<String>(),
