@@ -31,6 +31,7 @@ import org.hisp.dhis.rules.models.RuleAction
 import org.hisp.dhis.rules.models.RuleEffect
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
@@ -567,6 +568,46 @@ class FormRepositoryImplTest {
             ) doReturn Flowable.just(provideMandatoryListWithCategoryCombo("option1,expiredOption"))
             repository.fetchFormItems()
             assertTrue(repository.runDataIntegrityCheck(false) is MissingMandatoryResult)
+        }
+
+    @Test
+    fun `Should show why the category combo was cleared until a new combo is saved`() =
+        runBlocking {
+            val categoryComboUid = "EVENT_CATEGORY_COMBO_UID-uid001"
+            val error = "Index is not valid for the event date"
+            // Given a report date change that clears the category combo
+            whenever(
+                formValueStore.save(EventRepository.EVENT_REPORT_DATE_UID, "2025-06-01", null),
+            ) doReturn
+                    StoreResult(
+                        EventRepository.EVENT_REPORT_DATE_UID,
+                        ValueStoreResult.VALUE_CHANGED,
+                        invalidatedFieldErrors = mapOf(categoryComboUid to error),
+                    )
+            whenever(dataEntryRepository.list()) doReturn Flowable.just(
+                provideMandatoryListWithCategoryCombo("")
+            )
+
+            repository.save(EventRepository.EVENT_REPORT_DATE_UID, "2025-06-01", null)
+            val clearedList = repository.fetchFormItems()
+
+            // Then the category combo shows why and the event can't be completed
+            assertEquals(error, clearedList.find { it.uid == categoryComboUid }?.error)
+            assertTrue(repository.runDataIntegrityCheck(false) is MissingMandatoryResult)
+
+            // When the user saves a new combo
+            whenever(formValueStore.save(categoryComboUid, "option1,option2", null)) doReturn
+                    StoreResult(categoryComboUid, ValueStoreResult.VALUE_CHANGED)
+            whenever(
+                dataEntryRepository.list(),
+            ) doReturn Flowable.just(provideMandatoryListWithCategoryCombo("option1,option2"))
+
+            repository.save(categoryComboUid, "option1,option2", null)
+            val updatedList = repository.fetchFormItems()
+
+            // Then the error is gone
+            assertNull(updatedList.find { it.uid == categoryComboUid }?.error)
+            assertTrue(repository.runDataIntegrityCheck(false) is SuccessfulResult)
         }
 
     @Test

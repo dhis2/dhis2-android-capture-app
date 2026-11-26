@@ -17,6 +17,10 @@ import org.dhis2.form.data.EventRepository.Companion.EVENT_REPORT_DATE_UID
 import org.dhis2.form.model.EnrollmentDetail
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.mobile.commons.category.data.toDomain
+import org.dhis2.mobile.commons.category.data.toLocalDate
+import org.dhis2.mobile.commons.category.domain.isAvailableIn
+import org.dhis2.mobile.commons.category.domain.isValidOn
 import org.dhis2.mobile.commons.files.deleteStagedFile
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
@@ -76,6 +80,7 @@ class FormValueStore(
                         StoreResult(
                             EVENT_REPORT_DATE_UID,
                             ValueStoreResult.VALUE_CHANGED,
+                            invalidatedFieldErrors = clearInvalidAttributeOptionCombo(),
                         )
                     } ?: StoreResult(
                         EVENT_REPORT_DATE_UID,
@@ -92,6 +97,7 @@ class FormValueStore(
                         StoreResult(
                             EVENT_ORG_UNIT_UID,
                             ValueStoreResult.VALUE_CHANGED,
+                            invalidatedFieldErrors = clearInvalidAttributeOptionCombo(),
                         )
                     } ?: StoreResult(
                         EVENT_ORG_UNIT_UID,
@@ -113,6 +119,49 @@ class FormValueStore(
                 }
             }
         }
+
+    private fun clearInvalidAttributeOptionCombo(): Map<String, String> {
+        val event = eventRepository?.blockingGet() ?: return emptyMap()
+        val attributeOptionComboUid = event.attributeOptionCombo() ?: return emptyMap()
+        val categoryComboUid =
+            d2
+                .categoryModule()
+                .categoryOptionCombos()
+                .uid(attributeOptionComboUid)
+                .blockingGet()
+                ?.categoryCombo()
+                ?.uid() ?: return emptyMap()
+        val options =
+            d2
+                .categoryModule()
+                .categoryOptions()
+                .withOrganisationUnits()
+                .byCategoryOptionComboUid(attributeOptionComboUid)
+                .blockingGet()
+                .map { it.toDomain() }
+        val eventDate = event.eventDate()?.toLocalDate()
+        val outOfDateRange = options.filterNot { it.isValidOn(eventDate) }
+        val notInOrgUnit = options.filterNot { it.isAvailableIn(event.organisationUnit()) }
+
+        val error =
+            when {
+                outOfDateRange.isNotEmpty() ->
+                    resourceManager.getString(
+                        R.string.event_category_option_not_valid_for_date,
+                        outOfDateRange.joinToString(", ") { it.name },
+                    )
+
+                notInOrgUnit.isNotEmpty() ->
+                    resourceManager.getString(
+                        R.string.category_option_not_in_org_unit,
+                        notInOrgUnit.joinToString(", ") { it.name },
+                    )
+
+                else -> return emptyMap()
+            }
+        eventRepository.setAttributeOptionComboUid(null)
+        return mapOf("$EVENT_CATEGORY_COMBO_UID-$categoryComboUid" to error)
+    }
 
     fun eventState(): EventStatus? =
         d2
