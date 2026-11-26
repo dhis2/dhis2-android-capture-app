@@ -1488,7 +1488,7 @@ class FormValueStoreTest {
         whenever(
             resourceManager.getString(
                 R.string.event_category_option_not_valid_for_date,
-                OPTION_NAME
+                OPTION_NAME,
             ),
         ) doReturn DATE_ERROR
 
@@ -1527,7 +1527,7 @@ class FormValueStoreTest {
         verify(eventRepository).setAttributeOptionComboUid(null)
         assertEquals(
             mapOf(CATEGORY_COMBO_FIELD_UID to ORG_UNIT_ERROR),
-            result.invalidatedFieldErrors
+            result.invalidatedFieldErrors,
         )
     }
 

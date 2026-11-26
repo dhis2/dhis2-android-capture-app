@@ -584,9 +584,10 @@ class FormRepositoryImplTest {
                         ValueStoreResult.VALUE_CHANGED,
                         invalidatedFieldErrors = mapOf(categoryComboUid to error),
                     )
-            whenever(dataEntryRepository.list()) doReturn Flowable.just(
-                provideMandatoryListWithCategoryCombo("")
-            )
+            whenever(dataEntryRepository.list()) doReturn
+                    Flowable.just(
+                        provideMandatoryListWithCategoryCombo(""),
+                    )
 
             repository.save(EventRepository.EVENT_REPORT_DATE_UID, "2025-06-01", null)
             val clearedList = repository.fetchFormItems()
