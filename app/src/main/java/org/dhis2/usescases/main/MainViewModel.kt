@@ -536,7 +536,7 @@ class MainViewModel(
     }
 
     private fun removePin() {
-        launchUseCase(dispatcher.io()) {
+        launchUseCase {
             deletePin()
                 .onSuccess {
                     _homeEffects.send(HomeEffect.PinDeleted)
