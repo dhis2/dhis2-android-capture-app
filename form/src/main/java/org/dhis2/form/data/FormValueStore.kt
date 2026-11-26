@@ -1,6 +1,7 @@
 package org.dhis2.form.data
 
 import io.reactivex.Flowable
+import kotlinx.coroutines.runBlocking
 import okio.Path.Companion.toPath
 import org.dhis2.bindings.blockingSetCheck
 import org.dhis2.bindings.withValueTypeCheck
@@ -80,7 +81,7 @@ class FormValueStore(
                         StoreResult(
                             EVENT_REPORT_DATE_UID,
                             ValueStoreResult.VALUE_CHANGED,
-                            invalidatedFieldErrors = clearInvalidAttributeOptionCombo(),
+                            invalidatedFieldErrors = runBlocking { clearInvalidAttributeOptionCombo() },
                         )
                     } ?: StoreResult(
                         EVENT_REPORT_DATE_UID,
@@ -97,7 +98,7 @@ class FormValueStore(
                         StoreResult(
                             EVENT_ORG_UNIT_UID,
                             ValueStoreResult.VALUE_CHANGED,
-                            invalidatedFieldErrors = clearInvalidAttributeOptionCombo(),
+                            invalidatedFieldErrors = runBlocking { clearInvalidAttributeOptionCombo() },
                         )
                     } ?: StoreResult(
                         EVENT_ORG_UNIT_UID,
@@ -120,15 +121,15 @@ class FormValueStore(
             }
         }
 
-    private fun clearInvalidAttributeOptionCombo(): Map<String, String> {
-        val event = eventRepository?.blockingGet() ?: return emptyMap()
+    private suspend fun clearInvalidAttributeOptionCombo(): Map<String, String> {
+        val event = eventRepository?.suspendGet() ?: return emptyMap()
         val attributeOptionComboUid = event.attributeOptionCombo() ?: return emptyMap()
         val categoryComboUid =
             d2
                 .categoryModule()
                 .categoryOptionCombos()
                 .uid(attributeOptionComboUid)
-                .blockingGet()
+                .suspendGet()
                 ?.categoryCombo()
                 ?.uid() ?: return emptyMap()
         val options =
@@ -137,7 +138,7 @@ class FormValueStore(
                 .categoryOptions()
                 .withOrganisationUnits()
                 .byCategoryOptionComboUid(attributeOptionComboUid)
-                .blockingGet()
+                .suspendGet()
                 .map { it.toDomain() }
         val eventDate = event.eventDate()?.toLocalDate()
         val outOfDateRange = options.filterNot { it.isValidOn(eventDate) }

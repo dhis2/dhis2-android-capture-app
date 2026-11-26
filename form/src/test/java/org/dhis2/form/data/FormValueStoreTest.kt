@@ -51,6 +51,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
+import org.mockito.kotlin.wheneverBlocking
 import java.util.Date
 import java.util.GregorianCalendar
 
@@ -1555,26 +1556,26 @@ class FormValueStoreTest {
                 on { eventDate() } doReturn eventDate
                 on { organisationUnit() } doReturn orgUnitUid
             }
-        whenever(eventRepository.blockingGet()) doReturn event
+        wheneverBlocking { eventRepository.suspendGet() } doReturn event
         val attributeOptionCombo: CategoryOptionCombo =
             mock {
                 on { categoryCombo() } doReturn ObjectWithUid.create(CATEGORY_COMBO_UID)
             }
-        whenever(
+        wheneverBlocking {
             d2
                 .categoryModule()
                 .categoryOptionCombos()
                 .uid(AOC_UID)
-                .blockingGet(),
-        ) doReturn attributeOptionCombo
-        whenever(
+                .suspendGet()
+        } doReturn attributeOptionCombo
+        wheneverBlocking {
             d2
                 .categoryModule()
                 .categoryOptions()
                 .withOrganisationUnits()
                 .byCategoryOptionComboUid(AOC_UID)
-                .blockingGet(),
-        ) doReturn listOf(option)
+                .suspendGet()
+        } doReturn listOf(option)
     }
 
     private fun categoryOption(
