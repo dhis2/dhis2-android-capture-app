@@ -69,6 +69,8 @@ import org.koin.core.parameter.parametersOf
  * @param onForgotPin When set, "Forgot your PIN?" and too many failed attempts call it instead
  * of the default forgot-PIN flow (delete PIN, log out, dismiss), so the caller can log out and
  * leave the screen itself.
+ * @param onBack When set, Back and the close button call it instead of [onDismiss], so the
+ * caller can tell a user cancel apart from a completed forgot-PIN flow.
  * @param modifier Optional modifier for customization.
  * @param windowSizeClass Window size class for layout adjustments.
  */
@@ -79,6 +81,7 @@ fun PinDialog(
     onSuccess: () -> Unit,
     onDismiss: () -> Unit,
     onForgotPin: (() -> Unit)? = null,
+    onBack: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     windowSizeClass: WindowSizeClass = getWindowSizeClass(),
 ) {
@@ -122,7 +125,7 @@ fun PinDialog(
         onDismiss = {
             viewModel.resetAttempts()
             viewModel.resetState()
-            onDismiss()
+            (onBack ?: onDismiss)()
         },
         modifier = modifier,
     )

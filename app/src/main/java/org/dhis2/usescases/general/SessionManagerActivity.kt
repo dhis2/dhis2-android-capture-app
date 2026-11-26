@@ -163,6 +163,9 @@ abstract class SessionManagerActivity :
                     analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
                     onDismiss()
                 },
+                // Back works like a lock screen: leave the app and keep the PIN. The session
+                // stays locked, so the next launch asks for the PIN again.
+                onBack = { finishAffinity() },
             )
     }
 
