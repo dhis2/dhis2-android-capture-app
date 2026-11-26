@@ -529,7 +529,7 @@ class MainViewModel(
     }
 
     private fun onPinSet() {
-        launchUseCase(dispatcher.io()) {
+        launchUseCase {
             val effect =
                 if (_homeScreenState.value.pinAlreadyCreated) {
                     HomeEffect.PinUpdated

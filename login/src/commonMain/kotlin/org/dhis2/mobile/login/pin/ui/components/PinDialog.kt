@@ -91,9 +91,12 @@ fun PinDialog(
     val forgotPin: () -> Unit =
         if (onForgotPin != null) {
             {
-                viewModel.resetAttempts()
-                viewModel.resetState()
-                onForgotPin()
+                // Same guard as PinViewModel.onForgotPin: ignore taps while a check is running.
+                if (!uiState.isLoading) {
+                    viewModel.resetAttempts()
+                    viewModel.resetState()
+                    onForgotPin()
+                }
             }
         } else {
             viewModel::onForgotPin

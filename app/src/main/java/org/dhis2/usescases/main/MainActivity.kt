@@ -213,7 +213,7 @@ class MainActivity : ActivityGlobalAbstract() {
     private fun initBinding() {
         binding.navView.setNavigationItemSelectedListener { item ->
             // Actions, not screens: never make them the checked item, otherwise every
-            // later drawer close would reopen their dialog.
+            // later drawer close would run them again.
             when (item.itemId) {
                 R.id.delete_account -> {
                     binding.mainDrawerLayout.closeDrawers()
@@ -228,6 +228,11 @@ class MainActivity : ActivityGlobalAbstract() {
                 R.id.menu_dev -> {
                     binding.mainDrawerLayout.closeDrawers()
                     startActivity(Intent(this, DevelopmentActivity::class.java))
+                }
+
+                R.id.logout_button -> {
+                    binding.mainDrawerLayout.closeDrawers()
+                    mainViewModel.logOut()
                 }
 
                 else -> {
@@ -426,9 +431,6 @@ class MainActivity : ActivityGlobalAbstract() {
 
             R.id.menu_about ->
                 mainViewModel.onChangeScreen(MainScreenType.About)
-
-            R.id.logout_button ->
-                mainViewModel.logOut()
 
             R.id.menu_home ->
                 mainViewModel.onChangeToHome()
