@@ -1,6 +1,4 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -30,40 +28,14 @@ kotlin {
 
     jvm("desktop")
 
-    iosArm64()
-    iosSimulatorArm64()
-
-    // jvmCommonMain holds the JVM-only code shared by android and desktop, so commonMain stays
-    // compilable for iOS.
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
-    applyDefaultHierarchyTemplate {
-        common {
-            group("jvmCommon") {
-                withJvm()
-                withCompilations { it.platformType == KotlinPlatformType.androidJvm }
-            }
-        }
-    }
-
     sourceSets {
         commonMain.dependencies {
             implementation(project(":commonskmm"))
 
-            implementation(libs.compose.runtime)
-            implementation(libs.compose.foundation)
-            implementation(libs.compose.ui)
-            implementation(libs.compose.material3)
-            implementation(libs.compose.material3.window)
-            implementation(libs.lifecycle.runtime.compose)
-
             // Koin
             api(project.dependencies.platform(libs.koin.bom))
             api(libs.koin.core)
-            implementation(libs.koin.compose)
-            implementation(libs.koin.composeVM)
 
-            // Design system
-            implementation(libs.dhis2.mobile.designsystem)
         }
 
         commonTest.dependencies {
@@ -74,10 +46,7 @@ kotlin {
         }
 
         androidMain.dependencies {
-            implementation(project.dependencies.platform(libs.androidx.compose.bom))
             implementation(libs.dhis2.android.sdk)
-            compileOnly(libs.androidx.compose.preview)
-            compileOnly(libs.androidx.compose.uitooling)
         }
 
         getByName("androidHostTest") {
