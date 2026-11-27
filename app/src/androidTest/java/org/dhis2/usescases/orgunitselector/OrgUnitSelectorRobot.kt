@@ -15,7 +15,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
-import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 
@@ -45,7 +44,7 @@ class OrgUnitSelectorRobot(private val composeTestRule: ComposeTestRule) : BaseR
         composeTestRule.onAllNodes(orgUnitTreeItemMatcher).onFirst().assertExists()
     }
 
-    fun selectTreeOrgUnit(orgUnitName: String) {
+    fun selectTreeOrgUnit(orgUnitName: String, doneText: String = getString(R.string.done)) {
         composeTestRule.waitUntilAtLeastOneExists(
             hasTestTag("ORG_TREE_ITEM_$orgUnitName"),
             TIMEOUT,
@@ -54,7 +53,7 @@ class OrgUnitSelectorRobot(private val composeTestRule: ComposeTestRule) : BaseR
             .performScrollTo()
             .performClick()
         composeTestRule.waitForIdle()
-        clickDone()
+        clickDone(doneText)
     }
 
     fun clickFirstOrgUnitCheckbox() {
@@ -63,9 +62,7 @@ class OrgUnitSelectorRobot(private val composeTestRule: ComposeTestRule) : BaseR
         composeTestRule.waitForIdle()
     }
 
-    fun clickDone() {
-        val doneText =
-            InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.done)
+    fun clickDone(doneText: String = getString(R.string.done)) {
         composeTestRule.waitUntilAtLeastOneExists(hasText(doneText) and isEnabled(), TIMEOUT)
         composeTestRule.onNodeWithText(doneText)
             .assertIsDisplayed()

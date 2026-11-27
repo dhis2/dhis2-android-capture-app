@@ -9,7 +9,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
 android {
     compileSdk = libs.versions.compileSdk.get().toInt()

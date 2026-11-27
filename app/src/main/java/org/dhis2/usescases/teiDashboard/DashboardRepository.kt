@@ -89,6 +89,8 @@ interface DashboardRepository {
 
     fun getEnrollmentStatus(enrollmentUid: String?): EnrollmentStatus?
 
+    fun isEnrollmentCategoryComboReadOnly(enrollmentUid: String?): Boolean
+
     fun updateEnrollmentStatus(
         enrollmentUid: String,
         status: EnrollmentStatus,

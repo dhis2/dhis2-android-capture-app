@@ -12,7 +12,7 @@ import timber.log.Timber
 
 const val PREF_URLS = "PREF_URLS"
 
-internal class PreferenceProviderImpl(
+class PreferenceProviderImpl(
     context: Context,
 ) : PreferenceProvider {
     private val sharedPreferences: SharedPreferences =
@@ -157,15 +157,6 @@ internal class PreferenceProviderImpl(
         setValue(SECURE_SERVER_URL, serverUrl)
         setValue(SECURE_USER_NAME, userName)
         pass?.let { secureValue(SECURE_PASS, it) }
-    }
-
-    override fun saveUserCredentialsAndCipher(
-        serverUrl: String,
-        userName: String,
-        ciphertextWrapper: CiphertextWrapper,
-    ) {
-        saveUserCredentials(serverUrl, userName, null)
-        saveAsJson(BIOMETRIC_CREDENTIALS, ciphertextWrapper)
     }
 
     override fun getBiometricCredentials(): CiphertextWrapper? =

@@ -170,7 +170,7 @@ class EventCaptureRepositoryImplTest {
                 .programModule()
                 .programStages()
                 .uid(testEventStageUid)
-                .get(),
+                .rxGet(),
         ) doReturn
             Single.just(
                 ProgramStage
@@ -238,7 +238,7 @@ class EventCaptureRepositoryImplTest {
                 .eventModule()
                 .events()
                 .uid(eventUid)
-                .delete(),
+                .rxDelete(),
         ) doReturn Completable.complete()
 
         repository
@@ -421,7 +421,7 @@ class EventCaptureRepositoryImplTest {
         val repository = EventCaptureRepositoryImpl(d2 = d2, eventUid = eventUid)
 
         whenever(
-            d2.eventModule().eventService().getEditableStatus(eventUid),
+            d2.eventModule().eventService().rxGetEditableStatus(eventUid),
         ) doReturn
             Single.just(
                 EventEditableStatus.NonEditable(EventNonEditableReason.EXPIRED) as EventEditableStatus,
@@ -442,7 +442,7 @@ class EventCaptureRepositoryImplTest {
         val repository = EventCaptureRepositoryImpl(d2 = d2, eventUid = eventUid)
 
         whenever(
-            d2.eventModule().eventService().getEditableStatus(eventUid),
+            d2.eventModule().eventService().rxGetEditableStatus(eventUid),
         ) doReturn
             Single.just(
                 EventEditableStatus.Editable() as EventEditableStatus,
@@ -507,7 +507,7 @@ class EventCaptureRepositoryImplTest {
                 .notes()
                 .byEventUid()
                 .eq(eventUid)
-                .count(),
+                .rxCount(),
         ) doReturn Single.just(numberOfNotes)
 
         repository.noteCount

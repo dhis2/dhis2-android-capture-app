@@ -1,6 +1,10 @@
 package org.dhis2.usescases.login
 
+import androidx.compose.ui.autofill.ContentType
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -85,6 +89,19 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithTag(CREDENTIALS_PASSWORD_INPUT_TAG).performClick()
         // Now find the inner text field and type the password
         composeTestRule.onNodeWithTag("INPUT_PASSWORD_TEXT_FIELD").performTextReplacement(password)
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun checkCredentialsExposeAutofillContentTypes() {
+        composeTestRule.waitUntilExactlyOneExists(
+            hasTestTag(CREDENTIALS_PASSWORD_INPUT_TAG),
+            TIMEOUT,
+        )
+        // Autofill services read the content type from the inner text field, not the shell
+        composeTestRule.onNodeWithTag("INPUT_USER_FIELD")
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.ContentType, ContentType.Username))
+        composeTestRule.onNodeWithTag("INPUT_PASSWORD_TEXT_FIELD")
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.ContentType, ContentType.Password))
     }
 
     @OptIn(ExperimentalTestApi::class)

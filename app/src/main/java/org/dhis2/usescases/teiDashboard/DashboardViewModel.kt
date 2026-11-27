@@ -4,7 +4,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.automirrored.filled.StickyNote2
 import androidx.compose.material.icons.automirrored.outlined.Assignment
-import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.automirrored.outlined.StickyNote2
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Hub
@@ -137,8 +136,8 @@ class DashboardViewModel(
 
     /**
      * Derived from every piece of state the menu depends on, so it is rebuilt whenever the grouping
-     * preference is toggled, the follow up bar changes or the dashboard model is reloaded, instead
-     * of being snapshotted once with values that have not been resolved yet.
+     * preference is toggled, the follow-up bar changes or the dashboard model is reloaded, instead
+     * of being snapshot once with values that have not been resolved yet.
      */
     val moreOptionsMenu: StateFlow<List<MenuItemData<EnrollmentMenuItem>>> =
         combine(
@@ -175,107 +174,11 @@ class DashboardViewModel(
             addSyncMenuItem()
             addTransferMenuItem()
             addFollowUpMenuItem(showFollowUpBar)
-            if (groupByStage) {
-                add(
-                    MenuItemData(
-                        id = EnrollmentMenuItem.VIEW_TIMELINE,
-                        label = resourcesManager.getString(R.string.view_timeline),
-                        leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Timeline),
-                    ),
-                )
-            } else {
-                add(
-                    MenuItemData(
-                        id = EnrollmentMenuItem.GROUP_BY_STAGE,
-                        label =
-                            customLabelProvider.getCustomGroupByStageLabel(
-                                programUid = repository.getProgramUid(),
-                            ),
-                        leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Workspaces),
-                    ),
-                )
-            }
-            add(
-                MenuItemData(
-                    id = EnrollmentMenuItem.HELP,
-                    label = resourcesManager.getString(R.string.showHelp),
-                    leadingElement = MenuLeadingElement.Icon(icon = Icons.AutoMirrored.Outlined.HelpOutline),
-                ),
-            )
+            addStagesViewMenuItem(groupByStage)
             addMoreEnrollmentsMenuItem()
-            add(
-                MenuItemData(
-                    id = EnrollmentMenuItem.SHARE,
-                    label = resourcesManager.getString(R.string.share),
-                    showDivider = true,
-                    leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Share),
-                ),
-            )
-            val enrollmentStatus = repository.getEnrollmentStatus(repository.getEnrollmentUid())
-
-            if (enrollmentStatus != EnrollmentStatus.COMPLETED) {
-                add(
-                    MenuItemData(
-                        id = EnrollmentMenuItem.COMPLETE,
-                        label = resourcesManager.getString(R.string.complete),
-                        leadingElement =
-                            MenuLeadingElement.Icon(
-                                icon = Icons.Outlined.CheckCircle,
-                                defaultTintColor = SurfaceColor.CustomGreen,
-                                selectedTintColor = SurfaceColor.CustomGreen,
-                            ),
-                    ),
-                )
-            }
-
-            if (enrollmentStatus != EnrollmentStatus.ACTIVE) {
-                add(
-                    MenuItemData(
-                        id = EnrollmentMenuItem.ACTIVATE,
-                        label = resourcesManager.getString(R.string.re_open),
-                        showDivider = enrollmentStatus == EnrollmentStatus.CANCELLED,
-                        leadingElement =
-                            MenuLeadingElement.Icon(
-                                icon = Icons.Outlined.LockReset,
-                                defaultTintColor = SurfaceColor.Warning,
-                                selectedTintColor = SurfaceColor.Warning,
-                            ),
-                    ),
-                )
-            }
-
-            if (enrollmentStatus != EnrollmentStatus.CANCELLED) {
-                add(
-                    MenuItemData(
-                        id = EnrollmentMenuItem.DEACTIVATE,
-                        label = resourcesManager.getString(R.string.deactivate),
-                        showDivider = true,
-                        leadingElement =
-                            MenuLeadingElement.Icon(
-                                icon = Icons.Outlined.Cancel,
-                                defaultTintColor = TextColor.OnDisabledSurface,
-                                selectedTintColor = TextColor.OnDisabledSurface,
-                            ),
-                    ),
-                )
-            }
-            if (repository.checkIfDeleteEnrollmentIsPossible(repository.getEnrollmentUid())) {
-                val programmeName =
-                    if (dashboardModel is DashboardEnrollmentModel) {
-                        dashboardModel.currentProgram()?.displayName()
-                    } else {
-                        ""
-                    }
-                add(
-                    MenuItemData(
-                        id = EnrollmentMenuItem.REMOVE,
-                        label = resourcesManager.getString(R.string.remove_from),
-                        supportingText = programmeName,
-                        style = MenuItemStyle.ALERT,
-                        leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.DeleteOutline),
-                    ),
-                )
-            }
+            addShareMenuItem()
+            addChangeEnrollmentStatusMenuItem()
+            addDeleteEnrollmentMenuItem(dashboardModel)
             addDeleteTeiMenuItem()
         }
 
@@ -544,6 +447,7 @@ class DashboardViewModel(
                             customLabelProvider.getCustomEnrollmentLabel(
                                 programUid = repository.getProgramUid(),
                                 quantity = 2,
+                                keepConfiguredCase = true,
                             ),
                     ),
                 leadingElement = MenuLeadingElement.Icon(icon = Icons.AutoMirrored.Outlined.Assignment),
@@ -570,6 +474,114 @@ class DashboardViewModel(
                     id = EnrollmentMenuItem.TRANSFER,
                     label = resourcesManager.getString(R.string.transfer),
                     leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.MoveDown),
+                ),
+            )
+        }
+    }
+
+    private fun MutableList<MenuItemData<EnrollmentMenuItem>>.addDeleteEnrollmentMenuItem(dashboardModel: DashboardModel?) {
+        if (repository.checkIfDeleteEnrollmentIsPossible(repository.getEnrollmentUid())) {
+            val programmeName =
+                if (dashboardModel is DashboardEnrollmentModel) {
+                    dashboardModel.currentProgram()?.displayName()
+                } else {
+                    ""
+                }
+            add(
+                MenuItemData(
+                    id = EnrollmentMenuItem.REMOVE,
+                    label = resourcesManager.getString(R.string.remove_from),
+                    supportingText = programmeName,
+                    style = MenuItemStyle.ALERT,
+                    leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.DeleteOutline),
+                ),
+            )
+        }
+    }
+
+    private fun MutableList<MenuItemData<EnrollmentMenuItem>>.addChangeEnrollmentStatusMenuItem() {
+        val enrollmentStatus = repository.getEnrollmentStatus(repository.getEnrollmentUid())
+        // A read-only enrollment AOC also locks the enrollment status.
+        val canChangeStatus =
+            !repository.isEnrollmentCategoryComboReadOnly(repository.getEnrollmentUid())
+
+        if (canChangeStatus && enrollmentStatus != EnrollmentStatus.COMPLETED) {
+            add(
+                MenuItemData(
+                    id = EnrollmentMenuItem.COMPLETE,
+                    label = resourcesManager.getString(R.string.complete),
+                    leadingElement =
+                        MenuLeadingElement.Icon(
+                            icon = Icons.Outlined.CheckCircle,
+                            defaultTintColor = SurfaceColor.CustomGreen,
+                            selectedTintColor = SurfaceColor.CustomGreen,
+                        ),
+                ),
+            )
+        }
+
+        if (canChangeStatus && enrollmentStatus != EnrollmentStatus.ACTIVE) {
+            add(
+                MenuItemData(
+                    id = EnrollmentMenuItem.ACTIVATE,
+                    label = resourcesManager.getString(R.string.re_open),
+                    showDivider = enrollmentStatus == EnrollmentStatus.CANCELLED,
+                    leadingElement =
+                        MenuLeadingElement.Icon(
+                            icon = Icons.Outlined.LockReset,
+                            defaultTintColor = SurfaceColor.Warning,
+                            selectedTintColor = SurfaceColor.Warning,
+                        ),
+                ),
+            )
+        }
+
+        if (canChangeStatus && enrollmentStatus != EnrollmentStatus.CANCELLED) {
+            add(
+                MenuItemData(
+                    id = EnrollmentMenuItem.DEACTIVATE,
+                    label = resourcesManager.getString(R.string.deactivate),
+                    showDivider = true,
+                    leadingElement =
+                        MenuLeadingElement.Icon(
+                            icon = Icons.Outlined.Cancel,
+                            defaultTintColor = TextColor.OnDisabledSurface,
+                            selectedTintColor = TextColor.OnDisabledSurface,
+                        ),
+                ),
+            )
+        }
+    }
+
+    private fun MutableList<MenuItemData<EnrollmentMenuItem>>.addShareMenuItem() {
+        add(
+            MenuItemData(
+                id = EnrollmentMenuItem.SHARE,
+                label = resourcesManager.getString(R.string.share),
+                showDivider = true,
+                leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Share),
+            ),
+        )
+    }
+
+    private suspend fun MutableList<MenuItemData<EnrollmentMenuItem>>.addStagesViewMenuItem(groupByStage: Boolean) {
+        if (groupByStage) {
+            add(
+                MenuItemData(
+                    id = EnrollmentMenuItem.VIEW_TIMELINE,
+                    label = resourcesManager.getString(R.string.view_timeline),
+                    leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Timeline),
+                ),
+            )
+        } else {
+            add(
+                MenuItemData(
+                    id = EnrollmentMenuItem.GROUP_BY_STAGE,
+                    label =
+                        customLabelProvider.getCustomGroupByStageLabel(
+                            programUid = repository.getProgramUid(),
+                        ),
+                    leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Workspaces),
                 ),
             )
         }

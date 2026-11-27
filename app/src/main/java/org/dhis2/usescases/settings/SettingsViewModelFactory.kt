@@ -2,14 +2,13 @@ package org.dhis2.usescases.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
 import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.ExportDatabase
 import org.dhis2.usescases.settings.domain.GetSettingsState
-import org.dhis2.usescases.settings.domain.GetSyncErrors
 import org.dhis2.usescases.settings.domain.LaunchSync
 import org.dhis2.usescases.settings.domain.SettingsMessages
 import org.dhis2.usescases.settings.domain.UpdateSmsModule
@@ -21,14 +20,13 @@ class SettingsViewModelFactory(
     private val getSettingsState: GetSettingsState,
     private val updateSyncSettings: UpdateSyncSettings,
     private val updateSmsResponse: UpdateSmsResponse,
-    private val getSyncErrors: GetSyncErrors,
     private val updateSmsModule: UpdateSmsModule,
     private val deleteLocalData: DeleteLocalData,
     private val exportDatabase: ExportDatabase,
     private val checkVersionUpdate: CheckVersionUpdate,
     private val launchSync: LaunchSync,
     private val dispatcherProvider: DispatcherProvider,
-    private val networkUtils: NetworkUtils,
+    private val networkUtils: NetworkStatusProvider,
     private val settingsMessages: SettingsMessages,
     private val twoFaStatus: GetTwoFAStatus,
 ) : ViewModelProvider.Factory {
@@ -37,7 +35,6 @@ class SettingsViewModelFactory(
             getSettingsState = getSettingsState,
             updateSyncSettings = updateSyncSettings,
             updateSmsResponse = updateSmsResponse,
-            getSyncErrors = getSyncErrors,
             updateSmsModule = updateSmsModule,
             deleteLocalData = deleteLocalData,
             exportDatabase = exportDatabase,

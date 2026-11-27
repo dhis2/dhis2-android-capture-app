@@ -24,33 +24,35 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.providers.PreferenceProvider
+import org.dhis2.mobile.home.domain.CheckSingleNavigation
+import org.dhis2.mobile.home.domain.GetLockAction
+import org.dhis2.mobile.home.domain.GetUserName
+import org.dhis2.mobile.home.domain.UpdateInitialSyncStatus
+import org.dhis2.mobile.home.domain.model.LockAction
 import org.dhis2.mobile.sync.data.METADATA_SYNC_NOW
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.dhis2.mobile.sync.model.SyncJobStatus
 import org.dhis2.mobile.sync.model.SyncStatus
 import org.dhis2.mobile.sync.model.SyncStatusData
-import org.dhis2.usescases.main.domain.CheckSingleNavigation
 import org.dhis2.usescases.main.domain.ConfigureHomeNavigationBar
 import org.dhis2.usescases.main.domain.DeleteAccount
 import org.dhis2.usescases.main.domain.DownloadNewVersion
 import org.dhis2.usescases.main.domain.GetHomeFilters
-import org.dhis2.usescases.main.domain.GetLockAction
-import org.dhis2.usescases.main.domain.GetUserName
 import org.dhis2.usescases.main.domain.InitialSyncAction
 import org.dhis2.usescases.main.domain.LaunchInitialSync
 import org.dhis2.usescases.main.domain.LogoutUser
 import org.dhis2.usescases.main.domain.ScheduleNewVersionAlert
-import org.dhis2.usescases.main.domain.UpdateInitialSyncStatus
-import org.dhis2.usescases.main.domain.model.LockAction
 import org.dhis2.usescases.main.ui.Form
 import org.dhis2.usescases.main.ui.model.HomeAction
 import org.dhis2.usescases.main.ui.model.HomeEffect
 import org.dhis2.usescases.main.ui.model.VersionToUpdateState
+import org.dhis2.usescases.settings.models.DeleteDataState
 import org.dhis2.utils.MainCoroutineScopeRule
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -251,6 +253,23 @@ class MainViewModelTest {
         }
 
     @Test
+    fun `Should reset version state and notify when the new version download fails`() =
+        runTest {
+            val context: Context = mock()
+            whenever(downloadNewVersion(context)) doReturn Result.failure(Exception("download failed"))
+
+            viewModel.homeEffects.test {
+                with(context) {
+                    viewModel.downloadVersion(
+                        onDownloadCompleted = {},
+                        onLaunchUrl = {},
+                    )
+                }
+                assertTrue(awaitItem() == HomeEffect.NewVersionDownloadFailed)
+            }
+        }
+
+    @Test
     fun `Should open drawer when menu is clicked`() =
         runTest {
             viewModel.homeEffects.test {
@@ -303,6 +322,54 @@ class MainViewModelTest {
                 verify(syncBackgroundJobAction).cancelAll()
                 assertTrue(awaitItem() == HomeEffect.GoToLogin(1, true))
             }
+        }
+
+    @Test
+    fun `Should open and dismiss the delete account dialog`() =
+        runTest {
+            assertEquals(DeleteDataState.None, viewModel.deleteAccountState.value)
+
+            viewModel.onDeleteAccountClick()
+            assertEquals(DeleteDataState.Opened, viewModel.deleteAccountState.value)
+
+            viewModel.onDismissDeleteAccount()
+            assertEquals(DeleteDataState.None, viewModel.deleteAccountState.value)
+        }
+
+    @Test
+    fun `Should keep the delete account dialog open while deleting and close it on success`() =
+        runTest {
+            whenever(deleteAccount(any())) doReturn Result.success(1)
+            val mockedContext = mock<Context>()
+            whenever(mockedContext.cacheDir) doReturn File("random")
+
+            viewModel.onDeleteAccountClick()
+            with(mockedContext) {
+                viewModel.onDeleteAccount()
+            }
+            assertEquals(DeleteDataState.Deleting, viewModel.deleteAccountState.value)
+
+            viewModel.onDismissDeleteAccount()
+            assertEquals(DeleteDataState.Deleting, viewModel.deleteAccountState.value)
+
+            advanceUntilIdle()
+            assertEquals(DeleteDataState.None, viewModel.deleteAccountState.value)
+        }
+
+    @Test
+    fun `Should close the delete account dialog when deletion fails`() =
+        runTest {
+            whenever(deleteAccount(any())) doReturn Result.failure(Exception("delete failed"))
+            val mockedContext = mock<Context>()
+            whenever(mockedContext.cacheDir) doReturn File("random")
+
+            viewModel.onDeleteAccountClick()
+            with(mockedContext) {
+                viewModel.onDeleteAccount()
+            }
+            advanceUntilIdle()
+
+            assertEquals(DeleteDataState.None, viewModel.deleteAccountState.value)
         }
 
     @Test

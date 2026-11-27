@@ -1,9 +1,10 @@
 package org.dhis2.usescases.troubleshooting.ui
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import org.dhis2.R
 import org.dhis2.mobile.commons.extensions.toColor
 import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.usescases.development.ProgramRuleValidation
@@ -16,7 +17,7 @@ import java.util.Locale
 @Composable
 fun ConfItemPreview() {
     ConfigurationItem(
-        R.drawable.ic_settings_language,
+        Icons.Default.Language,
         "Languages",
         "Tap here to change the language of the application",
     )

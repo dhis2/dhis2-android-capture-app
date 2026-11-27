@@ -12,7 +12,7 @@ import org.dhis2.mobile.login.pin.domain.model.PinMode
 import org.dhis2.mobile.login.pin.domain.model.ValidatePinInput
 import org.dhis2.mobile.login.pin.domain.usecase.ForgotPinUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.SavePinUseCase
-import org.dhis2.mobile.login.pin.domain.usecase.ValidatePinUseCase
+import org.dhis2.mobile.login.pin.domain.usecase.ValidatePin
 import org.dhis2.mobile.login.pin.ui.provider.PinResourceProvider
 import org.dhis2.mobile.login.pin.ui.state.PinUiState
 
@@ -25,7 +25,7 @@ import org.dhis2.mobile.login.pin.ui.state.PinUiState
 class PinViewModel(
     private val mode: PinMode,
     private val savePinUseCase: SavePinUseCase,
-    private val validatePinUseCase: ValidatePinUseCase,
+    private val validatePin: ValidatePin,
     private val forgotPinUseCase: ForgotPinUseCase,
     private val resourceProvider: PinResourceProvider,
 ) : ViewModel() {
@@ -69,7 +69,7 @@ class PinViewModel(
         val pin = currentPin.replace("-", "")
         when (mode) {
             PinMode.SET -> savePin(pin)
-            PinMode.ASK -> validatePin(pin)
+            PinMode.ASK -> checkPin(pin)
         }
     }
 
@@ -90,10 +90,10 @@ class PinViewModel(
         }
     }
 
-    private fun validatePin(pin: String) {
+    private fun checkPin(pin: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, primaryButtonIsEnabled = false)
-            validatePinUseCase(ValidatePinInput(pin, pinAttempts)).fold(
+            validatePin(ValidatePinInput(pin, pinAttempts)).fold(
                 onSuccess = {
                     _uiState.value = _uiState.value.copy(isLoading = false, isSuccess = true)
                     pinAttempts = 0

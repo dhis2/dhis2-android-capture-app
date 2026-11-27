@@ -1,7 +1,7 @@
 package org.dhis2.mobile.sync.domain
 
+import kotlinx.coroutines.CancellationException
 import org.dhis2.mobile.commons.domain.UseCase
-import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.mobile.commons.session.SessionRenewalNotifier
 import org.dhis2.mobile.sync.data.SyncEventRepository
 
@@ -17,10 +17,10 @@ internal class SyncEvent(
             syncEventRepository.downloadEvent(input)
             syncEventRepository.downloadFileResources(input)
             Result.success(Unit)
-        } catch (domainError: DomainError) {
-            sessionRenewalNotifier.notifyIfRequired(domainError)
-            Result.failure(domainError)
-        } catch (e: Exception) {
-            Result.failure(e)
+        } catch (cancellation: CancellationException) {
+            throw cancellation
+        } catch (error: Exception) {
+            sessionRenewalNotifier.notifyIfRequired(error)
+            Result.failure(error)
         }
 }

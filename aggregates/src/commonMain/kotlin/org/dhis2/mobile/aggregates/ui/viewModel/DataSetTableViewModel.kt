@@ -608,7 +608,7 @@ internal class DataSetTableViewModel(
     }
 
     fun onReopenDataSet() {
-        viewModelScope.launch(dispatcher.io()) {
+        launchUseCase(dispatcher.io()) {
             reopenDataSet()
             val updatedDetails = getDataSetInstanceData(this).dataSetDetails
             withContext(dispatcher.main()) {

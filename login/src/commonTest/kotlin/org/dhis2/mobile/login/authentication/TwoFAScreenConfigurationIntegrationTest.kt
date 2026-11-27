@@ -11,6 +11,7 @@ import kotlinx.coroutines.test.setMain
 import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.authentication.domain.model.TwoFAStatus
+import org.dhis2.mobile.login.authentication.domain.repository.SecretClipboard
 import org.dhis2.mobile.login.authentication.domain.repository.TwoFARepository
 import org.dhis2.mobile.login.authentication.domain.usecase.DisableTwoFA
 import org.dhis2.mobile.login.authentication.domain.usecase.EnableTwoFA
@@ -39,6 +40,7 @@ class TwoFAScreenConfigurationIntegrationTest {
     private lateinit var mapper: TwoFAUiStateMapper
     private lateinit var viewModel: TwoFASettingsViewModel
     private val networkStatusProvider: NetworkStatusProvider = mock()
+    private val secretClipboard: SecretClipboard = mock()
     private val dispatchers =
         Dispatcher(
             testDispatcher,
@@ -82,6 +84,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                     mapper = mapper,
                     networkStatusProvider = networkStatusProvider,
                     dispatchers = dispatchers,
+                    secretClipboard = secretClipboard,
                 )
 
             // Then: Loading screen is displayed followed by enable 2FA screen
@@ -113,6 +116,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                     mapper = mapper,
                     networkStatusProvider = networkStatusProvider,
                     dispatchers = dispatchers,
+                    secretClipboard = secretClipboard,
                 )
 
             // Then: Loading screen is displayed followed by disable 2FA screen
@@ -144,6 +148,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                     mapper = mapper,
                     networkStatusProvider = networkStatusProvider,
                     dispatchers = dispatchers,
+                    secretClipboard = secretClipboard,
                 )
 
             // Then: Loading screen is displayed followed by no connection screen
@@ -175,6 +180,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                     mapper = mapper,
                     networkStatusProvider = networkStatusProvider,
                     dispatchers = dispatchers,
+                    secretClipboard = secretClipboard,
                 )
 
             // When: 2FA code is entered correctly"
@@ -234,6 +240,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                     mapper = mapper,
                     networkStatusProvider = networkStatusProvider,
                     dispatchers = dispatchers,
+                    secretClipboard = secretClipboard,
                 )
 
             // When: 2FA incorrect code is entered"
@@ -296,6 +303,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                     mapper = mapper,
                     networkStatusProvider = networkStatusProvider,
                     dispatchers = dispatchers,
+                    secretClipboard = secretClipboard,
                 )
 
             // Then: Loading screen is displayed followed by no connection screen

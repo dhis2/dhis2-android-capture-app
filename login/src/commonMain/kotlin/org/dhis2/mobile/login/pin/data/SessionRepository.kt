@@ -1,21 +1,24 @@
 package org.dhis2.mobile.login.pin.data
 
+import org.dhis2.mobile.login.pin.domain.model.PinVerification
+
 /**
  * Repository interface for managing PIN and session operations.
  * Platform-specific implementations should use the DHIS2 SDK for data operations.
  */
 interface SessionRepository {
     /**
-     * Saves a PIN to secure storage.
+     * Saves a PIN to secure storage. Only a salted hash of it is stored, never the PIN itself.
      * @param pin The PIN to save.
      */
     suspend fun savePin(pin: String)
 
     /**
-     * Retrieves the stored PIN.
-     * @return The stored PIN, or null if no PIN is stored.
+     * Checks a PIN against the stored one, so the stored value never leaves the data layer.
+     * @param pin The PIN to check.
+     * @return Whether the PIN matches, or [PinVerification.NoPinStored] if there is none to check.
      */
-    suspend fun getStoredPin(): String?
+    suspend fun verifyPin(pin: String): PinVerification
 
     /**
      * Deletes the stored PIN from secure storage.

@@ -1,5 +1,6 @@
 package org.dhis2.mobile.aggregates.data
 
+import okio.Path.Companion.toPath
 import org.dhis2.bindings.FILE_NOT_FOUND
 import org.dhis2.commons.bindings.dataElement
 import org.dhis2.commons.periods.data.PeriodLabelProvider
@@ -22,6 +23,7 @@ import org.dhis2.mobile.aggregates.model.NonEditableReason
 import org.dhis2.mobile.aggregates.model.PivoteMode
 import org.dhis2.mobile.aggregates.model.TableGroup
 import org.dhis2.mobile.aggregates.model.ValidationResultStatus
+import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration
 import org.dhis2.mobile.aggregates.model.ValidationRulesResult
 import org.dhis2.mobile.aggregates.model.Violation
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
@@ -42,11 +44,11 @@ import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.dataelement.DataElementOperand
 import org.hisp.dhis.android.core.dataset.DataSetEditableStatus
 import org.hisp.dhis.android.core.dataset.DataSetNonEditableReason
+import org.hisp.dhis.android.core.dataset.DataSetValidationRulesConfiguration
 import org.hisp.dhis.android.core.dataset.SectionPivotMode
 import org.hisp.dhis.android.core.dataset.TabsDirection
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.validation.engine.ValidationResultViolation
-import java.io.File
 import java.util.Locale
 
 internal class DataSetInstanceRepositoryImpl(
@@ -317,22 +319,14 @@ internal class DataSetInstanceRepositoryImpl(
             .getEditableStatus(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
             .blockingGet() == DataSetEditableStatus.Editable
 
-    override suspend fun areValidationRulesMandatory(dataSetUid: String): Boolean =
-        d2
-            .dataSetModule()
-            .dataSets()
-            .uid(dataSetUid)
-            .blockingGet()
-            ?.validCompleteOnly() ?: false
-
-    override suspend fun checkIfHasValidationRules(dataSetUid: String): Boolean =
-        !d2
-            .validationModule()
-            .validationRules()
-            .byDataSetUids(listOf(dataSetUid))
-            .bySkipFormValidation()
-            .isFalse
-            .blockingIsEmpty()
+    override suspend fun getValidationRulesConfiguration(dataSetUid: String): ValidationRulesConfiguration {
+        val validationRulesConfiguration =
+            d2
+                .dataSetModule()
+                .dataSetInstanceService()
+                .suspendGetValidationRulesConfiguration(dataSetUid)
+        return mapValidationRulesConfigurationToDomainModel(validationRulesConfiguration)
+    }
 
     override suspend fun getRenderingConfig(dataSetUid: String) =
         d2
@@ -1303,12 +1297,12 @@ internal class DataSetInstanceRepositoryImpl(
             d2
                 .validationModule()
                 .validationEngine()
-                .validate(
+                .suspendValidate(
                     dataSetUid,
                     periodId,
                     orgUnitUid,
                     attrOptionComboUid,
-                ).blockingGet()
+                )
 
         return ValidationRulesResult(
             ValidationResultStatus.valueOf(result.status().name),
@@ -1340,7 +1334,7 @@ internal class DataSetInstanceRepositoryImpl(
         return try {
             val fileResourceUid =
                 d2.fileResourceModule().fileResources().blockingProcessAndAdd(
-                    File(path),
+                    path.toPath(),
                     fileContext,
                 )
             deleteStagedFile(path)
@@ -1507,4 +1501,13 @@ internal class DataSetInstanceRepositoryImpl(
             (listOf(dataElementLabel) + categoryOptionNames).joinToString(" / ")
         }
     }
+
+    private fun mapValidationRulesConfigurationToDomainModel(
+        configuration: DataSetValidationRulesConfiguration,
+    ): ValidationRulesConfiguration =
+        when (configuration) {
+            DataSetValidationRulesConfiguration.MANDATORY -> ValidationRulesConfiguration.MANDATORY
+            DataSetValidationRulesConfiguration.OPTIONAL -> ValidationRulesConfiguration.OPTIONAL
+            DataSetValidationRulesConfiguration.NONE -> ValidationRulesConfiguration.NONE
+        }
 }

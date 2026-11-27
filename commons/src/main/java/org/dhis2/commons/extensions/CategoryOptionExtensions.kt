@@ -2,12 +2,14 @@ package org.dhis2.commons.extensions
 
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.category.CategoryOption
+import java.util.Calendar
 import java.util.Date
 
 fun CategoryOption.inDateRange(date: Date?): Boolean =
     date?.let {
-        (startDate() == null || date.after(startDate())) &&
-            (endDate() == null || date.before(endDate()))
+        val day = date.startOfDay()
+        (startDate() == null || !day.before(startDate()!!.startOfDay())) &&
+            (endDate() == null || !day.after(endDate()!!.startOfDay()))
     } ?: true
 
 fun CategoryOption.inOrgUnit(orgUnitUid: String?): Boolean =
@@ -18,3 +20,14 @@ fun CategoryOption.inOrgUnit(orgUnitUid: String?): Boolean =
             } ?: true
         } ?: false
     } ?: true
+
+private fun Date.startOfDay(): Date =
+    Calendar
+        .getInstance()
+        .apply {
+            time = this@startOfDay
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.time

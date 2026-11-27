@@ -60,7 +60,7 @@ class SplashPresenterTest {
             false,
         )
         verify(d2, never()).systemInfoModule()
-        verify(crashReportController, never()).trackServer(any(), any())
+        verify(crashReportController, never()).trackServer(any())
     }
 
     @Test
@@ -83,14 +83,13 @@ class SplashPresenterTest {
         val systemInfo =
             SystemInfo
                 .builder()
-                .contextPath("https://play.dhis2.org")
                 .version("2.40")
                 .build()
         whenever(d2.systemInfoModule().systemInfo().blockingGet()) doReturn systemInfo
 
         presenter.init()
 
-        verify(crashReportController).trackServer("https://play.dhis2.org", "2.40")
+        verify(crashReportController).trackServer("2.40")
         verify(view).goToNextScreen(
             true,
             preferenceProvider.getBoolean(Preference.SESSION_LOCKED, false),
@@ -120,7 +119,7 @@ class SplashPresenterTest {
 
         presenter.init()
 
-        verify(crashReportController, never()).trackServer(any(), any())
+        verify(crashReportController, never()).trackServer(any())
         verify(view).goToNextScreen(
             true,
             preferenceProvider.getBoolean(Preference.SESSION_LOCKED, false),

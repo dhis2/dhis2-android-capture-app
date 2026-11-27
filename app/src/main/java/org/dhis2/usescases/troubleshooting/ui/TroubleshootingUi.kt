@@ -1,6 +1,5 @@
 package org.dhis2.usescases.troubleshooting.ui
 
-import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
@@ -22,14 +21,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Rule
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.TaskAlt
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,6 +47,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -56,6 +61,8 @@ import org.dhis2.R
 import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.usescases.development.ProgramRuleValidation
 import org.dhis2.usescases.development.RuleValidation
+import org.dhis2.usescases.settings.ui.ErrorLogType
+import org.dhis2.usescases.settings.ui.SyncErrorLogDialog
 import org.dhis2.usescases.troubleshooting.TroubleshootingViewModel
 import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatar
 import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatarSize
@@ -82,6 +89,7 @@ fun TroubleshootingScreen(
     val ruleValidations by troubleshootingViewModel.ruleValidations.observeAsState()
     val visibleProgram by troubleshootingViewModel.visibleProgram.observeAsState(null)
     val localesToShow by troubleshootingViewModel.localesToDisplay.observeAsState(emptyList())
+    var showMetadataIntegrityDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier =
@@ -90,7 +98,7 @@ fun TroubleshootingScreen(
                 .padding(top = 8.dp),
     ) {
         ConfigurationItem(
-            itemIcon = R.drawable.ic_settings_language,
+            itemIcon = Icons.Default.Language,
             itemTitle = stringResource(R.string.troubleshooting_language_title),
             itemDescription = stringResource(R.string.troubleshooting_language_description),
             onClick = {
@@ -110,7 +118,7 @@ fun TroubleshootingScreen(
             onLanguageChanged()
         }
         ConfigurationItem(
-            itemIcon = R.drawable.ic_settings_rules,
+            itemIcon = Icons.AutoMirrored.Default.Rule,
             itemTitle = stringResource(R.string.troubleshooting_rules_title),
             itemDescription = stringResource(R.string.troubleshooting_rules_description),
             onClick = {
@@ -129,12 +137,26 @@ fun TroubleshootingScreen(
         ) { selectedProgramUid ->
             troubleshootingViewModel.onProgramSelected(selectedProgramUid)
         }
+        ConfigurationItem(
+            itemIcon = Icons.Default.TaskAlt,
+            itemTitle = stringResource(R.string.troubleshooting_metadata_integrity),
+            itemDescription = stringResource(R.string.troubleshooting_metadata_description),
+            onClick = {
+                showMetadataIntegrityDialog = true
+            },
+        )
+    }
+
+    if (showMetadataIntegrityDialog) {
+        SyncErrorLogDialog(errorLogType = ErrorLogType.MetadataIntegrity) {
+            showMetadataIntegrityDialog = false
+        }
     }
 }
 
 @Composable
 fun ConfigurationItem(
-    @DrawableRes itemIcon: Int,
+    itemIcon: ImageVector,
     itemTitle: String,
     itemDescription: String,
     onClick: () -> Unit = {},
@@ -149,9 +171,14 @@ fun ConfigurationItem(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         Icon(
-            modifier = Modifier.size(40.dp),
-            painter = painterResource(id = itemIcon),
+            modifier =
+                Modifier
+                    .size(40.dp)
+                    .background(MaterialTheme.colorScheme.primaryContainer, CircleShape)
+                    .padding(10.dp),
+            imageVector = itemIcon,
             contentDescription = "",
+            tint = MaterialTheme.colorScheme.onPrimaryContainer,
         )
         Column(
             modifier =

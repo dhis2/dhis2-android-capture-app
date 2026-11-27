@@ -4,7 +4,7 @@ import junit.framework.Assert.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.mobile.commons.error.DomainError
-import org.dhis2.usescases.main.data.HomeRepository
+import org.dhis2.mobile.home.data.HomeRepository
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
@@ -38,7 +38,7 @@ class DeleteAccountTest {
             whenever(repository.accountsCount()) doReturn 3
             with(deleteAccount(cacheFile)) {
                 verify(filterManager).clearAllFilters()
-                verify(repository).clearCache(cacheFile)
+                verify(repository).clearCache(cacheFile.path)
                 verify(repository).clearPreferences()
                 verify(repository).wipeAll()
                 verify(repository).deleteCurrentAccount()
@@ -55,7 +55,7 @@ class DeleteAccountTest {
             given(repository.deleteCurrentAccount()) willAnswer { throw DomainError.DatabaseError("Test") }
             with(deleteAccount(cacheFile)) {
                 verify(filterManager).clearAllFilters()
-                verify(repository).clearCache(cacheFile)
+                verify(repository).clearCache(cacheFile.path)
                 verify(repository).clearPreferences()
                 verify(repository).wipeAll()
                 verify(repository).deleteCurrentAccount()

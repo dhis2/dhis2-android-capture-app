@@ -1,11 +1,12 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose)
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.kotlin.compose.compiler)
-    alias(libs.plugins.kotlin.atomicfu)
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -31,6 +32,21 @@ kotlin {
 
     jvm("desktop")
 
+    iosArm64()
+    iosSimulatorArm64()
+
+    // jvmCommonMain holds the JVM-only code shared by android and desktop, so commonMain stays
+    // compilable for iOS.
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    applyDefaultHierarchyTemplate {
+        common {
+            group("jvmCommon") {
+                withJvm()
+                withCompilations { it.platformType == KotlinPlatformType.androidJvm }
+            }
+        }
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -54,20 +70,20 @@ kotlin {
             //dates
             implementation(libs.kotlinx.datetime)
 
-            // Atomicfu
-            implementation(libs.atomicfu)
-
             //Coil
             api(libs.coil)
+        }
+        getByName("jvmCommonMain").dependencies {
             api(libs.coil.network)
+        }
+        iosMain.dependencies {
+            api(libs.coil.network.ktor)
+            implementation(libs.ktor.client.darwin)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.koin.test)
-            implementation(libs.koin.test.junit5)
-            implementation(libs.koin.test.junit4)
             implementation(libs.test.kotlinCoroutines)
-            implementation(libs.test.mockitoKotlin)
         }
 
         androidMain.dependencies {
@@ -91,6 +107,8 @@ kotlin {
                 provider { tasks.getByName("copyAndroidMainComposeResourcesToAndroidAssets").outputs.files },
             )
             dependencies {
+                // Mockito is JVM-only, so it stays out of commonTest, which also compiles for iOS.
+                implementation(libs.test.mockitoKotlin)
             }
         }
 

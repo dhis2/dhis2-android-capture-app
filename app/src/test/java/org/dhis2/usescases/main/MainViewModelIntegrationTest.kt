@@ -18,25 +18,26 @@ import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobile.commons.providers.PreferenceProvider
+import org.dhis2.mobile.home.data.HomeRepository
+import org.dhis2.mobile.home.domain.CheckSingleNavigation
+import org.dhis2.mobile.home.domain.GetLockAction
+import org.dhis2.mobile.home.domain.GetUserName
+import org.dhis2.mobile.home.domain.UpdateInitialSyncStatus
+import org.dhis2.mobile.home.domain.model.HomeItemData
+import org.dhis2.mobile.home.domain.model.HomeUser
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.dhis2.mobile.sync.model.SyncJobStatus
 import org.dhis2.mobile.sync.model.SyncStatusData
-import org.dhis2.usescases.main.data.HomeRepository
-import org.dhis2.usescases.main.domain.CheckSingleNavigation
 import org.dhis2.usescases.main.domain.ConfigureHomeNavigationBar
 import org.dhis2.usescases.main.domain.DeleteAccount
 import org.dhis2.usescases.main.domain.DownloadNewVersion
 import org.dhis2.usescases.main.domain.GetHomeFilters
-import org.dhis2.usescases.main.domain.GetLockAction
-import org.dhis2.usescases.main.domain.GetUserName
 import org.dhis2.usescases.main.domain.LaunchInitialSync
 import org.dhis2.usescases.main.domain.LogoutUser
 import org.dhis2.usescases.main.domain.ScheduleNewVersionAlert
-import org.dhis2.usescases.main.domain.UpdateInitialSyncStatus
 import org.dhis2.usescases.main.ui.model.HomeEffect
 import org.dhis2.utils.MainCoroutineScopeRule
-import org.hisp.dhis.android.core.user.User
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -170,17 +171,10 @@ class MainViewModelIntegrationTest {
             )
     }
 
-    // NOTE: The User mock must be created before any `whenever` call is opened, because
-    // Mockito's stubbing state machine gets confused if another mock is configured while a
-    // stubbing is "in progress" (hint #3 of UnfinishedStubbingException).
     private fun mockUser(
         firstName: String?,
         surname: String?,
-    ): User =
-        mock {
-            on { firstName() } doReturn firstName
-            on { surname() } doReturn surname
-        }
+    ) = HomeUser(firstName, surname)
 
     // ------------------------------------------------------------------ state tests
 

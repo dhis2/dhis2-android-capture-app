@@ -19,7 +19,6 @@ plugins {
     alias(libs.plugins.kotlin.compose.compiler)
     alias(libs.plugins.sentry)
 }
-apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
 val getBuildDate by extra {
     fun(): String {
@@ -200,6 +199,10 @@ android {
             // install debug and release builds at the same time
             applicationIdSuffix = ".debug"
 
+            // Emits .ec execution data from androidTest runs, for jacocoReport.
+            // Debug only; release builds are unaffected.
+            enableAndroidTestCoverage = true
+
             buildConfigField("int", "MATOMO_ID", "2")
             buildConfigField("String", "BUILD_DATE", "\"" + getBuildDate() + "\"")
             buildConfigField("String", "GIT_SHA", "\"" + getCommitHash() + "\"")
@@ -331,6 +334,7 @@ dependencies {
     implementation(project(":commonskmm"))
     implementation(project(":login"))
     implementation(project(":sync"))
+    implementation(project(":home"))
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(platform(libs.koin.bom))
@@ -348,7 +352,6 @@ dependencies {
     implementation(libs.androidx.biometric)
     implementation(libs.androidx.material3)
     implementation(libs.google.guava)
-    implementation(libs.github.fancyshowcase)
     implementation(libs.lottie)
     implementation(libs.network.okhttp)
     implementation(libs.analytics.matomo)

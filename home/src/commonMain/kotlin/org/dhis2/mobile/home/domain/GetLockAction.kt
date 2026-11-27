@@ -1,0 +1,22 @@
+package org.dhis2.mobile.home.domain
+
+import org.dhis2.mobile.commons.domain.UseCase
+import org.dhis2.mobile.commons.error.DomainError
+import org.dhis2.mobile.home.data.HomeRepository
+import org.dhis2.mobile.home.domain.model.LockAction
+
+class GetLockAction(
+    private val repository: HomeRepository,
+) : UseCase<Unit, LockAction> {
+    override suspend fun invoke(input: Unit): Result<LockAction> =
+        try {
+            val isPinSet = repository.isPinStored()
+            if (isPinSet) {
+                Result.success(LockAction.PinAlreadyCreated)
+            } else {
+                Result.success(LockAction.CreatePin)
+            }
+        } catch (domainError: DomainError) {
+            Result.failure(domainError)
+        }
+}

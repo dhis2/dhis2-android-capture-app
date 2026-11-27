@@ -63,8 +63,26 @@ for library code — repo-map §5).
 Zero results → try the `<versionName>+<versionCode>` form seen in the release
 list; still zero → drop the `release:` filter and say so in the report.
 
-`sort: user` ranks by users *in this release*; score Impact on each issue's own
-`Users Impacted` and note the difference.
+**Then fetch the two numbers Impact scoring needs.** Do NOT score from the issue
+detail's `Users Impacted`: it is a **lifetime, all-release** total, so comparing
+it to one release's user base mixes two denominators and inflates every share
+(observed: 79TN reported 1,171 lifetime users but only 353 on 3.4.2 — 3.3×).
+Both come from `search_events` with `dataset: "errors"`:
+
+```
+# per issue, release-scoped
+query:  environment:production release:<PROD_VERSION>
+fields: ["issue", "count_unique(user)", "count()"]
+sort:   -count_unique(user)
+
+# the denominator: everyone Sentry saw on this release
+query:  environment:production release:<PROD_VERSION>
+fields: ["release", "count_unique(user)", "count()"]
+```
+
+Store the denominator as `RELEASE_USERS`. Impact is scored on
+`REACH = issue_users / RELEASE_USERS`; both figures go in the Scoring Detail so
+the share can be checked.
 
 ## 4. Latest event per issue
 
@@ -95,17 +113,29 @@ Skip frames whose file is `SourceFile:N`.
 
 ### Impact (1–5) — highest matching row, then modifiers
 
+Scored on **share of the release's users** (`REACH`, Step 3), not an absolute
+count. Crash = unhandled exception or ANR.
+
 | Score | Criteria |
 |---|---|
-| 5 | Crash (unhandled exception / ANR), ≥ 100 users |
-| 4 | Crash, 10–99 users |
-| 3 | Non-crash degradation (wrong data, feature disabled, blank screen), ≥ 50 users |
-| 2 | Non-crash, 10–49 users — or crash, < 10 users |
-| 1 | Non-crash, < 10 users — or cosmetic |
+| 5 | Crash, REACH ≥ 5% |
+| 4 | Crash, REACH 3–5% |
+| 3 | Crash, REACH 1.5–3% — or non-crash degradation (wrong data, feature disabled, blank screen), REACH ≥ 5% |
+| 2 | Crash, REACH 0.5–1.5% — or non-crash, REACH 1.5–5% |
+| 1 | Crash, REACH < 0.5% — or non-crash < 1.5% — or cosmetic |
+
+**Why shares.** The old absolute scale (≥ 100 users = 5) saturated: with
+7,000–19,000 users per production release every top-10 issue scored 5, and the
+quadrants collapsed to an effort split. The bands are calibrated to 3.4.2
+(8 Sep 2026, 7,104 release users, top 25 issues at REACH 1.7%–7.1%). **Re-check
+them if the install base changes by an order of magnitude** — if scores cluster
+on one value again, the bands are stale.
 
 Modifiers (cap 5): **+1** crash site in login or sync
 (`org.dhis2.usescases.login`, `org.dhis2.mobile.login`, `org.dhis2.mobile.sync`,
-`org.dhis2.usescases.sync`) · **+1** in data entry / enrollment / forms
+`org.dhis2.usescases.sync`, `org.dhis2.utils.granularsync` — granular sync is the
+sync flow to users, and has repeatedly supplied several top issues at once) ·
+**+1** in data entry / enrollment / forms
 (`org.dhis2.form`, `org.dhis2.usescases.eventsWithoutRegistration`,
 `org.dhis2.usescases.enrollment`) · **+1** events/users > 5.
 
@@ -131,6 +161,16 @@ Modifiers (cap 5): **+1** owned stack depth > 10 frames · **+1** library-owned
 | **Impact ≥ 4** | Q1 — Fix ASAP | Q2 — Plan carefully |
 | **Impact ≤ 3** | Q3 — Quick wins | Q4 — Defer |
 
+**Sanity-check the spread.** If every issue lands in one or two quadrants, or
+one axis takes a single value across all issues, the scale is not
+discriminating: say so at the top of the report and give the distribution,
+rather than presenting the quadrants as a ranking.
+
+**Collapse duplicates.** Issues sharing a crash site or root cause (two ANRs in
+the same blocking call, several `!!` in the same dialog builder) are one fix.
+Score them individually, but say which ride along with which — five tickets
+that are one change is the most common way this report misleads.
+
 ## 7. Jira lookup and report
 
 For every issue that could get a ticket (not attribute-only), run the lookup in
@@ -155,7 +195,8 @@ Generated: <date>   [release filter relaxed: <why>]
 - **Impact** X/5 — <why> · **Effort** X/5 — <why>
 - **Owner** <repo> (thrown in <repo>; confidence <level> — <reason>)
 - **Crash site** `File.kt:N` · **Flow** <login | sync | data-entry | tracker | dashboard | settings | other>
-- **Users** <n> · **Events** <n> (ratio <events/users>)
+- **Users** <release-scoped n> of <RELEASE_USERS> (REACH <x.x>%) · **Events** <release-scoped n> (ratio <events/users>)
+- **Lifetime users** <all-release total, when it differs materially — it usually does>
 - **Root cause hint** <one sentence from the crash-site code>
 - **Library only**: shipped version, and the Ships via line (repo-map §7)
 ```

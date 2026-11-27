@@ -8,6 +8,7 @@ import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.model.TableGroup
+import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration
 import org.dhis2.mobile.aggregates.model.ValidationRulesResult
 import java.util.SortedMap
 
@@ -108,9 +109,7 @@ internal interface DataSetInstanceRepository {
 
     suspend fun getCoordinatesFrom(coordinatesValue: String): Pair<Double, Double>
 
-    suspend fun checkIfHasValidationRules(dataSetUid: String): Boolean
-
-    suspend fun areValidationRulesMandatory(dataSetUid: String): Boolean
+    suspend fun getValidationRulesConfiguration(dataSetUid: String): ValidationRulesConfiguration
 
     suspend fun isComplete(
         dataSetUid: String,

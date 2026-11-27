@@ -69,12 +69,6 @@
     </style>
 
 
-    <style name="checkBoxErrorLog" parent="Base.Theme.AppCompat">
-        <item name="colorAccent">@color/colorPrimary_00b</item>
-        <item name="android:textColorSecondary">@color/colorGreyDefault
-        </item> <!-- for check state -->
-    </style>
-
     <style name="TextButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>

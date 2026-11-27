@@ -1,10 +1,6 @@
 package org.dhis2.usescases.general;
 
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
-
 import android.content.Context;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
@@ -15,27 +11,15 @@ import org.dhis2.R;
 import org.dhis2.commons.ActivityResultObservable;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.dialogs.CustomDialog;
-import org.dhis2.commons.popupmenu.AppMenuHelper;
-import org.dhis2.mobile.commons.reporting.CrashReportController;
-import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
-
-import javax.inject.Inject;
-
-import kotlin.Unit;
 
 
 public abstract class ActivityGlobalAbstract extends SessionManagerActivity
         implements AbstractActivityContracts.View, ActivityResultObservable {
 
     private static final String FRAGMENT_TAG = "SYNC";
-
-    public String uuid;
-
-    @Inject
-    public CrashReportController crashReportController;
 
     private CustomDialog descriptionDialog;
 
@@ -49,37 +33,6 @@ public abstract class ActivityGlobalAbstract extends SessionManagerActivity
                         newBase
                 )
         );
-    }
-
-
-    @Override
-    public void setTutorial() {
-
-    }
-
-    @Override
-    public void showTutorial(boolean shaked) {
-        if (HelpManager.getInstance().isReady()) {
-            HelpManager.getInstance().showHelp();
-        } else {
-            showToast(getString(R.string.no_intructions));
-        }
-    }
-
-    public void showMoreOptions(View view) {
-        new AppMenuHelper.Builder()
-                .menu(this, R.menu.home_menu)
-                .anchor(view)
-                .onMenuInflated(popupMenu -> {
-                    return Unit.INSTANCE;
-                })
-                .onMenuItemClicked(item -> {
-                    getAnalyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
-                    showTutorial(false);
-                    return false;
-                })
-                .build()
-                .show();
     }
 
     public Context getContext() {

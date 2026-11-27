@@ -125,14 +125,17 @@ class FilterResources(
     fun enrollmentStatusToText(enrollmentStatusList: List<EnrollmentStatus>): List<String> =
         enrollmentStatusList.map {
             when (it) {
-                EnrollmentStatus.ACTIVE ->
+                EnrollmentStatus.ACTIVE -> {
                     resourceManager.getString(R.string.enrollment_status_active)
+                }
 
-                EnrollmentStatus.COMPLETED ->
+                EnrollmentStatus.COMPLETED -> {
                     resourceManager.getString(R.string.enrollment_status_completed)
+                }
 
-                EnrollmentStatus.CANCELLED ->
+                EnrollmentStatus.CANCELLED -> {
                     resourceManager.getString(R.string.enrollment_status_cancelled)
+                }
             }
         }
 
@@ -155,13 +158,28 @@ class FilterResources(
 
     fun eventStatusToText(eventStatus: EventStatus): String =
         when (eventStatus) {
-            EventStatus.ACTIVE -> resourceManager.getString(R.string.filter_event_status_open)
-            EventStatus.COMPLETED ->
-                resourceManager.getString(R.string.filter_event_status_completed)
+            EventStatus.ACTIVE -> {
+                resourceManager.getString(R.string.filter_event_status_open)
+            }
 
-            EventStatus.SCHEDULE -> resourceManager.getString(R.string.filter_event_status_schedule)
-            EventStatus.SKIPPED -> resourceManager.getString(R.string.filter_event_status_skipped)
-            EventStatus.VISITED -> resourceManager.getString(R.string.filter_event_status_visited)
-            EventStatus.OVERDUE -> resourceManager.getString(R.string.filter_event_status_overdue)
+            EventStatus.COMPLETED -> {
+                resourceManager.getString(R.string.filter_event_status_completed)
+            }
+
+            EventStatus.SCHEDULE -> {
+                resourceManager.getString(R.string.filter_event_status_schedule)
+            }
+
+            EventStatus.SKIPPED -> {
+                resourceManager.getString(R.string.filter_event_status_skipped)
+            }
+
+            EventStatus.VISITED -> {
+                resourceManager.getString(R.string.filter_event_status_visited)
+            }
+
+            EventStatus.OVERDUE -> {
+                resourceManager.getString(R.string.filter_event_status_overdue)
+            }
         }
 }

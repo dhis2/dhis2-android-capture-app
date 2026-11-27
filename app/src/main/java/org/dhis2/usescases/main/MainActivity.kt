@@ -12,7 +12,6 @@ import android.provider.Settings
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
 import android.view.View
-import android.webkit.MimeTypeMap
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.compose.setContent
@@ -21,11 +20,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.NotificationCompat
+import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Lifecycle
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import org.dhis2.BuildConfig
 import org.dhis2.R
@@ -48,16 +47,20 @@ import org.dhis2.usescases.main.ui.model.HomeEffect
 import org.dhis2.usescases.main.ui.model.HomeScreenState
 import org.dhis2.usescases.main.ui.model.VersionToUpdateState
 import org.dhis2.usescases.main.ui.screens.MainScreen
+import org.dhis2.usescases.settings.models.DeleteDataState
+import org.dhis2.usescases.settings.ui.DeleteAccountDialog
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import java.io.File
 
 private const val FRAGMENT = "Fragment"
 private const val INIT_DATA_SYNC = "INIT_DATA_SYNC"
 private const val WIPE_NOTIFICATION = "wipe_notification"
 private const val RESTART = "Restart"
 const val AVOID_SYNC = "AvoidSync"
+private const val APK_MIME_TYPE = "application/vnd.android.package-archive"
 
 class MainActivity : ActivityGlobalAbstract() {
     private lateinit var binding: ActivityMainBinding
@@ -81,19 +84,7 @@ class MainActivity : ActivityGlobalAbstract() {
     private val filtersAdapter: FiltersAdapter = FiltersAdapter()
 
     private var backDropActive = false
-    private val requestWritePermissions =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R || granted) {
-                onDownloadNewVersion()
-            } else {
-                Toast
-                    .makeText(
-                        context,
-                        getString(R.string.storage_denied),
-                        Toast.LENGTH_LONG,
-                    ).show()
-            }
-        }
+    private var pendingUpdateApk: File? = null
 
     private val navigationLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
@@ -159,6 +150,13 @@ class MainActivity : ActivityGlobalAbstract() {
                             is HomeEffect.PeriodFilterRequest -> showPeriodRequest(effect.periodRequest)
                             HomeEffect.ShowDeleteNotification -> showProgressDeleteNotification()
                             HomeEffect.ShowGranularSync -> showGranularSync()
+                            HomeEffect.NewVersionDownloadFailed ->
+                                Toast
+                                    .makeText(
+                                        context,
+                                        getString(R.string.new_version_download_failed),
+                                        Toast.LENGTH_LONG,
+                                    ).show()
                             is HomeEffect.SingleProgramNavigation ->
                                 navigationLauncher.navigateTo(
                                     this@MainActivity,
@@ -178,16 +176,7 @@ class MainActivity : ActivityGlobalAbstract() {
                         if (backDropActive) {
                             showHideFilter()
                         }
-                        val navigationId =
-                            when (currentScreen) {
-                                MainScreenType.About -> R.id.menu_about
-                                is MainScreenType.Home -> R.id.menu_home
-                                MainScreenType.Loading -> null
-                                MainScreenType.QRScanner -> R.id.qr_scan
-                                MainScreenType.Settings -> R.id.sync_manager
-                                MainScreenType.TroubleShooting -> R.id.menu_troubleshooting
-                            }
-                        navigationId?.let {
+                        currentScreen.navigationId()?.let {
                             changeFragment(it)
                             // On recreation the ViewModel screen hasn't changed so
                             // navigateToScreen() would early-return without ever opening the
@@ -205,13 +194,30 @@ class MainActivity : ActivityGlobalAbstract() {
                         initBinding()
                     },
                 )
+
+                val deleteAccountState by mainViewModel.deleteAccountState.collectAsState()
+                if (deleteAccountState !is DeleteDataState.None) {
+                    DeleteAccountDialog(
+                        isDeletingAccount = deleteAccountState is DeleteDataState.Deleting,
+                        onDeleteAccount = { mainViewModel.onDeleteAccount() },
+                        onDismissRequest = mainViewModel::onDismissDeleteAccount,
+                        user = screenState.userName,
+                    )
+                }
             }
         }
     }
 
     private fun initBinding() {
         binding.navView.setNavigationItemSelectedListener { item ->
-            changeFragment(item.itemId)
+            if (item.itemId == R.id.delete_account) {
+                // An action, not a screen: never make it the checked item, otherwise every
+                // later drawer close would reopen the dialog.
+                binding.mainDrawerLayout.closeDrawers()
+                mainViewModel.onDeleteAccountClick()
+            } else {
+                changeFragment(item.itemId)
+            }
             false
         }
 
@@ -410,22 +416,18 @@ class MainActivity : ActivityGlobalAbstract() {
 
             R.id.menu_dev ->
                 startActivity(Intent(this, DevelopmentActivity::class.java))
-
-            R.id.delete_account ->
-                confirmAccountDelete()
         }
     }
 
-    private fun confirmAccountDelete() {
-        MaterialAlertDialogBuilder(this, R.style.MaterialDialog)
-            .setTitle(getString(R.string.delete_account))
-            .setMessage(getString(R.string.wipe_data_meesage))
-            .setView(R.layout.warning_layout)
-            .setPositiveButton(getString(R.string.wipe_data_ok)) { _, _ -> mainViewModel.onDeleteAccount() }
-            .setNegativeButton(getString(R.string.wipe_data_no)) { dialog, _ ->
-                dialog.dismiss()
-            }.show()
-    }
+    private fun MainScreenType.navigationId(): Int? =
+        when (this) {
+            MainScreenType.About -> R.id.menu_about
+            is MainScreenType.Home -> R.id.menu_home
+            MainScreenType.Loading -> null
+            MainScreenType.QRScanner -> R.id.qr_scan
+            MainScreenType.Settings -> R.id.sync_manager
+            MainScreenType.TroubleShooting -> R.id.menu_troubleshooting
+        }
 
     private fun showProgressDeleteNotification() {
         val notificationManager =
@@ -456,13 +458,7 @@ class MainActivity : ActivityGlobalAbstract() {
         NewVersionDialog(
             newVersion = version,
             onRemindMeLater = mainViewModel::remindLaterAlertNewVersion,
-            onDownloadVersion = {
-                if (hasPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE))) {
-                    onDownloadNewVersion()
-                } else {
-                    requestWritePermissions.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                }
-            },
+            onDownloadVersion = ::onDownloadNewVersion,
         ).show(supportFragmentManager)
     }
 
@@ -473,26 +469,27 @@ class MainActivity : ActivityGlobalAbstract() {
         )
     }
 
-    private fun installAPK(apkUri: Uri) {
-        when {
-            hasNoPermissionToInstall() ->
-                manageUnknownSources.launch(
-                    Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
-                        .setData(String.format("package:%s", packageName).toUri()),
-                )
-
-            !hasPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)) && Build.VERSION.SDK_INT < Build.VERSION_CODES.R ->
-                requestReadStoragePermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-
-            else ->
-                Intent(Intent.ACTION_VIEW).apply {
-                    val mime = MimeTypeMap.getSingleton()
-                    val ext = apkUri.path?.substringAfterLast(("."))
-                    val type: String? = mime.getMimeTypeFromExtension(ext)
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    setDataAndType(apkUri, type)
-                    startActivity(this)
+    private fun installAPK(apkFile: File) {
+        if (hasNoPermissionToInstall()) {
+            pendingUpdateApk = apkFile
+            manageUnknownSources.launch(
+                Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
+                    .setData(String.format("package:%s", packageName).toUri()),
+            )
+        } else {
+            pendingUpdateApk = null
+            val apkUri =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    FileProvider.getUriForFile(this, "$packageName.provider", apkFile)
+                } else {
+                    // The installer only accepts file:// URIs before API 24.
+                    Uri.fromFile(apkFile)
                 }
+            Intent(Intent.ACTION_VIEW).apply {
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                setDataAndType(apkUri, APK_MIME_TYPE)
+                startActivity(this)
+            }
         }
     }
 
@@ -510,23 +507,7 @@ class MainActivity : ActivityGlobalAbstract() {
                         Toast.LENGTH_LONG,
                     ).show()
             } else {
-                onDownloadNewVersion()
-            }
-        }
-
-    private val requestReadStoragePermission =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                onDownloadNewVersion()
-            } else if (granted) {
-                onDownloadNewVersion()
-            } else {
-                Toast
-                    .makeText(
-                        context,
-                        getString(R.string.storage_denied),
-                        Toast.LENGTH_LONG,
-                    ).show()
+                pendingUpdateApk?.let(::installAPK) ?: onDownloadNewVersion()
             }
         }
 

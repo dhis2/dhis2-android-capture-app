@@ -4,7 +4,6 @@ plugins {
     id("com.android.library")
 }
 
-apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
 android {
     namespace = "org.dhis2.dhis2_mobile_program_rules"

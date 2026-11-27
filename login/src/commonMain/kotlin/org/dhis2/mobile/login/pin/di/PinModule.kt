@@ -4,7 +4,7 @@ import org.dhis2.mobile.login.pin.domain.model.PinMode
 import org.dhis2.mobile.login.pin.domain.usecase.ForgotPinUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.GetIsSessionLockedUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.SavePinUseCase
-import org.dhis2.mobile.login.pin.domain.usecase.ValidatePinUseCase
+import org.dhis2.mobile.login.pin.domain.usecase.ValidatePin
 import org.dhis2.mobile.login.pin.ui.provider.PinResourceProvider
 import org.dhis2.mobile.login.pin.ui.provider.PinResourceProviderImpl
 import org.dhis2.mobile.login.pin.ui.viewmodel.PinViewModel
@@ -20,7 +20,7 @@ internal val pinModule =
     module {
         // PIN use cases
         factoryOf(::SavePinUseCase)
-        factoryOf(::ValidatePinUseCase)
+        factoryOf(::ValidatePin)
         factoryOf(::ForgotPinUseCase)
         factoryOf(::GetIsSessionLockedUseCase)
 

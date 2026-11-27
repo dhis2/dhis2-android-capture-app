@@ -105,9 +105,8 @@ class EventAdapter(
                 EventViewHolder(
                     binding,
                     program,
-                    colorUtils,
                     { presenter.onSyncDialogClick(it) },
-                    { eventUid, sharedView -> presenter.onScheduleSelected(eventUid, sharedView) },
+                    { eventUid, _ -> presenter.onScheduleSelected(eventUid) },
                     { eventUid, _, eventStatus, _ ->
                         presenter.onEventSelected(
                             eventUid,
@@ -131,9 +130,10 @@ class EventAdapter(
         holder: RecyclerView.ViewHolder,
         position: Int,
     ) {
+        val index = holder.bindingAdapterPosition
         when (holder) {
             is EventViewHolder -> {
-                getItem(position)?.let {
+                getItem(index)?.let {
                     val materialView =
                         holder.itemView.findViewById<ConstraintLayout>(R.id.materialView)
                     materialView.visibility = View.GONE
@@ -158,7 +158,6 @@ class EventAdapter(
                                             EventStatus.SCHEDULE, EventStatus.OVERDUE -> {
                                                 presenter.onScheduleSelected(
                                                     event.uid(),
-                                                    composeView,
                                                 )
                                             }
 
@@ -175,7 +174,7 @@ class EventAdapter(
 
                         if (it.event?.uid() == initialSelectedEventUid && previousSelectedPosition == RecyclerView.NO_POSITION) {
                             it.isClicked = true
-                            previousSelectedPosition = position
+                            previousSelectedPosition = index
                         }
                         Box(
                             modifier =
@@ -217,18 +216,18 @@ class EventAdapter(
                     }
 
                     holder.bind(it, null) {
-                        getItem(holder.bindingAdapterPosition)?.toggleValueList()
-                        notifyItemChanged(holder.bindingAdapterPosition)
+                        getItem(index)?.toggleValueList()
+                        notifyItemChanged(index)
                     }
                 }
             }
 
             is StageViewHolder -> {
-                holder.bind(getItem(position))
+                holder.bind(getItem(index))
             }
 
             is ToggleStageEventsButtonHolder -> {
-                holder.bind(getItem(position))
+                holder.bind(getItem(index))
             }
         }
     }

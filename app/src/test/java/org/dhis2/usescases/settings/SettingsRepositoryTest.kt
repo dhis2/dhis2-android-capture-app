@@ -16,9 +16,8 @@ import org.dhis2.commons.prefs.Preference.Companion.TIME_DAILY
 import org.dhis2.commons.prefs.Preference.Companion.TIME_DATA
 import org.dhis2.commons.prefs.Preference.Companion.TIME_META
 import org.dhis2.commons.prefs.Preference.Companion.TIME_WEEKLY
-import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.server.UserManager
-import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.mobile.commons.providers.PreferenceProvider
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
@@ -43,7 +42,6 @@ class SettingsRepositoryTest {
     private val userManager: UserManager =
         Mockito.mock(UserManager::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val preferencesProvider: PreferenceProvider = mock()
-    private val featureConfigRepository: FeatureConfigRepository = mock()
     private val syncBackgroundJobAction: SyncBackgroundJobAction =
         mock {
             on { getNextSettingsSync() } doReturn null
@@ -69,7 +67,6 @@ class SettingsRepositoryTest {
             SettingsRepository(
                 d2,
                 preferencesProvider,
-                featureConfigRepository,
                 syncBackgroundJobAction,
             )
         configurePreferences()

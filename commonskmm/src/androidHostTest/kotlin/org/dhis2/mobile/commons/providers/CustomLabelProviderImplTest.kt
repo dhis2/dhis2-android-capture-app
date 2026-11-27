@@ -178,6 +178,46 @@ class CustomLabelProviderImplTest {
 
     // endregion
 
+    // region capitalization
+
+    @Test
+    fun `custom label keeps configured case when keepConfiguredCase is set`() =
+        runTest {
+            mockProgram(orgUnitLabel = "clinic")
+
+            val result =
+                customLabelProvider.getCustomOrgUnitLabel(
+                    programUid = PROGRAM_UID,
+                    keepConfiguredCase = true,
+                )
+
+            assertEquals("clinic", result)
+        }
+
+    @Test
+    fun `custom label is capitalized by default`() =
+        runTest {
+            mockProgram(orgUnitLabel = "clinic")
+
+            val result = customLabelProvider.getCustomOrgUnitLabel(programUid = PROGRAM_UID)
+
+            assertEquals("Clinic", result)
+        }
+
+    @Test
+    fun `formatted string capitalizes custom label only at sentence start`() {
+        assertEquals(
+            "Visit details",
+            customLabelProvider.formatStringWithCustomLabel("%s details", "visit"),
+        )
+        assertEquals(
+            "New visit",
+            customLabelProvider.formatStringWithCustomLabel("New %s", "visit"),
+        )
+    }
+
+    // endregion
+
     // region unsupported plural locale
 
     @Test
@@ -214,6 +254,7 @@ class CustomLabelProviderImplTest {
         eventsLabel: String? = null,
         enrollmentLabel: String? = null,
         enrollmentsLabel: String? = null,
+        orgUnitLabel: String? = null,
     ) {
         val program =
             mock<Program> {
@@ -221,6 +262,7 @@ class CustomLabelProviderImplTest {
                 on { displayEventsLabel } doReturn eventsLabel
                 on { displayEnrollmentLabel() } doReturn enrollmentLabel
                 on { displayEnrollmentsLabel() } doReturn enrollmentsLabel
+                on { displayOrgUnitLabel() } doReturn orgUnitLabel
             }
         whenever(
             d2

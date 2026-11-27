@@ -1,6 +1,5 @@
 package org.dhis2.mobile.commons.di
 
-import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.customintents.CustomIntentRepositoryImpl
 import org.dhis2.mobile.commons.data.TableDimensionRepository
@@ -24,13 +23,14 @@ import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.mobile.commons.reporting.CrashReportControllerImpl
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProviderImpl
-import org.dhis2.mobile.commons.session.SessionRenewalNotifier
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
 actual val commonsModule: Module
     get() =
         module {
+            includes(sharedCommonsModule)
+
             single<ValueParser> {
                 ValueParserImpl(get())
             }
@@ -48,8 +48,6 @@ actual val commonsModule: Module
                 NetworkStatusProviderImpl(get())
             }
 
-            single { SessionRenewalNotifier() }
-
             single<PreferenceProvider> {
                 PreferenceProviderImpl(get())
             }
@@ -65,10 +63,6 @@ actual val commonsModule: Module
             factory<TableDimensionRepository> { params ->
                 TableDimensionRepositoryImpl(get(), params.get())
             }
-            factory<Dispatcher> {
-                Dispatcher()
-            }
-
             factory<DomainErrorMapper> {
                 DomainErrorMapper(
                     d2ErrorMessageProvider = get(),

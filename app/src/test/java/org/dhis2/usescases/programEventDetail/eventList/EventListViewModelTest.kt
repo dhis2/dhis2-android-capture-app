@@ -75,8 +75,9 @@ class EventListViewModelTest {
                         "programuid",
                     ),
                     2,
+                    true,
                 )
-            } doReturn "Events"
+            } doReturn "events"
         }
 
     @Test
@@ -105,7 +106,7 @@ class EventListViewModelTest {
             viewModel.eventListState.test {
                 viewModel.refreshData()
                 val result = awaitItem()
-                assertEquals("Events", result?.customEventLabel)
+                assertEquals("events", result?.customEventLabel)
                 assertEquals(listOf(mappedCard), result?.eventList?.asSnapshot())
             }
         }

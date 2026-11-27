@@ -4,8 +4,6 @@ import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.TypedValue
 import android.view.View
 import android.view.WindowManager
@@ -53,7 +51,6 @@ import org.dhis2.databinding.ActivityDashboardMobileBinding
 import org.dhis2.form.model.EnrollmentMode
 import org.dhis2.mobile.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
-import org.dhis2.mobile.commons.providers.CustomLabelProvider
 import org.dhis2.tracker.TEIDashboardItems
 import org.dhis2.tracker.relationships.ui.state.RelationshipTopBarIconState
 import org.dhis2.ui.ThemeManager
@@ -75,10 +72,7 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragme
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity
 import org.dhis2.usescases.teiDashboard.ui.RelationshipTopBarIcon
 import org.dhis2.usescases.teiDashboard.ui.setButtonContent
-import org.dhis2.utils.HelpManager
-import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.SHARE_TEI
-import org.dhis2.utils.analytics.SHOW_HELP
 import org.dhis2.utils.analytics.TYPE_QR
 import org.dhis2.utils.analytics.TYPE_SHARE
 import org.dhis2.utils.customviews.MoreOptionsWithDropDownMenuButton
@@ -90,7 +84,6 @@ import org.dhis2.utils.isPortrait
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
-import org.koin.android.ext.android.inject
 import javax.inject.Inject
 
 class TeiDashboardMobileActivity :
@@ -129,8 +122,6 @@ class TeiDashboardMobileActivity :
 
     @Inject
     lateinit var eventResourcesProvider: EventResourcesProvider
-
-    private val customLabelProvider: CustomLabelProvider by inject()
 
     var teiUid: String? = null
     var programUid: String? = null
@@ -249,10 +240,18 @@ class TeiDashboardMobileActivity :
                 dashboardViewModel.dashboardModel.collectLatest {
                     if (sessionManagerServiceImpl.isUserLoggedIn()) {
                         when (it) {
-                            is DashboardEnrollmentModel -> setData(it)
-                            is DashboardTEIModel -> setDataWithOutProgram(it)
-                            else -> // Do nothing
+                            is DashboardEnrollmentModel -> {
+                                setData(it)
+                            }
+
+                            is DashboardTEIModel -> {
+                                setDataWithOutProgram(it)
+                            }
+
+                            else -> {
+                                // Do nothing
                                 Unit
+                            }
                         }
                     }
                 }
@@ -377,12 +376,13 @@ class TeiDashboardMobileActivity :
     private fun navigateToFragment(item: TEIDashboardItems) {
         val fragment =
             when (item) {
-                TEIDashboardItems.DETAILS ->
+                TEIDashboardItems.DETAILS -> {
                     newInstance(
                         programUid,
                         teiUid,
                         enrollmentUid,
                     )
+                }
 
                 TEIDashboardItems.ANALYTICS -> {
                     presenter.trackDashboardAnalytics()
@@ -614,30 +614,6 @@ class TeiDashboardMobileActivity :
         teiProgramListLauncher.launch(intent)
     }
 
-    override fun setTutorial() {
-        Handler(Looper.getMainLooper()).postDelayed({
-            if (abstractActivity != null) {
-                HelpManager.getInstance().show(
-                    activity,
-                    HelpManager.TutorialName.TEI_DASHBOARD,
-                    null,
-                )
-            }
-        }, 500)
-    }
-
-    override fun showTutorial(shaked: Boolean) {
-        if (this.isLandscape()) {
-            setTutorial()
-        } else {
-            if (binding.editButton?.visibility == View.VISIBLE) {
-                setTutorial()
-            } else {
-                showToast(getString(R.string.no_intructions))
-            }
-        }
-    }
-
     private fun setProgramColor(programUid: String?) {
         themeManager.getThemePrimaryColor(
             programUid,
@@ -679,9 +655,18 @@ class TeiDashboardMobileActivity :
 
     override fun displayStatusError(statusCode: StatusChangeResultCode) {
         when (statusCode) {
-            StatusChangeResultCode.FAILED -> displayMessage(getString(R.string.something_wrong))
-            StatusChangeResultCode.ACTIVE_EXIST -> displayMessage(getString(R.string.status_change_error_active_exist))
-            StatusChangeResultCode.WRITE_PERMISSION_FAIL -> displayMessage(getString(R.string.permission_denied))
+            StatusChangeResultCode.FAILED -> {
+                displayMessage(getString(R.string.something_wrong))
+            }
+
+            StatusChangeResultCode.ACTIVE_EXIST -> {
+                displayMessage(getString(R.string.status_change_error_active_exist))
+            }
+
+            StatusChangeResultCode.WRITE_PERMISSION_FAIL -> {
+                displayMessage(getString(R.string.permission_denied))
+            }
+
             StatusChangeResultCode.CHANGED -> {
                 // No message needed to be displayed
             }
@@ -855,27 +840,45 @@ class TeiDashboardMobileActivity :
                 onMenuToggle = { expanded = it },
             ) { itemId ->
                 when (itemId) {
-                    EnrollmentMenuItem.SYNC -> openSyncDialog()
-                    EnrollmentMenuItem.TRANSFER -> presenter.onTransferClick()
-                    EnrollmentMenuItem.FOLLOW_UP -> dashboardViewModel.onFollowUp()
-                    EnrollmentMenuItem.GROUP_BY_STAGE -> dashboardViewModel.setGrouping(true)
-                    EnrollmentMenuItem.VIEW_TIMELINE -> dashboardViewModel.setGrouping(false)
-                    EnrollmentMenuItem.HELP -> {
-                        analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP)
-                        showTutorial(true)
+                    EnrollmentMenuItem.SYNC -> {
+                        openSyncDialog()
                     }
 
-                    EnrollmentMenuItem.ENROLLMENTS -> presenter.onEnrollmentSelectorClick()
-                    EnrollmentMenuItem.SHARE -> startQRActivity()
-                    EnrollmentMenuItem.ACTIVATE ->
+                    EnrollmentMenuItem.TRANSFER -> {
+                        presenter.onTransferClick()
+                    }
+
+                    EnrollmentMenuItem.FOLLOW_UP -> {
+                        dashboardViewModel.onFollowUp()
+                    }
+
+                    EnrollmentMenuItem.GROUP_BY_STAGE -> {
+                        dashboardViewModel.setGrouping(true)
+                    }
+
+                    EnrollmentMenuItem.VIEW_TIMELINE -> {
+                        dashboardViewModel.setGrouping(false)
+                    }
+
+                    EnrollmentMenuItem.ENROLLMENTS -> {
+                        presenter.onEnrollmentSelectorClick()
+                    }
+
+                    EnrollmentMenuItem.SHARE -> {
+                        startQRActivity()
+                    }
+
+                    EnrollmentMenuItem.ACTIVATE -> {
                         dashboardViewModel.updateEnrollmentStatus(
                             EnrollmentStatus.ACTIVE,
                         )
+                    }
 
-                    EnrollmentMenuItem.DEACTIVATE ->
+                    EnrollmentMenuItem.DEACTIVATE -> {
                         dashboardViewModel.updateEnrollmentStatus(
                             EnrollmentStatus.CANCELLED,
                         )
+                    }
 
                     EnrollmentMenuItem.COMPLETE -> {
                         dashboardViewModel.updateEnrollmentStatus(
@@ -883,8 +886,13 @@ class TeiDashboardMobileActivity :
                         )
                     }
 
-                    EnrollmentMenuItem.DELETE -> showDeleteTEIConfirmationDialog()
-                    EnrollmentMenuItem.REMOVE -> showRemoveEnrollmentConfirmationDialog()
+                    EnrollmentMenuItem.DELETE -> {
+                        showDeleteTEIConfirmationDialog()
+                    }
+
+                    EnrollmentMenuItem.REMOVE -> {
+                        showRemoveEnrollmentConfirmationDialog()
+                    }
                 }
             }
         }
@@ -897,7 +905,6 @@ enum class EnrollmentMenuItem {
     FOLLOW_UP,
     GROUP_BY_STAGE,
     VIEW_TIMELINE,
-    HELP,
     ENROLLMENTS,
     SHARE,
     ACTIVATE,

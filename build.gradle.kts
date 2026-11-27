@@ -49,6 +49,14 @@ sonar {
         // .java sources. Remove once the upstream fix is released.
         property("sonar.exclusions", "**/*.java")
 
+        // Relative to each module. Unit and instrumented coverage are separate reports
+        // because each is read against different class files; Sonar merges them.
+        property(
+            "sonar.coverage.jacoco.xmlReportPaths",
+            "build/coverage-report/jacocoTestReport.xml," +
+                "build/coverage-report-androidTest/jacocoAndroidTestReport.xml",
+        )
+
         // GitHub Actions always defines PULL_REQUEST, resolving it to an empty
         // string on push events, so a null check alone sends push builds down the
         // pull-request path with a blank sonar.pullrequest.key. Since scanner
@@ -71,11 +79,48 @@ allprojects {
         resolutionStrategy {
             cacheDynamicVersionsFor(10, TimeUnit.MINUTES)
             cacheChangingModulesFor(0, TimeUnit.SECONDS)
-            eachDependency {
-                if (requested.group == "org.jacoco")
-                    useVersion("0.8.10")
-            }
         }
+    }
+
+    // commons-io only arrives through the SDK's sms-compression, which declares it but never
+    // uses it. Its 2.6 version is vulnerable (CVE-2021-29425) and newer ones rely on
+    // java.nio.file (API 26+, minSdk is 23), so keep it out instead of upgrading it.
+    configurations
+        .matching { it.name.matches(Regex(".*([dD]ebug|[rR]elease|android)RuntimeClasspath")) }
+        .configureEach {
+            exclude(group = "commons-io", module = "commons-io")
+        }
+
+    // The SBOM uploaded to DependencyTrack must only list what ships in the APK, so it is
+    // built from the app release classpaths alone. Build and test tooling would flood it with
+    // findings, and library modules resolve older versions than the ones the app ends up with.
+    tasks.withType<org.cyclonedx.gradle.CyclonedxDirectTask>().configureEach {
+        enabled = project.path == ":app"
+        includeConfigs.set(listOf(".*ReleaseRuntimeClasspath"))
+    }
+
+    // JUnit Jupiter must never reach a test configuration. useJUnitPlatform() is set
+    // nowhere in this build, so a Jupiter @Test would compile but never run, and the
+    // build would still pass. Excluding it turns that into a compile error.
+    configurations.matching { it.name.contains("test", ignoreCase = true) }.configureEach {
+        exclude(group = "org.junit.jupiter")
+    }
+
+    // toolVersion governs both the instrumenter and the report engine. libs.jacoco is
+    // only on the buildscript classpath, so without this Gradle's bundled version is used.
+    plugins.withType<org.gradle.testing.jacoco.plugins.JacocoPlugin> {
+        extensions.configure<org.gradle.testing.jacoco.plugins.JacocoPluginExtension> {
+            toolVersion = libs.versions.jacoco.get()
+        }
+    }
+
+    // Every Android and KMP module reports coverage; new modules need no setup.
+    listOf(
+        "com.android.application",
+        "com.android.library",
+        "com.android.kotlin.multiplatform.library",
+    ).forEach { id ->
+        pluginManager.withPlugin(id) { apply(from = "$rootDir/jacoco/jacoco.gradle.kts") }
     }
 
     apply(plugin = "org.jlleitschuh.gradle.ktlint")

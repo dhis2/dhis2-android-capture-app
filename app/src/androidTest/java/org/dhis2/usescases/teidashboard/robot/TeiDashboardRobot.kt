@@ -1,7 +1,10 @@
 package org.dhis2.usescases.teidashboard.robot
 
 import android.content.Context
+import android.view.ViewGroup
+import android.widget.TextView
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasTestTag
@@ -11,6 +14,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
+import androidx.core.view.children
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.NoMatchingViewException
 import androidx.test.espresso.action.ViewActions.click
@@ -29,8 +33,6 @@ import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
-import org.dhis2.mobile.commons.resources.Res
-import org.dhis2.mobile.commons.resources.group_by_stage_label
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.dhis2.usescases.teiDashboard.ui.INFO_BAR_TEST_TAG
@@ -188,6 +190,40 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun checkCanNotAddEvent() {
         composeTestRule.onNodeWithTag(TEST_ADD_EVENT_BUTTON, useUnmergedTree = true)
             .assertDoesNotExist()
+        composeTestRule.onNodeWithTag(TEST_ADD_EVENT_BUTTON_IN_TIMELINE, useUnmergedTree = true)
+            .assertDoesNotExist()
+    }
+
+    fun checkEnrollmentIsActive() {
+        composeTestRule.waitUntilDoesNotExist(
+            hasTestTag(INFO_BAR_TEST_TAG + InfoBarType.ENROLLMENT_STATUS.name),
+            TIMEOUT,
+        )
+    }
+
+    fun clickOnMenuFollowUp() {
+        composeTestRule.waitUntilExactlyOneExists(hasText("Mark for follow-up"), TIMEOUT)
+        composeTestRule.onNodeWithText("Mark for follow-up").performClick()
+    }
+
+    fun checkFollowUpInfoBarIsDisplayed() {
+        composeTestRule.waitUntilExactlyOneExists(
+            hasTestTag(INFO_BAR_TEST_TAG + InfoBarType.FOLLOW_UP.name),
+            TIMEOUT,
+        )
+        composeTestRule.onNodeWithText("Marked for follow-up").assertIsDisplayed()
+    }
+
+    fun clickOnMenuTransfer() {
+        composeTestRule.onNodeWithText(getString(R.string.transfer)).performClick()
+    }
+
+    fun checkTransferSucceeded() {
+        waitForView(withText(R.string.successfully_transferred))
+    }
+
+    fun checkEventRegisteredIn(orgUnitName: String) {
+        composeTestRule.waitUntilAtLeastOneExists(hasText(orgUnitName, substring = true), TIMEOUT)
     }
 
     fun clickOnMenuDeleteTEI() {
@@ -226,6 +262,43 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         }
     }
 
+    /**
+     * Asserts the TEI card shows the enrollment AOC row (ANDROAPP-7897). The row is a
+     * constant card item, so it is rendered without expanding "Show more". The key can
+     * be trimmed to fit ("HIV age...: "), so the row is matched on its untrimmed value.
+     */
+    fun checkEnrollmentAOCIsShown(categoryOptionComboName: String) {
+        val aocRow = hasText(categoryOptionComboName, substring = true)
+        composeTestRule.waitUntil(ACTIVITY_LAUNCH_TIMEOUT) {
+            composeTestRule
+                .onAllNodes(aocRow, useUnmergedTree = true)
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        }
+        composeTestRule.onAllNodes(aocRow, useUnmergedTree = true)[0].assertExists()
+    }
+
+    /**
+     * Asserts the TEI card has no AOC row for an enrollment in a program with the
+     * default enrollment category combo, whose label and value would both read [defaultName].
+     * Waits first for the always-present "Owned by" row, so the card is known to be rendered.
+     */
+    fun checkEnrollmentAOCIsNotShown(defaultName: String) {
+        val ownedByRow = hasText(getString(R.string.ownedBy), substring = true)
+        composeTestRule.waitUntil(ACTIVITY_LAUNCH_TIMEOUT) {
+            composeTestRule
+                .onAllNodes(ownedByRow, useUnmergedTree = true)
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        }
+        composeTestRule
+            .onAllNodes(
+                hasText(defaultName, substring = true, ignoreCase = true),
+                useUnmergedTree = true
+            )
+            .assertCountEquals(0)
+    }
+
     fun clickOnScheduleNew() {
         val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
         val scheduleTag = targetContext.resources.getString(R.string.schedule) + " event"
@@ -239,7 +312,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnMenuProgramEnrollments() {
         with(InstrumentationRegistry.getInstrumentation().targetContext) {
-            val programSelectorLabel = "More Enrollments"
+            val programSelectorLabel = "More enrollments"
             composeTestRule.waitUntilExactlyOneExists(
                 hasText(programSelectorLabel),
                 TIMEOUT
@@ -272,9 +345,30 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         }
     }
 
+    fun clickOnGroupByStage() {
+        val groupLabel = "Group by stage"
+        composeTestRule.waitUntilExactlyOneExists(hasText(groupLabel), TIMEOUT)
+        composeTestRule.onNodeWithText(groupLabel).performClick()
+    }
+
+    fun checkEventsListedInOrder(vararg stageNames: String) {
+        composeTestRule.waitUntil(TIMEOUT) { listedStageNames() == stageNames.toList() }
+    }
+
+    // Event rows keep the stage name in a hidden TextView
+    private fun listedStageNames(): List<String> {
+        var stageNames = emptyList<String>()
+        onView(withId(R.id.tei_recycler)).check { view, _ ->
+            stageNames = (view as ViewGroup).children.mapNotNull {
+                it.findViewById<TextView>(R.id.programStageName)?.text?.toString()
+            }.toList()
+        }
+        return stageNames
+    }
+
     private fun checkIfGroupedEventsIsVisible() {
         with(InstrumentationRegistry.getInstrumentation().targetContext) {
-            val groupLabel = "Group by Stage"
+            val groupLabel = "Group by stage"
             composeTestRule.onNodeWithText(groupLabel).assertIsDisplayed()
         }
     }
@@ -305,7 +399,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             )
     }
 
-    private fun checkEventIsCompleted(position: Int) {
+    fun checkEventIsCompleted(position: Int) {
         onView(withId(R.id.tei_recycler))
             .check(
                 matches(
@@ -328,19 +422,12 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             )
     }
 
-    fun checkAllEventsCompleted(totalEvents: Int) {
-        composeTestRule.waitForIdle()
-        var event = 0
-        while (event < totalEvents) {
-            checkEventIsCompleted(event)
-            event++
-        }
-    }
-
+    // "View only" is prefixed by an inline icon
     fun checkAllEventsAreClosed() {
-        val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
-        val viewOnlyText = targetContext.resources.getString(R.string.view_only)
-        composeTestRule.onAllNodes(hasText(viewOnlyText), useUnmergedTree = false)
+        composeTestRule.waitUntilAtLeastOneExists(
+            hasText(getString(R.string.view_only), substring = true),
+            TIMEOUT,
+        )
     }
 
     fun clickOnConfirmDeleteTEI() {

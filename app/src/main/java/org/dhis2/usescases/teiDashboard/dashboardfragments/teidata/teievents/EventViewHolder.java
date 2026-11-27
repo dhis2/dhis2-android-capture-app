@@ -43,11 +43,9 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
     private final Function2<String, View, Unit> onScheduleClick;
     private final Function4<String, String, EventStatus, View, Unit> onEventSelected;
     private ItemEventBinding binding;
-    private ColorUtils colorUtils;
 
     public EventViewHolder(ItemEventBinding binding,
                            Program program,
-                           ColorUtils colorUtils,
                            Function1<String, Unit> syncClick,
                            Function2<String, View, Unit> scheduleClick,
                            Function4<String, String, EventStatus, View, Unit> onEventSelected
@@ -58,7 +56,6 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         this.onSyncClick = syncClick;
         this.onScheduleClick = scheduleClick;
         this.onEventSelected = onEventSelected;
-        this.colorUtils = colorUtils;
         binding.composeStageIcon.setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed.INSTANCE
         );

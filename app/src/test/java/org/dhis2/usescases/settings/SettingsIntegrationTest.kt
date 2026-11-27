@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.authentication.domain.model.TwoFAStatus
 import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
 import org.dhis2.usescases.settings.GatewayValidator.GatewayValidationResult
@@ -19,7 +19,6 @@ import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.ExportDatabase
 import org.dhis2.usescases.settings.domain.GetSettingsState
-import org.dhis2.usescases.settings.domain.GetSyncErrors
 import org.dhis2.usescases.settings.domain.LaunchSync
 import org.dhis2.usescases.settings.domain.SettingsMessages
 import org.dhis2.usescases.settings.domain.UpdateSmsModule
@@ -38,17 +37,17 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class SettingsIntegrationTest {
     private val settingsMessages: SettingsMessages = mock()
-    private val networkUtils: NetworkUtils = mock()
+    private val networkUtils: NetworkStatusProvider = mock()
     private val launchSync: LaunchSync = mock()
     private val checkVersionUpdate: CheckVersionUpdate = mock()
     private val exportDatabase: ExportDatabase = mock()
     private val deleteLocalData: DeleteLocalData = mock()
     private val updateSmsModule: UpdateSmsModule = mock()
-    private val getSyncErrors: GetSyncErrors = mock()
     private val updateSmsResponse: UpdateSmsResponse = mock()
     private val updateSyncSettings: UpdateSyncSettings = mock()
     private val metadataSettingsViewModel: MetadataSettingsViewModel = mock()
@@ -115,7 +114,6 @@ class SettingsIntegrationTest {
                 getSettingsState = getSettingsState,
                 updateSyncSettings = updateSyncSettings,
                 updateSmsResponse = updateSmsResponse,
-                getSyncErrors = getSyncErrors,
                 updateSmsModule = updateSmsModule,
                 deleteLocalData = deleteLocalData,
                 exportDatabase = exportDatabase,
@@ -169,6 +167,29 @@ class SettingsIntegrationTest {
                 assert(awaitItem()?.accountType == AccountType.OAUTH)
                 assert(awaitItem()?.twoFAStatus is TwoFAStatus.Disabled)
             }
+        }
+
+    @Test
+    fun `should display TFA without status when there is no connection`() =
+        runTest {
+            // Given TFA configured but the status cannot be checked
+            whenever(settingsRepository.authType()) doReturn AuthorizationType.OAUTH2
+            whenever(twoFAStatus.invoke()) doReturn TwoFAStatus.NoConnection
+
+            // When set settings config
+            buildPresenter()
+
+            // Then TFA should be displayed with no connection status
+            syncManagerPresenter.settingsState.test {
+                assert(awaitItem() == null)
+                val settingsState = awaitItem()
+                assert(settingsState?.accountType == AccountType.OAUTH)
+                assert(settingsState?.twoFAStatus is TwoFAStatus.NoConnection)
+                // NoConnection is the default status, so checking it emits no new state
+                testingDispatcher.scheduler.advanceUntilIdle()
+                expectNoEvents()
+            }
+            verify(twoFAStatus).invoke()
         }
 
     @Test

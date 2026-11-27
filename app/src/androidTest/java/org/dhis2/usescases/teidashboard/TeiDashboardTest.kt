@@ -88,43 +88,35 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
+    // [ANDROAPP-7897] Non-default enrollment combo: the AOC is shown on the TEI card.
     @Test
-    fun shouldReactivateTEIWhenClickReOpenWithProgramCompletedEvents() {
-        prepareTeiCompletedProgrammeAndLaunchActivity(rule)
+    fun shouldShowEnrollmentAOCForNonDefaultCategoryCombo() {
+        val enrollment = attributeRmnchEnrollmentToNonDefaultAOC()
+
+        startTeiDashboardActivity(
+            programUID = enrollment.programUid,
+            teiUID = enrollment.teiUid,
+            enrollmentUID = enrollment.enrollmentUid,
+            rule = rule,
+        )
 
         teiDashboardRobot(composeTestRule) {
-            clickOnMenuMoreOptions()
-            clickOnTimelineEvents()
-            clickOnMenuMoreOptions()
-            clickOnMenuReOpen()
-            checkAllEventsCompleted(1)
+            checkEnrollmentAOCIsShown(enrollment.categoryOptionComboName)
         }
     }
 
+    // [ANDROAPP-7897] Default enrollment combo: no AOC information is shown.
     @Test
-    fun shouldShowInactiveProgramWhenClickDeactivate() {
-        mockWebServerRobot.addResponse(
-            method = ResponseController.GET,
-            path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
-            sdkResource = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE,
-            responseCode = 200,
-        )
-
+    fun shouldNotShowEnrollmentAOCForDefaultCategoryCombo() {
         prepareTeiOpenedProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot(composeTestRule) {
-            clickOnMenuMoreOptions()
-            clickOnTimelineEvents()
-            clickOnMenuMoreOptions()
-            clickOnMenuDeactivate()
-            checkCancelledStateInfoBarIsDisplay()
-            checkCanNotAddEvent()
-            checkAllEventsAreClosed()
+            checkEnrollmentAOCIsNotShown(DEFAULT_CATEGORY_COMBO_NAME)
         }
     }
 
     @Test
-    fun shouldCompleteProgramWhenClickComplete() {
+    fun shouldManageEnrollmentLifecycle() {
         mockWebServerRobot.addResponse(
             method = ResponseController.GET,
             path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
@@ -137,11 +129,31 @@ class TeiDashboardTest : BaseTest() {
         teiDashboardRobot(composeTestRule) {
             clickOnMenuMoreOptions()
             clickOnTimelineEvents()
+
+            // [ANDROAPP-4216] Completed enrollment is locked.
             clickOnMenuMoreOptions()
             clickOnMenuComplete()
             checkCompleteStateInfoBarIsDisplay()
             checkCanNotAddEvent()
             checkAllEventsAreClosed()
+
+            // [ANDROAPP-4216] [ANDROAPP-871] Re-opened enrollment is active; Birth stays completed.
+            clickOnMenuMoreOptions()
+            clickOnMenuReOpen()
+            checkEnrollmentIsActive()
+            checkEventIsCompleted(1)
+
+            // [ANDROAPP-871] Deactivated enrollment is locked.
+            clickOnMenuMoreOptions()
+            clickOnMenuDeactivate()
+            checkCancelledStateInfoBarIsDisplay()
+            checkCanNotAddEvent()
+            checkAllEventsAreClosed()
+
+            // [ANDROAPP-871] Deactivated enrollment can be re-opened.
+            clickOnMenuMoreOptions()
+            clickOnMenuReOpen()
+            checkEnrollmentIsActive()
         }
     }
 
@@ -211,7 +223,51 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    fun shouldOpenEventAndSaveSuccessfully() {
+    fun shouldManageFollowUpAndOwnership() {
+        mockWebServerRobot.addResponse(
+            method = ResponseController.GET,
+            path = API_TB_IDENTIFIER_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
+            sdkResource = API_TB_IDENTIFIER_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE,
+            responseCode = 200,
+        )
+
+        val today = LocalDate.now().format(DateTimeFormatter.ofPattern("ddMMyyyy"))
+
+        prepareTeiForOwnershipAndLaunchActivity(rule)
+
+        teiDashboardRobot(composeTestRule) {
+            waitUntilActivityVisible<TeiDashboardMobileActivity>()
+            clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
+
+            // [ANDROAPP-913] Follow-up bar shown.
+            clickOnMenuMoreOptions()
+            clickOnMenuFollowUp()
+            checkFollowUpInfoBarIsDisplayed()
+
+            // [ANDROAPP-6461] Ownership transferred.
+            clickOnMenuMoreOptions()
+            clickOnMenuTransfer()
+        }
+
+        orgUnitSelectorRobot(composeTestRule) {
+            selectTreeOrgUnit(TRANSFER_ORG_UNIT, doneText = context.getString(R.string.transfer))
+        }
+
+        teiDashboardRobot(composeTestRule) {
+            checkTransferSucceeded()
+
+            // [ANDROAPP-7325] New scheduled event uses the new owner org unit.
+            clickOnFab()
+            clickOnScheduleNew()
+            typeOnInputDateField(today, "Due date")
+            clickOnSchedule()
+            checkEventRegisteredIn(TRANSFER_ORG_UNIT)
+        }
+    }
+
+    @Test
+    fun TimelineViewWithoutCompleting() {
         mockWebServerRobot.addResponse(
             method = ResponseController.GET,
             path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
@@ -224,8 +280,20 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiOpenedProgrammeAndLaunchActivity(rule)
 
         val babyPostNatal = "Baby Postnatal"
+        val birth = "Birth"
         teiDashboardRobot(composeTestRule) {
             waitUntilActivityVisible<TeiDashboardMobileActivity>()
+
+            // [ANDROAPP-4219] Timeline lists the newest event first.
+            clickOnMenuMoreOptions()
+            clickOnTimelineEvents()
+            checkEventsListedInOrder(babyPostNatal, birth)
+
+            // [ANDROAPP-4219] Group by stage lists events in stage order.
+            clickOnMenuMoreOptions()
+            clickOnGroupByStage()
+            checkEventsListedInOrder(birth, babyPostNatal)
+
             clickOnMenuMoreOptions()
             clickOnTimelineEvents()
             clickOnEventWithTitle(babyPostNatal)
@@ -430,5 +498,7 @@ class TeiDashboardTest : BaseTest() {
         const val USER = "android"
 
         const val LAB_MONITORING = "Lab monitoring"
+
+        const val TRANSFER_ORG_UNIT = "Blamawo MCHP"
     }
 }

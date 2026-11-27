@@ -309,7 +309,7 @@ class SyncStatusDialog :
     }
 
     override fun onDismiss(dialog: DialogInterface) {
-        viewModel.onDettach()
+        viewModel.onDetach()
         dismissListenerDialog?.onDismiss(syncing)
         super.onDismiss(dialog)
     }

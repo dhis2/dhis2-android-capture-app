@@ -3,16 +3,17 @@ package org.dhis2.usescases.settings
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.hasAnyDescendant
+import androidx.compose.ui.test.hasScrollToNodeAction
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.compose.ui.test.performScrollToNode
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.mobile.login.authentication.TwoFASettingsActivity
@@ -42,7 +43,7 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithTag(SettingItem.DATA_SYNC.name)
             .assertIsDisplayed()
         composeTestRule.onNode(
-                    hasText(NOT_EDIT_TEXT)
+            hasText(NOT_EDIT_TEXT)
         ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TEST_TAG_DATA_PERIOD).assertIsNotDisplayed()
     }
@@ -55,7 +56,7 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithTag(SettingItem.META_SYNC.name)
             .assertIsDisplayed()
         composeTestRule.onNode(
-                    hasText(NOT_EDIT_TEXT)
+            hasText(NOT_EDIT_TEXT)
         ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TEST_TAG_META_PERIOD).assertIsNotDisplayed()
     }
@@ -68,10 +69,11 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithTag(SettingItem.SYNC_PARAMETERS.name)
             .assertIsDisplayed()
         composeTestRule.onNode(
-                    hasText(SYNC_PARAMETERS_NOT_EDIT_TEXT)
+            hasText(SYNC_PARAMETERS_NOT_EDIT_TEXT)
         ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TEST_TAG_SYNC_PARAMETERS_LIMIT_SCOPE).assertIsNotDisplayed()
-        composeTestRule.onNodeWithTag(TEST_TAG_SYNC_PARAMETERS_EVENT_MAX_COUNT).assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag(TEST_TAG_SYNC_PARAMETERS_EVENT_MAX_COUNT)
+            .assertIsNotDisplayed()
         composeTestRule.onNodeWithTag(TEST_TAG_SYNC_PARAMETERS_TEI_MAX_COUNT).assertIsNotDisplayed()
     }
 
@@ -82,7 +84,7 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnManageReservedValues() {
         composeTestRule.onNode(
-                    hasText(getString(R.string.manage_reserved_values_button), ignoreCase = true)
+            hasText(getString(R.string.manage_reserved_values_button), ignoreCase = true)
         ).performClick()
         Intents.intended(IntentMatchers.hasComponent(ReservedValueActivity::class.java.name))
     }
@@ -91,8 +93,13 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithTag(SettingItem.ERROR_LOG.name).performClick()
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun checkLogViewIsDisplayed() {
-        waitForView(withId(R.id.errorRecycler)).check(matches(isDisplayed()))
+        composeTestRule.waitUntilAtLeastOneExists(
+            hasTestTag(ERROR_LOG_BACK_BUTTON),
+            TIMEOUT
+        )
+        composeTestRule.onNodeWithTag(ERROR_LOG_BACK_BUTTON).assertIsDisplayed()
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -108,8 +115,39 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithTag(SettingItem.TWO_FACTOR_AUTH.name).performClick()
     }
 
-    fun checkTwoFAOptionIsNotDisplayed() {
-        composeTestRule.onNodeWithTag(SettingItem.TWO_FACTOR_AUTH.name).assertIsNotDisplayed()
+    /**
+     * The 2FA item is only rendered for OAuth accounts, between the error log and the
+     * BASIC-only export database item. The settings list is lazy, so both neighbours are
+     * brought on screen first: if they are composed, any item between them would be too,
+     * which keeps the absence assertion from passing just because the row was off-screen.
+     */
+    fun checkTwoFAOptionIsNotShownForBasicAccount() {
+        val exportDatabaseTitle = getString(R.string.settingsExportDB)
+        val settingsList = composeTestRule.onNode(
+            hasScrollToNodeAction() and
+                    hasAnyDescendant(hasTestTag(SettingItem.RESERVED_VALUES.name))
+        )
+        settingsList.performScrollToNode(hasTestTag(SettingItem.ERROR_LOG.name))
+        settingsList.performScrollToNode(hasText(exportDatabaseTitle))
+        composeTestRule.onNodeWithTag(SettingItem.ERROR_LOG.name).assertIsDisplayed()
+        composeTestRule.onNode(hasText(exportDatabaseTitle)).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(SettingItem.TWO_FACTOR_AUTH.name).assertDoesNotExist()
+    }
+
+    fun checkTwoFAStatusIs(statusText: String) {
+        composeTestRule.onNodeWithTag(SettingItem.TWO_FACTOR_AUTH.name)
+            .assertTextContains(getString(R.string.settingTwoFA))
+            .assertTextContains(statusText, substring = true)
+            .assertTextContains(getString(R.string.settingTwoFADescr), substring = true)
+    }
+
+    fun checkTwoFAStatusIsHidden() {
+        composeTestRule.onNodeWithTag(SettingItem.TWO_FACTOR_AUTH.name)
+            .assertTextContains(getString(R.string.settingTwoFA))
+        composeTestRule.onNode(hasText(getString(R.string.settingsTwoFAStatus), substring = true))
+            .assertDoesNotExist()
+        composeTestRule.onNode(hasText(getString(R.string.settingTwoFADescr), substring = true))
+            .assertDoesNotExist()
     }
 
     fun checkTwoFAScreenIsDisplayed() {
@@ -119,5 +157,6 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     companion object {
         const val NOT_EDIT_TEXT = "Syncing period is not editable"
         const val SYNC_PARAMETERS_NOT_EDIT_TEXT = "Sync parameters are not editable"
+        const val ERROR_LOG_BACK_BUTTON = "ERROR_LOG_BACK_BUTTON"
     }
 }

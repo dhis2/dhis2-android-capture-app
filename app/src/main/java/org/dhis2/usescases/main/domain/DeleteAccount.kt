@@ -3,7 +3,7 @@ package org.dhis2.usescases.main.domain
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.mobile.commons.domain.UseCase
 import org.dhis2.mobile.commons.error.DomainError
-import org.dhis2.usescases.main.data.HomeRepository
+import org.dhis2.mobile.home.data.HomeRepository
 import java.io.File
 
 class DeleteAccount(
@@ -13,7 +13,7 @@ class DeleteAccount(
     override suspend fun invoke(input: File?): Result<AccountCount> =
         try {
             filterManager.clearAllFilters()
-            input?.let { repository.clearCache(it) }
+            input?.let { repository.clearCache(it.path) }
             repository.clearPreferences()
             repository.wipeAll()
             repository.deleteCurrentAccount()

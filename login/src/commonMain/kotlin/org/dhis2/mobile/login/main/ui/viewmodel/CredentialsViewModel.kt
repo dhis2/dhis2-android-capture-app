@@ -15,6 +15,8 @@ import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.commons.extensions.withMinimumDuration
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
+import org.dhis2.mobile.login.main.domain.OAuthCallback
+import org.dhis2.mobile.login.main.domain.OAuthCallbackParser
 import org.dhis2.mobile.login.main.domain.model.CredentialsEntryMode
 import org.dhis2.mobile.login.main.domain.model.DeviceEnrollmentInfo
 import org.dhis2.mobile.login.main.domain.model.LoginResult
@@ -119,6 +121,7 @@ class CredentialsViewModel(
             isSessionLocked = false,
             displayBiometricsDialog = false,
             isUserLoggedIn = false,
+            saveTypedCredentials = false,
         )
 
     private var loginJob: Job? = null
@@ -373,36 +376,31 @@ class CredentialsViewModel(
         }
     }
 
-    private fun handleOAuthCallbacks(urlString: String) {
-        // First check if there is any error
-        val error = urlString.substringAfter("error=", "").substringBefore('&')
-        if (error.isNotEmpty()) {
-            abortOAuthFlow(errorMessage = error)
-            return
-        }
+    private suspend fun handleOAuthCallbacks(urlString: String) {
+        when (val callback = OAuthCallbackParser.parse(urlString)) {
+            is OAuthCallback.Error -> {
+                abortOAuthFlow(errorMessage = callback.code)
+            }
 
-        // Check if there is a device enrollment callback
-        val iat = urlString.substringAfter("iat=", "").substringBefore('&')
-        val state = urlString.substringAfter("state=", "").substringBefore('&')
-        if (iat.isNotEmpty()) {
-            registerDevice(iat, state)
-            return
-        }
+            is OAuthCallback.Enrollment -> {
+                registerDevice(callback.iat, callback.state)
+            }
 
-        // Check if there is a login callback with the authorization code
-        val code = urlString.substringAfter("code=", "").substringBefore('&')
-        if (code.isNotEmpty()) {
-            loginWithOAuthCode(code, state)
-            return
-        }
+            is OAuthCallback.Login -> {
+                loginWithOAuthCode(callback.code, callback.state)
+            }
 
-        // Logout callback after a successful OAuth login: resume the deferred actions
-        if (pendingOAuthLoginResult != null) {
-            completeOAuthLogin()
-            return
-        }
+            OAuthCallback.Other -> {
+                // Logout callback after a successful OAuth login: resume the deferred actions
+                if (pendingOAuthLoginResult != null) {
+                    completeOAuthLogin()
+                    return
+                }
+            }
 
-        abortOAuthFlow(errorMessage = null)
+            // Not a DHIS2 OAuth redirect or tampered parameters: ignore it and keep the flow alive
+            OAuthCallback.Invalid -> Unit
+        }
     }
 
     private fun loginWithOAuthCode(
@@ -537,7 +535,9 @@ class CredentialsViewModel(
         }
     }
 
-    fun onLoginClicked() {
+    fun onLoginClicked() = login(passwordTypedByUser = true)
+
+    private fun login(passwordTypedByUser: Boolean) {
         when (entryMode) {
             CredentialsEntryMode.NEW_ACCOUNT_OAUTH -> fetchOAuthEnrollmentUrl()
             CredentialsEntryMode.EXISTING_OAUTH,
@@ -548,7 +548,7 @@ class CredentialsViewModel(
             CredentialsEntryMode.NEW_ACCOUNT_BASIC,
             CredentialsEntryMode.EXISTING_PASSWORD,
             ->
-                startLoginJob {
+                startLoginJob(saveTypedCredentials = passwordTypedByUser) {
                     loginUser(
                         serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
                         username = _credentialsScreenState.value.username().trim(),
@@ -589,6 +589,7 @@ class CredentialsViewModel(
 
     private fun startLoginJob(
         requiresOfflineCredential: Boolean = false,
+        saveTypedCredentials: Boolean = false,
         loginCall: suspend () -> LoginResult,
     ) {
         _credentialsScreenState.update {
@@ -603,7 +604,7 @@ class CredentialsViewModel(
                     withMinimumDuration {
                         loginCall()
                     }
-                handleLoginResult(result, requiresOfflineCredential)
+                handleLoginResult(result, requiresOfflineCredential, saveTypedCredentials)
             }
         loginJob?.invokeOnCompletion {
             if (!isLockoutActive) {
@@ -619,10 +620,12 @@ class CredentialsViewModel(
     private suspend fun handleLoginResult(
         result: LoginResult,
         requiresOfflineCredential: Boolean = false,
+        saveTypedCredentials: Boolean = false,
     ) = when (result) {
         is LoginResult.Success -> {
             _credentialsScreenState.update {
                 it.copy(
+                    saveTypedCredentials = saveTypedCredentials,
                     afterLoginActions =
                         buildList {
                             if (requiresOfflineCredential) {
@@ -714,7 +717,7 @@ class CredentialsViewModel(
                             onOfflineCredentialEntered(credential)
                         } else {
                             updatePassword(password = credential)
-                            onLoginClicked()
+                            login(passwordTypedByUser = false)
                         }
                 }
             }

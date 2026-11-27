@@ -1,8 +1,6 @@
 package org.dhis2.mobile.login.authentication
 
 import android.content.ActivityNotFoundException
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -14,9 +12,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.net.toUri
 import org.dhis2.mobile.login.authentication.ui.screen.TwoFANoConnectionScreen
 import org.dhis2.mobile.login.authentication.ui.screen.TwoFASettingsScreen
+import org.dhis2.mobile.login.authentication.ui.viewmodel.TwoFASettingsViewModel
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TwoFASettingsActivity : ComponentActivity() {
+    private val viewModel: TwoFASettingsViewModel by viewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -27,14 +29,15 @@ class TwoFASettingsActivity : ComponentActivity() {
                     onOpenStore = {
                         openPlayStore(this, "com.google.android.apps.authenticator2")
                     },
-                    onCopyCode = { code ->
-                        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        val clipData = ClipData.newPlainText("code", code)
-                        clipboard.setPrimaryClip(clipData)
-                    },
+                    viewModel = viewModel,
                 )
             }
         }
+    }
+
+    override fun finish() {
+        viewModel.onLeaveScreen()
+        super.finish()
     }
 }
 

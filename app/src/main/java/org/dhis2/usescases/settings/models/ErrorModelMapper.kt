@@ -1,27 +1,37 @@
 package org.dhis2.usescases.settings.models
 
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.toLocalDateTime
+import org.dhis2.mobile.commons.dates.errorLogDateTimeFormat
+import org.dhis2.mobile.commons.error.HttpStatusMessageProvider
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.ForeignKeyViolation
+import java.util.Date
+import kotlin.time.Instant
 
 class ErrorModelMapper(
+    private val fkTitle: String,
     private val fkMessage: String,
+    private val httpStatusMessageProvider: HttpStatusMessageProvider,
 ) {
-    companion object {
-        const val FK = "FK"
-    }
-
-    fun mapD2Error(errors: List<D2Error>): List<ErrorViewModel> =
+    suspend fun mapD2Error(errors: List<D2Error>): List<ErrorViewModel> =
         errors.map {
             map(it)
         }
 
-    fun map(error: D2Error): ErrorViewModel =
+    private suspend fun map(error: D2Error): ErrorViewModel =
         ErrorViewModel(
-            error.created(),
-            error.httpErrorCode().toString(),
-            error.errorDescription(),
-            error.errorComponent()?.name ?: "",
+            creationDate = error.created(),
+            creationDateLabel = dateLabel(error.created),
+            errorCode =
+                error.httpErrorCode?.let { errorCode ->
+                    val message = httpStatusMessageProvider.httpStatusMessage(errorCode)
+                    "$errorCode $message"
+                },
+            errorDescription = error.errorDescription,
+            errorComponent = error.errorComponent?.name,
         )
 
     fun mapConflict(conflicts: List<TrackerImportConflict>): List<ErrorViewModel> =
@@ -31,10 +41,11 @@ class ErrorModelMapper(
 
     fun map(conflict: TrackerImportConflict): ErrorViewModel =
         ErrorViewModel(
-            conflict.created(),
-            conflict.errorCode(),
-            conflict.displayDescription() ?: conflict.conflict(),
-            conflict.status()?.name,
+            creationDate = conflict.created,
+            creationDateLabel = dateLabel(conflict.created),
+            errorCode = conflict.errorCode,
+            errorDescription = conflict.displayDescription ?: conflict.conflict,
+            errorComponent = conflict.status?.name,
         )
 
     fun mapFKViolation(fKViolations: List<ForeignKeyViolation>): List<ErrorViewModel> =
@@ -48,10 +59,20 @@ class ErrorModelMapper(
         val toUid = fKViolation.notFoundValue() ?: ""
         val fromUid = fKViolation.fromObjectUid() ?: ""
         return ErrorViewModel(
-            fKViolation.created(),
-            FK,
-            fkMessage.format(toTable, toUid, fromTable, fromUid),
-            "",
+            creationDate = fKViolation.created(),
+            creationDateLabel = dateLabel(fKViolation.created),
+            errorCode = fkTitle,
+            errorDescription = fkMessage.format(toTable, toUid, fromTable, fromUid),
+            errorComponent = null,
         )
     }
+
+    private fun dateLabel(date: Date?) =
+        date?.let {
+            Instant
+                .fromEpochMilliseconds(it.time)
+                .toLocalDateTime(
+                    TimeZone.currentSystemDefault(),
+                ).format(errorLogDateTimeFormat)
+        }
 }

@@ -133,9 +133,12 @@ class DataSetTest : BaseTest() {
             catCombo = catCombo,
         )
 
+        // ANDROAPP-5539 (1/2): data element has a form name, so the form name is shown
         tapOnSaveButtonStep()
 
-        checkValidationBarIsDisplayedAndReview()
+        checkValidationBarIsDisplayedAndReview {
+            assertDataToReviewLabelIsDisplayed("Children trained on key survival skills")
+        }
 
         enterDataStep(
             tableId = tableId,
@@ -291,6 +294,29 @@ class DataSetTest : BaseTest() {
         checkValidationBarIsDisplayedAndCompleteAnyway()
         checkDataSetInstanceHasBeenCreatedAndIsCompleted(orgUnit)
 
+    }
+
+    @Test
+    fun validationRuleErrorShowsDataElementNameWhenItHasNoFormName() = runTest {
+        enterDataSetStep(
+            uid = "BfMAe6Itzgt",
+            name = "Child Health",
+        )
+
+        // Newest form already breaks rule "PCV 2 <= PCV 1"
+        dataSetDetailRobot(composeTestRule) {
+            clickOnDataSetAtPosition(0)
+        }
+        tableIsVisible()
+
+        // ANDROAPP-5539 (2/2): data element has no form name, so the name is shown
+        tapOnSaveButtonStep()
+
+        runOptionalValidationRules()
+
+        checkValidationBarIsDisplayedAndReview {
+            assertDataToReviewLabelIsDisplayed("PCV2 doses given / Fixed, <1y")
+        }
     }
 
     @Test
@@ -523,10 +549,13 @@ class DataSetTest : BaseTest() {
         }
     }
 
-    private fun checkValidationBarIsDisplayedAndReview() {
+    private fun checkValidationBarIsDisplayedAndReview(
+        checkValidationErrors: DataSetTableRobot.() -> Unit = {},
+    ) {
         dataSetTableRobot(composeTestRule) {
             assertValidationBarIsDisplayed()
             expandValidationRulesErrorDialog()
+            checkValidationErrors()
             tapOnReview()
         }
     }

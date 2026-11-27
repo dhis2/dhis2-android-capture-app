@@ -1,5 +1,7 @@
 package org.dhis2.form.data
 
+import okio.Path
+import okio.Path.Companion.toPath
 import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.extensions.toDate
 import org.dhis2.commons.network.NetworkUtils
@@ -43,7 +45,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
-import java.io.File
 
 class FormValueStoreTest {
     private lateinit var attrValueStore: FormValueStore
@@ -201,7 +202,7 @@ class FormValueStoreTest {
                 .errorDescription("error test")
                 .build()
         whenever(
-            d2.fileResourceModule().fileResources().blockingProcessAndAdd(eq(File("filePath")), any()),
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(eq("filePath".toPath()), any()),
         ) doAnswer { throw d2Error }
         val result =
             deValueStore.storeFile(
@@ -230,7 +231,7 @@ class FormValueStoreTest {
             d2.fileResourceModule().fileResources(),
         ) doReturn mock()
         whenever(
-            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any(), any()),
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any<Path>(), any()),
         ) doReturn generatedUid
         val result =
             deValueStore.storeFile(
@@ -257,13 +258,13 @@ class FormValueStoreTest {
         ) doReturn mockedDataElement
         whenever(d2.fileResourceModule().fileResources()) doReturn mock()
         whenever(
-            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any(), any()),
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any<Path>(), any()),
         ) doReturn "fileResourceUid"
 
         deValueStore.storeFile(uid = "uid", filePath = "filePath")
 
         verify(d2.fileResourceModule().fileResources()).blockingProcessAndAdd(
-            any(),
+            any<Path>(),
             argThat { this is ResourceContext.FileContext },
         )
     }
@@ -283,13 +284,13 @@ class FormValueStoreTest {
         ) doReturn mockedAttribute
         whenever(d2.fileResourceModule().fileResources()) doReturn mock()
         whenever(
-            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any(), any()),
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any<Path>(), any()),
         ) doReturn "fileResourceUid"
 
         attrValueStore.storeFile(uid = "uid", filePath = "filePath")
 
         verify(d2.fileResourceModule().fileResources()).blockingProcessAndAdd(
-            any(),
+            any<Path>(),
             argThat { this is ResourceContext.FileContext },
         )
     }
@@ -316,13 +317,13 @@ class FormValueStoreTest {
         whenever(enrollmentRepository.blockingGet()) doReturn mockedEnrollment
         whenever(d2.fileResourceModule().fileResources()) doReturn mock()
         whenever(
-            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any(), any()),
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any<Path>(), any()),
         ) doReturn generatedUid
 
         val result = attrValueStore.storeFile(uid = "uid", filePath = "filePath")
 
         verify(d2.fileResourceModule().fileResources()).blockingProcessAndAdd(
-            any(),
+            any<Path>(),
             argThat {
                 (this as? ResourceContext.ImageContext.ProgramImageContext)?.let {
                     it.programUid == programUid && it.resourceUid == "uid"
@@ -355,13 +356,13 @@ class FormValueStoreTest {
         whenever(eventRepository.blockingGet()) doReturn mockedEvent
         whenever(d2.fileResourceModule().fileResources()) doReturn mock()
         whenever(
-            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any(), any()),
+            d2.fileResourceModule().fileResources().blockingProcessAndAdd(any<Path>(), any()),
         ) doReturn generatedUid
 
         val result = deValueStore.storeFile(uid = "uid", filePath = "filePath")
 
         verify(d2.fileResourceModule().fileResources()).blockingProcessAndAdd(
-            any(),
+            any<Path>(),
             argThat {
                 (this as? ResourceContext.ImageContext.ProgramImageContext)?.let {
                     it.programUid == programUid && it.resourceUid == "uid"
@@ -1399,6 +1400,48 @@ class FormValueStoreTest {
     }
 
     @Test
+    fun `should save enrollment category option combo when every category is selected`() {
+        val uid = "categoryComboUid"
+        val value = "catOptionUid1,catOptionUid2"
+        val categoryOptionComboUid = "categoryOptionComboUid"
+
+        mockGetCategoryOptionComboUid(
+            categoryComboUid = uid,
+            categoryOptionsUids = value.split(","),
+            categoryOptionComboUid = categoryOptionComboUid,
+        )
+
+        val result = attrValueStore.save("ENROLLMENT_CATEGORY_COMBO_UID-$uid", value, null)
+
+        verify(enrollmentRepository).setAttributeOptionComboUid(categoryOptionComboUid)
+        assertEquals(EnrollmentRepository.ENROLLMENT_CATEGORY_COMBO_UID, result.uid)
+        assertEquals(VALUE_CHANGED, result.valueStoreResult)
+    }
+
+    @Test
+    fun `should not save enrollment category option combo for a partial selection`() {
+        mockGetCategoryOptionComboUid(
+            categoryComboUid = "categoryComboUid",
+            categoryOptionsUids = listOf("catOptionUid1"),
+            categoryOptionComboUid = null,
+        )
+
+        val result =
+            attrValueStore.save("ENROLLMENT_CATEGORY_COMBO_UID-categoryComboUid", "catOptionUid1", null)
+
+        verifyNoInteractions(enrollmentRepository)
+        assertEquals(ValueStoreResult.VALUE_HAS_NOT_CHANGED, result.valueStoreResult)
+    }
+
+    @Test
+    fun `should not save enrollment category option combo when the selection is cleared`() {
+        val result = attrValueStore.save("ENROLLMENT_CATEGORY_COMBO_UID-categoryComboUid", null, null)
+
+        verifyNoInteractions(enrollmentRepository)
+        assertEquals(ValueStoreResult.VALUE_HAS_NOT_CHANGED, result.valueStoreResult)
+    }
+
+    @Test
     fun `should save event details report date`() {
         val uid = EventRepository.EVENT_REPORT_DATE_UID
         val dateValue = "2023-01-01'T'00:00:00"
@@ -1431,7 +1474,7 @@ class FormValueStoreTest {
     private fun mockGetCategoryOptionComboUid(
         categoryComboUid: String,
         categoryOptionsUids: List<String>,
-        categoryOptionComboUid: String,
+        categoryOptionComboUid: String?,
     ) {
         whenever(
             d2

@@ -9,22 +9,25 @@ import org.dhis2.commons.resources.LocaleSelector
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.data.service.AndroidApkDownloader
+import org.dhis2.data.service.ApkDownloader
+import org.dhis2.data.service.ApkUpdateRepository
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkManagerControllerImpl
-import org.dhis2.usescases.main.data.HomeRepository
+import org.dhis2.mobile.home.data.HomeRepository
+import org.dhis2.mobile.home.domain.CheckSingleNavigation
+import org.dhis2.mobile.home.domain.GetLockAction
+import org.dhis2.mobile.home.domain.GetUserName
+import org.dhis2.mobile.home.domain.UpdateInitialSyncStatus
 import org.dhis2.usescases.main.data.HomeRepositoryImpl
-import org.dhis2.usescases.main.domain.CheckSingleNavigation
 import org.dhis2.usescases.main.domain.ConfigureHomeNavigationBar
 import org.dhis2.usescases.main.domain.DeleteAccount
 import org.dhis2.usescases.main.domain.DownloadNewVersion
 import org.dhis2.usescases.main.domain.GetHomeFilters
-import org.dhis2.usescases.main.domain.GetLockAction
-import org.dhis2.usescases.main.domain.GetUserName
 import org.dhis2.usescases.main.domain.LaunchInitialSync
 import org.dhis2.usescases.main.domain.LogoutUser
 import org.dhis2.usescases.main.domain.ScheduleNewVersionAlert
-import org.dhis2.usescases.main.domain.UpdateInitialSyncStatus
 import org.dhis2.usescases.troubleshooting.TroubleshootingRepository
 import org.dhis2.usescases.troubleshooting.TroubleshootingViewModel
 import org.koin.android.ext.koin.androidContext
@@ -65,6 +68,8 @@ val mainModule =
             FilterManager.getInstance()
         }
         singleOf(::VersionRepository)
+        factory<ApkDownloader> { AndroidApkDownloader(androidContext()) }
+        factoryOf(::ApkUpdateRepository)
         factoryOf(::ResourceManager)
         factory { params ->
             MainNavigator(

@@ -176,12 +176,6 @@
     <string name="permission_denied">K provedení této akce nemáte požadované oprávnění</string>
 
     <string name="period">Období</string>
-    <string name="tuto_main_1">Vítejte na dhis2</string>
-    <string name="tuto_main_2">Zde můžete vidět své aktivity</string>
-    <string name="tuto_main_3">Můžete použít filtr ...</string>
-    <string name="tuto_main_4">... změnou období a výběrem dat ...</string>
-    <string name="tuto_main_5">… Nebo filtrovat podle organizační jednotky</string>
-    <string name="tuto_main_6">Zkontrolujte další akce v hlavní nabídce</string>
 
     <!-- RELATIONSHIPS -->
     <string name="next">Další</string>
@@ -234,13 +228,6 @@
 
     <string name="menu_home">Úvodní strana</string>
     <string name="appwidget_text">PŘÍKLAD</string>
-    <string name="showHelp">Zobrazit nápovědu</string>
-    <string name="tuto_dashboard_1">Toto je řídicí panel entity</string>
-    <string name="tuto_dashboard_2">Zobrazte informace o profilu entit ...</string>
-    <string name="tuto_dashboard_6">Zde uvidíte všechny události. Kliknutím zobrazíte podrobnosti události.</string>
-    <string name="tuto_dashboard_7">V nabídce můžete přidávat vztahy, zobrazovat indikátory nebo psát poznámky.</string>
-    <string name="tuto_event_initial_new_1">Zadejte všechna data k vytvoření události</string>
-    <string name="tuto_event_initial_1">Klepnutím zkontrolujete stav dokončení události.</string>
     <string name="relationships">vztahy</string>
     <!--empty_tracker_events will be formatted with the custom or default label for event-->
     <string name="empty_tracker_events">Nejsou zaregistrovány žádné stránky %s, kliknutím na tlačítko \"+\" přidáte novou.</string>
@@ -257,7 +244,6 @@
     <string name="unique_warning">Hodnota by měla být jedinečná, byla nalezena koincidence. Nebylo uloženo. Prosím zkontrolujte to.</string>
     <string name="please_wait">Prosím, čekejte</string>
     <string name="skip">Přeskočit</string>
-    <string name="no_intructions">O této obrazovce nejsou žádné informace</string>
     <string name="delete_local_data_message">Nesynchronizovaná data budou ztracena. Opravdu chcete pokračovat?</string>
     <string name="delete_local_data_error">Data nelze smazat. Zkuste to prosím znovu.</string>
     <string name="delete_local_data_done">Odstranění místních dat bylo úspěšně dokončeno.</string>
@@ -269,7 +255,6 @@
     <string name="state_relationship">Vztah</string>
     <string name="sent_by_sms">Odesláno sms</string>
     <string name="action_close">Zavřít</string>
-    <string name="tuto_main_11">Nyní můžete zkontrolovat informace o synchronizaci kliknutím sem</string>
     <string name="relationship_error_recursive">Nemůžete spojit záznam sám se sebou</string>
     <string name="change_calendar_view">Změnit zobrazení kalendáře</string>
     <string name="relationship_without_enrollment">Záznam, ke kterému se pokoušíte získat přístup, nemá žádnou registraci. K hlavnímu panelu nemáte přístup.</string>

@@ -1,7 +1,7 @@
 package org.dhis2.usescases.datasets
 
-import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.headerTestTag
-import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.rowHeaderTestTag
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.semantics.headerTestTag
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.semantics.rowHeaderTestTag
 
 internal data class CategoryToRowTestingData(
     val sectionIndex: Int,

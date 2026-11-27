@@ -46,7 +46,6 @@ class SplashPresenter internal constructor(
                         { (userLogged, needsOfflinePin, trackingInfo) ->
                             trackingInfo?.let {
                                 trackUserInfo(
-                                    serverUrl = it.serverUrl,
                                     serverVersion = it.serverVersion,
                                 )
                             }
@@ -90,7 +89,6 @@ class SplashPresenter internal constructor(
                     .systemInfo()
                     .blockingGet()
             TrackingInfo(
-                serverUrl = systemInfo?.contextPath() ?: "",
                 serverVersion = systemInfo?.version() ?: "",
             )
         } else {
@@ -105,11 +103,8 @@ class SplashPresenter internal constructor(
             .blockingGet()
             ?.value() == true.toString()
 
-    private fun trackUserInfo(
-        serverUrl: String,
-        serverVersion: String,
-    ) {
-        crashReportController.trackServer(serverUrl, serverVersion)
+    private fun trackUserInfo(serverVersion: String) {
+        crashReportController.trackServer(serverVersion)
     }
 
     fun getAccounts(): Int =
@@ -130,7 +125,6 @@ class SplashPresenter internal constructor(
     }
 
     private data class TrackingInfo(
-        val serverUrl: String,
         val serverVersion: String,
     )
 }

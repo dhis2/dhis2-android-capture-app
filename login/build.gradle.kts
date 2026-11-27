@@ -61,6 +61,8 @@ kotlin {
                 api(libs.koin.core)
                 implementation(libs.koin.compose)
                 implementation(libs.koin.composeVM)
+
+                implementation(libs.ktor.http)
             }
         }
 
@@ -84,14 +86,13 @@ kotlin {
                 implementation(libs.koin.androidx.compose)
                 implementation(libs.androidx.activity.compose)
                 implementation(libs.androidx.browser)
-                implementation(libs.androidx.compose.uitooling)
+                compileOnly(libs.androidx.compose.uitooling)
             }
         }
 
         getByName("androidHostTest") {
             dependencies {
                 implementation(kotlin("test"))
-                implementation(libs.junit.jupiter)
                 implementation(libs.test.kotlinCoroutines)
                 implementation(libs.test.mockitoKotlin)
             }
