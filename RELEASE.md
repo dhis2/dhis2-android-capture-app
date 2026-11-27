@@ -1,59 +1,103 @@
-# New functionality and web parity
+# Release notes - Android App for DHIS2 - 3.5.1
 
-## Login with OAuth and two-factor authentication
+### Bug
 
-Version 3.5 adds login with OAuth. If the server has OAuth enabled, users log in on the login page of the server, in the browser. The server can ask for a code from an authenticator app. Users with an OAuth account can turn two-factor authentication on or off in **Settings**.
+[ANDROAPP-6512](https://dhis2.atlassian.net/browse/ANDROAPP-6512) Program rule validation is excessively verbose
 
-Users with an OAuth or OpenID Connect account must create a 4-digit offline code before they can use the app. The code unlocks the account without a connection. If the device has a fingerprint or face sensor, users can also unlock the account with it. After 3 wrong attempts, the app locks the login for 60 seconds.
+[ANDROAPP-6668](https://dhis2.atlassian.net/browse/ANDROAPP-6668) \[Built-in variable\] Environment variable not working
 
-[Jira](https://dhis2.atlassian.net/browse/ANDROAPP-6574)
+[ANDROAPP-7292](https://dhis2.atlassian.net/browse/ANDROAPP-7292) Landscape settings menu crash
 
-## Customized tracker terminology
+[ANDROAPP-7310](https://dhis2.atlassian.net/browse/ANDROAPP-7310) minutes in date time component
 
-Administrators can customize more of the terminology that the app uses in a program. The app shows these terms in filters, lists, menus, and messages. The new terms are:
+[ANDROAPP-7560](https://dhis2.atlassian.net/browse/ANDROAPP-7560) Infinite Spinner if you dont dont upload file
 
-- Program stage
-- Follow-up
-- Relationship (one term for singular and plural)
-- Organisation unit (one term for singular and plural)
-- The plural of enrollment and the plural of event
-- Tracked entity type (plural only)
+[ANDROAPP-7591](https://dhis2.atlassian.net/browse/ANDROAPP-7591) Can create and sync duplicate TEA IDs
 
-[Jira](https://dhis2.atlassian.net/browse/ANDROAPP-4731)
+[ANDROAPP-7600](https://dhis2.atlassian.net/browse/ANDROAPP-7600) Hamburger menu colour related with app theme colour
 
-## Program indicator disaggregation
+[ANDROAPP-7667](https://dhis2.atlassian.net/browse/ANDROAPP-7667) Cannot edit enrollment if there is a program rule error in an event form
 
-In DHIS2 42 and later, program indicators can be split by category, for example by gender or by age group. The app shows these values in the same analytics tables as before. Administrators do not need to configure anything in the app.
+[ANDROAPP-7676](https://dhis2.atlassian.net/browse/ANDROAPP-7676) Validation erros don't block swithing between events
 
-[Jira](https://dhis2.atlassian.net/browse/ANDROAPP-7277)
+[ANDROAPP-7697](https://dhis2.atlassian.net/browse/ANDROAPP-7697) \[Quick Data Entry\] User has access to one program or dataset
 
-## Image quality control
+[ANDROAPP-7699](https://dhis2.atlassian.net/browse/ANDROAPP-7699) Export > Download DB is not visible for the user on the device
 
-In the Android Settings Web App, administrators can choose the image fields whose pictures the app sends in their original quality. If the app did not download a picture, the field will showan image icon with a line across it.
+[ANDROAPP-7717](https://dhis2.atlassian.net/browse/ANDROAPP-7717) Enrollment details tab disappear when changing orientation from landscape to portrait
 
-[Jira](https://dhis2.atlassian.net/browse/ANDROAPP-7606)
+[ANDROAPP-7723](https://dhis2.atlassian.net/browse/ANDROAPP-7723) TEI card display incorrect value for Yes/No DE
 
-## Working lists
+[ANDROAPP-7752](https://dhis2.atlassian.net/browse/ANDROAPP-7752) "Import QR data" screen shows a black screen
 
-Working lists can now filter by empty and not empty values.
-[Jira](https://dhis2.atlassian.net/browse/ANDROAPP-7701)
+[ANDROAPP-7753](https://dhis2.atlassian.net/browse/ANDROAPP-7753) Fix Recover account path in v43
 
-# User experience
-## Organisation unit selector
+[ANDROAPP-7755](https://dhis2.atlassian.net/browse/ANDROAPP-7755) Cannot dismiss notification
 
-If several organisation units have the same name and the list does not show their parent, the selector adds a tag next to each of them. The tag will show the name of the parent it belongs to t.
+[ANDROAPP-7761](https://dhis2.atlassian.net/browse/ANDROAPP-7761) Sync notification never disappears for automatic metadata and data sync
 
-[Jira](https://dhis2.atlassian.net/browse/ANDROAPP-7609)
+[ANDROAPP-7772](https://dhis2.atlassian.net/browse/ANDROAPP-7772) Use file name instead of uid for FileResource name
 
-# Performance and maintenance
+[ANDROAPP-7774](https://dhis2.atlassian.net/browse/ANDROAPP-7774) \[ANR\] Splash screen - blocking SDK reads on the main thread in SplashPresenter
 
-## SDK modernization
+[ANDROAPP-7781](https://dhis2.atlassian.net/browse/ANDROAPP-7781) View only category not shown as greyed out
 
-The SDK continues to move from Java models to Kotlin data classes, and to remove its Android dependencies. This is some ground-laying work to prepare for a future migration to a multiplatform SDK. These changes are transparent for the user. .
+[ANDROAPP-7822](https://dhis2.atlassian.net/browse/ANDROAPP-7822) Solve GitHub action script injection vulnerability
 
-[Jira](https://dhis2.atlassian.net/browse/ANDROSDK-2225) | [Jira](https://dhis2.atlassian.net/browse/ANDROSDK-1586)
+[ANDROAPP-7825](https://dhis2.atlassian.net/browse/ANDROAPP-7825) Program rule warning is not triggered when navigating directly to a Yes/No field
 
-## Bug fixes
+[ANDROAPP-7837](https://dhis2.atlassian.net/browse/ANDROAPP-7837) Maps screen - API Key required message
 
-See the [full list of fixed bugs in Jira](https://dhis2.atlassian.net/projects/ANDROAPP/versions/12052/tab/release-report-all-issues).
+[ANDROAPP-7852](https://dhis2.atlassian.net/browse/ANDROAPP-7852) Incomplete ValueType number validator
 
+[ANDROAPP-7859](https://dhis2.atlassian.net/browse/ANDROAPP-7859) Negative decimals without a leading zero \(e.g. -.62\) are accepted in NUMBER fields but rejected by the server at sync
+
+[ANDROAPP-7860](https://dhis2.atlassian.net/browse/ANDROAPP-7860) Search screen crashes when tapping sync with no program selected
+
+[ANDROAPP-7863](https://dhis2.atlassian.net/browse/ANDROAPP-7863) TEI dashboard crashes when opened without a program in landscape
+
+[ANDROAPP-7864](https://dhis2.atlassian.net/browse/ANDROAPP-7864) TEI dashboard crashes on open when the TEI is not stored locally
+
+[ANDROAPP-7865](https://dhis2.atlassian.net/browse/ANDROAPP-7865) Granular sync dialog crashes with "Can not perform this action after onSaveInstanceState"
+
+[ANDROAPP-7867](https://dhis2.atlassian.net/browse/ANDROAPP-7867) Event not found provokes NPE
+
+[ANDROAPP-7883](https://dhis2.atlassian.net/browse/ANDROAPP-7883) Incomplete Value type Number validator
+
+[ANDROAPP-7894](https://dhis2.atlassian.net/browse/ANDROAPP-7894) Analytics tables show duplicated, empty rows when a visualization has two or more row dimensions
+
+[ANDROAPP-7901](https://dhis2.atlassian.net/browse/ANDROAPP-7901) Apply fading edge layout for Assist chips
+
+[ANDROAPP-7909](https://dhis2.atlassian.net/browse/ANDROAPP-7909) Inconsistent colors in top bar
+
+[ANDROAPP-7916](https://dhis2.atlassian.net/browse/ANDROAPP-7916) NoSuchElementException: Array contains no element matching the predicate.
+
+[ANDROAPP-7917](https://dhis2.atlassian.net/browse/ANDROAPP-7917) ApplicationNotResponding: ANR
+
+[ANDROAPP-7918](https://dhis2.atlassian.net/browse/ANDROAPP-7918) IllegalStateException: Can not perform this action after onSaveInstanceState
+
+[ANDROAPP-7919](https://dhis2.atlassian.net/browse/ANDROAPP-7919) UninitializedPropertyAccessException: lateinit property presenter has not been initialized
+
+[ANDROAPP-7921](https://dhis2.atlassian.net/browse/ANDROAPP-7921) Crash when click on any TEI with coordinates
+
+[ANDROAPP-7922](https://dhis2.atlassian.net/browse/ANDROAPP-7922) Analytics tables does not show values until column is resized
+
+[ANDROAPP-7923](https://dhis2.atlassian.net/browse/ANDROAPP-7923) spinner loading in filename field when no file selected
+
+[ANDROAPP-7926](https://dhis2.atlassian.net/browse/ANDROAPP-7926) Org unit ID displayed in enrollment
+
+[ANDROAPP-7928](https://dhis2.atlassian.net/browse/ANDROAPP-7928) Android app crashes when opening a data set with an indicator expression that evaluates to NaN
+
+[ANDROAPP-7937](https://dhis2.atlassian.net/browse/ANDROAPP-7937) HIDEFIELD is ignored when the same field also has an option rule action \(HIDEOPTION / HIDEOPTIONGROUP / SHOWOPTIONGROUP\)
+
+[ANDROAPP-7943](https://dhis2.atlassian.net/browse/ANDROAPP-7943) \[ANR\] Blocking local datastore read in LocaleSelector during attachBaseContext
+
+[ANDROAPP-7944](https://dhis2.atlassian.net/browse/ANDROAPP-7944) Home crashes with "No database is currently activated" in CheckSingleNavigation
+
+[ANDROAPP-7945](https://dhis2.atlassian.net/browse/ANDROAPP-7945) MainActivity crashes when the screen changes before the layout binding is inflated
+
+[ANDROAPP-7946](https://dhis2.atlassian.net/browse/ANDROAPP-7946) ANR events from 3.5.0 arrive in Sentry with unmapped app frames
+
+[ANDROAPP-8000](https://dhis2.atlassian.net/browse/ANDROAPP-8000) Incorrect "Retry sync" button in TEI list cards
+
+[ANDROAPP-8001](https://dhis2.atlassian.net/browse/ANDROAPP-8001) crash after capturing a polygon
