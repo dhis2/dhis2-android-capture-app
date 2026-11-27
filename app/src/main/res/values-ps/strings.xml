@@ -50,8 +50,6 @@
     <string name="edit">درست یې کړئ</string>
     <string name="deactivate">غېرې فعال یې کړئ</string>
     <string name="done_task">کور پاڼه</string>
-    <string name="wipe_data_ok">د منلو وړ</string>
-    <string name="wipe_data_no">رد یې کړئ [ ژباړه ـ ردول ]</string>
     <string name="SYNC_MANAGER">تنظیمات</string>
     <string name="settingsTwoFAStatus">وضعیت</string>
     <!--endregion-->
@@ -66,6 +64,7 @@
     <!--AGE CUSTOM VIEW-->
     <string name="incident_date">د پېښې نېټه</string>
     <string name="period">معیاد</string>
+
     <!-- RELATIONSHIPS -->
     <string name="next">راتلونکی</string>
     <string name="button_ok">سم دی</string>

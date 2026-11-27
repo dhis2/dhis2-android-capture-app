@@ -215,14 +215,19 @@
     <plurals name="event">
         <item quantity="other">活动</item>
     </plurals>
+    <plurals name="relationship">
+        <item quantity="other">关系</item>
+    </plurals>
     <!-- Fallbacks for locales without plural rules in Compose resources 1.10 (e.g. rw, tet, tg) -->
     <string name="enrollment_one">加入登记</string>
     <string name="enrollment_other">注册人数</string>
     <string name="org_unit_one">组织单位</string>
     <string name="org_unit_other">组织单位</string>
+    <string name="tei_one">tei</string>
     <string name="tei_other">teis</string>
     <string name="event_one">事件</string>
     <string name="event_other">事件</string>
+    <string name="relationship_one">关系</string>
     <string name="relationship_other">关系</string>
     <!--*******************
     Info bar labels

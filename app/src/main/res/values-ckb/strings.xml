@@ -28,8 +28,6 @@
     <!--TEI DASHBOARD-->
     <string name="edit">دةستكاري</string>
     <string name="done_task">ماڵةوة</string>
-    <string name="wipe_data_ok">پەسندکردن</string>
-    <string name="wipe_data_no">لابردن</string>
     <string name="SYNC_MANAGER">ريكخستن</string>
     <string name="settingsTwoFAStatus">پێگە</string>
     <!--endregion-->
@@ -37,6 +35,7 @@
     <!-- SEARCH OPTION SET -->
     <string name="search_optionset">طةران</string>
     <string name="period">ماوة</string>
+
     <!-- RELATIONSHIPS -->
     <string name="next">داهاتوو</string>
     <string name="button_ok">تةواو</string>

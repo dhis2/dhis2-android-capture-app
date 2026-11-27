@@ -115,10 +115,7 @@
     <string name="every_12_hours">12小时</string>
     <string name="Manual">手工</string>
     <string name="a_week">1周</string>
-    <string name="wipe_data_meesage">数据库将被删除。
-您将被要求重新登录。</string>
-    <string name="wipe_data_ok">接受</string>
-    <string name="wipe_data_no">取消</string>
+    <string name="delete_account_message">您的账户将保留在服务器上。\n未同步的数据 文件将会丢失。</string>
     <string name="SYNC_DATA">现在同步数据</string>
     <string name="SYNC_META">现在同步配置</string>
     <string name="SYNC_MANAGER">设置</string>
@@ -239,6 +236,7 @@
     <string name="info">信息</string>
     <string name="qr_no_id_error">不能读取该ID</string>
     <string name="delete_local_data">删除本地数据</string>
+    <string name="delete_data">删除数据</string>
     <string name="dashboard_overview">概要</string>
     <string name="empty_indicators">该项目无指标</string>
     <string name="unselect_enrollment">所有的加入登记</string>
@@ -248,7 +246,7 @@
     <string name="unique_warning">值应该唯一，发现相同的。还没有保存，请检查。</string>
     <string name="please_wait">请等待.....</string>
     <string name="skip">跳过</string>
-    <string name="delete_local_data_message">没有同步的数据不会丢失，你真想要继续</string>
+    <string name="delete_local_data_message_v2">您将保持登录状态。未同步的数据 文件将会丢失。</string>
     <string name="delete_local_data_error">数据不能删除，请重试</string>
     <string name="delete_local_data_done">删除本地数据成功完成</string>
     <string name="resource_not_found">%s没有发现</string>
@@ -334,9 +332,7 @@
     <string name="sms_empty_gateway">短信网关不能为空</string>
     <string name="granular_sync_enrollments_empty">没有登记可以上传</string>
     <string name="granular_sync_unsupported_task">转换任务不支持。</string>
-    <string name="set_pin">设置PIN</string>
     <string name="pin_created">已创建PIN码</string>
-    <string name="pin_already_created">PIN 码已设置</string>
     <string name="conflict">冲突</string>
     <string name="change_event_date">改变日期</string>
     <string name="go_back">后退</string>
@@ -381,6 +377,7 @@
     <string name="filter_sync_error">同步错误</string>
     <string name="filter_sync_sms">短信已同步</string>
     <string name="saved">已经保存！</string>
+    <string name="fk_error">外键错误</string>
     <string name="fk_message">遗失 %s %s 从%s %s</string>
     <string name="filters_title_event_status">事件状态</string>
     <string name="dataset_empty_list_can_create">没有数据，点击“+”添加新的记录</string>
@@ -395,13 +392,11 @@
     <string name="filters_title_date">日期</string>
     <string name="privacy_policy_title">私有策略</string>
     <string name="open_privacy_policy">点击这里检查<a href="">隐私策略</a></string>
-    <string name="break_glass_error_v2">由于%s 受保护，您不能从其他组织单位注册该程序。
-请联系您的管理员。</string>
+    <string name="break_glass_error_v2">您无法在此项目中加入来自其他组织单位的 %s，因为它受到保护。\n请与您的管理员联系。</string>
     <string name="field_is_mandatory">此字段是必填字段</string>
     <string name="security_debugger_message">出于安全原因，此版本的应用程序不允许与adb一起使用。请使用培训版本。</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">哎呀！有些事情没有按计划进行。
-让我们帮你恢复行动。</string>
+    <string name="customactivityoncrash_error_activity_error_occurred_explanation">哎呀！有些事情没有按计划进行。\n让我们帮你恢复行动。</string>
     <string name="customactivityoncrash_error_activity_restart_app">后退</string>
     <string name="customactivityoncrash_error_activity_error_details_copy">复制到剪贴板</string>
     <string name="metada_first_sync_error">与您的服务器同步时发现错误。如果可能，与系统管理员共享错误。</string>
@@ -453,7 +448,7 @@
     <string name="filter_period_last_n_biweeks">最近%d双周</string>
     <string name="section_feedback">反馈</string>
     <string name="section_indicators">指标</string>
-    <string name="camera_permission_denied">相机权限被拒绝。\n您需要启用它才能使用此功能。</string>
+    <string name="camera_permission_denied">相机权限被拒绝。\n 您需要启用它才能使用此功能。</string>
     <string name="section_charts_indicators">图表和指标</string>
     <string name="take_photo">拍照</string>
     <string name="break_glass_dialog_title">该项目受保护</string>
@@ -466,21 +461,26 @@
     <string name="blocked_by_completion">此数据不可编辑，因为已标记为已完成</string>
     <string name="edition_expired">此数据不可编辑，因为其编辑时间已过期</string>
     <string name="edition_no_write_access">您无权编辑此数据</string>
+    <string name="edition_event_not_found">该事件 无法在此设备上使用</string>
     <string name="event_date_not_in_orgunit_range">该数据 无法编辑，因为%s 已关闭</string>
     <string name="edition_no_catcombo_access">您无权编辑此数据</string>
     <string name="edition_orgunit_user_scope">您无法从这里编辑数据 %s</string>
     <string name="error_tei_online_search_title">网上搜索返回如下信息：</string>
-    <string name="delete_account">删除帐户</string>
+    <string name="remove_account_from_device">从设备中移除账户</string>
+    <string name="remove_account_from_device_question">要从该设备中移除该账户吗？</string>
+    <string name="remove_account">删除账户</string>
     <string name="main_menu_troubleshooting">配置疑难解答</string>
     <string name="troubleshooting_language_title">语言</string>
     <string name="troubleshooting_language_description">点击此处更改应用程序的语言</string>
     <string name="troubleshooting_rules_title">项目规则验证</string>
+    <string name="troubleshooting_metadata_integrity">元数据完整性</string>
+    <string name="troubleshooting_metadata_description">列出该应用检测到的本地数据 问题，例如引用缺失或记录冲突。</string>
     <string name="troubleshooting_rules_description">此操作将检查所有配置的规则并显示错误配置（如果有）</string>
     <string name="troubleshooting_ongoing_rule_validation">正在验证项目规则...</string>
     <string name="troubleshooting_pass_rule_validation">未发现任何警告</string>
     <string name="troobleshooting_pass_rule_validation_title">一切看起来都很棒</string>
     <string name="not_saved">未保存</string>
-    <string name="review_message">某些字段需要您注意。\n您要查看表单吗？</string>
+    <string name="review_message">有些字段需要您注意。\n您要复查表单吗？</string>
     <string name="search_loading_more">加载更多结果</string>
     <string name="search_no_results_in_program">%s 没有更多结果</string>
     <string name="search_outside_action">在此项目之外搜索</string>
@@ -537,6 +537,7 @@
     <string name="software_update">软件更新</string>
     <string name="remind_me_later">之后</string>
     <string name="download_now">现在下载</string>
+    <string name="new_version_download_failed">无法下载新版本。请重试。</string>
     <string name="check_for_updates">检查更新</string>
     <string name="no_updates">没有新的更新</string>
     <string name="unknow_sources_denied">未知来源权限被拒绝。\n您需要启用它才能安装版本。</string>
@@ -595,7 +596,7 @@
     <string name="complete_enrollment_label">完整%s</string>
     <string name="deactivate_enrollment_label">停用%s</string>
     <string name="reopen_enrollment_label">重新打开%s</string>
-    <string name="main_menu_developer_scree">开发者选项</string>
+    <string name="main_menu_developer_scree">开发人员选项</string>
 
     <plurals name="error_count_label">
         <item quantity="other">%s 错误</item>

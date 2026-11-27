@@ -255,6 +255,7 @@
     <string name="open_with">打开用</string>
 
     <string name="file_downloaded">文件下载成功</string>
+    <string name="file_download_error">无法下载文件</string>
 
     <!--Enrollment labels-->
     <plurals name="enrollment">

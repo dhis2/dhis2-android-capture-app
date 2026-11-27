@@ -316,7 +316,6 @@
     <string name="sms_empty_gateway">A porta de entrada do SMS não pode estar vazio</string>
     <string name="granular_sync_enrollments_empty">Não há inscrições para envio</string>
     <string name="granular_sync_unsupported_task">Este convertTask não é suportado</string>
-    <string name="set_pin">Definir pino</string>
     <string name="conflict">Conflito</string>
     <string name="change_event_date">Mudar data</string>
     <string name="go_back">Voltar</string>

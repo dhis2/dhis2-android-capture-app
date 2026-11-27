@@ -298,7 +298,6 @@
     <string name="sms_empty_gateway">SMS-gateway mag niet leeg zijn</string>
     <string name="granular_sync_enrollments_empty">Er zijn geen inschrijvingen om te uploaden</string>
     <string name="granular_sync_unsupported_task">Deze convertTask wordt niet ondersteund</string>
-    <string name="set_pin">Speld instellen</string>
     <string name="conflict">Conflict</string>
     <string name="change_event_date">Verander de datum</string>
     <string name="go_back">Ga terug</string>

@@ -49,8 +49,6 @@
     <string name="edit">تجدید</string>
     <string name="deactivate">غیر فعال</string>
     <string name="done_task">صفحه اصلی</string>
-    <string name="wipe_data_ok">پذیرش</string>
-    <string name="wipe_data_no">انصراف</string>
     <string name="SYNC_MANAGER">تنظیمات</string>
     <string name="settingsTwoFAStatus">وضعیت</string>
     <!--endregion-->
@@ -65,6 +63,7 @@
     <!--AGE CUSTOM VIEW-->
     <string name="incident_date">تاریخ رویداد/ واقعه</string>
     <string name="period">دوره</string>
+
     <!-- RELATIONSHIPS -->
     <string name="next">بعدی</string>
     <string name="button_ok">تأیید</string>

@@ -293,7 +293,6 @@
     <string name="sms_empty_gateway">SMS inngangsport kan ikke være tom</string>
     <string name="granular_sync_enrollments_empty">Det er ingen registreringer å laste opp</string>
     <string name="granular_sync_unsupported_task">Denne konverteringsoppgaven er ikke støttet</string>
-    <string name="set_pin">Sett pin</string>
     <string name="conflict">Konflikt</string>
     <string name="change_event_date">Endre dato</string>
     <string name="go_back">Gå tilbake</string>

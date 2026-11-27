@@ -94,9 +94,6 @@
     <string name="every_12_hours">12 Jam</string>
     <string name="Manual">Manual</string>
     <string name="a_week">1 Minggu</string>
-    <string name="wipe_data_meesage">Database akan dihapus. Anda akan diminta masuk lagi</string>
-    <string name="wipe_data_ok">Terima</string>
-    <string name="wipe_data_no">batal</string>
     <string name="SYNC_DATA">Sinkronkan Data Sekarang</string>
     <string name="SYNC_META">Sinkronkan Konfigurasi Sekarang</string>
     <string name="SYNC_MANAGER">Setting</string>
@@ -213,7 +210,6 @@
     <string name="unique_warning">Nilai harus unik, kebetulan telah ditemukan. Itu belum disimpan. Tolong diperiksa.</string>
     <string name="please_wait">Mohon tunggu</string>
     <string name="skip">Lewati</string>
-    <string name="delete_local_data_message">Data yang belum tersinkron akan hilang. Apakah Anda akan melanjutkan?</string>
     <string name="delete_local_data_error">Data tidak dapat dihapus. Silakan coba lagi.</string>
     <string name="delete_local_data_done">Hapus data lokal berhasil diselesaikan.</string>
     <string name="resource_not_found">%s tidak ditemukan</string>
@@ -297,7 +293,6 @@
     <string name="sms_empty_gateway">Gerbang SMS tidak boleh kosong</string>
     <string name="granular_sync_enrollments_empty">Tidak ada pendaftaran untuk diunggah</string>
     <string name="granular_sync_unsupported_task">convertTask ini tidak didukung</string>
-    <string name="set_pin">Setel pin</string>
     <string name="conflict">Konflik</string>
     <string name="change_event_date">Ganti tanggal</string>
     <string name="go_back">Kembali</string>

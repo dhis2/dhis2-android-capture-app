@@ -109,9 +109,6 @@
     <string name="every_12_hours">12 часов</string>
     <string name="Manual">Вручную</string>
     <string name="a_week">1 неделя</string>
-    <string name="wipe_data_meesage">База данных будет удалена.Вам будет предложено войти в систему снова.</string>
-    <string name="wipe_data_ok">Принять</string>
-    <string name="wipe_data_no">Отмена</string>
     <string name="SYNC_DATA">СИНХРОНИЗИРОВАТЬ данные сейчас</string>
     <string name="SYNC_META">СИНХРОНИЗИРОВАТЬ конфигурацию сейчас</string>
     <string name="SYNC_MANAGER">Настройки</string>
@@ -230,7 +227,6 @@
     <string name="unique_warning">Значение должно быть уникальным, совпадение найдено. Оно не было сохранено. Пожалуйста, проверьте его.</string>
     <string name="please_wait">Пожалуйста, подождите</string>
     <string name="skip">Пропустить</string>
-    <string name="delete_local_data_message">Не синхронизированные данные будут потеряны. Вы действительно хотите продолжить?</string>
     <string name="delete_local_data_error">Данные не удалось удалить. Пожалуйста, повторите попытку.</string>
     <string name="delete_local_data_done">Удаление локальных данных успешно завершено.</string>
     <string name="resource_not_found">%s не найдено</string>
@@ -306,7 +302,6 @@
     <string name="filter_event_status_completed">Завершенный</string>
     <string name="filter_event_status_skipped">Пропущенный</string>
     <string name="granular_sync_enrollments_empty">Нет регистраций к загрузке</string>
-    <string name="set_pin">Установить пин</string>
     <string name="conflict">Конфликт</string>
     <string name="change_event_date">Изменить дату</string>
     <string name="go_back">Вернуться</string>
@@ -417,7 +412,7 @@
     <string name="filter_period_last_n_financial_years">Прошлых %d финансовых лет</string>
     <string name="section_feedback">Обратная связь</string>
     <string name="section_indicators">Индикаторы</string>
-    <string name="camera_permission_denied">Разрешение камеры запрещено.\nЧтобы использовать эту функцию, ее необходимо разрешить.</string>
+    <string name="camera_permission_denied">Разрешение камеры отклонено. Для использования этой функции необходимо включить ее.</string>
     <string name="section_charts_indicators">Диаграммы и индикаторы</string>
     <string name="take_photo">Сделать фото</string>
     <string name="break_glass_dialog_title">Данная программа защищена</string>
@@ -431,7 +426,6 @@
     <string name="edition_no_write_access">У Вас нет прав на редактирование этих данных</string>
     <string name="edition_no_catcombo_access">У вас нет прав на редактирование этих данных</string>
     <string name="error_tei_online_search_title">Онлайн поиск дал следующее сообщение:</string>
-    <string name="delete_account">Удалить аккаунт</string>
     <string name="main_menu_troubleshooting">Устранение неисправностей конфигурации</string>
     <string name="troubleshooting_language_title">Язык</string>
     <string name="troubleshooting_language_description">Нажмите здесь, чтобы изменить язык приложения</string>
@@ -441,7 +435,7 @@
     <string name="troubleshooting_pass_rule_validation">Предупреждения не найдены</string>
     <string name="troobleshooting_pass_rule_validation_title">Все выглядит великолепно</string>
     <string name="not_saved">Не сохранено</string>
-    <string name="review_message">Некоторые поля требуют Вашего внимания.\nХотите просмотреть форму\?</string>
+    <string name="review_message">Некоторые поля требуют Вашего внимания. Не хотите ли Вы просмотреть форму?</string>
     <string name="search_loading_more">Загрузка других результатов</string>
     <string name="search_no_results_in_program">Больше никаких результатов для %s</string>
     <string name="search_outside_action">Поиск за пределами этой программы</string>
@@ -455,10 +449,10 @@
     <string name="init_search">Начните поиск, чтобы найти любой %s</string>
     <string name="search_or_create">Вы можете найти или создать новый %s</string>
     <string name="missing_warning_fields_completed_events">У Вас есть несколько предупреждающих сообщений.</string>
-    <string name="missing_warning_fields_events">У Вас есть несколько предупреждающих сообщений.\nХотите ли Вы отметить эту форму как завершенную\?</string>
-    <string name="missing_error_fields_events">В некоторых полях есть ошибки, и они не сохраняются. \nВы хотите просмотреть форму\?</string>
+    <string name="missing_warning_fields_events">У Вас есть несколько предупреждений. Хотите ли Вы отметить эту форму как завершенную?</string>
+    <string name="missing_error_fields_events">В некоторых полях есть ошибки, и они не сохраняются.  Хотите ли Вы просмотреть форму?</string>
     <string name="event_can_be_completed">Хотите ли Вы отметить эту форму как завершенную?</string>
-    <string name="event_error_on_complete">У Вас есть несколько сообщений об ошибках.\nХотите просмотреть их\?</string>
+    <string name="event_error_on_complete">У Вас есть несколько сообщений об ошибках. Хотите ли Вы их просмотреть?</string>
     <string name="re_opened">Открыть заново</string>
     <string name="account_disable_title">Аккаунт дезактивирован</string>
     <string name="account_disable_message">Ваша учетная запись была отключена администратором.</string>
@@ -493,6 +487,7 @@
     <string name="download_now">Скачать сейчас</string>
     <string name="check_for_updates">Проверить наличие обновлений</string>
     <string name="no_updates">Новые обновления отсутствуют</string>
+    <string name="unknow_sources_denied">Разрешение на неизвестные источники отклонено. Для установки версии Вам необходимо включить его.</string>
     <string name="app_version">Версия приложения</string>
     <string name="error_applying_rule_effects">Что-то пошло не так в конфигурации программы, мы не можем загрузить это событие. Пожалуйста, свяжитесь с Вашим системным администратором.</string>
     <string name="dashboard_menu_delete_person">Удалить участника</string>
@@ -511,6 +506,7 @@
     <string name="sync_warning">Предупреждение по синхронизации</string>
     <string name="sync_error">Ошибка синхронизации</string>
     <string name="coordinates">Координаты</string>
+    <string name="no_data_access">У Вас нет доступа к данным. Свяжитесь с администратором.</string>
     <string name="sync_offline_check_connection">Похоже, что Вы не в сети. Пожалуйста, проверьте подключение</string>
     <string name="delete_tei_dialog_title">Удалить этот %s?</string>
     <string name="delete_tei_dialog_message">Этот %s и все его данные во всех программах будут удалены. Это действие нельзя отменить.</string>

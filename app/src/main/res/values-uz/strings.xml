@@ -96,9 +96,6 @@
     <string name="every_12_hours">12 соат</string>
     <string name="Manual">Қўлланма</string>
     <string name="a_week">1 ҳафта</string>
-    <string name="wipe_data_meesage">Маълумотлар базаси ўчирилади. Сиздан қайта кириш сўралади.</string>
-    <string name="wipe_data_ok">Қабул қилинг</string>
-    <string name="wipe_data_no">Бекор қилиш</string>
     <string name="SYNC_DATA">Маълумотларни синхронлаш, ҳозир</string>
     <string name="SYNC_META">Конфигурацияни синхронланг, ҳозир</string>
     <string name="SYNC_MANAGER">Созламалар</string>
@@ -215,7 +212,6 @@
     <string name="unique_warning">Қиймат ноёб бўлиши лозим, бир бирига ўхшаш топилди. У сақланмади. Илтимос, текшириб кўриш.</string>
     <string name="please_wait">Илтимос, кутинг</string>
     <string name="skip">Ўтказиб юбориш</string>
-    <string name="delete_local_data_message">Синхронизация қилинмаган маълумотлар йўқолади. Ҳақиқатдан ҳам давом эттиришни хохлайсизми?</string>
     <string name="delete_local_data_error">Маълумотларни ўчириб бўлмади. Илтимос, қайта уриниб кўринг. </string>
     <string name="delete_local_data_done">Локал маълумотларни ўчириш муваффақиятли якунланди.</string>
     <string name="resource_not_found">%s топилмади</string>
@@ -299,7 +295,6 @@
     <string name="sms_empty_gateway">СМС шлюз бўш бўлиши мумкин эмас</string>
     <string name="granular_sync_enrollments_empty">Юклаш учун қайд этилганлар йўқ</string>
     <string name="granular_sync_unsupported_task">Ушбу конвертация қилиш вазифаси қўллаб-қувватланмайди</string>
-    <string name="set_pin">ПИН кодни ўрнатинг</string>
     <string name="conflict">Номутаносиблик</string>
     <string name="change_event_date">Санани ўзгартириш</string>
     <string name="go_back">Орқага қайтинг</string>

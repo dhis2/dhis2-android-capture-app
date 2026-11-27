@@ -302,7 +302,6 @@
     <string name="sms_empty_gateway">ເສັ້ນທາງການນຳສົ່ງຂໍ້ຄວາມຕ້ອງບໍ່ຫວ່າງເປົ່າ</string>
     <string name="granular_sync_enrollments_empty">ບໍ່ມີການລົງທະບຽນທີ່ຈະອັບໂຫຼດ</string>
     <string name="granular_sync_unsupported_task">ຍັງບໍ່ມີການຮອງຮັບຫນ້າວຽກການແປງນີ້</string>
-    <string name="set_pin">ຕັ້ງລະຫັດຜ່ານ</string>
     <string name="conflict">ຂັດແຍ້ງ</string>
     <string name="change_event_date">ປ່ຽນວັນທີ</string>
     <string name="go_back">ກັບຄືນ</string>
