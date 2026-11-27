@@ -16,78 +16,55 @@
         android:layout_height="match_parent"
         android:animateLayoutChanges="true">
 
-        <androidx.drawerlayout.widget.DrawerLayout
-            android:id="@+id/main_drawer_layout"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/backdropLayout"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:background="?colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <!--Main Content-->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/filterRecycler"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/toolbarProgress"
+                tools:listitem="@layout/item_header_filter" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/backdropLayout"
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/backdropGuide"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="?colorPrimary">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/filterRecycler"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/toolbarProgress"
-                    tools:listitem="@layout/item_header_filter" />
-
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/backdropGuide"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    app:layout_constraintGuide_percent="0.75" />
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.75" />
 
 
-                <androidx.core.widget.ContentLoadingProgressBar
-                    android:id="@+id/toolbarProgress"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:indeterminate="true"
-                    android:padding="0dp"
-                    android:visibility="gone"
-                    app:layout_constraintTop_toTopOf="parent" />
+            <androidx.core.widget.ContentLoadingProgressBar
+                android:id="@+id/toolbarProgress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:padding="0dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <FrameLayout
-                    android:id="@+id/fragment_container"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:background="@drawable/ic_front_home_backdrop_bg"
-                    android:clipToPadding="false"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/toolbarProgress" />
+            <FrameLayout
+                android:id="@+id/fragment_container"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@drawable/ic_front_home_backdrop_bg"
+                android:clipToPadding="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/toolbarProgress" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <!--End of Main Content-->
-
-            <com.google.android.material.navigation.NavigationView
-                android:id="@+id/nav_view"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="start"
-                android:background="@color/bg_white_fdf"
-                app:headerLayout="@layout/header_menu"
-                app:itemIconTint="@color/icon_color_989"
-                app:itemMaxLines="2"
-                app:itemTextColor="@color/text_black_333"
-                app:menu="@menu/main_menu" />
-
-        </androidx.drawerlayout.widget.DrawerLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
