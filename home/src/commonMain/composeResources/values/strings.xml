@@ -3,7 +3,8 @@
     <string name="menu_home">Home</string>
     <string name="menu_import_shared_data">Import QR data</string>
     <string name="menu_settings">Settings</string>
-    <string name="menu_set_pin">Set pin</string>
+    <string name="menu_set_pin">Set PIN</string>
+    <string name="menu_manage_pin">Manage PIN</string>
     <string name="menu_log_out">Log out</string>
     <string name="menu_troubleshooting">Configuration Troubleshooting</string>
     <string name="menu_dev_options">Developer Options</string>

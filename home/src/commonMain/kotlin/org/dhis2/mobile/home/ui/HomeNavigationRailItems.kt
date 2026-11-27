@@ -15,6 +15,7 @@ import org.dhis2.mobile.home.resources.menu_dev_options
 import org.dhis2.mobile.home.resources.menu_home
 import org.dhis2.mobile.home.resources.menu_import_shared_data
 import org.dhis2.mobile.home.resources.menu_log_out
+import org.dhis2.mobile.home.resources.menu_manage_pin
 import org.dhis2.mobile.home.resources.menu_remove_account
 import org.dhis2.mobile.home.resources.menu_set_pin
 import org.dhis2.mobile.home.resources.menu_settings
@@ -55,11 +56,18 @@ sealed class HomeNavigationReelItem(
         MainDrawerNavigationGroup.ACTIONS,
     )
 
-    data object PinManagement : HomeNavigationReelItem(
-        DrawerIcon.Vector(Icons.Filled.Lock),
-        Res.string.menu_set_pin,
-        MainDrawerNavigationGroup.ACTIONS,
-    )
+    /**
+     * Locks the session, creating a PIN first if there is none.
+     *
+     * @param pinAlreadyCreated whether a PIN exists; the item then reads "Manage PIN".
+     */
+    data class PinManagement(
+        val pinAlreadyCreated: Boolean,
+    ) : HomeNavigationReelItem(
+            DrawerIcon.Vector(Icons.Filled.Lock),
+            if (pinAlreadyCreated) Res.string.menu_manage_pin else Res.string.menu_set_pin,
+            MainDrawerNavigationGroup.ACTIONS,
+        )
 
     data object Logout : HomeNavigationReelItem(
         DrawerIcon.Vector(Icons.AutoMirrored.Filled.ExitToApp),
@@ -97,13 +105,18 @@ sealed class HomeNavigationReelItem(
          *
          * @param displayDeveloperOptions whether to show [DeveloperOptions]; the legacy menu only
          *   shows it in debug builds and in the training flavour.
+         * @param pinAlreadyCreated whether the user has a PIN, which changes the
+         *   [PinManagement] label.
          */
-        fun list(displayDeveloperOptions: Boolean): List<HomeNavigationReelItem> =
+        fun list(
+            displayDeveloperOptions: Boolean,
+            pinAlreadyCreated: Boolean,
+        ): List<HomeNavigationReelItem> =
             buildList {
                 add(Home)
                 add(ImportSharedData)
                 add(Settings)
-                add(PinManagement)
+                add(PinManagement(pinAlreadyCreated))
                 add(Logout)
                 add(Troubleshooting)
                 if (displayDeveloperOptions) add(DeveloperOptions)

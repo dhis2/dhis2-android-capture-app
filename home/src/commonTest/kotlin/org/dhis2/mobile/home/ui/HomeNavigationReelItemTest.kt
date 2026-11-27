@@ -1,5 +1,8 @@
 package org.dhis2.mobile.home.ui
 
+import org.dhis2.mobile.home.resources.Res
+import org.dhis2.mobile.home.resources.menu_manage_pin
+import org.dhis2.mobile.home.resources.menu_set_pin
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -11,13 +14,13 @@ class HomeNavigationReelItemTest {
                 HomeNavigationReelItem.Home,
                 HomeNavigationReelItem.ImportSharedData,
                 HomeNavigationReelItem.Settings,
-                HomeNavigationReelItem.PinManagement,
+                HomeNavigationReelItem.PinManagement(pinAlreadyCreated = false),
                 HomeNavigationReelItem.Logout,
                 HomeNavigationReelItem.Troubleshooting,
                 HomeNavigationReelItem.About,
                 HomeNavigationReelItem.RemoveAccount,
             ),
-            HomeNavigationReelItem.list(displayDeveloperOptions = false),
+            HomeNavigationReelItem.list(displayDeveloperOptions = false, pinAlreadyCreated = false),
         )
     }
 
@@ -28,15 +31,21 @@ class HomeNavigationReelItemTest {
                 HomeNavigationReelItem.Home,
                 HomeNavigationReelItem.ImportSharedData,
                 HomeNavigationReelItem.Settings,
-                HomeNavigationReelItem.PinManagement,
+                HomeNavigationReelItem.PinManagement(pinAlreadyCreated = false),
                 HomeNavigationReelItem.Logout,
                 HomeNavigationReelItem.Troubleshooting,
                 HomeNavigationReelItem.DeveloperOptions,
                 HomeNavigationReelItem.About,
                 HomeNavigationReelItem.RemoveAccount,
             ),
-            HomeNavigationReelItem.list(displayDeveloperOptions = true),
+            HomeNavigationReelItem.list(displayDeveloperOptions = true, pinAlreadyCreated = false),
         )
+    }
+
+    @Test
+    fun `pin management reads set pin without a pin and manage pin with one`() {
+        assertEquals(Res.string.menu_set_pin, HomeNavigationReelItem.PinManagement(pinAlreadyCreated = false).label)
+        assertEquals(Res.string.menu_manage_pin, HomeNavigationReelItem.PinManagement(pinAlreadyCreated = true).label)
     }
 
     @Test
