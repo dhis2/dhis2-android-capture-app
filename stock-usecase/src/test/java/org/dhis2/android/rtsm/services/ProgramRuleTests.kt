@@ -19,6 +19,7 @@ import org.hisp.dhis.rules.models.RuleValueType
 import org.hisp.dhis.rules.models.RuleVariable
 import org.hisp.dhis.rules.models.RuleVariableCurrentEvent
 import org.hisp.dhis.rules.models.RuleVariablePreviousEvent
+import org.hisp.dhis.rules.models.TriggerEnvironment
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -82,6 +83,7 @@ class ProgramRuleTests {
             rulesVariables,
             RuleSupplementaryData(),
             emptyMap(),
+            TriggerEnvironment.ANDROIDCLIENT,
         )
     }
 
@@ -263,6 +265,7 @@ class ProgramRuleTests {
                             fieldType = RuleValueType.NUMERIC,
                         ),
                     ),
+                environment = TriggerEnvironment.ANDROIDCLIENT,
             )
 
         // Evaluate the Android and Web events

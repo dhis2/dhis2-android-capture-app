@@ -9,6 +9,7 @@ import org.hisp.dhis.rules.api.RuleEngineContext
 import org.hisp.dhis.rules.models.RuleEffect
 import org.hisp.dhis.rules.models.RuleEnrollment
 import org.hisp.dhis.rules.models.RuleEvent
+import org.hisp.dhis.rules.models.TriggerEnvironment
 
 class RuleEngineHelper(
     private val evaluationType: EvaluationType,
@@ -86,6 +87,7 @@ class RuleEngineHelper(
                                 ruleVariables = ruleVariables.await(),
                                 ruleSupplementaryData = supplData.await(),
                                 constantsValues = constants.await(),
+                                environment = TriggerEnvironment.ANDROIDCLIENT,
                             ),
                         ruleEnrollment = ruleEnrollment.await(),
                         ruleEvents = ruleEvents.await(),

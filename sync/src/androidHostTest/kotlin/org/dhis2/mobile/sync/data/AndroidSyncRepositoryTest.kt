@@ -13,6 +13,7 @@ import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.mobile.commons.error.DomainErrorMapper
 import org.dhis2.mobile.commons.providers.PreferenceProvider
 import org.dhis2.mobile.commons.reporting.AnalyticActions
+import org.dhis2.mobile.commons.resources.UserLanguageCache
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.call.BaseD2Progress
 import org.hisp.dhis.android.core.fileresource.FileResourceDomainType
@@ -32,12 +33,14 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class AndroidSyncRepositoryTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val preferences: PreferenceProvider = mock()
     private val analyticsHelper: AnalyticActions = mock()
     private val domainErrorMapper: DomainErrorMapper = mock()
+    private val userLanguageCache: UserLanguageCache = mock()
 
     private val testDispatcher = StandardTestDispatcher()
 
@@ -47,6 +50,7 @@ class AndroidSyncRepositoryTest {
             preferences = preferences,
             analyticsHelper = analyticsHelper,
             domainErrorMapper = domainErrorMapper,
+            userLanguageCache = userLanguageCache,
             dispatcher =
                 Dispatcher(
                     testDispatcher,
@@ -209,5 +213,30 @@ class AndroidSyncRepositoryTest {
 
             // WHEN & THEN
             assertFalse(repository.isServerAvailable("SYNC_DATA"))
+        }
+
+    @Test
+    fun `Should refresh the cached user language after a metadata sync`() =
+        runTest {
+            // GIVEN - the UI language comes with the user settings in the metadata
+            whenever(d2.metadataModule().download()) doReturn Observable.empty()
+
+            // WHEN
+            val result = repository.syncMetadata {}
+
+            // THEN - the next screen reads the new language without touching the database
+            assertTrue(result.isSuccess)
+            verify(userLanguageCache).refresh()
+        }
+
+    @Test
+    fun `Should not fail the metadata sync if the user language cannot be refreshed`() =
+        runTest {
+            // GIVEN
+            whenever(d2.metadataModule().download()) doReturn Observable.empty()
+            whenever(userLanguageCache.refresh()).thenAnswer { throw IllegalStateException("no database") }
+
+            // WHEN & THEN - the cache keeps its last value; the sync itself succeeded
+            assertTrue(repository.syncMetadata {}.isSuccess)
         }
 }

@@ -7,6 +7,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
+import org.hisp.dhis.android.core.maintenance.D2Error
 import org.jetbrains.compose.resources.getString
 
 internal class ValueParserImpl(
@@ -60,8 +61,13 @@ internal class ValueParserImpl(
                 .type(FeatureType.POINT)
                 .build()
 
-        return GeometryHelper.getPoint(geometry).let {
-            "Lat: ${it[1]}\nLong: ${it[0]}"
+        // Only points have a Lat/Long label; polygons and multipolygons are shown as stored.
+        return try {
+            GeometryHelper.getPoint(geometry).let {
+                "Lat: ${it[1]}\nLong: ${it[0]}"
+            }
+        } catch (_: D2Error) {
+            value
         }
     }
 
