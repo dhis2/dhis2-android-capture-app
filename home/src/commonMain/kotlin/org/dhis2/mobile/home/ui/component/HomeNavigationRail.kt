@@ -57,6 +57,7 @@ fun homeNavigationRailItemTestTag(item: HomeNavigationReelItem): String = "HOME_
  * Navigation menu of the home screen, shown as a modal wide navigation rail that is hidden while
  * collapsed. It is used on every window size, phones and tablets alike.
  *
+ * @param pinAlreadyCreated whether the user has a PIN; the PIN item then reads "Manage PIN".
  * @param selectedItem the item to mark as selected, or null for none. It is controlled by the
  *   caller because the current screen can also change without going through this menu.
  * @param onItemSelected called when an item is clicked; the rail collapses afterwards.
@@ -66,6 +67,7 @@ fun ModalHomeNavigationRail(
     serverName: String,
     userName: String,
     displayDeveloperOptions: Boolean,
+    pinAlreadyCreated: Boolean,
     selectedItem: HomeNavigationReelItem?,
     state: WideNavigationRailState = rememberWideNavigationRailState(),
     onItemSelected: (HomeNavigationReelItem) -> Unit,
@@ -95,6 +97,7 @@ fun ModalHomeNavigationRail(
         ) {
             HomeNavigationRailItems(
                 displayDeveloperOptions = displayDeveloperOptions,
+                pinAlreadyCreated = pinAlreadyCreated,
                 selectedItem = selectedItem,
                 onItemSelected = { item ->
                     onItemSelected(item)
@@ -118,12 +121,14 @@ private fun homeNavigationRailColors(): WideNavigationRailColors =
 @Composable
 private fun HomeNavigationRailItems(
     displayDeveloperOptions: Boolean,
+    pinAlreadyCreated: Boolean,
     selectedItem: HomeNavigationReelItem?,
     onItemSelected: (HomeNavigationReelItem) -> Unit,
 ) {
     val items =
         HomeNavigationReelItem.list(
             displayDeveloperOptions = displayDeveloperOptions,
+            pinAlreadyCreated = pinAlreadyCreated,
         )
     items.forEachIndexed { index, item ->
         val selected = item == selectedItem
@@ -294,6 +299,7 @@ private fun HomeNavigationRailContentPreview() {
             Spacer(Modifier.size(WideNavigationRailHeaderSpace))
             HomeNavigationRailItems(
                 displayDeveloperOptions = true,
+                pinAlreadyCreated = true,
                 selectedItem = HomeNavigationReelItem.Home,
                 onItemSelected = {},
             )
