@@ -235,7 +235,11 @@ class SearchTETest : BaseTest() {
             )
 
             // ANDROAPP-4834: each field's X erases its value
-            clickOnEachFieldResetButton()
+            clickOnEachFieldResetButton(
+                TB_SEARCH_ATTR_CITY,
+                TB_SEARCH_ATTR_STATE,
+                TB_SEARCH_ATTR_TB_NUMBER,
+            )
             closeKeyboard()
             checkSearchParameterIsEmpty(TB_SEARCH_ATTR_CITY, TB_SEARCH_CITY_SHORT)
             checkSearchParameterIsEmpty(TB_SEARCH_ATTR_STATE, TB_SEARCH_CITY_SHORT)
