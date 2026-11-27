@@ -42,6 +42,7 @@ class FormRepositoryImpl(
 ) : FormRepository {
     private var completionPercentage: Float = 0f
     private val itemsWithError: MutableList<RowAction> = mutableListOf()
+    private val invalidatedFieldErrors: MutableMap<String, String> = mutableMapOf()
     private val mandatoryItemsWithoutValue: MutableMap<String, String> = mutableMapOf()
     private var mandatoryFieldUids: Set<String> = emptySet()
     private var openedSectionUid: String? = null
@@ -57,6 +58,7 @@ class FormRepositoryImpl(
         dataEntryRepository.disableCollapsableSections()
 
     override suspend fun fetchFormItems(shouldOpenErrorLocation: Boolean): List<FieldUiModel> {
+        invalidatedFieldErrors.putAll(formValueStore.recoverInvalidAttributeOptionCombo())
         itemList = dataEntryRepository.list().blockingFirst() ?: emptyList()
         openedSectionUid = getInitialOpenedSection(shouldOpenErrorLocation)
         backupList = itemList
@@ -79,6 +81,7 @@ class FormRepositoryImpl(
     override suspend fun composeList(skipProgramRules: Boolean): List<FieldUiModel> =
         itemList
             .applyRuleEffects(skipProgramRules)
+            .withInvalidatedFieldErrors()
             .mergeListWithErrorFields(itemsWithError)
             .also {
                 calculateCompletionPercentage(it)
@@ -843,9 +846,24 @@ class FormRepositoryImpl(
             return StoreResult(id, ValueStoreResult.VALUE_HAS_NOT_CHANGED)
         }
         val result = formValueStore.save(id, value, extraData)
+        if (result.valueStoreResult == ValueStoreResult.VALUE_CHANGED) {
+            invalidatedFieldErrors.remove(id)
+            if (id == EventRepository.EVENT_REPORT_DATE_UID || id == EventRepository.EVENT_ORG_UNIT_UID) {
+                invalidatedFieldErrors.keys.removeAll { it.startsWith(EventRepository.EVENT_CATEGORY_COMBO_UID) }
+            }
+        }
+        invalidatedFieldErrors.putAll(result.invalidatedFieldErrors)
         if (result.contextDataChanged()) ruleEngineRepository?.refreshContext()
         return result
     }
+
+    private fun List<FieldUiModel>.withInvalidatedFieldErrors(): List<FieldUiModel> =
+        map { item ->
+            invalidatedFieldErrors[item.uid]
+                ?.takeIf { item.value.isNullOrEmpty() }
+                ?.let { error -> item.setError(error) }
+                ?: item
+        }
 
     override fun storeFile(
         id: String,

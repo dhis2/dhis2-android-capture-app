@@ -36,6 +36,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.mockito.kotlin.wheneverBlocking
 import java.util.Date
 
 class FormRepositoryIntegrationTest {
@@ -76,6 +77,7 @@ class FormRepositoryIntegrationTest {
 
     @Before
     fun setUp() {
+        wheneverBlocking { formValueStore.recoverInvalidAttributeOptionCombo() } doReturn emptyMap()
         whenever(conf.sections()) doReturn emptyList()
         val programAttribute: ProgramTrackedEntityAttribute =
             mock {

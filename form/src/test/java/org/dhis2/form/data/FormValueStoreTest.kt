@@ -1,11 +1,13 @@
 package org.dhis2.form.data
 
+import kotlinx.coroutines.test.runTest
 import okio.Path
 import okio.Path.Companion.toPath
 import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.extensions.toDate
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.form.R
 import org.dhis2.form.model.EnrollmentDetail
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.model.ValueStoreResult.VALUE_CHANGED
@@ -13,6 +15,10 @@ import org.dhis2.form.model.ValueStoreResult.VALUE_NOT_UNIQUE
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.ResourceContext
+import org.hisp.dhis.android.core.category.CategoryOption
+import org.hisp.dhis.android.core.category.CategoryOptionCombo
+import org.hisp.dhis.android.core.common.Access
+import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
@@ -20,6 +26,8 @@ import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.event.EventEditableStatus
+import org.hisp.dhis.android.core.event.EventNonEditableReason
 import org.hisp.dhis.android.core.event.EventObjectRepository
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
@@ -42,9 +50,13 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
+import org.mockito.kotlin.wheneverBlocking
+import java.util.Date
+import java.util.GregorianCalendar
 
 class FormValueStoreTest {
     private lateinit var attrValueStore: FormValueStore
@@ -1471,6 +1483,194 @@ class FormValueStoreTest {
         assertEquals(result.valueStoreResult, ValueStoreResult.VALUE_HAS_NOT_CHANGED)
     }
 
+    @Test
+    fun `should clear the attribute option combo when the new report date is outside an option range`() {
+        givenEventAttributeOptionCombo(
+            eventDate = date(2025, 6, 1),
+            option = categoryOption(startDate = date(2026, 1, 1), endDate = date(2026, 12, 31)),
+        )
+        whenever(
+            resourceManager.getString(
+                R.string.event_category_option_not_valid_for_date,
+                OPTION_NAME,
+            ),
+        ) doReturn DATE_ERROR
+
+        val result = deValueStore.save(EventRepository.EVENT_REPORT_DATE_UID, "2025-06-01", null)
+
+        verify(eventRepository).setAttributeOptionComboUid(null)
+        assertEquals(VALUE_CHANGED, result.valueStoreResult)
+        assertEquals(mapOf(CATEGORY_COMBO_FIELD_UID to DATE_ERROR), result.invalidatedFieldErrors)
+    }
+
+    @Test
+    fun `should keep the attribute option combo when the new report date is inside the option range`() {
+        givenEventAttributeOptionCombo(
+            eventDate = date(2026, 6, 1),
+            option = categoryOption(startDate = date(2026, 1, 1), endDate = date(2026, 12, 31)),
+        )
+
+        val result = deValueStore.save(EventRepository.EVENT_REPORT_DATE_UID, "2026-06-01", null)
+
+        verify(eventRepository, never()).setAttributeOptionComboUid(null)
+        assertTrue(result.invalidatedFieldErrors.isEmpty())
+    }
+
+    @Test
+    fun `should clear the attribute option combo when the new org unit does not have the option`() {
+        givenEventAttributeOptionCombo(
+            orgUnitUid = "otherOrgUnitUid",
+            option = categoryOption(orgUnits = listOf(ObjectWithUid.create("orgUnitUid"))),
+        )
+        whenever(
+            resourceManager.getString(R.string.category_option_not_in_org_unit, OPTION_NAME),
+        ) doReturn ORG_UNIT_ERROR
+
+        val result = deValueStore.save(EventRepository.EVENT_ORG_UNIT_UID, "otherOrgUnitUid", null)
+
+        verify(eventRepository).setAttributeOptionComboUid(null)
+        assertEquals(
+            mapOf(CATEGORY_COMBO_FIELD_UID to ORG_UNIT_ERROR),
+            result.invalidatedFieldErrors,
+        )
+    }
+
+    @Test
+    fun `should keep the attribute option combo when the user only lacks write access to the option`() {
+        givenEventAttributeOptionCombo(
+            eventDate = date(2026, 6, 1),
+            option = categoryOption(canWrite = false),
+        )
+
+        val result = deValueStore.save(EventRepository.EVENT_REPORT_DATE_UID, "2026-06-01", null)
+
+        verify(eventRepository, never()).setAttributeOptionComboUid(null)
+        assertTrue(result.invalidatedFieldErrors.isEmpty())
+    }
+
+    @Test
+    fun `should report every reason when the options fail both the date and the org unit`() {
+        givenEventAttributeOptionCombo(
+            eventDate = date(2025, 6, 1),
+            orgUnitUid = "otherOrgUnitUid",
+            option =
+                categoryOption(
+                    startDate = date(2026, 1, 1),
+                    orgUnits = listOf(ObjectWithUid.create("orgUnitUid")),
+                ),
+        )
+        givenCategoryOptionErrors()
+
+        val result = deValueStore.save(EventRepository.EVENT_REPORT_DATE_UID, "2025-06-01", null)
+
+        assertEquals(
+            mapOf(CATEGORY_COMBO_FIELD_UID to "$DATE_ERROR\n$ORG_UNIT_ERROR"),
+            result.invalidatedFieldErrors,
+        )
+    }
+
+    @Test
+    fun `should recover an event locked by an attribute option combo that is no longer valid`() =
+        runTest {
+            givenEventAttributeOptionCombo(
+                eventDate = date(2025, 6, 1),
+                option = categoryOption(startDate = date(2026, 1, 1)),
+            )
+            givenCategoryOptionErrors()
+            givenEditableStatus(
+                EventEditableStatus.NonEditable(EventNonEditableReason.NO_CATEGORY_COMBO_ACCESS),
+            )
+
+            val errors = deValueStore.recoverInvalidAttributeOptionCombo()
+
+            verify(eventRepository).setAttributeOptionComboUid(null)
+            assertEquals(mapOf(CATEGORY_COMBO_FIELD_UID to DATE_ERROR), errors)
+        }
+
+    @Test
+    fun `should not recover an event that is locked for another reason`() =
+        runTest {
+            givenEventAttributeOptionCombo(
+                eventDate = date(2025, 6, 1),
+                option = categoryOption(startDate = date(2026, 1, 1)),
+            )
+            givenEditableStatus(EventEditableStatus.NonEditable(EventNonEditableReason.EXPIRED))
+
+            val errors = deValueStore.recoverInvalidAttributeOptionCombo()
+
+            verify(eventRepository, never()).setAttributeOptionComboUid(null)
+            assertTrue(errors.isEmpty())
+        }
+
+    private fun givenCategoryOptionErrors() {
+        whenever(
+            resourceManager.getString(R.string.event_category_option_not_valid_for_date, OPTION_NAME),
+        ) doReturn DATE_ERROR
+        whenever(
+            resourceManager.getString(R.string.category_option_not_in_org_unit, OPTION_NAME),
+        ) doReturn ORG_UNIT_ERROR
+    }
+
+    private fun givenEditableStatus(status: EventEditableStatus) {
+        wheneverBlocking {
+            d2.eventModule().eventService().suspendGetEditableStatus("recordUid")
+        } doReturn status
+    }
+
+    private fun givenEventAttributeOptionCombo(
+        option: CategoryOption,
+        eventDate: Date? = null,
+        orgUnitUid: String = "orgUnitUid",
+    ) {
+        val event: Event =
+            mock {
+                on { attributeOptionCombo() } doReturn AOC_UID
+                on { eventDate() } doReturn eventDate
+                on { organisationUnit() } doReturn orgUnitUid
+            }
+        wheneverBlocking { eventRepository.suspendGet() } doReturn event
+        val attributeOptionCombo: CategoryOptionCombo =
+            mock {
+                on { categoryCombo() } doReturn ObjectWithUid.create(CATEGORY_COMBO_UID)
+            }
+        wheneverBlocking {
+            d2
+                .categoryModule()
+                .categoryOptionCombos()
+                .uid(AOC_UID)
+                .suspendGet()
+        } doReturn attributeOptionCombo
+        wheneverBlocking {
+            d2
+                .categoryModule()
+                .categoryOptions()
+                .withOrganisationUnits()
+                .byCategoryOptionComboUid(AOC_UID)
+                .suspendGet()
+        } doReturn listOf(option)
+    }
+
+    private fun categoryOption(
+        startDate: Date? = null,
+        endDate: Date? = null,
+        orgUnits: List<ObjectWithUid>? = null,
+        canWrite: Boolean = true,
+    ): CategoryOption =
+        mock {
+            on { uid() } doReturn "optionUid"
+            on { displayName() } doReturn OPTION_NAME
+            on { startDate() } doReturn startDate
+            on { endDate() } doReturn endDate
+            on { organisationUnits() } doReturn orgUnits
+            on { access() } doReturn Access(true, canWrite, DataAccess(true, canWrite))
+        }
+
+    private fun date(
+        year: Int,
+        month: Int,
+        day: Int,
+    ): Date = GregorianCalendar(year, month - 1, day).time
+
     private fun mockGetCategoryOptionComboUid(
         categoryComboUid: String,
         categoryOptionsUids: List<String>,
@@ -1568,4 +1768,14 @@ class FormValueStoreTest {
                 .value("uniqueValue")
                 .build(),
         )
+
+    companion object {
+        const val AOC_UID = "aocUid"
+        const val CATEGORY_COMBO_UID = "categoryComboUid"
+        const val CATEGORY_COMBO_FIELD_UID =
+            "${EventRepository.EVENT_CATEGORY_COMBO_UID}-$CATEGORY_COMBO_UID"
+        const val OPTION_NAME = "Index"
+        const val DATE_ERROR = "Index is not valid for the event date"
+        const val ORG_UNIT_ERROR = "Index is not available in the selected org unit"
+    }
 }

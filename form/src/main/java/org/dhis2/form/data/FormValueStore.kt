@@ -1,6 +1,7 @@
 package org.dhis2.form.data
 
 import io.reactivex.Flowable
+import kotlinx.coroutines.runBlocking
 import okio.Path.Companion.toPath
 import org.dhis2.bindings.blockingSetCheck
 import org.dhis2.bindings.withValueTypeCheck
@@ -17,6 +18,10 @@ import org.dhis2.form.data.EventRepository.Companion.EVENT_REPORT_DATE_UID
 import org.dhis2.form.model.EnrollmentDetail
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.mobile.commons.category.data.toDomain
+import org.dhis2.mobile.commons.category.data.toLocalDate
+import org.dhis2.mobile.commons.category.domain.isAvailableIn
+import org.dhis2.mobile.commons.category.domain.isValidOn
 import org.dhis2.mobile.commons.files.deleteStagedFile
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
@@ -25,6 +30,8 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
+import org.hisp.dhis.android.core.event.EventEditableStatus
+import org.hisp.dhis.android.core.event.EventNonEditableReason
 import org.hisp.dhis.android.core.event.EventObjectRepository
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.maintenance.D2Error
@@ -76,6 +83,7 @@ class FormValueStore(
                         StoreResult(
                             EVENT_REPORT_DATE_UID,
                             ValueStoreResult.VALUE_CHANGED,
+                            invalidatedFieldErrors = runBlocking { clearInvalidAttributeOptionCombo() },
                         )
                     } ?: StoreResult(
                         EVENT_REPORT_DATE_UID,
@@ -92,6 +100,7 @@ class FormValueStore(
                         StoreResult(
                             EVENT_ORG_UNIT_UID,
                             ValueStoreResult.VALUE_CHANGED,
+                            invalidatedFieldErrors = runBlocking { clearInvalidAttributeOptionCombo() },
                         )
                     } ?: StoreResult(
                         EVENT_ORG_UNIT_UID,
@@ -113,6 +122,65 @@ class FormValueStore(
                 }
             }
         }
+
+    private suspend fun clearInvalidAttributeOptionCombo(): Map<String, String> {
+        val event = eventRepository?.suspendGet() ?: return emptyMap()
+        val attributeOptionComboUid = event.attributeOptionCombo() ?: return emptyMap()
+        val categoryComboUid =
+            d2
+                .categoryModule()
+                .categoryOptionCombos()
+                .uid(attributeOptionComboUid)
+                .suspendGet()
+                ?.categoryCombo()
+                ?.uid() ?: return emptyMap()
+        val options =
+            d2
+                .categoryModule()
+                .categoryOptions()
+                .withOrganisationUnits()
+                .byCategoryOptionComboUid(attributeOptionComboUid)
+                .suspendGet()
+                .map { it.toDomain() }
+        val eventDate = event.eventDate()?.toLocalDate()
+        val outOfDateRange = options.filterNot { it.isValidOn(eventDate) }
+        val notInOrgUnit = options.filterNot { it.isAvailableIn(event.organisationUnit()) }
+
+        val errors =
+            listOfNotNull(
+                outOfDateRange.takeIf { it.isNotEmpty() }?.let { invalidOptions ->
+                    resourceManager.getString(
+                        R.string.event_category_option_not_valid_for_date,
+                        invalidOptions.joinToString(", ") { it.name },
+                    )
+                },
+                notInOrgUnit.takeIf { it.isNotEmpty() }?.let { invalidOptions ->
+                    resourceManager.getString(
+                        R.string.category_option_not_in_org_unit,
+                        invalidOptions.joinToString(", ") { it.name },
+                    )
+                },
+            )
+        if (errors.isEmpty()) return emptyMap()
+        eventRepository.setAttributeOptionComboUid(null)
+        return mapOf("$EVENT_CATEGORY_COMBO_UID-$categoryComboUid" to errors.joinToString("\n"))
+    }
+
+    /**
+     * Clears the attribute option combo of an event that is locked only because its category
+     * options are no longer valid for its date or org unit, so the user can select new ones.
+     * Events locked for any other reason are left untouched.
+     *
+     * @return the errors to show on the category combo field, by field uid.
+     */
+    suspend fun recoverInvalidAttributeOptionCombo(): Map<String, String> {
+        if (entryMode != EntryMode.DE) return emptyMap()
+        val status = d2.eventModule().eventService().suspendGetEditableStatus(recordUid)
+        val lockedByCategoryCombo =
+            (status as? EventEditableStatus.NonEditable)?.reason ==
+                EventNonEditableReason.NO_CATEGORY_COMBO_ACCESS
+        return if (lockedByCategoryCombo) clearInvalidAttributeOptionCombo() else emptyMap()
+    }
 
     fun eventState(): EventStatus? =
         d2

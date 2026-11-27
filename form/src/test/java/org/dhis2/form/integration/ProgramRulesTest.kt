@@ -61,7 +61,10 @@ class ProgramRulesTest {
 
     private val d2: D2 = mock()
     private val optionRepository: OptionsRepository = mock()
-    private val formValueStore: FormValueStore = mock()
+    private val formValueStore: FormValueStore =
+        mock {
+            onBlocking { recoverInvalidAttributeOptionCombo() } doReturn emptyMap()
+        }
 
     private val ruleEngineHelper: RuleEngineHelper = mock()
     private val rulesUtilsProvider: RulesUtilsProvider =

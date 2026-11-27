@@ -31,6 +31,7 @@ import org.hisp.dhis.rules.models.RuleAction
 import org.hisp.dhis.rules.models.RuleEffect
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
@@ -64,6 +65,7 @@ class FormRepositoryImplTest {
     fun setUp(): Unit =
         runBlocking {
             whenever(dataEntryRepository.disableCollapsableSections()) doReturn null
+            whenever(formValueStore.recoverInvalidAttributeOptionCombo()) doReturn emptyMap()
             whenever(dataEntryRepository.firstSectionToOpen()) doReturn mockedSections().first()
             whenever(dataEntryRepository.sectionUids()) doReturn Flowable.just(mockedSections())
             whenever(dataEntryRepository.list()) doReturn Flowable.just(provideItemList())
@@ -567,6 +569,89 @@ class FormRepositoryImplTest {
             ) doReturn Flowable.just(provideMandatoryListWithCategoryCombo("option1,expiredOption"))
             repository.fetchFormItems()
             assertTrue(repository.runDataIntegrityCheck(false) is MissingMandatoryResult)
+        }
+
+    @Test
+    fun `Should show why the category combo was cleared until a new combo is saved`() =
+        runBlocking {
+            val categoryComboUid = "EVENT_CATEGORY_COMBO_UID-uid001"
+            val error = "Index is not valid for the event date"
+            // Given a report date change that clears the category combo
+            val dateChangeResult =
+                StoreResult(
+                    EventRepository.EVENT_REPORT_DATE_UID,
+                    ValueStoreResult.VALUE_CHANGED,
+                    invalidatedFieldErrors = mapOf(categoryComboUid to error),
+                )
+            whenever(
+                formValueStore.save(EventRepository.EVENT_REPORT_DATE_UID, "2025-06-01", null),
+            ) doReturn dateChangeResult
+            whenever(dataEntryRepository.list()) doReturn
+                Flowable.just(provideMandatoryListWithCategoryCombo(""))
+
+            repository.save(EventRepository.EVENT_REPORT_DATE_UID, "2025-06-01", null)
+            val clearedList = repository.fetchFormItems()
+
+            // Then the category combo shows why and the event can't be completed
+            assertEquals(error, clearedList.find { it.uid == categoryComboUid }?.error)
+            assertTrue(repository.runDataIntegrityCheck(false) is MissingMandatoryResult)
+
+            // When the user saves a new combo
+            val comboResult = StoreResult(categoryComboUid, ValueStoreResult.VALUE_CHANGED)
+            whenever(formValueStore.save(categoryComboUid, "option1,option2", null)) doReturn comboResult
+            whenever(
+                dataEntryRepository.list(),
+            ) doReturn Flowable.just(provideMandatoryListWithCategoryCombo("option1,option2"))
+
+            repository.save(categoryComboUid, "option1,option2", null)
+            val updatedList = repository.fetchFormItems()
+
+            // Then the error is gone
+            assertNull(updatedList.find { it.uid == categoryComboUid }?.error)
+            assertTrue(repository.runDataIntegrityCheck(false) is SuccessfulResult)
+        }
+
+    @Test
+    fun `Should remove the category combo error when the report date is changed again`() =
+        runBlocking {
+            val categoryComboUid = "EVENT_CATEGORY_COMBO_UID-uid001"
+            val invalidDateResult =
+                StoreResult(
+                    EventRepository.EVENT_REPORT_DATE_UID,
+                    ValueStoreResult.VALUE_CHANGED,
+                    invalidatedFieldErrors = mapOf(categoryComboUid to "Index is not valid for the event date"),
+                )
+            val validDateResult =
+                StoreResult(EventRepository.EVENT_REPORT_DATE_UID, ValueStoreResult.VALUE_CHANGED)
+            whenever(
+                formValueStore.save(EventRepository.EVENT_REPORT_DATE_UID, "2025-06-01", null),
+            ) doReturn invalidDateResult
+            whenever(
+                formValueStore.save(EventRepository.EVENT_REPORT_DATE_UID, "2026-06-01", null),
+            ) doReturn validDateResult
+            whenever(dataEntryRepository.list()) doReturn
+                Flowable.just(provideMandatoryListWithCategoryCombo(""))
+
+            repository.save(EventRepository.EVENT_REPORT_DATE_UID, "2025-06-01", null)
+            repository.save(EventRepository.EVENT_REPORT_DATE_UID, "2026-06-01", null)
+            val list = repository.fetchFormItems()
+
+            assertNull(list.find { it.uid == categoryComboUid }?.error)
+        }
+
+    @Test
+    fun `Should show why the category combo was cleared when opening a locked event`() =
+        runBlocking {
+            val categoryComboUid = "EVENT_CATEGORY_COMBO_UID-uid001"
+            val error = "Index is not valid for the event date"
+            whenever(formValueStore.recoverInvalidAttributeOptionCombo()) doReturn
+                mapOf(categoryComboUid to error)
+            whenever(dataEntryRepository.list()) doReturn
+                Flowable.just(provideMandatoryListWithCategoryCombo(""))
+
+            val list = repository.fetchFormItems()
+
+            assertEquals(error, list.find { it.uid == categoryComboUid }?.error)
         }
 
     @Test

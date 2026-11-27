@@ -60,6 +60,8 @@ class EventCaptureFormFragment :
                         activity.showProgress()
                     } else {
                         activity.hideProgress()
+                        // Loading the form can unlock an event with an invalid attribute option combo
+                        presenter.showOrHideSaveButton()
                     }
                 }.onItemChangeListener { action: RowAction ->
                     if (action.isEventDetailsRow) {

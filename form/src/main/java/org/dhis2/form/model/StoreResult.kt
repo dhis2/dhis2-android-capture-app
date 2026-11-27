@@ -14,6 +14,7 @@ data class StoreResult(
     val uid: String,
     val valueStoreResult: ValueStoreResult? = null,
     val valueStoreResultMessage: String? = null,
+    val invalidatedFieldErrors: Map<String, String> = emptyMap(),
 ) {
     fun contextDataChanged() =
         uid in
