@@ -11,6 +11,8 @@ import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.FailureHandler
 import androidx.test.espresso.IdlingResourceTimeoutException
@@ -63,6 +65,21 @@ open class BaseRobot {
             // Ignore keyboard close failures during cleanup
             // This can happen if the activity is already finishing or doesn't have focus
         }
+    }
+
+    fun isKeyboardVisible(): Boolean {
+        var visible = false
+        getInstrumentation().runOnMainSync {
+            val decorView = ActivityLifecycleMonitorRegistry.getInstance()
+                .getActivitiesInStage(Stage.RESUMED)
+                .firstOrNull()
+                ?.window
+                ?.decorView
+            visible = decorView
+                ?.let { ViewCompat.getRootWindowInsets(it) }
+                ?.isVisible(WindowInsetsCompat.Type.ime()) == true
+        }
+        return visible
     }
 
     fun itemWithTextIsDisplayed(

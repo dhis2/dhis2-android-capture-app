@@ -17,7 +17,6 @@ import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso.onView
@@ -191,8 +190,9 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         scrollToSearchParameter(label)
         composeTestRule.waitUntilAtLeastOneExists(hasText(label), TIMEOUT)
         composeTestRule.onNodeWithText(label).performClick()
-        composeTestRule.waitUntilAtLeastOneExists(hasTestTag(fieldTag), TIMEOUT)
-        composeTestRule.onAllNodesWithTag(fieldTag).onLast().performTextInput(value)
+        val field = hasTestTag(fieldTag) and hasAnyAncestor(openInput(label, fieldTag.removeSuffix("_FIELD")))
+        scrollUntilExists(label, field, useUnmergedTree = true)
+        composeTestRule.onNode(field, useUnmergedTree = true).performTextInput(value)
     }
 
     // Exact match on an editable node, so the label and the search bar can't satisfy it
@@ -258,23 +258,21 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithText(buttonText).performClick()
     }
 
-    @OptIn(ExperimentalTestApi::class)
-    fun clickOnEachFieldResetButton() {
+    fun clickOnEachFieldResetButton(vararg fieldLabels: String) {
         closeKeyboard()
         composeTestRule.waitForIdle()
-        val count = composeTestRule
-            .onAllNodesWithTag("INPUT_TEXT_RESET_BUTTON", useUnmergedTree = true)
-            .fetchSemanticsNodes().size
-        repeat(count) {
-            composeTestRule.waitForIdle()
-            composeTestRule
-                .onAllNodesWithTag("INPUT_TEXT_RESET_BUTTON", useUnmergedTree = true)[0]
-                .performScrollTo()
-                .performClick()
+        fieldLabels.forEach { label ->
+            val resetButton =
+                hasTestTag("INPUT_TEXT_RESET_BUTTON") and hasAnyAncestor(openInput(label))
+            scrollUntilExists(label, resetButton, useUnmergedTree = true)
+            composeTestRule.onNode(resetButton, useUnmergedTree = true).performClick()
             // Use hardware back press to dismiss the keyboard that appears after clicking X.
             // Unlike closeKeyboard() (IMM-based), the back key is consumed by the keyboard
             // itself before reaching Compose, so focus does not jump to the first focusable
             // item (Unique ID) in the LazyColumn.
+            composeTestRule.waitUntil("keyboard shown after resetting $label", TIMEOUT) {
+                isKeyboardVisible()
+            }
             pressBack()
             composeTestRule.waitForIdle()
         }
@@ -290,30 +288,14 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         )
     }
 
-    @OptIn(ExperimentalTestApi::class)
     fun checkMinCharactersErrorIsDisplayed(vararg fieldLabels: String) {
         composeTestRule.waitForIdle()
 
         fieldLabels.forEach { label ->
-            // Scroll the LazyColumn to compose the target field before asserting.
-            // Off-screen items are dropped from composition on slow CI devices, causing
-            // waitUntilAtLeastOneExists to time out even though the error is present.
-            scrollToSearchParameter(label)
-            composeTestRule.waitForIdle()
-
-            val containerMatcher =
-                hasAnyDescendant(hasText(label)) and
-                        hasAnyDescendant(hasText("Enter at least", substring = true))
-
-            composeTestRule.waitUntilAtLeastOneExists(containerMatcher, TIMEOUT)
-
-            val matchingNodes = composeTestRule
-                .onAllNodes(containerMatcher)
-                .fetchSemanticsNodes()
-
-            assertTrue(
-                "Expected a min-characters error associated with field label \"$label\", but none was found.",
-                matchingNodes.isNotEmpty(),
+            scrollUntilExists(
+                label,
+                openInput(label) and hasAnyDescendant(hasText("Enter at least", substring = true)),
+                useUnmergedTree = true,
             )
         }
     }
@@ -373,5 +355,17 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule
             .onNodeWithTag(SEARCH_PARAMETERS_LIST_TAG)
             .performScrollToNode(hasText(text))
+    }
+
+    // SEARCH_PARAM_ITEM only tags closed fields; match open ones in the unmerged tree
+    private fun openInput(label: String, shellTag: String = "INPUT_TEXT") =
+        hasTestTag(shellTag) and hasAnyDescendant(hasText(label))
+
+    // Scrolls on every poll: in landscape a reopened keyboard can scroll the field out of composition
+    private fun scrollUntilExists(label: String, matcher: SemanticsMatcher, useUnmergedTree: Boolean = false) {
+        composeTestRule.waitUntil("search parameter \"$label\": ${matcher.description}", TIMEOUT) {
+            scrollToSearchParameter(label)
+            composeTestRule.onAllNodes(matcher, useUnmergedTree).fetchSemanticsNodes().isNotEmpty()
+        }
     }
 }
