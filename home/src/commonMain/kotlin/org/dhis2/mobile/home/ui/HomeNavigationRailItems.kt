@@ -1,15 +1,15 @@
 package org.dhis2.mobile.home.ui
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Handyman
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.Settings
 import org.dhis2.mobile.home.resources.Res
-import org.dhis2.mobile.home.resources.ic_delete
-import org.dhis2.mobile.home.resources.ic_doctor_positive
-import org.dhis2.mobile.home.resources.ic_menu_home
-import org.dhis2.mobile.home.resources.ic_menu_info
-import org.dhis2.mobile.home.resources.ic_menu_lock
-import org.dhis2.mobile.home.resources.ic_menu_logout
-import org.dhis2.mobile.home.resources.ic_menu_settings
-import org.dhis2.mobile.home.resources.ic_qr
-import org.dhis2.mobile.home.resources.ic_troubleshooting
 import org.dhis2.mobile.home.resources.menu_about
 import org.dhis2.mobile.home.resources.menu_dev_options
 import org.dhis2.mobile.home.resources.menu_home
@@ -19,7 +19,6 @@ import org.dhis2.mobile.home.resources.menu_remove_account
 import org.dhis2.mobile.home.resources.menu_set_pin
 import org.dhis2.mobile.home.resources.menu_settings
 import org.dhis2.mobile.home.resources.menu_troubleshooting
-import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 
 /**
@@ -34,60 +33,60 @@ enum class MainDrawerNavigationGroup {
 }
 
 sealed class HomeNavigationReelItem(
-    val icon: DrawableResource,
+    val icon: DrawerIcon,
     val label: StringResource,
     val group: MainDrawerNavigationGroup,
 ) {
     data object Home : HomeNavigationReelItem(
-        Res.drawable.ic_menu_home,
+        DrawerIcon.Vector(Icons.Filled.Home),
         Res.string.menu_home,
         MainDrawerNavigationGroup.MAIN,
     )
 
     data object ImportSharedData : HomeNavigationReelItem(
-        Res.drawable.ic_qr,
+        DrawerIcon.Vector(Icons.Filled.QrCodeScanner),
         Res.string.menu_import_shared_data,
         MainDrawerNavigationGroup.ACTIONS,
     )
 
     data object Settings : HomeNavigationReelItem(
-        Res.drawable.ic_menu_settings,
+        DrawerIcon.Vector(Icons.Filled.Settings),
         Res.string.menu_settings,
         MainDrawerNavigationGroup.ACTIONS,
     )
 
     data object PinManagement : HomeNavigationReelItem(
-        Res.drawable.ic_menu_lock,
+        DrawerIcon.Vector(Icons.Filled.Lock),
         Res.string.menu_set_pin,
         MainDrawerNavigationGroup.ACTIONS,
     )
 
     data object Logout : HomeNavigationReelItem(
-        Res.drawable.ic_menu_logout,
+        DrawerIcon.Vector(Icons.AutoMirrored.Filled.ExitToApp),
         Res.string.menu_log_out,
         MainDrawerNavigationGroup.ACTIONS,
     )
 
     data object Troubleshooting : HomeNavigationReelItem(
-        Res.drawable.ic_troubleshooting,
+        DrawerIcon.Vector(Icons.Filled.Handyman),
         Res.string.menu_troubleshooting,
         MainDrawerNavigationGroup.EXTRA,
     )
 
     data object DeveloperOptions : HomeNavigationReelItem(
-        Res.drawable.ic_doctor_positive,
+        DrawerIcon.DesignSystem("dhis2_doctor_positive"),
         Res.string.menu_dev_options,
         MainDrawerNavigationGroup.EXTRA,
     )
 
     data object About : HomeNavigationReelItem(
-        Res.drawable.ic_menu_info,
+        DrawerIcon.Vector(Icons.Filled.Info),
         Res.string.menu_about,
         MainDrawerNavigationGroup.EXTRA,
     )
 
     data object RemoveAccount : HomeNavigationReelItem(
-        Res.drawable.ic_delete,
+        DrawerIcon.Vector(Icons.Filled.Delete),
         Res.string.menu_remove_account,
         MainDrawerNavigationGroup.ACCOUNT,
     )

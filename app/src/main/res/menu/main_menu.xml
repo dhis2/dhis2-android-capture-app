@@ -52,7 +52,7 @@
 
         <item
             android:id="@+id/menu_dev"
-            android:icon="@drawable/ic_doctor_positive"
+            android:icon="@drawable/dhis2_doctor_positive"
             android:title="@string/main_menu_developer_scree"
             android:visible="false" />
 

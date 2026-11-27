@@ -38,4 +38,12 @@ class HomeNavigationReelItemTest {
             HomeNavigationReelItem.list(displayDeveloperOptions = true),
         )
     }
+
+    @Test
+    fun `developer options uses the design system doctor icon`() {
+        assertEquals(
+            DrawerIcon.DesignSystem("dhis2_doctor_positive"),
+            HomeNavigationReelItem.DeveloperOptions.icon,
+        )
+    }
 }
