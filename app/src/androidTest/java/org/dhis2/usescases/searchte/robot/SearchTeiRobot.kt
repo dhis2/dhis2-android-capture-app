@@ -190,7 +190,6 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         scrollToSearchParameter(label)
         composeTestRule.waitUntilAtLeastOneExists(hasText(label), TIMEOUT)
         composeTestRule.onNodeWithText(label).performClick()
-        // Scoped to the label: another field already holding a value also has an open input
         val field = hasTestTag(fieldTag) and hasAnyAncestor(openInput(label, fieldTag.removeSuffix("_FIELD")))
         scrollUntilExists(label, field, useUnmergedTree = true)
         composeTestRule.onNode(field, useUnmergedTree = true).performTextInput(value)
@@ -270,8 +269,7 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             // Use hardware back press to dismiss the keyboard that appears after clicking X.
             // Unlike closeKeyboard() (IMM-based), the back key is consumed by the keyboard
             // itself before reaching Compose, so focus does not jump to the first focusable
-            // item (Unique ID) in the LazyColumn. The keyboard opens asynchronously: a back
-            // press before it is up would close the search screen instead.
+            // item (Unique ID) in the LazyColumn.
             composeTestRule.waitUntil("keyboard shown after resetting $label", TIMEOUT) {
                 isKeyboardVisible()
             }
@@ -359,14 +357,11 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             .performScrollToNode(hasText(text))
     }
 
-    // An opened search parameter is the design system InputShell ("INPUT_TEXT", "INPUT_NUMBER"…),
-    // not SEARCH_PARAM_ITEM, which only tags the closed placeholder. Match it in the unmerged
-    // tree: the shell is clickable, so the merged tree folds the label into it.
+    // SEARCH_PARAM_ITEM only tags closed fields; match open ones in the unmerged tree
     private fun openInput(label: String, shellTag: String = "INPUT_TEXT") =
         hasTestTag(shellTag) and hasAnyDescendant(hasText(label))
 
-    // Scrolls again on every poll: in landscape a focused field reopens the keyboard, which
-    // shrinks the list to about one row and drops the target item from composition
+    // Scrolls on every poll: in landscape a reopened keyboard can scroll the field out of composition
     private fun scrollUntilExists(label: String, matcher: SemanticsMatcher, useUnmergedTree: Boolean = false) {
         composeTestRule.waitUntil("search parameter \"$label\": ${matcher.description}", TIMEOUT) {
             scrollToSearchParameter(label)
