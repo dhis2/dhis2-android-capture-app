@@ -20,6 +20,7 @@ kotlin {
         namespace = "org.dhis2.mobile.home"
         compileSdk = libs.versions.compileSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
+        enableCoreLibraryDesugaring = true
         compilerOptions { jvmTarget.set(JvmTarget.JVM_17) }
         androidResources { enable = true }
         withHostTestBuilder {}.configure {
@@ -57,6 +58,7 @@ kotlin {
             implementation(libs.compose.material3)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.material3.window)
+            implementation(libs.compose.ui.uiToolingPreview)
             implementation(libs.lifecycle.runtime.compose)
 
             // Koin
@@ -95,6 +97,10 @@ kotlin {
                 implementation(libs.test.junit.ext)
                 implementation(libs.test.testCore)
                 implementation(libs.test.testRunner)
+                // "Run Preview" on a device installs this test APK and starts ui-tooling's
+                // PreviewActivity, so the activity must be in its manifest.
+                implementation(project.dependencies.platform(libs.androidx.compose.bom))
+                implementation(libs.androidx.compose.uitooling)
             }
         }
 
@@ -114,4 +120,6 @@ compose.resources {
 
 dependencies {
     coreLibraryDesugaring(libs.desugar)
+    // Android Studio renders @Preview through ui-tooling, so it must be on the runtime classpath.
+    "androidRuntimeClasspath"(libs.androidx.compose.uitooling)
 }
