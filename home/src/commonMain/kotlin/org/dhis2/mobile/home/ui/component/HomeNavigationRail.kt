@@ -39,6 +39,7 @@ import kotlinx.coroutines.launch
 import org.dhis2.mobile.home.resources.Res
 import org.dhis2.mobile.home.resources.ic_dhis_logo
 import org.dhis2.mobile.home.ui.HomeNavigationReelItem
+import org.dhis2.mobile.home.ui.painter
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.Outline
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
@@ -146,7 +147,7 @@ private fun HomeNavigationRailItems(
                     ),
                 icon = {
                     Icon(
-                        imageVector = vectorResource(item.icon),
+                        painter = item.icon.painter(),
                         // The label already names the item.
                         contentDescription = null,
                     )
