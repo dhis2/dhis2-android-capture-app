@@ -1,5 +1,6 @@
-Version 3.5 adds OAuth login with two-factor authentication and an offline code or biometric unlock.
-Administrators can customize more tracker terms. Program indicators can be disaggregated by category.
-Image fields can now be set to upload pictures in original quality.
-Working lists can filter by empty and not empty values. The organisation unit selector now tags units with the same name.
-Also includes various SDK improvements and bug fixes.
+Version 3.5.1 is a maintenance release focused on stability and data quality.
+Fixes crashes and ANRs on the splash, home, TEI dashboard, search and sync screens, and when capturing polygons.
+Program rules now hide fields and show warnings correctly, and rule errors no longer block enrollment editing.
+Number validation now matches the server and duplicate unique attribute values are prevented.
+Sync notifications can be dismissed and analytics tables show values correctly.
+Includes SDK updates.
