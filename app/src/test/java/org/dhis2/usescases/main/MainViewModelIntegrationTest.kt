@@ -181,14 +181,15 @@ class MainViewModelIntegrationTest {
     private fun mockUser(
         firstName: String?,
         surname: String?,
-    ) = HomeUser(firstName, surname)
+        userName: String?,
+    ) = HomeUser(firstName, surname, userName)
 
     // ------------------------------------------------------------------ state tests
 
     @Test
     fun `should expose full name built by GetUserName use case`() =
         runTest {
-            val user = mockUser("Jane", "Doe")
+            val user = mockUser("Jane", "Doe", "Test")
             whenever(homeRepository.user()) doReturn user
             whenever(homeRepository.hasHomeAnalytics()) doReturn false
             whenever(filterRepository.homeFilters()) doReturn emptyList()
@@ -205,7 +206,7 @@ class MainViewModelIntegrationTest {
     @Test
     fun `should expose only first name when surname is absent`() =
         runTest {
-            val user = mockUser("Jane", null)
+            val user = mockUser("Jane", null, null)
             whenever(homeRepository.user()) doReturn user
             whenever(homeRepository.hasHomeAnalytics()) doReturn false
             whenever(filterRepository.homeFilters()) doReturn emptyList()
@@ -222,7 +223,7 @@ class MainViewModelIntegrationTest {
     @Test
     fun `should show two nav items and bottom bar when analytics are configured`() =
         runTest {
-            val user = mockUser("User", null)
+            val user = mockUser("User", null, null)
             whenever(homeRepository.user()) doReturn user
             whenever(homeRepository.hasHomeAnalytics()) doReturn true
             whenever(filterRepository.homeFilters()) doReturn emptyList()
@@ -242,7 +243,7 @@ class MainViewModelIntegrationTest {
     @Test
     fun `should show one nav item and hide bottom bar when analytics are not configured`() =
         runTest {
-            val user = mockUser("User", null)
+            val user = mockUser("User", null, null)
             whenever(homeRepository.user()) doReturn user
             whenever(homeRepository.hasHomeAnalytics()) doReturn false
             whenever(filterRepository.homeFilters()) doReturn emptyList()
@@ -263,7 +264,7 @@ class MainViewModelIntegrationTest {
         runTest {
             // FilterItem is a sealed abstract class and cannot be mocked; test activeFilters
             // (from FilterManager) and homeFilters (from FilterRepository) independently.
-            val user = mockUser("User", null)
+            val user = mockUser("User", null, null)
             whenever(homeRepository.user()) doReturn user
             whenever(homeRepository.hasHomeAnalytics()) doReturn false
             whenever(filterRepository.homeFilters()) doReturn emptyList()
@@ -404,7 +405,7 @@ class MainViewModelIntegrationTest {
     @Test
     fun `should hide filter and sync buttons while sync is running`() =
         runTest {
-            val user = mockUser("User", null)
+            val user = mockUser("User", null, null)
             whenever(homeRepository.user()) doReturn user
             whenever(homeRepository.hasHomeAnalytics()) doReturn false
             whenever(filterRepository.homeFilters()) doReturn emptyList()
@@ -428,7 +429,7 @@ class MainViewModelIntegrationTest {
     @Test
     fun `should restore filter and sync buttons after sync completes`() =
         runTest {
-            val user = mockUser("User", null)
+            val user = mockUser("User", null, null)
             whenever(homeRepository.user()) doReturn user
             whenever(homeRepository.hasHomeAnalytics()) doReturn true
             whenever(filterRepository.homeFilters()) doReturn emptyList()

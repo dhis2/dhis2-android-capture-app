@@ -27,7 +27,7 @@ class GetUserNameTest {
     @Test
     fun `should return full name if user exists`() =
         runTest {
-            val user = HomeUser(firstName = "Peter", surname = "Jones")
+            val user = HomeUser(firstName = "Peter", surname = "Jones", null)
             whenever(homeRepository.user()) doReturn user
 
             val result = getUserName()
@@ -39,7 +39,7 @@ class GetUserNameTest {
     @Test
     fun `should return surname if first name is null`() =
         runTest {
-            val user = HomeUser(firstName = null, surname = "Jones")
+            val user = HomeUser(firstName = null, surname = "Jones", null)
             whenever(homeRepository.user()) doReturn user
 
             val result = getUserName()
@@ -51,7 +51,7 @@ class GetUserNameTest {
     @Test
     fun `should return first name if surname is null`() =
         runTest {
-            val user = HomeUser(firstName = "Peter", surname = null)
+            val user = HomeUser(firstName = "Peter", surname = null, null)
             whenever(homeRepository.user()) doReturn user
 
             val result = getUserName()

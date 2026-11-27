@@ -50,7 +50,7 @@ class HomeRepositoryImpl(
                 .userModule()
                 .user()
                 .suspendGet()
-                ?.let { HomeUser(it.firstName(), it.surname()) }
+                ?.let { HomeUser(it.firstName(), it.surname(), it.username) }
         }
 
     override suspend fun setInitialSyncDone() =
@@ -208,4 +208,16 @@ class HomeRepositoryImpl(
     override suspend fun restoreSyncStatus() {
         syncStatusController.restore()
     }
+
+    override suspend fun serverName(): String? =
+        execute {
+            d2
+                .userModule()
+                .accountManager()
+                .getCurrentAccount()
+                ?.let {
+                    it.loginConfig?.applicationTitle?.takeUnless { title -> title.isBlank() }
+                        ?: it.serverUrl
+                }
+        }
 }
