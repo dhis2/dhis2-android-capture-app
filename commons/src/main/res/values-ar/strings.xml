@@ -217,6 +217,7 @@
     <string name="overdue_today">اليوم</string>
     <string name="overdue_due_today">موعد استحقاقها اليوم</string>
     <string name="file_downloaded">تم تنزيل الملف بنجاح</string>
+    <string name="file_download_error">تعذر تنزيل الملف</string>
 
     <string name="break_glass_dialog_description_V2">يجب عليك تقديم سبب للتحقق من %s في هذا البرنامج المحمي. سيتم تسجيل جميع الأنشطة.</string>
     <string name="edition_enrollment_is_no_open_V2">هذه البيانات غير قابلة للتحرير لأن %s اكتملت أو تم إلغاؤها</string>

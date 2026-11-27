@@ -1,6 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!-- Warnings and error messages -->
     <string name="error">त्रुटि</string>
+    <string name="no_reserved_values">कोई और आरक्षित मान शेष नहीं हैं। अपने सिस्टम एडमिनिस्ट्रेटर से संपर्क करें।</string>
     <string name="something_wrong">कुछ गलत हुआ</string>
     <!-- SyncService strings: -->
 
@@ -43,24 +44,30 @@
     <string name="due_date">नियत तिथि</string>
     <string name="cancel">रद्द करें</string>
     <string name="delete">हटाएं</string>
+    <string name="no_options">कोई विकल्प उपलब्ध नहीं है</string>
+
     <!--TEI DASHBOARD-->
     <string name="edit">संपादन करें</string>
     <!--DONE TASKS-->
     <string name="events">इवेंट्स</string>
-    <string name="wipe_data_ok">स्वीकार करें</string>
-    <string name="wipe_data_no">रद्द करें</string>
     <string name="SYNC_MANAGER">सेटिंग्स</string>
     <!--endregion-->
 
     <!-- SEARCH OPTION SET -->
     <string name="search_optionset">सर्च करें / खोजें</string>
     <string name="add_file">फ़ाइल जोड़ें</string>
+    <!--EVENT SUMMARY-->
+
+    <!--AGE CUSTOM VIEW-->
+    <string name="incident_date">घटना की तारीख़</string>
     <string name="period">पीरियड</string>
+
     <!-- RELATIONSHIPS -->
     <string name="next">आगे</string>
     <string name="button_ok">ठीक है</string>
     <string name="qr_events">इवेंट्स</string>
     <string name="share">साझा करें</string>
+    <string name="warning_error_on_complete_title">इसे देखें!</string>
     <string name="save">सहेजें</string>
     <string name="invalid_phone_number">यह मान्य फ़ोन नंबर नहीं है</string>
     <string name="invalid_possitive_zero">केवल शून्य या पॉजिटिव संख्या ही अनुमति है</string>
@@ -69,6 +76,8 @@
     <string name="state_relationship">संबंध</string>
     <string name="action_close">बंद करें</string>
     <string name="syncing">सिंक हो रहा है…</string>
+
+    <string name="copied_text">कॉपी किया गया</string>
 
     <string name="filters_title_period">पीरियड</string>
     <string name="filter_period_today">आज</string>
@@ -110,16 +119,21 @@
     <string name="filter_period_last_quarter">पिछली तिमाही</string>
     <string name="filter_period_last_year">पिछला वर्ष</string>
     <string name="section_indicators">इंडिकेटर्स</string>
+    <string name="camera_permission_denied">कैमरा की अनुमति अस्वीकार कर दी गई है।\nइस सुविधा का उपयोग करने के लिए आपको इसे चालू करना होगा।</string>
     <string name="take_photo">फ़ोटो लें</string>
     <string name="break_glass_dialog_title">यह प्रोग्राम सुरक्षित है</string>
+    <string name="action_do_not_show_again">दोबारा न दिखाएँ</string>
     <string name="show_radar_graph">रेडार व्यू</string>
     <string name="update_field_error">यह फ़ील्ड अपडेट नहीं हो सका। कृपया फिर से प्रयास करें</string>
     <string name="edition_no_write_access">इस डेटा को संपादित करने की अनुमति नहीं है</string>
     <string name="edition_no_catcombo_access">इस डेटा को संपादित करने की अनुमति नहीं है</string>
     <string name="troubleshooting_language_title">भाषा</string>
     <string name="not_saved">सेव नहीं</string>
+    <string name="review_message">कुछ फ़ील्ड पर आपके ध्यान की आवश्यकता है। \nक्या आप फ़ॉर्म की समीक्षा करना चाहते हैं\?</string>
     <string name="missing_warning_fields_completed_events">आपके पास कुछ चेतावनी संदेश हैं</string>
     <string name="missing_warning_fields_events">आपके पास कुछ चेतावनी संदेश हैं\nक्या आप इस फ़ॉर्म को कम्प्लीट मार्क करना चाहते हैं\?</string>
+    <string name="missing_error_fields_events">कुछ फ़ील्ड में एरर संदेश हैं\nक्या आप उन्हें समीक्षा करना चाहते हैं\?</string>
+    <string name="event_can_be_completed">क्या आप इस फ़ॉर्म को पूरा करना चाहते हैं\?</string>
     <string name="event_error_on_complete">आपके पास कुछ एरर संदेश हैं\nक्या आप उन्हें समीक्षा करना चाहते हैं\?</string>
     <string name="sync_dialog_title_syncing">सिंक हो रहा है</string>
     <string name="sync_dialog_action_not_now">अभी नहीं</string>

@@ -47,7 +47,6 @@
     <string name="edit">ترمیم</string>
     <string name="deactivate">غیر فعال</string>
     <string name="done_task">گھر</string>
-    <string name="wipe_data_no">منسوخ</string>
     <string name="SYNC_MANAGER">ØªØ±ØªÛØ¨Ø§Øª</string>
     <string name="settingsTwoFAStatus">حالت</string>
     <!--endregion-->
@@ -62,6 +61,7 @@
     <!--AGE CUSTOM VIEW-->
     <string name="incident_date">واقعات کی تاریخ</string>
     <string name="period">مدت</string>
+
     <!-- RELATIONSHIPS -->
     <string name="next">اگلہ</string>
     <string name="button_ok">ٹھیک</string>

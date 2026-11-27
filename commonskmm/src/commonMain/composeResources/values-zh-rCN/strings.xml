@@ -185,6 +185,12 @@
     <plurals name="event">
         <item quantity="other">活动</item>
     </plurals>
+    <!-- Fallbacks for locales without plural rules in Compose resources 1.10 (e.g. rw, tet, tg) -->
+    <string name="enrollment_one">登记</string>
+    <string name="enrollment_other">注册人数</string>
+    <string name="event_one">事件</string>
+    <string name="event_other">事件</string>
+    <string name="relationship_other">关系</string>
     <string name="not_synced">未同步</string>
     <string name="sync">同步</string>
     <string name="sync_warning">同步警告</string>
@@ -194,4 +200,7 @@
     <string name="remove_follow_up">移除</string>
     <string name="program_stage">项目阶段</string>
     <string name="stage">阶段</string>
-</resources>
+
+    <string name="http_error_conflict">冲突</string>
+    <string name="http_error_internal_server_error">服务器内部错误</string>
+    </resources>

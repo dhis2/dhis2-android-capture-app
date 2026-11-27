@@ -158,10 +158,16 @@
     <string name="cancel">Annuleren</string>
     <string name="ok">OK</string>
 
+    <!-- Fallbacks for locales without plural rules in Compose resources 1.10 (e.g. rw, tet, tg) -->
+    <string name="enrollment_one">inschrijving</string>
+    <string name="event_one">evenement</string>
+    <string name="event_other">evenementen</string>
     <string name="sync">Synchroniseren</string>
     <string name="sync_warning">Sync waarschuwing</string>
     <string name="sync_error">Synchronisatiefout</string>
     <string name="marked_follow_up">Gemarkeerd voor vervolg</string>
     <string name="remove_follow_up">Verwijderen</string>
     <string name="program_stage">Programma fase</string>
+    <string name="http_error_conflict">Conflict</string>
+    <string name="http_error_internal_server_error">Interne Server Fout</string>
     </resources>

@@ -92,9 +92,6 @@
     <string name="every_12_hours">12 soat</string>
     <string name="Manual">Qoʼllanma</string>
     <string name="a_week">1 hafta</string>
-    <string name="wipe_data_meesage">Maʼlumotlar bazasi oʼchiriladi. Sizdan qayta kirish soʼraladi.</string>
-    <string name="wipe_data_ok">Qabul qiling</string>
-    <string name="wipe_data_no">Бекор қилиш</string>
     <string name="SYNC_DATA">Maʼlumotlarni sinxronlash, hozir</string>
     <string name="SYNC_META">Konfiguratsiyani sinxronlang, hozir</string>
     <string name="SYNC_MANAGER">Sozlamalar</string>
@@ -210,7 +207,6 @@
     <string name="unique_warning">Qiymat noyob boʼlishi lozim, bir biriga oʼxshash topildi. U saqlanmadi. Iltimos, tekshirib koʼrish.</string>
     <string name="please_wait">Iltimos, kuting</string>
     <string name="skip">Oʼtkazib yuborish</string>
-    <string name="delete_local_data_message">Sinxronizatsiya qilinmagan maʼlumotlar yoʼqoladi. Haqiqatdan ham davom ettirishni xoxlaysizmi?</string>
     <string name="delete_local_data_error">Maʼlumotlarni oʼchirib boʼlmadi. Iltimos, qayta urinib koʼring.</string>
     <string name="delete_local_data_done">Lokal maʼlumotlarni oʼchirish muvaffaqiyatli yakunlandi.</string>
     <string name="resource_not_found">%s topilmadi</string>
@@ -292,7 +288,6 @@
     <string name="sms_empty_gateway">SMS shlyuz boʼsh boʼlishi mumkin emas</string>
     <string name="granular_sync_enrollments_empty">Yuklash uchun qayd etilganlar yoʼq</string>
     <string name="granular_sync_unsupported_task">Ushbu konvertatsiya qilish vazifasi qoʼllab-quvvatlanmaydi</string>
-    <string name="set_pin">PIN kodni oʼrnating</string>
     <string name="conflict">Nomutanosiblik</string>
     <string name="change_event_date">Sanani oʼzgartirish</string>
     <string name="go_back">Orqaga qayting</string>

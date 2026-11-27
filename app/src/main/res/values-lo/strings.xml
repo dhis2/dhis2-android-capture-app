@@ -104,9 +104,6 @@
     <string name="every_12_hours">12h</string>
     <string name="Manual">ຄູ່ມື</string>
     <string name="a_week">1 ອາທິດ</string>
-    <string name="wipe_data_meesage">ຖານຂໍ້ມູນຈະຖືກລືບ.\nທ່ານຈະໄດ້ເຂົ້າລະບົບໃໝ່</string>
-    <string name="wipe_data_ok">ຍອມຮັບ</string>
-    <string name="wipe_data_no">ຍົກເລີກ</string>
     <string name="SYNC_DATA">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນນະຕອນນີ້</string>
     <string name="SYNC_META">ປັບການຕັ້ງຄ່າດຽວນີ້</string>
     <string name="SYNC_MANAGER">ຕັ້ງຄ່າ</string>
@@ -192,10 +189,10 @@
     <string name="about_sdk">SDK ລຸ້ນ: %s</string>
     <string name="about_connected">ເຊື່ອມຕໍ່ເຂົ້າກັບ: %s</string>
     <string name="about_user">ຜູ້ນໍາໃຊ້ປະຈຸບັນນີ້: %s</string>
-    <string name="about_more">ຂໍ້ມູນເພີ່ມຕື່ມກ່ຽວກັບໂປຣແກຣມນີ້: ອ່ານໄດ້ທີ່ <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">here</a>. ໃຊ້ໄດ້ກັບໂທລະສັບລຸ້ນໃດ ແລະ ໃຊ້ບໍ່ໄດ້ກັບລຸ້ນໃດ</string>
-    <string name="about_git">ລຸ້ນນີ້ ແລະ ລຸ້ນກ່ອນໆ ຂອງໂປຣແກຣມນີ້ ກໍ່ຄື ລະບົບໂປຣແກຣມຂອງມັນແມ່ນເບີ່ງໄດ້ທີ່ at <a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>. ໂປຣແກຣມ DHIS2 Android Capture ແມ່ນໄດ້ຮັບອະນຸຍາດພາຍໃຕ້ເງື່ອນໄຂຂອງ GNU General Public License ແລະ ປະກາດນໍາໃຊ້ໂດຍມຸນນິທິຊອບແວບໍ່ໄດ້ເສຍຄ່າ - ເບີ່ງໄດ້ທີ <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a></string>
-    <string name="about_dev">ຖືກພັດທະນາ ແລະ ບໍາລຸງຮັກສາໂດຍ <a href="https://www.dhis2.org/">DHIS2</a> ໂຄງການເຊີ່ງເປັນພາກສ່ວນໜື່ງຂອງມຫາວິທະຍາໄລ ໂອສໂລ, ກົມຂໍ້ມູນຂ່າວສານ<a href="https://www.mn.uio.no/ifi/english/">department of informatics</a>.</string>
-    <string name="about_contact">ສໍາລັບຂໍ້ມູນເພີມຕື່ມ ຫຼື ມີຄໍາຖາມກ່ຽວກັບໂປຣແກຣມນີ້, ກະລຸນາ ຂຽນໄປສອບຖາມໄດ້ທີ <a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
+    <string name="about_more">\"ຂໍ້ມູນເພີ່ມຕື່ມກ່ຽວກັບໂປຣແກຣມນີ້: ອ່ານໄດ້ທີ່ \"<a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">here</a>. ໃຊ້ໄດ້ກັບໂທລະສັບລຸ້ນໃດ ແລະ ໃຊ້ບໍ່ໄດ້ກັບລຸ້ນໃດ</string>
+    <string name="about_git">\"ລຸ້ນນີ້ ແລະ ລຸ້ນກ່ອນໆ ຂອງໂປຣແກຣມນີ້ ກໍ່ຄື ລະບົບໂປຣແກຣມຂອງມັນແມ່ນເບີ່ງໄດ້ທີ່ at \"<a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>\". ໂປຣແກຣມ DHIS2 Android Capture ແມ່ນໄດ້ຮັບອະນຸຍາດພາຍໃຕ້ເງື່ອນໄຂຂອງ GNU General Public License ແລະ ປະກາດນໍາໃຊ້ໂດຍມຸນນິທິຊອບແວບໍ່ໄດ້ເສຍຄ່າ - ເບີ່ງໄດ້ທີ \"<a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a></string>
+    <string name="about_dev">\"ຖືກພັດທະນາ ແລະ ບໍາລຸງຮັກສາໂດຍ \"<a href="https://www.dhis2.org/">DHIS2</a>\" ໂຄງການເຊີ່ງເປັນພາກສ່ວນໜື່ງຂອງມຫາວິທະຍາໄລ ໂອສໂລ, ກົມຂໍ້ມູນຂ່າວສານ\"<a href="https://www.mn.uio.no/ifi/english/">department of informatics</a>.</string>
+    <string name="about_contact">\"ສໍາລັບຂໍ້ມູນເພີມຕື່ມ ຫຼື ມີຄໍາຖາມກ່ຽວກັບໂປຣແກຣມນີ້, ກະລຸນາ ຂຽນໄປສອບຖາມໄດ້ທີ \"<a href="mailto:android@dhis2.org">android\@dhis2.org</a></string>
 
     <string name="search_program_not_selected">ເລືອກໂປຣແກຣມເພື່ອໃຫ້ສາມາດຂື້ນທະບຽນໄດ້</string>
     <string name="search_access_error">ທ່ານບໍ່ໄດ້ຮັບອະນຸຍາດຕາມທີ່ໄດ້ຮ້ອງຂໍ</string>
@@ -223,7 +220,6 @@
     <string name="unique_warning">ຄ່າບໍໍຄວນຊ້ຳກັນ ບັງເອີນໄດ້ຖຶກພົບເຫັນ. ມັນບໍໄດ້ບັນທຶກ. ກະລຸນາກວດສອບ</string>
     <string name="please_wait">ກະລຸນາລໍຖ້າ</string>
     <string name="skip">ຂ້າມ</string>
-    <string name="delete_local_data_message">ຂໍ້ມູນທີ່ບໍ່ໄດ້ຮັບການຊິ້ງຈະສູນເສຍໄປ. ທ່ານຕ້ອງການສືບຕໍ່ຫຼືບໍ?</string>
     <string name="delete_local_data_error">ບໍ່ສາມາດລົບຂໍ້ມູນໄດ້ ກະລຸນາລອງໃໝ່ອີກຄັ້ງ</string>
     <string name="delete_local_data_done">ລົບຂໍ້ມູນໃນເຄື່ອງຮຽບຮ້ອຍແລ້ວ</string>
     <string name="resource_not_found">%s ບໍ່ພົບເຫັນ</string>
@@ -306,7 +302,6 @@
     <string name="sms_empty_gateway">ເສັ້ນທາງການນຳສົ່ງຂໍ້ຄວາມຕ້ອງບໍ່ຫວ່າງເປົ່າ</string>
     <string name="granular_sync_enrollments_empty">ບໍ່ມີການລົງທະບຽນທີ່ຈະອັບໂຫຼດ</string>
     <string name="granular_sync_unsupported_task">ຍັງບໍ່ມີການຮອງຮັບຫນ້າວຽກການແປງນີ້</string>
-    <string name="set_pin">ຕັ້ງລະຫັດຜ່ານ</string>
     <string name="conflict">ຂັດແຍ້ງ</string>
     <string name="change_event_date">ປ່ຽນວັນທີ</string>
     <string name="go_back">ກັບຄືນ</string>
@@ -430,7 +425,6 @@
     <string name="edition_no_write_access">ທ່ານບໍ່ໄດ້ຮັບອານຸຍາດໃນການແກ້ໄຂຂໍ້ມູນນີ້</string>
     <string name="edition_no_catcombo_access">ທ່ານບໍ່ໄດ້ຮັບອານຸຍາດໃນການແກ້ໄຂຂໍ້ມູນນີ້</string>
     <string name="error_tei_online_search_title">ການຄົ້ນຫາອອນໄລນ໌ສົ່ງຂໍ້ຄວາມຕໍ່ໄປນີ້:</string>
-    <string name="delete_account">ລົບບັນຊີ</string>
     <string name="main_menu_troubleshooting">ການ​ແກ້​ໄຂ​ບັນ​ຫາ​ການ​ກຳນົດຄ່າ</string>
     <string name="troubleshooting_language_title">Language</string>
     <string name="troubleshooting_language_description">ແຕະບ່ອນນີ້ເພື່ອ ປ່ຽນພາສາຂອງແອັບພິເຄຊັ່ນ</string>
@@ -439,6 +433,7 @@
     <string name="troubleshooting_ongoing_rule_validation">ກຳລັງກວດສອບຄວາມຖຶກຕ້ອງຂອງສາຍງານ...</string>
     <string name="troubleshooting_pass_rule_validation">ບໍ່ພົບຂໍ້ຄວນລະວັງ</string>
     <string name="not_saved">ບໍ່ໄດ້ບັນທຶກ</string>
+    <string name="review_message">ບາງຊ່ອງຂໍ້ມູນຈຳເປັນຕ້ອງດຳເນີນການຂອງທ່ານ.\n ທ່ານຕ້ອງການກວດສອບແບບຟອມຫຼືບໍ?</string>
     <string name="search_loading_more">ກຳລັງໂຫຼດຫາຜົນລັບເພີ່ມເຕີມ</string>
     <string name="search_no_results_in_program">ບໍ່ມີຜົນໄດ້ຮັບເພີ່ມເຕີມສໍາລັບ%s</string>
     <string name="search_outside_action">ຄົ້ນຫານອກສາຍງານນີ້</string>
@@ -450,6 +445,7 @@
     <string name="action_ok">ຕົກລົງ</string>
     <string name="init_search">ເລີ່ມການຄົ້ນຫາເພື່ອຊອກຫາອັນໃດນຶ່ງ%s</string>
     <string name="search_or_create">ທ່ານສາມາດຄົ້ນຫາຫຼືສ້າງໃຫມ່%s</string>
+    <string name="missing_warning_fields_events">ທ່ານມີບາງຂໍ້ຄວາມເຕືອນ.\nທ່ານຕ້ອງການໝາຍແບບຟອມນີ້ວ່າສຳເລັດແລ້ວຫຼືບໍ?</string>
     <string name="event_can_be_completed">ທ່ານຕ້ອງການໝາຍແບບຟອມນີ້ວ່າສຳເລັດແລ້ວຫຼືບໍ?</string>
     <string name="event_error_on_complete">ທ່ານມີຂໍ້ຜິດພາດໃນບາງຂໍ້ຄວາມ.\nທ່ານຕ້ອງການກວດເບິ່ງຄືນບໍ?</string>
     <string name="re_opened">ເປີດຄືນໃໝ່</string>

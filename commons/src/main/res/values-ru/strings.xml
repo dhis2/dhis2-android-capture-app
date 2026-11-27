@@ -253,6 +253,7 @@
     <string name="open_with">Открыть с помощью</string>
 
     <string name="file_downloaded">Файл успешно загружен</string>
+    <string name="file_download_error">Не удалось загрузить файл</string>
 
     <!--Enrollment labels-->
     <plurals name="enrollment">
@@ -303,6 +304,7 @@
     <string name="period_monthly_title">Месяц</string>
     <string name="period_quarter_title">Квартал</string>
     <string name="period_yearly_title">Год</string>
+    <string name="no_periods">Нет доступных периодов </string>
     <string name="action_clear_all">Очистить все</string>
 
     <string name="enrollment_status">%s статус</string>

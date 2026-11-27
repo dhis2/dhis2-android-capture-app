@@ -96,9 +96,6 @@
     <string name="every_12_hours">12t</string>
     <string name="Manual">Manuelt</string>
     <string name="a_week">1 uke</string>
-    <string name="wipe_data_meesage">Databasen vil bli slettet. Du vil bli spurt om å logge inn igjen.</string>
-    <string name="wipe_data_ok">Aksepter</string>
-    <string name="wipe_data_no">Avbryt</string>
     <string name="SYNC_DATA">SYNK data nå</string>
     <string name="SYNC_META">SYNK konfigurasjon nå</string>
     <string name="SYNC_MANAGER">Innstillinger</string>
@@ -215,7 +212,6 @@
     <string name="unique_warning">Verdien skal være unik, et sammentreff ble funnet. Det har ikke blitt lagret. Vennligst sjekk det.</string>
     <string name="please_wait">Vennligst vent</string>
     <string name="skip">Hopp over</string>
-    <string name="delete_local_data_message">Ikke synkroniserte data vil bli bort. Vil du virkelig fortsette?</string>
     <string name="delete_local_data_error">Data kunne ikke slettes. Vennligst prøv på nytt.</string>
     <string name="delete_local_data_done">Lokal data ble slettet.</string>
     <string name="resource_not_found">%sikke funnet</string>
@@ -297,7 +293,6 @@
     <string name="sms_empty_gateway">SMS inngangsport kan ikke være tom</string>
     <string name="granular_sync_enrollments_empty">Det er ingen registreringer å laste opp</string>
     <string name="granular_sync_unsupported_task">Denne konverteringsoppgaven er ikke støttet</string>
-    <string name="set_pin">Sett pin</string>
     <string name="conflict">Konflikt</string>
     <string name="change_event_date">Endre dato</string>
     <string name="go_back">Gå tilbake</string>

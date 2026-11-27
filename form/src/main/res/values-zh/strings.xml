@@ -68,6 +68,12 @@
     <string name="category_combo">分类组合</string>
     <string name="no_options">无可用选项</string>
     <string name="cat_combo">分类选择框</string>
+    <string name="enrollment_category_combo_section_label">%1$s -%2$s</string>
+    <string name="category_option_not_valid_for_date">%s 该日期注册 无效</string>
+    <string name="category_option_not_in_org_unit">%s 在所选组织单位中不可用</string>
+    <string name="no_category_options_with_access">您无法访问任何%s 选项。请联系您的系统管理员。</string>
+    <string name="no_category_options_in_org_unit">所选组织单位中未提供“%s ”选项。请联系您的系统管理员。</string>
+    <string name="no_category_options_for_date">对于注册 这一日期，没有有效的%s 选项。请联系您的系统管理员。</string>
     <string name="storage_permission_denied">没有授予存储权限。\n 您需要启用它才能使用此功能。</string>
     <string name="select_app_intent">选择一个应用启动</string>
     <string name="custom_intent_error">无法检索数据</string>

@@ -189,6 +189,11 @@
     <string name="cancel">Hủy</string>
     <string name="ok">OK</string>
 
+    <!-- Fallbacks for locales without plural rules in Compose resources 1.10 (e.g. rw, tet, tg) -->
+    <string name="enrollment_one">đăng ký</string>
+    <string name="event_one">sự kiện</string>
+    <string name="event_other">sự kiện</string>
+    <string name="relationship_other">Các mối quan hệ</string>
     <string name="not_synced">Chưa được đồng bộ</string>
     <string name="sync">Đồng bộ</string>
     <string name="sync_warning">Cảnh báo đồng bộ</string>
@@ -197,4 +202,6 @@
     <string name="marked_follow_up">Đã đánh dấu để theo dõi</string>
     <string name="remove_follow_up">Bỏ ra</string>
     <string name="program_stage">Giai Đoạn Chương Trình</string>
+    <string name="http_error_conflict">Xung đột</string>
+    <string name="http_error_internal_server_error">Lỗi máy chủ nội bộ</string>
     </resources>

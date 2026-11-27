@@ -30,8 +30,6 @@
     <!--TEI DASHBOARD-->
     <string name="edit">تعديل</string>
     <string name="done_task">الرئيسية</string>
-    <string name="wipe_data_ok">قبول</string>
-    <string name="wipe_data_no">إلغاء</string>
     <string name="settingsTwoFAStatus">الحالة</string>
     <!--endregion-->
 

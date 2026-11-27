@@ -46,6 +46,27 @@
     <string name="interval_yesterday">कल (बिता हुआ)</string>
 
     <string name="section_indicators">इंडिकेटर्स</string>
+    <!--SDK error codes-->
+    <string name="login_error_null_pass">पासवर्ड नहीं दिया गया है। कृपया पासवर्ड दर्ज करें।</string>
+    <string name="login_error_null_username">यूज़रनेम नहीं दिया गया है। कृपया यूज़रनेम दर्ज करें।</string>
+    <string name="login_error_unsuccessful_response">कुछ गड़बड़ हो गई। कृपया जाँच लें कि सर्वर URL, यूज़रनेम और पासवर्ड सही हैं, और फिर से कोशिश करें।</string>
+    <string name="login_error_error_response">क्षमा करें! सर्वर की ओर से कुछ विफल हो गया</string>
+    <string name="login_error_no_dhis_instance">दिया गया URL DHIS2 सर्वर का नहीं है</string>
+    <string name="login_error_bad_credentials">यूज़रनेम या पासवर्ड गलत है</string>
+    <string name="login_error_unknown_host">अज्ञात सर्वर</string>
+    <string name="online_search_parsing_error">परिणामों को पार्स करते समय एरर हुई</string>
+    <string name="error_many_requests">सर्वर इस समय व्यस्त है। कृपया थोड़ी देर बाद कोशिश करें।</string>
+    <string name="error_already_authenticated">यूज़र पहले से लॉग इन है।</string>
+    <string name="error_already_executed">अनुरोध पहले ही पूरा किया जा चुका है।</string>
+    <string name="error_api_invalid_query">सर्वर अनुरोध मान्य नहीं है।</string>
+    <string name="error_app_name_not_set">ऐप्लिकेशन का नाम सेट नहीं किया गया है।</string>
+    <string name="error_app_version_not_set">ऐप्लिकेशन का वर्ज़न सेट नहीं किया गया है</string>
+    <string name="error_access_keystore">डिवाइस कीस्टोर तक पहुँचा नहीं जा सका</string>
+    <string name="error_create_existing_error">बनाना रद्द किया गया। ऑब्जेक्ट पहले से मौजूद है।</string>
+    <string name="error_delete_non_existing_object">डिलीट रद्द किया गया। ऑब्जेक्ट मौजूद नहीं है।</string>
+    <string name="error_export_login">डेटाबेस एक्सपोर्ट करने के लिए कृपया लॉग इन करें</string>
+    <string name="error_export_encrypted">एन्क्रिप्ट किए गए डेटाबेस को एक्सपोर्ट करना समर्थित नहीं है।</string>
+    <string name="error_import_exist">आप पहले से मौजूद डेटाबेस को इम्पोर्ट कर रहे हैं।</string>
     <string name="add_image">इमेज जोड़ें</string>
     <string name="add_file">फ़ाइल जोड़ें</string>
     <string name="keep_editing">संपादन करते रहें</string>
@@ -58,7 +79,10 @@
         <item quantity="one">%d दिन बाकी है</item>
         <item quantity="other">%d दिन बाकी है</item>
     </plurals>
+    <string name="open_with">इसके साथ खोलें</string>
+
     <string name="file_downloaded">फ़ाइल सफलतापूर्वक डाउनलोड हो गई</string>
+    <string name="file_download_error">फ़ाइल डाउनलोड नहीं हो सकी</string>
 
     <string name="enrollment_data_section_label_V2">%s डेटा</string>
     <string name="syncing">सिंक हो रहा है…</string>

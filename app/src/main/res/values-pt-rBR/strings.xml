@@ -44,7 +44,6 @@
     <string name="edit">Editar</string>
     <string name="deactivate">Desativar</string>
     <string name="done_task">Origem</string>
-    <string name="wipe_data_no">Cancelar</string>
     <string name="SYNC_MANAGER">Configurações</string>
     <string name="settingTwoFA">Autenticação de dois fatores</string>
     <string name="settingsTwoFAStatus">Situação</string>
@@ -60,6 +59,7 @@
     <!--AGE CUSTOM VIEW-->
     <string name="incident_date">Data do incidente</string>
     <string name="period">Período</string>
+
     <!-- RELATIONSHIPS -->
     <string name="next">Próximo</string>
     <string name="button_ok">Aprovado</string>

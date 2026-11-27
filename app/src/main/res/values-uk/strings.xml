@@ -105,9 +105,6 @@
     <string name="every_12_hours">12 год</string>
     <string name="Manual">Вручну</string>
     <string name="a_week">1 тиждень</string>
-    <string name="wipe_data_meesage">Базу даних буде видалено. Вам буде запропоновано увійти знову.</string>
-    <string name="wipe_data_ok">Прийняти</string>
-    <string name="wipe_data_no">Скасувати</string>
     <string name="SYNC_DATA">СИНХРОНІЗУВАТИ дані зараз</string>
     <string name="SYNC_META">СИНХРОНІЗУВАТИ конфігурацію зараз</string>
     <string name="SYNC_MANAGER">Налаштування</string>
@@ -227,7 +224,6 @@
     <string name="unique_warning">Значення має бути унікальним, знайдено збіг. Значення не збереглось. Будь ласка, перевірте це.</string>
     <string name="please_wait">Будь ласка, почекайте</string>
     <string name="skip">Пропустити</string>
-    <string name="delete_local_data_message">Несинхронізовані дані буде втрачено. Ви дійсно хочете продовжити?</string>
     <string name="delete_local_data_error">Не вдалося видалити дані. Будь ласка, повторіть спробу.</string>
     <string name="delete_local_data_done">Видалення локальних даних успішно завершено.</string>
     <string name="resource_not_found">%s не знайдено</string>
@@ -312,7 +308,6 @@
     <string name="sms_empty_gateway">SMS-шлюз не може бути порожнім</string>
     <string name="granular_sync_enrollments_empty">Немає реєстрацій для завантаження</string>
     <string name="granular_sync_unsupported_task">Цей convertTask не підтримується</string>
-    <string name="set_pin">Встановити PIN</string>
     <string name="conflict">Помилка</string>
     <string name="change_event_date">Змінити дату</string>
     <string name="go_back">Повернутися</string>
@@ -440,7 +435,6 @@
     <string name="edition_no_write_access">Ви не маєте дозволу редагувати ці дані</string>
     <string name="edition_no_catcombo_access">Ви не маєте дозволу редагувати ці дані</string>
     <string name="error_tei_online_search_title">Онлайн-пошук дав таке повідомлення:</string>
-    <string name="delete_account">Видалити обліковий запис</string>
     <string name="main_menu_troubleshooting">Усунення несправностей конфігурації</string>
     <string name="troubleshooting_language_title">Мова</string>
     <string name="troubleshooting_language_description">Натисніть тут, щоб змінити мову додатку</string>
@@ -450,6 +444,7 @@
     <string name="troubleshooting_pass_rule_validation">Попереджень не знайдено</string>
     <string name="troobleshooting_pass_rule_validation_title">Все виглядає чудово</string>
     <string name="not_saved">Не збережено</string>
+    <string name="review_message">Деякі поля потребують Вашої уваги. Бажаєте переглянути форму?</string>
     <string name="search_loading_more">Завантаження результатів</string>
     <string name="search_no_results_in_program">Результатів для %s не знайдено</string>
     <string name="search_outside_action">Пошук за межами цієї програми</string>
@@ -462,6 +457,8 @@
     <string name="action_ok">OK</string>
     <string name="init_search">Почніть пошук, щоб знайти будь-який %s</string>
     <string name="search_or_create">Ви можете знайти або створити новий %s</string>
+    <string name="missing_warning_fields_events">У вас є кілька попереджень. Ви хочете позначити цю форму як завершену?</string>
+    <string name="missing_error_fields_events">Деякі поля містять помилки і не були збережені. Бажаєте переглянути форму?</string>
     <string name="event_can_be_completed">Ви бажаєте позначити цю форму як завершену?</string>
     <string name="event_error_on_complete">У вас є кілька повідомлень про помилки. Бажаєте їх переглянути?</string>
     <string name="re_opened">Відкрито знову</string>

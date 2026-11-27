@@ -169,10 +169,15 @@
         <item quantity="many">події</item>
         <item quantity="other">події</item>
     </plurals>
+    <string name="event_one">подія</string>
+    <string name="event_other">випадки</string>
     <string name="not_synced">Не синхронізовано</string>
     <string name="sync">Синхронізація</string>
     <string name="sync_error">Помилка синхронізації</string>
     <string name="remove_follow_up">Видалити</string>
     <string name="program_stage">Етап програми</string>
     <string name="stage">Етап</string>
-</resources>
+
+    <string name="http_error_conflict">Помилка</string>
+    <string name="http_error_internal_server_error">Помилка серверу</string>
+    </resources>

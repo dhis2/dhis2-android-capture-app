@@ -177,6 +177,11 @@
     <string name="cancel">Cancelar</string>
     <string name="ok">OK</string>
 
+    <!-- Fallbacks for locales without plural rules in Compose resources 1.10 (e.g. rw, tet, tg) -->
+    <string name="enrollment_one">inscrição</string>
+    <string name="event_one">evento</string>
+    <string name="event_other">eventos</string>
+    <string name="relationship_other">Relações</string>
     <string name="not_synced">Não sincronizado</string>
     <string name="sync">Sincronizar</string>
     <string name="sync_warning">Aviso de sincronização</string>
@@ -186,4 +191,8 @@
     <string name="remove_follow_up">Remover</string>
     <string name="program_stage">Estagio de programa</string>
     <string name="stage">estágio</string>
+
+    <string name="http_error_conflict">Conflito</string>
+    <string name="http_error_internal_server_error">Erro do Servidor Interno</string>
+    <string name="http_error_unknown">Erro desconhecido</string>
 </resources>

@@ -158,6 +158,10 @@
     <string name="cancel">ຍົກເລີກ</string>
     <string name="ok">​ຕົກ​ລົງ</string>
 
+    <!-- Fallbacks for locales without plural rules in Compose resources 1.10 (e.g. rw, tet, tg) -->
+    <string name="enrollment_one">ການລົງທະບຽນ</string>
+    <string name="event_one">ເຫດການ</string>
+    <string name="event_other">ເຫດການ</string>
     <string name="not_synced">ບໍ່ໄດ້ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
     <string name="sync">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
     <string name="sync_error">ຄໍາຜິດທີ່ເກີດຈາກການທໍາງານຮ່ວມກັນຂອງລະບົບ</string>
@@ -166,4 +170,6 @@
     <string name="enrollment_completed">ການລົງທະບຽນສຳເລັດແລ້ວ</string>
     <string name="enrollment_cancelled">ການລົງທະບຽນຖຶກຍົກເລິກ</string>
     <string name="program_stage">ຂັ້ນຂອງສາຍງານ</string>
+    <string name="http_error_conflict">ຂັດແຍ້ງ</string>
+    <string name="http_error_internal_server_error">ຄໍາຜິດທີ່ເກີດຈາກພາຍໃນເຄື່ອງຄອມພີວເຕີໜ່ວຍແມ່</string>
     </resources>

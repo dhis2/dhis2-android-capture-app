@@ -145,6 +145,12 @@
     <string name="cancel">Annuler</string>
     <string name="ok">Ok</string>
 
+    <!-- Fallbacks for locales without plural rules in Compose resources 1.10 (e.g. rw, tet, tg) -->
+    <string name="enrollment_one">inscription</string>
+    <string name="enrollment_other">inscriptions</string>
+    <string name="org_unit_one">unité d\'organisation</string>
+    <string name="event_one">événement</string>
+    <string name="event_other">événements</string>
     <!--*******************
     Info bar labels
     **********************-->
@@ -158,4 +164,9 @@
     <string name="remove_follow_up">Supprimer</string>
     <string name="program_stage">Stade de programme</string>
     <string name="stage">stade</string>
+
+    <string name="http_error_not_found">Non trouvé</string>
+    <string name="http_error_conflict">Conflit</string>
+    <string name="http_error_internal_server_error">Erreur interne </string>
+    <string name="http_error_unknown">Erreur inconnue</string>
 </resources>

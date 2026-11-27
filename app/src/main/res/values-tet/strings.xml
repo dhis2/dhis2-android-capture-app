@@ -23,10 +23,10 @@
     <!--TEI DASHBOARD-->
     <string name="edit">Edita</string>
     <string name="done_task">Pájina inisial</string>
-    <string name="wipe_data_no">Kansela</string>
     <string name="SYNC_MANAGER">Konfigurasaun</string>
     <string name="settingsTwoFAStatus">Estadu</string>
     <string name="period">Períodu</string>
+
     <!-- RELATIONSHIPS -->
     <string name="next">Próximu</string>
     <string name="button_ok">OK</string>

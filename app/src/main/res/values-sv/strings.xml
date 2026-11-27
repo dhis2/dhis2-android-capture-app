@@ -80,9 +80,6 @@
     <string name="a_day">1 dag (Standard)</string>
     <string name="Manual">Manuell</string>
     <string name="a_week">1 vecka</string>
-    <string name="wipe_data_meesage">Databasen kommer att raderas\nDu måste logga in igen.</string>
-    <string name="wipe_data_ok">Acceptera</string>
-    <string name="wipe_data_no">Avbryt</string>
     <string name="SYNC_DATA">Synkronisera data nu</string>
     <string name="SYNC_META">Synkronisera konfigurationen nu</string>
     <string name="SYNC_MANAGER">Inställningar</string>

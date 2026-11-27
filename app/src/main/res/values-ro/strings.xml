@@ -27,8 +27,6 @@
     <!--DONE TASKS-->
     <string name="events">evenimente</string>
     <string name="done_task">Acasă</string>
-    <string name="wipe_data_ok">Accept</string>
-    <string name="wipe_data_no">Anulare</string>
     <string name="settingsTwoFAStatus">Stare</string>
     <!--endregion-->
 
