@@ -22,7 +22,7 @@ data class ResolvedCustomForm(
 class ResolveCustomForm(
     private val repository: CustomFormRepository,
     private val renderer: CustomFormRenderer,
-    private val rules: List<CompatibilityRule<String>>,
+    private val rule: CompatibilityRule<String>?,
     private val reporter: ExtensionFailureReporter,
 ) {
     suspend operator fun invoke(dataSetUid: String): ResolvedCustomForm? {
@@ -42,7 +42,7 @@ class ResolveCustomForm(
                 html.isBlank() -> FailureReason.EMPTY_CONTENT
                 !repository.isSecureServer() -> FailureReason.INSECURE_SERVER
                 renderer.deviceSupported() -> FailureReason.UNSUPPORTED_FEATURE
-                else -> rules.firstNotNullOfOrNull { it.check(html) }
+                else -> rule?.check(html)
             }
         return if (failure != null) {
             reporter.report(extension, failure)

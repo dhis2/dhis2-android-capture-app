@@ -1,6 +1,6 @@
 package org.dhis2.mobile.extensibility.host.di
 
-import org.dhis2.mobile.extensibility.host.domain.LegacyApiScan
+import org.dhis2.mobile.extensibility.host.domain.NoFormScripts
 import org.dhis2.mobile.extensibility.host.domain.ResolveCustomForm
 import org.dhis2.mobile.extensibility.host.reporting.ExtensionFailureReporter
 import org.koin.core.module.Module
@@ -21,7 +21,7 @@ val extensionHostModule =
             ResolveCustomForm(
                 repository = get(),
                 renderer = get(),
-                rules = listOf(LegacyApiScan()),
+                rule = NoFormScripts(),
                 reporter = get(),
             )
         }

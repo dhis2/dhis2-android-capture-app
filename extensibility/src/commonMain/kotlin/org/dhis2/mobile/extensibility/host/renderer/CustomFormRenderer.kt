@@ -28,6 +28,7 @@ interface CustomFormRenderer {
         editable: Boolean,
         reloadKey: Int,
         saveValue: suspend (dataElementUid: String, categoryOptionComboUid: String, value: String?) -> String?,
+        openInput: (dataElementUid: String, categoryOptionComboUid: String, fieldOrder: List<Pair<String, String>>) -> Unit,
         onFailed: (FailureReason) -> Unit,
     )
 }
