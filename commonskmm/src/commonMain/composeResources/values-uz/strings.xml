@@ -83,9 +83,16 @@
     <string name="cancel">Рад этиш</string>
     <string name="ok">ЯХШИ</string>
 
+    <!-- Fallbacks for locales without plural rules in Compose resources 1.10 (e.g. rw, tet, tg) -->
+    <string name="enrollment_one">қайд этиш</string>
+    <string name="event_one">ҳодиса/тадбир</string>
+    <string name="event_other">ҳодиса/тадбирлар</string>
     <string name="sync">Синх</string>
     <string name="sync_error">Синхронлашда хатолик</string>
     <string name="marked_follow_up">Кузатув учун белгиланган</string>
     <string name="remove_follow_up">Олиб ташлаш</string>
     <string name="program_stage">Дастур босқичи</string>
-    </resources>
+    <string name="http_error_conflict">Номутаносиблик</string>
+    <string name="http_error_internal_server_error">Сервердаги ички хатолик</string>
+    <string name="http_error_unknown">Аниқланмаган хатолик</string>
+</resources>

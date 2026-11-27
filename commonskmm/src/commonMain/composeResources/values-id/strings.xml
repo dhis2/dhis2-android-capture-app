@@ -70,9 +70,16 @@
     <string name="cancel">Batal</string>
     <string name="ok">OK</string>
 
+    <!-- Fallbacks for locales without plural rules in Compose resources 1.10 (e.g. rw, tet, tg) -->
+    <string name="enrollment_one">pendaftaran</string>
+    <string name="event_one">acara/peristiwa</string>
+    <string name="event_other">Even</string>
     <string name="sync">Sinkronkan</string>
     <string name="sync_error">Kesalahan sinkronisasi</string>
     <string name="remove_follow_up">Hapus</string>
     <string name="program_stage">Tahapan program</string>
     <string name="stage">Tahapan</string>
-</resources>
+
+    <string name="http_error_conflict">Konflik</string>
+    <string name="http_error_internal_server_error">Kesalahan internal server</string>
+    </resources>

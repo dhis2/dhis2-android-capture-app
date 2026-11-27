@@ -23,7 +23,7 @@
     <string name="conf_error_value_option_set">字段%s的值不属于%s中设置的选项集</string>
     <string name="field_is_mandatory">此字段是必填字段</string>
     <string name="missing_warning_fields_completed_events">您收到了一些警告信息。</string>
-    <string name="missing_warning_fields_events">您有一些警告消息。\n您想将此表单标记为完成吗？</string>
+    <string name="missing_warning_fields_events">您收到了一些警告信息。\n您是否要将此表格标记为已完成？</string>
     <string name="required">必须的</string>
     <string name="polygon">多边形</string>
     <string name="latitude">维度</string>
@@ -47,9 +47,9 @@
     <string name="complete">完成</string>
     <string name="discard_changes">忽略修改</string>
     <string name="saved">已经保存！</string>
-    <string name="event_error_on_complete">您有一些错误消息。\n您要查看它们吗？</string>
-    <string name="missing_error_fields_events">一些字段有错误并且它们没有被保存。 \n您要查看表单吗？</string>
-    <string name="review_message">某些字段需要您注意。\n您要查看表单吗？</string>
+    <string name="event_error_on_complete">您有一些错误信息。\n您想查看它们吗？</string>
+    <string name="missing_error_fields_events">某些字段有错误，无法保存。 \n您想查看表格吗？</string>
+    <string name="review_message">有些字段需要您注意。\n您要查看表格吗？</string>
     <string name="not_now">现在不要</string>
     <string name="keep_editing">继续编辑</string>
     <string name="event_can_be_completed">您想将此表单标记为已完成吗？</string>
@@ -215,9 +215,15 @@
     <plurals name="event">
         <item quantity="other">活动</item>
     </plurals>
-    <plurals name="relationship">
-        <item quantity="other">关系</item>
-    </plurals>
+    <!-- Fallbacks for locales without plural rules in Compose resources 1.10 (e.g. rw, tet, tg) -->
+    <string name="enrollment_one">加入登记</string>
+    <string name="enrollment_other">注册人数</string>
+    <string name="org_unit_one">组织单位</string>
+    <string name="org_unit_other">组织单位</string>
+    <string name="tei_other">teis</string>
+    <string name="event_one">事件</string>
+    <string name="event_other">事件</string>
+    <string name="relationship_other">关系</string>
     <!--*******************
     Info bar labels
     **********************-->
@@ -238,4 +244,19 @@
     <string name="program_stage">项目阶段</string>
     <string name="group_by_stage_label">按%s分组</string>
     <string name="stage">阶段</string>
+
+    <string name="http_error_bad_request">请求错误</string>
+    <string name="http_error_unauthorized">未经授权</string>
+    <string name="http_error_forbidden">禁止</string>
+    <string name="http_error_not_found">未找到</string>
+    <string name="http_error_method_not_allowed">方法不允许</string>
+    <string name="http_error_request_timeout">请求超时</string>
+    <string name="http_error_conflict">冲突</string>
+    <string name="http_error_unprocessable_entity">无法处理的实体</string>
+    <string name="http_error_too_many_requests">请求过多</string>
+    <string name="http_error_internal_server_error">服务器内部错误</string>
+    <string name="http_error_bad_gateway">网关错误</string>
+    <string name="http_error_service_unavailable">服务不可用</string>
+    <string name="http_error_gateway_timeout">网关超时</string>
+    <string name="http_error_unknown">未知错误</string>
 </resources>

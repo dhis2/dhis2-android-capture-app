@@ -44,7 +44,11 @@
     <string name="cancel">បោះបង់</string>
     <string name="ok">យល់ព្រម</string>
 
+    <!-- Fallbacks for locales without plural rules in Compose resources 1.10 (e.g. rw, tet, tg) -->
+    <string name="enrollment_one">ការចុះឈ្មោះ</string>
+    <string name="event_other">ព្រឹត្តិការណ៏</string>
     <string name="sync">បញ្ចូន</string>
     <string name="sync_error">ការបញ្ចូនទិន្នន័យមានបញ្ហាបច្ចេកទេស</string>
     <string name="remove_follow_up">លុបចេញ</string>
+    <string name="http_error_internal_server_error">ម៉ាស៊ីនមេខាងក្នុងមានបញ្ហាបច្ចេកទេស</string>
     </resources>

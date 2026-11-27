@@ -11,7 +11,21 @@
     <string name="cancel">रद्द करें</string>
 
     <string name="from">से</string>
+    <!--SDK error codes-->
+    <string name="login_error_unsuccessful_response">कुछ गड़बड़ हो गई। कृपया जाँच लें कि सर्वर URL, यूज़रनेम और पासवर्ड सही हैं, और फिर से कोशिश करें।</string>
+    <string name="login_error_unknown_host">अज्ञात सर्वर</string>
+    <string name="online_search_parsing_error">परिणामों को पार्स करते समय एरर हुई</string>
+    <string name="error_unexpected">कुछ गलत हुआ</string>
+    <string name="error_many_requests">सर्वर इस समय व्यस्त है। कृपया थोड़ी देर बाद कोशिश करें।</string>
+    <string name="error_already_authenticated">यूज़र पहले से लॉग इन है।</string>
+    <string name="error_already_executed">अनुरोध पहले ही पूरा किया जा चुका है।</string>
+    <string name="error_api_invalid_query">सर्वर अनुरोध मान्य नहीं है।</string>
+    <string name="error_create_existing_error">बनाना रद्द किया गया। ऑब्जेक्ट पहले से मौजूद है।</string>
+    <string name="error_export_login">डेटाबेस एक्सपोर्ट करने के लिए कृपया लॉग इन करें</string>
+    <string name="error_export_encrypted">एन्क्रिप्ट किए गए डेटाबेस को एक्सपोर्ट करना समर्थित नहीं है।</string>
+    <string name="error_import_exist">आप पहले से मौजूद डेटाबेस को इम्पोर्ट कर रहे हैं।</string>
     <string name="back">वापस जाएँ</string>
     <string name="not_saved">सेव नहीं</string>
     <string name="invalid_possitive_zero">केवल शून्य या पॉजिटिव संख्या ही अनुमति है</string>
-    </resources>
+    <string name="leading_zero_error">शुरुआत में शून्य वाली संख्याएँ मान्य नहीं हैं</string>
+</resources>

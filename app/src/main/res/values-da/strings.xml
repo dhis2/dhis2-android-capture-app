@@ -28,7 +28,6 @@
     <string name="due_date">Due date</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
-    <string name="wipe_data_no">Cancel</string>
     <string name="SYNC_MANAGER">Settings</string>
     <string name="settingsTwoFAStatus">Status</string>
     <!--EVENT SUMMARY-->
