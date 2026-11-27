@@ -237,6 +237,7 @@ fun MainScreen(
         serverName = screenState.serverName,
         userName = screenState.userName,
         displayDeveloperOptions = displayDeveloperOptions,
+        pinAlreadyCreated = screenState.pinAlreadyCreated,
         selectedItem = screenState.currentScreen.toNavigationItem(),
         state = navigationRailState,
         onItemSelected = { item -> onAction(item.toHomeAction()) },
@@ -259,7 +260,7 @@ private fun HomeNavigationReelItem.toHomeAction(): HomeAction =
         HomeNavigationReelItem.Home -> HomeAction.GoToHome
         HomeNavigationReelItem.ImportSharedData -> HomeAction.ScreenChanged(MainScreenType.QRScanner)
         HomeNavigationReelItem.Settings -> HomeAction.ScreenChanged(MainScreenType.Settings)
-        HomeNavigationReelItem.PinManagement -> HomeAction.BlockSession
+        is HomeNavigationReelItem.PinManagement -> HomeAction.BlockSession
         HomeNavigationReelItem.Logout -> HomeAction.LogOut
         HomeNavigationReelItem.Troubleshooting -> HomeAction.ScreenChanged(MainScreenType.TroubleShooting)
         HomeNavigationReelItem.DeveloperOptions -> HomeAction.OpenDeveloperOptions
