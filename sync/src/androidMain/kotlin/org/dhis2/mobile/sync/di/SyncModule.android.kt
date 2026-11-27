@@ -1,6 +1,7 @@
 package org.dhis2.mobile.sync.di
 
 import androidx.work.WorkManager
+import org.dhis2.mobile.commons.resources.UserLanguageCache
 import org.dhis2.mobile.sync.data.AndroidSyncBackgroundJobAction
 import org.dhis2.mobile.sync.data.AndroidSyncRepository
 import org.dhis2.mobile.sync.data.GranularSyncWorker
@@ -50,7 +51,14 @@ actual val syncModule =
         }
 
         factory<SyncRepository> {
-            AndroidSyncRepository(get(), get(), get(), get(), get())
+            AndroidSyncRepository(
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                UserLanguageCache(get(), get()),
+            )
         }
 
         factoryOf(::SyncDataSetRepositoryImpl) bind SyncDataSetRepository::class

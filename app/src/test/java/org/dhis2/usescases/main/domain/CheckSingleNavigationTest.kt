@@ -1,5 +1,6 @@
 package org.dhis2.usescases.main.domain
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.error.DomainError
@@ -66,5 +67,24 @@ class CheckSingleNavigationTest {
                 assertTrue(isFailure)
                 assertTrue(exceptionOrNull() is DomainError)
             }
+        }
+
+    @Test
+    fun `should return failure if the sdk throws an unmapped exception`() =
+        runTest {
+            given(homeRepository.homeItemCount()) willAnswer {
+                throw IllegalStateException("No database is currently activated")
+            }
+            with(checkSingleNavigation()) {
+                assertTrue(isFailure)
+                assertTrue(exceptionOrNull() is IllegalStateException)
+            }
+        }
+
+    @Test(expected = CancellationException::class)
+    fun `should rethrow cancellation`() =
+        runTest {
+            given(homeRepository.homeItemCount()) willAnswer { throw CancellationException("cancelled") }
+            checkSingleNavigation()
         }
 }

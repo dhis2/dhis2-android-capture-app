@@ -42,7 +42,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v7
       with:
-        python-version: 3.12.1
+        python-version: '3.12'
 
       # Creates an auxiliary branch. This branch will be used to create the signed commit using the GH API.
       # It is required to use an auxiliary branch because the RELEASE_BRANCH is protected and the GH API
@@ -90,7 +90,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: 3.12.1
+          python-version: '3.12'
 
       - name: Create development branch
         run: |
