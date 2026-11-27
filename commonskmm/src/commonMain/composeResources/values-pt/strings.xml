@@ -46,7 +46,7 @@
     <string name="complete">Concluir</string>
     <string name="discard_changes">Descartar alterações</string>
     <string name="saved">Gravado!</string>
-    <string name="event_error_on_complete">Tem algumas mensagens de erro. Quer revê-las\?</string>
+    <string name="event_error_on_complete">Tem algumas mensagens de erro. Quer revê-las?</string>
     <string name="not_now">Agora não</string>
     <string name="keep_editing">Continue a editar</string>
     <string name="event_can_be_completed">Deseja marcar este formulário como completo?</string>
