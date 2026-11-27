@@ -66,6 +66,11 @@ import org.koin.core.parameter.parametersOf
  * @param mode The PIN mode (SET for creation, ASK for verification).
  * @param onSuccess Callback invoked when PIN operation succeeds.
  * @param onDismiss Callback invoked when the bottom sheet is dismissed.
+ * @param onForgotPin When set, "Forgot your PIN?" and too many failed attempts call it instead
+ * of the default forgot-PIN flow (delete PIN, log out, dismiss), so the caller can log out and
+ * leave the screen itself.
+ * @param onBack When set, Back and the close button call it instead of [onDismiss], so the
+ * caller can tell a user cancel apart from a completed forgot-PIN flow.
  * @param modifier Optional modifier for customization.
  * @param windowSizeClass Window size class for layout adjustments.
  */
@@ -75,17 +80,35 @@ fun PinDialog(
     mode: PinMode,
     onSuccess: () -> Unit,
     onDismiss: () -> Unit,
+    onForgotPin: (() -> Unit)? = null,
+    onBack: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     windowSizeClass: WindowSizeClass = getWindowSizeClass(),
 ) {
-    val viewModel: PinViewModel = koinViewModel { parametersOf(mode) }
+    val viewModel: PinViewModel = koinViewModel(key = "PinViewModel_${mode.ordinal}") { parametersOf(mode) }
     val uiState by viewModel.uiState.collectAsState()
     val isLandscape = deviceIsInLandscapeMode()
+    val forgotPin: () -> Unit =
+        if (onForgotPin != null) {
+            {
+                // Same guard as PinViewModel.onForgotPin: ignore taps while a check is running.
+                if (!uiState.isLoading) {
+                    viewModel.resetAttempts()
+                    viewModel.resetState()
+                    onForgotPin()
+                }
+            }
+        } else {
+            viewModel::onForgotPin
+        }
 
     LaunchedEffect(uiState.isSuccess, uiState.isDismissed, uiState.isTooManyAttempts) {
         when {
-            uiState.isSuccess -> onSuccess()
-            uiState.isTooManyAttempts -> viewModel.onForgotPin()
+            uiState.isSuccess -> {
+                onSuccess()
+                viewModel.resetState()
+            }
+            uiState.isTooManyAttempts -> forgotPin()
             uiState.isDismissed -> {
                 viewModel.resetAttempts()
                 viewModel.resetState()
@@ -101,11 +124,11 @@ fun PinDialog(
         windowSizeClass = windowSizeClass,
         onPinChanged = viewModel::onPinChanged,
         onPrimaryClick = viewModel::onPinComplete,
-        onSecondaryClick = viewModel::onForgotPin,
+        onSecondaryClick = forgotPin,
         onDismiss = {
             viewModel.resetAttempts()
             viewModel.resetState()
-            onDismiss()
+            (onBack ?: onDismiss)()
         },
         modifier = modifier,
     )
@@ -380,8 +403,15 @@ private fun PinInputBlock(
     }
 }
 
+/**
+ * Stacks the PIN sheets' buttons vertically, primary on top, with the bottom sheet's button
+ * paddings.
+ *
+ * @param primaryButton The main action.
+ * @param secondaryButton The optional secondary action, shown below the primary one.
+ */
 @Composable
-private fun VerticalButtonBlock(
+internal fun VerticalButtonBlock(
     primaryButton: @Composable () -> Unit,
     secondaryButton: (@Composable () -> Unit)?,
 ) {

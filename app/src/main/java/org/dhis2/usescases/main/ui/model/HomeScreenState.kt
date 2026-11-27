@@ -17,6 +17,7 @@ data class HomeScreenState(
     val bottomNavigationBarVisible: Boolean,
     val syncButtonVisible: Boolean,
     val currentScreen: MainScreenType,
+    val pinAlreadyCreated: Boolean,
 )
 
 val defaultHomeScreenState =
@@ -30,6 +31,7 @@ val defaultHomeScreenState =
         bottomNavigationBarVisible = false,
         syncButtonVisible = false,
         currentScreen = MainScreenType.Loading,
+        pinAlreadyCreated = false,
     )
 
 sealed class VersionToUpdateState {

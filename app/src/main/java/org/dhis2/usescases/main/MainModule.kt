@@ -20,6 +20,7 @@ import org.dhis2.mobile.home.domain.CheckSingleNavigation
 import org.dhis2.mobile.home.domain.GetLockAction
 import org.dhis2.mobile.home.domain.GetUserName
 import org.dhis2.mobile.home.domain.UpdateInitialSyncStatus
+import org.dhis2.mobile.login.pin.domain.usecase.DeletePin
 import org.dhis2.usescases.main.data.HomeRepositoryImpl
 import org.dhis2.usescases.main.domain.ConfigureHomeNavigationBar
 import org.dhis2.usescases.main.domain.DeleteAccount
@@ -95,6 +96,7 @@ val mainModule =
         factoryOf(::UpdateInitialSyncStatus)
         factoryOf(::CheckSingleNavigation)
         factoryOf(::LaunchInitialSync)
+        factoryOf(::DeletePin)
         factory {
             ScheduleNewVersionAlert(
                 workManagerController = get(),
@@ -128,6 +130,7 @@ val mainModule =
                 syncBackgroundJobAction = get(),
                 initialScreen = initialScreen,
                 dispatcher = dispatcher,
+                deletePin = get(),
             )
         }
 

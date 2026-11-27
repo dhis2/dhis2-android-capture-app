@@ -32,7 +32,7 @@
             android:icon="@drawable/ic_menu_settings"
             android:title="@string/SYNC_MANAGER" />
         <item
-            android:id="@+id/block_button"
+            android:id="@+id/manage_pin"
             android:icon="@drawable/ic_menu_lock"
             android:title="@string/set_pin" />
 

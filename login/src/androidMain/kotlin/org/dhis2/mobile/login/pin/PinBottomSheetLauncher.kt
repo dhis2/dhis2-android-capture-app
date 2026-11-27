@@ -18,13 +18,16 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
  *
  * @param mode PIN mode: SET (create PIN) or ASK (verify PIN).
  * @param onSuccess Invoked when the PIN operation completes successfully.
- * @param onDismiss Invoked when the dialog is dismissed (back press, forgot PIN, too many attempts).
+ * @param onDismiss Invoked when the dialog is dismissed (forgot PIN, too many attempts, and back
+ * press when [onBack] is null).
+ * @param onBack Invoked on back press or close instead of [onDismiss], when set.
  * @return The [ComposeView] added to the window, or null if the decor view is unavailable.
  */
 fun FragmentActivity.addPinBottomSheet(
     mode: PinMode,
     onSuccess: () -> Unit,
     onDismiss: () -> Unit,
+    onBack: (() -> Unit)? = null,
 ): ComposeView? {
     val decorView = window?.decorView as? ViewGroup ?: return null
     return ComposeView(this).apply {
@@ -37,6 +40,7 @@ fun FragmentActivity.addPinBottomSheet(
                     mode = mode,
                     onSuccess = onSuccess,
                     onDismiss = onDismiss,
+                    onBack = onBack,
                 )
             }
         }

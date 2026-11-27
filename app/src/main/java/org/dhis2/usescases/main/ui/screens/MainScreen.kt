@@ -40,12 +40,14 @@ import org.dhis2.R
 import org.dhis2.databinding.ActivityMainBinding
 import org.dhis2.mobile.commons.extensions.ObserveAsEvents
 import org.dhis2.mobile.login.pin.domain.model.PinMode
+import org.dhis2.mobile.login.pin.ui.components.ManagePinDialog
 import org.dhis2.mobile.login.pin.ui.components.PinDialog
 import org.dhis2.usescases.main.HomeScreen
 import org.dhis2.usescases.main.MainScreenType
 import org.dhis2.usescases.main.ui.model.HomeAction
 import org.dhis2.usescases.main.ui.model.HomeEffect
 import org.dhis2.usescases.main.ui.model.HomeScreenState
+import org.dhis2.usescases.main.ui.model.PinAction
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.dhis2.utils.getOnToolbarColor
 import org.dhis2.utils.getThemePrimaryColor
@@ -66,35 +68,54 @@ fun MainScreen(
     onNewScreen: (MainScreenType) -> Unit,
     onLayoutInflated: (ActivityMainBinding) -> Unit,
 ) {
-    var showPinDialog by remember { mutableStateOf(false) }
+    var pinAction by remember { mutableStateOf<PinAction>(PinAction.None) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val pinCreatedMessage = stringResource(R.string.pin_created)
-    val pinAlreadyCreatedMessage = stringResource(R.string.pin_already_created)
+    val pinUpdatedMessage = stringResource(R.string.pin_updated)
+    val pinDeletedMessage = stringResource(R.string.pin_deleted)
     BackHandler { onAction(HomeAction.BackPressed) }
 
     ObserveAsEvents(effects) { effect ->
         when (effect) {
-            HomeEffect.ShowPinDialog ->
-                showPinDialog = true
+            HomeEffect.ShowPinDialog -> {
+                pinAction = PinAction.SetPin
+            }
 
-            HomeEffect.PinCreated ->
+            HomeEffect.PinAlreadyCreated -> {
+                pinAction = PinAction.AskPin
+            }
+
+            HomeEffect.PinCreated -> {
                 scope.launch {
                     snackbarHostState.showSnackbar(
                         message = pinCreatedMessage,
                         duration = SnackbarDuration.Long,
                     )
                 }
+            }
 
-            HomeEffect.PinAlreadyCreated ->
+            HomeEffect.PinUpdated -> {
                 scope.launch {
                     snackbarHostState.showSnackbar(
-                        message = pinAlreadyCreatedMessage,
+                        message = pinUpdatedMessage,
                         duration = SnackbarDuration.Long,
                     )
                 }
+            }
 
-            else -> onEffect(effect)
+            HomeEffect.PinDeleted -> {
+                scope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = pinDeletedMessage,
+                        duration = SnackbarDuration.Long,
+                    )
+                }
+            }
+
+            else -> {
+                onEffect(effect)
+            }
         }
     }
 
@@ -118,7 +139,7 @@ fun MainScreen(
             if (screenState.bottomNavigationBarVisible) {
                 HomeBottomBar(screenState) { navigationPage ->
                     when (navigationPage) {
-                        NavigationPage.ANALYTICS ->
+                        NavigationPage.ANALYTICS -> {
                             onAction(
                                 HomeAction.ScreenChanged(
                                     MainScreenType.Home(
@@ -126,8 +147,9 @@ fun MainScreen(
                                     ),
                                 ),
                             )
+                        }
 
-                        NavigationPage.PROGRAMS ->
+                        NavigationPage.PROGRAMS -> {
                             onAction(
                                 HomeAction.ScreenChanged(
                                     MainScreenType.Home(
@@ -135,6 +157,7 @@ fun MainScreen(
                                     ),
                                 ),
                             )
+                        }
 
                         else -> { // no op
                         }
@@ -163,15 +186,48 @@ fun MainScreen(
                     .root
             },
         )
-        if (showPinDialog) {
-            PinDialog(
-                mode = PinMode.SET,
-                onSuccess = {
-                    onAction(HomeAction.PinSet)
-                    showPinDialog = false
-                },
-                onDismiss = { showPinDialog = false },
-            )
+        when (pinAction) {
+            PinAction.AskPin -> {
+                PinDialog(
+                    mode = PinMode.ASK,
+                    onSuccess = {
+                        pinAction = PinAction.ManagePin
+                    },
+                    onDismiss = { pinAction = PinAction.None },
+                    onForgotPin = {
+                        pinAction = PinAction.None
+                        onAction(HomeAction.ForgotPin)
+                    },
+                )
+            }
+
+            PinAction.ManagePin -> {
+                ManagePinDialog(
+                    onUpdateClick = {
+                        pinAction = PinAction.SetPin
+                    },
+                    onRemoveClick = {
+                        onAction(HomeAction.DeletePin)
+                        pinAction = PinAction.None
+                    },
+                    onDismiss = { pinAction = PinAction.None },
+                )
+            }
+
+            PinAction.SetPin -> {
+                PinDialog(
+                    mode = PinMode.SET,
+                    onSuccess = {
+                        onAction(HomeAction.PinSet)
+                        pinAction = PinAction.None
+                    },
+                    onDismiss = { pinAction = PinAction.None },
+                )
+            }
+
+            PinAction.None -> {
+                // no-op
+            }
         }
     }
 }

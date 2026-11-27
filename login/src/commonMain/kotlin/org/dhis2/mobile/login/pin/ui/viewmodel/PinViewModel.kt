@@ -169,16 +169,19 @@ class PinViewModel(
     }
 
     /**
-     * Resets transient UI state flags (error, success, dismissed, tooManyAttempts).
-     * Useful when the dialog is dismissed or re-shown.
+     * Resets transient UI state flags (error, success, dismissed, tooManyAttempts) and the
+     * typed PIN. Useful when the dialog is dismissed or re-shown: the ViewModel outlives the
+     * dialog, and the reopened input starts empty, so a kept PIN would be submitted unseen.
      */
     fun resetState() {
+        currentPin = ""
         _uiState.value =
             _uiState.value.copy(
                 errorMessage = null,
                 isSuccess = false,
                 isDismissed = false,
                 isTooManyAttempts = false,
+                primaryButtonIsEnabled = false,
             )
     }
 

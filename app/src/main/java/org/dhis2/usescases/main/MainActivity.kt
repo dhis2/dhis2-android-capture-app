@@ -139,6 +139,8 @@ class MainActivity : ActivityGlobalAbstract() {
                             HomeEffect.BlockSession -> finish()
                             HomeEffect.PinAlreadyCreated,
                             HomeEffect.PinCreated,
+                            HomeEffect.PinUpdated,
+                            HomeEffect.PinDeleted,
                             -> { // handled in composable
                             }
                             is HomeEffect.GoToLogin ->
@@ -210,13 +212,32 @@ class MainActivity : ActivityGlobalAbstract() {
 
     private fun initBinding() {
         binding.navView.setNavigationItemSelectedListener { item ->
-            if (item.itemId == R.id.delete_account) {
-                // An action, not a screen: never make it the checked item, otherwise every
-                // later drawer close would reopen the dialog.
-                binding.mainDrawerLayout.closeDrawers()
-                mainViewModel.onDeleteAccountClick()
-            } else {
-                changeFragment(item.itemId)
+            // Actions, not screens: never make them the checked item, otherwise every
+            // later drawer close would run them again.
+            when (item.itemId) {
+                R.id.delete_account -> {
+                    binding.mainDrawerLayout.closeDrawers()
+                    mainViewModel.onDeleteAccountClick()
+                }
+
+                R.id.manage_pin -> {
+                    binding.mainDrawerLayout.closeDrawers()
+                    mainViewModel.onBlockSession()
+                }
+
+                R.id.menu_dev -> {
+                    binding.mainDrawerLayout.closeDrawers()
+                    startActivity(Intent(this, DevelopmentActivity::class.java))
+                }
+
+                R.id.logout_button -> {
+                    binding.mainDrawerLayout.closeDrawers()
+                    mainViewModel.logOut()
+                }
+
+                else -> {
+                    changeFragment(item.itemId)
+                }
             }
             false
         }
@@ -257,6 +278,15 @@ class MainActivity : ActivityGlobalAbstract() {
             .findViewById<TextView>(R.id.user_info)
             .text = screenState.userName
 
+        val pinTitle =
+            if (screenState.pinAlreadyCreated) {
+                getString(R.string.manage_pin)
+            } else {
+                getString(R.string.set_pin)
+            }
+        binding.navView.menu
+            .findItem(R.id.manage_pin)
+            .title = pinTitle
         if (screenState.homeFilters.isNotEmpty()) {
             filtersAdapter.submitList(screenState.homeFilters)
         }
@@ -402,20 +432,11 @@ class MainActivity : ActivityGlobalAbstract() {
             R.id.menu_about ->
                 mainViewModel.onChangeScreen(MainScreenType.About)
 
-            R.id.block_button ->
-                mainViewModel.onBlockSession()
-
-            R.id.logout_button ->
-                mainViewModel.logOut()
-
             R.id.menu_home ->
                 mainViewModel.onChangeToHome()
 
             R.id.menu_troubleshooting ->
                 mainViewModel.onChangeScreen(MainScreenType.TroubleShooting)
-
-            R.id.menu_dev ->
-                startActivity(Intent(this, DevelopmentActivity::class.java))
         }
     }
 
