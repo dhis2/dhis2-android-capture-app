@@ -270,7 +270,11 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             // Use hardware back press to dismiss the keyboard that appears after clicking X.
             // Unlike closeKeyboard() (IMM-based), the back key is consumed by the keyboard
             // itself before reaching Compose, so focus does not jump to the first focusable
-            // item (Unique ID) in the LazyColumn.
+            // item (Unique ID) in the LazyColumn. The keyboard opens asynchronously: a back
+            // press before it is up would close the search screen instead.
+            composeTestRule.waitUntil("keyboard shown after resetting $label", TIMEOUT) {
+                isKeyboardVisible()
+            }
             pressBack()
             composeTestRule.waitForIdle()
         }
@@ -364,7 +368,7 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     // Scrolls again on every poll: in landscape a focused field reopens the keyboard, which
     // shrinks the list to about one row and drops the target item from composition
     private fun scrollUntilExists(label: String, matcher: SemanticsMatcher, useUnmergedTree: Boolean = false) {
-        composeTestRule.waitUntil(TIMEOUT) {
+        composeTestRule.waitUntil("search parameter \"$label\": ${matcher.description}", TIMEOUT) {
             scrollToSearchParameter(label)
             composeTestRule.onAllNodes(matcher, useUnmergedTree).fetchSemanticsNodes().isNotEmpty()
         }
