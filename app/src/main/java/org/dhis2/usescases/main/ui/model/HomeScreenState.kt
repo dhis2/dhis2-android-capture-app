@@ -8,12 +8,15 @@ import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBa
 
 @Stable
 data class HomeScreenState(
+    val serverName: String,
     val userName: String,
     val navigationBarItems: List<NavigationBarItem<NavigationPage>>,
     val homeFilters: List<FilterItem>,
     val activeFilters: Int,
     val versionToUpdate: VersionToUpdateState,
     val filterButtonVisible: Boolean,
+    /** Whether the filter panel (backdrop) above the current screen is open. */
+    val filtersVisible: Boolean,
     val bottomNavigationBarVisible: Boolean,
     val syncButtonVisible: Boolean,
     val currentScreen: MainScreenType,
@@ -22,12 +25,14 @@ data class HomeScreenState(
 
 val defaultHomeScreenState =
     HomeScreenState(
+        serverName = "",
         userName = "",
         navigationBarItems = emptyList(),
         homeFilters = emptyList(),
         activeFilters = 0,
         versionToUpdate = VersionToUpdateState.None,
         filterButtonVisible = false,
+        filtersVisible = false,
         bottomNavigationBarVisible = false,
         syncButtonVisible = false,
         currentScreen = MainScreenType.Loading,

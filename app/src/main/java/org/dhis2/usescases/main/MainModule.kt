@@ -18,6 +18,7 @@ import org.dhis2.data.service.workManager.WorkManagerControllerImpl
 import org.dhis2.mobile.home.data.HomeRepository
 import org.dhis2.mobile.home.domain.CheckSingleNavigation
 import org.dhis2.mobile.home.domain.GetLockAction
+import org.dhis2.mobile.home.domain.GetServerName
 import org.dhis2.mobile.home.domain.GetUserName
 import org.dhis2.mobile.home.domain.UpdateInitialSyncStatus
 import org.dhis2.mobile.login.pin.domain.usecase.DeletePin
@@ -82,6 +83,7 @@ val mainModule =
                 homeRepository = get { parametersOf(params.get()) },
             )
         }
+        factoryOf(::GetServerName)
         factory { params ->
             ConfigureHomeNavigationBar(
                 homeRepository = get { parametersOf(params.get()) },
@@ -117,6 +119,7 @@ val mainModule =
                 syncStatusController = get(),
                 mainNavigator = get { parametersOf(fragmentManager) },
                 getUserName = get { parametersOf(context) },
+                getServerName = get { parametersOf(context) },
                 configureHomeNavigationBar = get { parametersOf(context) },
                 getHomeFilters = get(),
                 downloadNewVersion = get(),

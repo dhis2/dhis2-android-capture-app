@@ -34,6 +34,7 @@ import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.commons.providers.PreferenceProvider
 import org.dhis2.mobile.home.domain.CheckSingleNavigation
 import org.dhis2.mobile.home.domain.GetLockAction
+import org.dhis2.mobile.home.domain.GetServerName
 import org.dhis2.mobile.home.domain.GetUserName
 import org.dhis2.mobile.home.domain.UpdateInitialSyncStatus
 import org.dhis2.mobile.home.domain.model.LockAction
@@ -71,6 +72,7 @@ class MainViewModel(
     syncStatusController: SyncStatusController,
     val mainNavigator: MainNavigator,
     private val getUserName: GetUserName,
+    private val getServerName: GetServerName,
     private val configureHomeNavigationBar: ConfigureHomeNavigationBar,
     private val getHomeFilters: GetHomeFilters,
     private val downloadNewVersion: DownloadNewVersion,
@@ -178,19 +180,23 @@ class MainViewModel(
     private fun loadData(initialScreen: MainScreenType) {
         launchUseCase(dispatcher.io()) {
             val userName = getUserName().getOrDefault("")
+            val serverName = getServerName().getOrDefault("")
             val navigationBarItems = configureHomeNavigationBar().getOrDefault(emptyList())
             val homeFilters = getHomeFilters().getOrDefault(emptyList())
             val getLockAction = getLockAction().getOrDefault(LockAction.CreatePin)
 
             _homeScreenState.update { current ->
                 HomeScreenState(
+                    serverName = serverName,
                     userName = userName,
                     navigationBarItems = navigationBarItems,
                     homeFilters = homeFilters,
                     activeFilters = filterManager.totalFilters,
                     versionToUpdate = current.versionToUpdate,
                     filterButtonVisible = initialScreen.isPrograms(),
-                    bottomNavigationBarVisible = initialScreen.isHome() && navigationBarItems.size > 1,
+                    filtersVisible = current.filtersVisible,
+                    bottomNavigationBarVisible =
+                        !current.filtersVisible && initialScreen.isHome() && navigationBarItems.size > 1,
                     syncButtonVisible = initialScreen.isHome(),
                     currentScreen = initialScreen,
                     pinAlreadyCreated = getLockAction == LockAction.PinAlreadyCreated,
@@ -218,7 +224,7 @@ class MainViewModel(
                     it.copy(
                         filterButtonVisible = true,
                         bottomNavigationBarVisible =
-                            it.currentScreen.isHome() && it.navigationBarItems.size > 1,
+                            !it.filtersVisible && it.currentScreen.isHome() && it.navigationBarItems.size > 1,
                         syncButtonVisible = true,
                     )
                 }
@@ -273,7 +279,7 @@ class MainViewModel(
                                     filterButtonVisible = true,
                                     navigationBarItems = navigationBarItems,
                                     bottomNavigationBarVisible =
-                                        it.currentScreen.isHome() && navigationBarItems.size > 1,
+                                        !it.filtersVisible && it.currentScreen.isHome() && navigationBarItems.size > 1,
                                     syncButtonVisible = true,
                                 )
                             }
@@ -346,22 +352,19 @@ class MainViewModel(
         }
     }
 
-    private fun showFilter() {
-        launchUseCase(dispatcher.io()) {
-            _homeEffects.send(HomeEffect.ToggleFilters)
-            _homeScreenState.update {
-                it.copy(
-                    bottomNavigationBarVisible =
-                        !it.bottomNavigationBarVisible && it.currentScreen.isHome() && it.navigationBarItems.size > 1,
-                )
-            }
+    private fun toggleFilters() {
+        _homeScreenState.update {
+            val filtersVisible = !it.filtersVisible
+            it.copy(
+                filtersVisible = filtersVisible,
+                bottomNavigationBarVisible =
+                    !filtersVisible && it.currentScreen.isHome() && it.navigationBarItems.size > 1,
+            )
         }
     }
 
-    private fun onMenuClick() {
-        launchUseCase(dispatcher.io()) {
-            _homeEffects.send(HomeEffect.ToggleSideMenu)
-        }
+    private fun openDeveloperOptions() {
+        launchUseCase { _homeEffects.send(HomeEffect.OpenDeveloperOptions) }
     }
 
     fun onDataSuccess() {
@@ -454,17 +457,6 @@ class MainViewModel(
         navigateToScreen(mainNavigator.openHome())
     }
 
-    fun updateNavigationBarVisibility(bottomNavigationBarIsVisible: Boolean) {
-        launchUseCase(dispatcher.io()) {
-            _homeScreenState.update {
-                it.copy(
-                    bottomNavigationBarVisible =
-                        bottomNavigationBarIsVisible && it.currentScreen.isHome() && it.navigationBarItems.size > 1,
-                )
-            }
-        }
-    }
-
     fun onChangeScreen(screenToOpen: MainScreenType) {
         navigateToScreen(screenToOpen)
     }
@@ -474,6 +466,8 @@ class MainViewModel(
         _homeScreenState.update {
             it.copy(
                 filterButtonVisible = screenToOpen.isPrograms(),
+                // Changing screen closes the filter panel of the previous one.
+                filtersVisible = false,
                 bottomNavigationBarVisible = screenToOpen.isHome() && it.navigationBarItems.size > 1,
                 syncButtonVisible = screenToOpen.isHome(),
                 currentScreen = screenToOpen,
@@ -554,13 +548,17 @@ class MainViewModel(
     fun onAction(action: HomeAction) {
         when (action) {
             HomeAction.BackPressed -> onBackPressed()
-            HomeAction.MenuClicked -> onMenuClick()
             HomeAction.SyncClicked -> onSyncAllClick()
-            HomeAction.FilterClicked -> showFilter()
+            HomeAction.FilterClicked -> toggleFilters()
             is HomeAction.ScreenChanged -> onChangeScreen(action.screen)
             HomeAction.PinSet -> onPinSet()
             HomeAction.DeletePin -> removePin()
             HomeAction.ForgotPin -> logOut()
+            HomeAction.GoToHome -> onChangeToHome()
+            HomeAction.BlockSession -> onBlockSession()
+            HomeAction.LogOut -> logOut()
+            HomeAction.DeleteAccount -> onDeleteAccountClick()
+            HomeAction.OpenDeveloperOptions -> openDeveloperOptions()
         }
     }
 }

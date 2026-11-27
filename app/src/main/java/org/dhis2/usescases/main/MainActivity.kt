@@ -11,8 +11,6 @@ import android.os.Bundle
 import android.provider.Settings
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
-import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,8 +20,6 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.NotificationCompat
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Lifecycle
 import com.google.android.material.snackbar.Snackbar
 import org.dhis2.BuildConfig
@@ -83,7 +79,8 @@ class MainActivity : ActivityGlobalAbstract() {
 
     private val filtersAdapter: FiltersAdapter = FiltersAdapter()
 
-    private var backDropActive = false
+    /** Whether the filter panel is open in the current layout; mirrors HomeScreenState.filtersVisible. */
+    private var filtersPanelOpen = false
     private var pendingUpdateApk: File? = null
 
     private val navigationLauncher =
@@ -165,8 +162,8 @@ class MainActivity : ActivityGlobalAbstract() {
                                     effect.homeItemData,
                                 )
                             HomeEffect.ShowPinDialog -> { /*handled in composable*/ }
-                            HomeEffect.ToggleSideMenu -> openDrawer()
-                            HomeEffect.ToggleFilters -> showHideFilter()
+                            HomeEffect.OpenDeveloperOptions ->
+                                startActivity(Intent(this, DevelopmentActivity::class.java))
                         }
                     },
                     onNewState = { state ->
@@ -174,27 +171,17 @@ class MainActivity : ActivityGlobalAbstract() {
                             updateScreen(state)
                         }
                     },
-                    onNewScreen = { currentScreen ->
-                        if (backDropActive) {
-                            showHideFilter()
-                        }
-                        currentScreen.navigationId()?.let {
-                            changeFragment(it)
-                            // On recreation the ViewModel screen hasn't changed so
-                            // navigateToScreen() would early-return without ever opening the
-                            // fragment. Bypass it once to repopulate the fresh container.
-                            if (needsScreenRefresh) {
-                                needsScreenRefresh = false
-                                mainViewModel.refreshCurrentScreen()
-                            } else {
-                                initCurrentScreen()
-                            }
-                        }
-                    },
                     onLayoutInflated = {
                         binding = it
                         initBinding()
+                        // On recreation the ViewModel's current screen hasn't changed, so nothing
+                        // would open its fragment in the new container. Reopen it once.
+                        if (needsScreenRefresh) {
+                            needsScreenRefresh = false
+                            mainViewModel.refreshCurrentScreen()
+                        }
                     },
+                    displayDeveloperOptions = showDeveloperOptions(),
                 )
 
                 val deleteAccountState by mainViewModel.deleteAccountState.collectAsState()
@@ -211,72 +198,17 @@ class MainActivity : ActivityGlobalAbstract() {
     }
 
     private fun initBinding() {
-        binding.navView.setNavigationItemSelectedListener { item ->
-            // Actions, not screens: never make them the checked item, otherwise every
-            // later drawer close would run them again.
-            when (item.itemId) {
-                R.id.delete_account -> {
-                    binding.mainDrawerLayout.closeDrawers()
-                    mainViewModel.onDeleteAccountClick()
-                }
-
-                R.id.manage_pin -> {
-                    binding.mainDrawerLayout.closeDrawers()
-                    mainViewModel.onBlockSession()
-                }
-
-                R.id.menu_dev -> {
-                    binding.mainDrawerLayout.closeDrawers()
-                    startActivity(Intent(this, DevelopmentActivity::class.java))
-                }
-
-                R.id.logout_button -> {
-                    binding.mainDrawerLayout.closeDrawers()
-                    mainViewModel.logOut()
-                }
-
-                else -> {
-                    changeFragment(item.itemId)
-                }
-            }
-            false
-        }
-
-        binding.mainDrawerLayout.addDrawerListener(
-            object : DrawerLayout.DrawerListener {
-                override fun onDrawerSlide(
-                    drawerView: View,
-                    slideOffset: Float,
-                ) = Unit
-
-                override fun onDrawerOpened(drawerView: View) = Unit
-
-                override fun onDrawerClosed(drawerView: View) {
-                    initCurrentScreen()
-                }
-
-                override fun onDrawerStateChanged(newState: Int) = Unit
-            },
-        )
-
+        filtersPanelOpen = false
         binding.filterRecycler.adapter = filtersAdapter
-
-        if (BuildConfig.DEBUG || BuildConfig.FLAVOR == "dhis2Training") {
-            binding.navView.menu
-                .findItem(R.id.menu_troubleshooting)
-                .isVisible = true
-            binding.navView.menu
-                .findItem(R.id.menu_dev)
-                .isVisible = true
-        }
         checkNotificationPermission()
     }
 
+    private fun showDeveloperOptions() = BuildConfig.DEBUG || BuildConfig.FLAVOR == "dhis2Training"
+
     private fun updateScreen(screenState: HomeScreenState) {
-        binding.navView
-            .getHeaderView(0)
-            .findViewById<TextView>(R.id.user_info)
-            .text = screenState.userName
+        if (screenState.filtersVisible != filtersPanelOpen) {
+            showFiltersPanel(screenState.filtersVisible)
+        }
 
         val pinTitle =
             if (screenState.pinAlreadyCreated) {
@@ -314,14 +246,14 @@ class MainActivity : ActivityGlobalAbstract() {
         }
     }
 
-    private fun showHideFilter() {
+    private fun showFiltersPanel(open: Boolean) {
         val transition = ChangeBounds()
         transition.duration = 200
         TransitionManager.beginDelayedTransition(binding.backdropLayout, transition)
-        backDropActive = !backDropActive
+        filtersPanelOpen = open
         val initSet = ConstraintSet()
         initSet.clone(binding.backdropLayout)
-        if (backDropActive) {
+        if (open) {
             initSet.connect(
                 R.id.fragment_container,
                 ConstraintSet.TOP,
@@ -329,7 +261,6 @@ class MainActivity : ActivityGlobalAbstract() {
                 ConstraintSet.BOTTOM,
                 50,
             )
-            mainViewModel.updateNavigationBarVisibility(false)
         } else {
             initSet.connect(
                 R.id.fragment_container,
@@ -338,7 +269,6 @@ class MainActivity : ActivityGlobalAbstract() {
                 ConstraintSet.BOTTOM,
                 0,
             )
-            mainViewModel.updateNavigationBarVisibility(true)
         }
         initSet.applyTo(binding.backdropLayout)
     }
@@ -407,48 +337,6 @@ class MainActivity : ActivityGlobalAbstract() {
             transition = null,
         )
     }
-
-    private fun openDrawer() {
-        if (!binding.mainDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-            binding.mainDrawerLayout.openDrawer(GravityCompat.START)
-        } else {
-            binding.mainDrawerLayout.closeDrawer(GravityCompat.START)
-        }
-    }
-
-    private fun changeFragment(id: Int) {
-        binding.navView.setCheckedItem(id)
-        binding.mainDrawerLayout.closeDrawers()
-    }
-
-    private fun initCurrentScreen() {
-        when (binding.navView.checkedItem?.itemId) {
-            R.id.sync_manager ->
-                mainViewModel.onChangeScreen(MainScreenType.Settings)
-
-            R.id.qr_scan ->
-                mainViewModel.onChangeScreen(MainScreenType.QRScanner)
-
-            R.id.menu_about ->
-                mainViewModel.onChangeScreen(MainScreenType.About)
-
-            R.id.menu_home ->
-                mainViewModel.onChangeToHome()
-
-            R.id.menu_troubleshooting ->
-                mainViewModel.onChangeScreen(MainScreenType.TroubleShooting)
-        }
-    }
-
-    private fun MainScreenType.navigationId(): Int? =
-        when (this) {
-            MainScreenType.About -> R.id.menu_about
-            is MainScreenType.Home -> R.id.menu_home
-            MainScreenType.Loading -> null
-            MainScreenType.QRScanner -> R.id.qr_scan
-            MainScreenType.Settings -> R.id.sync_manager
-            MainScreenType.TroubleShooting -> R.id.menu_troubleshooting
-        }
 
     private fun showProgressDeleteNotification() {
         val notificationManager =

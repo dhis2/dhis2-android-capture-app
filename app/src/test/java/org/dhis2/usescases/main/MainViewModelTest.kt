@@ -27,6 +27,7 @@ import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.providers.PreferenceProvider
 import org.dhis2.mobile.home.domain.CheckSingleNavigation
 import org.dhis2.mobile.home.domain.GetLockAction
+import org.dhis2.mobile.home.domain.GetServerName
 import org.dhis2.mobile.home.domain.GetUserName
 import org.dhis2.mobile.home.domain.UpdateInitialSyncStatus
 import org.dhis2.mobile.home.domain.model.LockAction
@@ -86,6 +87,7 @@ class MainViewModelTest {
     private val resourceManager: ResourceManager = mock()
     private val mainNavigator: MainNavigator = mock()
     private val getUserName: GetUserName = mock()
+    private val getServerName: GetServerName = mock()
     private val configureHomeNavigationBar: ConfigureHomeNavigationBar = mock()
     private val getHomeFilters: GetHomeFilters = mock()
     private val downloadNewVersion: DownloadNewVersion = mock()
@@ -138,6 +140,7 @@ class MainViewModelTest {
                     syncStatusController = syncStatusController,
                     mainNavigator = mainNavigator,
                     getUserName = getUserName,
+                    getServerName = getServerName,
                     configureHomeNavigationBar = configureHomeNavigationBar,
                     getHomeFilters = getHomeFilters,
                     downloadNewVersion = downloadNewVersion,
@@ -166,6 +169,7 @@ class MainViewModelTest {
     fun `Should save default settings and render user name when the activity is resumed`() =
         runTest {
             whenever(getUserName()) doReturn Result.success("mocked_user_name")
+            whenever(getServerName()) doReturn Result.success("server")
             whenever(configureHomeNavigationBar()) doReturn Result.success(emptyList())
             whenever(getHomeFilters()) doReturn Result.success(emptyList())
             whenever(resourceManager.getString(-1)) doReturn ""
@@ -275,15 +279,6 @@ class MainViewModelTest {
         }
 
     @Test
-    fun `Should open drawer when menu is clicked`() =
-        runTest {
-            viewModel.homeEffects.test {
-                viewModel.onAction(HomeAction.MenuClicked)
-                assertTrue(awaitItem() == HomeEffect.ToggleSideMenu)
-            }
-        }
-
-    @Test
     fun `should return to home section when user taps back in a different section`() =
         runTest {
             whenever(mainNavigator.openHome()) doReturn MainScreenType.Home(HomeScreen.Programs)
@@ -381,6 +376,7 @@ class MainViewModelTest {
     fun shouldSetVersionToUpdate() =
         runTest {
             whenever(getUserName()) doReturn Result.success("username")
+            whenever(getServerName()) doReturn Result.success("server")
             whenever(configureHomeNavigationBar()) doReturn Result.success(emptyList())
             whenever(getHomeFilters()) doReturn Result.success(emptyList())
             whenever(filterManager.totalFilters) doReturn 0
@@ -408,6 +404,7 @@ class MainViewModelTest {
     fun shouldToggleFilters() =
         runTest {
             whenever(getUserName()) doReturn Result.success("username")
+            whenever(getServerName()) doReturn Result.success("server")
             whenever(configureHomeNavigationBar()) doReturn
                 Result.success(
                     listOf(
@@ -427,11 +424,95 @@ class MainViewModelTest {
             whenever(filterManager.totalFilters) doReturn 0
 
             viewModel.homeScreenState.test {
+                advanceUntilIdle()
+
                 viewModel.onAction(HomeAction.FilterClicked)
-                viewModel.homeEffects.test {
-                    assertTrue((this).awaitItem() is HomeEffect.ToggleFilters)
+                advanceUntilIdle()
+                with(expectMostRecentItem()) {
+                    assertTrue(filtersVisible)
+                    assertTrue(bottomNavigationBarVisible.not())
                 }
-                assertTrue((this@test).awaitItem().bottomNavigationBarVisible.not())
+
+                viewModel.onAction(HomeAction.FilterClicked)
+                advanceUntilIdle()
+                with(expectMostRecentItem()) {
+                    assertTrue(filtersVisible.not())
+                    assertTrue(bottomNavigationBarVisible)
+                }
+            }
+        }
+
+    @Test
+    fun `should close the filters when changing screen`() =
+        runTest {
+            stubHomeData()
+            viewModel.homeScreenState.test {
+                advanceUntilIdle()
+
+                viewModel.onAction(HomeAction.FilterClicked)
+                advanceUntilIdle()
+                assertTrue(expectMostRecentItem().filtersVisible)
+
+                viewModel.onAction(HomeAction.ScreenChanged(MainScreenType.Settings))
+                advanceUntilIdle()
+                assertTrue(expectMostRecentItem().filtersVisible.not())
+            }
+        }
+
+    @Test
+    fun `should go to the last home tab when home is selected in the menu`() =
+        runTest {
+            stubHomeData()
+            whenever(mainNavigator.openHome()) doReturn MainScreenType.Home(HomeScreen.Visualizations)
+
+            viewModel.homeScreenState.test {
+                advanceUntilIdle()
+
+                viewModel.onAction(HomeAction.GoToHome)
+                advanceUntilIdle()
+
+                verify(mainNavigator).openHome()
+                assertTrue(expectMostRecentItem().currentScreen.isVisualizations())
+            }
+        }
+
+    @Test
+    fun `should block session when it is selected in the menu`() =
+        runTest {
+            whenever(getLockAction()) doReturn Result.success(LockAction.CreatePin)
+
+            viewModel.homeEffects.test {
+                viewModel.onAction(HomeAction.BlockSession)
+                assertTrue(awaitItem() == HomeEffect.ShowPinDialog)
+            }
+        }
+
+    @Test
+    fun `should log out when it is selected in the menu`() =
+        runTest {
+            whenever(logOutUser()) doReturn Result.success(1)
+
+            viewModel.homeEffects.test {
+                viewModel.onAction(HomeAction.LogOut)
+                assertTrue(awaitItem() == HomeEffect.GoToLogin(1, false))
+            }
+        }
+
+    @Test
+    fun `should ask for confirmation before deleting the account`() =
+        runTest {
+            viewModel.onAction(HomeAction.DeleteAccount)
+
+            assertEquals(DeleteDataState.Opened, viewModel.deleteAccountState.value)
+            verify(deleteAccount, never()).invoke(any())
+        }
+
+    @Test
+    fun `should open developer options when they are selected in the menu`() =
+        runTest {
+            viewModel.homeEffects.test {
+                viewModel.onAction(HomeAction.OpenDeveloperOptions)
+                assertTrue(awaitItem() == HomeEffect.OpenDeveloperOptions)
             }
         }
 
@@ -543,8 +624,10 @@ class MainViewModelTest {
             }
         }
 
-    private suspend fun stubHomeData(lockAction: Result<LockAction>) {
-        whenever(getUserName()) doReturn Result.success("user")
+    /** Stubs the use cases that load the home screen state when it is first collected. */
+    private suspend fun stubHomeData(lockAction: Result<LockAction> = Result.success(LockAction.CreatePin)) {
+        whenever(getUserName()) doReturn Result.success("username")
+        whenever(getServerName()) doReturn Result.success("server")
         whenever(configureHomeNavigationBar()) doReturn Result.success(emptyList())
         whenever(getHomeFilters()) doReturn Result.success(emptyList())
         whenever(filterManager.totalFilters) doReturn 0
