@@ -210,6 +210,15 @@ class MainActivity : ActivityGlobalAbstract() {
             showFiltersPanel(screenState.filtersVisible)
         }
 
+        val pinTitle =
+            if (screenState.pinAlreadyCreated) {
+                getString(R.string.manage_pin)
+            } else {
+                getString(R.string.set_pin)
+            }
+        binding.navView.menu
+            .findItem(R.id.manage_pin)
+            .title = pinTitle
         if (screenState.homeFilters.isNotEmpty()) {
             filtersAdapter.submitList(screenState.homeFilters)
         }
