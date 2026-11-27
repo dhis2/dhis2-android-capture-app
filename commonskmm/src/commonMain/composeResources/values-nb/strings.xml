@@ -75,6 +75,10 @@
     <string name="cancel">Avbryt</string>
     <string name="ok">OK</string>
 
+    <!-- Fallbacks for locales without plural rules in Compose resources 1.10 (e.g. rw, tet, tg) -->
+    <string name="enrollment_one">registrering</string>
+    <string name="event_one">hendelse</string>
+    <string name="event_other">hendelser</string>
     <string name="sync">Synk</string>
     <string name="sync_error">Synkroniseringsfeil</string>
     <string name="remove_follow_up">Fjern</string>

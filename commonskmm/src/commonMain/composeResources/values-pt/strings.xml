@@ -46,7 +46,7 @@
     <string name="complete">Concluir</string>
     <string name="discard_changes">Descartar alterações</string>
     <string name="saved">Gravado!</string>
-    <string name="event_error_on_complete">Tem algumas mensagens de erro. Quer revê-las?</string>
+    <string name="event_error_on_complete">Tem algumas mensagens de erro. Quer revê-las\?</string>
     <string name="not_now">Agora não</string>
     <string name="keep_editing">Continue a editar</string>
     <string name="event_can_be_completed">Deseja marcar este formulário como completo?</string>
@@ -177,6 +177,11 @@
     <string name="cancel">Cancelar</string>
     <string name="ok">OK</string>
 
+    <!-- Fallbacks for locales without plural rules in Compose resources 1.10 (e.g. rw, tet, tg) -->
+    <string name="enrollment_one">inscrição</string>
+    <string name="event_one">evento</string>
+    <string name="event_other">eventos</string>
+    <string name="relationship_other">Relações</string>
     <string name="not_synced">Não sincronizado</string>
     <string name="sync">Sincronizar</string>
     <string name="sync_warning">Aviso de sincronização</string>

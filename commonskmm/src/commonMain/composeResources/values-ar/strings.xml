@@ -166,6 +166,8 @@
     <string name="cancel">إلغاء</string>
     <string name="ok">موافق</string>
 
+    <string name="event_one">حدث</string>
+    <string name="event_other">الأحداث</string>
     <string name="not_synced">غير متزامن</string>
     <string name="sync">حالة التزامن</string>
     <string name="sync_warning">تحذير المزامنة</string>

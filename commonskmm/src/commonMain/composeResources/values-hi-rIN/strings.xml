@@ -21,7 +21,7 @@
     <string name="conf_error_value_option_set">फील्ड का मान %s के ऑप्शन सेट %s में नहीं है</string>
     <string name="field_is_mandatory">यह फ़ील्ड आवश्यक है</string>
     <string name="missing_warning_fields_completed_events">आपके पास कुछ चेतावनी संदेश हैं</string>
-    <string name="missing_warning_fields_events">आपके पास कुछ चेतावनी संदेश हैं\nक्या आप इस फ़ॉर्म को कम्प्लीट मार्क करना चाहते हैं?</string>
+    <string name="missing_warning_fields_events">आपके पास कुछ चेतावनी संदेश हैं\nक्या आप इस फ़ॉर्म को कम्प्लीट मार्क करना चाहते हैं\?</string>
     <string name="required">आवश्यकता है</string>
     <string name="latitude">अक्षांश</string>
     <string name="longitude">देशांतर</string>
@@ -44,12 +44,12 @@
     <string name="complete">पूरा हुआ</string>
     <string name="discard_changes">बदलावों को छोड़ना है</string>
     <string name="saved">सेव</string>
-    <string name="event_error_on_complete">आपके पास कुछ एरर संदेश हैं\nक्या आप उन्हें समीक्षा करना चाहते हैं?</string>
-    <string name="missing_error_fields_events">कुछ फ़ील्ड में एरर संदेश हैं\nक्या आप उन्हें समीक्षा करना चाहते हैं?</string>
-    <string name="review_message">कुछ फ़ील्ड पर आपके ध्यान की आवश्यकता है। \nक्या आप फ़ॉर्म की समीक्षा करना चाहते हैं?</string>
+    <string name="event_error_on_complete">आपके पास कुछ एरर संदेश हैं\nक्या आप उन्हें समीक्षा करना चाहते हैं\?</string>
+    <string name="missing_error_fields_events">कुछ फ़ील्ड में एरर संदेश हैं\nक्या आप उन्हें समीक्षा करना चाहते हैं\?</string>
+    <string name="review_message">कुछ फ़ील्ड पर आपके ध्यान की आवश्यकता है। \nक्या आप फ़ॉर्म की समीक्षा करना चाहते हैं\?</string>
     <string name="not_now">अभी नहीं</string>
     <string name="keep_editing">संपादन करते रहें</string>
-    <string name="event_can_be_completed">क्या आप इस फ़ॉर्म को पूरा करना चाहते हैं?</string>
+    <string name="event_can_be_completed">क्या आप इस फ़ॉर्म को पूरा करना चाहते हैं\?</string>
     <string name="discard_go_back">यदि आप अभी बाहर निकलते हैं, तो फ़ॉर्म की सारी जानकारी हटा दी जाएगी।</string>
     <string name="field_errors_not_saved_discard">कुछ फ़ील्ड में एरर हैं और वे सेव नहीं किए गए हैं।\nअगर आप अभी बाहर निकलते हैं, तो बदलाव हटा दिए जाएँगे।</string>
     <string name="share">साझा करें</string>
@@ -138,6 +138,8 @@
     <string name="cancel">रद्द करें</string>
     <string name="ok">ठीक है</string>
 
+    <string name="event_one">इवेंट</string>
+    <string name="event_other">इवेंट्स</string>
     <string name="sync_error">सिंक की गलती</string>
     <string name="remove_follow_up">हटाएं</string>
     </resources>
