@@ -39,6 +39,7 @@
     <string name="add_file">फ़ाइल जोड़ें</string>
     <string name="file_downloaded">फ़ाइल सफलतापूर्वक डाउनलोड हो गई</string>
     <string name="file_download_error">फ़ाइल डाउनलोड नहीं हो सकी</string>
+    <string name="file_upload_error">फ़ाइल अपलोड नहीं हो सकी</string>
     <string name="add_image">इमेज जोड़ें</string>
     <string name="take_photo">फ़ोटो लें</string>
     <string name="from_gallery">गैलरी से ऐड करें</string>

@@ -9,5 +9,9 @@
     <string name="no_results_found">Nu au fost găsite rezultate</string>
     <string name="action_done">Terminat</string>
     <string name="cancel">Anulare</string>
+    <!-- Fallbacks for locales without plural rules in Compose resources 1.10 (e.g. rw, tet, tg) -->
+    <string name="enrollment_one">înrolare</string>
+    <string name="event_one">eveniment</string>
+    <string name="event_other">evenimente</string>
     <string name="stage">etapă</string>
 </resources>

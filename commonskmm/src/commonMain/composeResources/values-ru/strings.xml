@@ -184,6 +184,12 @@
         <item quantity="many">события</item>
         <item quantity="other">событий</item>
     </plurals>
+    <!-- Fallbacks for locales without plural rules in Compose resources 1.10 (e.g. rw, tet, tg) -->
+    <string name="enrollment_one">регистрация</string>
+    <string name="enrollment_other">зачисления</string>
+    <string name="event_one">событие</string>
+    <string name="event_other">событий</string>
+    <string name="relationship_other">Связи</string>
     <string name="not_synced">Не синхронизировано</string>
     <string name="sync">Синхронизировать</string>
     <string name="sync_warning">Предупреждение по синхронизации</string>

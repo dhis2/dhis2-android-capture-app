@@ -189,6 +189,11 @@
     <string name="cancel">Hủy</string>
     <string name="ok">OK</string>
 
+    <!-- Fallbacks for locales without plural rules in Compose resources 1.10 (e.g. rw, tet, tg) -->
+    <string name="enrollment_one">đăng ký</string>
+    <string name="event_one">sự kiện</string>
+    <string name="event_other">sự kiện</string>
+    <string name="relationship_other">Các mối quan hệ</string>
     <string name="not_synced">Chưa được đồng bộ</string>
     <string name="sync">Đồng bộ</string>
     <string name="sync_warning">Cảnh báo đồng bộ</string>

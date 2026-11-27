@@ -169,6 +169,8 @@
         <item quantity="many">події</item>
         <item quantity="other">події</item>
     </plurals>
+    <string name="event_one">подія</string>
+    <string name="event_other">випадки</string>
     <string name="not_synced">Не синхронізовано</string>
     <string name="sync">Синхронізація</string>
     <string name="sync_error">Помилка синхронізації</string>

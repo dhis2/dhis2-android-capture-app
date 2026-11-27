@@ -152,6 +152,10 @@
     <string name="cancel">Cancelar</string>
     <string name="ok">Correcto</string>
 
+    <!-- Fallbacks for locales without plural rules in Compose resources 1.10 (e.g. rw, tet, tg) -->
+    <string name="enrollment_one">inscripción</string>
+    <string name="event_one">evento</string>
+    <string name="event_other">Eventos</string>
     <string name="sync">Sincronizado</string>
     <string name="sync_error">Error en sincronizacion</string>
     <string name="remove_follow_up">Eliminar</string>

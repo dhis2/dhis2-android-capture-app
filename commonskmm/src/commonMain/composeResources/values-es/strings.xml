@@ -199,6 +199,12 @@
         <item quantity="many">eventos</item>
         <item quantity="other">eventos</item>
     </plurals>
+    <!-- Fallbacks for locales without plural rules in Compose resources 1.10 (e.g. rw, tet, tg) -->
+    <string name="enrollment_one">inscripción</string>
+    <string name="enrollment_other">Registros</string>
+    <string name="event_one">evento</string>
+    <string name="event_other">Eventos</string>
+    <string name="relationship_other">Relaciones</string>
     <string name="not_synced">No Sincronizado</string>
     <string name="sync">Sincronizar</string>
     <string name="sync_warning">Advertencia de sincronización</string>
